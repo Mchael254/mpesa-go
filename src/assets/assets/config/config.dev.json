@@ -1,0 +1,26 @@
+{
+  "contextPath": {
+    "accounts_services": "crm",
+    "users_services": "user",
+    "auth_services": "oauth",
+    "setup_services":  "crm",
+    "chart_services": "charts",
+    "gis_services": "gis",
+    "ticket_services": "turnquest",
+    "api":"api"
+  },
+
+  "organization": {
+    "passport_regex": "^[A-Z]{1,2}[0-9]{6,8}[A-Z]{0,1}$",
+    "pin_regex": "^[A][0-9]{9}[A-Z]{1}",
+    "birth_cert_regex": "^[0-9]{3}\\/[0-9]{5}$",
+    "national_ID_regex": "^[0-9]{8}$",
+    "alien_number_regex": "^A[0-9]{8}$",
+    "huduma_number_regex": "^[0-9]{5}-[0-9]{5}-[0-9]{4}$",
+    "registration_number_regex": "^[0-9]{5}\\/[0-9]{5}$",
+    "drivers_license_number_regex": "^[0-9]{9}$",
+    "cert_of_incorporation_number_regex": "^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$"
+  },
+
+  "dmsDefaultUrl": "http://192.0.1.140:9080/alfrescoServices"
+}

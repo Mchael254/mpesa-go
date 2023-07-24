@@ -1,0 +1,761 @@
+@charset "utf-8";
+/* CSS Document */
+#top-wrap {
+  width: 100%;
+  float: left;
+  height: 80px;
+  background: #ffffff;
+  z-index: 100;
+  position: fixed;
+  top: 0;
+}
+
+#logo {
+  width: 133px;
+  height: 80px;
+  float: left;
+  margin-left: 20px;
+  background: url(../images/kenindia/logo.png) no-repeat top left;
+}
+
+#top-menu {
+  float: right;
+  width: auto;
+}
+
+#top-menu li {
+  height: 80px;
+  display: inline;
+  float: left;
+  text-align: center;
+  padding: 20px 15px;
+  color: #21244D;
+  border-left:none;
+}
+
+#top-menu li a {
+  color: #4e308b;
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+#top-menu li a:hover {
+  text-decoration: none;
+  color: #e52384;
+  font-weight: 600;
+  /*text-shadow: 1px 1px 2px black, 0 0 25px #4e308b, 0 0 5px #4e308b;*/
+}
+
+#main-menu {
+  width: 100%;
+  float: left;
+  height: 50px;
+  border-bottom: solid #999999 1px;
+  background: #282d64 /*#fff url(../images/top-bg.jpg) repeat-x*/;
+}
+
+#main-menu .dropdown-menu {
+  background: #282d64;
+}
+
+#main-menu .navbar-default {
+  background: none !important;
+  border: none !important;
+}
+
+#main-menu .navbar {
+  margin: 0 !important;
+}
+
+#main-menu ul li a {
+  font-size: 13px !important;
+  color: #fff !important;
+}
+
+.dropdown-menu>li>a:hover {
+  color: #262626;
+  text-decoration: none;
+  background-color: transparent !important;
+  font-weight: bold;
+}
+
+.navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  background-color: transparent !important;
+}
+
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover {
+   background-color: transparent !important;
+   border-color: #337ab7;
+}
+
+#banner, #banner-img {
+  background-position: 50% 0%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url(../images/kenindia/banner1.jpg);
+}
+
+#login-wrap2 {
+  background: #e8e8e8;
+  border: solid 1px #b3aeea;
+}
+
+#login-wrap .btn-success, #login-wrap2 .btn-success {
+  height: 37px;
+  line-height: 30px;
+  padding: 0 18px;
+  background-color: #e52384 !important;
+  border: solid 1px #e52384 !important;
+  font-size: 14px;
+  color: #ffffff;
+  /* text-transform: uppercase; */
+  border-radius: 7px;
+}
+
+#product-desc .btn {
+  padding: 4px 8px;
+  float: left;
+  margin-right: 10px;
+}
+
+#product-desc .btn-primary {
+  color: #fff;
+  background-color: #e52384;
+  border-color: #e52384;
+}
+
+#product-bg {
+  background: linear-gradient(#d3d4e7, #4c47ab);
+}
+
+#register-bg {
+  width: 100%;
+  float: left;
+  height: 600px;
+  background: linear-gradient(#d3d4e7, #4c47ab);
+}
+
+
+#product-desc .btn-danger {
+  color: #fff;
+  background-color: #282d64;
+  border-color: #282d64;
+}
+
+.left-col-1 {
+  width: 32%;
+  height: auto;
+  min-height: 500px;
+  float: left;
+  padding: 20px;
+  background: #282d64;
+  color: #CCCCCC;
+  margin-right: 3%;
+}
+
+.left-col-1 a {
+  color: #CCCCCC;
+}
+
+.right-col-1 {
+  width: 65%;
+  float: left;
+  padding: 20px 20px 20px 0px;
+}
+
+.left-col-2 {
+  width: 30%;
+  min-height: 500px;
+  float: left;
+  padding: 20px;
+  color: #ccc;
+  background: #282d64;
+}
+
+.right-col-2 {
+  width: 70%;
+  float: left;
+  padding: 20px 20px 20px 0px;
+}
+
+.left-col-3 {
+  width: 50%;
+  float: left;
+  padding: 30px;
+}
+
+.right-col-3 {
+  width: 50%;
+  float: left;
+  padding: 20px 20px 20px 0px;
+}
+
+#content-wrap .btn-primary {
+  color: #fff;
+  background-color: #282d64;
+  border-color: #282d64;
+}
+
+#content-wrap .btn-success {
+  color: #fff;
+  background-color: #e52384;
+  border-color: #e52384;
+}
+
+#plan-wrap {
+  width: 100%;
+  float: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top: solid #282d64 5px;
+}
+
+#footer-wrap {
+  width: 100%;
+  height: auto;
+  float: left;
+  padding: 40px 0;
+  line-height: 24px;
+  color: #FFFFFF;
+  background: #282828 url(../images/kenindia/footer-sm.jpg) top center no-repeat;
+  border-top: solid #ffffff 5px;
+}
+
+#footer-wrap h4 {
+  text-transform: uppercase;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#footer-wrap ul {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+#footer-wrap ul li {
+  list-style: none;
+}
+
+#footer-wrap ul li a {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+#copyright {
+  width: 100%;
+  float: left;
+  background: #0f1523;
+  color: #ffffff;
+  padding: 10px 0;
+  text-align: center;
+}
+
+#getquote-aig {
+  width: auto;
+  border-radius: 7px;
+  -webkit-border-radius: 7px;
+  float: left;
+  margin-top: 40px;
+  padding: 5px 15px 15px 5px;
+  font-size: 18px;
+  color: #FFFFFF;
+}
+
+/*#getquote-aig select{
+	background:none;
+	border:solid #FFFFFF 1px;
+	}
+#getquote-aig a{ padding:10px 25px; font-size:16px; font-weight:bold; margin-right:10px;}*/
+
+.shortcuts {
+  width: 600px;
+  float: left;
+  height: auto;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.shortcuts li {
+  list-style: none;
+  width: 30%;
+  height: 120px;
+  float: left;
+  padding: 10px;
+  text-align: center;
+}
+
+.shortcuts li a {
+  color: #ffffff;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.shortcuts li a:hover {
+  color: #00ccff;
+}
+
+.item-1 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/quote.png) no-repeat center top;
+}
+
+.item-1:hover {
+  background: url(../images/kenindia/quote-h.png) no-repeat center top;
+}
+
+.item-2 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/change.png) no-repeat center top;
+}
+
+.item-2:hover {
+  background: url(../images/kenindia/change-h.png) no-repeat center top;
+}
+
+.item-3 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/renewal.png) no-repeat center top;
+}
+
+.item-3:hover {
+  background: url(../images/kenindia/renewal-h.png) no-repeat center top;
+}
+
+.item-4 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/report.png) no-repeat center top;
+}
+
+.item-4:hover {
+  background: url(../images/kenindia/report-h.png) no-repeat center top;
+}
+
+.item-5 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/claims.png) no-repeat center top;
+}
+
+.item-5:hover {
+  background: url(../images/kenindia/claims-h.png) no-repeat center top;
+}
+
+.item-6 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/inquiry.png) no-repeat center top;
+}
+
+.item-6:hover {
+  background: url(../images/kenindia/inquiry-h.png) no-repeat center top;
+}
+
+.item-6 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/inquiry.png) no-repeat center top;
+}
+
+.item-6:hover {
+  background: url(../images/kenindia/inquiry-h.png) no-repeat center top;
+}
+
+.item-7 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/kenindia/prof.png) no-repeat center top;
+}
+
+.item-7:hover {
+  background: url(../images/kenindia/prof-h.png) no-repeat center top;
+}
+
+/*----------------plan page changes start-------------*/
+.plan-col {
+  width: 100%;
+  height: auto;
+  float: left;
+  margin-right: 2%;
+  margin-top: 10px;
+  border-top: solid #999999 5px;
+  border-left: solid #cccccc 1px;
+  border-right: solid #cccccc 1px;
+  border-bottom: solid #cccccc 1px;
+  padding: 0 0 15px 0;
+}
+
+.col-name {
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 16px;
+  background: #2671be;
+}
+
+.aig-plan-desc {
+  width: 100%;
+  height: auto;
+  float: left;
+  padding: 0;
+  text-align: center;
+  border-bottom: solid #cccccc 1px;
+}
+
+.aig-plan-price {
+  width: 100%;
+  height: auto;
+  float: left;
+}
+
+.aig-plan-price strong {
+  font-size: 16px;
+}
+
+.aig-plan-select {
+  width: 100%;
+  height: auto;
+}
+
+.dp-name {
+  width: 33%;
+  height: 170px;
+  float: left;
+  padding: 60px 10px 10px 10px;
+  text-align: center;
+  border: solid #CCCCCC 1px;
+}
+
+.dp-desc {
+  width: 34%;
+  height: 170px;
+  float: left;
+  padding: 10px;
+  border: solid #CCCCCC 1px;
+}
+
+.dp-price {
+  width: 33%;
+  height: 170px;
+  float: left;
+  text-align: center;
+  padding: 40px 10px 10px 10px;
+  border: solid #CCCCCC 1px;
+}
+
+.dp-price strong {
+  font-size: 22px;
+}
+
+.dp-select {
+  width: 33%;
+  height: 170px;
+  float: left;
+  padding: 60px 10px 10px 20px;
+  border: solid #CCCCCC 1px;
+}
+
+/*----------------plan page changes end-------------*/
+
+/*============checkboxes start====================*/
+/* Hiding the checkbox, but allowing it to be focused */
+.badgebox {
+  opacity: 0;
+}
+
+.badgebox + .badge {
+  /* Move the check mark away when unchecked */
+  text-indent: -999999px;
+  /* Makes the badge's width stay the same checked and unchecked */
+  width: 27px;
+}
+
+.badgebox:focus + .badge {
+  /* Set something to make the badge looks focused */
+  /* This really depends on the application, in my case it was: */
+
+  /* Adding a light border */
+  box-shadow: inset 0px 0px 5px;
+  /* Taking the difference out of the padding */
+}
+
+.badgebox:checked + .badge {
+  /* Move the check mark back when checked */
+  text-indent: 0;
+}
+
+/*============checkboxes end======================*/
+
+.custom-table {
+  float: left;
+  width: 100%;
+}
+
+.custom-table td {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+.home-main {
+  margin-top: 80px;
+}
+
+/*-------------------------Start Mobile and Table--------------------*/
+
+@media screen and (max-width: 1024px) {
+
+  .home-main {
+    margin-top: 160px;
+  }
+
+  #top-wrap {
+    z-index: 100;
+    height: 160px;
+    position: fixed;
+    top: 0;
+  }
+
+  #top-menu {
+    width: auto;
+  }
+
+  #logo {
+    width: 100%;
+    background: url(../images/kenindia/logo.png) no-repeat top center;
+    float: right;
+    margin-right: 15px;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  #product-cont {
+    width: 90%;
+  }
+
+  #main-menu .navbar-nav>li>a {
+    padding: 10px 5px
+  }
+
+  #footer-wrap {
+    height: auto;
+  }
+
+  #register-bg {
+    height: 1000px;
+  }
+
+  #register-wrap {
+    width: 100%;
+  }
+
+  .left-col-1 {
+    height: 800px;
+  }
+
+  .right-col-1 {
+    width: 65%;
+  }
+
+  html, body {
+    height: 1000px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .shortcuts {
+    margin: auto;
+    height: auto;
+    width: 100%;
+    float:none;
+  }
+
+  #footer-wrap {
+    height: auto;
+  }
+
+  .left-col-1 {
+    display: none;
+  }
+
+  .right-col-1 {
+    width: 100%;
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+
+  .home-main {
+    margin-top: 80px;
+  }
+
+  #top-wrap {
+    height: auto;
+  }
+
+  #top-menu {
+    width: 0;
+    background: #282d64;
+  }
+
+  #top-menu ul {
+    float: left;
+    padding-inline-start: 0;
+  }
+
+  #top-menu li {
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    border-left:none;
+    text-align: left;
+    padding: 0;
+    border-bottom: solid 1px #ccc;
+    border-left: none;
+    width: 100%;
+    height: 50px;
+  }
+
+  #top-menu li a,
+  #top-menu li span,
+  #top-menu li i {
+    color: #fff;
+  }
+
+  #top-menu li a {
+    float: left;
+    margin-right: 15px;
+    margin-top: 0;
+  }
+
+  #login-wrap2 {
+    width: 600px;
+    margin: 100px auto;
+  }
+
+  #main-menu {
+    margin-top: 0;
+  }
+
+  #top-wrap .icon-bar {
+    background: #282d64;
+  }
+
+  #logo {
+    width: 90px;
+    background: url(../images/kenindia/logo.png) no-repeat top center;
+    float: right;
+    margin-right: 15px;
+  }
+
+  #content-wrap form {
+    padding: 20px;
+  }
+
+  #content-wrap #quote-form {
+    padding: 0;
+  }
+
+  #product-cont {
+    width: 90%;
+  }
+
+  .left-col-2, .right-col-2 {
+    width: 100%;
+  }
+
+  .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+    position: unset;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #register-bg {
+    height: 600px;
+  }
+
+  #login-wrap2 {
+    width: 100%;
+    margin: 40px auto;
+  }
+
+  #logo {
+    width: 100px;
+    background: url(../images/kenindia/logo.png) no-repeat top center;
+    float: right;
+  }
+
+  #top-wrap .icon-bar {
+    background: #282d64;
+  }
+
+  #top-menu {
+    width: 50%;
+    background: #282d64;
+    display: block;
+  }
+
+  #top-menu ul {
+    float: left;
+    padding-inline-start: 0;
+  }
+
+  #top-menu li {
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    border-left:none;
+    text-align: left;
+    padding: 0;
+    border-bottom: solid 1px #ccc;
+    border-left: none;
+    width: 100%;
+    height: 50px;
+  }
+
+  #top-menu li a,
+  #top-menu li span,
+  #top-menu li i {
+    color: #fff;
+  }
+
+  #top-menu li a {
+    float: left;
+    margin-right: 15px;
+    margin-top: 0;
+  }
+
+  .left-col-2 {
+    font-size: 0.8em;
+  }
+
+  #product-wrap {
+    width: 100%;
+  }
+
+  #main-menu .navbar {
+    margin: 0 !important;
+    z-index: 9;
+  }
+
+  #main-menu .navbar-nav {
+    margin: 0 -15px;
+  }
+
+}
+
+/*-------------------------End Mobile and Table--------------------*/

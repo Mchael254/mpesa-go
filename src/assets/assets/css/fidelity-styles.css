@@ -1,0 +1,745 @@
+@charset "utf-8";
+@import 'aig-quote.css';
+
+.home-main {
+  margin: 80px auto;
+}
+
+#product-desc h3 {
+  /*color: #b6dc77 !important;*/
+}
+
+#product-desc .btn-danger {
+  color: #fff;
+  background-color: #b6dc77;
+  border-color: #b6dc77;
+}
+
+#register-bg {
+  width: 100%;
+  float: left;
+  height: 600px;
+  background: linear-gradient(#d3d4e7,#04767c);
+}
+
+#product-desc .btn-primary {
+  color: #fff;
+  background-color: #0b7c7c;
+  border-color: #0b7c7c;
+}
+
+#plan-wrap {
+  border-top: solid #0093cd 5px !important;
+}
+
+.tab-menu {
+  color: #0b7c7c !important;
+}
+
+.left-col-2 {
+  color: #ffffff !important;
+  background: #0b7c7c !important;
+}
+
+.left-col-1 {
+  background: #007b7b !important;
+  color: #ffffff !important;
+}
+
+#content-wrap .btn-primary {
+  color: #000;
+  background-color: #b6dc77;
+  border-color: #b6dc77;
+}
+
+#content-wrap .btn-success {
+  color: #fff;
+  background-color: #0b7c7c;
+  border-color: #0b7c7c;
+}
+
+body .ui-button {
+  color: #ffffff;
+  background-color: #0b7c7c !important;
+  border: 1px solid #0b7c7c !important;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
+body
+.ui-autocomplete-panel
+.ui-autocomplete-items
+.ui-autocomplete-list-item.ui-state-highlight,
+body .ui-datepicker table td > a.ui-state-active {
+  background-color: #0b7c7c;
+}
+
+.btn-info {
+  color: #ffffff;
+  background-color: #0b7c7c !important;
+  border: 1px solid #ffffff !important;
+}
+
+/* CSS Document */
+#top-wrap {
+  width: 100%;
+  float: left;
+  height: 80px;
+  background: #ffffff;
+  z-index: 100;
+  position: fixed;
+  top: 0;
+}
+
+#logo {
+  width: 133px;
+  height: 80px;
+  float: left;
+  margin-left: 20px;
+  background: url(../images/fidelity/logo.png) no-repeat top left;
+}
+
+#top-menu {
+  float: right;
+  width: auto;
+}
+
+#top-menu li {
+  height: 80px;
+  display: inline;
+  float: left;
+  text-align: center;
+  padding: 20px 15px;
+  color: #04767c;
+  border-left:none;
+}
+
+#top-menu li a {
+  color: #04767c;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+#main-menu {
+  width: 100%;
+  float: left;
+  height: 50px;
+  background: #007b7b;
+  border-bottom: solid #999999 1px;
+  /*margin-top: 80px;*/
+}
+
+#main-menu .navbar-default {
+  background: none !important;
+  border: none !important;
+}
+
+#main-menu .navbar {
+  margin: 0 !important;
+}
+
+#main-menu ul li a {
+  font-size: 13px !important;
+  color: #ffffff !important;
+  background: #007b7b;
+}
+
+#main-menu ul.navbar-nav li ul.dropdown-menu {
+  background: #007b7b !important;
+}
+
+#main-menu ul.navbar-nav li ul.dropdown-menu li a:hover {
+  color: #007b7b !important;
+}
+
+#banner, #banner-img {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url(../images/fidelity/banner1.jpg);
+}
+
+#footer-wrap {
+  width: 100%;
+  height: auto;
+  float: left;
+  padding: 40px 0;
+  color: #ffffff;
+  background: #007b7b url(../images/fidelity/motif.png) repeat;
+  border-top: solid #b7dc78 5px;
+}
+
+#footer-wrap h4 {
+  text-transform: uppercase;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#footer-wrap ul {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+#footer-wrap ul li {
+  list-style: none;
+}
+
+#footer-wrap ul li a {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.BottomNav {
+  background: #f7f7f7;
+  padding: 10px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.menu-bottom-home {
+  width: 50%;
+  float: left;
+  padding-top: 35px;
+}
+
+.menu-bottom-home ul li {
+  float: left;
+  border-right: 1px #4f4f4f solid;
+  padding: 0 2%;
+  list-style: none;
+}
+
+.menu-bottom-home ul li a {
+  display: block;
+  color: #4f4f4f;
+  font-size: 0.87em;
+  text-transform: uppercase;
+}
+
+.SocialLinks {
+  width: auto;
+  float: right;
+  padding-top: 15px;
+}
+
+.SocialLinks h4 {
+  font-size: 0.87em;
+  float: left;
+  line-height: 2.8;
+  font-weight: 200;
+  margin-right: 20px;
+  text-transform: uppercase;
+}
+
+.Twitter {
+  width: 45px;
+  height: 40px;
+  margin-top: 5px;
+  float: right;
+  text-decoration: none;
+  background: #2a98f1 url(../images/fidelity/twitter.jpg) no-repeat;
+}
+
+.Facebook {
+  width: 45px;
+  height: 40px;
+  margin-top: 5px;
+  float: right;
+  text-decoration: none;
+  background: #3b5a9b url(../images/fidelity/fb.jpg) no-repeat;
+}
+
+.Youtube {
+  width: 45px;
+  height: 40px;
+  margin-top: 5px;
+  float: right;
+  text-decoration: none;
+  background: #cd322d url(../images/fidelity/ytube.jpg) no-repeat;
+}
+
+#copyright {
+  width: 100%;
+  float: left;
+  background: #ffffff;
+  color: #4f4f4f;
+  padding: 10px 0;
+  text-align: center;
+}
+
+#getquote-aig {
+  width: auto;
+  border-radius: 7px;
+  -webkit-border-radius: 7px;
+  float: left;
+  margin-top: 40px;
+  padding: 5px 15px 15px 5px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+/*#getquote-aig select{
+	background:none;
+	border:solid #FFFFFF 1px;
+	}
+#getquote-aig a{ padding:10px 25px; font-size:16px; font-weight:bold; margin-right:10px;}*/
+.shortcuts {
+  width: 600px;
+  float: left;
+  height: auto;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.shortcuts li {
+  list-style: none;
+  width: 30%;
+  height: 120px;
+  float: left;
+  padding: 10px;
+  text-align: center;
+}
+
+.shortcuts li a {
+  color: #ffffff;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.shortcuts li a:hover {
+  color: #00ccff;
+}
+
+.item-1 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/quote.png) no-repeat center top;
+}
+
+.item-1:hover {
+  background: url(../images/fidelity/quote-h.png) no-repeat center top;
+}
+
+.item-2 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/change.png) no-repeat center top;
+}
+
+.item-2:hover {
+  background: url(../images/fidelity/change-h.png) no-repeat center top;
+}
+
+.item-3 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/renewal.png) no-repeat center top;
+}
+
+.item-3:hover {
+  background: url(../images/fidelity/renewal-h.png) no-repeat center top;
+}
+
+.item-4 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/report.png) no-repeat center top;
+}
+
+.item-4:hover {
+  background: url(../images/fidelity/report-h.png) no-repeat center top;
+}
+
+.item-5 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/claims.png) no-repeat center top;
+}
+
+.item-5:hover {
+  background: url(../images/fidelity/claims-h.png) no-repeat center top;
+}
+
+.item-6 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/inquiry.png) no-repeat center top;
+}
+
+.item-6:hover {
+  background: url(../images/fidelity/inquiry-h.png) no-repeat center top;
+}
+
+.item-6 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/inquiry.png) no-repeat center top;
+}
+
+.item-6:hover {
+  background: url(../images/fidelity/inquiry-h.png) no-repeat center top;
+}
+
+.item-7 {
+  width: 100%;
+  float: left;
+  padding-top: 60px;
+  background: url(../images/fidelity/prof.png) no-repeat center top;
+}
+
+.item-7:hover {
+  background: url(../images/fidelity/prof-h.png) no-repeat center top;
+}
+
+/*----------------plan page changes start-------------*/
+.plan-col {
+  width: 100%;
+  height: auto;
+  float: left;
+  margin-right: 2%;
+  margin-top: 10px;
+  border-top: solid #999999 5px;
+  border-left: solid #cccccc 1px;
+  border-right: solid #cccccc 1px;
+  border-bottom: solid #cccccc 1px;
+  padding: 0 0 15px 0;
+}
+
+.col-name {
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 16px;
+  background: #2671be;
+}
+
+.aig-plan-desc {
+  width: 100%;
+  height: auto;
+  float: left;
+  padding: 0;
+  text-align: center;
+  border-bottom: solid #cccccc 1px;
+}
+
+.aig-plan-price {
+  width: 100%;
+  height: auto;
+  float: left;
+}
+
+.aig-plan-price strong {
+  font-size: 16px;
+}
+
+.aig-plan-select {
+  width: 100%;
+  height: auto;
+}
+
+.dp-name {
+  width: 33%;
+  height: 170px;
+  float: left;
+  padding: 60px 10px 10px 10px;
+  text-align: center;
+  border: solid #cccccc 1px;
+}
+
+.dp-desc {
+  width: 34%;
+  height: 170px;
+  float: left;
+  padding: 10px;
+  border: solid #cccccc 1px;
+}
+
+.dp-price {
+  width: 33%;
+  height: 170px;
+  float: left;
+  text-align: center;
+  padding: 40px 10px 10px 10px;
+  border: solid #cccccc 1px;
+}
+
+.dp-price strong {
+  font-size: 22px;
+}
+
+.dp-select {
+  width: 33%;
+  height: 170px;
+  float: left;
+  padding: 60px 10px 10px 20px;
+  border: solid #cccccc 1px;
+}
+
+/*----------------plan page changes end-------------*/
+
+/*============checkboxes start====================*/
+/* Hiding the checkbox, but allowing it to be focused */
+.badgebox {
+  opacity: 0;
+}
+
+.badgebox + .badge {
+  /* Move the check mark away when unchecked */
+  text-indent: -999999px;
+  /* Makes the badge's width stay the same checked and unchecked */
+  width: 27px;
+}
+
+.badgebox:focus + .badge {
+  /* Set something to make the badge looks focused */
+  /* This really depends on the application, in my case it was: */
+
+  /* Adding a light border */
+  box-shadow: inset 0px 0px 5px;
+  /* Taking the difference out of the padding */
+}
+
+.badgebox:checked + .badge {
+  /* Move the check mark back when checked */
+  text-indent: 0;
+}
+
+/*============checkboxes end======================*/
+
+/*-------------------------Start Mobile and Table--------------------*/
+
+@media screen and (max-width: 1024px) {
+
+  .home-main {
+    margin: 160px auto;
+  }
+
+  #top-wrap {
+    z-index: 100;
+    height: 160px;
+    position: fixed;
+    top: 0;
+  }
+
+  #top-menu {
+    width: auto;
+  }
+
+  #main-menu {
+    margin-top: 0;
+  }
+
+  #logo {
+    width: 100%;
+    background: url(../images/fidelity/logo.png) no-repeat top center;
+    float: right;
+    margin-right: 15px;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  #top-menu {
+    /*display: none;*/
+  }
+
+  #main-menu {
+    margin-top: 80px;
+  }
+
+  #main-menu .navbar-nav>li>a {
+    padding: 10px 5px
+  }
+
+  .left-col-1 {
+    display: none;
+  }
+
+  #footer-wrap {
+    height: auto;
+  }
+
+  #register-bg {
+    height: 1000px;
+  }
+
+  #content-wrap form {
+    padding: 20px;
+  }
+
+  html, body {
+    height: 1000px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .shortcuts {
+    margin: auto;
+    height: auto;
+    width: 100%;
+    float:none;
+  }
+
+  #footer-wrap {
+    height: auto;
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+
+  .home-main {
+    margin: 80px auto;
+  }
+
+  #top-wrap {
+    height: auto;
+  }
+
+  #top-menu {
+    width: 0;
+    background: #007b7b;
+  }
+
+  #top-menu ul {
+    float: left;
+    padding-inline-start: 0;
+  }
+
+  #top-menu li {
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    border-left:none;
+    text-align: left;
+    padding: 0;
+    border-bottom: solid 1px #ccc;
+    border-left: none;
+    width: 100%;
+    height: 50px;
+  }
+
+  #top-menu li a,
+  #top-menu li span,
+  #top-menu li i {
+    color: #fff;
+  }
+
+  #top-menu li a {
+    float: left;
+    margin-right: 15px;
+    margin-top: 0;
+  }
+
+  #main-menu {
+    margin-top: 0;
+  }
+
+  #top-wrap .icon-bar {
+    background: #007b7b;
+  }
+
+  #logo {
+    width: 20%;
+    background: url(../images/fidelity/logo.png) no-repeat top center;
+    float: right;
+    margin-right: 15px;
+  }
+
+  #content-wrap form {
+    padding: 20px;
+  }
+
+  #content-wrap #quote-form {
+    padding: 0;
+  }
+
+  .left-col-2, .right-col-2 {
+    width: 100%;
+  }
+
+  .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+    position: unset;
+  }
+  .BottomNav {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  #register-bg {
+    height: 1200px;
+    background: url(../images/reg-bg.png) repeat;;
+  }
+
+  #logo {
+    width: 130px;
+    background: url(../images/fidelity/logo.png) no-repeat top center;
+    float: right;
+  }
+
+  #top-wrap .icon-bar {
+    background: #007b7b;
+  }
+
+  #top-menu {
+    width: 0;
+    background: #007b7b;
+    display: block;
+  }
+
+  #top-menu ul {
+    float: left;
+    padding-inline-start: 0;
+  }
+
+  #top-menu li {
+    margin-bottom: 5px;
+    font-size: 0.7em;
+    border-left:none;
+    text-align: left;
+    padding: 0;
+    border-bottom: solid 1px #ccc;
+    border-left: none;
+    width: 100%;
+    height: 50px;
+  }
+
+  #top-menu li a,
+  #top-menu li span,
+  #top-menu li i {
+    color: #fff;
+  }
+
+  #top-menu li a {
+    float: left;
+    margin-right: 15px;
+    margin-top: 0;
+  }
+
+  .left-col-2 {
+    font-size: 0.8em;
+  }
+
+  #product-wrap {
+    width: 100%;
+  }
+
+  #main-menu .navbar {
+    margin: 0 !important;
+    z-index: 9;
+  }
+
+  #main-menu .navbar-nav {
+    margin: 0 -15px;
+  }
+
+}
+
+/*-------------------------End Mobile and Table--------------------*/
