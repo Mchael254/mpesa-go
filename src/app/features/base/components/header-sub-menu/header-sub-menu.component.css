@@ -1,0 +1,15 @@
+.base-content .content-nav .navbar {
+  background: #fff;
+}
+
+.base-content .content-nav #navbar .nav-item{
+  margin-right: 20px;
+}
+
+
+.base-content .content-nav .navbar #chart ul li a{
+  color: #00529B!important;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-decoration: underline;
+}

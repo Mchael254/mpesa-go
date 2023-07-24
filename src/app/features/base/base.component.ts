@@ -1,12 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 // import {NbMenuItem, NbMenuService} from "@nebular/theme";
 import {MenuService} from "./services/menu.service";
 import { MENU_ITEMS } from './util/base-menu';
 
 @Component({
-  selector: 'ngx-pages',
+  selector: 'app-base',
   styleUrls: ['base.component.scss'],
   templateUrl: 'base.component.html',
+  encapsulation: ViewEncapsulation.None
+
 })
 export class BaseComponent implements OnInit {
   menu: [] = [];

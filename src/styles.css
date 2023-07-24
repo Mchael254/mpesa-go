@@ -4,10 +4,6 @@
 @import "~@fortawesome/fontawesome-free/css/regular.css";
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --primary: #00529B;
   --secondary: #0DD3F1;

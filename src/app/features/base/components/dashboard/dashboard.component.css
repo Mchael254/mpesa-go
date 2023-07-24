@@ -1,0 +1,61 @@
+
+.base-content .base-content-section {
+  margin-bottom: 30px;
+  margin-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.base-content .home  {
+  min-height: 50vh;
+}
+
+.base-content .home  .card {
+  position: relative;
+  height: 100%;
+}
+
+.base-content .base-content-section table tr th,
+.base-content .base-content-section table tr td {
+  font-size: 0.9em;
+  padding: 0.4rem;
+  color: gray;
+  line-height: 30px;
+}
+
+.base-content .base-content-section table tr th {
+  color: #000;
+}
+
+.base-content .base-content-section .align-center {
+  text-align: center;
+}
+
+
+.base-content .section-title {
+  font-weight: bold;
+  color: #00529B;
+}
+
+.base-content .base-content-section .calendar {
+  color: #00529B!important;
+}
+
+.base-content .base-content-section .form-control {
+  border-radius: 0;
+}
+
+.base-content .base-content-section .calendar .card-header {
+  background: #00529B;
+  color: #fff;
+}
+
+.base-content .base-content-section .calendar .form-select {
+  padding: 0.1rem;
+}
+
+.base-content .base-content-section .row .transactions {
+  margin-bottom: 0;
+  font-weight: bold;
+}
+
