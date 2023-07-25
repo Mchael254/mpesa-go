@@ -3,6 +3,7 @@
 @import "~@fortawesome/fontawesome-free/css/solid.css";
 @import "~@fortawesome/fontawesome-free/css/regular.css";
 @import "~@fortawesome/fontawesome-free/css/brands.css";
+@import "assets/css/turnkey-styles.css";
 
 :root {
   --primary: #00529B;
@@ -10,10 +11,10 @@
   --light: #F6F7FC;
   --dark: #15233C;
 }
-html, body {
+/*html, body {
   margin: 0;
   padding: 0;
   font-family: 'Lato', sans-serif;
   color: #00529B!important;
   height: 100%;
-}
+}*/
