@@ -1,27 +1,23 @@
-# Turnquestv6
+# Turnquest V6 Version 2 Repository
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.4.
+This project is organized according to core, feature and shared modules. This project uses Angular 16, nodejs version v18.12.1 and npm version 9.2.0.
 
-## Development server
+## Table of Contents
+- [Project Structure](./src/app/documentation/project-structure/project-structure.md)
+- [Setting up the project](./src/app/documentation/general-setups/setting-up-project.md)
+- [General Project Guidelines](./src/app/documentation/general-guidelines/general-guidelines.md)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Project Structure
 
-## Code scaffolding
+This document contains the structure for the project. Please read this document before starting to work on the project.
+[Read Project Structure](./src/app/documentation/project-structure/project-structure.md)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Setting up the project
 
-## Build
+This document contains the steps to set up the Angular project on your local machine, such as installing dependencies, running the development server, building the production bundle, etc. Please follow this document to set up the project correctly.
+[Read Setting up the project](./src/app/documentation/general-setups/setting-up-project.md)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## General Guidelines
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+This document contains some general guidelines for working on the Angular project, such as using git, writing commit messages, creating pull requests, reviewing code, coding standards, naming conventions, testing, etc. Please follow this document before starting to work on the project to ensure a smooth and consistent workflow.
+[Read General Guidelines](./src/app/documentation/general-guidelines/general-guidelines.md)
