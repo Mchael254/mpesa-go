@@ -1,0 +1,32 @@
+.logo-lg img {
+    height: 100px;
+    width: 150px;
+
+}
+
+.login-text {
+    /* font-size: 2em;
+    font-weight: bold;
+    color: #222b45; */
+    font-size: 1.625rem;
+    font-weight: 700;
+    line-height: 2rem;
+    color: #222b45;
+}
+
+.login-form .form-group .form-label, .form-label {
+    float: left;
+    color: #000000;
+}
+
+/* .btn-primary {
+    width: 100%;
+    background: #00529B;
+    border-color: #00529B;
+    border-radius: 0;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: red;
+} */
