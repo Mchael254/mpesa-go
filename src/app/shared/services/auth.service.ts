@@ -1,12 +1,21 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, Observable, ReplaySubject, throwError } from 'rxjs';
+import { concatMap, distinctUntilChanged } from 'rxjs/operators';
 import { untilDestroyed } from './until-destroyed';
-// import {BrowserStorage} from "./storage";
+import {BrowserStorage} from "./storage";
 import { AccountContact } from '../data/account-contact';
 import { ClientAccountContact } from '../data/client-account-contact';
 import { WebAdmin } from '../data/web-admin';
 import { Logger } from './logger.service';
+import { JwtService } from './jwt/jwt.service';
+import { UtilService } from './util.service';
+import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { Router } from '@angular/router';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Message } from 'primeng/api';
+import { UserCredential, AuthenticationResponse } from 'src/app/features/base/util';
+// import "./http/http.service";
+import { OauthToken } from '../data/auth';
 
 
 const log = new Logger('AuthService');
@@ -23,9 +32,15 @@ export class AuthService implements OnDestroy {
   public isLoading$ = this.isLoadingUserSubject.asObservable();
   private defaultRedirectUrl = '/home/dashboard';
   private sessionExpiredSubject = new BehaviorSubject<boolean>(false);
+  service: {};
 
   constructor(
-    // private browserStorage: BrowserStorage,
+    private http: HttpClient,
+    private jwtService: JwtService,
+    private utilService: UtilService,
+    private appConfigService: AppConfigService,
+    private router: Router,
+    private browserStorage: BrowserStorage,
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -35,512 +50,508 @@ export class AuthService implements OnDestroy {
     });
   }
 
-  private _redirectUrl!: string;
+ private _redirectUrl: string;
 
   get redirectUrl(): string {
-    // return this.browserStorage.getObj('auth_redirect_uri') || this._redirectUrl;
-    return '';
+    return this.browserStorage.getObj('auth_redirect_uri') || this._redirectUrl;
   }
 
   set redirectUrl(value: string) {
     this._redirectUrl = value;
 
     const url: string = value ||  this.defaultRedirectUrl;
-    // this.browserStorage.storeObj('auth_redirect_uri', url);
+    this.browserStorage.storeObj('auth_redirect_uri', url);
   }
 
-//   /**
-//    * Verifies JWT in localstorage with server & load user's info.
-//    *
-//    * This runs once on the application
-//    */
-//   populate() {
-//     this.isLoadingUserSubject.next(true);
-//     // if JWT detected, attempt to get & store user's info
-//     if (this.jwtService.getToken()) {
-//       const token = this.jwtService.getToken();
-//       const headers = new HttpHeaders({
-//         'Content-Type': 'application/json',
-//         Accept: 'application/json',
-//         Authorization: `Bearer ${token}`,
-//       });
+  /**
+   * Verifies JWT in localstorage with server & load user's info.
+   *
+   * This runs once on the application
+   */
+  populate() {
+    this.isLoadingUserSubject.next(true);
+    // if JWT detected, attempt to get & store user's info
+    if (this.jwtService.getToken()) {
+      const token = this.jwtService.getToken();
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-//       const baseUrl = this.appConfigService.config.contextPath.users_services;
-//       this.http
-//         .get<AccountContact | ClientAccountContact | WebAdmin>(
-//           `/${baseUrl}/administration/users/profile`,
-//           { headers: headers },
-//         )
-//         .subscribe(
-//           (data: AccountContact | ClientAccountContact | WebAdmin) =>
-//             this.setAuth(data),
-//           (err) => this.purgeAuth(),
-//         );
-//     } else {
-//       // remove any potential remnants of previous auth states
-//       this.purgeAuth();
-//     }
-//   }
+      const baseUrl = this.appConfigService.config.contextPath.users_services;
+      this.http
+        .get<AccountContact | ClientAccountContact | WebAdmin>(
+          `/${baseUrl}/administration/users/profile`,
+          { headers: headers },
+        )
+        .subscribe(
+          (data: AccountContact | ClientAccountContact | WebAdmin) =>
+            this.setAuth(data),
+          (err) => this.purgeAuth(),
+        );
+    } else {
+      // remove any potential remnants of previous auth states
+      this.purgeAuth();
+    }
+  }
 
-//   setAuth(user: AccountContact | ClientAccountContact | WebAdmin) {
-//     // set current user data into observable
-//     if (this.utilService.isUserAdmin(user)) {
-//       this.browserStorage.storeObj('activeUser', 'ADMIN');
-//     } else if (this.utilService.isUserAgent(user)) {
-//       this.browserStorage.storeObj('activeUser', 'AGENT');
-//     } else if (this.utilService.isUserClient(user)) {
-//       this.browserStorage.storeObj('activeUser', 'CLIENT');
-//     }
-//     this.currentUserSubject.next(user);
-//     // set isAuthenticated
-//     this.isAuthenticatedSubject.next(!!user);
-//   }
+  setAuth(user: AccountContact | ClientAccountContact | WebAdmin) {
+    // set current user data into observable
+    if (this.utilService.isUserAdmin(user)) {
+      this.browserStorage.storeObj('activeUser', 'ADMIN');
+    } else if (this.utilService.isUserAgent(user)) {
+      this.browserStorage.storeObj('activeUser', 'AGENT');
+    } else if (this.utilService.isUserClient(user)) {
+      this.browserStorage.storeObj('activeUser', 'CLIENT');
+    }
+    this.currentUserSubject.next(user);
+    // set isAuthenticated
+    this.isAuthenticatedSubject.next(!!user);
+  }
 
-//   purgeAuth(expiredSession: boolean = false) {
-//     if (this.jwtService.getToken()) {
-//       const token = this.jwtService.getToken();
-//       const refreshToken = this.jwtService.getRefreshToken();
-//       const headers = new HttpHeaders({
-//         'Content-Type': 'application/json',
-//         Accept: 'application/json',
-//         Authorization: `Bearer ${token}`,
-//         'refresh_token': refreshToken
-//       });
+  purgeAuth(expiredSession: boolean = false) {
+    if (this.jwtService.getToken()) {
+      const token = this.jwtService.getToken();
+      const refreshToken = this.jwtService.getRefreshToken();
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        'refresh_token': refreshToken
+      });
 
-//       // destroy user logged in
-//       this.destroyUser();
-//       const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//       this.http
-//         .get(`/${baseUrl}/revoke-token`, { headers: headers })
-//         .subscribe(
-//           (_) => {
-//             this.jwtService.destroyRefreshToken();
-//             // localStorage.clear(); /** TODO: Find better way to handle local/session storage*/
-//             if (expiredSession) {
-//               this.sessionExpiredSubject.next(true);
-//               this.router.navigate(['/auth'],
-//                 { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
-//               });
-//               location.reload();
-//             }
-//             // else {
-//             //   this.router
-//             //     .navigateByUrl('/')
-//             //     .then((onfulfilled) => {
-//             //       log.info(`Redirecting to home.`);
-//             //       location.reload();
-//             //     })
-//             //     .catch((error) => log.error(error));
-//             // }
+      // destroy user logged in
+      this.destroyUser();
+      const baseUrl = this.appConfigService.config.contextPath.auth_services;
+      this.http
+        .get(`/${baseUrl}/revoke-token`, { headers: headers })
+        .subscribe(
+          (_) => {
+            this.jwtService.destroyRefreshToken();
+            // localStorage.clear(); /** TODO: Find better way to handle local/session storage*/
+            if (expiredSession) {
+              this.sessionExpiredSubject.next(true);
+              this.router.navigate(['/auth'],
+                { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
+              });
+              location.reload();
+            }
+            // else {
+            //   this.router
+            //     .navigateByUrl('/')
+            //     .then((onfulfilled) => {
+            //       log.info(`Redirecting to home.`);
+            //       location.reload();
+            //     })
+            //     .catch((error) => log.error(error));
+            // }
 
-//           },
-//           (error) => this.destroyUser(),
-//         );
-//     } else {
-//       // destroy user logged in
-//       this.destroyUser();
-//     }
-//   }
+          },
+          (error) => this.destroyUser(),
+        );
+    } else {
+      // destroy user logged in
+      this.destroyUser();
+    }
+  }
 
-//   attemptRefreshToken() {
-//     this.isLoadingUserSubject.next(true);
-//     let headers: HttpHeaders;
-//       headers = new HttpHeaders({
-//         Accept: 'application/json',
-//       });
+  attemptRefreshToken() {
+    this.isLoadingUserSubject.next(true);
+    let headers: HttpHeaders;
+      headers = new HttpHeaders({
+        Accept: 'application/json',
+      });
 
-//     let refresh_token: string = this.jwtService.getRefreshToken();
-//     // formData.append('grant_type', 'refresh_token');
-//     // formData.append('refresh_token', `${this.jwtService.getRefreshToken()}`);
-//     log.info(`${JSON.stringify(this.jwtService.getRefreshToken())}`);
+    let refresh_token: string = this.jwtService.getRefreshToken();
+    // formData.append('grant_type', 'refresh_token');
+    // formData.append('refresh_token', `${this.jwtService.getRefreshToken()}`);
+    log.info(`${JSON.stringify(this.jwtService.getRefreshToken())}`);
 
-//     // destroy user logged in
-//     this.destroyUser();
-//     this.refreshAuthToken(refresh_token, headers);
-//   }
+    // destroy user logged in
+    this.destroyUser();
+    this.refreshAuthToken(refresh_token, headers);
+  }
 
-//   attemptAuth(
-//     credentials: UserCredential,
-//     errorCallback?: (msg: Message) => void,
-//   ) {
-//     this.isLoadingUserSubject.next(true);
-//     let headers: HttpHeaders;
-//     headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       Accept: 'application/json',
-//     });
+  attemptAuth(
+    credentials: UserCredential,
+    errorCallback?: (msg: Message) => void,
+  ) {
+    this.isLoadingUserSubject.next(true);
+    let headers: HttpHeaders;
+    headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
 
-//     this.getAuthToken(credentials, headers, (errMsg) => {
-//       log.info(`Received Error Message: ${errMsg}`);
+    this.getAuthToken(credentials, headers, (errMsg) => {
+      log.info(`Received Error Message: ${errMsg}`);
 
-//       const _msg = <Message>{
-//         severity: 'error',
-//         detail: errMsg,
-//       };
+      const _msg = <Message>{
+        severity: 'error',
+        detail: errMsg,
+      };
 
-//       if (errorCallback) {
-//         errorCallback(_msg);
-//       }
-//     });
-//   }
+      if (errorCallback) {
+        errorCallback(_msg);
+      }
+    });
+  }
 
-//   // getAuthVerification
+  // getAuthVerification
 
-//   authenticateUser(
-//     credentials: UserCredential,
-//     AuthenticationResponse?: (data)  =>void,
-//     errorCallback?: (msg: Message) => void,
-//   ) {
-//     let headers: HttpHeaders;
-//     headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       Accept: 'application/json',
-//     });
+  authenticateUser(
+    credentials: UserCredential,
+    AuthenticationResponse?: (data)  =>void,
+    errorCallback?: (msg: Message) => void,
+  ) {
+    let headers: HttpHeaders;
+    headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
 
-//     this.getAuthVerification(credentials, headers, (data) => {
-//       log.info(`User Authentication data: ${data}`);
-//       if (AuthenticationResponse) {
-//         AuthenticationResponse(data);
-//       }
-//     },(errMsg) => {
-//       log.info(`authenticateUser Error Message: ${errMsg}`);
+    this.getAuthVerification(credentials, headers, (data) => {
+      log.info(`User Authentication data: ${data}`);
+      if (AuthenticationResponse) {
+        AuthenticationResponse(data);
+      }
+    },(errMsg) => {
+      log.info(`authenticateUser Error Message: ${errMsg}`);
 
-//       const _msg = <Message>{
-//         severity: 'error',
-//         detail: errMsg,
-//       };
+      const _msg = <Message>{
+        severity: 'error',
+        detail: errMsg,
+      };
 
-//       if (errorCallback) {
-//         errorCallback(_msg);
-//       }
-//     });
-//   }
+      if (errorCallback) {
+        errorCallback(_msg);
+      }
+    });
+  }
 
-//   // authenticateUser(authenticationData: UserCredential): Observable<AuthenticationResponse> {
-//   //   const headers = new HttpHeaders({
-//   //     Accept: 'application/json',
-//   //     'Content-Type': 'application/json;charset=utf8',
-//   //   });
-//   //   console.log('AUTHENTICATION DATA', authenticationData);
-//   //   const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//   //   return this.http
-//   //     .post<AuthenticationResponse>(`/${baseUrl}/authenticate-user`,
-//   //       JSON.stringify(authenticationData), {
-//   //         headers: headers,
-//   //       });
-//   // }
+  // authenticateUser(authenticationData: UserCredential): Observable<AuthenticationResponse> {
+  //   const headers = new HttpHeaders({
+  //     Accept: 'application/json',
+  //     'Content-Type': 'application/json;charset=utf8',
+  //   });
+  //   console.log('AUTHENTICATION DATA', authenticationData);
+  //   const baseUrl = this.appConfigService.config.contextPath.auth_services;
+  //   return this.http
+  //     .post<AuthenticationResponse>(`/${baseUrl}/authenticate-user`,
+  //       JSON.stringify(authenticationData), {
+  //         headers: headers,
+  //       });
+  // }
 
-//   sentVerificationOtp(username: string, channel: string): Observable<boolean> {
-//     const headers = new HttpHeaders({
-//       Accept: 'application/json',
-//       'Content-Type': 'application/json;charset=utf8',
-//     });
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//     return this.http
-//       .post<boolean>(`/${baseUrl}/generate-otp?username=${username}&channel=${channel}`, {
-//           headers: headers,
-//         });
-//   }
+  sentVerificationOtp(username: string, channel: string): Observable<boolean> {
+    const headers = new HttpHeaders({
+      Accept: 'application/json',
+      'Content-Type': 'application/json;charset=utf8',
+    });
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    return this.http
+      .post<boolean>(`/${baseUrl}/generate-otp?username=${username}&channel=${channel}`, {
+          headers: headers,
+        });
+  }
 
-//   verifyResetOtp(username: string, otp: number, email: string = null): Observable<boolean> {
-//     let url: string = '';
-//     const headers = new HttpHeaders({
-//       Accept: 'application/json',
-//       'Content-Type': 'application/json;charset=utf8',
-//     });
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
+  verifyResetOtp(username: string, otp: number, email: string = null): Observable<boolean> {
+    let url: string = '';
+    const headers = new HttpHeaders({
+      Accept: 'application/json',
+      'Content-Type': 'application/json;charset=utf8',
+    });
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
 
-//     // const params = new HttpParams()
-//     //   .set('username', `${username}`)
-//     //   .set('otp', `${otp}`)
-//     //   .set('email', `${email}`);
-//     //
-//     // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    // const params = new HttpParams()
+    //   .set('username', `${username}`)
+    //   .set('otp', `${otp}`)
+    //   .set('email', `${email}`);
+    //
+    // let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-//     if(username)
-//       url = `/${baseUrl}/verify-reset-otp?username=${username}&otp=${otp}`;
+    if(username)
+      url = `/${baseUrl}/verify-reset-otp?username=${username}&otp=${otp}`;
 
-//     if(email)
-//       url = `/${baseUrl}/verify-reset-otp?email=${email}&otp=${otp}`;
+    if(email)
+      url = `/${baseUrl}/verify-reset-otp?email=${email}&otp=${otp}`;
 
-//     return this.http
-//       .post<boolean>(url, {
-//         headers: headers,
-//       });
-//   }
+    return this.http
+      .post<boolean>(url, {
+        headers: headers,
+      });
+  }
 
-//   // verifyOtp(username: string, otp: number ): Observable<string>{
-//   //   const headers = new HttpHeaders({
-//   //     'Content-Type': 'application/json',
-//   //     'Accept': 'application/json',
-//   //   });
-//   //   return this.http.post<string>(`/${(this.baseUrl)}/verify-reset-otp?username=${username}&otp=${otp}`,{headers:headers});
-//   // }
-//   /**
-//    * Gets details of the logged in user
-//    *
-//    * This has been deprecated because this will always give you different values depending on when
-//    * it has been accessed.
-//    *
-//    * ```
-//    * import { Component, OnInit } from '@angular/core';
-//    * import { AuthService } from '@tq-frontend/shared';
-//    *
-//    * @Component({
-//    *   template: '<h1>Example</h1>'
-//    * })
-//    * export class ExampleComponent implements OnInit {
-//    *   constructor(private authService: AuthService){}
-//    *
-//    *   ngOnInt() {
-//    *     this.authService.currentUser$.subscribe(user => {
-//    *       console.log(user);
-//    *     });
-//    *   }
-//    * }
-//    * ```
-//    *
-//    * @returns {AccountContact | ClientAccountContact | WebAdmin}
-//    * @deprecated
-//    */
+  // verifyOtp(username: string, otp: number ): Observable<string>{
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   });
+  //   return this.http.post<string>(`/${(this.baseUrl)}/verify-reset-otp?username=${username}&otp=${otp}`,{headers:headers});
+  // }
+  /**
+   * Gets details of the logged in user
+   *
+   * This has been deprecated because this will always give you different values depending on when
+   * it has been accessed.
+   *
+   * ```
+   * import { Component, OnInit } from '@angular/core';
+   * import { AuthService } from '@tq-frontend/shared';
+   *
+   * @Component({
+   *   template: '<h1>Example</h1>'
+   * })
+   * export class ExampleComponent implements OnInit {
+   *   constructor(private authService: AuthService){}
+   *
+   *   ngOnInt() {
+   *     this.authService.currentUser$.subscribe(user => {
+   *       console.log(user);
+   *     });
+   *   }
+   * }
+   * ```
+   *
+   * @returns {AccountContact | ClientAccountContact | WebAdmin}
+   * @deprecated
+   */
   getCurrentUser(): AccountContact | ClientAccountContact | WebAdmin {
     return this.currentUserSubject.value;
   }
 
-//   /**
-//    * Gets details of the logged in user name
-//    * @returns {string}
-//    */
-//   getCurrentUserName(): string {
-//     const user = this.getCurrentUser();
-//     let user_name;
-//     if (this.utilService.isUserAgent(user)) {
-//       user_name = user.acccUsername || '';
-//     } else if (this.utilService.isUserClient(user)) {
-//       user_name = user.acwaUsername;
-//     } else if (this.utilService.isUserAdmin(user)) {
-//       user_name = user.username;
-//     }
-//     return user_name;
-//   }
+  /**
+   * Gets details of the logged in user name
+   * @returns {string}
+   */
+  getCurrentUserName(): string {
+    const user = this.getCurrentUser();
+    let user_name;
+    if (this.utilService.isUserAgent(user)) {
+      user_name = user.acccUsername || '';
+    } else if (this.utilService.isUserClient(user)) {
+      user_name = user.acwaUsername;
+    } else if (this.utilService.isUserAdmin(user)) {
+      user_name = user.username;
+    }
+    return user_name;
+  }
 
-//   // Update the user on the server
-//   update(
-//     user: AccountContact | ClientAccountContact | WebAdmin,
-//   ): Observable<AccountContact | ClientAccountContact | WebAdmin> {
-//     return throwError('Not Implemented');
-//   }
+  // Update the user on the server
+  update(
+    user: AccountContact | ClientAccountContact | WebAdmin,
+  ): Observable<AccountContact | ClientAccountContact | WebAdmin> {
+    return throwError('Not Implemented');
+  }
 
   ngOnDestroy() {
   }
-  // private getAuthToken(
-  //   userCredential: UserCredential,
-  //   headers: HttpHeaders,
-  //   errorCallback?: (errMsg) => void,
-  // ) {
-  //   const baseUrl = this.appConfigService.config.contextPath.auth_services;
-  //   const userBaseUrl = this.appConfigService.config.contextPath.users_services;
-  //   this.http
-  //     .skipErrorHandler()
-  //     .post(`/${baseUrl}/login`, JSON.stringify(userCredential),{
-  //       headers: headers,
-  //       withCredentials: true,
-  //     })
-  //     .pipe(
-  //       concatMap((data: OauthToken) => {
-  //         // save the token
+  private getAuthToken(
+    userCredential: UserCredential,
+    headers: HttpHeaders,
+    errorCallback?: (errMsg) => void,
+  ) {
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    const userBaseUrl = this.appConfigService.config.contextPath.users_services;
+    this.http
+      .post(`/${baseUrl}/login`, JSON.stringify(userCredential),{
+        headers: headers,
+        withCredentials: true,
+      })
+      .pipe(
+        concatMap((data: OauthToken) => {
+          // save the token
 
-  //         this.jwtService.saveToken(data);
-  //         return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
-  //       }),
-  //     )
-  //     .subscribe(
-  //       (data: AccountContact | ClientAccountContact | WebAdmin) => {
-  //         this.setAuth(data);
-  //         log.info(data);
+          this.jwtService.saveToken(data);
+          return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
+        }),
+      )
+      .subscribe(
+        (data: AccountContact | ClientAccountContact | WebAdmin) => {
+          this.setAuth(data);
+          log.info(data);
 
-  //         this.router
-  //           .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
-  //           .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
-  //           .catch((error) => log.error(error));
-  //       },
-  //       (error) => {
-  //         this.destroyUser();
-  //         log.debug('Login error response:', error)
+          this.router
+            .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
+            .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
+            .catch((error) => log.error(error));
+        },
+        (error) => {
+          this.destroyUser();
+          log.debug('Login error response:', error)
 
-  //         if (errorCallback && error instanceof HttpErrorResponse) {
-  //           errorCallback(
-  //             error.error['error_description'] || error.error['message'],
-  //           );
-  //         } else {
-  //           errorCallback(error);
-  //         }
-  //       },
-  //     );
+          if (errorCallback && error instanceof HttpErrorResponse) {
+            errorCallback(
+              error.error['error_description'] || error.error['message'],
+            );
+          } else {
+            errorCallback(error);
+          }
+        },
+      );
+  }
+  /**
+   * User Authentication
+  */
+ private getAuthVerification(
+    userCredential: UserCredential,
+    headers: HttpHeaders,
+    AuthenticationResponse?: (data)  =>void,
+    errorCallback?: (errMsg) => void,
+  ) {
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    this.http
+      .post(`/${baseUrl}/authenticate-user`, JSON.stringify(userCredential),{
+        headers: headers,
+        withCredentials: true,
+      })
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        (data: AuthenticationResponse) => {
+          log.debug('Response Data->:', data)
+          return AuthenticationResponse(data);
+        },
+        (error) => {
+          if (errorCallback && error instanceof HttpErrorResponse) {
+            errorCallback(
+              error.error['error_description'] || error.error['message'],
+            );
+          } else {
+            errorCallback(error);
+          }
+        },
+      );
+  }
+  /**
+   * Destroy the user logged in
+   */
+  private destroyUser() {
+    // remove JWT from localstorage
+    this.jwtService.destroyToken();
+    // remove RefreshToken
+    this.jwtService.destroyRefreshToken();
+    // set current use to an empty object
+    this.currentUserSubject.next(
+      {} as AccountContact | ClientAccountContact | WebAdmin,
+    );
+    // set auth status to false
+    this.isAuthenticatedSubject.next(false);
+  }
+
+  /**
+   * VALIDATE ACCOUNT EXISTS
+   */
+  /*getAccountVerification(emailAddress: string): Observable<AccountVerification[]> {
+    const baseUrl = this.appConfigService.config.context_path.uaa;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    const params = new HttpParams()
+      .append('emailAddress', `${emailAddress}`);
+    return this.http.get<AccountVerification[]>(
+      `/${baseUrl}/api/auth/get-verify-account`,
+      { headers: headers, params },
+    );
+  }*/
+
+
+  getUserDetails() {
+    const baseUrl = this.appConfigService.config.contextPath.accounts_services;
+    return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${baseUrl}/api/me`).pipe()
+      .subscribe((data) => {
+        this.setAuth(data);
+      });
+  }
+
+  resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null){
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const body = {
+      username: username,
+      email: email,
+      // password: currentPassword,
+      newPassword: newPassword,
+      validateOldPassword: validateOldPassword
+    }
+    return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
+  }
+
+  //change Password when logged in
+  changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string){
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const body = {
+      newPassword: newPassword,
+      password: confirmPassword,
+      username: username,
+      validateOldPassword: validateOldPassword
+    }
+    return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
+  }
+
+  // updateUserProfile(userData:UserDetailsDTO){
+  //   const baseUrl = this.appConfigService.config.contextPath.users_services;
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   });
+  //   return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
   // }
-//   /**
-//    * User Authentication
-//   */
-//  private getAuthVerification(
-//     userCredential: UserCredential,
-//     headers: HttpHeaders,
-//     AuthenticationResponse?: (data)  =>void,
-//     errorCallback?: (errMsg) => void,
-//   ) {
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//     this.http
-//       .skipErrorHandler()
-//       .post(`/${baseUrl}/authenticate-user`, JSON.stringify(userCredential),{
-//         headers: headers,
-//         withCredentials: true,
-//       })
-//       .pipe(untilDestroyed(this))
-//       .subscribe(
-//         (data: AuthenticationResponse) => {
-//           log.debug('Response Data->:', data)
-//           return AuthenticationResponse(data);
-//         },
-//         (error) => {
-//           if (errorCallback && error instanceof HttpErrorResponse) {
-//             errorCallback(
-//               error.error['error_description'] || error.error['message'],
-//             );
-//           } else {
-//             errorCallback(error);
-//           }
-//         },
-//       );
-//   }
-//   /**
-//    * Destroy the user logged in
-//    */
-//   private destroyUser() {
-//     // remove JWT from localstorage
-//     this.jwtService.destroyToken();
-//     // remove RefreshToken
-//     this.jwtService.destroyRefreshToken();
-//     // set current use to an empty object
-//     this.currentUserSubject.next(
-//       {} as AccountContact | ClientAccountContact | WebAdmin,
-//     );
-//     // set auth status to false
-//     this.isAuthenticatedSubject.next(false);
-//   }
 
-//   /**
-//    * VALIDATE ACCOUNT EXISTS
-//    */
-//   /*getAccountVerification(emailAddress: string): Observable<AccountVerification[]> {
-//     const baseUrl = this.appConfigService.config.context_path.uaa;
-//     const headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       Accept: 'application/json',
-//     });
-//     const params = new HttpParams()
-//       .append('emailAddress', `${emailAddress}`);
-//     return this.http.get<AccountVerification[]>(
-//       `/${baseUrl}/api/auth/get-verify-account`,
-//       { headers: headers, params },
-//     );
-//   }*/
+  private refreshAuthToken(
+      refresh_token: string,
+      headers: HttpHeaders,
+      errorCallback?: (errMsg) => void,
+  ) {
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    const userBaseUrl = this.appConfigService.config.contextPath.users_services;
+    const refreshToken = {
+      "refresh_token": refresh_token
+    };
 
+    this.http
+        .post(`/${baseUrl}/refresh`, refreshToken, {
+          headers: headers,
+          withCredentials: true,
+        })
+        .pipe(
+            concatMap((data: OauthToken) => {
+              // save the token
+              this.jwtService.saveToken(data);
+              return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
+            }),
+        )
+        .subscribe(
+            (data: AccountContact | ClientAccountContact | WebAdmin) => {
+              this.setAuth(data);
+              log.info(data);
 
-//   getUserDetails() {
-//     const baseUrl = this.appConfigService.config.contextPath.accounts_services;
-//     return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${baseUrl}/api/me`).pipe()
-//       .subscribe((data) => {
-//         this.setAuth(data);
-//       });
-//   }
+              this.router
+                  .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
+                  .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
+                  .catch((error) => log.error(error));
+            },
+            (error) => {
+              this.destroyUser();
+              log.debug('Login error response:', error)
 
-//   resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null){
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//     const headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json',
-//     });
-//     const body = {
-//       username: username,
-//       email: email,
-//       // password: currentPassword,
-//       newPassword: newPassword,
-//       validateOldPassword: validateOldPassword
-//     }
-//     return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
-//   }
-
-//   //change Password when logged in
-//   changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string){
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//     const headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json',
-//     });
-//     const body = {
-//       newPassword: newPassword,
-//       password: confirmPassword,
-//       username: username,
-//       validateOldPassword: validateOldPassword
-//     }
-//     return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
-//   }
-
-//   updateUserProfile(userData:UserDetailsDTO){
-//     const baseUrl = this.appConfigService.config.contextPath.users_services;
-//     const headers = new HttpHeaders({
-//       'Content-Type': 'application/json',
-//       'Accept': 'application/json',
-//     });
-//     return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
-//   }
-
-//   private refreshAuthToken(
-//       refresh_token: string,
-//       headers: HttpHeaders,
-//       errorCallback?: (errMsg) => void,
-//   ) {
-//     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-//     const userBaseUrl = this.appConfigService.config.contextPath.users_services;
-//     const refreshToken = {
-//       "refresh_token": refresh_token
-//     };
-
-//     this.http
-//         .skipErrorHandler()
-//         .post(`/${baseUrl}/refresh`, refreshToken, {
-//           headers: headers,
-//           withCredentials: true,
-//         })
-//         .pipe(
-//             concatMap((data: OauthToken) => {
-//               // save the token
-//               this.jwtService.saveToken(data);
-//               return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
-//             }),
-//         )
-//         .subscribe(
-//             (data: AccountContact | ClientAccountContact | WebAdmin) => {
-//               this.setAuth(data);
-//               log.info(data);
-
-//               this.router
-//                   .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
-//                   .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
-//                   .catch((error) => log.error(error));
-//             },
-//             (error) => {
-//               this.destroyUser();
-//               log.debug('Login error response:', error)
-
-//               if (errorCallback && error instanceof HttpErrorResponse) {
-//                 errorCallback(
-//                     error.error['error_description'] || error.error['message'],
-//                 );
-//               } else {
-//                 errorCallback(error);
-//               }
-//             },
-//         );
-//   }
+              if (errorCallback && error instanceof HttpErrorResponse) {
+                errorCallback(
+                    error.error['error_description'] || error.error['message'],
+                );
+              } else {
+                errorCallback(error);
+              }
+            },
+        );
+  }
 
 }

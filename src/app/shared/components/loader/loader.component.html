@@ -1,0 +1,13 @@
+<ng-container *ngIf="!isBlocking">
+  <div class="fixedElement">
+    <p-progressBar
+      mode="indeterminate"
+      [style]="{ height: '5px' }"
+    ></p-progressBar>
+  </div>
+</ng-container>
+<ng-container>
+<!--  <ngx-loading-->
+<!--    [show]="(showLoader$ | async) && isBlocking"-->
+<!--  ></ngx-loading>-->
+</ng-container>

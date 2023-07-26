@@ -1,72 +1,154 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+/****************************************************************************
+ **
+ ** Author: Justus Muoka
+ **
+ ****************************************************************************/
+
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  Optional,
+} from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { SessionStorageService } from '../session-storage/session-storage.service';
+import { ApiErrorInterceptor } from './api-error-interceptor';
+import { CacheInterceptor } from './cache-interceptor';
+import { TokenInterceptor } from './token-interceptor';
+import { LoaderInterceptor } from './loader-interceptor';
+import {
+  HttpClient,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class HttpService {
-  private readonly apiUrl = environment.BASE_URL; // Replace with your API base URL
+// HttpClient is declared in a re-exported module, so we have to extend the original module to make it work properly
+// (see https://github.com/Microsoft/TypeScript/issues/13897)
+declare module '@angular/common/http' {
+  // Augment HttpClient with the added configuration methods from HttpService, to allow in-place replacement of
+  // HttpClient with HttpService using dependency injection
+  export interface HttpClient {
+    /**
+     * Enables caching for this request.
+     * @return {HttpClient} The new instance.
+     * @param options
+     */
+    cache(options?: {
+      update?: boolean;
+      persistence?: 'local' | 'session';
+    }): HttpClient;
 
-  private readonly defaultHeaders = new HttpHeaders({
-    'Content-Type': 'application/json',
-  });
+    /**
+     * Skips default error handler for this request.
+     * @return {HttpClient} The new instance.
+     */
+    skipErrorHandler(): HttpClient;
 
-  constructor(private http: HttpClient, sessionStorage:SessionStorageService) {}
+    /**
+     * Skips default loader for this request.
+     * @return {HttpClient} The new instance.
+     */
+    skipLoaderInterceptor(): HttpClient;
 
-  // Helper function to set up headers for each request
-  private getHeaders(customHeaders?: HttpHeaders): HttpHeaders {
-    const token = this.getAuthToken();
-    let headers = this.defaultHeaders;
+    /**
+     * Skips all dynamic interceptors.
+     * @return {HttpClient} The new instance.
+     */
+    skipAllInterceptors(): HttpClient;
+  }
+}
 
-    // If the user is authenticated, add the token to the headers
-    if (token) {
-      headers = headers.append('Authorization', `Bearer ${token}`);
+// From @angular/common/http/src/interceptor: allows to chain interceptors
+class HttpInterceptorHandler implements HttpHandler {
+  constructor(
+    private next: HttpHandler,
+    private interceptor: HttpInterceptor
+  ) {}
+
+  handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
+    return this.interceptor.intercept(request, this.next);
+  }
+}
+
+/**
+ * Allows to override default dynamic interceptors that can be disabled with the HttpService extension.
+ * Except for very specific needs, you should better configure these interceptors directly in the constructor below
+ * for better readability.
+ *
+ * For static interceptors that should always be enabled (like IECacheControlInterceptor), use the standard
+ * HTTP_INTERCEPTORS token.
+ */
+export const HTTP_DYNAMIC_INTERCEPTORS = new InjectionToken<HttpInterceptor>(
+  'HTTP_DYNAMIC_INTERCEPTORS'
+);
+
+@Injectable()
+export class HttpService extends HttpClient {
+  constructor(
+    private httpHandler: HttpHandler,
+    private injector: Injector,
+    @Optional()
+    @Inject(HTTP_DYNAMIC_INTERCEPTORS)
+    private readonly interceptors: HttpInterceptor[] = []
+  ) {
+    super(httpHandler);
+
+    if (!this.interceptors) {
+      // Configure default interceptors that can be disabled here
+      this.interceptors = [
+        this.injector.get(LoaderInterceptor),
+        this.injector.get(ApiErrorInterceptor),
+        this.injector.get(TokenInterceptor),
+      ];
     }
-
-    // Add any custom headers from customHeaders object
-    if (customHeaders) {
-      customHeaders.keys().forEach((headerName) => {
-        headers = headers.append(headerName, customHeaders.get(headerName)!);
-      });
-    }
-    return headers;
   }
 
-  // Function to get the authentication token from wherever you store it (e.g., localStorage, session, etc.)
-  private getAuthToken(): string | null {
-    return sessionStorage.getItem('token');
+  override cache(options?: {
+    update?: boolean;
+    persistence?: 'local' | 'session';
+  }): HttpClient {
+    const cacheInterceptor = this.injector
+      .get(CacheInterceptor)
+      .configure(options);
+    return this.addInterceptor(cacheInterceptor);
   }
 
-  // GET request
-  get<T>(endpoint: string, params?: HttpParams, customHeaders?: HttpHeaders): Observable<T> {
-    const headers = this.getHeaders(customHeaders);
-    return this.http.get<T>(`${this.apiUrl}/${endpoint}`, { headers, params });
+  override skipErrorHandler(): HttpClient {
+    return this.removeInterceptor(ApiErrorInterceptor);
   }
 
-  // POST request
-  post<T>(endpoint: string, data: any, customHeaders?: HttpHeaders): Observable<T> {
-    const headers = this.getHeaders(customHeaders);
-    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, data, { headers });
+  override skipLoaderInterceptor(): HttpClient {
+    return this.removeInterceptor(LoaderInterceptor);
   }
 
-  // PUT request
-  put<T>(endpoint: string, data: any, customHeaders?: HttpHeaders): Observable<T> {
-    const headers = this.getHeaders(customHeaders);
-    return this.http.put<T>(`${this.apiUrl}/${endpoint}`, data, { headers });
+  override skipAllInterceptors(): HttpClient {
+    return new HttpService(this.httpHandler, this.injector, []);
   }
 
-  // PATCH request
-  patch<T>(endpoint: string, data: any, customHeaders?: HttpHeaders): Observable<T> {
-    const headers = this.getHeaders(customHeaders);
-    return this.http.patch<T>(`${this.apiUrl}/${endpoint}`, data, { headers });
+  // Override the original method to wire interceptors when triggering the request.
+  override request(method?: any, url?: any, options?: any): any {
+    const handler = this.interceptors.reduceRight(
+      (next, interceptor) => new HttpInterceptorHandler(next, interceptor),
+      this.httpHandler
+    );
+    return new HttpClient(handler).request(method, url, options);
   }
 
-  // DELETE request
-  delete<T>(endpoint: string, params?: HttpParams, customHeaders?: HttpHeaders): Observable<T> {
-    const headers = this.getHeaders(customHeaders);
-    return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, { headers, params });
+  private removeInterceptor(interceptorType: Function): HttpService {
+    return new HttpService(
+      this.httpHandler,
+      this.injector,
+      this.interceptors.filter((i) => !(i instanceof interceptorType))
+    );
+  }
+
+  private addInterceptor(interceptor: HttpInterceptor): HttpService {
+    return new HttpService(
+      this.httpHandler,
+      this.injector,
+      this.interceptors.concat([interceptor])
+    );
   }
 }
