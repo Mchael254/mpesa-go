@@ -13,8 +13,8 @@ export const routes: Routes = [
     path: 'auth', loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
   },
   {
-    path: 'main',
-    //  canActivate: [AuthGuard], // here we tell Angular to check the access with our AuthGuard
+    path: 'home',
+    // canActivate: [AuthGuard], // here we tell Angular to check the access with our AuthGuard
     loadChildren: () => import('./features/base/base.module').then(m => m.BaseModule),
   },
   {
