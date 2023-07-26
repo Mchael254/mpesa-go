@@ -9,9 +9,9 @@
     <h4 class="login-text mb-3">Login</h4>
     <p class="text-muted mb-3">Enter your email address and password to access account.</p>
 
-    <!-- <div *ngIf='errorOccurred '>
+    <div *ngIf='errorOccurred '>
       <app-error [message]='errorMessage'appHideMessage></app-error>
-    </div> -->
+    </div>
     <!-- form -->
     <form [formGroup]='loginForm' novalidate>
       <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
@@ -40,7 +40,7 @@
         <ng-container *controlErrorContainer></ng-container>
       </div>
       <div class="form-group mb-3 form-check">
-        <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" [(ngModel)]="rememberMe">
+        <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" formControlName="rememberMe">
         <label class="form-check-label form-label" for="rememberMe">Remember me</label>
       </div>
       <div class="mb-3">

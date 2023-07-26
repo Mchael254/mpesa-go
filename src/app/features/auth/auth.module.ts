@@ -11,6 +11,7 @@ import { VerificationComponent } from './verification/verification.component';
 import { OtpVerificationComponent } from './otp-verification/otp-verification.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    SharedModule
   ]
 })
 export class AuthModule { }
