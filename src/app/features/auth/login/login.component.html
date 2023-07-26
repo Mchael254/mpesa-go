@@ -1,89 +1,62 @@
-<div class="auth-fluid-form-box">
-  <div class="align-items-center d-flex h-100">
-    <div class="card-body">
-      <div class="auth-brand text-center text-lg-left">
-        <div class="auth-logo">
+<div>
+  <div class="card-body">
+    <div class="mb-3">
+      <span class="logo-lg">
+        <img src="assets/images/turnkey-logo.png" alt="hostlogo">
+      </span>
+    </div>
+    <!-- title-->
+    <h4 class="login-text mb-3">Login</h4>
+    <p class="text-muted mb-3">Enter your email address and password to access account.</p>
 
-          <!-- <a class="logo text-center" style="display: flex; justify-content: center;">
-            <span class="logo-lg">
-              <img src="assets/images/turnkey-logo.png" alt="hostlogo">
-            </span>
-          </a> -->
-        </div>
+    <!-- <div *ngIf='errorOccurred '>
+      <app-error [message]='errorMessage'appHideMessage></app-error>
+    </div> -->
+    <!-- form -->
+    <form [formGroup]='loginForm' novalidate>
+      <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
+        <label for="emailAddress" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="emailAddress" placeholder="{{ 'Email' }}" formControlName='username'>
       </div>
-      <br clear="all">
-      <!-- title-->
-      <h4 class="mt-0" style="display: flex; justify-content: center; font-size: 1rem;">SIGN INTO YOUR ACCOUNT</h4>
-      <p class="text-muted mb-4">Enter your email address and password to access account.</p>
-
-      <div *ngIf='errorOccurred '>
-        <!-- <app-error [message]='errorMessage'appHideMessage></app-error> -->
-      </div>
-      <!-- form -->
-      <form [formGroup]='loginForm' novalidate>
-        <div class="form-group">
-          <div class='form-group' controlHasError controlRequiredAsterisk>
-            <label for='emailAddress'>Email address</label>
-            <input
-              type='email'
-              class='form-control'
-              id='emailAddress'
-              placeholder="{{ 'Email' }}"
-              formControlName='username'
-            />
-          </div>
-        </div>
-        <div class='form-group' controlHasError controlRequiredAsterisk>
-          <a  class="text-muted float-right" routerLink="./forgot-password"><small>Forgot your password?</small></a>
-          <label
-            for='password'
-          >Password</label>
-          <div class="input-group input-group-merge">
+      <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
+        <a class="text-muted float-end" routerLink="./forgot-password"><small>Forgot your password?</small></a>
+        <label for="password" class="form-label" i18n='Password|Auth Password Input@@authPasswordInput'>Password</label>
+        <div class="input-group input-group-merge">
           <input
             type="{{ showPassword ? 'text' : 'password' }}"
-            class='form-control inpl'
+            class='form-control'
             id='password'
             placeholder='Password'
             formControlName='password'
           />
-            <div class="input-group-append" data-password="false">
-              <div class="input-group-text">
-                <!-- <span class="password-eye"></span> -->
-                <span>
-                  <i class="fa fa-eye" [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"></i>
-                </span>
-              </div>
+          <div class="input-group-append" data-password="false">
+            <div class="input-group-text">
+              <span>
+                <i class="fa fa-eye" [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"></i>
+              </span>
             </div>
           </div>
-          <ng-container *controlErrorContainer></ng-container>
         </div>
-
-        <div class="form-group mb-3">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="rememberMe" id="rememberMe" [(ngModel)]="rememberMe">
-            <label class="custom-control-label" for="rememberMe">Remember me</label>
-          </div>
-        </div>
-        <button
-        style="background-color: #000000; color: white;"
-          id='loginBtn'
-          (click)='authAttempt()'
-          class="btn  btn-block"
-          type='submit'
-          >
+        <ng-container *controlErrorContainer></ng-container>
+      </div>
+      <div class="form-group mb-3 form-check">
+        <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" [(ngModel)]="rememberMe">
+        <label class="form-check-label form-label" for="rememberMe">Remember me</label>
+      </div>
+      <div class="mb-3">
+        <button type="submit" 
+                id="login-submit" 
+                class="btn btn-primary btn-full-width" 
+                (click)='authAttempt()'
+                i18n='Login|Auth Login Action@@authLoginActionBtn'>
           Login
         </button>
-<!--        <div class="form-group mb-0 text-center">-->
-<!--          <a  class="btn btn-primary btn-block" type="submit" (click)="attemptAuth()">Login </a>-->
-<!--        </div>-->
-      </form>
+      </div>
+    </form>
+  </div> <!-- end .card-body -->
 
-
-
-    </div> <!-- end .card-body -->
-  </div>
-
-  <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+  <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header border-0">
@@ -97,14 +70,14 @@
             or cancel to continue
           </p>
         </div>
-        <!-- <div class="modal-footer border-0">
+        <div class="modal-footer border-0">
           <button type="button" class="bttn can" data-dismiss="modal">Cancel</button>
           <button id="reset-password" type="button" class="bttn res" (click)="resetPassword()">Reset Password</button>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
-  <!-- <div style=" display: flex; justify-content: center; bottom: 0;">
+  <div style="padding-top: 50px;">
     <small style="color: #7E8299;">{{ this.utilService.getCurrentYear() }}© Turnkey Africa</small>
-  </div> -->
+  </div>
 </div>
