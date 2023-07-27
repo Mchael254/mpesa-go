@@ -30,6 +30,7 @@ import { CacheInterceptor } from './services/http/cache-interceptor';
 import { TokenInterceptor } from './services/http/token-interceptor';
 import { HttpCacheService } from './services/http/http-cache.service';
 import { IeCacheControlInterceptor } from './services/http/ie-cache-control-interceptor';
+import { CopyrightFooterComponent } from './components/copyright-footer/copyright-footer.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -93,7 +94,8 @@ const SERVICES = [
     LoaderComponent,
     NotificationsComponent,
     FileExtensionPipe,
-    DocViewerComponent
+    DocViewerComponent,
+    CopyrightFooterComponent
   ],
     imports: [
         CommonModule,
@@ -101,14 +103,15 @@ const SERVICES = [
         ProgressBarModule,
         NgOptimizedImage
     ],
-  exports: [
-    ErrorComponent,
-    HideMessageDirective,
-    NotificationsComponent,
-    LoaderComponent,
-    FileExtensionPipe,
-    DocViewerComponent
-  ],
+    exports: [
+        ErrorComponent,
+        HideMessageDirective,
+        NotificationsComponent,
+        LoaderComponent,
+        FileExtensionPipe,
+        DocViewerComponent,
+        CopyrightFooterComponent
+    ],
   // providers: [...SERVICES]
 })
 export class SharedModule {

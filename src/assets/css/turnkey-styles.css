@@ -246,7 +246,7 @@ h5.htxt {
 
 }
 
-.login-text {
+.login-text, .forgot-password-text{
   font-size: 1.625rem;
   font-weight: 700;
   line-height: 2rem;
