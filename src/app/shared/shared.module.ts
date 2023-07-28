@@ -30,6 +30,12 @@ import { CacheInterceptor } from './services/http/cache-interceptor';
 import { TokenInterceptor } from './services/http/token-interceptor';
 import { HttpCacheService } from './services/http/http-cache.service';
 import { IeCacheControlInterceptor } from './services/http/ie-cache-control-interceptor';
+import { OtpComponent } from './components/otp/otp.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import { DynamicTableComponent } from './components/dynamic-table/dynamic-table.component';
+import {TableModule} from "primeng/table";
+import {ButtonModule} from "primeng/button";
+import {ChipsModule} from "primeng/chips";
 import { CopyrightFooterComponent } from './components/copyright-footer/copyright-footer.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
@@ -95,23 +101,31 @@ const SERVICES = [
     NotificationsComponent,
     FileExtensionPipe,
     DocViewerComponent,
+    OtpComponent,
+    DynamicTableComponent,
     CopyrightFooterComponent
   ],
     imports: [
         CommonModule,
         ToastModule,
         ProgressBarModule,
-        NgOptimizedImage
+        NgOptimizedImage,
+      ReactiveFormsModule,
+      TableModule,
+      ButtonModule,
+      ChipsModule
     ],
-    exports: [
-        ErrorComponent,
-        HideMessageDirective,
-        NotificationsComponent,
-        LoaderComponent,
-        FileExtensionPipe,
-        DocViewerComponent,
-        CopyrightFooterComponent
-    ],
+  exports: [
+    ErrorComponent,
+    HideMessageDirective,
+    NotificationsComponent,
+    LoaderComponent,
+    FileExtensionPipe,
+    DocViewerComponent,
+    OtpComponent,
+    DynamicTableComponent,
+    CopyrightFooterComponent
+  ],
   // providers: [...SERVICES]
 })
 export class SharedModule {

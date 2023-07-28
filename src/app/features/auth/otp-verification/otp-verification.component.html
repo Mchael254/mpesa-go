@@ -1,1 +1,11 @@
-<p>otp-verification works!</p>
+<div>
+  <div class="card-body">
+    <div class="mb-3">
+      <span class="logo-lg">
+        <img src="assets/images/turnkey-logo.png" alt="hostlogo">
+      </span>
+    </div>
+    <!-- title-->
+    <app-otp (otpResponse)="verifyOtp($event)"></app-otp>
+  </div>
+</div>
