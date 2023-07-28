@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import { UtilService } from '../../../shared/services';
 import { AuthService } from '../../../shared/services/auth.service';
 import { UserCredential } from '../../base/util';
+import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
+import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 
 @Component({
   selector: 'app-login',
@@ -27,8 +29,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
+    private sessionStorageService: SessionStorageService,
+    private localStorageService: LocalStorageService,
     public utilService: UtilService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {
   }
 
@@ -74,10 +78,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (data.accountStatus ===true && data.emailAddress != null) {
           if (this.loginForm.get('rememberMe').value) {
             // Store login details in local storage
-            localStorage.setItem('loginDetails', JSON.stringify(authenticationData));
+            this.localStorageService.setItem('loginDetails', JSON.stringify(authenticationData));
+            // localStorage.setItem('loginDetails', JSON.stringify(authenticationData));
           } else {
             // Remove login details from local storage
-            localStorage.removeItem('loginDetails');
+            this.localStorageService.removeItem('loginDetails');
+            // localStorage.removeItem('loginDetails');
           }
 
           // localStorage.clear();
@@ -91,8 +97,11 @@ export class LoginComponent implements OnInit, OnDestroy {
             email: data.emailAddress,
             username: authenticationData.username
           };
-          localStorage.setItem('details', JSON.stringify(loginDetails));
-          localStorage.setItem('extras', JSON.stringify(extras));
+          this.sessionStorageService.setItem('details', JSON.stringify(loginDetails));
+          this.sessionStorageService.setItem('extras', JSON.stringify(extras));
+          //
+          // localStorage.setItem('details', JSON.stringify(loginDetails));
+          // localStorage.setItem('extras', JSON.stringify(extras));
 
           if(message.includes('will expire')){
             this.expiryMessage = message;
@@ -127,7 +136,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   resetPassword() {
-    const extras = JSON.parse(localStorage.getItem("extras"));
+    const extras = JSON.parse(this.sessionStorageService.getItem("extras"));
     const username = extras.email;
 
     // $("#passwordModal").modal('hide');

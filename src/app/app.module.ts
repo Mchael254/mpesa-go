@@ -11,6 +11,7 @@ import { ConfigurationLoader } from './core/config/app-config-loader';
 import { APP_CONFIG, AppConfigService } from './core/config/app-config-service';
 import { HomeComponent } from './features/auth/home/home.component';
 import { SharedModule } from './shared/shared.module';
+import {ConfirmDialogModule} from "primeng/confirmdialog";
 
 export function loadConfig(
   config: AppConfigService,
@@ -29,15 +30,16 @@ const cubejsOptions = {
     AppComponent,
     HomeComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    SharedModule.forRoot(),
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        SharedModule.forRoot(),
+        ConfirmDialogModule,
+    ],
   providers: [
     {
       provide: APP_INITIALIZER,

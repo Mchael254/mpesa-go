@@ -16,6 +16,7 @@ import { Message } from 'primeng/api';
 import { UserCredential, AuthenticationResponse } from 'src/app/features/base/util';
 // import "./http/http.service";
 import { OauthToken } from '../data/auth';
+import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
 
 
 const log = new Logger('AuthService');
@@ -254,6 +255,26 @@ export class AuthService implements OnDestroy {
       .post<boolean>(`/${baseUrl}/generate-otp?username=${username}&channel=${channel}`, {
           headers: headers,
         });
+  }
+
+  /**
+   * Verify user contact details
+   * @param username
+   * @param phoneNo
+   * @return O
+   */
+  verifyAccount(username:string, phoneNo:string): Observable<AccountVerifiedResponse>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+
+    const body = {
+      email: username,
+      phoneNo: phoneNo
+    }
+    return this.http.post<AccountVerifiedResponse>(`/${(baseUrl)}/verify-account`, JSON.stringify(body),{headers:headers})
   }
 
   verifyResetOtp(username: string, otp: number, email: string = null): Observable<boolean> {
