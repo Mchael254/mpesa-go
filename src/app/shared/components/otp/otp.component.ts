@@ -5,6 +5,7 @@ import {AuthService} from "../../services/auth.service";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
 import {Logger, UtilService} from "../../services";
 import {untilDestroyed} from "../../services/until-destroyed";
+import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 
 const log = new Logger('OtpVerificationComponent');
 
@@ -34,7 +35,8 @@ export class OtpComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private globalMessagingService: GlobalMessagingService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private sessionStorage: SessionStorageService
   ) {
     this.otpForm = this.createOtpFormGroup(this.formInput);
   }
@@ -71,7 +73,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   onVerify() {
-    const extras = JSON.parse(localStorage.getItem("extras"));
+    const extras = JSON.parse(this.sessionStorage.getItem("extras"));
     this.submitted = true;
     this.otpValue = '';
     let email = '';
@@ -86,21 +88,7 @@ export class OtpComponent implements OnInit, OnDestroy {
 
       this.authService.verifyResetOtp(username, parseInt(this.otpValue, 10), email)
         .subscribe(data =>{
-          this.otpResponse.emit(data)
-          if(data === true){
-            this.verifySuccess = true;
-            if(this.otpProcess == 'password-reset'){
-              this.router.navigate(['/auth/change-password']).then(r => {});
-            }
-            else{
-              const details = JSON.parse(localStorage.getItem('details'));
-              this.authService.attemptAuth(details);
-            }
-            this.otpValue = null;
-          }else{
-            return;
-          }
-
+          this.otpResponse.emit(data);
         })
     }
   }
