@@ -40,27 +40,31 @@ html,body {
   display: flex;
 }
 
-.base-container app-sidebar {
-  width: 320px;
-}
 
-.base-container .base-side-nav .btn {
+/* Side Navigation Starts */
+.base-side-nav .btn {
   color: #00529B!important;
   font-weight: bold;
 }
 
-.base-container .base-side-nav .btn .menu-title {
+.base-side-nav .btn .menu-title {
   margin-left: 10px;
 }
 
-.base-container .base-side-nav .btn-toggle-nav li {
+.base-side-nav .btn-toggle-nav li {
   margin-left: 45px;
   margin-bottom: 10px;
 }
 
-.base-container .base-side-nav .btn-toggle-nav li a:link{
+.base-side-nav .btn-toggle-nav li a:link{
   text-decoration: none;
 }
+
+.base-side-nav li {
+  width: max-content;
+}
+/* Side Navigation ends */
+
 
 .base-navbar {
   background: #00529B !important;
