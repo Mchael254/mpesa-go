@@ -1,0 +1,47 @@
+<p-table
+  #dt1
+  [columns]="tableDetails.cols"
+  [value]="tableDetails.rows"
+  [paginator]="tableDetails.paginator"
+  [rows]="tableDetails.rowsPerPage || 2"
+  [showCurrentPageReport]="true"
+  [globalFilterFields]="tableDetails.globalFilterFields"
+>
+  <ng-template pTemplate="caption" >
+    <div class="row">
+      <div class="col-sm-8">
+        <p class="fw-normal text-muted" style="">{{ tableDetails.title }}</p>
+      </div>
+      <div class="col-sm-4">
+        <span class="p-input-icon-left mr-auto float-end">
+          <i class="pi pi-search"></i>
+          <input pInputText class="p-inputtext-sm" type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search keyword" />
+      </span>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+        {{ col.header }}
+        <span *ngIf="tableDetails.showSorting">
+          <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+        </span>
+        <span *ngIf="tableDetails.showFilter">
+          <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
+        </span>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
+        {{ rowData[col.field] }}
+      </td>
+
+    </tr>
+  </ng-template>
+</p-table>
+
+
+<!--// template for spring endpoint consumption-->
