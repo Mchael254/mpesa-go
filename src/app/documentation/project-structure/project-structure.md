@@ -10,12 +10,12 @@ The core module (`src/app/core`) contains all the guards, interceptors, models, 
 
 The features folder (`src/app/features`) contains all the feature modules that are related to a specific feature or functionality of the app. The feature modules are:
 
-- [crm](../crm/crm-doc.md) module : for all crm related submodules
-- [lms](../lms/lms-doc.md) module: for all lms related submodules
-- [gis](../gis/gis-doc.md) module: for all gis related submodules
-- [auth](../auth/auth-doc.md) module: for authentication components such as home , login, register, forget-password, reset-password components
-- [base](../base/base-layout-doc.md) module: components such as header, sidebar, user's dashboard and dashboard layout
-- [entities](../entities/entities-doc.md) module: for entity-related submodules i.e entity, staff, clients, service providers, and intermediary submodules
+- [crm](../features/crm/crm-doc.md) module : for all crm related submodules
+- [lms](../features/lms/lms-doc.md) module: for all lms related submodules
+- [gis](../features/gis/gis-doc.md) module: for all gis related submodules
+- [auth](../features/auth/auth-doc.md) module: for authentication components such as home , login, register, forget-password, reset-password components
+- [base](../features/base/base-layout-doc.md) module: components such as header, sidebar, user's dashboard and dashboard layout
+- [entities](../features/entities/entities-doc.md) module: for entity-related submodules i.e entity, staff, clients, service providers, and intermediary submodules
 
 Each feature module has its own folder under the `src/app/feature` folder and contains its specific components. that are specific to that feature. The feature submodules are lazy-loaded using the router whenever possible to improve performance and reduce bundle size.
 
