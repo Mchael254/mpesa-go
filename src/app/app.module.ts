@@ -12,6 +12,7 @@ import { APP_CONFIG, AppConfigService } from './core/config/app-config-service';
 import { HomeComponent } from './features/auth/home/home.component';
 import { SharedModule } from './shared/shared.module';
 import {ConfirmDialogModule} from "primeng/confirmdialog";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 export function loadConfig(
   config: AppConfigService,
@@ -30,16 +31,17 @@ const cubejsOptions = {
     AppComponent,
     HomeComponent,
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        SharedModule.forRoot(),
-        ConfirmDialogModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    SharedModule.forRoot(),
+    ConfirmDialogModule,
+    FontAwesomeModule,
+  ],
   providers: [
     {
       provide: APP_INITIALIZER,

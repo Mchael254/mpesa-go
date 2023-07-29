@@ -1,0 +1,57 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.verify-button {
+    max-width: 450px;
+    max-height: 90px;
+    /* left: 110px;
+    top: 450px; */
+    border-radius: 6px;
+    display: flex;
+    /* align-items: center; */
+    background-color: #cdd2da;
+    /* vertical-align: middle; */
+    margin-bottom: 16px;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+/* .account-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+} */
+
+.verify-button div:nth-child(1) {
+    margin-right: 70px;
+}
+
+/* .verify-button span {
+    margin-left: 80px;
+
+} */
+
+.verify-text {
+    color: #000000;
+}
+
+.fa-solid {
+  margin-left: 20px;
+  font-size: 1.5rem;
+  line-height: 2;
+  width: 2em;
+  height: 2em;
+  color: #FFFFFF;
+  opacity: 50%;
+  svg {
+    vertical-align: middle;
+  }
+}
+
+.selected {
+    background-color: #00529B;
+    color: white;
+}
