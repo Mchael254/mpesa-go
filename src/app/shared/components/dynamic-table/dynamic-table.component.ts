@@ -1,7 +1,11 @@
 import {Component, Input, ViewChild} from '@angular/core';
 import {Table} from "primeng/table";
-import {TableDetail} from "../../../features/base/components/dashboard/dashboard.component";
 import {Router} from "@angular/router";
+import {Logger} from "../../services";
+import {TableDetail} from "../../data/table-detail";
+
+
+const log = new Logger('DynamicTableComponent');
 
 @Component({
   selector: 'app-dynamic-table',
@@ -14,7 +18,7 @@ export class DynamicTableComponent {
   }
 
   @ViewChild('dt1') dt1: Table | undefined;
-  @Input() tableDetails: TableDetail;
+  @Input() public tableDetails: TableDetail;
 
   clear(table: Table) {
     table.clear();
@@ -28,6 +32,6 @@ export class DynamicTableComponent {
   viewDetails(row) {
     const urlPostfix = row[this.tableDetails.urlIdentifier];
     // this.router.navigate([`home/dashboard/${urlPostfix}`])
-    console.log(row[this.tableDetails.urlIdentifier])
+    log.info(row[this.tableDetails.urlIdentifier])
   }
 }
