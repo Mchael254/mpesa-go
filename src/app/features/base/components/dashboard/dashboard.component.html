@@ -202,7 +202,7 @@
           <p class="transactions">My Policies</p>
           <div class="card">
               <div class="card-body">
-                  <div class="row mb-3">
+                  <!--<div class="row mb-3">
                       <div class="col-sm-7">
                           <p class="text-muted fs-6">A list of the policies transacted</p>
                       </div>
@@ -211,10 +211,11 @@
                               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                           </form>
                       </div>
-                  </div>
+                  </div>-->
                   <div class="row">
                       <div class="col-sm-12">
-                          <table class="table table-borderless table-hover">
+                        <app-dynamic-table [tableDetails]="tableDetails"></app-dynamic-table>
+                          <!--<table class="table table-borderless table-hover">
                               <thead>
                               <tr>
                                   <th scope="col">Policy Number</th>
@@ -254,7 +255,7 @@
                                   <td>KSH 40,000.00</td>
                               </tr>
                               </tbody>
-                          </table>
+                          </table>-->
                       </div>
                   </div>
               </div>
@@ -265,7 +266,7 @@
           <p class="transactions">My Quotations</p>
           <div class="card">
               <div class="card-body">
-                  <div class="row mb-3">
+                  <!--<div class="row mb-3">
                       <div class="col-sm-7">
                           <p class="text-muted fs-6">A list of the policies transacted</p>
                       </div>
@@ -274,10 +275,10 @@
                               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                           </form>
                       </div>
-                  </div>
+                  </div>-->
                   <div class="row">
                       <div class="col-sm-12">
-                          <table class="table table-borderless table-hover">
+                          <!--<table class="table table-borderless table-hover">
                               <thead>
                               <tr>
                                   <th scope="col">Policy Number</th>
@@ -322,7 +323,8 @@
                                   <td class="text-center">View</td>
                               </tr>
                               </tbody>
-                          </table>
+                          </table>-->
+                        <app-dynamic-table [tableDetails]="tableDetails2"></app-dynamic-table>
                       </div>
                   </div>
               </div>
@@ -330,3 +332,4 @@
       </div>
   </div>
 </div>
+

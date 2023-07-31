@@ -2,7 +2,7 @@
 @import url("../../../node_modules/bootstrap/dist/css/bootstrap.min.css");
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap');
 
-
+/* Root (global)*/
 html,body {
   margin:0;
   padding:0;
@@ -18,31 +18,53 @@ html,body {
   color: #188623!important;
 }
 
+.btn-primary {
+  background: #00529B;
+  border-color: #00529B;
+  border-radius: 0;
+  color: #fff;
+}
+
+/* .btn-primary:hover {
+  background: red;
+} */
+
+.btn-full-width {
+    width: 100%;
+}
+
+/* Root (global) ends*/
+
+/* Root Base n Dashboard starts*/
 .base-container {
   display: flex;
 }
 
-.base-container app-sidebar {
-  width: 320px;
-}
 
-.base-container .base-side-nav .btn {
+/* Side Navigation Starts */
+.base-side-nav .btn {
   color: #00529B!important;
   font-weight: bold;
 }
 
-.base-container .base-side-nav .btn .menu-title {
+.base-side-nav .btn .menu-title {
   margin-left: 10px;
 }
 
-.base-container .base-side-nav .btn-toggle-nav li {
+.base-side-nav .btn-toggle-nav li {
   margin-left: 45px;
   margin-bottom: 10px;
 }
 
-.base-container .base-side-nav .btn-toggle-nav li a:link{
+.base-side-nav .btn-toggle-nav li a:link{
   text-decoration: none;
 }
+
+.base-side-nav li {
+  width: max-content;
+}
+/* Side Navigation ends */
+
 
 .base-navbar {
   background: #00529B !important;
@@ -160,5 +182,97 @@ html,body {
   margin-bottom: 0;
   font-weight: bold;
 }
+
+/* Root Base n Dashboard starts*/
+
+/*Login starts*/
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #00396C;
+}
+
+.auth-container .right {
+  margin: auto;
+  text-align: center;
+  height: 100vh;
+  color: #ffff;
+  padding-top: 10vh;
+
+}
+
+.auth-container .left {
+  text-align: center;
+  height: 100vh;
+  background: #fff;
+  width: 35%;
+  padding-top: 15vh;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.slogan {
+  width: 70%;
+  margin: auto;
+}
+
+.slogan p.lead-text {
+  font-size: .875rem;
+  margin: 0 auto 20px auto;
+}
+
+.lead-text {
+  font-weight: 300;
+  color: #fff !important;
+}
+
+.htxt {
+  font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+h2.htxt {
+  font-size: 1.875rem;
+}
+
+h5.htxt {
+  font-size: .9375rem;
+}
+
+h5.htxt {
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+}
+
+.logo-lg img {
+  height: 100px;
+  width: 150px;
+
+}
+
+.login-text, .forgot-password-text{
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 2rem;
+  color: #222b45;
+}
+
+.login-form .form-group .form-label,
+.form-label {
+  float: left;
+  color: #000000;
+}
+
+.form-control {
+  border-radius: 0;
+}
+
+/*Login ends*/
+
+/*Common*/
+.form-error-text {
+  float:left;
+}
+/*Common ends*/
 
 

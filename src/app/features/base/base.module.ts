@@ -10,17 +10,19 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { DashboardLayoutComponent } from './components/dashboard-layout/dashboard-layout.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderSubMenuComponent } from './components/header-sub-menu/header-sub-menu.component';
+import {SharedModule} from "../../shared/shared.module";
 
 
 @NgModule({
-  imports: [
-    BaseRoutingModule,
-    // ThemeModule,
-    // NbMenuModule,
-    // PsharedModule,
-    // DashboardModule,
-    DragDropModule
-  ],
+    imports: [
+        BaseRoutingModule,
+        // ThemeModule,
+        // NbMenuModule,
+        // PsharedModule,
+        // DashboardModule,
+        DragDropModule,
+        SharedModule
+    ],
   declarations: [
     BaseComponent,
     DashboardLayoutComponent,
