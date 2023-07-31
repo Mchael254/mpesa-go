@@ -11,6 +11,7 @@ import { DashboardLayoutComponent } from './components/dashboard-layout/dashboar
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderSubMenuComponent } from './components/header-sub-menu/header-sub-menu.component';
 import {SharedModule} from "../../shared/shared.module";
+import {ChartModule} from "primeng/chart";
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import {SharedModule} from "../../shared/shared.module";
         // PsharedModule,
         // DashboardModule,
         DragDropModule,
-        SharedModule
+        SharedModule,
+        ChartModule
     ],
   declarations: [
     BaseComponent,
