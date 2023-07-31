@@ -6,6 +6,7 @@ import {GlobalMessagingService} from "../../services/messaging/global-messaging.
 import {Logger, UtilService} from "../../services";
 import {untilDestroyed} from "../../services/until-destroyed";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
+import {LocalStorageService} from "../../services/local-storage/local-storage.service";
 
 const log = new Logger('OtpVerificationComponent');
 
@@ -36,7 +37,8 @@ export class OtpComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private globalMessagingService: GlobalMessagingService,
     private utilService: UtilService,
-    private sessionStorage: SessionStorageService
+    // private sessionStorage: SessionStorageService,
+    private localStorageService: LocalStorageService,
   ) {
     this.otpForm = this.createOtpFormGroup(this.formInput);
   }
@@ -73,7 +75,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   onVerify() {
-    const extras = JSON.parse(this.sessionStorage.getItem("extras"));
+    const extras = JSON.parse(this.localStorageService.getItem("extras"));
     this.submitted = true;
     this.otpValue = '';
     let email = '';

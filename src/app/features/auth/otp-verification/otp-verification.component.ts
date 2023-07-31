@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../../shared/services/auth.service";
 import {Logger} from "../../../shared/services";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
+import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('OtpVerificationComponent');
 
@@ -17,7 +18,8 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   public otpProcess: string = '';
   constructor(
     private authService: AuthService,
-    private sessionStorage: SessionStorageService,
+    // private sessionStorage: SessionStorageService,
+    private localStorageService: LocalStorageService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -37,7 +39,7 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         this.router.navigate(['/auth/change-password']).then(r => {});
       }
       else {
-        const details = JSON.parse(this.sessionStorage.getItem('details'));
+        const details = JSON.parse(this.localStorageService.getItem('details'));
         this.authService.attemptAuth(details);
       }
 
