@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.createForm();
     this.isAuthenticated$ = this.authService.isAuthenticated;
     // Set default values for login form fields from local storage
-    const loginDetails = JSON.parse(this.localStorageService.getItem('loginDetails')|| '');
+    const loginDetails = JSON.parse(this.localStorageService.getItem('loginDetails'));
     if (loginDetails) {
       this.loginForm.patchValue({
         username: loginDetails.username,

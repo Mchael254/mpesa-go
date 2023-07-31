@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { AuthVerification } from 'src/app/core/auth/auth-verification';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('VerificationComponent');
 
@@ -21,14 +22,15 @@ export class VerificationComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     public utilService: UtilService,
-    private sessionStorageService: SessionStorageService,
+    // private sessionStorageService: SessionStorageService,
+    private localStorageService: LocalStorageService,
   ) {}
 
   ngOnInit(): void {
-    const extras = JSON.parse(this.sessionStorageService.getItem("extras"));
+    const extras = JSON.parse(this.localStorageService.getItem("extras"));
 
     const verificationsTypes: AuthVerification[] = []
-    if(extras.phone){
+    if(extras?.phone){
       const verificationsType: AuthVerification = {
         name: extras.phone.substr(0,4)+ '********'+extras.phone.slice(-2),
         type: "Via sms:",
@@ -54,7 +56,7 @@ export class VerificationComponent implements OnInit {
     this.selectedAccount = account;
     log.debug('Selected Verification Type:', this.selectedAccount)
     const verificationType = this.selectedAccount.type.includes("Email".toLocaleLowerCase())? "email": "sms"
-    const extras = JSON.parse(this.sessionStorageService.getItem("extras"));
+    const extras = JSON.parse(this.localStorageService.getItem("extras"));
     let username = extras.username;
     this.authService.sentVerificationOtp(username, verificationType)
       .pipe(untilDestroyed(this)).subscribe( response =>{
