@@ -1,0 +1,34 @@
+/*============================== ERROR ALERT=================================*/
+.error {
+    display: flex;
+    background-color: #fff6f5;
+    border-left: solid 3px #f60e08;
+
+    margin: 5px;
+
+    & > div {
+        height: 100%;
+        color: #f60e08;
+        text-align: center;
+        padding: 10px;
+        font-size:14px;
+    }
+
+    .icon {
+        width: 25px;
+    }
+
+    .message {
+        padding-left:20px;
+        flex-basis: 80%;
+        text-align: left;
+    }
+
+    .action {
+        margin-left: auto;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

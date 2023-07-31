@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="form-content">
+        <div class="logo-lg">
+            <img src="assets/images/turnkey-logo.png" alt="hostlogo">
+        </div>
+        <p style="font-weight:bold; color:#00519a;">Turnquest suite</p>
+        <div class="verify-text">
+            <p style="font-weight:bold;">Verification</p>
+            <p>Select which contact details we should send verification code.</p>
+            <i class="fa-solid fa-phone"></i>
+        </div>
+        <form class="verify-text">
+            <div *ngFor="let account of accountVerification">
+                <div class="verify-button" [class.selected]="account === selectedAccount"
+                    (click)="onSelectAccount(account)">
+                    <div>
+                        <i class="fa-solid {{account.icon}}"></i>
+                    </div>
+                    <div class="account-info">
+                        <span>{{ account.type | titlecase}}</span> <br>
+                        <span>{{ account.name | lowercase}}</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <app-copyright-footer></app-copyright-footer>
+</div>
+
