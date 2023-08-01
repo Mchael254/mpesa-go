@@ -25,6 +25,10 @@ html,body {
   color: #fff;
 }
 
+.btn-link, a {
+  text-decoration: none;
+}
+
 /* .btn-primary:hover {
   background: red;
 } */
@@ -210,6 +214,11 @@ html,body {
   padding-top: 15vh;
   padding-left: 20px;
   padding-right: 20px;
+}
+
+.auth-container .left .otp-form {
+  max-width: 80%;
+  margin: auto
 }
 
 .slogan {
