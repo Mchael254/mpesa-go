@@ -13,6 +13,7 @@ import { ListServiceProviderComponent } from './components/service-provider/list
 import { NewStaffComponent } from './components/staff/new-staff/new-staff.component';
 import { ListStaffComponent } from './components/staff/list-staff/list-staff.component';
 import { EditComponent } from './components/edit/edit.component';
+import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { EditComponent } from './components/edit/edit.component';
     ListServiceProviderComponent,
     NewStaffComponent,
     ListStaffComponent,
-    EditComponent
+    EditComponent,
+    ViewEntityComponent
   ],
   imports: [
     CommonModule,
