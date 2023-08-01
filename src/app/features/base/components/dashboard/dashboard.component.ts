@@ -1,4 +1,5 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {TableDetail} from "../../../../shared/data/table-detail";
 
 @Component({
   selector: 'app-dashboard',
@@ -7,7 +8,9 @@ import { Component, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None
 
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
+
+  basicData: any;
 
   cols = [
     { field: 'policyNumber', header: 'Policy Number' },
@@ -30,7 +33,6 @@ export class DashboardComponent {
   tableDetails: TableDetail = {
     cols: this.cols,
     rows: this.rows,
-    // rowsPerPage: 2,
     globalFilterFields: this.globalFilterFields,
     showFilter: false,
     showSorting: false,
@@ -62,24 +64,29 @@ export class DashboardComponent {
   tableDetails2: TableDetail = {
     cols: this.cols2,
     rows: this.rows2,
-    // rowsPerPage: 3,
     globalFilterFields: this.globalFilterFields2,
     showFilter: false,
     showSorting: false,
     title: 'A list of policies transacted',
     paginator: true,
   }
-}
 
-export interface TableDetail {
-  cols: {field: string, header: string}[],
-  rows: any[],
-  rowsPerPage?: number,
-  globalFilterFields: string[],
-  showFilter: boolean,
-  showSorting: boolean,
-  title: string,
-  paginator: boolean,
-  url?: string,
-  urlIdentifier?: string,
+  ngOnInit() {
+    this.basicData = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label: 'My First dataset',
+          data: [65, 59, 80, 81, 56, 55, 40]
+        },
+        {
+          label: 'My Second dataset',
+          data: [28, 48, 40, 19, 86, 27, 90]
+        }
+      ]
+    };
+
+
+  }
+
 }

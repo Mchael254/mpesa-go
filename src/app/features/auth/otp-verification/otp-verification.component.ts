@@ -3,7 +3,6 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../../shared/services/auth.service";
 import {Logger} from "../../../shared/services";
-import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('OtpVerificationComponent');
@@ -18,7 +17,6 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
   public otpProcess: string = '';
   constructor(
     private authService: AuthService,
-    // private sessionStorage: SessionStorageService,
     private localStorageService: LocalStorageService,
     private route: ActivatedRoute,
     private router: Router,
