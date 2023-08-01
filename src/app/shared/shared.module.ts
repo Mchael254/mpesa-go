@@ -39,6 +39,8 @@ import {ChipsModule} from "primeng/chips";
 import { CopyrightFooterComponent } from './components/copyright-footer/copyright-footer.component';
 import { DynamicChartComponent } from './components/dynamic-chart/dynamic-chart.component';
 import {ChartModule} from "primeng/chart";
+import { SpinnerComponent } from './components/spinner/spinner.component';
+import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -106,7 +108,9 @@ const SERVICES = [
     OtpComponent,
     DynamicTableComponent,
     CopyrightFooterComponent,
-    DynamicChartComponent
+    DynamicChartComponent,
+    SpinnerComponent,
+    DynamicFormComponent
   ],
     imports: [
         CommonModule,
@@ -129,7 +133,9 @@ const SERVICES = [
     OtpComponent,
     DynamicTableComponent,
     CopyrightFooterComponent,
-    DynamicChartComponent
+    DynamicChartComponent,
+    SpinnerComponent,
+    DynamicFormComponent
   ],
   // providers: [...SERVICES]
 })
