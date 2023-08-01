@@ -15,7 +15,7 @@
           <label [for]="field.name" class="form-label" [class.required]="field.required">{{ field.label }}</label>
 
           <!-- Input type text -->
-          <input *ngIf="field.type === 'text'" [formControlName]="field.name" [type]="field.inputType || 'text'" class="form-control" [placeholder]="field.placeholder" >
+          <input *ngIf="field.type === 'text'" [formControlName]="field.name" [type]="field.type || 'text'" class="form-control" [placeholder]="field.placeholder" >
 
           <!-- Input type number -->
           <input *ngIf="field.type === 'number'" [formControlName]="field.name" type="number" class="form-control" [placeholder]="field.placeholder" >
