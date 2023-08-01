@@ -1,0 +1,80 @@
+
+
+<form [formGroup]="dynamicForm" class="mt-4 full-border">
+  <div class="d-flex justify-content-between align-items-center mb-2"> <!-- Add a container div to align items -->
+    <h3 class="mb-2 fs-6 fw-bold">{{ title  | uppercase}}</h3> <!-- Replace "Dynamic Form" with your desired title -->
+    <hr>
+    <div>
+      <!-- Add any additional content or buttons here if needed -->
+    </div>
+  </div>
+  <div class="row" [ngClass]="'row-cols-md-' + fieldsPerRow + ' gx-md-4'">
+    <ng-container *ngFor="let field of formFields">
+      <div class="col mb-3"> <!-- Add margin-bottom for spacing between fields -->
+        <div class="form-group px-3"> <!-- Add horizontal padding to each field -->
+          <label [for]="field.name" class="form-label" [class.required]="field.required">{{ field.label }}</label>
+
+          <!-- Input type text -->
+          <input *ngIf="field.type === 'text'" [formControlName]="field.name" [type]="field.inputType || 'text'" class="form-control" [placeholder]="field.placeholder" >
+
+          <!-- Input type number -->
+          <input *ngIf="field.type === 'number'" [formControlName]="field.name" type="number" class="form-control" [placeholder]="field.placeholder" >
+
+          <!-- Input type date -->
+          <input *ngIf="field.type === 'date'" [formControlName]="field.name" type="date" class="form-control" [placeholder]="field.placeholder" >
+
+          <!-- Textarea -->
+          <textarea *ngIf="field.type === 'textarea'" [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" ></textarea>
+
+          <!-- Dropdown -->
+          <select *ngIf="field.type === 'dropdown'" [formControlName]="field.name" class="form-select" >
+            <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+          </select>
+
+          <!-- Checkbox -->
+          <div *ngIf="field.type === 'checkbox'" class="form-check">
+            <input [formControlName]="field.name" type="checkbox" class="form-check-input" >
+            <label class="form-check-label">{{ field.label }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</form>
+
+<div class="d-flex justify-content-between mt-3 action-buttons-container">
+  <!-- Left Buttons -->
+  <ng-container *ngIf="actionButtonConfig.back.alignment === 'start'">
+    <button *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> {{ actionButtonConfig.back.label }}
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="actionButtonConfig.submit.alignment === 'start'">
+    <button *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.submit.label }} <i class="bi bi-check"></i>
+    </button>
+  </ng-container>
+
+  <!-- Center Button -->
+  <div class="flex-grow-1"></div>
+  <ng-container *ngIf="actionButtonConfig.center.alignment === 'center'">
+    <button *ngIf="actionButtonConfig.center.visible" type="button" (click)="onCenterAction()" [disabled]="!actionButtonConfig.center.enabled" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.center.label }} <i class="bi bi-check"></i>
+    </button>
+  </ng-container>
+  <div class="flex-grow-1"></div>
+
+  <!-- Right Buttons -->
+  <ng-container *ngIf="actionButtonConfig.submit.alignment === 'end'">
+    <button *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.submit.label }} <i class="bi bi-check"></i>
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="actionButtonConfig.back.alignment === 'end'">
+    <button *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> {{ actionButtonConfig.back.label }}
+    </button>
+  </ng-container>
+</div>
