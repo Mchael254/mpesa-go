@@ -37,6 +37,8 @@ import {TableModule} from "primeng/table";
 import {ButtonModule} from "primeng/button";
 import {ChipsModule} from "primeng/chips";
 import { CopyrightFooterComponent } from './components/copyright-footer/copyright-footer.component';
+import { DynamicChartComponent } from './components/dynamic-chart/dynamic-chart.component';
+import {ChartModule} from "primeng/chart";
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -103,17 +105,19 @@ const SERVICES = [
     DocViewerComponent,
     OtpComponent,
     DynamicTableComponent,
-    CopyrightFooterComponent
+    CopyrightFooterComponent,
+    DynamicChartComponent
   ],
     imports: [
         CommonModule,
         ToastModule,
         ProgressBarModule,
         NgOptimizedImage,
-      ReactiveFormsModule,
-      TableModule,
-      ButtonModule,
-      ChipsModule
+        ReactiveFormsModule,
+        TableModule,
+        ButtonModule,
+        ChipsModule,
+        ChartModule
     ],
   exports: [
     ErrorComponent,
@@ -124,7 +128,8 @@ const SERVICES = [
     DocViewerComponent,
     OtpComponent,
     DynamicTableComponent,
-    CopyrightFooterComponent
+    CopyrightFooterComponent,
+    DynamicChartComponent
   ],
   // providers: [...SERVICES]
 })

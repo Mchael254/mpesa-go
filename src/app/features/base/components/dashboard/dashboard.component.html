@@ -163,35 +163,17 @@
   <h5 class="section-title">My Dashboard</h5>
   <div class="row">
       <div class="col-sm-6">
-          <div class="card">
-              <div class="card-body">
-                  <div class="row">
-                      <p class="text-primary">
-                          Total Individual Premium <br>
-                          <span class="fs-5">KSH 20,000</span>
-                      </p>
-                  </div>
-                  <div class="row">
-                      <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
-                  </div>
-              </div>
-          </div>
+        <app-dynamic-chart
+          [basicData]="basicData"
+          [chartType]="'bar'"
+        ></app-dynamic-chart>
       </div>
 
       <div class="col-sm-6">
-          <div class="card">
-              <div class="card-body">
-                  <div class="row">
-                      <p class="text-primary">
-                          Total Insurance Premium <br>
-                          <span class="fs-5">KSH 20,000</span>
-                      </p>
-                  </div>
-                  <div class="row">
-                      <canvas id="myChart2" style="width:100%;max-width:700px"></canvas>
-                  </div>
-              </div>
-          </div>
+        <app-dynamic-chart
+          [chartType]="'line'"
+          [basicData]="basicData"
+        ></app-dynamic-chart>
       </div>
   </div>
 </div>
@@ -202,60 +184,11 @@
           <p class="transactions">My Policies</p>
           <div class="card">
               <div class="card-body">
-                  <!--<div class="row mb-3">
-                      <div class="col-sm-7">
-                          <p class="text-muted fs-6">A list of the policies transacted</p>
-                      </div>
-                      <div class="col-sm-5">
-                          <form class="d-flex">
-                              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                          </form>
-                      </div>
-                  </div>-->
                   <div class="row">
                       <div class="col-sm-12">
-                        <app-dynamic-table [tableDetails]="tableDetails"></app-dynamic-table>
-                          <!--<table class="table table-borderless table-hover">
-                              <thead>
-                              <tr>
-                                  <th scope="col">Policy Number</th>
-                                  <th scope="col">Type</th>
-                                  <th scope="col">Insured</th>
-                                  <th scope="col">Status</th>
-                                  <th scope="col">Premium</th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Motor</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Active</td>
-                                  <td>KSH 40,000.00</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Travel</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Active</td>
-                                  <td>KSH 40,000.00</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Marine</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Active</td>
-                                  <td>KSH 40,000.00</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Motor</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Active</td>
-                                  <td>KSH 40,000.00</td>
-                              </tr>
-                              </tbody>
-                          </table>-->
+                        <app-dynamic-table
+                          [tableDetails]="tableDetails"
+                        ></app-dynamic-table>
                       </div>
                   </div>
               </div>
@@ -266,65 +199,11 @@
           <p class="transactions">My Quotations</p>
           <div class="card">
               <div class="card-body">
-                  <!--<div class="row mb-3">
-                      <div class="col-sm-7">
-                          <p class="text-muted fs-6">A list of the policies transacted</p>
-                      </div>
-                      <div class="col-sm-5">
-                          <form class="d-flex">
-                              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                          </form>
-                      </div>
-                  </div>-->
                   <div class="row">
                       <div class="col-sm-12">
-                          <!--<table class="table table-borderless table-hover">
-                              <thead>
-                              <tr>
-                                  <th scope="col">Policy Number</th>
-                                  <th scope="col">Type</th>
-                                  <th scope="col">Insured</th>
-                                  <th scope="col">Status</th>
-                                  <th scope="col">Premium</th>
-                                  <th scope="col" class="text-center">Options</th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Motor</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Paid</td>
-                                  <td>KSH 40,000.00</td>
-                                  <td class="text-center">View</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Travel</td>
-                                  <td>John Doe</td>
-                                  <td class="text-warning">Pending</td>
-                                  <td>KSH 40,000.00</td>
-                                  <td class="text-center">View</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Marine</td>
-                                  <td>John Doe</td>
-                                  <td class="text-success">Paid</td>
-                                  <td>KSH 40,000.00</td>
-                                  <td class="text-center">View</td>
-                              </tr>
-                              <tr>
-                                  <td>TA823154</td>
-                                  <td>Motor</td>
-                                  <td>John Doe</td>
-                                  <td class="text-warning">Pending</td>
-                                  <td>KSH 40,000.00</td>
-                                  <td class="text-center">View</td>
-                              </tr>
-                              </tbody>
-                          </table>-->
-                        <app-dynamic-table [tableDetails]="tableDetails2"></app-dynamic-table>
+                        <app-dynamic-table
+                          [tableDetails]="tableDetails2"
+                        ></app-dynamic-table>
                       </div>
                   </div>
               </div>
