@@ -15,6 +15,7 @@ import {
   NewServiceProviderComponent
 } from "./components/service-provider/new-service-provider/new-service-provider.component";
 import {EditComponent} from "./components/edit/edit.component";
+import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
 
 const routes: Routes = [
     {
@@ -28,6 +29,10 @@ const routes: Routes = [
     {
       path: 'new',
       component: NewEntityComponent,
+    },
+    {
+      path: 'view/:id',
+      component: ViewEntityComponent,
     },
     {
       path: 'staff',
