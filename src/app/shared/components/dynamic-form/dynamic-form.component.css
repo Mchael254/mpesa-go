@@ -1,0 +1,24 @@
+.required::after {
+  content: '*'; /* Display an asterisk (*) to indicate required field */
+  color: red; /* Change the color to red (you can customize as per your preference) */
+  font-size: 14px; /* Increase the font size for better visibility */
+  font-weight: bold; /* Use bold style for the asterisk */
+  margin-left: 5px; /* Add some space between the label and the asterisk */
+}
+
+.full-border {
+  border: 1px solid #ccc; /* Adjust border style and color as per your preference */
+  padding: 2rem; /* Add padding to create space between form elements and the border */
+  border-radius: 5px; /* Optional: Add border radius for rounded corners */
+  margin: 10px;
+  background-color: white;
+}
+
+.action-buttons-container {
+  margin-top: 10px; /* Adjust the margin as needed to bring the buttons closer */
+  margin-bottom: 20px; /* Adjust the margin as needed to bring the buttons closer */
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+
