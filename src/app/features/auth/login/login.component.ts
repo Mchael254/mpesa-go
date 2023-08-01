@@ -24,6 +24,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   errMsgsEvent = new EventEmitter<Message[]>(true);
   public isAuthenticated$!: Observable<boolean>;
   public rememberMe: boolean = false;
+  isLoading: boolean = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   authAttempt() {
+    this.isLoading = true
     this.errorOccurred = false;
     this.errorMessage = '';
 
@@ -121,6 +123,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges()
         }
       }
+      this.isLoading = false;
     },(msg) => {
       // log.info(`Pushing error message ${JSON.stringify(msg)}`);
       if(msg != null){
@@ -129,6 +132,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         // log.debug('Reached here',this.errorOccurred, this.errorMessage);
         this.cdr.detectChanges()
       }
+      this.isLoading = false;
+
     });
   }
 
