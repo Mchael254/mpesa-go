@@ -1,1 +1,435 @@
-<p>edit works!</p>
+<app-dynamic-form
+  [formFields]="fieldsets"
+  [fieldsPerRow]="3"
+  [title]="'Client Details'"
+  [actionButtonConfig]="buttonConfig"
+  (formSubmitted)="submitForm($event)"
+  (goBackButton)="goBack()">
+</app-dynamic-form>
+
+
+<!--
+<div class="card ms-4 me-4 my-4">
+  <div class="card-body">
+    <div class="mt-3">
+      <h6 class="fw-bold">Client Details</h6>
+    </div>
+      <p-tabView>
+        <p-tabPanel header="Personal Information">
+          <form [formGroup]="entityDetailsForm">
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Full Names</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Full Names"
+                      formControlName="name"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Passport Number</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Passport Number"
+                      formControlName="passportNumber"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Type</label>
+                  <div class="col-sm-9">
+                    <select class="form-control form-select" formControlName="partyType">
+                      <option value="" selected>Party Type</option>
+                      <option value="I">Individual</option>
+                      <option value="C">Corporate</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputMobileNumber" class="col-sm-3 col-form-label">Mobile Number</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                       class="form-control"
+                       id="inputMobileNumber"
+                       placeholder="Mobile Number"
+                       formControlName="mobileNumber"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Title</label>
+                  <div class="col-sm-9">
+                    <select id="inputTitle" class="form-control form-select" formControlName="clientTitle">
+                      <option value="" selected>Title</option>
+                      <option *ngFor="let titles of titlesData" >
+                        {{ titles.description }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Date of Birth</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="inputDOB"
+                      placeholder="Date of Birth"
+                      onfocus="(this.type='date')"
+                      onblur="(this.type='text')"
+                      id="date"
+                      formControlName="dateOfBirth"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Email Address</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="inputEmailAddress"
+                      placeholder="Email Address"
+                      formControlName="emailAddress"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Physical Address</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="inputPhysicalAddress"
+                      placeholder="Physical Address"
+                      formControlName="physicalAddress"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">ID Number</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="inputIdNumber"
+                      placeholder="ID Number"
+                      formControlName="idNumber"
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">Occupation</label>
+                  <div class="col-sm-9">
+                    <select id="inputOccupation" class="form-control form-select" formControlName="occupation">
+                      <option value="" selected>Occupation</option>
+                      <option *ngFor="let occupation of occupationData"
+                              [value]="occupation.id">
+                        {{ occupation.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngIf="showExtraStaffDetails">
+              <div class="row align-items-start">
+                <div class="col">
+                  <div class="row mb-3">
+                    <label for="inputEmail3" class="col-sm-3 col-form-label">Department</label>
+                    <div class="col-sm-9">
+                      <select id="inputStaffDepartments" class="form-control form-select" formControlName="staffDepartment">
+                        <option value="" selected>Department</option>
+                        <option *ngFor="let department of staffDepartments"
+                                value="{{ department?.id }}">
+                          {{ department?.departmentName }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="row mb-3">
+                    <label for="inputEmail3" class="col-sm-3 col-form-label">Supervisor</label>
+                    <div class="col-sm-9">
+                      &lt;!&ndash; todo &ndash;&gt;
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <div class="row align-items-start">
+              <div class="col-sm-6">
+                <div class="row mb-3">
+                  <label for="inputEmail3" class="col-sm-3 col-form-label">PIN Number</label>
+                  <div class="col-sm-9">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="inputPinNumber"
+                      placeholder="Pin Number"
+                      formControlName="pinNumber"
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-sm-6">
+                <button class="btn btn-link">Go Back</button>
+              </div>
+              <div class="col-sm-6">
+                <button class="btn btn-primary float-end">Save</button>
+              </div>
+            </div>
+          </form>
+        </p-tabPanel>
+
+
+        <p-tabPanel header="Additional Information">
+          <p-tabView>
+            <p-tabPanel header="Bank Details">
+              <form>
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Bank</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Account Number</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Select Account Type</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Branch</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col-sm-6">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Preferred Payment A/C</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-2 col-form-label">Short Codes</label>
+                      <div class="col-sm-2">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                      <div class="col-sm-3">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                      <div class="col-sm-3">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                      <div class="col-sm-2">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </p-tabPanel>
+            <p-tabPanel header="Wealth Details">
+              <form>
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Nationality</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Citizenship</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Source of Funds</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Sector</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col-sm-6">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Type of Employment</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </p-tabPanel>
+            <p-tabPanel header="AML Details (Organisation)">
+              <form>
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Trading Names</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Cert. Reg. Number</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Company</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Source of Wealth</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Cert. Registration Year</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Parent Country</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row align-items-start">
+                  <div class="col-sm-6">
+                    <div class="row mb-3">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label">Operation Year</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </p-tabPanel>
+            <p-tabPanel header="Next of Kin">
+              Next of kin
+            </p-tabPanel>
+          </p-tabView>
+        </p-tabPanel>
+
+      </p-tabView>
+    </div>
+</div>
+-->
