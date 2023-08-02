@@ -1,4 +1,4 @@
-interface DynamicFormButtons {
+export interface DynamicFormButtons {
   submit?: {
     label: string;
     visible: boolean;
