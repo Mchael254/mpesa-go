@@ -41,6 +41,8 @@ import { DynamicChartComponent } from './components/dynamic-chart/dynamic-chart.
 import {ChartModule} from "primeng/chart";
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
+import { DynamicBreadcrumbComponent } from './components/dynamic-breadcrumb/dynamic-breadcrumb.component';
+import {RouterLink} from "@angular/router";
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -110,7 +112,8 @@ const SERVICES = [
     CopyrightFooterComponent,
     DynamicChartComponent,
     SpinnerComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    DynamicBreadcrumbComponent
   ],
     imports: [
         CommonModule,
@@ -121,7 +124,8 @@ const SERVICES = [
         TableModule,
         ButtonModule,
         ChipsModule,
-        ChartModule
+        ChartModule,
+        RouterLink
     ],
   exports: [
     ErrorComponent,
@@ -135,7 +139,8 @@ const SERVICES = [
     CopyrightFooterComponent,
     DynamicChartComponent,
     SpinnerComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    DynamicBreadcrumbComponent
   ],
   // providers: [...SERVICES]
 })
