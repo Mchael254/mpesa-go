@@ -39,6 +39,10 @@
         <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
           {{ rowData[col.field] }}
         </td>
+        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+          <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]">View</a>
+          <!-- Use routerLink with the input properties -->
+        </td>
 
       </tr>
     </ng-template>
@@ -81,6 +85,9 @@
           <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
         </span>
         </th>
+        <th *ngIf="tableDetails?.url">
+          Actions
+        </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
@@ -88,7 +95,10 @@
         <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
           {{ rowData[col.field] }}
         </td>
-
+        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+          <a [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">View</a>
+          <!-- Use routerLink with the input properties -->
+        </td>
       </tr>
     </ng-template>
   </p-table>
