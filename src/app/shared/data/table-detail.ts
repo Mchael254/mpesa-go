@@ -5,8 +5,10 @@ export interface TableDetail {
   globalFilterFields: string[],
   showFilter: boolean,
   showSorting: boolean,
-  title: string,
+  title?: string,
   paginator: boolean,
   url?: string,
   urlIdentifier?: string,
+  isLazyLoaded?: boolean,
+  totalElements?: number
 }
