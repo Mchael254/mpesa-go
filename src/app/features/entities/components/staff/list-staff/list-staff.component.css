@@ -1,0 +1,30 @@
+.nav-underline .nav-link.active, .nav-underline .show>.nav-link{
+  color: #1890FF;
+  background-color: transparent;
+  border-color: transparent transparent #f3f3f3;
+  border-bottom: 3px solid !important;
+  font-weight: bold;
+}
+.nav-link {
+  text-align: left;
+  align-self: stretch;
+  padding-bottom: 12px;
+
+  color: #0062cc;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: normal;
+}
+.nav-link, .nav-link:hover, .nav-link:focus{
+  border: none !important;
+}
+.nav-link:hover ,
+.nav-link:focus {
+  background: transparent !important;
+}
+
+.nav-tabs > a{
+  text-decoration: none;
+  text-transform: capitalize;
+  color: rgba(0, 0, 0, 0.85);
+  }
