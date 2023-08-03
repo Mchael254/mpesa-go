@@ -10,7 +10,6 @@ import {StaffService} from "../../../services/staff/staff.service";
 import {SortFilterService} from "../../../../../shared/services/sort-filter.service";
 import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
-import {Observable} from "rxjs";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 
 const log = new Logger('ListStaffComponent');
@@ -70,7 +69,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   staffBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
-      url: '/home/dahsboard'
+      url: '/home/dashboard'
     },
     {
       label: 'CRM',
@@ -106,7 +105,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      url: 'edit',
+      url: '/home/entity/edit',
       urlIdentifier: 'id',
       isLazyLoaded: true
     }
@@ -140,24 +139,6 @@ export class ListStaffComponent implements OnInit, OnDestroy {
 
   }
 
-  loadIndividualStaff(event: LazyLoadEvent | TableLazyLoadEvent){
-    log.info('Fetching staff ...');
-    const pageIndex = event.first / event.rows;
-    const sortField = event.sortField;
-    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
-
-    this.getIndividualStaff(pageIndex, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-      )
-      .subscribe(
-        (data: Pagination<StaffDto>) => {
-          this.refreshStaffData(data);
-          this.cdr.detectChanges();
-        }
-      );
-
-  }
 
   getStaffData(pageIndex: number = 0,
                sortList: any = 'dateCreated',
@@ -168,14 +149,6 @@ export class ListStaffComponent implements OnInit, OnDestroy {
         this.activeTab() === 'Group' ? 'G':  'U',
                  sortList,
                 order, null)
-      .pipe(untilDestroyed(this));
-  }
-
-  getIndividualStaff(pageIndex: number,
-                 sortList: any = 'dateCreated',
-                 order: string = 'desc'): Observable<Pagination<StaffDto>> {
-    return this.staffService
-      .getStaff(pageIndex, this.staffPageSize, 'U', sortList, order, null)
       .pipe(untilDestroyed(this));
   }
 
@@ -202,8 +175,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
           this.refreshStaffData(data);
         }
       );
-    this.cdr.detectChanges()
-    log.info('Current Tab is: ', this.activeTab());
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy(): void {
