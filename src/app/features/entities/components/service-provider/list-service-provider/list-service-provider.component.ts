@@ -8,6 +8,7 @@ import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
 import { tap } from 'rxjs';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-service-provider',
@@ -44,7 +45,8 @@ export class ListServiceProviderComponent {
 
   globalFilterFields = ['name', 'category', 'modeOfIdentity', 'pinNumber'];
   constructor(
-    private service:ServiceProviderService,
+    private service: ServiceProviderService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {
     this.tableDetails = {
@@ -76,35 +78,42 @@ export class ListServiceProviderComponent {
   getServiceProviders(pageIndex: number,
     sortField: any = 'createdDate',
     sortOrder: string = 'desc') {
-return this.service
-.getServiceProviders(pageIndex, this.pageSize, sortField, sortOrder)
-.pipe(
-untilDestroyed(this),
-);
-}
+    return this.service
+    .getServiceProviders(pageIndex, this.pageSize, sortField, sortOrder)
+    .pipe(
+    untilDestroyed(this),
+    );
+  }
 
 lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
-const pageIndex = event.first / event.rows;
-const sortField = event.sortField;
-const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+  const pageIndex = event.first / event.rows;
+  const sortField = event.sortField;
+  const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
 
-this.getServiceProviders(pageIndex, sortField, sortOrder)
-.pipe(
-untilDestroyed(this),
-tap((data) => console.log(`Service Providers`, data))
-)
-.subscribe(
-(data: Pagination<ServiceProviderDTO>) => {
-  data.content.forEach(entity => {
-    entity.spEntityType = entity.providerType.name
-  });
- this.ServiceProviderDetails = data;
- this.tableDetails.rows = this.ServiceProviderDetails?.content;
- this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
- this.cdr.detectChanges();
-}
-);
-}
-ngOnDestroy(): void {
-}
+  this.getServiceProviders(pageIndex, sortField, sortOrder)
+    .pipe(
+    untilDestroyed(this),
+    tap((data) => console.log(`Service Providers`, data))
+    )
+    .subscribe(
+      (data: Pagination<ServiceProviderDTO>) => {
+        data.content.forEach(entity => {
+          entity.spEntityType = entity.providerType.name
+        });
+      this.ServiceProviderDetails = data;
+      this.tableDetails.rows = this.ServiceProviderDetails?.content;
+      this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
+      this.cdr.detectChanges();
+      }
+    );
+  }
+
+  gotoEntityPage() {
+    this.router.navigate(['/home/entity/new'],
+      {queryParams: {entityType: 'Service Provider'}}).then(r => {
+    })
+  }
+  
+  ngOnDestroy(): void {
+  }
 }

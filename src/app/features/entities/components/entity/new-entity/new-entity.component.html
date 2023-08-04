@@ -1,1 +1,220 @@
-<p>new-entity works!</p>
+<div>
+    <!-- Top Header Text and Breadcrumb !-->
+    <div class="d-flex justify-content-between my-4 ms-4">
+        <div class="mr-auto p-2">
+            <h6 class="htxt page-header">New Entity</h6>
+        </div>
+        <div class="me-4">
+            <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
+            </app-dynamic-breadcrumb>
+        </div>
+    </div>
+    <div class="my-4 ms-4 me-4">
+        <div class="card col-md-12 col-lg-12 col-xxl-12">
+            <div class="card-body">
+                <form [formGroup]="entityRegistrationForm">
+                    <div class="row">
+                        <ng-container *ngIf="visibleStatus.category === 'Y'">
+                            <div class="col-md-4">
+                                <label for="category">Party Type</label>
+                                <select id="category" class="form-control" placeholder="Select Party Type"
+                                    formControlName="category"
+                                    [ngClass]="{ 'is-invalid': f['category'].invalid && (f['category'].dirty || f['category'].touched) }">
+                                    <option value="" selected>Primary Party Type</option>
+                                    <option value="I">Individual</option>
+                                    <option value="C">Corporate</option>
+                                </select>
+                                <div *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)"
+                                    class="form-text text-danger">
+                                    <div *ngIf="f['category']?.errors['required']">Category is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
+                            <div class="col-md-4 col-12 md-col-4">
+                                <label for="date_of_birth">Date of Birth</label>
+                                <input type="text" 
+                                    class="form-control" 
+                                    name="inputDateOfBirth" 
+                                    placeholder="Date of Birth"
+                                    onfocus="(this.type='date')" 
+                                    onblur="(this.type='text')" 
+                                    id="date_of_birth"
+                                    [max]="eighteenYearsAgo | date:'yyyy-MM-dd'" 
+                                    formControlName="date_of_birth"
+                                    [ngClass]="{ 'is-invalid': f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched) }">
+                                <div *ngIf="f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)"
+                                    class="form-text text-danger"
+                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['date_of_birth']?.errors }">
+                                    <div *ngIf="f['date_of_birth']?.errors['required']">Date of birth is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
+                            <div class="col-md-4">
+                                <label for="entity_name">Entity</label>
+                                <input type="text" class="form-control" id="entity_name" placeholder="Entity Name"
+                                    formControlName="entity_name"
+                                    [ngClass]="{ 'is-invalid': f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched) }">
+                                <div *ngIf="f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched)"
+                                    class="form-text text-danger"
+                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['entity_name']?.errors }">
+                                    <div *ngIf="f['entity_name']?.errors['required']">Name is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
+                            <div class="col-md-4">
+                                <label for="mode_of_identity">Primary ID Type</label>
+                                <select id="mode_of_identity" class="form-control" placeholder="Primary ID Type"
+                                    formControlName="mode_of_identity"
+                                    [ngClass]="{ 'is-invalid': f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched) }">
+                                    <option value="" selected disabled>Primary ID Type</option>
+                                    <option *ngFor="let type of  modeIdentityType" [value]="type.id">{{ type.name }}
+                                    </option>
+                                </select>
+                                <div *ngIf="f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched)"
+                                    class="form-text text-danger"
+                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['mode_of_identity']?.errors }">
+                                    <div *ngIf="f['mode_of_identity']?.errors['required']">Mode of identity is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
+                            <div class="col-md-4">
+                                <label for="identity_number">ID Number</label>
+                                <input type="text" class="form-control" id="identity_number" placeholder="ID Number"
+                                    formControlName="identity_number"
+                                    [ngClass]="{ 'is-invalid': f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched) }">
+                                <div *ngIf="f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched)"
+                                    class="form-text text-danger"
+                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['identity_number']?.errors }">
+                                    <div *ngIf="f['identity_number']?.errors['required']">Identity number is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
+                            <div class="col-md-4">
+                                <label for="pin_number">Pin Number</label>
+                                <input type="text" class="form-control" id="pin_number" placeholder="Pin Number"
+                                    formControlName="pin_number"
+                                    [ngClass]="{ 'is-invalid': f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched) }">
+                                <div *ngIf="f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched)"
+                                    class="form-text text-danger"
+                                    [ngClass]="{ 'is-invalid': ['submitted'] && f['pin_number']?.errors }">
+                                    <div *ngIf="f['pin_number']?.errors['required']">PIN Number is required</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="row">
+                        <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
+                            <!-- <div class="col-md-4">
+                                <label for="assign_role">Assign Role (Optional)</label>
+                                <input type="text" class="form-control" id="assign_role" placeholder="selected Role"
+                                    value="{{ selectedRole.partyTypeName }}" formControlName="assign_role" [disabled]="true">
+                            </div> -->
+                            <div class="col-md-4">
+                                <label for="assign_role">Assign Role (Optional)</label>
+                                <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
+                                    [disabled]="true">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="rolesButton">Select Role</label>
+                                <button type="button" id="rolesButton" class="btn btn-outline-primary btn-md btn-block"
+                                    data-bs-toggle="modal" data-bs-target="#selectRoleModal" [disabled]="disableRole">
+                                    Select Role
+                                </button>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="row">
+                        <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
+                            <div class="col-md-4">
+                                <label for="inputProfileImg">Profile Photo</label>
+                                <div (change)="onFileChange($event)">
+                                    <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
+                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" hidden />
+                                    <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload image</label>
+                                    <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">Edit</label>
+                                </div>
+                            </div>
+                        </ng-container>
+    
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="lower-navigation">
+            <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+            <span class="float-end">
+                <button type="button" id="nextButton" class="btn btn-primary" (click)="onSubmit()">Next</button>
+            </span>
+        </div>
+    </div>
+
+</div>
+<!-- modal -->
+<form [formGroup]="selectRoleModalForm" aria-labelledby="title">
+    <div class="modal fade" id="selectRoleModal" tabindex="-1" aria-labelledby="selectRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectRoleModalLabel"></h5>
+                    <button type="button" #closebutton class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        id="closeBtn"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h6 class="black-text">Roles</h6>
+                                <div class="row">
+                                    <div class="col-md-12 black-text">
+                                        <div class="form-check form-check-inline" *ngFor="let role of partyLevel1">
+                                            <input class="form-check-input" type="radio" name="partyType"
+                                                id="radioRoles" [value]="role.partyTypeName" formControlName="partyType"
+                                                (click)="onAssignRole(role)">
+                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName
+                                                }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h6 class="black-text">Others</h6>
+                                <div class="row">
+                                    <ng-container *ngFor="let role of partyLevel2">
+                                        <div class="col-sm-4 black-text">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="partyType"
+                                                    id="radioOthers" [value]="role.partyTypeName"
+                                                    formControlName="partyType" (click)="onAssignRole(role)">
+                                                <label class="form-check-label" for="partyType">{{ role.partyTypeName
+                                                    }}</label>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- <app-dynamic-form 
+    [formFields]="fieldsets" 
+    [fieldsPerRow]="3" 
+    [title]="'New Entity'"
+    [actionButtonConfig]="buttonConfig"
+    (formSubmitted)="submitForm($event)" 
+    (goBackButton)="goBack()">
+</app-dynamic-form> -->
