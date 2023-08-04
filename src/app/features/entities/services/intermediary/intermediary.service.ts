@@ -1,9 +1,86 @@
 import { Injectable } from '@angular/core';
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {AppConfigService} from "../../../../core/config/app-config-service";
+import {Observable} from "rxjs";
+import {Pagination} from "../../../../shared/data/common/pagination";
+import {AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../data/AgentDTO";
 
 @Injectable({
   providedIn: 'root'
 })
 export class IntermediaryService {
 
-  constructor() { }
+  constructor(
+    private http: HttpClient,
+    private appConfig: AppConfigService
+  ) { }
+
+  getAgents(
+    page: number = 0,
+    size: number = 5,
+    sortList: string = 'createdDate',
+    order: string = 'desc'
+  ): Observable<Pagination<AgentDTO>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('organizationId', 2)
+      .set('sortListFields', `${sortList}`)
+      .set('order', `${order}`);
+
+    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/accounts/agents`,{
+      headers:headers,
+      params: params,
+    })
+  }
+
+  getAgentById(id: number): Observable<AgentDTO> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+
+    return this.http.get<AgentDTO>(`/${baseUrl}/accounts/agents/${id}`,{
+      headers:headers,
+    })
+  }
+
+  searchAgent(
+    page: number = 0,
+    size: number = 5,
+    name: string
+  ): Observable<Pagination<AgentDTO>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const header = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    });
+
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('organizationId', 2);
+
+    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/accounts/agents`, {
+      headers: header,
+      params: params,
+    });
+  }
+
+  saveAgentDetails(data: AgentPostDTO): Observable<IntermediaryDTO> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<IntermediaryDTO>(`/${baseUrl}/accounts/accounts`, JSON.stringify(data), {headers:headers})
+
+  }
 }
