@@ -37,7 +37,7 @@ export class ListServiceProviderComponent {
   cols = [
     { field: 'name', header: 'Name' },
     { field: 'category', header: 'Category' },
-    { field: 'providerType?.name', header: 'Entity Type' },
+    { field: 'spEntityType', header: 'Entity Type' },
     { field: 'modeOfIdentity', header: 'Primary ID Type' },
     { field: 'pinNumber', header: 'ID Number' }
   ];
@@ -95,7 +95,9 @@ tap((data) => console.log(`Service Providers`, data))
 )
 .subscribe(
 (data: Pagination<ServiceProviderDTO>) => {
-
+  data.content.forEach(entity => {
+    entity.spEntityType = entity.providerType.name
+  });
  this.ServiceProviderDetails = data;
  this.tableDetails.rows = this.ServiceProviderDetails?.content;
  this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;

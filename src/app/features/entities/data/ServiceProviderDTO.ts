@@ -25,6 +25,7 @@ export interface ServiceProviderDTO{
     postalAddress?: string,
     providerLicenseNo?: string,
     providerStatus?: string,
+    spEntityType?:string,
     providerType?: {
       code?: number,
       name?: string,
