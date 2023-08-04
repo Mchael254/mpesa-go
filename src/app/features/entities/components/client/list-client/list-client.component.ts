@@ -121,4 +121,10 @@ export class ListClientComponent implements OnInit {
 
   ngOnDestroy(): void {
   }
+
+  gotoEntityPage() {
+    this.router.navigate(['/home/entity/new'],
+      {queryParams: {entityType: 'Client'}}).then(r => {
+    })
+  }
 }

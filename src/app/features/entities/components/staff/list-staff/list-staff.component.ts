@@ -178,6 +178,13 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // To be modified
+  gotoEntityPage() {
+    this.router.navigate(['/home/entity/new'],
+      {queryParams: {entityType: 'Staff'}}).then(r => {
+    })
+  }
+
   ngOnDestroy(): void {
   }
 
