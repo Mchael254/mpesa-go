@@ -128,7 +128,7 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
   }
 
   gotoEntityPage() {
-    this.router.navigate(['/home/create-entity'],
+    this.router.navigate(['/home/entity/new'],
       {queryParams: {entityType: 'Agent'}}).then(r => {
     })
   }
