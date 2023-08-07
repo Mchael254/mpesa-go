@@ -1,0 +1,21 @@
+.pill-box {
+  border: solid 1px #eee;
+  margin-top: 20px;
+  min-width: 200px;
+}
+
+.pill-title {
+  background: #0c3f73;
+  padding: 10px;
+  color: #fff
+}
+
+.pill-title span {
+  float: right;
+}
+
+.pill-criteria {
+  background: #fff;
+  padding: 10px 5px;
+  color: #0c3f73
+}

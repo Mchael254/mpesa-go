@@ -23,15 +23,16 @@ html,body {
   border-color: #00529B;
   border-radius: 0;
   color: #fff;
+  margin-right: 5px;
+}
+
+.btn-outline-secondary {
+  border-radius: 0;
 }
 
 .btn-link, a {
   text-decoration: none;
 }
-
-/* .btn-primary:hover {
-  background: red;
-} */
 
 .btn-full-width {
     width: 100%;
@@ -99,14 +100,14 @@ html,body {
 }
 
 .base-side-nav {
-  /*width: 15%;*/
+  width: 15%;
   min-height: 90vh;
   padding: 10px;
   border-right: solid 1px #eee;
 }
 
 .base-content {
-  /*width: 85%;*/
+  width: 85%;
   min-height: 90vh;
   background: #f5f6f8;
 }
@@ -281,6 +282,24 @@ h5.htxt {
 /*Common*/
 .form-error-text {
   float:left;
+}
+.page-header {
+  font-weight: 500 !important;
+  font-size: 14px;
+  color: #000000;
+}
+.filter-btn{
+  background: #FAFAFA;
+  box-sizing: border-box;
+
+  letter-spacing: 1.25px;
+  text-transform: uppercase;
+
+  filter: drop-shadow(0px 4px 4px rgba(61, 164, 255, 0.23));
+  color: #3A3B3F;
+}
+.fa-filter{
+  color: #9EA0A5;
 }
 /*Common ends*/
 

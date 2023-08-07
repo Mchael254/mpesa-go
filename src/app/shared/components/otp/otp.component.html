@@ -1,3 +1,4 @@
+<app-spinner *ngIf="isLoading"></app-spinner>
 <div class="container-fluid">
   <p class="fw-bold text-dark mb-3">One Time Password</p>
   <p class="text-muted mb-3">
@@ -17,7 +18,7 @@
       </div>
       <div class="row">
         <div class="my-3">
-          <button id="onVerify" type="submit" class="btn btn-primary btn-full-width" size="large" (click)="onVerify()">
+          <button [disabled]="!this.otpForm.valid" id="onVerify" type="submit" class="btn btn-primary btn-full-width" size="large" (click)="onVerify()">
             Verify
           </button>
         </div>

@@ -14,6 +14,10 @@ import { NewStaffComponent } from './components/staff/new-staff/new-staff.compon
 import { ListStaffComponent } from './components/staff/list-staff/list-staff.component';
 import { EditComponent } from './components/edit/edit.component';
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
+import {TabViewModule} from "primeng/tabview";
+import {InputTextModule} from "primeng/inputtext";
+import {ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../../shared/shared.module";
 
 
 @NgModule({
@@ -31,9 +35,13 @@ import { ViewEntityComponent } from './components/entity/view-entity/view-entity
     EditComponent,
     ViewEntityComponent
   ],
-  imports: [
-    CommonModule,
-    EntitiesRoutingModule
-  ]
+    imports: [
+        CommonModule,
+        EntitiesRoutingModule,
+        TabViewModule,
+        InputTextModule,
+        ReactiveFormsModule,
+        SharedModule
+    ]
 })
 export class EntitiesModule { }

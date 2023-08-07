@@ -17,6 +17,7 @@ const log = new Logger('VerificationComponent');
 export class VerificationComponent implements OnInit {
   accountVerification: AuthVerification[] = [];
   selectedAccount?: AuthVerification;
+  isLoading: boolean = false;
 
   constructor(
     private router: Router,
@@ -54,6 +55,7 @@ export class VerificationComponent implements OnInit {
 
   onSelectAccount(account: AuthVerification) {
     this.selectedAccount = account;
+    this.isLoading = true;
     log.debug('Selected Verification Type:', this.selectedAccount)
     const verificationType = this.selectedAccount.type.includes("Email".toLocaleLowerCase())? "email": "sms"
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
@@ -70,7 +72,9 @@ export class VerificationComponent implements OnInit {
           localStorage.setItem('otp-channel', JSON.stringify(channel));
           this.router.navigate(['/auth/otp']);
         }
+        this.isLoading = false;
       }
+
 
     );
 

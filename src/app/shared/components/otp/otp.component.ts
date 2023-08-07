@@ -7,6 +7,7 @@ import {Logger, UtilService} from "../../services";
 import {untilDestroyed} from "../../services/until-destroyed";
 import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../services/local-storage/local-storage.service";
+import { finalize } from 'rxjs';
 
 const log = new Logger('OtpVerificationComponent');
 
@@ -26,6 +27,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   public otpValue = '';
   public otpProcess: string = '';
   public otp: string;
+  isLoading: boolean = false;
   @ViewChildren('formRow') rows: any;
 
   @Output() public otpResponse: EventEmitter<any> = new EventEmitter<any>();
@@ -75,6 +77,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   onVerify() {
+    this.isLoading = true;
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
     this.submitted = true;
     this.otpValue = '';
@@ -91,11 +94,18 @@ export class OtpComponent implements OnInit, OnDestroy {
       this.authService.verifyResetOtp(username, parseInt(this.otpValue, 10), email)
         .subscribe(data =>{
           this.otpResponse.emit(data);
+          this.isLoading = false;
+        },
+        (error) =>{
+          this.isLoading = false;
+
         })
     }
+
   }
 
   resendOtp() {
+    this.isLoading = true;
     this.otpForm.reset();
     const otpChannel = JSON.parse(localStorage.getItem("otp-channel"));
     log.info(`OTP channel >>>`, otpChannel);
@@ -104,7 +114,11 @@ export class OtpComponent implements OnInit, OnDestroy {
         if(response){
           this.globalMessagingService.displaySuccessMessage("Success", "OTP sent successfully");
           log.info("OTP Sent", response);
+          this.isLoading = false;
         }
+      },
+      (error)=> {
+        this.isLoading = false;
       }
     );
   }
