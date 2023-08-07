@@ -11,7 +11,7 @@
     <ng-template pTemplate="caption" >
       <div class="row">
         <div class="col-sm-8">
-          <p class="fw-normal text-muted" style="">{{ tableDetails?.title }}</p>
+          <p class="fw-normal text-muted">{{ tableDetails?.title }}</p>
         </div>
         <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
@@ -64,7 +64,7 @@
     <ng-template pTemplate="caption" >
       <div class="row">
         <div class="col-sm-8">
-          <p class="fw-normal text-muted" style="">{{ tableDetails.title }}</p>
+          <p class="fw-normal text-muted">{{ tableDetails.title }}</p>
         </div>
         <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
@@ -96,7 +96,10 @@
           {{ rowData[col.field] }}
         </td>
         <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
-          <a [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">View</a>
+          <button type="button" class="btn btn-primary" style="font-size: 0.9em; padding: 7px 15px; border-radius: 4px;" [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">
+            view details
+            <!-- <i class="pi pi-id-card"></i> -->
+          </button>
           <!-- Use routerLink with the input properties -->
         </td>
       </tr>
