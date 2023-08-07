@@ -12,18 +12,18 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderSubMenuComponent } from './components/header-sub-menu/header-sub-menu.component';
 import {SharedModule} from "../../shared/shared.module";
 import {ChartModule} from "primeng/chart";
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
     imports: [
         BaseRoutingModule,
-        // ThemeModule,
-        // NbMenuModule,
-        // PsharedModule,
-        // DashboardModule,
         DragDropModule,
         SharedModule,
-        ChartModule
+        ChartModule,
+        CommonModule
     ],
   declarations: [
     BaseComponent,

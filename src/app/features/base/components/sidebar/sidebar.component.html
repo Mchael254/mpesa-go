@@ -1,74 +1,32 @@
-<!--Side navbar starts-->
-  <div class="flex-shrink-0 p-3 bg-white">
-      <ul class="list-unstyled ps-0">
-          <li class="mb-1">
-              <button class="btn btn-toggle align-items-center rounded collapsed" aria-expanded="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                      <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"/>
-                  </svg>
+<div class="base-side-nav">
+    <div class="flex-shrink-0 p-3 bg-white">
+        <ul class="list-unstyled ps-0">
+            <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded collapsed" aria-expanded="true" routerLink="/home/dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+                        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"/>
+                    </svg>
+                    <span class="menu-title">
+                        Home
+                    </span>
+                </button>
+            </li>
+            <ng-container *ngFor="let item of sidebarMainMenuList; let i=index">
+              <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.nameSlug" [attr.aria-expanded]="false">
+                  <span *ngIf="item.svgContent" [innerHTML]= "item.svgContent"></span>
                   <span class="menu-title">
-                      Home
+                    {{ item.name }}
                   </span>
-              </button>
-          </li>
-          <li class="mb-1">
-              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#analytics-collapse" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
-                  </svg>
-                  <span class="menu-title">
-                      Analytics
-                  </span>
-              </button>
-              <div class="collapse" id="analytics-collapse">
+                </button>
+                <div class="collapse" [id]="item.nameSlug">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="#" class="link-dark rounded">New Chart</a></li>
-                      <li><a href="#" class="link-dark rounded">My Charts</a></li>
-                      <li><a href="#" class="link-dark rounded">Shared Charts</a></li>
+                    <li *ngFor="let menuItem of item.menuItems"><a (click)="clickURL(menuItem.link)" class="link-dark rounded">{{ menuItem.name }}</a></li>
                   </ul>
-              </div>
-          </li>
-          <li class="mb-1">
-              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clipboard-data" viewBox="0 0 16 16">
-                      <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0V9z"/>
-                      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                  </svg>
-                  <span class="menu-title">
-                      Dashboard
-                  </span>
-              </button>
-              <div class="collapse" id="dashboard-collapse">
-                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="#" class="link-dark rounded">Overview</a></li>
-                      <li><a href="#" class="link-dark rounded">Weekly</a></li>
-                      <li><a href="#" class="link-dark rounded">Monthly</a></li>
-                      <li><a href="#" class="link-dark rounded">Annually</a></li>
-                  </ul>
-              </div>
-          </li>
-          <li class="mb-1">
-              <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-list-task" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z"/>
-                      <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z"/>
-                      <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z"/>
-                  </svg>
-                  <span class="menu-title">
-                      My Tasks
-                  </span>
-              </button>
-              <div class="collapse" id="orders-collapse">
-                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                      <li><a href="#" class="link-dark rounded">My Dashboard</a></li>
-                      <li><a href="#" class="link-dark rounded">My Transactions</a></li>
-                      <li><a href="#" class="link-dark rounded">My Policies</a></li>
-                      <li><a href="#" class="link-dark rounded">My Quotations</a></li>
-                      <li><a href="#" class="link-dark rounded">My Renewals</a></li>
-                  </ul>
-              </div>
-          </li>
-      </ul>
-  </div>
-<!--side navbar ends-->
+                </div>
+              </li>
+            </ng-container>
+
+          </ul>
+    </div>
+</div>
