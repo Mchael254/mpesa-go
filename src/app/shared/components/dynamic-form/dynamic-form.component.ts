@@ -12,6 +12,7 @@ export class DynamicFormComponent {
   @Input() formFields: DynamicFormFields[];
   @Output() formSubmitted: EventEmitter<any> = new EventEmitter<any>();
   @Output() goBackButton: EventEmitter<any> = new EventEmitter<any>();
+  @Output() centerButton: EventEmitter<any> = new EventEmitter<any>();
   @Input() title: string = 'Dynamic Form';
   @Input() fieldsPerRow: number = 1; // Input attribute to specify fields per row
   @Input() actionButtonConfig: any = {
@@ -24,8 +25,6 @@ export class DynamicFormComponent {
   constructor(private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    // this.formFields = this.formConfigService.getFormFields();
-
     this.rows = this.chunkArray(this.formFields, this.fieldsPerRow);
 
     const formGroupConfig = {};
@@ -35,8 +34,7 @@ export class DynamicFormComponent {
         validators.push(Validators.pattern(field.pattern));
       }
 
-      // formGroupConfig[field.name] = new FormControl(field.defaultValue || '', validators);
-      formGroupConfig[field.name] = new FormControl({ value: field.name || '', disabled: field?.disabled }, validators);
+      formGroupConfig[field.name] = new FormControl({ value: field.value || '', disabled: field?.disabled }, validators);
 
     });
 
@@ -44,9 +42,17 @@ export class DynamicFormComponent {
   }
 
   onSubmitForm() {
+
     if (this.dynamicForm.valid) {
       const formValues = this.dynamicForm.value;
       this.formSubmitted.emit(formValues); // Emit the event with formValues
+    }
+  }
+
+  onCenterButton() {
+    if (this.dynamicForm.valid) {
+      const formValues = this.dynamicForm.value;
+      this.centerButton.emit(formValues); // Emit the event with formValues
     }
   }
 
