@@ -36,3 +36,18 @@ export interface StaffDto{
   pinNumber?: string;
   gender?: string;
 }
+export interface CreateStaffDto {
+  id: number,
+  username: string;
+  userType: string;
+  emailAddress?: string;
+  personelRank?: string;
+  departmentCode?: number;
+  granterUserId: number;
+  otherPhone: number;
+  activatedBy?: string;
+  updateBy?: string;
+  profilePicture?: string;
+  organizationGroupId: number;
+  supervisorId?: number;
+}

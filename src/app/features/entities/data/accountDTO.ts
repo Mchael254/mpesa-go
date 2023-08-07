@@ -1,9 +1,128 @@
 import { AgentDTO } from "./AgentDTO";
-import { StaffDto } from "./StaffDto";
+import {StaffDto, CreateStaffDto} from "./StaffDto";
 import { IdentityModeDTO } from "./entityDto";
 import { PartyTypeDto } from "./partyTypeDto";
+import {ClientDetailsDto} from "./ClientDTO";
+import {CreateServiceProviderDTO} from "./ServiceProviderDTO";
 
-export interface AccountDTO {
+/**
+ * DTO for creating an address object when creating a new entity account (Staff, Client, Service Provider, Intermediaries)
+ */
+export interface AddressDto{
+  box_number: string,
+  country_id: number,
+  estate: string,
+  fax: string,
+  house_number: string,
+  id: number,
+  is_utility_address: string,
+  phoneNumber: string,
+  physical_address: string,
+  postal_code: string,
+  residential_address: string,
+  road: string,
+  state_id: number,
+  town_id: number,
+  utility_address_proof: string,
+  zip: string
+}
+
+
+/**
+ * DTO for creating contact details object when creating a new entity account (Staff, Client, Service Provider, Intermediaries)
+ */
+export interface ContactDetails{
+  // accountId: number,
+  emailAddress: string,
+  id: number,
+  phoneNumber: string,
+  receivedDocuments: string,
+  smsNumber: string,
+  title?: ClientTitleDTO,
+  titleShortDescription?: string
+}
+
+
+/**
+ * DTO for creating payment details object when creating a new entity account (Client, Service Provider, Intermediaries)
+ */
+export interface PaymentDetailsDTO {
+  account_number: string;
+  bank_branch_id: number;
+  currency_id: number;
+  effective_from_date: string;
+  effective_to_date: string;
+  id: number;
+  is_default_channel: string;
+}
+
+/**
+ * DTO for creating wealth or aml details object when creating a new entity account (Client)
+ */
+export interface WealthAmlDTO {
+  citizenship_country_id: number;
+  cr_form_required: string;
+  cr_form_year: number;
+  funds_source: string;
+  id: number;
+  is_employed: string;
+  is_self_employed: string;
+  marital_status: string;
+  nationality_country_id: number;
+  occupation_id: number;
+  sector_id: number;
+  certificate_registration_number: number,
+  certificate_year_of_registration: string,
+  distributeChannel: string,
+  insurancePurpose: string,
+  operating_country_id: null,
+  parent_country_id: number,
+  premiumFrequency: string,
+  registeredName: string,
+  source_of_wealth_id: number,
+  tradingName: string
+}
+
+/**
+ * DTO for creating any type of account; Staff, Client, Service provider, Agent
+ */
+export interface CreateAccountDTO {
+  address: AddressDto,
+  contactDetails: ContactDetails,
+  paymentDetails?: PaymentDetailsDTO,
+  wealthAmlDetails?: WealthAmlDTO,
+  nextOfKinDetailsList?: any
+  effectiveDateFrom: string,
+  effectiveDateTo: string,
+  partyId: number,
+  partyTypeShortDesc: string;
+  modeOfIdentityid: number;
+  organizationId: number,
+  firstName: string,
+  lastName: string,
+  category: string,
+  accountType?: number,
+  countryId: number,
+  status: string,
+  modeOfIdentityNumber?: number,
+  branchId?: number,
+  gender?: string,
+  dateOfBirth?: string,
+  pinNumber?: string,
+  dateCreated?: string
+  clientDetails?:ClientDetailsDto,
+  serviceProviderRequest?: CreateServiceProviderDTO,
+  userRequest?: CreateStaffDto,
+}
+
+/**
+ * DTO Response Structure for a newly created entity account (Staff, Client, Intermediary, Service Provider)
+ */
+export interface NewAccountCreatedResponse {
+  status: string;
+  statusCode: number;
+  accountId: number;
+  accountCode: number;
 }
 
 export interface kycInfoDTO {
