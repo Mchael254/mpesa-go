@@ -89,3 +89,10 @@ export interface ClientPostDTO {
 export interface ClientDetailsDto {
   clientBranchCode: number,
 }
+export interface ClientTitlesDto {
+  id: number,
+  shortDescription: string,
+  description: string,
+  gender: string,
+  organizationId: number
+}
