@@ -47,3 +47,13 @@ export interface ServiceProviderDTO{
     type?: string,
     vatNumber?: string
 }
+
+export interface CreateServiceProviderDTO {
+  tradeName: string,
+  parentCompany: string,
+  systemShtDesc: string,
+  systemId: number,
+  providerLicenseNo: string,
+  vatNumber: string
+  id: number,
+}
