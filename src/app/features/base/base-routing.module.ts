@@ -36,7 +36,11 @@ const routes: Routes = [{
     {
       path: 'entity',
       loadChildren: () => import('../entities/entities.module').then(m => m.EntitiesModule),
-    }
+    },
+    {
+      path: 'reports',
+      loadChildren: () => import('../reports/reports.module').then(m => m.ReportsModule)
+    },
   ],
 }];
 

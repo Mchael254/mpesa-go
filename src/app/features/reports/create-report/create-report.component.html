@@ -1,0 +1,193 @@
+<div class="base-content-section dashboard">
+  <h5 class="section-title">Create Report</h5>
+  <div class="row">
+    <div class="col-sm-3 left">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="text-primary fw-bold">Subject Areas</h6>
+          <form [formGroup]="searchForm" class="my-3">
+            <div class="form-group">
+              <p-dropdown
+                styleClass="dropdownStyle"
+                [options]="subjectAreas"
+                optionLabel="subjectAreaName"
+                [filter]="true"
+                filterBy="subjectAreaName"
+                [showClear]="true"
+                placeholder="Select Subject Area"
+              >
+                <ng-template let-subjectArea pTemplate="item">
+                  <div class="flex align-items-center gap-2">
+                    <div
+                      (click)="getCategoriesBySubjectAreaId(subjectArea)">
+                      {{ subjectArea.subjectAreaName }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </form>
+
+          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories">
+            <p-progressSpinner></p-progressSpinner>
+          </div>
+          <ng-template #showSubjectAreaCategories>
+            <ng-container *ngFor="let category of subjectAreaCategories">
+              <p
+                data-bs-toggle="collapse"
+                [attr.data-bs-target]="'#'+category.description"
+                role="button"
+                aria-expanded="false" [attr.aria-controls]="category.description"
+                class="dropdown-toggle"
+                id="category-name"
+              >
+                {{ category?.name }}
+              </p>
+              <div class="collapse" [attr.id]="category.description">
+                <ng-container *ngFor="let subCategory of category.subCategory">
+                  <ul
+                    class="sub-category"
+                    data-bs-toggle="collapse"
+                    [attr.data-bs-target]="'#'+category.description+subCategory.description"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="collapseExample2"
+                  >
+                    <li class="dropdown-toggle" id="sub-category-name">
+                      {{ subCategory.name }}
+                    </li>
+                  </ul>
+                  <div class="collapse" [attr.id]="category.description+subCategory.description">
+                    <ul *ngFor="let query of subCategory.categoryAreas">
+                      <li
+                        [ngClass]="{'text-primary font-weight-bold' : query.isSelected === true, 'text-secondary': query.isSelected === false}"
+                        (dblclick)="selectCriteria(category, subCategory, query)"
+                        class="query"
+                      >
+                        {{ query.name }}
+                      </li>
+                    </ul>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </ng-template>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 right">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row preview-top">
+            <div class="col-sm-4">
+              <button
+                type="button" class="btn btn-primary" id="criteria-btn"
+                [ngClass]="{'active-btn': isCriteriaButtonActive, 'inactive-btn': !isCriteriaButtonActive}"
+                (click)="toggleCriteriaPreview('criteria')"
+              >
+                Criteria
+              </button>
+              <button
+                type="button" class="btn btn-outline-secondary" id="preview"
+                [ngClass]="{'active-btn': !isCriteriaButtonActive, 'inactive-btn': isCriteriaButtonActive}"
+                (click)="toggleCriteriaPreview('preview')"
+              >
+                Preview Results
+              </button>
+            </div>
+            <div class="col-sm-4 offset-sm-4">
+              <button type="button" class="btn btn-primary" (click)="addReportToDashboard()">Add to Dashboard</button>
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveReportModal">Save</button>
+            </div>
+          </div>
+
+          <ng-container *ngIf="isCriteriaButtonActive">
+            <div class="row">
+              <ng-container *ngFor="let criteriaItem of criteria">
+                <div class="col-sm-3">
+                  <app-criteria-pill
+                    [queryObject]="criteriaItem"
+                    (deleteCriteriaDetails)="deleteCriteria($event)"
+                  ></app-criteria-pill>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="!isCriteriaButtonActive">
+            <div class="preview-nav">
+              <div class="row position-relative">
+                <div class="col-sm-4">
+                  <span class="icons" (click)="showVisualizationList()">
+                    <i class="pi pi-chart-bar"></i>
+                    <i class="pi pi-caret-down"></i>
+                  </span>
+                  <span class="icons">
+                    <i class="pi pi-undo"></i>
+                  </span>
+                  <ng-container *ngIf="shouldShowVisualization">
+                    <div class="position-absolute visualizations">
+                      <ul>
+                        <ng-container *ngFor="let chartType of chartTypes" >
+                          <li class="chart-type" (click)="selectChartType(chartType)">
+                            <i [class]="chartType.iconClass"></i>
+                            <span class="ml-2">{{ chartType.name }}</span>
+                          </li>
+                        </ng-container>
+                      </ul>
+                    </div>
+                  </ng-container>
+                </div>
+                <div class="col-sm-2 offset-sm-6">
+                  <span class="icons">
+                    <i class="pi pi-file"></i>
+                  </span>
+                  <span class="icons">
+                    <i class="pi pi-print"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="row preview-div">
+
+              <div class="col-sm-10 offset-sm-1">
+
+                <div class="text-center" *ngIf="!isPreviewResultAvailable">
+                  <p-progressSpinner></p-progressSpinner>
+                </div>
+
+                <h6 class="mainHead text-center" *ngIf="reportTitle != ''">{{ reportTitle | titlecase }}</h6>
+
+                <div class="mt-4"
+                     *ngIf="shouldShowTable && isPreviewResultAvailable;
+                     else showChart"
+                >
+                  <app-dynamic-table
+                    [tableDetails]="tableDetails"
+                  ></app-dynamic-table>
+                </div>
+
+                <ng-template #showChart>
+                  <!--<div *ngIf="isPreviewResultAvailable" style="max-height: 600px">
+                    <canvas
+                      baseChart
+                      [data]="chartData"
+                      [options]="chartOptions"
+                      [legend]="chartLegend"
+                      [type]="chartType"
+                    >
+                    </canvas>
+                  </div>-->
+                </ng-template>
+
+              </div>
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
