@@ -19,7 +19,6 @@ export class DynamicTableComponent {
   }
 
   @ViewChild('dt1') dt1: Table | undefined;
-  @ViewChild('dt2') dt2: Table | undefined;
   @Input() public tableDetails: TableDetail;
   @Output() onLazyLoad = new EventEmitter<LazyLoadEvent|TableLazyLoadEvent> ();
 
@@ -29,7 +28,6 @@ export class DynamicTableComponent {
 
   applyFilterGlobal($event, stringVal) {
     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
-    this.dt2.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
 
 

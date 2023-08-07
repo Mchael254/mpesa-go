@@ -8,7 +8,7 @@
     [showCurrentPageReport]="true"
     [globalFilterFields]="tableDetails?.globalFilterFields"
   >
-    <ng-template pTemplate="caption" >
+    <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
       <div class="row">
         <div class="col-sm-8">
           <p class="fw-normal text-muted" style="">{{ tableDetails?.title }}</p>

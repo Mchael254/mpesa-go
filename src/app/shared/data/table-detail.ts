@@ -1,14 +1,15 @@
 export interface TableDetail {
-  cols: {field: string, header: string}[],
-  rows: any[],
+  cols?: {field: string, header: string}[],
+  rows?: any[],
   rowsPerPage?: number,
-  globalFilterFields: string[],
-  showFilter: boolean,
-  showSorting: boolean,
+  globalFilterFields?: string[],
+  showFilter?: boolean,
+  showSorting?: boolean,
+  showSearch?: boolean,
   title?: string,
-  paginator: boolean,
+  paginator?: boolean,
   url?: string,
   urlIdentifier?: string,
   isLazyLoaded?: boolean,
-  totalElements?: number
+  totalElements?: number,
 }
