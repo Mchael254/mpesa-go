@@ -14,7 +14,17 @@ export class EntityDetails  {
         type: 'text',
         required: true,
         disabled:false,
-        placeholder: 'Enter your first name'
+        placeholder: 'Enter your first name',
+        value: ""
+
+      },
+      {
+        name: 'date_of_birth_file',
+        label: 'Date of Birth File',
+        type: 'file',
+        required: true,
+        disabled:false,
+        placeholder: 'Date of Birth File'
       },
       {
         name: 'email',
@@ -22,7 +32,7 @@ export class EntityDetails  {
         type: 'text', // Ensure the type is 'text' for email
         required: true,
         disabled:false,
-
+        value: "",
         pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$', // Add the email pattern
         placeholder: 'Enter your email address'
       },
@@ -32,6 +42,7 @@ export class EntityDetails  {
         type: 'dropdown',
         required: false,
         disabled:false,
+        value: "",
         placeholder: 'Select your country',
         options: [
           { value: 'usa', label: 'USA' },
@@ -131,4 +142,3 @@ export class EntityDetails  {
 
 
 }
-

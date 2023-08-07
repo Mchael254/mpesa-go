@@ -48,6 +48,7 @@ export class EditComponent implements OnInit{
     this.buttonConfig = this.entityDetails.actionButtonConfig();
   }
   submitForm(data:any){
+    console.log(data);
   }
   goBack(data?:any){
     if(data!=null){
