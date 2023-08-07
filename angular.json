@@ -16,6 +16,9 @@
             "outputPath": "dist/turnquestv6-fe",
             "index": "src/index.html",
             "main": "src/main.ts",
+            "allowedCommonJsDependencies": [
+              "crypto-js"
+           ],
             "polyfills": [
               "zone.js"
             ],

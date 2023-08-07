@@ -6,7 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { each } from 'lodash';
+import { each } from 'lodash-es';
 import { Logger } from '../logger.service';
 
 const cachePersistenceKey = 'httpCache';

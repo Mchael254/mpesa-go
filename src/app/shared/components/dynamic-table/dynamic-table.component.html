@@ -1,47 +1,109 @@
-<p-table
-  #dt1
-  [columns]="tableDetails.cols"
-  [value]="tableDetails.rows"
-  [paginator]="tableDetails.paginator"
-  [rows]="tableDetails.rowsPerPage || 5"
-  [showCurrentPageReport]="true"
-  [globalFilterFields]="tableDetails.globalFilterFields"
->
-  <ng-template pTemplate="caption" >
-    <div class="row">
-      <div class="col-sm-8">
-        <p class="fw-normal text-muted" style="">{{ tableDetails.title }}</p>
-      </div>
-      <div class="col-sm-4">
+<ng-container *ngIf="!tableDetails?.isLazyLoaded">
+  <p-table
+    #dt1
+    [columns]="tableDetails?.cols"
+    [value]="tableDetails?.rows"
+    [paginator]="tableDetails?.paginator"
+    [rows]="tableDetails?.rowsPerPage || 5"
+    [showCurrentPageReport]="true"
+    [globalFilterFields]="tableDetails?.globalFilterFields"
+  >
+    <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
+      <div class="row">
+        <div class="col-sm-8">
+          <p class="fw-normal text-muted" style="">{{ tableDetails?.title }}</p>
+        </div>
+        <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
           <i class="pi pi-search"></i>
           <input pInputText class="p-inputtext-sm" type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search keyword" />
       </span>
+        </div>
       </div>
-    </div>
-  </ng-template>
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
-        {{ col.header }}
-        <span *ngIf="tableDetails.showSorting">
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+          {{ col.header }}
+          <span *ngIf="tableDetails.showSorting">
           <p-sortIcon field="{{ col.field }}"></p-sortIcon>
         </span>
-        <span *ngIf="tableDetails.showFilter">
+          <span *ngIf="tableDetails.showFilter">
           <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
         </span>
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns">
-    <tr>
-      <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
-        {{ rowData[col.field] }}
-      </td>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
+          {{ rowData[col.field] }}
+        </td>
+        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+          <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]">View</a>
+          <!-- Use routerLink with the input properties -->
+        </td>
 
-    </tr>
-  </ng-template>
-</p-table>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+<ng-container *ngIf="tableDetails?.isLazyLoaded">
+  <p-table
+    #dt1
+    (onLazyLoad)="lazyLoad($event)"
+    [lazy]="true"
+    [columns]="tableDetails?.cols"
+    [value]="tableDetails?.rows"
+    [paginator]="tableDetails?.paginator"
+    [rows]="tableDetails.rowsPerPage || 5"
+    [showCurrentPageReport]="true"
+    [totalRecords]="tableDetails?.totalElements"
+    [globalFilterFields]="tableDetails?.globalFilterFields"
+  >
+    <ng-template pTemplate="caption" >
+      <div class="row">
+        <div class="col-sm-8">
+          <p class="fw-normal text-muted" style="">{{ tableDetails.title }}</p>
+        </div>
+        <div class="col-sm-4">
+        <span class="p-input-icon-left mr-auto float-end">
+          <i class="pi pi-search"></i>
+          <input pInputText class="p-inputtext-sm" type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search keyword" />
+      </span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+          {{ col.header }}
+          <span *ngIf="tableDetails.showSorting">
+          <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+        </span>
+          <span *ngIf="tableDetails.showFilter">
+          <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
+        </span>
+        </th>
+        <th *ngIf="tableDetails?.url">
+          Actions
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
+          {{ rowData[col.field] }}
+        </td>
+        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+          <a [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">View</a>
+          <!-- Use routerLink with the input properties -->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+
 
 
 <!--// template for spring endpoint consumption-->

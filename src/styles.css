@@ -4,10 +4,3 @@
 @import "~@fortawesome/fontawesome-free/css/regular.css";
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 @import "assets/css/turnkey-styles.css";
-
-:root {
-  --primary: #00529B;
-  --secondary: #0DD3F1;
-  --light: #F6F7FC;
-  --dark: #15233C;
-}
