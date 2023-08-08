@@ -1,34 +1,38 @@
-import {ChangeDetectorRef, Component, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {OrganizationBranchDto} from "../../../../../shared/data/common/organization-branch-dto";
-import {DepartmentDto} from "../../../../../shared/data/common/departmentDto";
-import {CountryDto, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
-import {StaffDto, CreateStaffDto} from "../../../data/StaffDto";
 import {Pagination} from "../../../../../shared/data/common/pagination";
-import {DatePipe} from "@angular/common";
-import {BranchService} from "../../../../../shared/services/setups/branch.service";
+import {CreateStaffDto, StaffDto} from "../../../data/StaffDto";
+import {EntityDto} from "../../../data/entityDto";
+import {CountryDto, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
+import {DepartmentDto} from "../../../../../shared/data/common/departmentDto";
+import {OrganizationBranchDto} from "../../../../../shared/data/common/organization-branch-dto";
+import {StaffService} from "../../../services/staff/staff.service";
+import {EntityService} from "../../../services/entity/entity.service";
+import {CountryService} from "../../../../../shared/services/setups/country.service";
+import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields.service";
+import {AppService} from "../../../../../shared/services/setups/app.service";
+import {DepartmentService} from "../../../../../shared/services/setups/department.service";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Logger, UtilService} from "../../../../../shared/services";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {DepartmentService} from "../../../../../shared/services/setups/department.service";
-import {AppService} from "../../../../../shared/services/setups/app.service";
-import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields.service";
-import {CountryService} from "../../../../../shared/services/setups/country.service";
-import {EntityService} from "../../../services/entity/entity.service";
-import {StaffService} from "../../../services/staff/staff.service";
-import {untilDestroyed} from "../../../../../shared/shared.module";
-import {EntityDto} from "../../../data/entityDto";
+import {BranchService} from "../../../../../shared/services/setups/branch.service";
+import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import {DatePipe} from "@angular/common";
 import {CreateAccountDTO, NewAccountCreatedResponse} from "../../../data/accountDTO";
-import {MenuItem} from "primeng/api";
+import {TableLazyLoadEvent} from "primeng/table";
+import {Dropdown} from "primeng/dropdown";
 
-const log = new Logger('NewStaffComponent');
+const log = new Logger('StaffProfileComponent');
 
 @Component({
-  selector: 'app-new-staff',
-  templateUrl: './new-staff.component.html',
-  styleUrls: ['./new-staff.component.css']
+  selector: 'app-staff-profile',
+  templateUrl: './staff-profile.component.html',
+  styleUrls: ['./staff-profile.component.css']
 })
-export class NewStaffComponent implements OnInit, OnDestroy {
+export class StaffProfileComponent {
+  @ViewChild('cancelSupervisorSelection', {read: ElementRef}) cancelSupervisorSelect: ElementRef;
+  @ViewChild('countryDropdown') countriesDropdown?: Dropdown;
+
   visibleStatus: any = {
     firstName: 'Y',
     lastName: 'Y',
@@ -52,7 +56,6 @@ export class NewStaffComponent implements OnInit, OnDestroy {
     dateOfBirth: 'Y',
     idNumber: 'Y'
   };
-  steps: MenuItem[]; // the menu items for each step
 
   public staffRegistrationForm: FormGroup;
   viewUsers: Pagination<StaffDto> = <Pagination<StaffDto>>{};
@@ -73,9 +76,32 @@ export class NewStaffComponent implements OnInit, OnDestroy {
   groupId: string = 'staffTab';
   submitted = false;
   savedStaffDetails: boolean = false;
+  staffSize: number = 5;
+
   private savedStaff: CreateStaffDto;
   private currentStaff: number;
-  activeIndex: number = 0;
+
+  private _listFilter: string;
+  private _usernameFilter: string;
+  selectedCountry: any;
+
+  set usernameFilter(value: string) {
+    this._usernameFilter = value;
+    this.searchUsers(value);
+  }
+
+  get usernameFilter(): string {
+    return this._usernameFilter;
+  }
+
+  get listFilter(): string {
+    return this._listFilter;
+  }
+
+  set listFilter(value: string) {
+    this._listFilter = value;
+    this.searchUsers(value);
+  }
 
   constructor(private fb: FormBuilder,
               private staffService: StaffService,
@@ -90,23 +116,10 @@ export class NewStaffComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private router: Router,
               private utilService: UtilService,
-              private branchService: BranchService
-  ) {
-
+              private branchService: BranchService) {
   }
 
   ngOnInit(): void {
-    this.steps = [
-      {
-        label: 'Staff Profile',
-        tooltip: 'Add Staff Profile Details',
-        command: (event: any) => { }
-      },
-      {
-        label: 'Assign Apps',
-        command: (event: any) => { }
-      }
-    ];
     this.fetchEntityById();
     this.fetchCountries();
     this.fetchSystemApps();
@@ -119,7 +132,7 @@ export class NewStaffComponent implements OnInit, OnDestroy {
     this.entityService.currentEntity$
       .pipe(untilDestroyed(this))
       .subscribe( data => {
-          console.log('>>>>> entity data from service: ', data);
+         log.info('>>>>> entity data from service: ', data);
           this.entityDetails = data;
         }
       );
@@ -197,7 +210,7 @@ export class NewStaffComponent implements OnInit, OnDestroy {
 
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId)
       .pipe(untilDestroyed(this)
-    )
+      )
       .subscribe((response) =>{
         response.forEach((field) =>{
           for (const key of Object.keys(this.staffRegistrationForm.controls)) {
@@ -295,7 +308,9 @@ export class NewStaffComponent implements OnInit, OnDestroy {
   }
 
   onCountryChange(event: { value: any; }) {
-    let selectedCountry = this.staffRegistrationForm.getRawValue().countryCode  || event.value;
+    let selectedCountry = event.value;
+
+    console.log('Selected country: ', event);
     if(selectedCountry ){
       this.fetchCityStatesByCountry(selectedCountry);
       this.fetchTownsByCountry(selectedCountry);
@@ -429,10 +444,53 @@ export class NewStaffComponent implements OnInit, OnDestroy {
     return this.staffRegistrationForm.get(control);
   }
 
+  lazyLoadAllUsers(event:TableLazyLoadEvent) {
+    const pageIndex = event.first / event.rows;
+    const sortField = event.sortField;
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+
+    this.getIndividualUsers(pageIndex, sortField, sortOrder)
+      .pipe(untilDestroyed(this))
+      .subscribe((data:Pagination<StaffDto>) => {
+        this.viewUsers = data;
+        this.cdr.detectChanges();
+      })
+  }
+
   ngOnDestroy(): void {
   }
 
-  onStepChange($event: number) {
+
+  getIndividualUsers(pageIndex: number,
+                     sortList: any = 'dateCreated',
+                     order: string = 'desc') {
+    return this.staffService.getStaff(pageIndex, this.staffSize, 'U', sortList, order, null)
+      .pipe(untilDestroyed(this));
+  }
+  onSupervisorSelect(event) {
+    const nestedControl = this.staffRegistrationForm.get('employment_details.manager');
+    nestedControl.patchValue(event.data.name);
+
+    this.globalMessagingService.displayInfoMessage('User Selected', event.data.name);
+  }
+
+  onSupervisorUnselect(event: any) {
+    document.querySelector<HTMLInputElement>('#individualUserInput').value = null;
+    const nestedControl = this.staffRegistrationForm.get('employment_details.manager');
+    nestedControl.patchValue('');
+  }
+
+  saveSelectedSupervisor() {
+    const cancelBtn = this.cancelSupervisorSelect.nativeElement;
+    cancelBtn.click();
+  }
+
+  searchUsers(name:string){
+    this.staffService.searchStaff(0,5,null, name)
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.viewUsers = data;
+      })
 
   }
 }

@@ -36,8 +36,12 @@ export interface StaffDto{
   pinNumber?: string;
   gender?: string;
 }
+
+/***
+ * DTO used to create a new staff
+ */
 export interface CreateStaffDto {
-  id: number,
+  id?: number,
   username: string;
   userType: string;
   emailAddress?: string;
@@ -50,4 +54,16 @@ export interface CreateStaffDto {
   profilePicture?: string;
   organizationGroupId: number;
   supervisorId?: number;
+}
+
+/***
+ * DTO used for assigning systems/apps to a user or staff
+ */
+export interface AssignAppsRequest {
+  assignedSystems: number[];
+}
+export interface AssignAppsDto{
+  id?: number;
+  shortDesc: string;
+  systemName: string;
 }
