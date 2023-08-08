@@ -1,0 +1,85 @@
+.top-elements {
+    position: inherit;
+    white-space: nowrap;
+}
+.top-header-text {
+    font-family: 'Roboto', serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 30px;
+    display: inline-block;
+    
+    color: #323A46;
+}
+
+.top-link-float-right {
+    text-align: right;
+    float: right;
+    font-family: 'Roboto', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
+    /* identical to box height, or 150% */
+    color: #3F4254;
+    opacity: 7.5;
+    padding-bottom: 16px;
+
+}
+
+.fa {
+    opacity: 0.4;
+    padding-right: 5px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.nav-link {
+     color: rgba(0, 0, 0, 0.85);
+     text-decoration: none;
+     font-weight: bold;
+     font-size: 14px;
+     line-height: 22px;
+}
+
+.nav-link.active {
+     color: #1890FF;
+}
+
+
+.can {
+     display: block;
+     margin-left: auto;
+     margin-right: auto;
+     width: 100%;
+     background: #00529B;
+     border-radius: 0px;
+     color: #ffffff;
+     text-transform: uppercase;
+     border: 1px solid #00529b;
+}
+
+.top {
+     font-weight: 600;
+     font-size: 16px;
+     line-height: 22px;
+}
+
+.text1 {
+     font-weight: 400;
+     font-size: 13px;
+     line-height: 22px;
+}
+
+.pad {
+     padding-bottom: 0px;
+}
+
+.modal-body {
+     padding-bottom: 0;
+}
+
+.bac {
+     background-color: #F7F9FC;
+}

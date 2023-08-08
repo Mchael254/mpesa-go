@@ -17,6 +17,7 @@ import { UserCredential, AuthenticationResponse } from 'src/app/features/base/ut
 // import "./http/http.service";
 import { OauthToken } from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
+import { UserDetailsDTO } from 'src/app/features/administration/model/user-details';
 
 
 const log = new Logger('AuthService');
@@ -518,14 +519,14 @@ export class AuthService implements OnDestroy {
     return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
   }
 
-  // updateUserProfile(userData:UserDetailsDTO){
-  //   const baseUrl = this.appConfigService.config.contextPath.users_services;
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json',
-  //   });
-  //   return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
-  // }
+  updateUserProfile(userData:UserDetailsDTO){
+    const baseUrl = this.appConfigService.config.contextPath.users_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
+  }
 
   private refreshAuthToken(
       refresh_token: string,
