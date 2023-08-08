@@ -163,17 +163,27 @@
   <h5 class="section-title">My Dashboard</h5>
   <div class="row">
       <div class="col-sm-6">
-        <app-dynamic-chart
-          [basicData]="basicData"
-          [chartType]="'bar'"
-        ></app-dynamic-chart>
+        <div class="card">
+          <div class="card-body">
+            <app-dynamic-chart
+              [basicData]="basicData"
+              [chartType]="'bar'"
+              [chartTitle]="'Total Individual Premium'"
+            ></app-dynamic-chart>
+          </div>
+        </div>
       </div>
 
       <div class="col-sm-6">
-        <app-dynamic-chart
-          [chartType]="'line'"
-          [basicData]="basicData"
-        ></app-dynamic-chart>
+        <div class="card">
+          <div class="card-body">
+            <app-dynamic-chart
+              [chartType]="'line'"
+              [basicData]="basicData"
+              [chartTitle]="'Total Gross Premium'"
+            ></app-dynamic-chart>
+          </div>
+        </div>
       </div>
   </div>
 </div>

@@ -22,5 +22,6 @@
     "cert_of_incorporation_number_regex": "^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$"
   },
 
-  "dmsDefaultUrl": "http://192.0.1.140:9080/alfrescoServices"
+  "dmsDefaultUrl": "http://192.0.1.140:9080/alfrescoServices",
+  "cubejsDefaultUrl": "https://ekwe.turnkeyafrica.com/cubejs-api/v1"
 }
