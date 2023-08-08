@@ -30,16 +30,16 @@ const routes: Routes = [{
       loadChildren: () => import('../crm/crm.module').then(m => m.CrmModule),
     },
     {
-      path: 'report',
-      loadChildren: () => import('../reports/reports.module').then(m => m.ReportsModule),
-    },
-    {
       path: 'entity',
       loadChildren: () => import('../entities/entities.module').then(m => m.EntitiesModule),
     },
     {
       path: 'reports',
       loadChildren: () => import('../reports/reports.module').then(m => m.ReportsModule)
+    },
+    {
+      path: 'administration',
+      loadChildren: () => import('../administration/administration.module').then(m => m.AdministrationModule)
     },
   ],
 }];
