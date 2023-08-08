@@ -13,6 +13,7 @@ import { HomeComponent } from './features/auth/home/home.component';
 import { SharedModule } from './shared/shared.module';
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {ChartModule} from "primeng/chart";
 
 export function loadConfig(
   config: AppConfigService,
@@ -41,6 +42,7 @@ const cubejsOptions = {
     SharedModule.forRoot(),
     ConfirmDialogModule,
     FontAwesomeModule,
+    ChartModule
   ],
   providers: [
     {
