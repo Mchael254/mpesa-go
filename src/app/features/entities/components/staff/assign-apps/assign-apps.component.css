@@ -1,0 +1,15 @@
+.user-app-card:hover{
+  background-color:  #00529B;
+  border-radius: 5px;
+  cursor: pointer;
+
+  color: white;
+}
+
+.user-app-checked{
+  background: #4A4A4A;
+  mix-blend-mode: normal;
+  opacity: 0.54;
+}
+
+

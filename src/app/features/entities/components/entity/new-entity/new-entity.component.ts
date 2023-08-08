@@ -336,13 +336,14 @@ export class NewEntityComponent implements OnInit {
         url = '/home/entity';
     }
     sessionStorage.setItem('entityDetails', JSON.stringify(this.savedEntity));
+    this.entityService.setCurrentEntity(this.savedEntity);
     this.router.navigate([url],
       {queryParams: {id: id}});
   }
 
   // submitForm(data:any){
   // }
-  
+
   // goBack(data?:any){
   //   if(data!=null){
   //   }
