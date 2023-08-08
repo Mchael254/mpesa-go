@@ -1,0 +1,190 @@
+<div class="mx-4">
+    <div class="col-md-12 col-lg-12 col-xxxl-12 top-elements">
+        <h6 class="top-header-text">Administration</h6>
+        <div class="top-link-float-right">
+            <a>Home</a>
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            <a>CRM</a>
+            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            <a>Administration</a>
+        </div>
+    </div>
+    
+    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"
+                aria-selected="false">Organization Profile</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab"
+                aria-controls="ex1-tabs-2" aria-selected="true">Manage Account</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+                aria-selected="false">Manage Users</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-4" data-bs-toggle="tab" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
+                aria-selected="false">Dashboard</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-5" data-bs-toggle="tab" href="#ex1-tabs-5" role="tab" aria-controls="ex1-tabs-5"
+                aria-selected="false">Theme</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-6" data-bs-toggle="tab" href="#ex1-tabs-6" role="tab" aria-controls="ex1-tabs-6"
+                aria-selected="false">Integrations</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="ex1-content">
+        <div class="tab-pane fade" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+            Organization Profile Content
+        </div>
+        <div class="tab-pane fade show active" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+            <div class="card">
+                <h5 class="card-header">My Account</h5>
+                <div class="card-body">
+                    <form [formGroup]="userDetailsForm">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="firstName" class="label col-sm-3 col-form-label">First Name</label>
+                                    <input type="text" id="firstName" placeholder="First Name" class="form-control"
+                                        formControlName="firstName">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="lastName" class="label col-sm-3 col-form-label">Last Name</label>
+                                    <input type="text" id="lastName" placeholder="Last Name" class="form-control"
+                                        formControlName="lastName">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="phoneNumber" class="label col-sm-4 col-form-label">Phone Number</label>
+                                    <input type="text" id="phoneNumber" placeholder="Phone Number" class="form-control"
+                                        formControlName="phoneNumber">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="id" class="label col-sm-3 col-form-label">ID</label>
+                                    <input type="text" id="id" placeholder="ID" class="form-control" formControlName="id">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="pinNumber" class="label col-sm-3 col-form-label">Pin Number</label>
+                                    <input type="text" id="pinNumber" placeholder="Pin Number" class="form-control"
+                                        formControlName="pinNumber">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="email" class="label col-sm-3 col-form-label">Email</label>
+                                    <input type="email" id="email" placeholder="Email" class="form-control"
+                                        formControlName="email">
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="status" class="label col-sm-3 col-form-label">This Account is</label>
+                                    <select id="status" class="form-control" placeholder="" formControlName="status">
+                                        <option value="">This Account is:</option>
+                                        <option value="A">Active</option>
+                                        <option value="I">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="lower-navigation">
+                    <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+                    <button type="button" class="btn btn-primary btn-md" id="updateUserButton"
+                        (click)="updateUserDetails()">Update</button>
+                    <button type="button" class="btn btn-light btn-md" data-bs-toggle="modal"
+                        data-bs-target="#changePasswordModal">Change Password</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+            Manage Users Content
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+            Dashboard Content
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-5" role="tabpanel" aria-labelledby="ex1-tab-5">
+            Theme Content
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-6" role="tabpanel" aria-labelledby="ex1-tab-6">
+            Integrations Content
+        </div>
+    </div>
+</div>
+
+
+<div class="container">
+
+    <!-- Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header pad">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h6 class="modal-title fs-5 top" id="exampleModalLabel">Change Password</h6>
+                        </div>
+                        <div class="col-lg-12">
+                            <p class="text1">Set your preferred password</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="changePassForm">
+                        <div class="form-group">
+                            <label class="label" for="oldPassword">Old Password:</label>
+                            <input type="password" class="form-control" id="oldPassword" placeholder="******"
+                                formControlName="oldPassword">
+                            <div *ngIf="f['oldPassword'].invalid && (f['oldPassword'].dirty || f['oldPassword'].touched)"
+                                class="form-text text-danger form-error-text"
+                                [ngClass]="{ 'is-invalid': submitted && f['oldPassword'].errors }">
+                                <div *ngIf="f['oldPassword'].errors['required']">Old password is required</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label" for="newPassword">New Password:</label>
+                            <input type="password" class="form-control bac" id="newPassword"
+                                placeholder="Atleast 6 characters" formControlName="newPassword">
+                            <div *ngIf="f['newPassword'].invalid && (f['newPassword'].dirty || f['newPassword'].touched)"
+                                class="form-text text-danger form-error-text"
+                                [ngClass]="{ 'is-invalid': submitted && f['newPassword'].errors }">
+                                <div *ngIf="f['newPassword'].errors['required']">New Password is required</div>
+                                <div *ngIf="f['newPassword'].errors['minlength']">Password must be at least 6 characters</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label" for="confirmNewPassword">Confirm New Password:</label>
+                            <input type="password" class="form-control bac" id="confirmNewPassword"
+                                placeholder="Atleast 6 characters" formControlName="confirmNewPassword">
+                            <div *ngIf="f['confirmNewPassword'].invalid && (f['confirmNewPassword'].dirty || f['confirmNewPassword'].touched)"
+                                class="form-text text-danger form-error-text"
+                                [ngClass]="{ 'is-invalid': submitted && f['confirmNewPassword'].errors }">
+                                <div *ngIf="f['confirmNewPassword'].errors['required']">Confirm Password is required</div>
+                                <div *ngIf="f['confirmNewPassword'].errors['confirmedValidator']">Passwords must match</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn can" data-bs-dismiss="modal" (click)="onNewPassSave()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
