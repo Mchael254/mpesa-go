@@ -10,14 +10,6 @@ import {NotificationsComponent} from "./components/notifications/notifications.c
 import {ToastModule} from "primeng/toast";
 import {ProgressBarModule} from "primeng/progressbar";
 import {HTTP_INTERCEPTORS, HttpClient} from "@angular/common/http";
-// import {HttpService} from "../service/http/http.service";
-// import {IeCacheControlInterceptor} from "./http/ie-cache-control-interceptor";
-// import {AuthHeaderInterceptor} from "./http/auth-header.interceptor";
-// import {ApiErrorInterceptor} from "./http/api-error-interceptor";
-// import {CacheInterceptor} from "./http/cache-interceptor";
-// import {LoaderInterceptor} from "./http/loader-interceptor";
-// import {TokenInterceptor} from "./http/token-interceptor";
-// import {HttpCacheService} from "./http/http-cache.service";
 import {LoaderService} from "./services/loader.service";
 import { FileExtensionPipe } from './pipes/file-extension.pipe';
 import { DocViewerComponent } from './components/doc-viewer/doc-viewer.component';
@@ -43,6 +35,9 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
 import { DynamicBreadcrumbComponent } from './components/dynamic-breadcrumb/dynamic-breadcrumb.component';
 import {RouterLink} from "@angular/router";
+import { StepperComponent } from './components/stepper/stepper.component';
+import { VerticalStepperComponent } from './components/stepper/vertical-stepper/vertical-stepper.component';
+import { HorizontalStepperComponent } from './components/stepper/horizontal-stepper/horizontal-stepper.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -113,7 +108,10 @@ const SERVICES = [
     DynamicChartComponent,
     SpinnerComponent,
     DynamicFormComponent,
-    DynamicBreadcrumbComponent
+    DynamicBreadcrumbComponent,
+    StepperComponent,
+    VerticalStepperComponent,
+    HorizontalStepperComponent
   ],
     imports: [
         CommonModule,
@@ -140,9 +138,9 @@ const SERVICES = [
     DynamicChartComponent,
     SpinnerComponent,
     DynamicFormComponent,
-    DynamicBreadcrumbComponent
+    DynamicBreadcrumbComponent,
+    StepperComponent
   ],
-  // providers: [...SERVICES]
 })
 export class SharedModule {
   public static forRoot(): ModuleWithProviders<SharedModule> {
