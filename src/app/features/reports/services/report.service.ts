@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
+import {Report} from "../../../shared/data/reports/report";
 
 @Injectable({
   providedIn: 'root'
