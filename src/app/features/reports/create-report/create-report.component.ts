@@ -10,6 +10,7 @@ import {GlobalMessagingService} from "../../../shared/services/messaging/global-
 import {ChartConfiguration, ChartType} from "chart.js";
 import {TableDetail} from "../../../shared/data/table-detail";
 import cubejs from "@cubejs-client/core";
+import {AppConfigService} from "../../../core/config/app-config-service";
 
 const log = new Logger('CreateReportComponent');
 
@@ -21,7 +22,6 @@ const log = new Logger('CreateReportComponent');
 export class CreateReportComponent implements OnInit{
 
   public searchForm: FormGroup;
-
   public subjectAreas: SubjectArea[] = [];
   public selectedSubjectArea: string = null;
   public subjectAreaCategories: SubjectAreaCategory[] = [];
@@ -40,14 +40,10 @@ export class CreateReportComponent implements OnInit{
   public isCriteriaButtonActive: boolean = true;
   public isPreviewResultAvailable: boolean = null;
   private reportId: number;
-
-  // public tableDetails = {};
   public chartTypes: {iconClass: string, name: ChartType | string}[] = [
     { iconClass: 'pi pi-table', name: 'table'},
     { iconClass: 'pi pi-chart-bar', name: 'bar'},
     { iconClass: 'pi pi-chart-line', name: 'line'},
-    /*{ iconClass: 'pi pi-chart-bar', name: 'scatter'},
-    { iconClass: 'pi pi-chart-bar', name: 'bubble'},*/
     { iconClass: 'pi pi-chart-pie', name: 'pie'},
     { iconClass: 'pi pi-chart-bar', name: 'doughnut'},
     { iconClass: 'pi pi-chart-bar', name: 'polarArea'},
@@ -55,18 +51,18 @@ export class CreateReportComponent implements OnInit{
   ];
   public chartType: ChartType | string = "table";
   public reportTitle: string = '';
+  public tableDetails: TableDetail = {};
 
-  // to remove this
-
-
-  public tableDetails: TableDetail = {}
-  // to remove ends
+  private cubejsApi = cubejs({
+    apiUrl: this.appConfig.config.cubejsDefaultUrl
+  });
 
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private reportService: ReportService,
     private globalMessagingService: GlobalMessagingService,
+    private appConfig: AppConfigService
   ) {}
   ngOnInit(): void {
     this.getSubjectAreas();
@@ -151,6 +147,7 @@ export class CreateReportComponent implements OnInit{
   }
 
   loadChart(): void {
+
     if (this.reportId) {
       this.measures = [];
       this.dimensions = [];
@@ -163,50 +160,24 @@ export class CreateReportComponent implements OnInit{
     const query = {
       measures: this.measures,
       dimensions: this.dimensions,
-      limit: 15
+      limit: 20
     }
     log.info(`query for cube >>> `, query);
 
-    /*this.cubejs.load(query)
-      .subscribe(resultSet => {
-          this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
-          const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
-          const reportData = resultSet.series().map(s => s.series.map(r => r.value));
-
-          log.info(`chartLabels`, this.chartLabels, reportLabels);
-          this.chartData = {
-            labels: this.chartLabels,
-            datasets: this.generateDatasets(reportLabels, reportData)
-          };
-          this.isPreviewResultAvailable = true;
-
-          // this.tableDetails = { reportLabels, reportData };
-          this.cdr.detectChanges();
-        },
-        error => log.info('HTTP error: ', error)
-      )*/
-
-    const cubejsApi = cubejs({
-      apiUrl: 'https://ekwe.turnkeyafrica.com/cubejs-api/v1'
-    });
-
-    cubejsApi.load(query).then(resultSet => {
+    this.cubejsApi.load(query).then(resultSet => {
       this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
       const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
       const reportData = resultSet.series().map(s => s.series.map(r => r.value));
-
 
       this.chartData = {
         labels: this.chartLabels,
         datasets: this.generateDatasets(reportLabels, reportData)
       };
+
       this.isPreviewResultAvailable = true;
-      const tempTableDetails = { reportLabels, reportData };
-      log.info(`tempTableDetails`, tempTableDetails);
 
       this.prepareTableData(reportLabels, reportData);
     });
-
   }
 
   generateDatasets(chartLabels, chartData) {
@@ -221,7 +192,6 @@ export class CreateReportComponent implements OnInit{
     log.info(`dataset >>>`, datasets);
     return datasets;
   }
-
 
   addReportToDashboard() {
     const reportToSave: any /*Report*/ = {
@@ -285,12 +255,13 @@ export class CreateReportComponent implements OnInit{
       this.shouldShowTable = false;
     }
     this.shouldShowVisualization = false;
+    this.loadChart();
   }
 
   prepareTableData(chartLabels, chartData): void {
     const tableHead = [];
     const header = [ ...this.dimensions, ...this.measures ];
-    const tableHeaderColspan = header.length;
+    // const tableHeaderColspan = header.length;
 
     header.forEach(x => {
       const query = x.split(".")[1];
@@ -309,13 +280,10 @@ export class CreateReportComponent implements OnInit{
       chartLabels.forEach((item, j) => {
         arr.push(item[i])
       })
-      log.info(`${i} column >>>`, arr);
       enhancedChartLabels.push(arr);
-      log.info(`===========================`)
     }
 
     let tableData = [...enhancedChartLabels];
-    log.info(`table data`, tableData);
     chartData.forEach(x => tableData.push(x));
 
 
@@ -329,8 +297,6 @@ export class CreateReportComponent implements OnInit{
       tableRows.push(rowData);
     }
 
-    log.info('tableRows >>>', tableRows);
-
     const cols = [];
     const rows = []
 
@@ -342,13 +308,15 @@ export class CreateReportComponent implements OnInit{
     tableRows.forEach((row, i) => {
       let rowItem = {};
       cols.forEach((col, j) => {
-        const fieldValue = typeof row[j] === 'number' ? (Math.round(row[j] * 100) / 100).toFixed(2) : row[j];
+
+        const fieldValue =
+          typeof row[j] === 'number' ? (Math.round(row[j] * 100) / 100).toFixed(2) : row[j];
+
         rowItem[cols[j].field] = fieldValue;
 
       });
       rows.push(rowItem);
-      log.info(`rowItem`, rowItem);
-    })
+    });
 
     this.tableDetails = {
       cols,

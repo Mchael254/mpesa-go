@@ -170,16 +170,16 @@
                 </div>
 
                 <ng-template #showChart>
-                  <!--<div *ngIf="isPreviewResultAvailable" style="max-height: 600px">
-                    <canvas
-                      baseChart
-                      [data]="chartData"
-                      [options]="chartOptions"
-                      [legend]="chartLegend"
-                      [type]="chartType"
-                    >
-                    </canvas>
-                  </div>-->
+                  <div
+                    *ngIf="isPreviewResultAvailable"
+                    style="max-height: 600px"
+                    class="py-3"
+                  >
+                    <app-dynamic-chart
+                      [chartType]="chartType"
+                      [basicData]="chartData"
+                    ></app-dynamic-chart>
+                  </div>
                 </ng-template>
 
               </div>
