@@ -3,7 +3,8 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from "../../../../core/config/app-config-service";
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
-import {AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../data/AgentDTO";
+import {AccountTypeDTO, AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../data/AgentDTO";
+import {IdentityModeDTO} from "../../data/entityDto";
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,36 @@ export class IntermediaryService {
       headers: header,
       params: params,
     });
+  }
+
+  getIdentityType(): Observable<IdentityModeDTO[]> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const params = new HttpParams()
+      .set('organizationId', 2);
+    return this.http.get<IdentityModeDTO[]>(`/${baseUrl}/accounts/identity-modes`,
+      {
+        headers:headers,
+        params:params
+      })
+  }
+
+  getAccountType(): Observable<AccountTypeDTO[]> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    const params = new HttpParams()
+      .set('organizationId', 2);
+    return this.http.get<AccountTypeDTO[]>(`/${baseUrl}/accounts/account-types`,
+      {
+        headers:headers,
+        params:params
+      })
   }
 
   saveAgentDetails(data: AgentPostDTO): Observable<IntermediaryDTO> {

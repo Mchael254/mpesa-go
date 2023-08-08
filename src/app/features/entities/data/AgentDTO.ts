@@ -111,9 +111,9 @@ export interface AccountTypeDTO {
 }
 
 export interface AgentPostDTO {
-  // address: AddressDTO;
+  address: AddressDTO;
   agentRequestDto: AgentRequestDTO;
-  // contactDetails: ContactDetailsDTO;
+  contactDetails: ContactDetailsDTO;
   partyId: number;
   partyTypeShortDesc: string;
   createdBy: string,
@@ -133,3 +133,28 @@ export interface AgentPostDTO {
   organizationId: number
 }
 
+export interface ContactDetailsDTO {
+  emailAddress: string;
+  id: number;
+  phoneNumber: string;
+  receivedDocuments: string;
+  smsNumber: string;
+  titleShortDescription: string;
+}
+
+export interface AddressDTO {
+  box_number: string;
+  country_id: number;
+  estate: string;
+  fax: string;
+  house_number: string;
+  id: number;
+  is_utility_address: string;
+  physical_address: string;
+  postal_code: string;
+  residential_address: string;
+  road: string;
+  state_id: number;
+  town_id: string;
+  zip: string;
+}
