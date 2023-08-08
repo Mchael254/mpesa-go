@@ -1,0 +1,131 @@
+.btn-float-right {
+    float: right;
+    margin-right: 10px;
+  }
+  .label {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .btn-next-kin {
+    float: right;
+    color: #00529B
+  }
+  
+  .table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    color: #6c757d;
+  }
+  .table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+  }
+  .table td, .table th {
+    padding: 0.85rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+  .card-body .table td {
+    padding: 1px 10px;
+    vertical-align: middle;
+  }
+  
+  .top-elements{
+    position: inherit;
+    white-space: nowrap;
+  
+    .top-header-text{
+      font-family: 'Roboto', serif;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 30px;
+      display: inline-block;
+  
+      color: #323A46;
+    }
+  }
+  .top-link-float-right {
+    text-align: right;
+    float: right;
+    font-family: 'Roboto', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
+    /* identical to box height, or 150% */
+    color: #3F4254;
+    opacity: 7.5;
+    padding-bottom: 16px;
+  
+    nb-icon {
+      opacity: 0.4;
+      padding-right: 5px;
+      height: 20px;
+      vertical-align: middle;
+    }
+  
+  }
+  
+  #profile-photo {
+    width: 50px;
+    height: 50px;
+    margin-right: 16px;
+    border-radius: 50%;
+  }
+  
+  .img_upload {
+    display: inline-block;
+    font-family: 'Roboto', serif;
+    text-align: center;
+    background-color: white;
+    color: #00529B;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    border: 1px solid #00529B;
+    border-radius: 2px 1px 2px 2px;
+  }
+  
+  .img_edit {
+    color: #00529B;
+    font-size: 14px;
+  }
+  
+  .img_edit:hover {
+    text-decoration: underline;
+  }
+  .myarrow {
+    margin-right: 5px;
+    margin-left: 5px;
+    font-size: 9px;
+    color: #8a8a8d;
+  }
+  
+  .card-header {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  .btn-primary {
+    color: #fff;
+    background-color: #00529b;
+    border-color: #00529b;
+  }
+  .form-control {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .required:after {
+    content:" *";
+    color: red;
+  }
+
+::ng-deep {
+  .p-dropdown-filter {
+    height: 30px;
+  }
+}
