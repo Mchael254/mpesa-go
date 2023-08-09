@@ -10,7 +10,7 @@ export interface EntityDto {
   effectiveDateTo: string;
   id: number;
   modeOfIdentity: IdentityModeDTO,
-  modeOfIdentityName: string
+  modeOfIdentityName?: string
   identityNumber: number;
   name: string;
   organizationId: number;

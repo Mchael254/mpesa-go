@@ -159,20 +159,4 @@ export interface ContactsDTO {
   preferredChannel: string
 }
 
-export interface EntityDTO{
-  categoryName: string;
-  countryId: number;
-  dateOfBirth: string;
-  effectiveDateFrom: string;
-  effectiveDateTo: string;
-  id: number;
-  modeOfIdentity: IdentityModeDTO,
-  identityNumber: number;
-  name: string;
-  organizationId: number;
-  pinNumber: string;
-  profilePicture: string;
-  profileImage: string;
-  partyTypeId?: number;
-}
 
