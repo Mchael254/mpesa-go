@@ -4,13 +4,19 @@ import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {Logger} from "../../../shared/services";
 import {ReportService} from "../services/report.service";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
-import {take} from "rxjs/operators";
+import {map, take, tap} from "rxjs/operators";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import {ChartConfiguration, ChartType} from "chart.js";
 import {TableDetail} from "../../../shared/data/table-detail";
 import cubejs from "@cubejs-client/core";
 import {AppConfigService} from "../../../core/config/app-config-service";
+import {Folder} from "../../../shared/data/reports/folder";
+import {Observable} from "rxjs";
+import {Report} from "../../../shared/data/reports/report";
+import {AuthService} from "../../../shared/services/auth.service";
+import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
+import {Router} from "@angular/router";
 
 const log = new Logger('CreateReportComponent');
 
@@ -22,9 +28,11 @@ const log = new Logger('CreateReportComponent');
 export class CreateReportComponent implements OnInit{
 
   public searchForm: FormGroup;
+  public saveReportForm: FormGroup;
   public subjectAreas: SubjectArea[] = [];
   public selectedSubjectArea: string = null;
   public subjectAreaCategories: SubjectAreaCategory[] = [];
+  public reports$: Observable<Report[]> = new Observable<Report[]>();
   public queryObject: Criteria = {};
   public showSubjectAreas: boolean = false;
   public shouldShowVisualization: boolean = false;
@@ -40,6 +48,7 @@ export class CreateReportComponent implements OnInit{
   public isCriteriaButtonActive: boolean = true;
   public isPreviewResultAvailable: boolean = null;
   private reportId: number;
+  private report: Report;
   public chartTypes: {iconClass: string, name: ChartType | string}[] = [
     { iconClass: 'pi pi-table', name: 'table'},
     { iconClass: 'pi pi-chart-bar', name: 'bar'},
@@ -57,22 +66,51 @@ export class CreateReportComponent implements OnInit{
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
 
+  public folders: Folder[] = [];
+  private user: any = null;
+  private userId: number = 0;
+  private folderId: number = 0; // defaults to My Reports
+
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private reportService: ReportService,
     private globalMessagingService: GlobalMessagingService,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    private authService: AuthService,
+    private localStorage: LocalStorageService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.getSubjectAreas();
     this.createSearchForm();
+    this.createSaveReportForm();
+
+    this.authService.currentUser$.subscribe((user) => {
+      this.user = user;
+      this.userId = this.user.id;
+    });
+
+    this.getReports();
+    this.getFolders();
+
+    const extras = this.localStorage.getItem('extras');
+    const loginDetails = this.localStorage.getItem('details');
+    log.info(`extras | loginDetails >>>`, extras, loginDetails)
   }
 
   createSearchForm(): void {
     this.searchForm = this.fb.group({
       searchTerm: [''],
       subjectArea: ['']
+    });
+  }
+
+  createSaveReportForm(): void {
+    this.saveReportForm = this.fb.group({
+      reportSearch: [''],
+      reportName: [''],
+      reportDescription: ['']
     });
   }
 
@@ -171,31 +209,20 @@ export class CreateReportComponent implements OnInit{
 
       this.chartData = {
         labels: this.chartLabels,
-        datasets: this.generateDatasets(reportLabels, reportData)
+        datasets: this.reportService.generateReportDatasets(reportLabels, reportData, this.measures)
       };
 
       this.isPreviewResultAvailable = true;
 
-      this.prepareTableData(reportLabels, reportData);
+      this.tableDetails = this.reportService.prepareTableData(
+        reportLabels, reportData, this.dimensions, this.measures, this.criteria
+      );
     });
-  }
-
-  generateDatasets(chartLabels, chartData) {
-    let datasets = [];
-    for (let i=0; i < chartData.length; i++) {
-      const dataset = {
-        data: chartData[i],
-        label: this.measures[i].split(".")[1]
-      };
-      datasets.push(dataset);
-    }
-    log.info(`dataset >>>`, datasets);
-    return datasets;
   }
 
   addReportToDashboard() {
     const reportToSave: any /*Report*/ = {
-      /*criteria: JSON.stringify(this.criteria),
+      criteria: JSON.stringify(this.criteria),
       reportName: this.report.reportName,
       reportType: this.chartType,
       reportDescription: this.report.reportDescription,
@@ -203,25 +230,17 @@ export class CreateReportComponent implements OnInit{
       borderColor: 'blue',
       backgroundColor: 'red',
       folderId: this.report.folderId,
-      userId: this.report.userId,*/
+      userId: this.report.userId,
     };
 
     this.reportService.editReport(this.reportId, reportToSave)
       .pipe()
       .subscribe((res) => {
         log.info(`Report successfully updated >>> `, res);
-        /*this.messageService.add({
-          severity: 'success',
-          summary:'Success',
-          detail:'Report successfully added to dashboard'
-        });*/
-        // this.router.navigate(['home/reports/dashboard']).then(r => {})
+        this.globalMessagingService.displaySuccessMessage('success', 'Report successfully added to dashboard.')
+        this.router.navigate(['home/reports/dashboard']).then(r => {})
       }, (error) => {
-        /*this.messageService.add({
-          severity: 'error',
-          summary:'Error',
-          detail:'Report not added to dashboard'
-        });*/
+        this.globalMessagingService.displayErrorMessage('error', 'Report not added to dashboard.')
       });
   }
 
@@ -258,78 +277,80 @@ export class CreateReportComponent implements OnInit{
     this.loadChart();
   }
 
-  prepareTableData(chartLabels, chartData): void {
-    const tableHead = [];
-    const header = [ ...this.dimensions, ...this.measures ];
-    // const tableHeaderColspan = header.length;
+  searchReport(): void {
+    const searchTerm = this.saveReportForm.getRawValue().reportSearch;
+    log.info(`search report using >>>`, searchTerm);
+  }
 
-    header.forEach(x => {
-      const query = x.split(".")[1];
-      const headerName = this.criteria.filter(q => q.query === query)[0].queryName;
-      tableHead.push(headerName);
+  selectFolder(folder: Folder): void {
+    this.folders.forEach(item => {
+      item.active = item.id === folder.id ? true: false
     });
 
-    const tableRows = []; //always initialize table to empty array before populating
-    log.info(`table head`, tableHead);
+    this.userId = folder.id === 0 ? this.user.id : 0;
+    this.folderId = folder.id;
+    this.getReports();
+  }
 
-    const elementLength = chartLabels[0].length;
-    let enhancedChartLabels = [];
+  getReports(): void {
+    log.info(`user id >>>`, this.userId, typeof this.userId);
+    this.reports$ = this.reportService.getReports()
+      .pipe(
+        map(reports => reports.filter(report => parseInt(String(report.folderId)) === this.folderId)),
+        tap(reports => log.info(`reports >>>`, reports))
+      );
+  }
 
-    for (let i = 0; i < elementLength; i++) {
-      const arr = [];
-      chartLabels.forEach((item, j) => {
-        arr.push(item[i])
-      })
-      enhancedChartLabels.push(arr);
-    }
-
-    let tableData = [...enhancedChartLabels];
-    chartData.forEach(x => tableData.push(x));
-
-
-    const dataLength = tableData[0].length;
-
-    for (let i = 0; i < dataLength; i++) {
-      const rowData = [];
-      for (let j = 0; j < tableData.length; j++) {
-        rowData.push(tableData[j][i]);
-      }
-      tableRows.push(rowData);
-    }
-
-    const cols = [];
-    const rows = []
-
-    tableHead.forEach((el, i) => {
-      const field = el.replace(/\s/g, ""); // remove whitespaces from field name
-      cols[i] = { field, header: el};
-    });
-
-    tableRows.forEach((row, i) => {
-      let rowItem = {};
-      cols.forEach((col, j) => {
-
-        const fieldValue =
-          typeof row[j] === 'number' ? (Math.round(row[j] * 100) / 100).toFixed(2) : row[j];
-
-        rowItem[cols[j].field] = fieldValue;
-
+  getReport(): void {
+    this.reportService.getReport(this.reportId)
+      .pipe(take(1))
+      .subscribe((report) => {
+        report.criteria = JSON.parse(String(report.criteria));
+        // @ts-ignore
+        this.criteria = report.criteria
+        this.report = report;
+        this.reportTitle = report.reportName;
+        this.shouldShowTable = report.reportType === 'table';
+        this.chartType = report.reportType;
+        this.toggleCriteriaPreview('preview');
       });
-      rows.push(rowItem);
-    });
+  }
 
-    this.tableDetails = {
-      cols,
-      rows,
-      globalFilterFields: [],
-      showFilter: false,
-      showSorting: false,
-      showSearch: false,
-      title: '',
-      paginator: true,
-      url: '',
-      urlIdentifier: ''
-    }
+  getFolders(): void {
+    this.folders = [
+      {id: 0, name: 'My Reports', desc: 'Logged in user folder', userId: 1, active: true},
+      {id: 1, name: 'Shared Reports', desc: 'All users folder', userId: 0},
+    ]
+  }
+
+  saveReport(): void {
+    const rawValue = this.saveReportForm.getRawValue();
+    this.reportTitle = rawValue.reportName;
+    const reportDescription = rawValue.reportDescription;
+
+    const reportToSave: Report = {
+      criteria: JSON.stringify(this.criteria),
+      reportName: this.reportTitle,
+      reportType: this.chartType,
+      reportDescription: reportDescription,
+      dashboardId: null,
+      folderId: this.folderId,
+      userId: this.userId,
+    };
+
+    this.reportService.saveReport(reportToSave)
+      .subscribe(res => {
+        log.info(`response from successful save >>>`, res);
+        this.reportId = res.id;
+        this.getReports();
+
+        this.getReport();
+        this.globalMessagingService.displaySuccessMessage('success', 'Report saved');
+        this.cdr.detectChanges();
+      }, (error) =>
+      {
+        this.globalMessagingService.displayErrorMessage('error', 'Report not saved');
+      });
 
   }
 

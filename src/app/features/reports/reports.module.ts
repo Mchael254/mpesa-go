@@ -9,13 +9,15 @@ import {DropdownModule} from "primeng/dropdown";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
+import { ReportDashboardComponent } from './report-dashboard/report-dashboard.component';
 
 
 @NgModule({
   declarations: [
     ReportsComponent,
     CreateReportComponent,
-    CriteriaPillComponent
+    CriteriaPillComponent,
+    ReportDashboardComponent
   ],
   imports: [
     CommonModule,
