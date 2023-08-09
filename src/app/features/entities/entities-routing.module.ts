@@ -75,7 +75,7 @@ const routes: Routes = [
     },
   {
     path: 'service-provider',
-    children: [
+      children: [
       {
         path: 'list',
         component: ListServiceProviderComponent,
