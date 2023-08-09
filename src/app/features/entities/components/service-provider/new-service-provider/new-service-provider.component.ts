@@ -4,7 +4,6 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import {  
   ContactsDTO,
   CurrenciesDto,
-         EntityDTO,
          ProviderTypeDto, 
          ServiceProviderDTO,
          ServiceProviderRequestDTO, 
@@ -67,7 +66,7 @@ export class NewServiceProviderComponent {
   identityTypeData : IdentityModeDTO[];
   occupationData : OccupationDTO[];
   serviceProviders: ServiceProviderDTO[] = [];
-  entityDetails: EntityDTO;
+  entityDetails: EntityDto;
   agentType: string = 'I';
   groupId: string = 'serviceProviderTab';
   selectedCountry: number;
