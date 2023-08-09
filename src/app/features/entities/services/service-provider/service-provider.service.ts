@@ -3,9 +3,14 @@ import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ClientTitlesDto, CountryDto, CurrenciesDto, IdentityModeDto, MandatoryFieldsDTO, OccupationDto, ProviderTypeDto, SectorDto, ServiceProviderDTO, TownDto } from '../../data/ServiceProviderDTO';
+import {  CurrenciesDto, ProviderTypeDto, ServiceProviderDTO} from '../../data/ServiceProviderDTO';
 import { BankBranchDTO, BankDTO } from 'src/app/shared/data/common/bank-dto';
-import { StateDto } from 'src/app/shared/data/common/countryDto';
+import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
+import { MandatoryFieldsDTO } from 'src/app/shared/data/common/mandatory-fields-dto';
+import { ClientTitlesDto } from '../../data/ClientDTO';
+import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
+import { IdentityModeDTO } from '../../data/entityDto';
+import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 
 
 @Injectable({
@@ -108,14 +113,14 @@ export class ServiceProviderService {
   getCountries(): Observable<CountryDto[]> {
     return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
   }
-  getSectors(): Observable<SectorDto[]> {
+  getSectors(): Observable<SectorDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<SectorDto[]>(`/${this.baseUrl}/setups/sectors`,
+    return this.http.get<SectorDTO[]>(`/${this.baseUrl}/setups/sectors`,
       {
         headers:headers,
         params:params,
@@ -141,27 +146,27 @@ export class ServiceProviderService {
         params:params,
       });
   }
-  getIdentityType(): Observable<IdentityModeDto[]> {
+  getIdentityType(): Observable<IdentityModeDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<IdentityModeDto[]>(`/${this.baseUrl}/accounts/identity-modes`,
+    return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/accounts/identity-modes`,
       {
         headers:headers,
         params:params,
       });
   }
-  getOccupation(): Observable<OccupationDto[]> {
+  getOccupation(): Observable<OccupationDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<OccupationDto[]>(`/${this.baseUrl}/setups/occupations`,
+    return this.http.get<OccupationDTO[]>(`/${this.baseUrl}/setups/occupations`,
       {
         headers:headers,
         params:params,

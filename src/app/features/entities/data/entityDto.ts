@@ -20,6 +20,7 @@ export interface EntityDto {
   partyTypeId?: number;
 }
 
+
 export interface IdentityModeDTO {
   id?: number;
   name?: string;
