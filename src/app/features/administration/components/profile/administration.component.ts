@@ -9,7 +9,7 @@ import { WebAdmin } from 'src/app/shared/data/web-admin';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { Logger } from 'src/app/shared/services/logger.service';
 import { UtilService } from 'src/app/shared/services/util.service';
-import { UserDetailsDTO } from '../model/user-details';
+import { UserDetailsDTO } from '../../data/user-details';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 
 
