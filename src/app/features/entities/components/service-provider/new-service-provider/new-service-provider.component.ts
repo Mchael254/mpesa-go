@@ -1,25 +1,15 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { ClientTitlesDto,
-         CountryDto, 
-         CountyDto, 
-         CurrenciesDto, 
-         IdentityModeDto, 
-         OccupationDto, 
+import {  
+  ContactsDTO,
+  CurrenciesDto,
+         EntityDTO,
          ProviderTypeDto, 
-         SectorDto, 
-         ServiceProviderDTO, 
-         TownDto,
-         EntityDto,
-         ServiceProviderRequestDTO,
-         WealthDTO,
-         PaymentDTO,
-         ContactsDTO,
-         AddressDTO
-
+         ServiceProviderDTO,
+         ServiceProviderRequestDTO, 
         } from '../../../data/ServiceProviderDTO';
-import { StateDto } from 'src/app/shared/data/common/countryDto';
+import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
 import { BankBranchDTO, BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { DatePipe } from '@angular/common';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -29,6 +19,12 @@ import {takeUntil} from "rxjs/operators";
 import { ReplaySubject } from 'rxjs';
 import { untilDestroyed } from 'src/app/shared/shared.module';
 import { UtilService } from 'src/app/shared/shared.module';
+import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
+import { ClientTitlesDto } from '../../../data/ClientDTO';
+import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
+import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
+import { PaymentDetailsDTO, WealthAmlDTO } from '../../../data/accountDTO';
+import { AddressDTO } from '../../../data/AgentDTO';
 @Component({
   selector: 'app-new-service-provider',
   templateUrl: './new-service-provider.component.html',
@@ -61,17 +57,17 @@ export class NewServiceProviderComponent {
   countryData: CountryDto[] = [];
   citiesData: StateDto[] = [];
   townData: TownDto[] = [];
-  sectorData : SectorDto[];
+  sectorData : SectorDTO[];
   currenciesData : CurrenciesDto[];
   banksData: BankDTO[];
   bankBranchData: BankBranchDTO[];
   clientTitlesData : ClientTitlesDto[];
-  countyData : CountyDto[];
+  countyData : CountryDto[];
   providerTypeData : ProviderTypeDto[];
-  identityTypeData : IdentityModeDto[];
-  occupationData : OccupationDto[];
+  identityTypeData : IdentityModeDTO[];
+  occupationData : OccupationDTO[];
   serviceProviders: ServiceProviderDTO[] = [];
-  entityDetails: EntityDto;
+  entityDetails: EntityDTO;
   agentType: string = 'I';
   groupId: string = 'serviceProviderTab';
   selectedCountry: number;
@@ -502,9 +498,9 @@ export class NewServiceProviderComponent {
         road: serviceproviderFormValues.address.road,
         state_id: 2,
         town_id: serviceproviderFormValues.address.town,
-        utility_address_proof:serviceproviderFormValues.address.utility_address_proof,
+        // utility_address_proof:serviceproviderFormValues.address.utility_address_proof,
         zip: "1022",
-        phoneNumber: serviceproviderFormValues.address.phoneNumber
+        // phoneNumber: serviceproviderFormValues.address.phoneNumber
       }
       //preparing  contact dto
 
@@ -524,7 +520,7 @@ export class NewServiceProviderComponent {
         preferredChannel: null
       }
       //preparing payment dto
-      const payment: PaymentDTO = {
+      const payment: PaymentDetailsDTO = {
         /* Todo:
             bank: not captured in endpoint,
             mpayNo: not captured in endpoint,
@@ -537,7 +533,7 @@ export class NewServiceProviderComponent {
         id: 0,
         is_default_channel: "N"
       }
-      const wealth: WealthDTO = {
+      const wealth: WealthAmlDTO = {
         /* Todo:
             typeOfEmployment: is of type LOV on frontend,
             purposeinInsurance: not captured in endpoint,
@@ -556,7 +552,16 @@ export class NewServiceProviderComponent {
         nationality_country_id: serviceproviderFormValues.wealth_details.country,
         occupation_id: serviceproviderFormValues.wealth_details.occupation,
         sector_id: serviceproviderFormValues.wealth_details.economic_sector,
-        partyAccountId: 0
+        certificate_registration_number: 0,
+        certificate_year_of_registration: '',
+        distributeChannel: '',
+        insurancePurpose: '',
+        operating_country_id: null,
+        parent_country_id: 0,
+        premiumFrequency: '',
+        registeredName: '',
+        source_of_wealth_id: 0,
+        tradingName: ''
       }
       const servProvider: ServiceProviderRequestDTO = {
         // category: this.agentType,
