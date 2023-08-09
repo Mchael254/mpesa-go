@@ -109,7 +109,7 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
   }
 
   gotoEntityPage() {
-    this.router.navigate(['/home/entity/new'],
+    this.router.navigate(['/home/entity/service-provider/new'],
       {queryParams: {entityType: 'Service Provider'}}).then(r => {
     })
   }
