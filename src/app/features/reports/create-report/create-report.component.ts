@@ -15,6 +15,8 @@ import {Folder} from "../../../shared/data/reports/folder";
 import {Observable} from "rxjs";
 import {Report} from "../../../shared/data/reports/report";
 import {AuthService} from "../../../shared/services/auth.service";
+import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
+import {Router} from "@angular/router";
 
 const log = new Logger('CreateReportComponent');
 
@@ -76,6 +78,8 @@ export class CreateReportComponent implements OnInit{
     private globalMessagingService: GlobalMessagingService,
     private appConfig: AppConfigService,
     private authService: AuthService,
+    private localStorage: LocalStorageService,
+    private router: Router
   ) {}
   ngOnInit(): void {
     this.getSubjectAreas();
@@ -89,6 +93,10 @@ export class CreateReportComponent implements OnInit{
 
     this.getReports();
     this.getFolders();
+
+    const extras = this.localStorage.getItem('extras');
+    const loginDetails = this.localStorage.getItem('details');
+    log.info(`extras | loginDetails >>>`, extras, loginDetails)
   }
 
   createSearchForm(): void {
@@ -201,31 +209,20 @@ export class CreateReportComponent implements OnInit{
 
       this.chartData = {
         labels: this.chartLabels,
-        datasets: this.generateDatasets(reportLabels, reportData)
+        datasets: this.reportService.generateReportDatasets(reportLabels, reportData, this.measures)
       };
 
       this.isPreviewResultAvailable = true;
 
-      this.prepareTableData(reportLabels, reportData);
+      this.tableDetails = this.reportService.prepareTableData(
+        reportLabels, reportData, this.dimensions, this.measures, this.criteria
+      );
     });
-  }
-
-  generateDatasets(chartLabels, chartData) {
-    let datasets = [];
-    for (let i=0; i < chartData.length; i++) {
-      const dataset = {
-        data: chartData[i],
-        label: this.measures[i].split(".")[1]
-      };
-      datasets.push(dataset);
-    }
-    log.info(`dataset >>>`, datasets);
-    return datasets;
   }
 
   addReportToDashboard() {
     const reportToSave: any /*Report*/ = {
-      /*criteria: JSON.stringify(this.criteria),
+      criteria: JSON.stringify(this.criteria),
       reportName: this.report.reportName,
       reportType: this.chartType,
       reportDescription: this.report.reportDescription,
@@ -233,25 +230,17 @@ export class CreateReportComponent implements OnInit{
       borderColor: 'blue',
       backgroundColor: 'red',
       folderId: this.report.folderId,
-      userId: this.report.userId,*/
+      userId: this.report.userId,
     };
 
     this.reportService.editReport(this.reportId, reportToSave)
       .pipe()
       .subscribe((res) => {
         log.info(`Report successfully updated >>> `, res);
-        /*this.messageService.add({
-          severity: 'success',
-          summary:'Success',
-          detail:'Report successfully added to dashboard'
-        });*/
-        // this.router.navigate(['home/reports/dashboard']).then(r => {})
+        this.globalMessagingService.displaySuccessMessage('success', 'Report successfully added to dashboard.')
+        this.router.navigate(['home/reports/dashboard']).then(r => {})
       }, (error) => {
-        /*this.messageService.add({
-          severity: 'error',
-          summary:'Error',
-          detail:'Report not added to dashboard'
-        });*/
+        this.globalMessagingService.displayErrorMessage('error', 'Report not added to dashboard.')
       });
   }
 
@@ -286,80 +275,6 @@ export class CreateReportComponent implements OnInit{
     }
     this.shouldShowVisualization = false;
     this.loadChart();
-  }
-
-  prepareTableData(chartLabels, chartData): void {
-    const tableHead = [];
-    const header = [ ...this.dimensions, ...this.measures ];
-    // const tableHeaderColspan = header.length;
-
-    header.forEach(x => {
-      const query = x.split(".")[1];
-      const headerName = this.criteria.filter(q => q.query === query)[0].queryName;
-      tableHead.push(headerName);
-    });
-
-    const tableRows = []; //always initialize table to empty array before populating
-    log.info(`table head`, tableHead);
-
-    const elementLength = chartLabels[0].length;
-    let enhancedChartLabels = [];
-
-    for (let i = 0; i < elementLength; i++) {
-      const arr = [];
-      chartLabels.forEach((item, j) => {
-        arr.push(item[i])
-      })
-      enhancedChartLabels.push(arr);
-    }
-
-    let tableData = [...enhancedChartLabels];
-    chartData.forEach(x => tableData.push(x));
-
-
-    const dataLength = tableData[0].length;
-
-    for (let i = 0; i < dataLength; i++) {
-      const rowData = [];
-      for (let j = 0; j < tableData.length; j++) {
-        rowData.push(tableData[j][i]);
-      }
-      tableRows.push(rowData);
-    }
-
-    const cols = [];
-    const rows = []
-
-    tableHead.forEach((el, i) => {
-      const field = el.replace(/\s/g, ""); // remove whitespaces from field name
-      cols[i] = { field, header: el};
-    });
-
-    tableRows.forEach((row, i) => {
-      let rowItem = {};
-      cols.forEach((col, j) => {
-
-        const fieldValue =
-          typeof row[j] === 'number' ? (Math.round(row[j] * 100) / 100).toFixed(2) : row[j];
-
-        rowItem[cols[j].field] = fieldValue;
-
-      });
-      rows.push(rowItem);
-    });
-
-    this.tableDetails = {
-      cols,
-      rows,
-      globalFilterFields: [],
-      showFilter: false,
-      showSorting: false,
-      showSearch: false,
-      title: '',
-      paginator: true,
-      url: '',
-      urlIdentifier: ''
-    }
   }
 
   searchReport(): void {
@@ -436,7 +351,6 @@ export class CreateReportComponent implements OnInit{
       {
         this.globalMessagingService.displayErrorMessage('error', 'Report not saved');
       });
-
 
   }
 
