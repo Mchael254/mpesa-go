@@ -37,7 +37,9 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns">
       <tr>
         <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
-          {{ rowData[col.field] }}
+          <span *ngIf="!isNumber(rowData[col.field])">{{ rowData[col.field] }}</span>
+          <span *ngIf="isNumber(rowData[col.field])" style="float: right">{{ rowData[col.field] | number:'1.2-2'}}</span>
+<!--          {{ rowData[col.field] }}-->
         </td>
         <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
           <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]">View</a>
