@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 })
 export class SidebarComponent {
   sidebarMainMenuList: SidebarMenu[];
-  openedSublistIndex: number = -1;
   constructor(private menuService:MenuService, private router: Router){
     this.menuService.sidebarMainMenuRead.subscribe(data => {this.sidebarMainMenuList = data;}
     );
@@ -21,7 +20,7 @@ export class SidebarComponent {
 
 
 clickURL(url:string){
-  if(url.length > 0 ) this.router.navigate([url]);
+  if(url?.length > 0 ) this.router.navigate([url]);
 }
 
 }
