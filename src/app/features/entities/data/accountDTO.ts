@@ -3,7 +3,7 @@ import {StaffDto, CreateStaffDto} from "./StaffDto";
 import { IdentityModeDTO } from "./entityDto";
 import { PartyTypeDto } from "./partyTypeDto";
 import {ClientDetailsDto} from "./ClientDTO";
-import {CreateServiceProviderDTO} from "./ServiceProviderDTO";
+// import {CreateServiceProviderDTO} from "./ServiceProviderDTO";
 
 /**
  * DTO for creating an address object when creating a new entity account (Staff, Client, Service Provider, Intermediaries)
@@ -111,7 +111,7 @@ export interface CreateAccountDTO {
   pinNumber?: string,
   dateCreated?: string
   clientDetails?:ClientDetailsDto,
-  serviceProviderRequest?: CreateServiceProviderDTO,
+  serviceProviderRequest?: any,
   userRequest?: CreateStaffDto,
 }
 

@@ -4,11 +4,11 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbar">
                   <li class="nav-item">
-                      <a class="nav-link" href="#" routerLink="/home/dashboard">Dashboard</a>
+                      <a class="nav-link" href="#" routerLink="/home/dashboard" style="font-weight: 700;"><i class="fa-solid fa-house-chimney" style="padding-right: 6px; font-size: 20px;"></i>Dashboard</a>
                   </li>
-                  <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Accounts
+                  <li class="nav-item dropdown" >
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-file-invoice-dollar" style="padding-right: 6px; font-size: 20px;"></i>Accounts
                       </a>
                       <ul class="dropdown-menu">
                         <ng-container *ngFor="let account of accountSubMenuList">
@@ -37,8 +37,8 @@
                       </ul>
                   </li> -->
                   <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Reinsurance
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-handshake-angle" style="padding-right: 6px; font-size: 20px;"></i>Reinsurance
                       </a>
                       <ul class="dropdown-menu">
                         <ng-container *ngFor="let claim of reinsuranceubMenuList">
@@ -57,8 +57,8 @@
                       </ul>
                   </li> -->
                   <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Team
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-people-group" style="padding-right: 6px; font-size: 20px;"></i>Team
                       </a>
                       <ul class="dropdown-menu">
                         <ng-container *ngFor="let team of teamSubMenuList">
@@ -67,8 +67,8 @@
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Administration
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-toolbox" style="padding-right: 6px; font-size: 20px;"></i>Administration
                       </a>
                       <ul class="dropdown-menu">
                           <ng-container *ngFor="let admin of administationSubMenuList">
@@ -80,10 +80,10 @@
               <div class="d-flex" id="chart">
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                          <a class="nav-link" href="#">New Chart</a>
+                          <a class="nav-link" href="#"><i class="fa-solid fa-chart-simple" style="padding-right: 6px; font-size: 20px;"></i>New Chart</a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="#">Analytics</a>
+                          <a class="nav-link" href="#"><i class="fa-solid fa-chart-pie" style="padding-right: 6px; font-size: 20px;"></i>Analytics</a>
                       </li>
                   </ul>
               </div>
