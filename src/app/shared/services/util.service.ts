@@ -501,7 +501,6 @@ export class UtilService {
       // adding only defined values to the params
       if (value !== undefined && value !== null && value !== 'null' && value !== '') {
         queryParams[key] = value;
-        console.log('Query Params: ', queryParams, value)
       }
 
       return queryParams;
