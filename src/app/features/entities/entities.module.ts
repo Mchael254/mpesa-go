@@ -25,6 +25,7 @@ import {StepsModule} from "primeng/steps";
 import {TableModule} from "primeng/table";
 
 
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -53,6 +54,7 @@ import {TableModule} from "primeng/table";
     StepsModule,
     TableModule,
     FormsModule
-  ]
+  ],
+  providers:[DatePipe]
 })
 export class EntitiesModule { }
