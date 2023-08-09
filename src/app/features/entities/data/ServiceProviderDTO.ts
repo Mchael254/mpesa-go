@@ -1,6 +1,6 @@
 import { IdentityModeDTO } from "./entityDto"
 
-export interface ServiceProviderDTO{
+export interface ServiceProviderDTO {
     category?: string,
     country?: {
       id?: number,
