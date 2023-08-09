@@ -1,0 +1,27 @@
+<div class="text-center progress-spinner" *ngIf="!isPreviewResultAvailable">
+  <p-progressSpinner></p-progressSpinner>
+</div>
+
+<div class="row p-3">
+  <ng-container *ngFor="let report of reportVisualizations | slice:0:chartCount">
+    <div class="col-sm-6 mb-3">
+      <div style="background: #fff; padding: 10px; border-radius: 5px; ">
+        <p class="mainHead text-center fw-bold">{{ report.reportName | titlecase }}</p>
+
+        <ng-container *ngIf="report.reportType !== 'table'">
+          <app-dynamic-chart
+            [chartType]="report.chartData.chartType"
+            [basicData]="report.chartData"
+          ></app-dynamic-chart>
+        </ng-container>
+
+        <ng-container *ngIf="report.reportType === 'table'">
+          <app-dynamic-table
+            [tableDetails]="report.tableDetails"
+          ></app-dynamic-table>
+        </ng-container>
+
+      </div>
+    </div>
+  </ng-container>
+</div>

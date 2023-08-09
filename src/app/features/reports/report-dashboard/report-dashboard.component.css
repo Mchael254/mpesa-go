@@ -1,0 +1,6 @@
+::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.5em;
+  font-size: 0.9em;
+  color: #00529b;
+}

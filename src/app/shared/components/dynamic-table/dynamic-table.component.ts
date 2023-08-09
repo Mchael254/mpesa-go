@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Table, TableLazyLoadEvent} from "primeng/table";
 import {Router} from "@angular/router";
-import {Logger} from "../../services";
+import {Logger, UtilService} from "../../services";
 import {TableDetail} from "../../data/table-detail";
 import {LazyLoadEvent} from "primeng/api";
 
@@ -15,7 +15,10 @@ const log = new Logger('DynamicTableComponent');
 })
 export class DynamicTableComponent {
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private utilService: UtilService
+    ) {
   }
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -38,7 +41,13 @@ export class DynamicTableComponent {
   }
 
   lazyLoad(event) {
-    console.log('Lazy load event: ', JSON.stringify(event));
+    log.info('Lazy load event: ', JSON.stringify(event));
     this.onLazyLoad.emit(event);
+  }
+
+  isNumber(val): boolean {
+    const dataValue = parseFloat(val);
+    // log.info(`dataValue >>>`, dataValue, typeof dataValue);
+    return !isNaN(dataValue);
   }
 }

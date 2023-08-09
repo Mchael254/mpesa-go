@@ -97,9 +97,9 @@
                 Preview Results
               </button>
             </div>
-            <div class="col-sm-4 offset-sm-4">
+            <div class="col-sm-4 offset-sm-4 criteria-preview">
               <button type="button" class="btn btn-primary" (click)="addReportToDashboard()">Add to Dashboard</button>
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#saveReportModal">Save</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveReportModal">Save</button>
             </div>
           </div>
 
@@ -173,7 +173,7 @@
                   <div
                     *ngIf="isPreviewResultAvailable"
                     style="max-height: 600px"
-                    class="py-3"
+                    class="py-2"
                   >
                     <app-dynamic-chart
                       [chartType]="chartType"
@@ -191,3 +191,182 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="saveReportModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form [formGroup]="saveReportForm">
+        <div class="modal-header">
+          <div class="row" style="width: 100%">
+            <div class="col-sm-3">
+              <p class="modal-title fw-bold">File Uploads</p>
+            </div>
+            <div class="col-sm-8">
+              <div class="form-group">
+                <input
+                  (keyup)="searchReport()"
+                  formControlName="reportSearch"
+                  class="form-control"
+                  aria-describedby="saveReportSearch"
+                  placeholder="Search report"
+                  id="saveReportSearch"
+                >
+              </div>
+            </div>
+            <div class="col-sm-1" style="float: right; text-align: right">
+              <span class="btn-close" data-bs-dismiss="modal" aria-label="Close"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-3 left">
+              <ul *ngFor="let folder of folders">
+                <li
+                  [ngStyle]="{'backgroundColor': folder.active ? '#D0DAE3' : '#ffffff' }"
+                  (click)="selectFolder(folder)"
+                >
+                  <i class="pi pi-folder"></i>{{ folder.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="col-sm-9">
+              <div class="row report-row">
+                <ng-container *ngFor="let report of reports$ | async">
+                  <div class="col-sm-4 report-item">
+                    <i class="pi pi-folder"></i>
+                    <span>{{ report.reportName }}</span>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="description">File name</label>
+                    <input
+                      formControlName="reportName"
+                      class="form-control"
+                      aria-describedby="reportName"
+                      placeholder="File name"
+                      id="reportName"
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea
+                      formControlName="reportDescription"
+                      class="form-control"
+                      id="description"
+                      rows="3"
+                    >
+                </textarea>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveReport()">Proceed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Save Modal-->
+
+<!--
+<div class="modal fade" id="saveReportModal2" tabindex="-1" role="dialog" aria-labelledby="saveReportModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content mb-2">
+      <form [formGroup]="saveReportForm">
+        <div class="modal-header">
+          <div class="row" style="width: 100%">
+            <div class="col-sm-3">
+              <h6>File uploads</h6>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input
+                  (keyup)="searchReport()"
+                  formControlName="reportSearch"
+                  class="form-control"
+                  aria-describedby="saveReportSearch"
+                  placeholder="Search report"
+                  id="saveReportSearch"
+                >
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-3 left">
+              <ul *ngFor="let folder of folders">
+                <li
+                  [ngStyle]="{'backgroundColor': folder.active ? '#D0DAE3' : '#ffffff' }"
+                  (click)="selectFolder(folder)"
+                >
+                  <i class="pi pi-folder"></i>{{ folder.name }}
+                </li>
+                &lt;!&ndash;<li><i class="pi pi-folder-open"></i>Shared Reports</li>&ndash;&gt;
+              </ul>
+            </div>
+            <div class="col-sm-9">
+              <div class="row report-row">
+                <ng-container *ngFor="let report of reports$ | async">
+                  <div class="col-sm-4 report-item">
+                    <i class="pi pi-folder"></i>
+                    <span>{{ report.reportName }}</span>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <label for="description">File name</label>
+                    <input
+                      formControlName="reportName"
+                      class="form-control"
+                      aria-describedby="reportName"
+                      placeholder="File name"
+                      id="reportName"
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea
+                      formControlName="reportDescription"
+                      class="form-control"
+                      id="description"
+                      rows="3"
+                    >
+                    </textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn active-btn" data-dismiss="modal" (click)="saveReport()">Proceed</button>
+      </div>
+    </div>
+  </div>
+</div>
+-->
+
+<!-- Save modal ends-->
