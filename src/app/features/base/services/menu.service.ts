@@ -130,7 +130,7 @@ export class MenuService{
   {
     name: 'Favorite Setups',
     nameSlug: 'favoriteSetups',
-    icon: 'fa-solid fa-gears',
+    icon: 'fa-solid fa-list-check',
     menuItems: [{name:'My Tasks', link:""}, {name:'My Dashboard', link:""}, {name:'My Transactions', link:""}, {name:'My Policies', link:""}, {name:'My Quotations', link:""}, {name:'My Renewals', link:""}],
     svgContent: `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
@@ -142,7 +142,7 @@ export class MenuService{
   {
     name: 'Pending Setups',
     nameSlug: 'pendingSetups',
-    icon: 'fa-solid fa-gears',
+    icon: 'fa-solid fa-screwdriver-wrench',
     menuItems: [{name:'My Tasks', link:""}, {name:'My Dashboard', link:""}, {name:'My Transactions', link:""}, {name:'My Policies', link:""}, {name:'My Quotations', link:""}, {name:'My Renewals', link:""}],
     svgContent: `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
@@ -154,7 +154,7 @@ export class MenuService{
   {
     name: 'Frequently viewed',
     nameSlug: 'frequentlyViewed',
-    icon: 'fa-solid fa-gears',
+    icon: 'fa-solid fa-sliders',
     menuItems: [{name:'My Tasks', link:""}, {name:'My Dashboard', link:""}, {name:'My Transactions', link:""}, {name:'My Policies', link:""}, {name:'My Quotations', link:""}, {name:'My Renewals', link:""}],
     svgContent: `
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
