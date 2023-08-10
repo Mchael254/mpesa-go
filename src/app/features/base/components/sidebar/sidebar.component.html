@@ -1,7 +1,6 @@
-<div class="base-side-nav" style="margin: 0; padding: 0rem 0 0 0;">
-    <div class="flex-shrink-0 bg-white">
+<div class="base-side-nav" style="margin: 0; padding: 2.4rem 0 0 0;">
         <ul style="list-style: none; margin: 0px; padding-left: 0px; ">
-            <li class="mb-1" >
+            <li>
                 <button class="btn btn-toggle align-items-center rounded collapsed" aria-expanded="true" routerLink="/home/dashboard">
 
                     <span class="menu-title">
@@ -13,8 +12,8 @@
             </li>
 
             <ng-container *ngFor="let item of sidebarMainMenuList; let i=index">
-              <li class="mb-1">
-                <button (click)="clickURL(item?.link)" class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.nameSlug" [attr.aria-expanded]="false">
+              <li (click)="clickURL(item?.link)" >
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.nameSlug" [attr.aria-expanded]="false">
                   <span class="menu-title">
                     <i class="{{item.icon}}" style="font-size: 22px; padding-right: 6px;"></i> {{ item.name }}
                   </span>
@@ -28,5 +27,4 @@
             </ng-container>
 
           </ul>
-    </div>
 </div>
