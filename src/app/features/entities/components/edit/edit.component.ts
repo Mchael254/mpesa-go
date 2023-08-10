@@ -8,6 +8,8 @@ import {DepartmentDto} from "../../../../shared/data/common/departmentDto";
 import {DynamicFormFields} from "../../../../shared/utils/dynamic.form.fields";
 import {DynamicFormButtons} from "../../../../shared/utils/dynamic.form.button";
 import { EntityDetails } from '../../data/entity-details-data'
+import {DepartmentService} from "../../../../shared/services/setups/department.service";
+import {OccupationService} from "../../../../shared/services/setups/occupation.service";
 
 @Component({
   selector: 'app-edit',
@@ -35,7 +37,9 @@ export class EditComponent implements OnInit{
   constructor(
     private fb: FormBuilder,
     private entityService: EntityService,
-    private entityDetails: EntityDetails
+    private entityDetails: EntityDetails,
+    private departmentService: DepartmentService,
+    private occupationService: OccupationService
   ) {
   }
 
@@ -48,6 +52,7 @@ export class EditComponent implements OnInit{
     this.buttonConfig = this.entityDetails.actionButtonConfig();
   }
   submitForm(data:any){
+    console.log(data);
   }
   goBack(data?:any){
     if(data!=null){
@@ -139,7 +144,7 @@ export class EditComponent implements OnInit{
   }
 
   fetchOccupations(organizationId: number){
-    this.entityService.getOccupations(organizationId)
+    this.occupationService.getOccupations(organizationId)
       .pipe(take(1))
       .subscribe( (data) => {
         this.occupationData = data;
@@ -147,7 +152,7 @@ export class EditComponent implements OnInit{
   }
 
   fetchDepartments(){
-    this.entityService.getDepartments(2)
+    this.departmentService.getDepartments(2)
       .pipe(take(1))
       .subscribe( value => {
         this.staffDepartments = value;

@@ -11,7 +11,7 @@
     <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
       <div class="row">
         <div class="col-sm-8">
-          <p class="fw-normal text-muted" style="">{{ tableDetails?.title }}</p>
+          <p class="fw-normal text-muted">{{ tableDetails?.title }}</p>
         </div>
         <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
@@ -66,7 +66,7 @@
     <ng-template pTemplate="caption" >
       <div class="row">
         <div class="col-sm-8">
-          <p class="fw-normal text-muted" style="">{{ tableDetails.title }}</p>
+          <p class="fw-normal text-muted">{{ tableDetails.title }}</p>
         </div>
         <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
@@ -98,7 +98,10 @@
           {{ rowData[col.field] }}
         </td>
         <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
-          <a [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">View</a>
+          <a  style="font-size: 0.9em; border-radius: 4px;" [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">
+
+            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+          </a>
           <!-- Use routerLink with the input properties -->
         </td>
       </tr>
