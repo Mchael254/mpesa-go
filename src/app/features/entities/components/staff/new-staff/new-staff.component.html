@@ -1,1 +1,16 @@
-<p>new-staff works!</p>
+ <!-- Stepper component !-->
+<div class="my-5 mx-5">
+    <p-steps
+      class="customstepper"
+      [model]="steps" [(activeIndex)]="activeIndex" [readonly]="false"
+      (activeIndexChange)="onStepChange($event)"></p-steps>
+  </div>
+
+
+  <ng-container *ngFor="let item of steps; let i = index">
+    <!-- Staff Profile Form !-->
+    <app-staff-profile *ngIf="i == activeIndex && i == 0"></app-staff-profile>
+
+    <!-- Assign Apps To Staff Form !-->
+    <app-assign-apps *ngIf="i == activeIndex && i == 1"></app-assign-apps>
+  </ng-container>

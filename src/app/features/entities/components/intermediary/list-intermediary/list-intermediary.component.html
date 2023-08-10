@@ -1,1 +1,27 @@
-<p>list-intermediary works!</p>
+<div>
+  <!-- Top Header Text and Breadcrumb !-->
+  <div class="d-flex justify-content-between my-4 ms-4">
+    <div class="mr-auto p-2">
+      <h4 class="htxt page-header">Business Accounts</h4>
+    </div>
+    <div class="me-4">
+      <app-dynamic-breadcrumb [breadCrumbItems]="intermediaryBreadCrumbItems">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+
+  <!-- Top Buttons !-->
+  <div class="d-flex my-4 ms-4">
+    <button type="button" class="btn btn-primary rounded-1 px-3 me-3"  (click)="gotoEntityPage()">New Account</button>
+    <button type="button" class="btn btn-outline-primary px-3 me-3">Import Account</button>
+    <button type="button" class="btn filter-btn rounded-1 px-3 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+  </div>
+
+  <div class="my-4 ms-4 me-4">
+    <app-dynamic-table
+      [tableDetails]="tableDetails"
+      (onLazyLoad)="lazyLoadAgents($event)">
+    </app-dynamic-table>
+  </div>
+</div>
+

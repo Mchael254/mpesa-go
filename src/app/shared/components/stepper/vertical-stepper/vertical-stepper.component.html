@@ -1,0 +1,20 @@
+<section>
+  <div class="rt-container">
+    <div class="col-rt-12">
+      <div class="Scriptcontent">
+
+        <div class="step" *ngFor="let step of stepperData; let i = index"
+          [ngClass]="getStepClasses(i+1)">
+          <div>
+            <div class="circle">{{ step.number }}</div>
+          </div>
+          <div (click)="navigateToPage(step.link)" class="link">
+            <div class="title">{{ step.title }}</div>
+            <div class="caption">{{ step.caption }}</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

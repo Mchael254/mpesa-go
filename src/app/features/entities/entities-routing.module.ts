@@ -36,7 +36,6 @@ const routes: Routes = [
     },
     {
       path: 'staff',
-      component: ListStaffComponent,
       children: [
         {
           path: 'list',
@@ -50,7 +49,6 @@ const routes: Routes = [
     },
     {
       path: 'client',
-      component: ListClientComponent,
       children: [
         {
           path: 'list',
@@ -64,7 +62,6 @@ const routes: Routes = [
     },
     {
       path: 'intermediary',
-      component: ListIntermediaryComponent,
       children: [
         {
           path: 'list',
@@ -78,8 +75,7 @@ const routes: Routes = [
     },
   {
     path: 'service-provider',
-    component: ListServiceProviderComponent,
-    children: [
+      children: [
       {
         path: 'list',
         component: ListServiceProviderComponent,

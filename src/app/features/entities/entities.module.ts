@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 import { EntitiesRoutingModule } from './entities-routing.module';
 import { NewClientComponent } from './components/client/new-client/new-client.component';
@@ -16,10 +16,16 @@ import { EditComponent } from './components/edit/edit.component';
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
 import {TabViewModule} from "primeng/tabview";
 import {InputTextModule} from "primeng/inputtext";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../../shared/shared.module";
+import {DropdownModule} from "primeng/dropdown";
+import { StaffProfileComponent } from './components/staff/staff-profile/staff-profile.component';
+import { AssignAppsComponent } from './components/staff/assign-apps/assign-apps.component';
+import {StepsModule} from "primeng/steps";
+import {TableModule} from "primeng/table";
 
 
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -33,15 +39,22 @@ import {SharedModule} from "../../shared/shared.module";
     NewStaffComponent,
     ListStaffComponent,
     EditComponent,
-    ViewEntityComponent
+    ViewEntityComponent,
+    StaffProfileComponent,
+    AssignAppsComponent
   ],
-    imports: [
-        CommonModule,
-        EntitiesRoutingModule,
-        TabViewModule,
-        InputTextModule,
-        ReactiveFormsModule,
-        SharedModule
-    ]
+  imports: [
+    CommonModule,
+    EntitiesRoutingModule,
+    TabViewModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SharedModule,
+    DropdownModule,
+    StepsModule,
+    TableModule,
+    FormsModule
+  ],
+  providers:[DatePipe]
 })
 export class EntitiesModule { }
