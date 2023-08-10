@@ -13,16 +13,21 @@ const log = new Logger("HeaderSubMenuComponent")
 
 })
 export class HeaderSubMenuComponent implements OnInit {
-administationSubMenuList: SidebarMenu[];
-teamSubMenuList: SidebarMenu[];
-claimSubMenuList: SidebarMenu[];
-reinsuranceubMenuList: SidebarMenu[];
-accountSubMenuList: SidebarMenu[];
+  defaultSidebar: SidebarMenu | undefined;
+  administationSubMenuList: SidebarMenu[];
+  teamSubMenuList: SidebarMenu[];
+  claimSubMenuList: SidebarMenu[];
+  reinsuranceubMenuList: SidebarMenu[];
+  accountSubMenuList: SidebarMenu[];
 
-constructor(private menuService: MenuService, private router:Router){}
+constructor(private menuService: MenuService, private router:Router){
+  this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: './dashboard'}
+}
 
 
 ngOnInit(): void {
+
+
   this.administationSubMenuList = this.menuService.administationSubMenuList();
   this.teamSubMenuList = this.menuService.teamSubMenuList();
   this.claimSubMenuList = this.menuService.teamSubMenuList();
