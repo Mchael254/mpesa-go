@@ -1,10 +1,10 @@
 <div class="content-nav">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary fadeIn" style="border-bottom: 1px solid #00539b14;">
       <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbar">
                   <li class="nav-item">
-                      <a class="nav-link" href="#" routerLink="/home/dashboard" style="font-weight: 700;"><i class="fa-solid fa-house-chimney" style="padding-right: 6px; font-size: 20px;"></i>Dashboard</a>
+                      <a (click)="dynamicSideBarMenu(defaultSidebar)" class="nav-link" href="#" routerLink="/home/dashboard" style="font-weight: 700;"><i class="fa-solid fa-house-chimney" style="padding-right: 6px; font-size: 20px;"></i>Dashboard</a>
                   </li>
                   <li class="nav-item dropdown" >
                       <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
