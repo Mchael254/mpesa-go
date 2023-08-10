@@ -1,0 +1,78 @@
+.calendar {
+  padding: 7px 4px;
+}
+
+.calendar .days {
+  margin-bottom: 20px;
+}
+
+.calendar .weeks li{
+  font-weight: bold;
+  padding: 10px;
+}
+
+.calendar ul li {
+  position: relative;
+  width: calc(100% / 7);
+  height: calc(100% / 7);
+  font-weight: bold;
+}
+
+.calendar .days li {
+  z-index: 1;
+  cursor: pointer;
+  padding: 15px 7px;
+  font-size: 14px;
+}
+
+.calendar ul {
+  display: flex;
+  list-style: none;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.calendar ul li::before {
+  position: absolute;
+  content: "";
+  height: 30px;
+  width: 30px;
+  top: 14%;
+  left: 50%;
+  z-index: -1;
+  transform: translate(-50%, -50%);
+}
+
+.days li span {
+  padding: 10px;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.days li span.inactive, .inactive {
+  color: #aaa;
+}
+
+.days li span#date:hover {
+  background: #f2f2f2;
+}
+
+.days li span.active, .active {
+  background: #00529B;
+  color: #fff;
+}
+
+.days li span.selected {
+  background: #b8cfe3;
+  color: #00529B;
+}
+
+.days li span.view-more {
+  color: #00529B;
+  font-weight: bold;
+  padding-top: 10px
+}
+
+.days li span.view-more:hover {
+  text-decoration: underline;
+}

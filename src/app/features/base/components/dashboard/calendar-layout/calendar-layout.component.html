@@ -1,0 +1,27 @@
+<div class="calendar">
+  <ul class="weeks">
+    <li *ngFor="let day of daysOfTheWeek"> {{ day | slice: 0: 3 }}</li>
+  </ul>
+  <ul class="days">
+    <li
+      id="selectDayBtn"
+      *ngFor="let  day of daysToDisplay"
+      (click)="emitSelectedDate(day)"
+    >
+      <span id="date" [ngClass]="{'active': day.active,'inactive': day.overflow, 'selected': day.isSelected }">
+        {{ day?.date }}
+      </span>
+      <ng-container *ngIf="selectedRange === 'MONTH'">
+        <br>
+        <span>
+          {{ day?.event[0]?.title | titlecase }}
+        </span>
+        <br>
+        <span *ngIf="day?.event?.length > 1" (click)="showDialog(day)" class="mt-2 view-more" id="showDialog">
+          {{ day.event.length - 1}} more
+        </span>
+      </ng-container>
+
+    </li>
+  </ul>
+</div>

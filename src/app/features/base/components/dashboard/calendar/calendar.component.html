@@ -1,0 +1,245 @@
+<div class="card calendar">
+  <div class="card-header">
+    <form [formGroup]="dateSelectionForm">
+      <div class="row">
+        <div class="col-sm-2 offset-sm-3">
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            formControlName="dateRange"
+            (change)="fetchFilteredEvents()"
+          >
+            <option *ngFor="let range of dateRange" [value]="range">
+              <span>{{ range | titlecase }}</span>
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            formControlName="month"
+            (change)="gotoPrevNext()"
+          >
+            <option *ngFor="let month of months" [value]="month">
+              <span>{{ month | titlecase }}</span>
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            formControlName="year"
+            (change)="gotoPrevNext()"
+          >
+            <option *ngFor="let year of years" [value]="year">
+              <span>{{ year }}</span>
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <button
+            class="btn btn-sm create-event-button"
+            (click)="activateCreateEvent('create')"
+          >
+            Create Event
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="card-body">
+
+    <ng-container *ngIf="calendarView === 'DAY' || calendarView === 'WEEK'">
+      <div class="row">
+        <div class="col-sm-7">
+          <app-calendar-layout
+            [daysOfTheWeek]="daysOfTheWeek"
+            [daysToDisplay]="daysToDisplay"
+            (selectDate)="selectDate($event)"
+          >
+          </app-calendar-layout>
+        </div>
+
+        <div class="col-sm-5">
+          <div class="events">
+            <ng-container *ngIf="events.length > 0; else noEvent">
+              <ng-container *ngFor="let event of events">
+                <div class="event">
+                  <div class="row">
+                    <div class="col-sm-10">
+                      <p>{{event?.title | titlecase}}</p>
+                      <p>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</p>
+                    </div>
+                    <div class="col-sm-2">
+                  <span class="inactive mr-2" style="font-size: 0.9em">
+                    {{ event?.startDate | date: 'EE '}}
+                  </span>
+                      <span style="color: #00529B; font-weight: bold; font-size: 1.2em">
+                    {{ event?.startDate | date: 'dd'}}
+                  </span>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #noEvent>
+              <div class="event">
+                <p>No event found for selected date.</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="calendarView === 'MONTH'">
+      <div class="row">
+        <app-calendar-layout
+          [daysOfTheWeek]="daysOfTheWeek"
+          [daysToDisplay]="daysToDisplay"
+          [selectedRange]="selectedRange"
+          [selectedDayInMonthView]="selectedDayInMonthView"
+          (selectDate)="selectDate($event)"
+        >
+        </app-calendar-layout>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="calendarView === 'create'">
+      <form [formGroup]="newEventForm">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="row">
+              <div class="col-sm-8">
+                <span
+                  style="padding: 10px;
+                   border-radius: 100%;
+                   background: #00529B;
+                   color: #fff;
+                   margin-right: 10px"
+                >
+                  {{ selectedDate }}
+                </span>
+                {{ months[currMonth] | titlecase }}, {{ daysOfTheWeek[dayOfWeek] | titlecase }}
+              </div>
+              <div class="col-sm-4">
+                <span>
+                  <p-calendar
+                    [showIcon]="true"
+                    styleClass="calendar-input"
+                    formControlName="eventDate"
+                    (onSelect)="sliceTime()">
+                  </p-calendar>
+                </span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="mb-3">
+                  <label for="organiser" class="form-label">Organiser</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="organiser"
+                    [value]="loggedInUser" disabled
+                  >
+                </div>
+                <div class="mb-3">
+                  <label for="attendees" class="form-label">Attendees / Participants</label>
+                  <textarea
+                    class="form-control"
+                    id="attendees"
+                    rows="6"
+                    formControlName="guests"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <div class="row">
+              <div class="col-sm-12 mb-3">
+                <label for="title" class="form-label">Title / Subject</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  formControlName="eventTitle"
+                >
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-12 mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="location"
+                      formControlName="location"
+                    >
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-sm-6">
+                    <label for="timeFrom" class="form-label">Time From</label>
+                    <select class="form-control" id="timeFrom" formControlName="fromDate">
+                      <option *ngFor="let time of slicedTime" [value]="time">
+                        <span>{{ time | date: 'shortTime' }}</span>
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-sm-6">
+                    <label for="timeTo" class="form-label">Time To</label>
+                    <select class="form-control" id="timeTo" formControlName="toDate">
+                      <option *ngFor="let time of slicedTime" [value]="time">
+                        <span>{{ time | date: 'shortTime' }}</span>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <label for="status" class="form-label">Status</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="status"
+                      formControlName="status"
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <label for="details" class="form-label">Description / Details</label>
+                <textarea
+                  class="form-control"
+                  id="details"
+                  rows="8"
+                  formControlName="details"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <button
+              class="btn btn-link text-primary"
+              (click)="activateCreateEvent('DAY')"
+            >Back
+            </button>
+          </div>
+          <div class="col-sm-2 offset-sm-8 text-end">
+            <button
+              class="btn btn-link text-primary"
+              (click)="createEvent()"
+            >Save</button>
+          </div>
+        </div>
+      </form>
+    </ng-container>
+
+  </div>
+</div>
