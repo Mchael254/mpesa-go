@@ -1,0 +1,128 @@
+.right, .left {
+  padding: 5px;
+}
+
+.left p, #sub-category-name {
+  color: #00529b;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.right .card, .left .card {
+  min-height: 65vh;
+}
+
+.right .card .card-body {
+  padding: 0;
+}
+
+.right .preview-top {
+  border-bottom: solid 1px #edf1f7;
+  padding: 10px;
+}
+
+.preview-nav {
+  background: #00529B0A;
+  padding: 10px 0 10px 20px;
+}
+
+.preview-nav .icons{
+  font-size: 20px;
+  color: #343A4080;
+  margin: 0 15px;
+}
+
+.preview-nav .visualizations {
+  background: #fff;
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.preview-nav .visualizations ul {
+  padding: 0;
+}
+
+.preview-nav .visualizations ul li {
+  list-style-type: none;
+  margin-left: 0;
+  padding-right: 1rem;
+}
+
+.chart-type {
+  cursor: pointer;
+  font-size: 1.1em;
+  color: gray;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+
+.chart-type:hover {
+  cursor: pointer;
+  font-size: 1.1em;
+  color: #00529B;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+
+.modal-content {
+  margin-top: 10vh;
+}
+
+#saveReportModal .left {
+  border-right: solid 1px #D0DAE3;
+}
+
+#saveReportModal ul {
+  margin-left: -30px;
+}
+
+#saveReportModal .active-folder {
+  background: #D0DAE3;
+}
+
+#saveReportModal .report-row {
+  margin: 10px 20px 20px;
+  height: 200px;
+  overflow-y: scroll;
+}
+
+#saveReportModal ul li, #saveReportModal .report-item {
+  list-style-type: none;
+  margin: 10px 0;
+  padding: 5px;
+  cursor: pointer;
+  color: gray;
+}
+
+#saveReportModal ul li:hover, #saveReportModal .report-item:hover {
+  background: #D0DAE3;
+}
+
+#saveReportModal li i, #saveReportModal .report-item i {
+  margin-right: 5px;
+  color: #00529b;
+}
+
+.criteria-preview {
+  text-align: right;
+}
+
+/*primeng style*/
+.container .row .p-dropdown .p-dropdown-label.p-placeholder,
+.p-dropdown.p-dropdown-clearable .p-dropdown-label {
+  font-size: 0.5em;
+}
+
+:host ::ng-deep .p-dropdown span{
+  font-size: 0.9em;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.5em;
+  font-size: 0.9em;
+  color: #00529b!important;
+}

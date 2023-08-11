@@ -9,6 +9,7 @@ export class DynamicChartComponent implements OnInit {
 
   @Input() public basicData: any;
   @Input() public chartType: any;
+  @Input() public chartTitle: string;
   public barChartOptions: any;
   public pieChartOptions: any;
   public doughnutChartOptions: any;
