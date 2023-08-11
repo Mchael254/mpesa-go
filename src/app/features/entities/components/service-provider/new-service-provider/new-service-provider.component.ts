@@ -3,13 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import {  
   ContactsDTO,
-  CurrenciesDto,
+  
          ProviderTypeDto, 
          ServiceProviderDTO,
          ServiceProviderRequestDTO, 
         } from '../../../data/ServiceProviderDTO';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
-import { BankBranchDTO, BankDTO } from 'src/app/shared/data/common/bank-dto';
+import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
 import { DatePipe } from '@angular/common';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +24,12 @@ import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
 import { PaymentDetailsDTO, WealthAmlDTO } from '../../../data/accountDTO';
 import { AddressDTO } from '../../../data/AgentDTO';
+import { BankService } from 'src/app/shared/services/setups/bank.service';
+import { CountryService } from 'src/app/shared/services/setups/country.service';
+import {MandatoryFieldsService} from 'src/app/shared/services/mandatory-fields.service'
+import { SectorService } from 'src/app/shared/services/setups/sector.service';
+import { ClientService } from '../../../services/client/client.service';
+import { OccupationService } from 'src/app/shared/services/setups/occupation.service';
 @Component({
   selector: 'app-new-service-provider',
   templateUrl: './new-service-provider.component.html',
@@ -57,7 +63,7 @@ export class NewServiceProviderComponent {
   citiesData: StateDto[] = [];
   townData: TownDto[] = [];
   sectorData : SectorDTO[];
-  currenciesData : CurrenciesDto[];
+  currenciesData :CurrencyDTO[];
   banksData: BankDTO[];
   bankBranchData: BankBranchDTO[];
   clientTitlesData : ClientTitlesDto[];
@@ -138,8 +144,14 @@ export class NewServiceProviderComponent {
     private globalMessagingService: GlobalMessagingService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
-    private service:ServiceProviderService,
-    private utilService:UtilService
+    private serviceProviderService:ServiceProviderService,
+    private utilService:UtilService,
+    private bankService:BankService,
+    private countryService: CountryService,
+    private mandatoryService:MandatoryFieldsService,
+    private sectorService:SectorService,
+    private clientService:ClientService,
+    private occupationService:OccupationService
   ) { }
 
   ngOnInit(): void {
@@ -250,7 +262,7 @@ export class NewServiceProviderComponent {
 
     });
     // this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
-    this.service
+    this.serviceProviderService
       .currentEntity$
       .pipe(
         takeUntil(this.destroyed$),
@@ -259,7 +271,7 @@ export class NewServiceProviderComponent {
         currentEntity => this.entityDetails = currentEntity
       );
     console.log('Entities data to service provider', this.entityDetails);
-    this.service.getMandatoryFieldsByGroupId(this.groupId).pipe(
+    this.mandatoryService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
     )
       .subscribe((response) =>{
@@ -376,7 +388,7 @@ export class NewServiceProviderComponent {
     });
   }
   getBanks(countryId: number) {
-    this.service.getBanks(countryId)
+    this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.banksData = data
@@ -389,7 +401,7 @@ export class NewServiceProviderComponent {
     });
     // Call getBanks with the selected country ID
     this.getBanks(this.selectedCountry);
-    this.service.getMainCityStatesByCountry(this.selectedCountry)
+    this.countryService.getMainCityStatesByCountry(this.selectedCountry)
       .pipe(untilDestroyed(this))
       .subscribe( (data) => {
         this.citiesData = data;
@@ -397,7 +409,7 @@ export class NewServiceProviderComponent {
     this.cdr.detectChanges();
   }
   onCityChange() {
-    this.service.getTownsByMainCityState(this.selectedCityState)
+    this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
       .subscribe( (data) => {
         this.townData = data;
@@ -428,7 +440,7 @@ export class NewServiceProviderComponent {
   }
   getBankBranches(bankId: number) {
     if (bankId) {
-      this.service.getBankBranchesByBankId(bankId).subscribe((branches) => {
+      this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {
         this.bankBranchData = branches;
       });
     } else {
@@ -616,7 +628,7 @@ export class NewServiceProviderComponent {
 
 
       }
-      this.service.saveServiceProvider(saveServiceProvider)
+      this.serviceProviderService.saveServiceProvider(saveServiceProvider)
         .pipe(
           takeUntil(this.destroyed$),
         )
@@ -632,7 +644,7 @@ export class NewServiceProviderComponent {
 
   fetchCountries(){
     console.log('Fetching countries list');
-    this.service.getCountries()
+    this.countryService.getCountries()
       .subscribe( (data) => {
         this.countryData = data;
         // if(this.countryData){
@@ -643,7 +655,7 @@ export class NewServiceProviderComponent {
       });
   }
   getSectors() {
-    this.service.getSectors()
+    this.sectorService.getSectors(2)
       .pipe(
         untilDestroyed(this)
       )
@@ -655,7 +667,7 @@ export class NewServiceProviderComponent {
       );
   }
   getCurrencies() {
-    this.service.getCurrencies()
+    this.bankService.getCurrencies()
       .pipe(
         takeUntil(this.destroyed$),
       )
@@ -666,7 +678,7 @@ export class NewServiceProviderComponent {
       );
   }
   getClientTitles() {
-    this.service.getClientTitles()
+    this.serviceProviderService.getClientTitles()
       .pipe(
         takeUntil(this.destroyed$),
       )
@@ -677,7 +689,7 @@ export class NewServiceProviderComponent {
       );
   }
   getIdentityType() {
-    this.service.getIdentityType()
+    this.clientService.getIdentityType()
       .pipe(
         takeUntil(this.destroyed$),
       )
@@ -688,7 +700,7 @@ export class NewServiceProviderComponent {
       );
   }
   getOccupation() {
-    this.service.getOccupation()
+    this.occupationService.getOccupations(2)
       .pipe(
         takeUntil(this.destroyed$),
       )
@@ -699,7 +711,7 @@ export class NewServiceProviderComponent {
       );
   }
   getServiceProviderType() {
-    this.service.getServiceProviderType()
+    this.serviceProviderService.getServiceProviderType()
       .pipe(
         takeUntil(this.destroyed$),
       )
