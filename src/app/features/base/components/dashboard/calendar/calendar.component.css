@@ -1,0 +1,40 @@
+.create-event-button {
+  background: #fff;
+  color: #00529B;
+  padding: 5px 10px;
+  float: right;
+  font-weight: bold
+}
+
+.events {
+  background: #e6eef5;
+  color: #000;
+  margin: 5px 0 0;
+  padding: 5px;
+  height: 390px;
+  overflow-y: auto;
+  position: relative
+}
+
+.event {
+  background: #fff;
+  color: #000;
+  margin: 5px auto;
+  padding: 10px;
+  border-radius: 5px
+}
+
+::ng-deep .calendar-input .p-inputtext {
+  border: none !important;
+}
+
+::ng-deep .calendar-input .p-button {
+  background: #fff !important;
+  color: #00529b !important;
+  border: none;
+}
+
+::ng-deep .calendar-input .pi {
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+}

@@ -1,1 +1,305 @@
-<p>view-entity works!</p>
+<div class="mx-4 my-4">
+    <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
+                aria-controls="ex1-tabs-1" aria-selected="false">Overview</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
+                aria-selected="true">Transactions</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+                aria-selected="false">Reports</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="ex1-content">
+        <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-2" (change)="onFileChange($event)">
+                                    <img *ngIf="url !== '' && url" [src]="url" alt="" class="img_upload" />
+                                    <input type="file" id="inputUploadProfile" formControlName="profilePicture" hidden />
+                                    <label *ngIf="url === ''" for="inputUploadProfile" class="img_upload"></label>
+                                    <div>
+                                        <label for="inputUploadProfile" *ngIf="url === ''" class="img_edit">
+                                            <i class="fa fa-camera" aria-hidden="true"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-4 entityTitle">
+                                    <h2>{{ entityPartyIdDetails?.name | titlecase }}</h2>
+                                    <select id="rolesDropDown" (change)="selectAccount($event)">
+                                        <option *ngFor="let role of entityAccountIdDetails" [value]="role.id"
+                                            [selected]="partyAccountDetails?.partyType?.partyTypeName === role.partyType.partyTypeName">
+                                            {{ role?.partyType.partyTypeName }} Account
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-6 account_role_actions float-end">
+                                    <button class="img_up" id="btn-assign-roles" data-bs-toggle="modal" data-bs-target="#selectRoleModal">
+                                        <i class="pi pi-user-plus" aria-hidden="true"></i>
+                                        Assign Role
+                                    </button>
+                                    <button class="img_up" id="btn-manage-roles" (click)="manageRoles(entityPartyIdDetails?.id)">
+                                        <i class="pi pi-user-edit" aria-hidden="true"></i>
+                                        Manage Roles
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-transparent">Profile</div>
+                        <div class="card-body">
+                            <div *ngFor="let role of entityAccountIdDetails" class="accounts_container">
+                                <label for="partyType" class="entity_accounts_list">
+                                    <span (click)="editEntities(entityPartyIdDetails?.id)" id="rolesName" style="cursor: pointer;">
+                                        {{ role?.partyType.partyTypeName }}</span><br>
+                                    <span id="roleAssignDate">{{ role?.effectiveDateFrom | date: 'dd-MMM-yyy' }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-transparent">
+                            Client Information
+                        </div>
+                        <div class="card-body">
+                            <div class="row entityAccountDetails">
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col-12 entityLabels">
+                                            <label for="location">Location</label><br><br
+                                                *ngIf="partyAccountDetails?.address?.physical_address == null">
+                                            <p class="entityDetails" id="location">{{ partyAccountDetails?.address?.physical_address
+                                                }}</p>
+                                        </div>
+                                        <div class="col-12 entityLabels">
+                                            <label for="phoneNumber">Phone Number</label><br><br *ngIf="partyAccountDetails?.contactDetails?.phoneNumber  == null">
+                                            <p class="entityDetails" id="phoneNumber">{{ partyAccountDetails?.contactDetails?.phoneNumber }}</p>
+                                        </div>
+                                        <div class="col-12 entityLabels">
+                                            <label for="emailAddress">Email Address</label><br>
+                                            <p class="entityDetails" id="emailAddress">{{ partyAccountDetails?.contactDetails?.emailAddress }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                      <div class="col-12 entityLabels">
+                                        <label for="status">Status</label><br><br *ngIf="partyAccountDetails?.status  == null">
+                                        <p class="entityDetails" id="status" style="color: #04B400;">{{ partyAccountDetails?.status }}</p>
+                                      </div>
+                                      <div class="col-12 entityLabels">
+                                        <label for="type">Type</label><br><br *ngIf="partyAccountDetails?.category  == null">
+                                        <p class="entityDetails" id="type">{{ partyAccountDetails?.category }}</p>
+                                      </div>
+                                      <div class="col-12 entityLabels">
+                                        <label for="customerSince">Customer Since</label><br>
+                                        <p class="entityDetails" id="customerSince">{{ partyAccountDetails?.effectiveDateFrom | date: 'dd-MMM-yyy' }}</p>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                      <div class="col-12 entityLabels">
+                                        <label for="taxId">Tax ID</label><br>
+                                        <p class="entityDetails" id="taxId">{{ partyAccountDetails?.pinNumber }}</p>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-transparent">Basic Information</div>
+                            <div class="card-body">
+
+                                <div class="row entityAccountDetails">
+                                    <div class="col-4">
+                                      <div class="row">
+                                        <div class="col-12 entityLabels">
+                                          <label class="mb-1" for="entityName">Entity Name</label><br><br *ngIf="entityPartyIdDetails?.name == null">
+                                          <p class="entityDetails" id="entityName">{{ entityPartyIdDetails?.name}}</p>
+                                        </div>
+                                        <div class="col-12 entityLabels">
+                                          <label class="mb-1" for="pinNumber">Pin Number</label><br>
+                                          <p class="entityDetails" id="pinNumber">{{ entityPartyIdDetails?.pinNumber }}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col-12 entityLabels">
+                                          <label class="mb-1" for="partyType">Party Type</label><br><br *ngIf="partyAccountDetails?.partyType?.partyTypeName == null">
+                                          <p class="entityDetails" id="partyType">{{ partyAccountDetails?.partyType?.partyTypeName  }}</p>
+                                        </div>
+                                        <div class="col-12 entityLabels">
+                                          <label class="mb-1" for="idNumber">ID Number</label><br>
+                                          <p class="entityDetails" id="idNumber">{{ entityPartyIdDetails?.identityNumber }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col-12 entityLabels">
+                                          <label class="mb-1" for="partyIdType">Party ID Type</label><br>
+                                          <p class="entityDetails" id="partyIdType">{{ entityPartyIdDetails?.modeOfIdentity.name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 entityAccInfo">
+                    <div class="card">
+                        <div class="card-header bg-transparent">More Information</div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6 card-view ">
+                                    <div class="card-content">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-user fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Client Details</h6>
+                                            <p>View Entity Details</p>
+                                        </span>
+                                        <span class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6 card-view ">
+                                    <div class="card-content" (click)="goToViewClaims(entityPartyIdDetails?.id)">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-heart fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Claims</h6>
+                                            <p>View claims</p>
+                                        </span>
+                                        <span  class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 card-view">
+                                    <div class="card-content" (click)="goToViewQuotations(entityPartyIdDetails?.id)">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-cart-shopping fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Quotations</h6>
+                                            <p>View Quotations</p>
+                                        </span>
+                                        <span class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6 card-view">
+                                    <div class="card-content" (click)="goToViewPayments()">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-credit-card fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Payments</h6>
+                                            <p>View Payments</p>
+                                        </span>
+                                        <span  class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6 card-view">
+                                    <div class="card-content" (click)="goToViewPolicies(entityPartyIdDetails?.id)">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-shield fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Policies</h6>
+                                            <p>View Policies</p>
+                                        </span>
+                                        <span class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6 card-view">
+                                    <div class="card-content">
+                                        <span class="img-left">
+                                            <i class="fa-solid fa-cube fa-2xl"></i>
+                                        </span>
+                                        <span class="card-txt">
+                                            <h6>Related Accounts</h6>
+                                            <p>View Related Accounts</p>
+                                        </span>
+                                        <span  class="img-right">
+                                            <i class="fa-solid fa-grid fa-2xl"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+            Transactions Content
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+            Reports Content
+        </div>
+    </div>
+</div>
+<!-- modal -->
+<form [formGroup]="selectRoleModalForm" aria-labelledby="title">
+    <div class="modal fade" id="selectRoleModal" tabindex="-1" role="dialog" aria-labelledby="selectRoleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" #closebutton class="close" data-bs-dismiss="modal" aria-label="Close"
+                        id="closeBtn">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h6>Roles</h6>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-check form-check-inline"
+                                            *ngFor="let role of unAssignedPartyTypes">
+                                            <input class="form-check-input" type="radio" name="partyType"
+                                                id="radioRoles" [value]="role.partyTypeName" formControlName="partyType"
+                                                (click)="onAssignRole(role)">
+                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName
+                                                }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

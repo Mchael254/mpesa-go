@@ -1,0 +1,68 @@
+/* Horizontal Stepper Styles */
+.rt-container {
+  display: flex;
+  justify-content: center;
+  border: 1px solid #b2b4b7;
+  padding: 2.4rem 0.1rem;
+  border-radius: 3px;
+  margin-top: 1.5rem;
+  background-color: white;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  color: gray;
+  margin-right: 0.2em;
+}
+
+.step:last-child {
+  margin-right: 0; /* Remove right margin for the last step */
+}
+
+.step.step-active {
+  color: #010101;
+}
+
+.step.step-active .circle {
+  background-color: var(--primary)
+}
+
+.step.done .circle {
+  background-color: #0cdd08;
+}
+
+/* Circle */
+.circle {
+  background: rgb(0, 0, 0);
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  border-radius: 100%;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 0 3px #fff;
+  margin-bottom: 0.5em;
+}
+
+/* Connecting Line between Step 1 and Step 2 */
+.step.done::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 1.5em; /* Adjust the width for the horizontal line */
+  height: 2px;
+  background-color: green; /* Change the color to green */
+  transform: translateY(-50%);
+  z-index: -1;
+}
+
+/* Stepper Titles */
+.title {
+  font-weight: bold;
+  font-size: 0.8rem;
+  margin-top: 0.5em; /* Add margin-top for the title */
+}

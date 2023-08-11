@@ -1,0 +1,23 @@
+/**
+Staff Manager Dropdown
+*/
+.dropdown-wrapper {
+  font-size: 1rem;
+  font-weight: 400;
+  position: relative;
+  display: block;
+  border: none;
+}
+.staff-supervisor-input{
+  height: calc(1.5em + 0.75rem + 2px);
+  --bs-input-height: calc(1.5em + 0.75rem + 2px);
+  border-color: #dee2e6;
+}
+.staff-supervisor-input:focus,
+.dropdown-wrapper:focus{
+  border: none;
+}
+.staff-manager-dropdown-icon{
+  right: 10px;
+  cursor: pointer;
+}

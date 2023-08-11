@@ -16,6 +16,7 @@ import {
 } from "./components/service-provider/new-service-provider/new-service-provider.component";
 import {EditComponent} from "./components/edit/edit.component";
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
+import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
 
 const routes: Routes = [
     {
@@ -35,8 +36,11 @@ const routes: Routes = [
       component: ViewEntityComponent,
     },
     {
+      path: 'manage-roles/:id',
+      component: RelatedAccountsComponent,
+    },
+    {
       path: 'staff',
-      component: ListStaffComponent,
       children: [
         {
           path: 'list',
@@ -50,7 +54,6 @@ const routes: Routes = [
     },
     {
       path: 'client',
-      component: ListClientComponent,
       children: [
         {
           path: 'list',
@@ -64,7 +67,6 @@ const routes: Routes = [
     },
     {
       path: 'intermediary',
-      component: ListIntermediaryComponent,
       children: [
         {
           path: 'list',
@@ -78,8 +80,7 @@ const routes: Routes = [
     },
   {
     path: 'service-provider',
-    component: ListServiceProviderComponent,
-    children: [
+      children: [
       {
         path: 'list',
         component: ListServiceProviderComponent,
@@ -91,7 +92,7 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'edit',
+    path: 'edit/:id',
     component: EditComponent
   }
 ]

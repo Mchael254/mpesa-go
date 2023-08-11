@@ -1,25 +1,29 @@
 <div class="content-nav">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary fadeIn" style="border-bottom: 1px solid #00539b14;">
       <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="navbar">
                   <li class="nav-item">
-                      <a class="nav-link" href="#">Dashboard</a>
+                      <a (click)="dynamicSideBarMenu(defaultSidebar)" class="nav-link" href="#" routerLink="/home/dashboard" style="font-weight: 700;"><i class="fa-solid fa-house-chimney" style="padding-right: 6px; font-size: 20px;"></i>Dashboard</a>
                   </li>
-                  <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Accounts
+                  <li class="nav-item dropdown" >
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-file-invoice-dollar" style="padding-right: 6px; font-size: 20px;"></i>Accounts
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                        <ng-container *ngFor="let account of accountSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(account,true)">{{account['name']}}</a></li>
+                        </ng-container>
                       </ul>
                   </li>
-                  <li class="nav-item dropdown">
+                  <!-- <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Quotations
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                        <ng-container *ngFor="let claim of claimSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
+                        </ng-container>
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
@@ -27,49 +31,59 @@
                           Policies
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                        <ng-container *ngFor="let claim of claimSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
+                        </ng-container>
                       </ul>
-                  </li>
+                  </li> -->
                   <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Reinsurance
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-handshake-angle" style="padding-right: 6px; font-size: 20px;"></i>Reinsurance
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                        <ng-container *ngFor="let claim of reinsuranceubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
+                        </ng-container>
                       </ul>
                   </li>
-                  <li class="nav-item dropdown">
+                  <!-- <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Claims
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                        <ng-container *ngFor="let claim of claimSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
+                        </ng-container>
+                      </ul>
+                  </li> -->
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-people-group" style="padding-right: 6px; font-size: 20px;"></i>Team
+                      </a>
+                      <ul class="dropdown-menu">
+                        <ng-container *ngFor="let team of teamSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(team)">{{team['name']}}</a></li>
+                        </ng-container>
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Team
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-weight: 700;">
+                        <i class="fa-solid fa-toolbox" style="padding-right: 6px; font-size: 20px;"></i>Administration
                       </a>
                       <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
-                      </ul>
-                  </li>
-                  <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Administration
-                      </a>
-                      <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
+                          <ng-container *ngFor="let admin of administationSubMenuList">
+                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(admin)">{{admin['name']}}</a></li>
+                        </ng-container>
                       </ul>
                   </li>
               </ul>
               <div class="d-flex" id="chart">
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                       <li class="nav-item">
-                          <a class="nav-link" href="#">New Chart</a>
+                          <a class="nav-link" routerLink="./reports"><i class="fa-solid fa-chart-simple" style="padding-right: 6px; font-size: 20px;"></i>New Chart</a>
                       </li>
                       <li class="nav-item">
-                          <a class="nav-link" href="#">Analytics</a>
+                          <a class="nav-link" routerLink="./reports"><i class="fa-solid fa-chart-pie" style="padding-right: 6px; font-size: 20px;"></i>Analytics</a>
                       </li>
                   </ul>
               </div>

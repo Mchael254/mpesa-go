@@ -12,7 +12,9 @@
     <ng-container *ngFor="let field of formFields">
       <div class="col mb-3"> <!-- Add margin-bottom for spacing between fields -->
         <div class="form-group px-3"> <!-- Add horizontal padding to each field -->
-          <label [for]="field.name" class="form-label" [class.required]="field.required">{{ field.label }}</label>
+          <label *ngIf="field.type !== 'checkbox'"  [for]="field.name" class="form-label" [class.required]="field.required">{{ field.label }}</label>
+
+          <input *ngIf="field.type === 'file'" [formControlName]="field.name" [type]="field.type" class="form-control" [placeholder]="field.placeholder" [id]="field.name" multiple>
 
           <!-- Input type text -->
           <input *ngIf="field.type === 'text'" [formControlName]="field.name" [type]="field.type || 'text'" class="form-control" [placeholder]="field.placeholder" >
@@ -31,9 +33,11 @@
             <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
           </select>
 
+
+
           <!-- Checkbox -->
-          <div *ngIf="field.type === 'checkbox'" class="form-check">
-            <input [formControlName]="field.name" type="checkbox" class="form-check-input" >
+          <div *ngIf="field.type === 'checkbox'" class="form-check form-switch">
+            <input [formControlName]="field.name" type="checkbox" role="switch" class="form-check-input" checked>
             <label class="form-check-label">{{ field.label }}</label>
           </div>
         </div>
@@ -59,7 +63,7 @@
   <!-- Center Button -->
   <div class="flex-grow-1"></div>
   <ng-container *ngIf="actionButtonConfig.center.alignment === 'center'">
-    <button *ngIf="actionButtonConfig.center.visible" type="button" (click)="onCenterAction()" [disabled]="!actionButtonConfig.center.enabled" class="btn btn-primary btn-sm">
+    <button *ngIf="actionButtonConfig.center.visible" type="button" (click)="onCenterAction()" class="btn btn-primary btn-sm">
       {{ actionButtonConfig.center.label }} <i class="bi bi-check"></i>
     </button>
   </ng-container>

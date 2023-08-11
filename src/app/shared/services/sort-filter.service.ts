@@ -3,10 +3,7 @@ import {Observable} from "rxjs/internal/Observable";
 import {Pagination} from "../data/common/pagination";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from "../../core/config/app-config-service";
-import {AgentDTO} from "../../account/intermediary/intermediary-dto";
-import {StaffDto, StaffResDto} from "../../account/staff/models/staffDto";
-import {EntityDto} from "../../account/entity/entityDto";
-import { ClientDTO } from '../../account/client/clientDTO';
+import {StaffDto} from "../../features/entities/data/StaffDto";
 
 @Injectable({
   providedIn: 'root'
@@ -21,100 +18,100 @@ export class SortFilterService {
     private appConfig: AppConfigService
   ) { }
 
-  /*Sort by date created*/
-  dateSortIntermerdiary(
-    /*page: number = 0,
-    size: number = 5,*/
-    sortListFields: string,
-    order: string
-  ): Observable<Pagination<AgentDTO>> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    const params = new HttpParams()
-      /* .set('page', `${page}`)
-       .set('size', `${size}`)*/
-      .set('dateCreated', `${sortListFields}`)
-      .set('order', `${order}`)
-      .set('organizationId', 2);
-
-    return this.http.get<Pagination<AgentDTO>>(`/${this.baseUrl}/accounts/agents`,
-      {
-        headers: headers,
-        params: params,
-      });
-  }
-  dateSortClients(
-    /*page: number = 0,
-    size: number = 5,*/
-    sortListFields: string,
-    order: string
-  ): Observable<Pagination<ClientDTO>> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    const params = new HttpParams()
-      /* .set('page', `${page}`)
-       .set('size', `${size}`)*/
-      .set('dateCreated', `${sortListFields}`)
-      .set('order', `${order}`)
-      .set('organizationId', 2);
-
-    return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`,
-      {
-        headers: headers,
-        params: params,
-      });
-  }
-  dateSortStaff(
-    /*page: number = 0,
-    size: number = 5,*/
-    userType: string,
-    sortListFields: string,
-    order: string
-  ): Observable<Pagination<StaffDto>> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    const params = new HttpParams()
-      /* .set('page', `${page}`)
-       .set('size', `${size}`)*/
-      .set('userType', `${userType}`)
-      .set('dateCreated', `${sortListFields}`)
-      .set('order', `${order}`)
-      .set('groupId', 1);
-
-    return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`,
-      {
-        headers: headers,
-        params: params,
-      });
-  }
-  dateSortEntities(
-    /*page: number = 0,
-    size: number = 5,*/
-    sortListFields: string,
-    order: string
-  ): Observable<Pagination<EntityDto>> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    const params = new HttpParams()
-      /* .set('page', `${page}`)
-       .set('size', `${size}`)*/
-      .set('dateCreated', `${sortListFields}`)
-      .set('order', `${order}`);
-
-    return this.http.get<Pagination<EntityDto>>(`/${this.baseUrl}/accounts/parties/all-parties`,
-      {
-        headers: headers,
-        params: params,
-      });
-  }
+  // /*Sort by date created*/
+  // dateSortIntermerdiary(
+  //   /*page: number = 0,
+  //   size: number = 5,*/
+  //   sortListFields: string,
+  //   order: string
+  // ): Observable<Pagination<AgentDTO>> {
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   })
+  //   const params = new HttpParams()
+  //     /* .set('page', `${page}`)
+  //      .set('size', `${size}`)*/
+  //     .set('dateCreated', `${sortListFields}`)
+  //     .set('order', `${order}`)
+  //     .set('organizationId', 2);
+  //
+  //   return this.http.get<Pagination<AgentDTO>>(`/${this.baseUrl}/accounts/agents`,
+  //     {
+  //       headers: headers,
+  //       params: params,
+  //     });
+  // }
+  // dateSortClients(
+  //   /*page: number = 0,
+  //   size: number = 5,*/
+  //   sortListFields: string,
+  //   order: string
+  // ): Observable<Pagination<ClientDTO>> {
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   })
+  //   const params = new HttpParams()
+  //     /* .set('page', `${page}`)
+  //      .set('size', `${size}`)*/
+  //     .set('dateCreated', `${sortListFields}`)
+  //     .set('order', `${order}`)
+  //     .set('organizationId', 2);
+  //
+  //   return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`,
+  //     {
+  //       headers: headers,
+  //       params: params,
+  //     });
+  // }
+  // dateSortStaff(
+  //   /*page: number = 0,
+  //   size: number = 5,*/
+  //   userType: string,
+  //   sortListFields: string,
+  //   order: string
+  // ): Observable<Pagination<StaffDto>> {
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   })
+  //   const params = new HttpParams()
+  //     /* .set('page', `${page}`)
+  //      .set('size', `${size}`)*/
+  //     .set('userType', `${userType}`)
+  //     .set('dateCreated', `${sortListFields}`)
+  //     .set('order', `${order}`)
+  //     .set('groupId', 1);
+  //
+  //   return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`,
+  //     {
+  //       headers: headers,
+  //       params: params,
+  //     });
+  // }
+  // dateSortEntities(
+  //   /*page: number = 0,
+  //   size: number = 5,*/
+  //   sortListFields: string,
+  //   order: string
+  // ): Observable<Pagination<EntityDto>> {
+  //   const headers = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Accept': 'application/json',
+  //   })
+  //   const params = new HttpParams()
+  //     /* .set('page', `${page}`)
+  //      .set('size', `${size}`)*/
+  //     .set('dateCreated', `${sortListFields}`)
+  //     .set('order', `${order}`);
+  //
+  //   return this.http.get<Pagination<EntityDto>>(`/${this.baseUrl}/accounts/parties/all-parties`,
+  //     {
+  //       headers: headers,
+  //       params: params,
+  //     });
+  // }
 
   sortStaff(
       userType: string,
@@ -123,7 +120,7 @@ export class SortFilterService {
       groupId: number = 1,
       page: number = 0,
       size: number = 5
-  ): Observable<Pagination<StaffResDto>> {
+  ): Observable<Pagination<StaffDto>> {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
