@@ -1,0 +1,65 @@
+<div>
+    <!-- Top Header Text and Breadcrumb !-->
+    <div class="d-flex justify-content-between my-4 ms-4">
+        <div class="mr-auto p-2">
+            <h6 class="htxt page-header">Manage Roles</h6>
+        </div>
+        <div class="me-4 float-end">
+            <!-- <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
+            </app-dynamic-breadcrumb> -->
+            <div class="row">
+                <form [formGroup]="dateForm">
+                    <input type="date" id="requestdate" class="form-control" formControlName="requestdate"/>
+                </form>
+                <!-- <button class="btn btn-primary">
+                    <i class="fa fa-calendar"></i>
+                </button>
+                <button class="btn btn-primary"><i class="fa fa-sync"></i></button>
+                <button class="btn btn-primary"><i class="fa fa-filter"></i></button> -->
+            </div>
+        </div>
+    </div>
+    <!-- Top Buttons !-->
+    <!-- <div class="d-flex my-4 ms-4">
+        <button type="button" class="btn btn-primary rounded-1 px-3 me-3" (click)="createEntity()">New Entity</button>
+        <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i
+                class="fa fa-filter pe-2"></i>Filter</button>
+    </div> -->
+    <div class="my-4 ms-4 me-4">
+        <p-table [autoLayout]="true" [lazy]="true" [paginator]="true" [rowHover]="true" [showCurrentPageReport]="true"
+            [rows]="pageSize" [totalRecords]="entityAccountIdDetails.length" [value]="entityAccountIdDetails"
+            styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable'
+            currentPageReportTemplate="{first} - {last} of {totalRecords}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="policyNumber" class="head">Role<p-sortIcon field="policyNumber"></p-sortIcon></th>
+                    <th pSortableColumn="product" class="head">WEF<p-sortIcon field="product"></p-sortIcon></th>
+                    <th pSortableColumn="status" class="head">WET<p-sortIcon field="status"></p-sortIcon></th>
+                    <th class="head">Status</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-entity>
+                <tr>
+                    <td class="body">{{ entity.partyType.partyTypeName | titlecase}}</td>
+                    <td class="body">{{ entity.effectiveDateFrom | date: 'dd-MMM-yyy' }}</td>
+                    <td class="body">{{ entity.effectiveDateTo | date: 'dd-MMM-yyy' }}</td>
+                    <td>
+                        <app-select-status [id]="entity.id" 
+                                           [statusList]="entity.statusList"
+                                           [currentValue]="entity.currentStatus"
+                                            (output)='changeStatus($event)'>
+                        </app-select-status>
+                    </td>
+        
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8">No role's found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <!-- <app-dynamic-table [tableDetails]="tableDetails" (onLazyLoad)="lazyLoadEntity($event)">
+        </app-dynamic-table> -->
+    </div>
+</div>
