@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -10,6 +10,8 @@ import { ViewEmployeeTransactionsComponent } from './components/staff-performanc
 import { ViewTicketsComponent } from './components/tickets/view-tickets/view-tickets.component';
 import { RiskDetailsComponent } from './components/tickets/view-tickets/risk-details/risk-details.component';
 import { TaxDetailsComponent } from './components/tickets/view-tickets/tax-details/tax-details.component';
+import {SharedModule} from "../../shared/shared.module";
+import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
 
 
 @NgModule({
@@ -19,14 +21,20 @@ import { TaxDetailsComponent } from './components/tickets/view-tickets/tax-detai
     ViewEmployeeTransactionsComponent,
     ViewTicketsComponent,
     RiskDetailsComponent,
-    TaxDetailsComponent
+    TaxDetailsComponent,
+    TicketDetailsComponent
   ],
     imports: [
         CommonModule,
         AdministrationRoutingModule,
         FormsModule,
         ReactiveFormsModule,
+        TableModule,
+        SharedModule,
         TableModule
+    ],
+    schemas: [
+      CUSTOM_ELEMENTS_SCHEMA
     ]
 })
 export class AdministrationModule { }

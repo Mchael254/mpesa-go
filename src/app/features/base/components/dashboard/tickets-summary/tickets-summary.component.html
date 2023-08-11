@@ -1,0 +1,31 @@
+<div class="card">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-9">
+        <h5 class="card-title">Tickets</h5>
+      </div>
+      <div class="col-sm-2">
+        <span class="text-danger fw-bold">{{ticketCountTotal}}</span>
+      </div>
+    </div>
+    <table class="table table-borderless">
+      <thead>
+      <tr>
+        <th>Tickets</th>
+        <th class="align-center">No. of Tickets</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let ticketCountPerModule of ticketCount">
+        <td>{{ticketCountPerModule.activityName}}</td>
+        <td style="text-align: center;">{{ticketCountPerModule.totalTickets}}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="text-end">
+        <a class="text-primary" (click)="goToViewTickets()">View all</a>
+      </div>
+    </div>
+  </div>
+</div>
