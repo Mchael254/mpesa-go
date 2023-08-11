@@ -1,6 +1,6 @@
+import { AccountStatus } from "./AccountStatus";
 import { kycInfoDTO } from "./accountDTO";
 import { PartyTypeDto } from "./partyTypeDto";
-// import {AccountStatus} from "./related-accounts/models/AccountStatus";
 
 export interface EntityDto {
   categoryName: string;
@@ -10,7 +10,7 @@ export interface EntityDto {
   effectiveDateTo: string;
   id: number;
   modeOfIdentity: IdentityModeDTO,
-  modeOfIdentityName: string
+  modeOfIdentityName?: string
   identityNumber: number;
   name: string;
   organizationId: number;
@@ -19,6 +19,7 @@ export interface EntityDto {
   profileImage: string;
   partyTypeId?: number;
 }
+
 
 export interface IdentityModeDTO {
   id?: number;
@@ -59,7 +60,7 @@ export interface AccountReqPartyId {
 
 export interface EntityRelatedAccount extends AccountReqPartyId{
   currentStatus?: string;
-  // statusList?: AccountStatus[]
+  statusList?: AccountStatus[]
 }
 
 export interface ReqPartyById {
