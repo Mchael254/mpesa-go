@@ -5,23 +5,33 @@ import {ViewEmployeeComponent} from "./components/staff-performance/view-employe
 import {
   ViewEmployeeTransactionsComponent
 } from "./components/staff-performance/view-employee-transactions/view-employee-transactions.component";
+import {ViewTicketsComponent} from "./components/tickets/view-tickets/view-tickets.component";
+import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
 
 const routes: Routes = [{
   path: '',
   component: AdministrationComponent},
 
     {
-      path: 'view-employee-transactions',
+      path: 'employee-transactions',
       component: ViewEmployeeTransactionsComponent
     },
     {
-      path: 'view-employee-transactions/:username',
+      path: 'employee-transactions/:username',
       component: ViewEmployeeTransactionsComponent
     },
     {
-      path: 'view-employees',
+      path: 'employees',
       component: ViewEmployeeComponent
-    }
+    },
+    {
+      path: 'tickets',
+      component: ViewTicketsComponent
+    },
+    {
+      path: 'ticket-details/:id',
+      component: TicketDetailsComponent
+    },
 
 ];
 

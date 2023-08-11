@@ -1,1 +1,229 @@
-<p>view-tickets works!</p>
+<div class="row">
+  <!--<div class="col-12">
+    <form [formGroup]="sortingForm" style="background: none; display: contents">
+      <div class="row col-6 pb-2" style="padding-left: 0; padding-right: 0;">
+        <div class="col-lg-3 col-sm-6">
+          <label>From</label><br>
+          <input type="date" formControlName="fromDate" (change)="sortTickets()">
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <label>To</label><br>
+          <input type="date" formControlName="toDate" (change)="sortTickets()">
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <label>Type</label><br>
+          <select formControlName="ticketTypes" id="type" (change)="sortTickets()">
+            <option value="" disabled selected>Select option</option>
+            <option value="">All</option>
+            <option *ngFor="let ticketTypes of ticketTypesData" value="{{ ticketTypes.shortDescription }}">{{ ticketTypes.description }}
+            </option>
+          </select>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+          <label>Module</label><br>
+          &lt;!&ndash;          <select formControlName="ticketModules" id="module" [(ngModel)]="selectedModule" (change)="searchModule($event)">&ndash;&gt;
+          <select formControlName="ticketModules" id="module" (change)="sortTickets()">
+            <option value="" selected>Select option</option>
+            <option value="">All</option>
+            <option *ngFor="let ticketModule of ticketModules"
+                    [ngValue]="ticketModule.shortDescription"
+            >
+              {{ ticketModule.description }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>-->
+</div>
+
+
+<div style="padding: 2rem 0 0 1rem;">
+  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>
+  <button class="btn btn-primary">Reassign</button>
+</div>
+<div class="my-4 mx-4">
+  <div class="card">
+    <div class="card-body">
+      <p-table 
+      [value]="filteredTickets" 
+      [tableStyle]="{ 'min-width': '50rem' }"
+      [paginator]="true"
+      [rows]="10"
+      [totalRecords]="filteredTickets.length"
+    >
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="head">
+              Select All
+            </th>
+            <th class="head" pSortableColumn="createdOn">
+              Created On <p-sortIcon field="createdOn"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketName">
+              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="refNo">
+              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="clientName">
+              Client <p-sortIcon field="clientName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="intermediaryName">
+              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketFrom">
+              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketAssignee">
+              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
+            </th>
+            <th>Actions</th>
+          </tr>
+            <tr>
+              <th class="head">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th>
+                <!--<p-columnFilter type="text" field="createdOn"></p-columnFilter>-->
+              </th>
+              <th>
+                <p-columnFilter type="text" field="ticketName"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="refNo"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="clientName"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
+              </th>
+              <th>
+                <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
+              </th>
+  
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ticket>
+            <tr>
+              <td class="body">
+                <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
+              </td>
+              <td class="body">{{ticket.createdOn | date: 'shortDate'}}</td>
+              <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
+              <td class="body">{{ ticket.refNo }}</td>
+              <td class="body">{{ ticket.clientName }}</td>
+              <td class="body">{{ ticket.intermediaryName }}</td>
+              <td class="body">{{ ticket.ticketFrom }}</td>
+              <td class="body">{{ ticket.ticketAssignee }}</td>
+              <td class="body" (click)="goToTicketDetails(ticket.ticketID)">View</td>
+            </tr>
+        </ng-template>
+    </p-table>
+      <!-- <p-table
+        #ticketsTable
+        [value]="filteredTickets"
+        [(selection)]="selectedTickets"
+        dataKey="ticketID"
+        [rows]="pageSize"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[5,10,25,50]"
+        [paginator]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [totalRecords]="filteredTickets.length"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [globalFilterFields]="globalFilterFields"
+        [tableStyle]="{'min-width':'75rem'}"
+        styleClass="p-datatable-sm"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="head">
+              Select All
+            </th>
+            <th class="head" pSortableColumn="createdOn">
+              Created On <p-sortIcon field="createdOn"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketName">
+              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="refNo">
+              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="clientName">
+              Client <p-sortIcon field="clientName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="intermediaryName">
+              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketFrom">
+              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketAssignee">
+              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
+            </th>
+            <th class="head">
+              Ticket ID
+            </th>
+          </tr>
+          <tr>
+            <th class="head">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="createdOn"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="refNo"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="clientName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketID"></p-columnFilter>
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ticket>
+          <tr>
+            <td class="body">
+              <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
+            </td>
+            <td class="body">{{ticket.createdOn | date: 'shortDate'}}</td>
+            <td class="body" style="cursor:pointer;">{{ ticket.ticketName }}</td>
+            <td class="body">{{ ticket.refNo }}</td>
+            <td class="body">{{ ticket.clientName }}</td>
+            <td class="body">{{ ticket.intermediaryName }}</td>
+            <td class="body">{{ ticket.ticketFrom }}</td>
+            <td class="body">{{ ticket.ticketAssignee }}</td>
+            <td class="body">{{ ticket.ticketID }}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8">No tickets found.</td>
+          </tr>
+        </ng-template>
+      </p-table> -->
+    </div>
+  </div>
+
+</div>
+
