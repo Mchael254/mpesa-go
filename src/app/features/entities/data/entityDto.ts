@@ -1,6 +1,6 @@
+import { AccountStatus } from "./AccountStatus";
 import { kycInfoDTO } from "./accountDTO";
 import { PartyTypeDto } from "./partyTypeDto";
-// import {AccountStatus} from "./related-accounts/models/AccountStatus";
 
 export interface EntityDto {
   categoryName: string;
@@ -60,7 +60,7 @@ export interface AccountReqPartyId {
 
 export interface EntityRelatedAccount extends AccountReqPartyId{
   currentStatus?: string;
-  // statusList?: AccountStatus[]
+  statusList?: AccountStatus[]
 }
 
 export interface ReqPartyById {
