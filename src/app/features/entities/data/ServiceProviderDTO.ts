@@ -141,14 +141,7 @@ export interface CreateServiceProviderDTO {
   vatNumber: string
   id: number,
 }
-export interface CurrenciesDto {
-  id: number,
-  symbol: string,
-  name: string,
-  roundingOff: number,
-  numberWord: string,
-  decimalWord: string
-}
+
 export interface ContactsDTO {
   emailAddress: string;
   id: number;
