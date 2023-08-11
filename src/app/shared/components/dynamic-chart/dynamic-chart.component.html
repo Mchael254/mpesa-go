@@ -1,13 +1,15 @@
-<div class="card">
-  <div class="card-body">
-    <div class="row">
-      <p class="text-primary">
-        Total Individual Premium <br>
-        <span class="fs-5">KSH 20,000</span>
-      </p>
-    </div>
-    <div class="row">
-      <p-chart height="400" [type]="chartType" [data]="basicData" [options]="basicOptions"></p-chart>
-    </div>
+
+<div class="row">
+  <div class="row">
+    <p class="text-primary fw-bold">
+      {{ chartTitle }} <br>
+      <!--<span class="fs-5">KSH 20,000</span>-->
+    </p>
   </div>
+  <p-chart
+    height="400"
+    [type]="chartType"
+    [data]="basicData"
+    [options]="basicOptions"
+  ></p-chart>
 </div>

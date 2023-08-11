@@ -23,6 +23,11 @@ html,body {
   border-color: #00529B;
   border-radius: 0;
   color: #fff;
+  margin-right: 5px;
+}
+
+.btn-outline-secondary {
+  border-radius: 0;
 }
 
 .btn-link, a {
@@ -32,8 +37,8 @@ html,body {
 .btn-full-width {
     width: 100%;
 }
-
 /* Root (global) ends*/
+
 
 /* Root Base n Dashboard starts*/
 .base-container {
@@ -270,7 +275,6 @@ h5.htxt {
 .form-control {
   border-radius: 0;
 }
-
 /*Login ends*/
 
 /*Common*/
