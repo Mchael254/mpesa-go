@@ -16,6 +16,7 @@ import {
 } from "./components/service-provider/new-service-provider/new-service-provider.component";
 import {EditComponent} from "./components/edit/edit.component";
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
+import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
 
 const routes: Routes = [
     {
@@ -33,6 +34,10 @@ const routes: Routes = [
     {
       path: 'view/:id',
       component: ViewEntityComponent,
+    },
+    {
+      path: 'manage-roles/:id',
+      component: RelatedAccountsComponent,
     },
     {
       path: 'staff',

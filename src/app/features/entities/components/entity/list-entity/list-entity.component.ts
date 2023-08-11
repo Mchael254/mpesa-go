@@ -102,7 +102,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
               entity.modeOfIdentityName = entity.modeOfIdentity.name
             });
             this.entities = data;
-            this.tableDetails.rows = this.entities.content;
+            this.tableDetails.rows = this.entities?.content;
             this.tableDetails.totalElements = this.entities?.totalElements;
             this.cdr.detectChanges();
           }

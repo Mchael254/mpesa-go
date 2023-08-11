@@ -26,6 +26,8 @@ import {TableModule} from "primeng/table";
 
 
 import { DatePipe } from '@angular/common';
+import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
+import { SelectStatusComponent } from './components/entity/select-status/select-status.component';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -41,7 +43,9 @@ import { DatePipe } from '@angular/common';
     EditComponent,
     ViewEntityComponent,
     StaffProfileComponent,
-    AssignAppsComponent
+    AssignAppsComponent,
+    RelatedAccountsComponent,
+    SelectStatusComponent
   ],
   imports: [
     CommonModule,
