@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ProviderTypeDto, ServiceProviderDTO} from '../../data/ServiceProviderDTO';
+import { ProviderTypeDto, ServiceProviderDTO, ServiceProviderRes} from '../../data/ServiceProviderDTO';
 import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
 import { MandatoryFieldsDTO } from 'src/app/shared/data/common/mandatory-fields-dto';
@@ -113,5 +113,17 @@ export class ServiceProviderService {
       'Accept': 'application/json'
     });
     return this.http.get<ProviderTypeDto[]>(`/${this.baseUrl}/accounts/service-provider-types`,{headers:headers});
+  }
+
+    /*Get a Service Provider by Id*/
+  getServiceProviderById(id: number): Observable<ServiceProviderRes> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+    return this.http.get<ServiceProviderRes>(`/${this.baseUrl}/accounts/service-providers/${id}`,
+      {
+        headers: headers,
+      });
   }
 }
