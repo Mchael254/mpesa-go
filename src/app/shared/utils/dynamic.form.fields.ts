@@ -6,5 +6,6 @@ export interface DynamicFormFields {
   disabled:boolean;
   placeholder?: string;
   pattern?: string;
-  options?: {value: 'string', label: 'string' }[]
+  value?: string;
+  options?: {value: string, label: string }[]
 }

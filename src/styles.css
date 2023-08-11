@@ -5,9 +5,30 @@
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 @import "assets/css/turnkey-styles.css";
 
-:root {
-  --primary: #00529B;
-  --secondary: #0DD3F1;
-  --light: #F6F7FC;
-  --dark: #15233C;
+
+
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+  animation-duration: 1s;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

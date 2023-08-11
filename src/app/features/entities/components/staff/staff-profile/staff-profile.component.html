@@ -1,0 +1,327 @@
+<div class="my-5 ms-5 me-5">
+  <form [formGroup]="staffRegistrationForm" class="clearfix">
+    <div class="col-sm-12">
+      <div class="card mb-3">
+        <div class="card-header bg-transparent font-weight-bold">
+          Prime Identity
+        </div>
+        <div class="card-body">
+          <div class="form-group row">
+            <ng-container *ngIf="visibleStatus.lastName === 'Y'">
+              <div class="col-sm-4">
+                <label for="lastName" class="label col-form-label">Surname</label>
+                <input type="text"  id="lastName" name="lastName" placeholder="Surname" class="form-control" formControlName="lastName"
+                       [ngClass]="{ 'is-invalid': f['lastName']?.invalid && (f['lastName']?.dirty || f['lastName']?.touched) }" [disabled]="true">
+                <div *ngIf="f['lastName']?.invalid && (f['lastName']?.dirty || f['lastName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['lastName']?.errors['required']">Last Name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.firstName === 'Y'">
+              <div class="col-sm-4">
+                <label for="firstName" class="label col-form-label">Other names</label>
+                <input type="text"  nbInput fullWidth id="firstName" name="firstName" placeholder="Other names" class="form-control" formControlName="firstName"
+                       [ngClass]="{ 'is-invalid': f['firstName']?.invalid && (f['firstName']?.dirty || f['firstName']?.touched) }" [disabled]="true">
+                <div *ngIf="f['firstName']?.invalid && (f['firstName']?.dirty || f['firstName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['firstName']?.errors['required']">First Name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.username === 'Y'">
+              <div class="col-sm-4">
+                <label for="username" class="label col-form-label">Username</label>
+                <input type="text"  nbInput fullWidth id="username" name="username" placeholder="username" class="form-control" formControlName="username"
+                       [ngClass]="{ 'is-invalid': f['username']?.invalid && (f['username']?.dirty || f['username']?.touched) }">
+                <div *ngIf="f['username']?.invalid && (f['username']?.dirty || f['username']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['username']?.errors['required']">Username is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.idNumber === 'Y'">
+              <div class="col-sm-4">
+                <label for="idNumber" class="label col-form-label">ID</label>
+                <input type="text"  nbInput fullWidth id="idNumber" placeholder="ID" class="form-control" formControlName="idNumber"  name="idNumber"
+                       [ngClass]="{ 'is-invalid': f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched) }">
+                <div *ngIf="f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['idNumber']?.errors['required']">Identity number is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.userType === 'Y'">
+              <div class="col-sm-4">
+                <label for="userType" class="label col-form-label">User Type</label>
+                <select  id="userType" name="userType" class="form-control" formControlName="userType"
+                         [ngClass]="{ 'is-invalid': f['userType']?.invalid && (f['userType']?.dirty || f['userType']?.touched) }">
+                  <option value="" selected disabled>User type</option>
+                  <option value="U" aria-selected="true">Individual</option>
+                  <option value="G">Group</option>
+                </select>
+                <div *ngIf="f['userType']?.invalid && (f['userType']?.dirty || f['userType']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['userType']?.errors['required']">User Type is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.dateOfBirth === 'Y'">
+              <div class="col-sm-4">
+                <label for="dateOfBirth" class="label col-form-label">Date of Birth</label>
+                <input type="text"  class="form-control" id="dateOfBirth" name="dateOfBirth" placeholder="D.O.B" class="form-control" formControlName="dateOfBirth"
+                       onfocus="(this.type='date')" onblur="(this.type='text')"
+                       [ngClass]="{ 'is-invalid': f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched) }">
+                <div *ngIf="f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['dateOfBirth']?.errors['required']">Date of birth is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.gender === 'Y'">
+              <div class="col-sm-4">
+                <label for="gender" class="label col-form-label">Gender</label>
+                <select id="gender" class="form-control" formControlName="gender" name="gender"
+                        [ngClass]="{ 'is-invalid': f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched) }">
+                  <option value="" selected disabled>Gender</option>
+                  <option value="M" aria-selected="true">Male</option>
+                  <option value="F">Female</option>
+                </select>
+                <div *ngIf="f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['gender']?.errors['required']">PIN Number is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.pinNumber === 'Y'">
+              <div class="col-sm-4">
+                <label for="pinNumber" class="label col-form-label">PIN</label>
+                <input type="text"  class="form-control" id="pinNumber" name="pinNumber" placeholder="PIN" class="form-control" formControlName="pinNumber"
+                       [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }" [disabled]="true">
+                <div *ngIf="f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['pinNumber']?.errors['required']">PIN Number is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent font-weight-bold">
+          Contact Details
+        </div>
+        <div class="card-body" formGroupName="contact_details">
+          <div class="form-group row">
+            <ng-container *ngIf="visibleStatus.countryCode === 'Y'">
+              <div class="col-sm-4">
+                <label for="countryCode" class="label col-form-label">Country</label>
+<!--                <select id="countryCode" class="form-control" formControlName="countryCode"-->
+<!--                        (change)="onCountryChange($event.target.value)"-->
+<!--                        [ngClass]="{ 'is-invalid': f['contact_details'].get('countryCode')?.invalid && (f['contact_details'].get('countryCode')?.dirty || f['contact_details'].get('countryCode')?.touched) }">-->
+<!--                  <option value="" selected disabled>Country</option>-->
+<!--                  <option *ngFor="let country of countries " value="{{ country?.id }}">{{ country?.name }}</option>-->
+<!--                </select>-->
+                <p-dropdown [options]="countries"
+                            optionLabel="name" optionValue="id"
+                            [style]="{ width: '100%' }" name="countryCode"
+                            formControlName="countryCode" id="countryCode" placeholder="Country"
+                            [filter]="true" filterBy="name" [showClear]="true"
+                            (onChange)="onCountryChange($event)"
+                            [autoDisplayFirst]="false" #countryDropdown
+                            [ngClass]="{ 'is-invalid': f['contact_details'].get('countryCode')?.invalid && f['contact_details'].get('countryCode')?.dirty || f['contact_details'].get('countryCode')?.touched }">
+                </p-dropdown>
+                <div *ngIf="f['contact_details'].get('countryCode')?.invalid && f['contact_details'].get('countryCode')?.dirty || f['contact_details'].get('countryCode')?.touched" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('countryCode')?.errors?.['required']">Country is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.townCode === 'Y'">
+              <div class="col-sm-4">
+                <label for="townCode" class="label col-form-label">Town</label>
+                <p-dropdown [options]="towns" optionLabel="name"
+                            optionValue="id" formControlName="townCode"
+                            [style]="{ width: '100%' }"
+                            placeholder="Town" name="townCode" id="townCode"
+                            [filter]="true" filterBy="name" [showClear]="true"
+                            [ngClass]="{ 'is-invalid': f['contact_details'].get('townCode')?.invalid && (f['contact_details'].get('townCode')?.dirty || f['contact_details'].get('townCode')?.touched) }">
+                </p-dropdown>
+                <div *ngIf="f['contact_details'].get('townCode')?.invalid && (f['contact_details'].get('townCode')?.dirty || f['contact_details'].get('townCode')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('townCode')?.errors['required']">Town is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.city === 'Y'">
+              <div class="col-sm-4">
+                <label for="city" class="label col-form-label">City</label>
+                <p-dropdown [options]="cities"
+                            optionLabel="name" optionValue="id" formControlName="city"
+                            [style]="{ width: '100%' }" name="city" id="city"
+                            [filter]="true" filterBy="name" [showClear]="true"
+                            placeholder="City"
+                            [ngClass]="{ 'is-invalid': f['contact_details'].get('city')?.invalid && (f['contact_details'].get('city')?.dirty || f['contact_details'].get('city')?.touched) }">
+                </p-dropdown>
+                <div *ngIf="f['contact_details'].get('city')?.invalid && (f['contact_details'].get('city')?.dirty || f['contact_details'].get('city')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('city')?.errors['required']">City is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.physicalAddress === 'Y'">
+              <div class="col-sm-4">
+                <label for="physicalAddress" class="label col-form-label">Physical address</label>
+                <input type="text"  nbInput fullWidth id="physicalAddress" name="physicalAddress" placeholder="Physical address" class="form-control" formControlName="physicalAddress"
+                       [ngClass]="{ 'is-invalid': f['contact_details'].get('physicalAddress')?.invalid && (f['contact_details'].get('physicalAddress')?.dirty || f['contact_details'].get('physicalAddress')?.touched) }">
+                <div *ngIf="f['contact_details'].get('physicalAddress')?.invalid && (f['contact_details'].get('physicalAddress')?.dirty || f['contact_details'].get('physicalAddress')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('physicalAddress')?.errors['required']">Physical address is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.phoneNumber === 'Y'">
+              <div class="col-sm-4">
+                <label for="phoneNumber" class="label col-form-label">Primary Phone number</label>
+                <input type="text"  nbInput fullWidth id="phoneNumber" name="phoneNumber" placeholder="Primary phone" class="form-control" formControlName="phoneNumber"
+                       [ngClass]="{ 'is-invalid': f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched) }">
+                <div *ngIf="f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('phoneNumber')?.errors['required']">Phone number is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.otherPhone === 'Y'">
+              <div class="col-sm-4">
+                <label for="otherPhone" class="label col-form-label">Secondary phone number</label>
+                <input type="text"  nbInput fullWidth id="otherPhone" name="otherPhone" placeholder="Secondary phone number" class="form-control" formControlName="otherPhone"
+                       [ngClass]="{ 'is-invalid': f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched) }">
+                <div *ngIf="f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('otherPhone')?.errors['required']">Secondary phone number is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.email === 'Y'">
+              <div class="col-sm-4">
+                <label for="email" class="label col-form-label">Email</label>
+                <input type="email" nbInput fullWidth id="email" name="email" class="form-control" placeholder="Email" formControlName="email"
+                       [ngClass]="{ 'is-invalid': f['contact_details'].get('email')?.invalid && (f['contact_details'].get('email')?.dirty || f['contact_details'].get('email')?.touched) }">
+                <div *ngIf="f['contact_details'].get('email')?.invalid && (f['contact_details'].get('email')?.dirty || f['contact_details'].get('email')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('email')?.errors['required']">Email is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent font-weight-bold">
+          Employment Details
+        </div>
+        <div class="card-body" formGroupName="employment_details">
+          <div class="form-group row">
+            <ng-container *ngIf="visibleStatus.departmentCode === 'Y'">
+              <div class="col-sm-4">
+                <label for="departmentCode" class="label col-form-label">Department</label>
+                <select id="departmentCode" class="form-control" formControlName="departmentCode"
+                        [ngClass]="{ 'is-invalid': f['employment_details'].get('departmentCode')?.invalid && (f['employment_details'].get('departmentCode')?.dirty || f['employment_details'].get('departmentCode')?.touched) }">
+                  <option value="" selected disabled>Department</option>
+                  <option *ngFor="let dep of departments " value="{{ dep.id }}">{{ dep.departmentName }}</option>
+                </select>
+                <div *ngIf="f['employment_details'].get('departmentCode')?.invalid && (f['employment_details'].get('departmentCode')?.dirty || f['employment_details'].get('departmentCode')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['employment_details'].get('departmentCode')?.errors['required']">Department is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.manager === 'Y'">
+              <div class="col-sm-4">
+                <label for="manager" class="label col-form-label">Supervisor</label>
+                <div class="dropdown-wrapper">
+                  <input type="text" id="manager" name="manager" placeholder="Supervisor" class="w-100 box-sizing-border-box  staff-supervisor-input" formControlName="manager" [disabled]="true"
+                         [ngClass]="{ 'is-invalid': f['employment_details'].get('manager')?.invalid && (f['employment_details'].get('manager')?.dirty || f['employment_details'].get('manager')?.touched) }">
+                  <i class="pi pi-angle-down position-absolute top-50 translate-middle-y staff-manager-dropdown-icon" data-bs-toggle="modal" data-bs-target="#supervisorsModal"></i>
+                </div>
+
+                <div *ngIf="f['employment_details'].get('manager')?.invalid && (f['employment_details'].get('manager')?.dirty || f['employment_details'].get('manager')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['employment_details'].get('manager')?.errors['required']">Supervisor is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.branch === 'Y'">
+              <div class="col-sm-4">
+                <label for="branch" class="label col-form-label">Branch</label>
+                <select id="branch" class="form-control" formControlName="branch" name="branch"
+                        [ngClass]="{ 'is-invalid': f['employment_details'].get('branch')?.invalid && (f['employment_details'].get('branch')?.dirty || f['employment_details'].get('branch')?.touched) }">
+                  <option value="" selected disabled>Branch</option>
+                  <option *ngFor="let branch of branches " [ngValue]="branch.id">{{ branch.name }}</option>
+                </select>
+                <div *ngIf="f['employment_details'].get('branch')?.invalid && (f['employment_details'].get('branch')?.dirty || f['employment_details'].get('branch')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['employment_details'].get('branch')?.errors['required']">Default branch is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.personelRank === 'Y'">
+              <div class="col-sm-4">
+                <label for="personelRank" class="label col-form-label">Personnel Rank</label>
+                <input type="text"  nbInput fullWidth id="personelRank" name="personelRank" placeholder="Personel Rank" class="form-control" formControlName="personelRank"
+                       [ngClass]="{ 'is-invalid':f['employment_details'].get('personelRank')?.invalid && (f['employment_details'].get('personelRank')?.dirty || f['employment_details'].get('personelRank')?.touched) }">
+                <!--                             [ngClass]="{'form-control-danger': staffRegistrationForm.invalid && (staffRegistrationForm.dirty || staffRegistrationForm.touched)}"-->
+                <div *ngIf="f['employment_details'].get('personelRank')?.invalid && (f['employment_details'].get('personelRank')?.dirty || f['employment_details'].get('personelRank')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['employment_details'].get('personelRank')?.errors['required']">Personel rank is required</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="onSubmit()" class="btn btn-lg btn-primary rounded-1 px-5 float-end">Save</button>
+  </form>
+</div>
+
+<div class="modal fade" id="supervisorsModal" tabindex="-1" role="dialog" aria-labelledby="supervisorsModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fs-5 header" id="supervisorsModalTitle">Select Supervisor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="search" name="searchUsername" id="searchUsername" placeholder="Username" [(ngModel)]="usernameFilter"  [ngModelOptions]="{standalone: true}"
+               class="border border-1 border-secondary rounded-1 w-50 h-auto">
+        <input type="search" name="searchName" id="searchName" placeholder="Full Name" [(ngModel)]="listFilter"  [ngModelOptions]="{standalone: true}"
+               class="border border-1 border-secondary rounded-1 w-50 h-auto">
+        <p-table (onLazyLoad)="lazyLoadAllUsers($event)"
+                 [lazy]="true"
+                 [rowHover]="true"
+                 [scrollable]="true"
+                 [paginator]="true"
+                 [rows]="staffSize"
+                 [totalRecords]="viewUsers?.totalElements"
+                 [value]="viewUsers?.content"
+                 [tableStyle]="{ 'width.%': 100 }"
+                 sortMode="single"
+                 selectionMode="single"
+                 [(selection)]="selectedUser"
+                 dataKey="id"
+                 styleClass="p-datatable-gridlines users"
+                 responsiveLayout="scroll" class='ui-datatable'
+                 (onRowSelect)="onSupervisorSelect($event)">
+          <ng-template pTemplate="header">
+            <tr >
+              <th class="supervisors-table-head">Username</th>
+              <th class="supervisors-table-head">Full Name</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-viewUsers>
+            <tr [pSelectableRow]="viewUsers">
+              <td class="body" style="width: 50%">{{viewUsers?.username | titlecase}}</td>
+              <td class="body" style="width: 50%">{{viewUsers?.name | titlecase}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="9">No users found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer d-block border-top-0">
+        <button class="btn btn-primary cancelBtn supervisors-bottom-btn"
+                data-bs-dismiss="modal" aria-label="Close"
+                #cancelSupervisorSelection>Cancel</button>
+        <button class="btn btn-outline-primary float-right reassign supervisors-bottom-btn" aria-label="Close" (click)="saveSelectedSupervisor()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+

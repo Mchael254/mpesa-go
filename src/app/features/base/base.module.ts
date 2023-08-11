@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-// import { NbMenuModule } from '@nebular/theme';
 
 import { BaseComponent } from './base.component';
 import { BaseRoutingModule } from './base-routing.module';
@@ -12,19 +11,25 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderSubMenuComponent } from './components/header-sub-menu/header-sub-menu.component';
 import {SharedModule} from "../../shared/shared.module";
 import {ChartModule} from "primeng/chart";
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { CalendarComponent } from './components/dashboard/calendar/calendar.component';
+import { CalendarLayoutComponent } from './components/dashboard/calendar-layout/calendar-layout.component';
+import {CalendarModule} from "primeng/calendar";
 
 
 @NgModule({
-    imports: [
-        BaseRoutingModule,
-        // ThemeModule,
-        // NbMenuModule,
-        // PsharedModule,
-        // DashboardModule,
-        DragDropModule,
-        SharedModule,
-        ChartModule
-    ],
+  imports: [
+    BaseRoutingModule,
+    DragDropModule,
+    SharedModule,
+    ChartModule,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CalendarModule,
+  ],
   declarations: [
     BaseComponent,
     DashboardLayoutComponent,
@@ -33,6 +38,8 @@ import {ChartModule} from "primeng/chart";
     SidebarComponent,
     DashboardComponent,
     HeaderSubMenuComponent,
+    CalendarComponent,
+    CalendarLayoutComponent,
   ],
 })
 export class BaseModule {

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 
 import { EntitiesRoutingModule } from './entities-routing.module';
 import { NewClientComponent } from './components/client/new-client/new-client.component';
@@ -14,8 +14,20 @@ import { NewStaffComponent } from './components/staff/new-staff/new-staff.compon
 import { ListStaffComponent } from './components/staff/list-staff/list-staff.component';
 import { EditComponent } from './components/edit/edit.component';
 import { ViewEntityComponent } from './components/entity/view-entity/view-entity.component';
+import {TabViewModule} from "primeng/tabview";
+import {InputTextModule} from "primeng/inputtext";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../../shared/shared.module";
+import {DropdownModule} from "primeng/dropdown";
+import { StaffProfileComponent } from './components/staff/staff-profile/staff-profile.component';
+import { AssignAppsComponent } from './components/staff/assign-apps/assign-apps.component';
+import {StepsModule} from "primeng/steps";
+import {TableModule} from "primeng/table";
 
 
+import { DatePipe } from '@angular/common';
+import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
+import { SelectStatusComponent } from './components/entity/select-status/select-status.component';
 @NgModule({
   declarations: [
     NewClientComponent,
@@ -29,11 +41,24 @@ import { ViewEntityComponent } from './components/entity/view-entity/view-entity
     NewStaffComponent,
     ListStaffComponent,
     EditComponent,
-    ViewEntityComponent
+    ViewEntityComponent,
+    StaffProfileComponent,
+    AssignAppsComponent,
+    RelatedAccountsComponent,
+    SelectStatusComponent
   ],
   imports: [
     CommonModule,
-    EntitiesRoutingModule
-  ]
+    EntitiesRoutingModule,
+    TabViewModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SharedModule,
+    DropdownModule,
+    StepsModule,
+    TableModule,
+    FormsModule
+  ],
+  providers:[DatePipe]
 })
 export class EntitiesModule { }
