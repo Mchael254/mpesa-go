@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="col-sm-4 offset-sm-4 my-5">
+    <app-dynamic-chart
+      [basicData]="basicData"
+      [chartType]="'line'"
+    ></app-dynamic-chart>
+
+    <div class="mt-1 text-center">
+      <h6 class="text-secondary">No dashboards available
+        <a class="btn-link" routerLink="/home/reports/create-report">
+          <span class="text-primary fw-bold text-decoration-underline">Create Report</span>
+        </a>
+      </h6>
+    </div>
+
+  </div>
+</div>

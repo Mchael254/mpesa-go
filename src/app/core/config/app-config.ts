@@ -1,7 +1,8 @@
 export interface AppConfig {
   contextPath: ContextPath;
   organization: Organization;
-  dmsDefaultUrl?: string
+  dmsDefaultUrl?: string;
+  cubejsDefaultUrl?: string;
 }
 export interface ContextPath {
   accounts_services: string;
