@@ -17,7 +17,7 @@ import { UserCredential, AuthenticationResponse } from 'src/app/features/base/ut
 import "./http/http.service";
 import { OauthToken } from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
-import { UserDetailsDTO } from 'src/app/features/administration/model/user-details';
+import { UserDetailsDTO } from 'src/app/features/administration/data/user-details';
 
 
 const log = new Logger('AuthService');
