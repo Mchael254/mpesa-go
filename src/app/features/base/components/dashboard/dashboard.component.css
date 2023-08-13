@@ -1,0 +1,17 @@
+.section-title {
+  font-size: 15px;
+  text-transform:uppercase;
+}
+
+
+
+.transactions {
+  font-size: 13px;
+  text-transform:uppercase;
+  padding: 0.5rem 0;
+}
+
+.card {
+  border-radius: 0;
+  border: 0;
+}

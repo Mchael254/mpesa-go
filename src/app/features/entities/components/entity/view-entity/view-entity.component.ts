@@ -127,6 +127,8 @@ export class ViewEntityComponent implements OnInit {
   * Fetch roles not assigned to this entity
    */
   setAccountCode() {
+    console.log('entityAccountIdDetails: ' +this.entityAccountIdDetails);
+
     this.accountCode = this.entityAccountIdDetails?.[0]?.accountCode;
     // this.accountId = this.entityAccountIdDetails?.[0]?.id;
     // this.selectedAccount = this.entityAccountIdDetails?.[0];
@@ -408,15 +410,16 @@ export class ViewEntityComponent implements OnInit {
   }
 
   goToViewClaims(id:number) {
-    this.router.navigate([`home/view-claim/${this.accountCode}`]);
+    this.router.navigate([`/home/gis/claim/list/${this.accountCode}`]);
   }
 
   goToViewPolicies(id:number) {
-    this.router.navigate([`home/policies/${this.accountCode}`]);
+    this.router.navigate([`/home/gis/policy/list/${this.accountCode}`]);
   }
 
   goToViewQuotations(id:number) {
-    this.router.navigate([`home/quotations/${this.accountCode}`]);
+    // this.router.navigate([`/home/gis/quotation/list/${this.accountCode}`]);
+    this.router.navigate([`/home/gis/quotation/list`]);
   }
 
   goToViewPayments() {

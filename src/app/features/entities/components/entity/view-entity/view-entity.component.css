@@ -117,8 +117,9 @@
 .card-header {
     color: #00529B;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 20px;
+    border-bottom: 1px solid rgba(15, 46, 147, 0.108);
 }
 
 .entity_accounts_list {
@@ -171,8 +172,8 @@
 .card-view {
     box-sizing: border-box;
     background: #FFFFFF;
-    border: 1px solid rgba(238, 238, 238, 0.44);
-    border-radius: 5.46px;
+    border: 1px solid rgba(238, 238, 238, 0.585);
+    border-radius: 3px;
     flex: 1;
     padding: 10px;
     margin: 0 5px;
@@ -195,7 +196,7 @@
 .card-content .card-txt h6 {
     font-size: 14px;
     font-weight: bold;
-} 
+}
 
 .card-content .card-txt p {
     font-weight: 400;
@@ -226,4 +227,8 @@
     align-items: center;
     justify-content: flex-end;
     opacity: 0.5;
+}
+.card {
+  border: 0;
+  border-radius: 2px;
 }

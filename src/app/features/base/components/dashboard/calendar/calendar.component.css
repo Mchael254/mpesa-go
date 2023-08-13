@@ -38,3 +38,16 @@
   font-size: 1.5em !important;
   font-weight: bold !important;
 }
+
+
+::ng-deep .card.calendar {
+  font-size: 10px;
+  border: 0;
+  border-radius: 0;
+  height: 10%;
+}
+
+.form-select {
+  border-radius: 0;
+  font-size: 13px;
+}

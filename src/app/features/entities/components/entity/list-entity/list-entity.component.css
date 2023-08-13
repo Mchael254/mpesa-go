@@ -1,0 +1,9 @@
+::ng-deep tr.ng-star-inserted {
+  border: 0;
+  font-size: 12px;
+}
+
+.page-header {
+  font-size: 14px;
+  font-weight: 900;
+}

@@ -2,14 +2,14 @@
   <div class="card-header">
     <form [formGroup]="dateSelectionForm">
       <div class="row">
-        <div class="col-sm-2 offset-sm-3">
+        <div class="col-sm-2 offset-sm-3" >
           <select
             class="form-select"
             aria-label="Default select example"
             formControlName="dateRange"
             (change)="fetchFilteredEvents()"
           >
-            <option *ngFor="let range of dateRange" [value]="range">
+            <option *ngFor="let range of dateRange" [value]="range" >
               <span>{{ range | titlecase }}</span>
             </option>
           </select>

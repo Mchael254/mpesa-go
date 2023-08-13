@@ -180,38 +180,38 @@ export class ViewTicketsComponent implements OnInit {
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
       const selectedTickets = this.selectedTickets;
-  
+
     // Check if any products are selected
       if (selectedTickets.length === 0) {
         this.globalMessagingService.displayWarningMessage('Warning', 'Please select at least one ticket to authorize');
       return;
       }
-  
+
       const selectedTicketCodes = this.selectedTickets.map(ticket => ticket.systemModule);
       this.otpRequestCheck(selectedTicketCodes)
         .then((results) => {
-  
+
           if (results && results.length > 0) {
             const generateOtp = results.some((result) => {
               const matchingModule = this.ticketModules.find(module => module.shortDescription === result.sysModule);
               return matchingModule && result.response.premium !== null &&
                 result.response.premium > matchingModule.maximumAuthorizationAmount;
             });
-  
-  
-  
+
+
+
             if (!generateOtp) {
               // Authorize without OTP
               this.authorizeTickets();
               return;
             }
-  
+
             const loggedInUser = this.authService.getCurrentUser();
             if (loggedInUser !== null) {
               const username = loggedInUser.emailAddress;
               const channel = 'email';
               log.info('Username:', username);
-  
+
               this.sendVerificationOtp(username, channel);
               // this.openModal(); // Open the modal programmatically
             }
@@ -338,7 +338,7 @@ export class ViewTicketsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  
+
   sendVerificationOtp(username: string, channel: string) {
     this.authService.sentVerificationOtp(username, channel)
       .pipe(untilDestroyed(this))
@@ -352,6 +352,6 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   goToTicketDetails(id:number) {
-    this.router.navigate([`home/administration/ticket-details/${id}`]);
+    this.router.navigate([`home/administration/ticket/details/${id}`]);
   }
 }

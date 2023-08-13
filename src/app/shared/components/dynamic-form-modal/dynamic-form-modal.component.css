@@ -1,0 +1,13 @@
+.modal {
+  display: none;
+}
+
+.modal.show {
+  display: block;
+}
+
+
+.modal-header > .btn-close:hover {
+  background-color: rgba(25, 34, 117, 0.223);
+  border-radius: 1rem;
+}

@@ -13,21 +13,24 @@
   font-weight: bold;
   text-decoration: underline;
 }
-
-.nav-item > .nav-link:hover {
-  /* border-bottom: 0.5px solid #00539b1c; */
+/* .nav-item > .nav-link {
   background-color: #00539b0a;
-}
+
+} */
+
+/* .nav-item > .nav-link:hover {
+} */
 
 .dropdown-menu {
   border-radius: 0;
-  font-size: 13px;
+  font-size: 12px;
+  border: 0;
 }
 
 .dropdown-item:hover {
   background-color: #00539b0c;
   font-weight: 600;
-  border-right: #00529B solid 1px;
+  border-right: #00529B solid 2px;
 }
 
 
