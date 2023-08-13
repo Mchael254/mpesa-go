@@ -21,7 +21,7 @@ export class HeaderSubMenuComponent implements OnInit {
   accountSubMenuList: SidebarMenu[];
 
 constructor(private menuService: MenuService, private router:Router){
-  this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: './dashboard'}
+  this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
 }
 
 
@@ -36,11 +36,9 @@ ngOnInit(): void {
 }
 
 dynamicSideBarMenu(sidebarMenu: SidebarMenu, isLink = false) {
-  if(isLink){
-    this.router.navigate([sidebarMenu.link])
-  }else{
+  console.log(sidebarMenu);
+  if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
   this.menuService.updateSidebarMainMenu(sidebarMenu.value)
-  }
 }
 
 }

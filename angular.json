@@ -17,7 +17,10 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "allowedCommonJsDependencies": [
-              "crypto-js"
+              "crypto-js",
+              "moment",
+              "cubejs-client",
+              "cross-fetch"
            ],
             "polyfills": [
               "zone.js"

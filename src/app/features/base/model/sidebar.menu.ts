@@ -7,7 +7,8 @@ export interface SidebarMenu {
   collapsed?: boolean;
   link?: string;
   subList?: SidebarSubMenu[];
-  value?: string
+  value?: string,
+  isActive?: boolean,
 }
 
 export interface SidebarSubMenu {

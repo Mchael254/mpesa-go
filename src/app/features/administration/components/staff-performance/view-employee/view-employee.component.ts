@@ -126,7 +126,7 @@ export class ViewEmployeeComponent  implements OnInit {
     // this.ticketsService.transactionRouting = {username: username, module: module, name: name};
 
     // this.ticketsService.setTransactionsRoutingData({username: username, module: module, name: name})
-    // this.router.navigate([ `/home/view-employee-transactions/${username}`]);
+    // this.router.navigate([ `/home/view-employee/transactions/${username}`]);
 
     this.router.navigate(['/home/view-employee-transactions'],
       {queryParams: {username, module, name }}).then(r => {

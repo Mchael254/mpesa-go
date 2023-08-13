@@ -8,16 +8,17 @@ import {
 import {ViewTicketsComponent} from "./components/tickets/view-tickets/view-tickets.component";
 import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
 
-const routes: Routes = [{
+const routes: Routes = [
+  {
   path: '',
-  component: AdministrationComponent},
-
+  component: AdministrationComponent
+},
     {
-      path: 'employee-transactions',
+      path: 'employee/transactions',
       component: ViewEmployeeTransactionsComponent
     },
     {
-      path: 'employee-transactions/:username',
+      path: 'employee/transactions/:username',
       component: ViewEmployeeTransactionsComponent
     },
     {
@@ -29,7 +30,7 @@ const routes: Routes = [{
       component: ViewTicketsComponent
     },
     {
-      path: 'ticket-details/:id',
+      path: 'ticket/details/:id',
       component: TicketDetailsComponent
     },
 

@@ -38,6 +38,8 @@ import {RouterLink} from "@angular/router";
 import { StepperComponent } from './components/stepper/stepper.component';
 import { VerticalStepperComponent } from './components/stepper/vertical-stepper/vertical-stepper.component';
 import { HorizontalStepperComponent } from './components/stepper/horizontal-stepper/horizontal-stepper.component';
+import { DynamicSimpleModalComponent } from './components/dynamic-simple-modal/dynamic-simple-modal.component';
+import { DynamicFormModalComponent } from './components/dynamic-form-modal/dynamic-form-modal.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -111,7 +113,9 @@ const SERVICES = [
     DynamicBreadcrumbComponent,
     StepperComponent,
     VerticalStepperComponent,
-    HorizontalStepperComponent
+    HorizontalStepperComponent,
+    DynamicSimpleModalComponent,
+    DynamicFormModalComponent
   ],
     imports: [
         CommonModule,
@@ -139,7 +143,9 @@ const SERVICES = [
     SpinnerComponent,
     DynamicFormComponent,
     DynamicBreadcrumbComponent,
-    StepperComponent
+    StepperComponent,
+    DynamicSimpleModalComponent,
+    DynamicFormModalComponent
   ],
 })
 export class SharedModule {
