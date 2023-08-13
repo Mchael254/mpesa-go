@@ -1,10 +1,10 @@
 <div class="base-content-section dashboard">
-  <h5 class="section-title">Create Report</h5>
+  <h5 class="section-title"  style="font-size: 1rem; font-weight: 900;">{{'Create Report' | uppercase}}</h5>
   <div class="row">
     <div class="col-sm-3 left">
       <div class="card mb-3">
         <div class="card-body">
-          <h6 class="text-primary fw-bold">Subject Areas</h6>
+          <h6 class="text-primary fw-bold" style="font-size: 0.8rem; font-weight: 900;">{{'Subject Areas' | uppercase}}</h6>
           <form [formGroup]="searchForm" class="my-3">
             <div class="form-group">
               <p-dropdown
@@ -17,7 +17,7 @@
                 placeholder="Select Subject Area"
               >
                 <ng-template let-subjectArea pTemplate="item">
-                  <div class="flex align-items-center gap-2">
+                  <div class="flex align-items-center gap-2" style="font-size: 12px;">
                     <div
                       (click)="getCategoriesBySubjectAreaId(subjectArea)">
                       {{ subjectArea.subjectAreaName }}
@@ -28,8 +28,9 @@
             </div>
           </form>
 
-          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories">
-            <p-progressSpinner></p-progressSpinner>
+          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories" style="padding: 4rem 0;">
+            <p-progressSpinner styleClass="w-0.5em h-0.5em " strokeWidth="3" fill="var(--surface-ground)" animationDuration=".6s" ></p-progressSpinner>
+
           </div>
           <ng-template #showSubjectAreaCategories>
             <ng-container *ngFor="let category of subjectAreaCategories">
@@ -40,8 +41,9 @@
                 aria-expanded="false" [attr.aria-controls]="category.description"
                 class="dropdown-toggle"
                 id="category-name"
+                style="font-size: 12px; padding-bottom: 0.6rem;"
               >
-                {{ category?.name }}
+                {{ category?.name | uppercase }}
               </p>
               <div class="collapse" [attr.id]="category.description">
                 <ng-container *ngFor="let subCategory of category.subCategory">
@@ -53,12 +55,12 @@
                     aria-expanded="false"
                     aria-controls="collapseExample2"
                   >
-                    <li class="dropdown-toggle" id="sub-category-name">
+                    <li class="dropdown-toggle" id="sub-category-name" style="font-size: 12px;">
                       {{ subCategory.name }}
                     </li>
                   </ul>
                   <div class="collapse" [attr.id]="category.description+subCategory.description">
-                    <ul *ngFor="let query of subCategory.categoryAreas">
+                    <ul *ngFor="let query of subCategory.categoryAreas" class="metricSublist">
                       <li
                         [ngClass]="{'text-primary font-weight-bold' : query.isSelected === true, 'text-secondary': query.isSelected === false}"
                         (dblclick)="selectCriteria(category, subCategory, query)"
@@ -87,26 +89,26 @@
                 [ngClass]="{'active-btn': isCriteriaButtonActive, 'inactive-btn': !isCriteriaButtonActive}"
                 (click)="toggleCriteriaPreview('criteria')"
               >
-                Criteria
+              <i class="fa-solid fa-chart-bar"></i>&nbsp; &nbsp; Criteria
               </button>
               <button
                 type="button" class="btn btn-outline-secondary" id="preview"
                 [ngClass]="{'active-btn': !isCriteriaButtonActive, 'inactive-btn': isCriteriaButtonActive}"
                 (click)="toggleCriteriaPreview('preview')"
               >
-                Preview Results
+              <i class="fa-regular fa-newspaper"></i>&nbsp; &nbsp; Preview Results
               </button>
             </div>
             <div class="col-sm-4 offset-sm-4 criteria-preview">
-              <button type="button" class="btn btn-primary" (click)="addReportToDashboard()">Add to Dashboard</button>
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveReportModal">Save</button>
+              <button type="button" class="btn btn-primary" (click)="addReportToDashboard()"><i class="fa-regular fa-square-plus"></i> &nbsp;Add to Dashboard</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveReportModal"><i class="fa-regular fa-floppy-disk"></i> &nbsp; Save</button>
             </div>
           </div>
 
           <ng-container *ngIf="isCriteriaButtonActive">
-            <div class="row">
+            <div class="row" style="padding: 0 2rem 2rem 1rem">
               <ng-container *ngFor="let criteriaItem of criteria">
-                <div class="col-sm-3">
+                <div class="col-sm-3 fadeInDown" >
                   <app-criteria-pill
                     [queryObject]="criteriaItem"
                     (deleteCriteriaDetails)="deleteCriteria($event)"
@@ -154,8 +156,8 @@
 
               <div class="col-sm-10 offset-sm-1">
 
-                <div class="text-center" *ngIf="!isPreviewResultAvailable">
-                  <p-progressSpinner></p-progressSpinner>
+                <div class="text-center" *ngIf="!isPreviewResultAvailable" style="padding: 4rem 0;">
+                  <p-progressSpinner styleClass="w-0.5em h-0.5em " strokeWidth="3" fill="var(--surface-ground)" animationDuration=".6s" ></p-progressSpinner>
                 </div>
 
                 <h6 class="mainHead text-center" *ngIf="reportTitle != ''">{{ reportTitle | titlecase }}</h6>

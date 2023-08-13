@@ -45,8 +45,8 @@
 <div class="my-4 mx-4">
   <div class="card">
     <div class="card-body">
-      <p-table 
-      [value]="filteredTickets" 
+      <p-table
+      [value]="filteredTickets"
       [tableStyle]="{ 'min-width': '50rem' }"
       [paginator]="true"
       [rows]="10"
@@ -78,14 +78,14 @@
             <th class="head" pSortableColumn="ticketAssignee">
               Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
             </th>
-            <th>Actions</th>
+            <th></th>
           </tr>
             <tr>
               <th class="head">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
               </th>
               <th>
-                <!--<p-columnFilter type="text" field="createdOn"></p-columnFilter>-->
+                <p-columnFilter type="text" field="createdOn"></p-columnFilter>
               </th>
               <th>
                 <p-columnFilter type="text" field="ticketName"></p-columnFilter>
@@ -105,7 +105,9 @@
               <th>
                 <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
               </th>
-  
+              <th>
+              </th>
+
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-ticket>
@@ -120,7 +122,10 @@
               <td class="body">{{ ticket.intermediaryName }}</td>
               <td class="body">{{ ticket.ticketFrom }}</td>
               <td class="body">{{ ticket.ticketAssignee }}</td>
-              <td class="body" (click)="goToTicketDetails(ticket.ticketID)">View</td>
+              <td class="body ticket-button" (click)="goToTicketDetails(ticket.ticketID)">
+                 <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+                 <!-- Details -->
+                </td>
             </tr>
         </ng-template>
     </p-table>

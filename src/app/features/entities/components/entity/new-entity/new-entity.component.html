@@ -2,7 +2,7 @@
     <!-- Top Header Text and Breadcrumb !-->
     <div class="d-flex justify-content-between my-4 ms-4">
         <div class="mr-auto p-2">
-            <h6 class="htxt page-header">New Entity</h6>
+            <h6 class="htxt page-header" style="font-size: 15px; font-weight: 900;">{{'New Entity' | uppercase}}</h6>
         </div>
         <div class="me-4">
             <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
@@ -15,7 +15,7 @@
                 <form [formGroup]="entityRegistrationForm">
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.category === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1" >
                                 <label for="category">Party Type</label>
                                 <select id="category" class="form-control" placeholder="Select Party Type"
                                     formControlName="category"
@@ -31,16 +31,16 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
-                            <div class="col-md-4 col-12 md-col-4">
+                            <div class="col-md-4 col-12 md-col-4 pad-1">
                                 <label for="date_of_birth">Date of Birth</label>
-                                <input type="text" 
-                                    class="form-control" 
-                                    name="inputDateOfBirth" 
+                                <input type="text"
+                                    class="form-control"
+                                    name="inputDateOfBirth"
                                     placeholder="Date of Birth"
-                                    onfocus="(this.type='date')" 
-                                    onblur="(this.type='text')" 
+                                    onfocus="(this.type='date')"
+                                    onblur="(this.type='text')"
                                     id="date_of_birth"
-                                    [max]="eighteenYearsAgo | date:'yyyy-MM-dd'" 
+                                    [max]="eighteenYearsAgo | date:'yyyy-MM-dd'"
                                     formControlName="date_of_birth"
                                     [ngClass]="{ 'is-invalid': f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched) }">
                                 <div *ngIf="f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)"
@@ -51,7 +51,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="entity_name">Entity</label>
                                 <input type="text" class="form-control" id="entity_name" placeholder="Entity Name"
                                     formControlName="entity_name"
@@ -64,7 +64,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="mode_of_identity">Primary ID Type</label>
                                 <select id="mode_of_identity" class="form-control" placeholder="Primary ID Type"
                                     formControlName="mode_of_identity"
@@ -81,7 +81,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="identity_number">ID Number</label>
                                 <input type="text" class="form-control" id="identity_number" placeholder="ID Number"
                                     formControlName="identity_number"
@@ -94,7 +94,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="pin_number">Pin Number</label>
                                 <input type="text" class="form-control" id="pin_number" placeholder="Pin Number"
                                     formControlName="pin_number"
@@ -114,13 +114,13 @@
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role"
                                     value="{{ selectedRole.partyTypeName }}" formControlName="assign_role" [disabled]="true">
                             </div> -->
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="assign_role">Assign Role (Optional)</label>
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
                                     [disabled]="true">
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="rolesButton">Select Role</label>
                                 <button type="button" id="rolesButton" class="btn btn-outline-primary btn-md btn-block"
                                     data-bs-toggle="modal" data-bs-target="#selectRoleModal" [disabled]="disableRole">
@@ -131,7 +131,7 @@
                     </div>
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
-                            <div class="col-md-4">
+                            <div class="col-md-4 pad-1">
                                 <label for="inputProfileImg">Profile Photo</label>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
@@ -142,15 +142,15 @@
                                 </div>
                             </div>
                         </ng-container>
-    
+
                     </div>
                 </form>
             </div>
         </div>
-        <div class="lower-navigation">
+        <div class="lower-navigation pad-1">
             <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
             <span class="float-end">
-                <button type="button" id="nextButton" class="btn btn-primary" (click)="onSubmit()">Next</button>
+                <button style="padding: 0.4 0.5rem;" type="button" id="nextButton" class="btn btn-primary" (click)="onSubmit()"><i class="fa-solid fa-circle-arrow-right"></i>&nbsp;Next</button>
             </span>
         </div>
     </div>
@@ -210,11 +210,11 @@
     </div>
 </form>
 
-<!-- <app-dynamic-form 
-    [formFields]="fieldsets" 
-    [fieldsPerRow]="3" 
+<!-- <app-dynamic-form
+    [formFields]="fieldsets"
+    [fieldsPerRow]="3"
     [title]="'New Entity'"
     [actionButtonConfig]="buttonConfig"
-    (formSubmitted)="submitForm($event)" 
+    (formSubmitted)="submitForm($event)"
     (goBackButton)="goBack()">
 </app-dynamic-form> -->

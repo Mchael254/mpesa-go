@@ -24,13 +24,13 @@ type CustomLazyLoadEvent = LazyLoadEvent & { sortField: string | string[] };
 export class ListEntityComponent implements OnInit, OnDestroy {
 
   entities: Pagination<EntityDto> = <Pagination<EntityDto>>{};
-  
+
   tableDetails: TableDetail;
   pageSize = 5;
-  
+
   cols = [
     { field: 'name', header: 'Name' },
-    { field: 'modeOfIdentityName', header: 'Primary ID type' },
+    { field: 'modeOfIdentityName', header: 'ID Type' },
     { field: 'identityNumber', header: 'ID Number' },
     { field: 'pinNumber', header: 'Pin Number' },
     { field: 'categoryName', header: 'Entity Type' },
