@@ -60,3 +60,11 @@
 .black-text {
     color: black;
 }
+
+.card-body {
+  padding: 3rem;
+}
+
+.pad-1 {
+  padding: 0.7em;
+}

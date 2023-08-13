@@ -1,0 +1,17 @@
+.ticket-button {
+  cursor: pointer;
+  color: rgb(19, 3, 100);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+:host ::ng-deep .p-column-filter-row p-columnfilterformelement {
+  width: 100%;
+}
+:host ::ng-deep .p-datatable-thead {
+  font-size: 12px;
+}
+:host ::ng-deep  .p-datatable-table {
+  width: 100%;
+  font-size: 13px;
+}

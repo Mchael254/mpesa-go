@@ -33,7 +33,7 @@ export class TicketsSummaryComponent implements OnInit {
   }
 
   goToViewTickets() {
-    this.router.navigate([ `/home/administration/view-tickets`]);
+    this.router.navigate([ `/home/administration/tickets`]);
   }
 
   //get ticket count per module for the logged in user

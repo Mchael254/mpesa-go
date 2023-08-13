@@ -4,7 +4,7 @@
                 <button class="btn btn-toggle align-items-center rounded collapsed" aria-expanded="true" routerLink="/home/dashboard">
 
                     <span class="menu-title">
-                      <i class="fa-solid fa-house" style="font-size: 22px; padding-right: 6px;"></i>
+                      <i class="fa-solid fa-house" style="font-size: 15px; padding-right: 9px;"></i>
                         Home
                     </span>
                 </button>
@@ -15,12 +15,12 @@
               <li (click)="clickURL(item?.link)" >
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.nameSlug" [attr.aria-expanded]="false">
                   <span class="menu-title">
-                    <i class="{{item.icon}}" style="font-size: 22px; padding-right: 6px;"></i> {{ item.name }}
+                    <i class="{{item.icon}}" style="font-size: 15px; padding-right: 9px;"></i> {{ item.name }}
                   </span>
                 </button>
                 <div  class="collapse" [id]="item.nameSlug">
                   <ul *ngIf="item.menuItems?.length > 0" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li *ngFor="let menuItem of item.menuItems"><a (click)="clickURL(menuItem.link)" class="link-dark rounded">{{ menuItem.name }}</a></li>
+                    <li *ngFor="let menuItem of item.menuItems"><a (click)="clickURL(menuItem.link)" class="link-dark rounded" style="font-size: 15px;">{{ menuItem.name }}</a></li>
                   </ul>
                 </div>
               </li>

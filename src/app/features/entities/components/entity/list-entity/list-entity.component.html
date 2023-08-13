@@ -2,7 +2,7 @@
     <!-- Top Header Text and Breadcrumb !-->
     <div class="d-flex justify-content-between my-4 ms-4">
         <div class="mr-auto p-2">
-            <h6 class="htxt page-header">Entities</h6>
+            <h6 class="htxt page-header">{{'Entities' | uppercase}}</h6>
         </div>
         <div class="me-4">
             <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
@@ -11,11 +11,11 @@
     </div>
     <!-- Top Buttons !-->
     <div class="d-flex my-4 ms-4">
-        <button type="button" class="btn btn-primary rounded-1 px-3 me-3" (click)="createEntity()">New Entity</button>
-        <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+        <button type="button" class="btn btn-primary rounded-0 px-3 me-3" (click)="createEntity()">New Entity</button>
+        <button type="button" class="btn filter-btn rounded-0 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
     </div>
     <div class="my-4 ms-4 me-4">
-        <app-dynamic-table 
+        <app-dynamic-table
             [tableDetails]="tableDetails"
             (onLazyLoad)="lazyLoadEntity($event)">
         </app-dynamic-table>

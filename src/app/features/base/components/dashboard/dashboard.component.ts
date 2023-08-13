@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
 
   globalFilterFields = ['policyNumber', 'type', 'insured', 'status', 'premium'];
 
-  tableDetails: TableDetail = {
+  policyDataTable: TableDetail = {
     cols: this.cols,
     rows: this.rows,
     globalFilterFields: this.globalFilterFields,
@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
 
   globalFilterFields2 = ['policyNumber', 'type', 'insured', 'status', 'premium'];
 
-  tableDetails2: TableDetail = {
+  quotationDataTable: TableDetail = {
     cols: this.cols2,
     rows: this.rows2,
     globalFilterFields: this.globalFilterFields2,
