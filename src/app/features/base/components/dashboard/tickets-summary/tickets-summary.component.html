@@ -1,6 +1,9 @@
 <div class="card" style="border-radius: 0; font-size: 14px;">
   <div class="card-body">
     <div class="row">
+      <div class="col-sm-9">
+        <h5 class="card-title">Tickets</h5>
+      </div>
       <div class="col-sm-2">
         <span class="text-danger fw-bold">{{ticketCountTotal}}</span>
       </div>
@@ -19,10 +22,10 @@
       </tr>
       </tbody>
     </table>
-    <div class="row">
-      <div class="text-end">
-        <a class="text-end-view" (click)="goToViewTickets()" >VIEW ALL</a>
-      </div>
+  </div>
+  <div class="card-footer border-top-0" style="background-color: #ffffff">
+    <div class="text-end">
+      <a class="text-end-view" (click)="goToViewTickets()" >VIEW ALL</a>
     </div>
   </div>
 </div>

@@ -1,8 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {TicketsService} from "../../../../administration/services/tickets.service";
 import {Router} from "@angular/router";
-import {AuthService} from "../../../../../shared/services/auth.service";
-import {Logger, UtilService} from "../../../../../shared/services";
+import {Logger} from "../../../../../shared/services";
 import {takeUntil, tap} from "rxjs/operators";
 import {TicketCountDTO} from "../../../../administration/data/ticketsDTO";
 import {ReplaySubject} from "rxjs";
@@ -24,8 +23,6 @@ export class TicketsSummaryComponent implements OnInit {
     private router: Router,
     private ticketsService: TicketsService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService,
-    private utilService: UtilService
   ) {}
 
   ngOnInit(): void {

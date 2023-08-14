@@ -67,3 +67,28 @@ export interface AssignAppsDto{
   shortDesc: string;
   systemName: string;
 }
+export interface StaffResDto{
+  id?: number;
+  name: string;
+  username: string;
+  userType: string;
+  emailAddress?: string;
+  status: string;
+  profilePicture?: string;
+  department?: string;
+  manager?: string;
+  telNo?: string;
+  phoneNumber?: string;
+  otherPhone?: string;
+  countryCode?: number;
+  townCode?: number;
+  personelRank?: string;
+  city?: number;
+  physicalAddress?: string;
+  postalCode?: string;
+  departmentCode?: number;
+  activatedBy?: string;
+  updateBy?: string;
+  dateCreated?: string;
+  granter?: string;
+}
