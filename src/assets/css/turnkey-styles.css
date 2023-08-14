@@ -300,4 +300,21 @@ h5.htxt {
 }
 /*Common ends*/
 
+/**Modals**/
+.modal {
+  display: none;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-backdrop {
+  display: none;
+}
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+/**Modal ends**/
+
 
