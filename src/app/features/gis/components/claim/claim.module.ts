@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { ClaimRoutingModule } from './claim-routing.module';
 import { ListClaimsComponent } from './components/list-claims/list-claims.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
 
 
 @NgModule({
@@ -11,7 +13,10 @@ import { ListClaimsComponent } from './components/list-claims/list-claims.compon
   ],
   imports: [
     CommonModule,
-    ClaimRoutingModule
+    ClaimRoutingModule,
+    TableModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class ClaimModule { }
