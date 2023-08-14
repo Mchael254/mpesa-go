@@ -5,7 +5,7 @@ import {UtilService} from "../../../../shared/services";
 import {AuthService} from "../../../../shared/services/auth.service";
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
-import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto} from "../../data/StaffDto";
+import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto, StaffResDto} from "../../data/StaffDto";
 import {CreateAccountDTO, NewAccountCreatedResponse} from "../../data/accountDTO";
 
 @Injectable({
@@ -108,6 +108,43 @@ export class StaffService {
       .set('groupId', `${groupId}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`, {
+      headers: header,
+      params: paramObject,
+    });
+  }
+
+  getStaffWithSupervisor(
+    page: number = 0,
+    size: number,
+    userType: string,
+    sortList: string = 'dateCreated',
+    order: string = 'desc',
+  ): Observable<Pagination<StaffResDto>> {
+    const header = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    });
+    const loggedInUser = this.authService.getCurrentUser();
+    let id:number;
+    if (this.utilService.isUserAdmin(loggedInUser)) {
+      id = loggedInUser.id;
+
+    }
+    const supervisor = id;
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('userType', `${userType}`)
+      .set('groupId', 1) /*TODO: Find proper way to fetch groupId*/
+      .set('sortList', `${sortList}`)
+      .set('order', `${order}`)
+      .set('supervisor', `${supervisor}`);
+
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+    // log.info('Page selected: ', page);
+    // log.info('Staff Params object', paramObject);
 
     return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`, {
       headers: header,

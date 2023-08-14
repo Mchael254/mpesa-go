@@ -2,14 +2,14 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Logger} from "../../../../../shared/services";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {LazyLoadEvent, SortEvent} from "primeng/api";
-import {ReplaySubject} from "rxjs";
+import {forkJoin, ReplaySubject} from "rxjs";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {StaffService} from "../../../../entities/services/staff/staff.service";
 import {Router} from "@angular/router";
-import {untilDestroyed} from "../../../../../shared/shared.module";
 import {takeUntil, tap} from "rxjs/operators";
 import {AggregatedEmployeeData} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
+import {StaffDto} from "../../../../entities/data/StaffDto";
 
 const log = new Logger('ViewEmployeeComponent');
 
@@ -65,11 +65,11 @@ export class ViewEmployeeComponent  implements OnInit {
   getAllEmployees(pageIndex: number, sortList: string = 'dateCreated',
                   order: string = 'desc' ) {
 
-    /*return this.staffService.getStaffWithSupervisor(pageIndex, this.pageSize, null, sortList, order)
+    return this.staffService.getStaffWithSupervisor(pageIndex, this.pageSize, null, sortList, order)
       .pipe(
         takeUntil(this.destroyed$),
         tap((data) => log.info('Fetch transactions data>> ', data))
-      );*/
+      );
   }
   lazyLoadEmployees(event:LazyLoadEvent) {
     /*const pageIndex = event.first / event.rows;
@@ -90,7 +90,7 @@ export class ViewEmployeeComponent  implements OnInit {
   * This method aggregates staff, transactions, & department data into an array
   * The array is used to populate employees under a manager/supervisor table*/
   getGrpEmployeeData() {
-    /*forkJoin(([
+    forkJoin(([
       this.staffService.getStaffWithSupervisor(0, null, null, 'dateCreated', 'desc'),
       this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
       this.ticketsService.getAllDepartments(2)
@@ -115,7 +115,7 @@ export class ViewEmployeeComponent  implements OnInit {
         this.aggregatedEmployeeData.totalElements = staff?.totalElements;
         this.cdr.detectChanges();
       }
-    })*/
+    })
   }
 
   ngOnDestroy(): void {
@@ -128,7 +128,7 @@ export class ViewEmployeeComponent  implements OnInit {
     // this.ticketsService.setTransactionsRoutingData({username: username, module: module, name: name})
     // this.router.navigate([ `/home/view-employee/transactions/${username}`]);
 
-    this.router.navigate(['/home/view-employee-transactions'],
+    this.router.navigate(['/home/administration/employee/transactions'],
       {queryParams: {username, module, name }}).then(r => {
     })
   }
