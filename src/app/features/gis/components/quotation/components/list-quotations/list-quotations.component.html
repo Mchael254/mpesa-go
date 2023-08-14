@@ -1,1 +1,153 @@
-<p>list-quotations works!</p>
+<div class="row my-4 mx-4">
+    <div class="col-md-12 col-lg-12 col-xxxl-12 top-elements">
+      <div class="float-left-element">
+        <h2 class="top-header-text">Quotations</h2>
+      </div>
+      <div class="top-link-float-right">
+        <a href="/home">Home</a>
+        <i class="fa fa-angle-right top-link-arrow" aria-hidden="true"></i>
+        <a href="/home/dashboard">CRM</a>
+        <i class="fa fa-angle-right top-link-arrow" aria-hidden="true"></i>
+        <a href="/home/quotations" class="active">Quotations </a>
+      </div>
+    </div>
+    <div class="col-12 top-staff-btns">
+      <button type="button" class="btn btn-primary float-left-element" id="btn-new-quotation">New quotation</button>
+      <button type="button" class="btn btn-outline-primary float-left-element" id="btn-import-quotation">Import quotation</button>
+      <button type="button" class="btn float-left-element" id="btn-filter-quotation" data-toggle="modal" data-target="#filterModal">
+        <i class="fa fa-filter common-icon-color"></i>Filter
+      </button>
+      <form class="form-inline float-left-element">
+        <button type="submit">Search</button>
+        <input type="search" id="input-search-quotation" name="input-search-quotation" class="input-group-sm"
+               placeholder="Search by name" [(ngModel)]="listFilter"  [ngModelOptions]="{standalone: true}">
+      </form>
+    </div>
+    <div class="col-md-12 col-lg-12 col-xxxl-12">
+      <div class="card">
+        <div class="card-body">
+          <p-table
+                   [autoLayout]="true"
+                   [paginator]="true"
+                   [rowHover]="true"
+                   [resizableColumns]="true"
+                   [showCurrentPageReport]="true"
+                   [rows]="pageSize"
+                   [totalRecords]="quotations.totalElements"
+                   [value]="quotations.content"
+                   styleClass="p-datatable-sm"
+                   responsiveLayout="scroll" class='ui-datatable'
+                   currentPageReportTemplate="{first} - {last} of {totalRecords}">
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="no"  class="head">Quotation Number<p-sortIcon field="no"></p-sortIcon></th>
+                <th pSortableColumn="product"  class="head">Product<p-sortIcon field="product"></p-sortIcon></th>
+                <th pSortableColumn="premium"  class="head">Premium(KES)<p-sortIcon field="premium"></p-sortIcon></th>
+                <th pSortableColumn="coverFrom"  class="head">Cover From<p-sortIcon field="coverFrom"></p-sortIcon></th>
+                <th pSortableColumn="coverTo"  class="head">Cover To<p-sortIcon field="coverTo"></p-sortIcon></th>
+                <th pSortableColumn="client"  class="head">Client<p-sortIcon field="client"></p-sortIcon></th>
+                <th class="head">Action</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-quotation>
+              <tr>
+                <td class="body">{{quotation?.no | uppercase}}</td>
+                <td class="body">{{quotation?.quotation_product?.product?.insurance_type | titlecase}}</td>
+                <td class="body">{{quotation?.premium}}</td>
+                <td class="body">{{quotation?.cover_from | titlecase}}</td>
+                <td class="body">{{quotation?.cover_to}}</td>
+                <td class="body">{{quotation?.client | titlecase}}</td>
+                <td>
+                  <button type="button" class="btn" id="btn_view_quotation" >View</button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7">No quotation found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <div class="lower-navigation mt-3">
+        <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+      </div>
+    </div>
+  </div>
+  <div class="container">
+  
+    <!-- Modal -->
+    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header pad">
+            <div class="row">
+              <div class="col-lg-12">
+                <h6 class="modal-title top" id="exampleModalLabel">View</h6>
+              </div>
+            </div>
+  
+          </div>
+          <div class="modal-body">
+  
+            <form [formGroup]="sortingForm">
+              <div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input box"
+                    type="checkbox"
+                    value="dateCreated"
+                    id="CheckDate"
+                    checked
+                    formControlName="dateCreated"
+                  >
+                  <i class="fa fa-calendar icon"></i>
+                  <label class="form-check-label pl-2" for="CheckDate">
+                    Date
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input
+                    class="form-check-input box"
+                    type="radio"
+                    value="asc"
+                    id="CheckAsc"
+                    formControlName="sortOrder"
+                  >
+                  <i class="fa fa-sort-amount-up icon"></i>
+                  <label class="form-check-label pl-2" for="CheckAsc">
+                    Ascending
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input box"
+                    type="radio"
+                    value="desc"
+                    id="CheckDesc"
+                    formControlName="sortOrder"
+                  >
+                  <i class="fa fa-sort-amount-down icon"></i>
+                  <label class="form-check-label pl-2" for="CheckDesc">
+                    Descending
+                  </label>
+                </div>
+  
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer border-top-0">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-dismiss="modal"
+            >Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  
