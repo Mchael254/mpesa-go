@@ -12,6 +12,8 @@ import { RiskDetailsComponent } from './components/tickets/view-tickets/risk-det
 import { TaxDetailsComponent } from './components/tickets/view-tickets/tax-details/tax-details.component';
 import {SharedModule} from "../../shared/shared.module";
 import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
+import {EntitiesModule} from "../entities/entities.module";
+import { ReassignTicketModalComponent } from './components/tickets/reassign-ticket-modal/reassign-ticket-modal.component';
 
 
 @NgModule({
@@ -22,7 +24,8 @@ import { TicketDetailsComponent } from './components/tickets/ticket-details/tick
     ViewTicketsComponent,
     RiskDetailsComponent,
     TaxDetailsComponent,
-    TicketDetailsComponent
+    TicketDetailsComponent,
+    ReassignTicketModalComponent
   ],
     imports: [
         CommonModule,
@@ -31,7 +34,8 @@ import { TicketDetailsComponent } from './components/tickets/ticket-details/tick
         ReactiveFormsModule,
         TableModule,
         SharedModule,
-        TableModule
+        TableModule,
+        EntitiesModule
     ],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
