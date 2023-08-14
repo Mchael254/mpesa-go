@@ -28,37 +28,42 @@ import {TableModule} from "primeng/table";
 import { DatePipe } from '@angular/common';
 import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
 import { SelectStatusComponent } from './components/entity/select-status/select-status.component';
+import { StaffModalComponent } from './components/staff/staff-modal/staff-modal.component';
 @NgModule({
-  declarations: [
-    NewClientComponent,
-    ListClientComponent,
-    NewEntityComponent,
-    ListEntityComponent,
-    NewIntermediaryComponent,
-    ListIntermediaryComponent,
-    NewServiceProviderComponent,
-    ListServiceProviderComponent,
-    NewStaffComponent,
-    ListStaffComponent,
-    EditComponent,
-    ViewEntityComponent,
-    StaffProfileComponent,
-    AssignAppsComponent,
-    RelatedAccountsComponent,
-    SelectStatusComponent
-  ],
-  imports: [
-    CommonModule,
-    EntitiesRoutingModule,
-    TabViewModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    SharedModule,
-    DropdownModule,
-    StepsModule,
-    TableModule,
-    FormsModule
-  ],
-  providers:[DatePipe]
+    declarations: [
+        NewClientComponent,
+        ListClientComponent,
+        NewEntityComponent,
+        ListEntityComponent,
+        NewIntermediaryComponent,
+        ListIntermediaryComponent,
+        NewServiceProviderComponent,
+        ListServiceProviderComponent,
+        NewStaffComponent,
+        ListStaffComponent,
+        EditComponent,
+        ViewEntityComponent,
+        StaffProfileComponent,
+        AssignAppsComponent,
+        RelatedAccountsComponent,
+        SelectStatusComponent,
+        StaffModalComponent
+    ],
+    imports: [
+        CommonModule,
+        EntitiesRoutingModule,
+        TabViewModule,
+        InputTextModule,
+        ReactiveFormsModule,
+        SharedModule,
+        DropdownModule,
+        StepsModule,
+        TableModule,
+        FormsModule
+    ],
+    exports: [
+        StaffModalComponent
+    ],
+    providers: [DatePipe]
 })
 export class EntitiesModule { }

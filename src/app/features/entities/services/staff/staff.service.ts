@@ -152,4 +152,11 @@ export class StaffService {
     });
   }
 
+  getStaffByGroup(staffGroupId: number): Observable<StaffDto[]>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    return this.http.get<StaffDto[]>(`/${this.baseStaffUrl}/administration/user-groups/${staffGroupId}/users`);
+  }
 }
