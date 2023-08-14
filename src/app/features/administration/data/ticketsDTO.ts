@@ -1,6 +1,7 @@
 // import {StaffResDto} from "../../../../account/staff/models/staffDto";
 
 import {DepartmentDto} from "../../../shared/data/common/departmentDto";
+import {StaffResDto} from "../../entities/data/StaffDto";
 
 export interface TicketsDTO {
   agentName: string,
@@ -128,7 +129,7 @@ export interface TransactionsCountDTO {
 }
 export interface AggregatedEmployeeData{
   transaction?: TransactionsCountDTO;
-  // staffs?: StaffResDto;
+  staffs?: StaffResDto;
   department?: DepartmentDto;
 }
 export interface TransactionsRoutingDTO {

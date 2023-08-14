@@ -188,7 +188,7 @@ export class TicketsService {
     })
     const assignee = this.authService.getCurrentUserName();
     const params = new HttpParams()
-      .set('assignee', `john.gachoki`)
+      .set('assignee', `${assignee}`)
 
     return this.http.get<TicketCountDTO[]>(`/${this.baseUrl}/workflow/api/v1/tickets/count-per-module`,
       {

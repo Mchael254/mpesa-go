@@ -59,13 +59,13 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    /*this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe(params => {
       log.info(`query Params >>>`, params);
-      this.name = params.name;
-      this.module = params.module;
-      this.username = params.username;
-      this.getAllTransactions(this.page, this.queryColumn, params.username, params.module);
-    });*/
+      this.name = params['name'];
+      this.module = params['module'];
+      this.username = params['username'];
+      this.getAllTransactions(this.page, this.queryColumn, params['username'], params['module']);
+    });
 
     // this.getTransactionsData();
     this.getAllSystems();
@@ -137,7 +137,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       })
   }*/
   getAllSystems() {
-    /*this.ticketsService.getSystems()
+    this.ticketsService.getSystems()
       .pipe(
         untilDestroyed(this),
       )
@@ -145,7 +145,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
         (data) => {
           this.systemsData = data;
         }
-      )*/
+      )
   }
 
   sortEmployeeTransactions() {
@@ -202,6 +202,6 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate([ `/home/administration/view-employees/`]);
+    this.router.navigate([ `/home/administration/employees/`]);
   }
 }
