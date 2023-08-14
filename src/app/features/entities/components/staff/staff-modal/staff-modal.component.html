@@ -1,0 +1,80 @@
+<input type="search" #inputusername name="searchUsername" id="searchUsername" placeholder="Username" (keydown)="handleEnteredValue($event, inputusername.value)" [(ngModel)]="usernameFilter"
+       class="border border-1 border-secondary rounded-1 w-50 h-auto">
+<input type="search" #inputname name="searchName" id="searchName" placeholder="Full Name" (keydown)="handleEnteredValue($event, inputname.value)"
+       class="border border-1 border-secondary  rounded-1 w-50 h-auto">
+<ng-container *ngIf="isLazyLoaded">
+  <p-table #dt1 (onLazyLoad)="lazyLoadAllUsers($event)"
+           [lazy]="true"
+           [rowHover]="true"
+           [scrollable]="true"
+           [paginator]="true"
+           [rows]="staffSize"
+           [totalRecords]="lazyLoadedUsers?.totalElements"
+           [value]="lazyLoadedUsers?.content"
+           [tableStyle]="{ 'width.%': 100 }"
+           sortMode="single"
+           selectionMode="single"
+           [(selection)]="selectedUser"
+           dataKey="id"
+           styleClass="p-datatable-gridlines users"
+           responsiveLayout="scroll" class='ui-datatable'
+           (onRowSelect)="onUserRowSelect($event)">
+    <ng-template pTemplate="header">
+      <tr >
+        <th class="supervisors-table-head">Username</th>
+        <th class="supervisors-table-head">Full Name</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-viewUsers>
+      <tr [pSelectableRow]="viewUsers">
+        <td class="body" style="width: 50%">{{viewUsers?.username | titlecase}}</td>
+        <td class="body" style="width: 50%">{{viewUsers?.name | titlecase}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">No users found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+<ng-container *ngIf="!isLazyLoaded">
+  <p-table #dt2 [rowHover]="true"
+           [scrollable]="true"
+           [paginator]="true"
+           [rows]="staffSize"
+           [value]="staffList"
+           [tableStyle]="{ 'width.%': 100 }"
+           sortMode="single"
+           selectionMode="single"
+           [(selection)]="selectedUser"
+           dataKey="id"
+           styleClass="p-datatable-gridlines users"
+           responsiveLayout="scroll" class='ui-datatable'
+           (onRowSelect)="onUserRowSelect($event)" >
+    <ng-template pTemplate="header">
+      <tr >
+        <th class="supervisors-table-head">Username</th>
+        <th class="supervisors-table-head">Full Name</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-viewUsers>
+      <tr [pSelectableRow]="viewUsers">
+        <td class="body w-50">{{viewUsers?.username | titlecase}}</td>
+        <td class="body w-50">{{viewUsers?.name | titlecase}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">No users found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+
+<div class="d-block border-top-0" *ngIf="showButtons">
+  <button class="btn btn-primary cancelBtn supervisors-bottom-btn"
+          data-bs-dismiss="modal" aria-label="Close"
+          #cancelUserSelection>Cancel</button>
+  <button class="btn btn-outline-primary float-right reassign supervisors-bottom-btn" aria-label="Close" (click)="saveSelectedUser()">Save</button>
+</div>

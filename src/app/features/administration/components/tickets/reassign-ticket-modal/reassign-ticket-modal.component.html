@@ -1,0 +1,106 @@
+<!-- Main Reassign Ticket Component !-->
+<div class="modal fade" id="reassignModal" [style.z-index]="zIndex"
+     [ngClass]="{ 'show': reassignModalVisible }" tabindex="-1" role="dialog" aria-labelledby="reassignModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fs-5 header" id="usersModalTitle">Reassign Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="emitAction()" aria-label="Close"></button>
+      </div>
+
+      <form [formGroup]="reassignTicketForm" class="clearfix">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-3">
+              <label for="modalUserAssignTo">User</label>
+            </div>
+            <div class="col-7">
+              <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
+            </div>
+            <div class="col-2">
+              <button type="submit" (click)="openAllUsersModal()" class="dropdownBtn">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="showDefaultUser" class="row mt-2">
+            <div class="col-3">
+              <label for="modalDefaultGroupUser">Default User</label>
+            </div>
+            <div class="col-7">
+              <input type="text" name="modalDefaultGroupUser" formControlName="modalDefaultGroupUser" id="modalDefaultGroupUser" class="form-control w-100 h-39 border border-secondary">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="dropdownBtn" (click)="showGroupMembers()">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-3">
+              <label for="modalTicketComments">Comments</label>
+            </div>
+            <div class="col-9">
+              <textarea rows="10" id="modalTicketComments" class="border border-1 border-secondary w-100" style="--bs-border-opacity: 0.15; min-width: 94%;"
+                        formControlName="modalTicketComments" name="modalTicketComments">
+              </textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer d-block float-end" style="border-top:0">
+          <button class="btn btn-primary cancelBtn" id="cancelReassignBtn" (click)="clearReassignModalFields()"
+                  #cancelReassign>Cancel</button>
+          <button class="btn btn-outline-primary float-right reassign" id="reassignTktBtn" (click)="reassignTicket()">Reassign</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--End of Main Reassign Ticket Component !-->
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Save User to Reassign'"
+  [modalTitle]="'Select User to Reassign'"
+  [useDynamicContent]="true"
+  [zIndex]="firstModalZIndex"
+  (actionEmitter)="processSelectedUser($event)"
+>
+  <!---Use content projection !-->
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    </app-staff-modal>
+  </div>
+  <!---Use content projection !-->
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the allUsersModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="allUsersModalVisible"
+     [style.z-index]="firstModalZIndex"></div>
+
+
+<!-- Modal for Viewing Group Members if User from above list was of group Type (type = G) !-->
+<app-dynamic-simple-modal
+  [modalVisible]="groupUserModalVisible"
+  [modalButtonLabel]="'Save Default User'"
+  [zIndex]="secondModalZIndex"
+  [title]="'Select Default User'"
+  [useDynamicContent]="true"
+  (actionEmitter)="processDefaultUser($event)"
+>
+  <div modal-body-content>
+    <app-staff-modal
+      [isLazyLoaded]="false"
+      [staffList]="groupStaffMembers"
+      (userSelected)="getSelectedDefaultUser($event)">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the groupUserModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="groupUserModalVisible"
+     [style.z-index]="zIndex"></div>
+
+
