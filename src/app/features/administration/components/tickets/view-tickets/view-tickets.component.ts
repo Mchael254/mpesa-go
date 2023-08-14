@@ -1,17 +1,13 @@
-import {ChangeDetectorRef, Component, OnInit, Query} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO} from "../../../data/ticketsDTO";
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {NewTicketDto, TicketModuleDTO, TicketReassignDto} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
-import {catchError, take} from "rxjs/operators";
+import {catchError} from "rxjs/operators";
 import {Logger} from "../../../../../shared/services";
 import {TicketsService} from "../../../services/tickets.service";
 import cubejs from "@cubejs-client/core";
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
-import { DmsService } from 'src/app/shared/services/dms/dms.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { ParameterService } from 'src/app/shared/services/parameter.service';
 import { throwError } from 'rxjs';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
 
@@ -28,6 +24,7 @@ export class ViewTicketsComponent implements OnInit {
   pageSize: 5;
   ticketModules: TicketModuleDTO[] = [];
 
+  showReassignTicketsModal: boolean;
 
   globalFilterFields = [
     'createdOn',
@@ -40,9 +37,9 @@ export class ViewTicketsComponent implements OnInit {
     'ticketID',
     'systemModule'];
 
-    private cubejsApi = cubejs({
-      apiUrl: this.appConfig.config.cubejsDefaultUrl
-    });
+  private cubejsApi = cubejs({
+    apiUrl: this.appConfig.config.cubejsDefaultUrl
+  });
 
   constructor(
     private authService: AuthService,
@@ -53,10 +50,6 @@ export class ViewTicketsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
-    private messageService: MessageService,
-    private staffService: StaffService,
-    private dmsService: DmsService,
-    private parameterService: ParameterService,
   )
   {
 
@@ -227,7 +220,7 @@ export class ViewTicketsComponent implements OnInit {
           // Display an error message or take necessary action
         });
     }
-    otpRequestCheck(ticketCodes: string[]) {
+  otpRequestCheck(ticketCodes: string[]) {
       log.info('Value from selectedTickets:', ticketCodes);
 
       const ticketPromises = ticketCodes.map((sysModule) => {
@@ -338,7 +331,6 @@ export class ViewTicketsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
   sendVerificationOtp(username: string, channel: string) {
     this.authService.sentVerificationOtp(username, channel)
       .pipe(untilDestroyed(this))
@@ -353,5 +345,31 @@ export class ViewTicketsComponent implements OnInit {
 
   goToTicketDetails(id:number) {
     this.router.navigate([`home/administration/ticket/details/${id}`]);
+  }
+
+  toggleReassignModal(visible: boolean) {
+    this.showReassignTicketsModal = visible;
+  }
+
+  checkSelectedTickets() {
+    // Get the selected tickets from the table
+    const selectedTickets = this.selectedTickets;
+
+    // Check if any products are selected
+    if (selectedTickets.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Warning', 'Please select at least one ticket to reassign');
+      return;
+    }
+    this.toggleReassignModal(true);
+  }
+
+  handleAction(event: void) {
+    this.toggleReassignModal(false); // Close the modal after performing the action
+  }
+
+  reassignSubmitted(event: TicketReassignDto) {
+    if(event){
+      console.log('Reassign dto received: ', event);
+    }
   }
 }
