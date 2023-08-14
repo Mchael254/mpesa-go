@@ -10,6 +10,8 @@ export class DynamicSimpleModalComponent {
   @Input() modalBody: string;
   @Input() modalButtonLabel: string;
   @Input() modalVisible: boolean;
+  @Input() useDynamicContent = false;
+  @Input() zIndex: any;
 
   @Output() actionEmitter: EventEmitter<void> = new EventEmitter<void>();
 
@@ -21,6 +23,7 @@ export class DynamicSimpleModalComponent {
       third: "3rd"
     }
     this.actionEmitter.emit(forms);
+    this.modalVisible = !this.modalVisible;
   }
 
 }
