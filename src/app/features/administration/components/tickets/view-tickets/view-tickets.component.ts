@@ -346,8 +346,10 @@ export class ViewTicketsComponent implements OnInit {
       })
   }
 
-  goToTicketDetails(id:number) {
-    this.router.navigate([`home/administration/ticket/details/${id}`]);
+  goToTicketDetails(id:number, module: string) {
+    this.router.navigate([`home/administration/ticket/details/`],
+      {queryParams: {id, module}}).then(r => {
+    });
   }
 
   toggleReassignModal(visible: boolean) {
