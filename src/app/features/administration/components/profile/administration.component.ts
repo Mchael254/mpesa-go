@@ -73,6 +73,8 @@ export class AdministrationComponent {
   getUserDetails() {
     this.user = this.authService.getCurrentUser();
 
+    console.log('Login User Details', this.user);
+
     if(this.utilService.isUserAdmin(this.user)) {
       const names = this.user.name.split(' ');
       const firstName = names[0];
