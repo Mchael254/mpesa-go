@@ -87,7 +87,8 @@ export class ListEntityComponent implements OnInit, OnDestroy {
 
     const pageIndex = event.first / event.rows;
     // const sortField = event.sortField;
-    const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
+    // const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
+    const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const searchTerm = localStorage.getItem('searchTerm');
 
     this.getEntities(pageIndex, sortField, sortOrder)
