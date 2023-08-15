@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {NewTicketDto, TicketModuleDTO, TicketReassignDto} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/operators";
@@ -10,6 +10,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { throwError } from 'rxjs';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
+import {StaffDto} from "../../../../entities/data/StaffDto";
+import {Table} from "primeng/table";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -18,6 +20,7 @@ const log = new Logger('ViewTicketsComponent');
   styleUrls: ['./view-tickets.component.css']
 })
 export class ViewTicketsComponent implements OnInit {
+  @ViewChild('dt') dt: Table | undefined;
   public filteredTickets: NewTicketDto[] = [];
   private allTickets: NewTicketDto[] = [];
   selectedTickets: NewTicketDto[] = [];
@@ -351,24 +354,33 @@ export class ViewTicketsComponent implements OnInit {
     this.showReassignTicketsModal = visible;
   }
 
-  checkSelectedTickets() {
+  checkSelectedTickets(): boolean {
     // Get the selected tickets from the table
     const selectedTickets = this.selectedTickets;
 
-    // Check if any products are selected
+    // Check if any ticket is selected
     if (selectedTickets.length === 0) {
       this.globalMessagingService.displayErrorMessage('Warning', 'Please select at least one ticket to reassign');
-      return;
+      return false;
     }
-    this.toggleReassignModal(true);
+
+    return true
+  }
+
+  processReassignTask(){
+    if(this.checkSelectedTickets()){
+      this.toggleReassignModal(true)
+    }
   }
 
   handleAction(event: void) {
     this.toggleReassignModal(false); // Close the modal after performing the action
   }
 
-  reassignSubmitted(event: TicketReassignDto) {
+  reassignSubmitted(event) {
     if(event){
+      this.dt.reset();
+      this.toggleReassignModal(false);
       console.log('Reassign dto received: ', event);
     }
   }

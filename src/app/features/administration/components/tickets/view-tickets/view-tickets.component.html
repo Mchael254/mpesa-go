@@ -38,14 +38,14 @@
 </div>
 
 
-<div style="padding: 2rem 0 0 1rem;">
+<div  class="d-flex my-4 mx-4">
   <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>
-  <button class="btn btn-primary" (click)="checkSelectedTickets()">Reassign</button>
+  <button class="btn btn-primary" (click)="processReassignTask()">Multiple Reassign</button>
 </div>
 <div class="my-4 mx-4">
   <div class="card">
     <div class="card-body">
-      <p-table
+      <p-table #dt
       [value]="filteredTickets"
       [(selection)]="selectedTickets"
       [tableStyle]="{ 'min-width': '50rem' }"
@@ -235,6 +235,7 @@
 
 <app-reassign-ticket-modal
   [reassignModalVisible]="showReassignTicketsModal"
+  [selectedTickets]="selectedTickets"
   (actionReassignEmitter)="handleAction($event)"
-  (reassignData)="reassignSubmitted($event)">
+  (reassignedTickets)="reassignSubmitted($event)">
 </app-reassign-ticket-modal>
