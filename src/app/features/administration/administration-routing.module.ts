@@ -33,7 +33,10 @@ const routes: Routes = [
       path: 'ticket/details/:id',
       component: TicketDetailsComponent
     },
-
+    {
+      path: 'ticket/details',
+      component: TicketDetailsComponent
+    },
 ];
 
 @NgModule({
