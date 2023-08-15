@@ -8,12 +8,16 @@ import { ViewEmployeeComponent } from './components/staff-performance/view-emplo
 import {TableModule} from "primeng/table";
 import { ViewEmployeeTransactionsComponent } from './components/staff-performance/view-employee-transactions/view-employee-transactions.component';
 import { ViewTicketsComponent } from './components/tickets/view-tickets/view-tickets.component';
-import { RiskDetailsComponent } from './components/tickets/view-tickets/risk-details/risk-details.component';
-import { TaxDetailsComponent } from './components/tickets/view-tickets/tax-details/tax-details.component';
+import { RiskDetailsComponent } from './components/tickets/ticket-details/risk-details/risk-details.component';
+import { TaxDetailsComponent } from './components/tickets/ticket-details/tax-details/tax-details.component';
 import {SharedModule} from "../../shared/shared.module";
 import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
 import {EntitiesModule} from "../entities/entities.module";
 import { ReassignTicketModalComponent } from './components/tickets/reassign-ticket-modal/reassign-ticket-modal.component';
+import {TabViewModule} from "primeng/tabview";
+import { FullTicketDetailsComponent } from './components/tickets/ticket-details/full-ticket-details/full-ticket-details.component';
+import { TicketReportsComponent } from './components/tickets/ticket-details/ticket-reports/ticket-reports.component';
+import { TicketDocumentsComponent } from './components/tickets/ticket-details/ticket-documents/ticket-documents.component';
 
 
 @NgModule({
@@ -25,7 +29,10 @@ import { ReassignTicketModalComponent } from './components/tickets/reassign-tick
     RiskDetailsComponent,
     TaxDetailsComponent,
     TicketDetailsComponent,
-    ReassignTicketModalComponent
+    ReassignTicketModalComponent,
+    FullTicketDetailsComponent,
+    TicketReportsComponent,
+    TicketDocumentsComponent
   ],
     imports: [
         CommonModule,
@@ -35,7 +42,8 @@ import { ReassignTicketModalComponent } from './components/tickets/reassign-tick
         TableModule,
         SharedModule,
         TableModule,
-        EntitiesModule
+        EntitiesModule,
+        TabViewModule
     ],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
