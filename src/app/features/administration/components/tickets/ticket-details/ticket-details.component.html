@@ -1,13 +1,13 @@
-<p>ticket-details works!</p>
-
-<app-dynamic-form-modal
-  [modalVisible]="modalVisible"
-  (actionEmitter)="changeModal($event)"
-  [formFields]="fieldsets"
-  [fieldsPerRow]="1"
-  [title]="'Client Details'"
-  (formSubmitted)="submitForm($event)"
-  >
-</app-dynamic-form-modal>
-
-  <button (click)="openModal()" class="btn btn-primary">Open Dynamic Form Modal</button>
+<div class="base-content-section">
+  <p-tabView>
+    <p-tabPanel header="Ticket Details">
+      Full ticket details
+    </p-tabPanel>
+    <p-tabPanel header="Reports">
+      Reports
+    </p-tabPanel>
+    <p-tabPanel header="Documents">
+      Documents
+    </p-tabPanel>
+  </p-tabView>
+</div>
