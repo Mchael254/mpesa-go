@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {StaffDto} from "../../../../entities/data/StaffDto";
-import {TicketReassignDto, TicketsDTO} from "../../../data/ticketsDTO";
+import {NewTicketDto, TicketReassignDto, TicketsDTO} from "../../../data/ticketsDTO";
 import {untilDestroyed} from "../../../../../shared/shared.module";
 import {Observable} from "rxjs";
 import {StaffService} from "../../../../entities/services/staff/staff.service";
@@ -15,8 +15,8 @@ import {GlobalMessagingService} from "../../../../../shared/services/messaging/g
 })
 export class ReassignTicketModalComponent implements OnInit, OnDestroy{
   @Input() reassignModalVisible: boolean;
-  @Input() selectedTickets: TicketsDTO[] = [];
-  @Output() reassignData = new EventEmitter<TicketReassignDto>();
+  @Input() selectedTickets: NewTicketDto[] = [];
+  @Output() reassignedTickets = new EventEmitter<true>();
   @Output() actionReassignEmitter:  EventEmitter<void> = new EventEmitter<void>();
 
   groupStaffMembers: StaffDto[] = [];
@@ -135,6 +135,7 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
 
   reassignTicket() {
     if(!this.reassignTicketForm.valid){
+      this.globalMessagingService.displayErrorMessage('Error', 'Form is invalid. Fill in required fields');
       return;
     }
 
@@ -142,7 +143,7 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
       let reassignForm = this.reassignTicketForm.value;
       let ticketsToReassign: TicketReassignDto[] = this.selectedTickets.map(item => {
         return {
-          ticketCode: item?.ticket?.code,
+          ticketCode: item?.ticketID,
           groupUser: this.selectedDefaultUser?.username,
           remarks: reassignForm.modalTicketComments,
           userCodeToAssignFrom: null,
@@ -159,7 +160,7 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
           this.globalMessagingService.displaySuccessMessage("Success", response.message);
           this.reassignTicketForm.reset();
           this.reassignModalVisible = false;
-          this.actionReassignEmitter.emit();
+          this.reassignedTickets.emit(true);
         } );
     }
   }
