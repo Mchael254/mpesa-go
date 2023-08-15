@@ -1,8 +1,581 @@
-<app-dynamic-form
+<!-- <app-dynamic-form
   [formFields]="fieldsets"
   [fieldsPerRow]="2"
   [title]="'Client Details'"
   [actionButtonConfig]="buttonConfig"
   (formSubmitted)="submitForm($event)"
   (goBackButton)="goBack()">
-</app-dynamic-form>
+</app-dynamic-form> -->
+
+<div class="mx-4 my-4">
+  <h6>{{ partyAccountDetails?.partyType?.partyTypeName }} Details</h6>
+  <ul class="nav nav-tabs" id="ex1" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
+        aria-controls="ex1-tabs-1" aria-selected="false">
+        Personal Information
+      </a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
+        aria-selected="true">
+        Additional Information
+      </a>
+    </li>
+  </ul>
+  <div class="tab-content" id="ex1-content">
+    <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+      <div class="card">
+        <div class="card-body mb-2">
+          <form [formGroup]="entityDetailsForm">
+            <div class="row mb-2">
+              <label for="inputName" class="col-sm-2 col-form-label">Full Names</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputName" placeholder="Full Names" formControlName="name">
+              </div>
+              <label for="inputPassportNumber" class="col-sm-2 col-form-label">Passport Number</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputPassportNumber" placeholder="Passport Number"
+                  formControlName="passportNumber">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label for="inputPartyType" class="col-sm-2 col-form-label">Type</label>
+              <div class="col-md-4">
+                <select id="inputPartyType" class="form-select" formControlName="partyType">
+                  <option value="" selected>Party Type</option>
+                  <option value="I">Individual</option>
+                  <option value="C">Corporate</option>
+                </select>
+              </div>
+              <label for="inputMobileNumber" class="col-sm-2 col-form-label">Mobile Number</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputMobileNumber" placeholder="Mobile Number"
+                  formControlName="mobileNumber">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+              <div class="col-md-4">
+                <select id="inputTitle" class="form-select" formControlName="clientTitle">
+                  <option value="" selected>Title</option>
+                  <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles">
+                    {{ titles.description }}
+                  </option>
+                </select>
+              </div>
+              <label for="inputDOB" class="col-sm-2 col-form-label">Date of Birth</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" name="inputDOB" placeholder="Date of Birth"
+                  onfocus="(this.type='date')" onblur="(this.type='text')" id="date" formControlName="dateOfBirth">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label for="inputEmailAddress" class="col-sm-2 col-form-label">Email Address</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
+                  formControlName="emailAddress">
+              </div>
+              <label for="inputPhysicalAddress" class="col-sm-2 col-form-label">Physical Address</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputPhysicalAddress" placeholder="Physical Address"
+                  formControlName="physicalAddress">
+              </div>
+            </div>
+            <div class="row mb-2">
+              <label for="inputIdNumber" class="col-sm-2 col-form-label">ID Number</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputIdNumber" placeholder="ID Number"
+                  formControlName="idNumber">
+              </div>
+              <label for="inputOccupation" class="col-sm-2 col-form-label">Occupation</label>
+              <div class="col-md-4">
+                <select id="inputOccupation" class="form-select" formControlName="occupation">
+                  <option value="" selected>Occupation</option>
+                  <option *ngFor="let occupation of occupationData" [value]="occupation.id">
+                    {{ occupation.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+  
+            <div *ngIf="showExtraStaffDetails" class="row mb-2">
+              <label for="inputStaffDepartments" class="col-sm-2 col-form-label">Department</label>
+              <div class="col-md-4">
+                <select id="inputStaffDepartments" class="form-select" formControlName="staffDepartment">
+                  <option value="" selected>Department</option>
+                  <option *ngFor="let department of staffDepartments" value="{{ department?.id }}">
+                    {{ department?.departmentName }}
+                  </option>
+                </select>
+              </div>
+  
+              <label for="inputStaffSupervisor" class="col-sm-2 col-form-label">Supervisor</label>
+              <div class="col-md-4">
+                <div class="dropdown-wrapper">
+                  <input type="text" id="inputStaffSupervisor" class="disabled-input form-control"
+                    formControlName="staffSupervisor" style="border: 1px solid rgba(0, 0, 0, 0.15);float: left;" readonly>
+                  <i class="pi pi-angle-down manager-dropdown-icon" data-bs-toggle="modal"
+                    data-bs-target="#supervisorModal"></i>
+                </div>
+              </div>
+            </div>
+  
+            <div class="row mb-2">
+              <label for="inputPinNumber" class="col-sm-2 col-form-label">Pin Number</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputPinNumber" placeholder="Pin Number"
+                  formControlName="pinNumber">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="mx-2 mb-2">
+          <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+          <button type="button" class="btn btn-light btn-md" id="completeInforButton">
+            COMPLETE {{ partyAccountDetails?.partyType?.partyTypeName | uppercase }} INFORMATION
+          </button>
+          <span class="float-end">
+            <button type="button" class="btn btn-primary btn-md" id="updateUserButton" (click)="updatePersonalInfo()">
+              SAVE
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button 
+              class="nav-link active" 
+              id="bank-tab" 
+              data-bs-toggle="tab" 
+              data-bs-target="#bank-tab-pane" 
+              type="button"
+              role="tab" 
+              aria-controls="bank-tab-pane" 
+              aria-selected="true">
+            Bank Details
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+              class="nav-link" 
+              id="wealth-tab" 
+              data-bs-toggle="tab" 
+              data-bs-target="#wealth-tab-pane" 
+              type="button"
+              role="tab" 
+              aria-controls="wealth-tab-pane" 
+              aria-selected="false">
+            Wealth Details
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+              class="nav-link" 
+              id="aml-tab" 
+              data-bs-toggle="tab" 
+              data-bs-target="#aml-tab-pane" 
+              type="button"
+              role="tab" 
+              aria-controls="aml-tab-pane" 
+              aria-selected="false">
+            AML Details(Organization)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+              class="nav-link" 
+              id="kins-tab" 
+              data-bs-toggle="tab" 
+              data-bs-target="#kins-tab-pane" 
+              type="button"
+              role="tab" 
+              aria-controls="kins-tab-pane" 
+              aria-selected="false">
+            Next of Kins
+          </button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="bank-tab-pane" role="tabpanel" aria-labelledby="bank-tab" tabindex="0">
+          <div class="card">
+            <div class="card-body">
+              <form [formGroup]="bankDetailsForm">
+                <div class="row mb-2">
+                  <label for="inputBank" class="col-sm-2 col-form-label">Bank</label>
+                  <div class="col-md-4">
+                    <select id="inputBank" class="form-select" formControlName="bankName">
+                      <option value="" selected>Bank</option>
+                      <option *ngFor="let bank of banksData" [value]="bank.id">{{ bank.name }}</option>
+                    </select>
+                  </div>
+                  <label for="inputAccountNumber" class="col-sm-2 col-form-label">Account</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputAccountNumber" placeholder="Account Number"
+                      formControlName="accountNumber">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputAccountType" class="col-sm-2 col-form-label">Select Account Type</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputAccountType" placeholder="Account Type"
+                      formControlName="accountType">
+                  </div>
+                  <label for="inputBranch" class="col-sm-2 col-form-label">Branch</label>
+                  <div class="col-md-4">
+                    <select id="inputBranch" class="form-select" formControlName="branch">
+                      <option value="">Branch</option>
+                      <option *ngFor="let branch of branchesData" [value]="branch.id">
+                        {{ branch.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputPrefferedChannel" class="col-sm-2 col-form-label">Preferred Payment A/C</label>
+                  <div class="col-md-4">
+                    <select id="inputPrefferedChannel" class="form-select" formControlName="preferredPaymentAccount">
+                      <option value="">Preferred Payment A/C</option>
+                      <option value="N">Mobile Money</option>
+                      <option value="N">Bank</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputShortCodes" class="col-sm-2 col-form-label">Short Codes</label>
+                  <div class="col-md-2">
+                    <input type="text" class="form-control" id="inputShortCodes" placeholder="IBAN" formControlName="iban">
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" class="form-control" id="inputShortCodes" placeholder="Swift Code"
+                      formControlName="swiftCode">
+                  </div>
+                  <div class="col-md-3">
+                    <input type="text" class="form-control" id="inputShortCodes" placeholder="Mpay" formControlName="mpay">
+                  </div>
+                  <div class="col-md-2">
+                    <input type="text" class="form-control" id="inputShortCodes" placeholder="BVN" formControlName="bvn">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="mx-2 mb-2">
+              <span class="float-end">
+                <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedBankDetails()">
+                  SAVE
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="wealth-tab-pane" role="tabpanel" aria-labelledby="wealth-tab" tabindex="0">
+          <div class="card">
+            <div class="card-body">
+              <form [formGroup]="wealthDetailsForm">
+                <div class="row mb-2">
+                  <label for="inputNationality" class="col-sm-2 col-form-label">Nationality</label>
+                  <div class="col-md-4">
+                    <select id="inputNationality" class="form-select" formControlName="nationality">
+                      <option value="">Nationality</option>
+                      <option *ngFor="let country of countryData" [value]="country.id">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <label for="inputCitizenship" class="col-sm-2 col-form-label">Citizenship</label>
+                  <div class="col-md-4">
+                    <select id="inputCitizenship" class="form-select" formControlName="citizenship">
+                      <option value="">Citizenship</option>
+                      <option *ngFor="let country of countryData" [value]="country.id">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputFundSource" class="col-sm-2 col-form-label">Source Of Funds</label>
+                  <div class="col-md-4">
+                    <select id="inputFundSource" class="form-select" formControlName="fundSource">
+                      <option value="">Source of Funds</option>
+                      <option *ngFor="let source of fundSource" [value]="source.code">
+                        {{ source.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <label for="inputSector" class="col-sm-2 col-form-label">Sector</label>
+                  <div class="col-md-4">
+                    <select id="inputSector" class="form-select" formControlName="sector">
+                      <option value="">Sector</option>
+                      <option *ngFor="let sector of sectorData" [value]="sector.id">
+                        {{ sector.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputEmploymentType" class="col-sm-2 col-form-label">Type of Employment</label>
+                  <div class="col-md-4">
+                    <select id="inputEmploymentType" class="form-select" formControlName="employmentType">
+                      <option value="">Type Employment</option>
+                      <option value="Y">Employed</option>
+                      <option value="N">Self-Employed</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="mx-2 mb-2">
+              <span class="float-end">
+                <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedWealthDetails()">
+                  SAVE
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="aml-tab-pane" role="tabpanel" aria-labelledby="aml-tab" tabindex="0">
+          <div class="card">
+            <div class="card-body">
+              <form [formGroup]="amlDetailsForm">
+                <div class="row mb-2">
+                  <label for="inputTradingName" class="col-sm-2 col-form-label">Trading Names</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputTradingName" placeholder="Name"
+                      formControlName="tradingName">
+                  </div>
+                  <label for="inputRegNumber" class="col-sm-2 col-form-label">Cert Reg Number</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputRegNumber" placeholder="Certificate Reg Number"
+                      formControlName="certRegNumber">
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputRegName" class="col-sm-2 col-form-label">Company</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputRegName" placeholder="Registered Name"
+                      formControlName="companyRegName">
+                  </div>
+                  <label for="inputWealthSource" class="col-sm-2 col-form-label">Source of Wealth</label>
+                  <div class="col-md-4">
+                    <select id="inputWealthSource" class="form-select" formControlName="wealthSource">
+                      <option value="">Source of Wealth</option>
+                      <option *ngFor="let source of fundSource" [value]="source.code">
+                        {{ source.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputCertRegYear" class="col-sm-2 col-form-label">Cert Registration Year</label>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" id="inputCertRegYear" placeholder="Cert Registration Year"
+                      formControlName="certificateRegYear">
+                  </div>
+                  <label for="inputParentCountry" class="col-sm-2 col-form-label">Parent Country</label>
+                  <div class="col-md-4">
+                    <select id="inputParentCountry" class="form-select" formControlName="parentCountry">
+                      <option value="">Parent Country</option>
+                      <option *ngFor="let country of countryData" [value]="country.id">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-2">
+                  <label for="inputOperationCountry" class="col-sm-2 col-form-label">Operation Country</label>
+                  <div class="col-md-4">
+                    <select id="inputOperationCountry" class="form-select" formControlName="operationCountry">
+                      <option value="">Operation Country</option>
+                      <option *ngFor="let country of countryData" [value]="country.id">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="mx-2 mb-2">
+              <span class="float-end">
+                <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedAmlWealthDetails()">
+                  SAVE
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="kins-tab-pane" role="tabpanel" aria-labelledby="kins-tab" tabindex="0">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <div class="nextKinBtn float-end">
+                <button type="button" class="btn btn-outline-primary me-2" id="shareBtn">
+                  Share
+                </button>
+                <button type="button" class="btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#editKinsModal"
+                  id="addButton">
+                  Add
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <p-table [autoLayout]="true" [lazy]="false" [paginator]="true" [rowHover]="true" [rows]="pageSize"
+                [showCurrentPageReport]="true" [resizableColumns]="true" [value]="partyAccountDetails?.nextOfKinDetailsList"
+                styleClass="p-datatable-sm" responsiveLayout="scroll" class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Identifier Type</th>
+                    <th class="head">Identifier No</th>
+                    <th class="head">Full Name</th>
+                    <th class="head">Relation</th>
+                    <th class="head">DOB</th>
+                    <th class="head">Mobile</th>
+                    <th class="head">Email</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-kins>
+                  <tr>
+                    <td class="body">{{kins.modeOfIdentity.name | titlecase}}</td>
+                    <td class="body">{{kins.identityNumber}}</td>
+                    <td class="body">{{kins.fullName | titlecase}}</td>
+                    <td class="body">{{kins.relationship | titlecase}}</td>
+                    <td class="body">{{kins.dateOfBirth}}</td>
+                    <td class="body">{{kins.phoneNumber}}</td>
+                    <td class="body">{{kins.emailAddress}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No Next of Kin found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- modal -->
+<div class="modal fade" id="editKinsModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Next of Kins</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="nextKinDetailsForm">
+          <div class="row">
+            <label for="inputIdentifierType" class="col-4 col-form-label">Identifier Type</label>
+            <div class="col-8 mb-2">
+              <select id="inputIdentifierType" class="form-select" formControlName="identifierType">
+                <option value="" selected>Identifier Type</option>
+                <option *ngFor="let type of modeIdentityType" [value]="type.id">{{ type.name }}</option>
+              </select>
+            </div>
+            <label for="inputIdNumber" class="col-4 col-form-label">ID</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" id="inputIdNumber" placeholder="Passport Number"
+                formControlName="idNumber">
+            </div>
+            <label for="inputName" class="col-4 col-form-label">Full Name</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" id="inputName" placeholder="Full Name" formControlName="fullName">
+            </div>
+            <label for="inputEmailAddress" class="col-4 col-form-label">Email Address</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
+                formControlName="emailAddress">
+            </div>
+            <label for="inputRelation" class="col-4 col-form-label">Relation</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" id="inputRelation" placeholder="Relation"
+                formControlName="relationship">
+            </div>
+            <label for="inputPhoneNumber" class="col-4 col-form-label">Mobile Number</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" id="inputPhoneNumber" placeholder="Mobile Number"
+                formControlName="phoneNumber">
+            </div>
+            <label for="inputDateOfBirth" class="col-4 col-form-label">Date of Birth</label>
+            <div class="col-8 mb-2">
+              <input type="text" class="form-control" name="inputDateOfBirth" placeholder="Date of Birth"
+                onfocus="(this.type='date')" onblur="(this.type='text')" id="date" formControlName="dateOfBirth">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary ms-auto" data-bs-dismiss="modal" (click)="saveUpdatedNextofKinDetails()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="supervisorModal" tabindex="-1" role="dialog" aria-labelledby="supervisorModalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title header">Assign Supervisor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="search" name="searchUsername" id="searchUsername" placeholder="Username" [(ngModel)]="usernameFilter" 
+          [ngModelOptions]="{standalone: true}" style="border: 1px solid #DCDCDC; border-radius: 2px; width: 50%; height: 30px;" 
+          placement="bottom" ngbTooltip="Search User by their username">
+        <input type="search" name="searchName" id="searchName" placeholder="Full Name" [(ngModel)]="nameFilter"
+          [ngModelOptions]="{standalone: true}" style="border: 1px solid #DCDCDC; border-radius: 2px; width: 50%; height: 30px;"
+          placement="bottom" ngbTooltip="Search User by name">
+        <p-table (onLazyLoad)="lazyLoadAllUsers($event)" 
+            [lazy]="true" 
+            [rowHover]="true" 
+            [rows]="staffSupervisorOptions"
+            [totalRecords]="viewUsers?.totalElements" 
+            [value]="viewUsers?.content" 
+            [tableStyle]="{ 'width.%': 100 }"
+            [paginator]="true" 
+            sortMode="single" 
+            selectionMode="single" 
+            [(selection)]="selectedUser" 
+            dataKey="id"
+            styleClass="p-datatable-gridlines" 
+            responsiveLayout="scroll" 
+            class="ui-datatable"
+            (onRowSelect)="onUserRowSelect($event)" 
+            (onRowUnselect)="onUserRowUnselect($event)">
+          <ng-template pTemplate="header">
+            <tr>
+              <th class="head assign-supervisor-table-head">Username</th>
+              <th class="head assign-supervisor-table-head">Full name</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-viewUsers>
+            <tr [pSelectableRow]="viewUsers">
+              <td class="body">{{ viewUsers?.username | titlecase }}</td>
+              <td class="body">{{ viewUsers?.name | titlecase }}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2">No users found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer" style="border-top: 0;">
+        <button class="btn btn-outline-secondary cancelBtn supervisor-modal-bottom-btn float-start" data-bs-dismiss="modal"
+          (click)="clearReassignModalFields()">Cancel</button>
+        <button class="btn btn-primary ms-auto assign-supervisor-btn supervisor-modal-bottom-btn"
+          data-bs-dismiss="modal" (click)="saveSelectedSupervisor()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
