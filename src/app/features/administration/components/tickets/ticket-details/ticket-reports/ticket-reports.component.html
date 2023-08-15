@@ -1,1 +1,12 @@
-<p>ticket-reports works!</p>
+<div>
+  <label for="format">Select format:</label>
+  <select id="format" [(ngModel)]="selectedFormat">
+    <option value="HTML">HTML</option>
+    <option value="PDF">PDF</option>
+  </select>
+</div>
+<ul style="padding-left: 0;">
+  <li *ngFor="let report of reportsWithLinks" style="list-style: none;">
+    <a [href]="getReportLink(report)" target="_blank">{{ report.name }}</a>
+  </li>
+</ul>
