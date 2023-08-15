@@ -47,6 +47,61 @@
                     <form [formGroup]="userDetailsForm">
                         <div class="row">
                             <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" id="firstName" placeholder="First Name" class="form-control"
+                                        formControlName="firstName">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" id="lastName" placeholder="Last Name" class="form-control"
+                                        formControlName="lastName">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                                    <input type="text" id="phoneNumber" placeholder="Phone Number" class="form-control"
+                                        formControlName="phoneNumber">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="id" class="form-label">ID</label>
+                                    <input type="text" id="id" placeholder="ID" class="form-control" formControlName="id">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="pinNumber" class="form-label">Pin Number</label>
+                                    <input type="text" id="pinNumber" placeholder="Pin Number" class="form-control"
+                                        formControlName="pinNumber">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" id="email" placeholder="Email" class="form-control" formControlName="email">
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">This Account is</label>
+                                    <select id="status" class="form-select" placeholder="" formControlName="status">
+                                        <option value="">This Account is:</option>
+                                        <option value="A">Active</option>
+                                        <option value="I">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- <form [formGroup]="userDetailsForm">
+                        <div class="row">
+                            <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="firstName" class="label col-sm-3 col-form-label">First Name</label>
                                     <input type="text" id="firstName" placeholder="First Name" class="form-control"
@@ -98,10 +153,9 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </form> -->
                 </div>
-                <div class="lower-navigation">
-                    <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
+                <div class="mx-3 my-2">
                     <button type="button" class="btn btn-primary btn-md" id="updateUserButton"
                         (click)="updateUserDetails()">Update</button>
                     <button type="button" class="btn btn-light btn-md" data-bs-toggle="modal"
@@ -146,8 +200,8 @@
                 </div>
                 <div class="modal-body">
                     <form [formGroup]="changePassForm">
-                        <div class="form-group">
-                            <label class="label" for="oldPassword">Old Password:</label>
+                        <div class="form-group mb-2">
+                            <label class="label mb-2" for="oldPassword">Old Password:</label>
                             <input type="password" class="form-control" id="oldPassword" placeholder="******"
                                 formControlName="oldPassword">
                             <div *ngIf="f['oldPassword'].invalid && (f['oldPassword'].dirty || f['oldPassword'].touched)"
@@ -156,8 +210,8 @@
                                 <div *ngIf="f['oldPassword'].errors['required']">Old password is required</div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="label" for="newPassword">New Password:</label>
+                        <div class="form-group mb-2">
+                            <label class="label mb-2" for="newPassword">New Password:</label>
                             <input type="password" class="form-control bac" id="newPassword"
                                 placeholder="Atleast 6 characters" formControlName="newPassword">
                             <div *ngIf="f['newPassword'].invalid && (f['newPassword'].dirty || f['newPassword'].touched)"
@@ -167,8 +221,8 @@
                                 <div *ngIf="f['newPassword'].errors['minlength']">Password must be at least 6 characters</div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="label" for="confirmNewPassword">Confirm New Password:</label>
+                        <div class="form-group mb-2">
+                            <label class="label mb-2" for="confirmNewPassword">Confirm New Password:</label>
                             <input type="password" class="form-control bac" id="confirmNewPassword"
                                 placeholder="Atleast 6 characters" formControlName="confirmNewPassword">
                             <div *ngIf="f['confirmNewPassword'].invalid && (f['confirmNewPassword'].dirty || f['confirmNewPassword'].touched)"

@@ -224,7 +224,7 @@ administationSubMenuList() : SidebarMenu[]{
   return [
     {
       name:"Account Setup",
-      link: "/home/administration/employees",
+      link: "/home/administration",
       value: "ACC_SETUP",
       isActive: true
     },
