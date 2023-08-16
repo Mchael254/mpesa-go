@@ -17,6 +17,10 @@ const routes: Routes = [
     loadChildren: () => import('./components/claim/claim.module').then(m => m.ClaimModule),
   },
   {
+    path: 'setup',
+    loadChildren: () => import('./components/setups/setups.module').then(m => m.SetupsModule),
+  },
+  {
     path: 'dynamic-test',
     component:DynamicSetupFormScreenComponent,
   },
