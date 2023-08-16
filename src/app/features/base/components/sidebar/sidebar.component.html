@@ -1,30 +1,53 @@
-<div class="base-side-nav" style="margin: 0; padding: 2.4rem 0 0 0;">
-        <ul style="list-style: none; margin: 0px; padding-left: 0px; ">
-            <li>
-                <button class="btn btn-toggle align-items-center rounded collapsed" aria-expanded="true" routerLink="/home/dashboard">
+<div class="base-side-nav" style="margin: 0; padding: 2.4rem 0 0 0">
+  <ul style="list-style: none; margin: 0px; padding-left: 0px">
+    <li>
+      <button
+        class="btn btn-toggle align-items-center rounded collapsed"
+        aria-expanded="true"
+        routerLink="/home/dashboard"
+      >
+        <span class="menu-title">
+          <i
+            class="fa-solid fa-house"
+            style="font-size: 15px; padding-right: 9px"
+          ></i>
+          Home
+        </span>
+      </button>
+    </li>
 
-                    <span class="menu-title">
-                      <i class="fa-solid fa-house" style="font-size: 15px; padding-right: 9px;"></i>
-                        Home
-                    </span>
-                </button>
-
+    <ng-container *ngFor="let item of sidebarMainMenuList; let i = index">
+      <li (click)="clickURL(item?.link)">
+        <button
+          class="btn btn-toggle align-items-center rounded collapsed"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#' + item.nameSlug"
+          [attr.aria-expanded]="false"
+        >
+          <span class="menu-title">
+            <i
+              class="{{ item.icon }}"
+              style="font-size: 15px; padding-right: 9px"
+            ></i>
+            {{ item.name }}
+          </span>
+        </button>
+        <div class="collapse sub-title" [id]="item.nameSlug">
+          <ul
+            *ngIf="item.menuItems?.length > 0"
+            class="btn-toggle-nav list-unstyled pb-1"
+          >
+            <li *ngFor="let menuItem of item.menuItems">
+              <a
+                (click)="clickURL(menuItem.link)"
+                class="link-dark rounded"
+                style="font-size: 12px"
+                >{{ menuItem.name }}</a
+              >
             </li>
-
-            <ng-container *ngFor="let item of sidebarMainMenuList; let i=index">
-              <li (click)="clickURL(item?.link)" >
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" [attr.data-bs-target]="'#' + item.nameSlug" [attr.aria-expanded]="false">
-                  <span class="menu-title">
-                    <i class="{{item.icon}}" style="font-size: 15px; padding-right: 9px;"></i> {{ item.name }}
-                  </span>
-                </button>
-                <div  class="collapse" [id]="item.nameSlug">
-                  <ul *ngIf="item.menuItems?.length > 0" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li *ngFor="let menuItem of item.menuItems"><a (click)="clickURL(menuItem.link)" class="link-dark rounded" style="font-size: 15px;">{{ menuItem.name }}</a></li>
-                  </ul>
-                </div>
-              </li>
-            </ng-container>
-
           </ul>
+        </div>
+      </li>
+    </ng-container>
+  </ul>
 </div>
