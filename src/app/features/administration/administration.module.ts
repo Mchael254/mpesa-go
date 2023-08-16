@@ -18,6 +18,7 @@ import {TabViewModule} from "primeng/tabview";
 import { FullTicketDetailsComponent } from './components/tickets/ticket-details/full-ticket-details/full-ticket-details.component';
 import { TicketReportsComponent } from './components/tickets/ticket-details/ticket-reports/ticket-reports.component';
 import { TicketDocumentsComponent } from './components/tickets/ticket-details/ticket-documents/ticket-documents.component';
+import {DialogModule} from "primeng/dialog";
 
 
 @NgModule({
@@ -34,17 +35,18 @@ import { TicketDocumentsComponent } from './components/tickets/ticket-details/ti
     TicketReportsComponent,
     TicketDocumentsComponent
   ],
-    imports: [
-        CommonModule,
-        AdministrationRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TableModule,
-        SharedModule,
-        TableModule,
-        EntitiesModule,
-        TabViewModule
-    ],
+  imports: [
+    CommonModule,
+    AdministrationRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TableModule,
+    SharedModule,
+    TableModule,
+    EntitiesModule,
+    TabViewModule,
+    DialogModule
+  ],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ]

@@ -1,0 +1,25 @@
+.ticketLabel {
+  margin-right: 10px;
+  width: 140px;
+}
+
+.ticketDesc {
+  font-weight: bold;
+}
+
+.risks, .taxes {
+  border: solid 1px #eee;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px;
+}
+
+.view-more {
+  text-align: right;
+}
+
+.action-buttons .col-sm-7 {
+  text-align: right;
+}
+
+
