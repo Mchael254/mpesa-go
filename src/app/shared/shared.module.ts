@@ -40,6 +40,7 @@ import { VerticalStepperComponent } from './components/stepper/vertical-stepper/
 import { HorizontalStepperComponent } from './components/stepper/horizontal-stepper/horizontal-stepper.component';
 import { DynamicSimpleModalComponent } from './components/dynamic-simple-modal/dynamic-simple-modal.component';
 import { DynamicFormModalComponent } from './components/dynamic-form-modal/dynamic-form-modal.component';
+import { DynamicSetupFormScreenComponent } from './components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -115,7 +116,8 @@ const SERVICES = [
     VerticalStepperComponent,
     HorizontalStepperComponent,
     DynamicSimpleModalComponent,
-    DynamicFormModalComponent
+    DynamicFormModalComponent,
+    DynamicSetupFormScreenComponent
   ],
     imports: [
         CommonModule,
