@@ -22,7 +22,7 @@ const dmsEndpoints = {
 export class DmsService{
 
   protected dmsUrlParameter: BehaviorSubject<string> = new BehaviorSubject<string>('null');
-  protected dmsApiUrl!: string;
+  protected dmsApiUrl: string;
 
   dmsUrlParameter$ = this.dmsUrlParameter.asObservable();
 
@@ -126,10 +126,7 @@ export class DmsService{
     let url: string;
 
     // if dmsUrl has been set from the backend , otherwise select the one set on environment (either dev/prod)
-    if(this.dmsApiUrl)
-      url = this.dmsApiUrl;
-    else
-      url = this.appConfig.config.dmsDefaultUrl || environment.dmsDefaultUrl;
+    url = !environment.production ? environment.dmsDefaultUrl : url = this.dmsApiUrl ? this.dmsApiUrl : this.appConfig.config?.dmsDefaultUrl || environment.dmsDefaultUrl;
 
     log.info('Dms Url Selected is: ', url, 'Endpoint is: ', urlEndpoint);
     return url.endsWith('/') ? url + urlEndpoint :  url + '/' + urlEndpoint;

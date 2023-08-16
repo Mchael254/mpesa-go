@@ -1,5 +1,5 @@
-import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO, TicketReassignDto} from "../../../data/ticketsDTO";
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {NewTicketDto, TicketModuleDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/operators";
 import {Logger} from "../../../../../shared/services";
@@ -10,7 +10,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { throwError } from 'rxjs';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
-import {StaffDto} from "../../../../entities/data/StaffDto";
 import {Table} from "primeng/table";
 
 const log = new Logger('ViewTicketsComponent');
@@ -346,9 +345,13 @@ export class ViewTicketsComponent implements OnInit {
       })
   }
 
-  goToTicketDetails(id:number, module: string) {
+  goToTicketDetails(ticket: NewTicketDto) {
+    this.ticketsService.currentTicketDetail.set(ticket);
+
+    let ticketId = ticket?.ticketID;
+    let module = ticket?.systemModule;
     this.router.navigate([`home/administration/ticket/details/`],
-      {queryParams: {id, module}}).then(r => {
+      {queryParams: { ticketId, module}}).then(r => {
     });
   }
 
