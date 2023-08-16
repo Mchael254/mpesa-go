@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {TicketsService} from "../../../services/tickets.service";
+import {NewTicketDto} from "../../../data/ticketsDTO";
 
 @Component({
   selector: 'app-ticket-details',
@@ -6,12 +9,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./ticket-details.component.css']
 })
 export class TicketDetailsComponent implements OnInit {
+  ticketId: any;
+  ticketModule: any;
+  currentTicket: NewTicketDto;
 
-
-  constructor() {}
+  constructor(private activatedRoute: ActivatedRoute, private ticketService: TicketsService) {}
   ngOnInit(): void {
-
+    this.ticketId = this.activatedRoute.snapshot.params['id'];
+    this.ticketModule = this.activatedRoute.snapshot.params['module'];
+    this.currentTicket = this.ticketService.currentTicketDetail();
   }
-
 
 }

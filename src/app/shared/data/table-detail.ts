@@ -12,4 +12,6 @@ export interface TableDetail {
   urlIdentifier?: string,
   isLazyLoaded?: boolean,
   totalElements?: number,
+  showCustomModalOnView?: boolean,
+  noDataFoundMessage?: string
 }

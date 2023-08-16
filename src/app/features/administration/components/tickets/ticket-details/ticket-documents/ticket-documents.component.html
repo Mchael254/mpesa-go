@@ -1,1 +1,22 @@
-<p>ticket-documents works!</p>
+<app-dynamic-table
+  [tableDetails]="tableDetails"
+  (showCustomModalEmitter)="showModal($event)">
+</app-dynamic-table>
+
+<app-dynamic-simple-modal
+  [modalVisible]="documentModalVisible"
+  [showModalButtons]="false"
+  [useDynamicContent]="true"
+  [modalTitle]="selectedDocument?.docType"
+  [zIndex]="1"
+  (actionEmitter)="processActionEmitted($event)">
+  <div modal-body-content>
+    <ngx-doc-viewer
+      [isBase64]="!!selectedDocumentData?.byteData"
+      [base64String]="selectedDocumentData?.byteData"
+      [fileName]="selectedDocumentData?.docName ?? ''"
+      [srcUrl]="selectedDocumentData?.url ?? ''"
+      [mimeType]="selectedDocumentData?.docMimetype"
+    ></ngx-doc-viewer>
+  </div>
+</app-dynamic-simple-modal>
