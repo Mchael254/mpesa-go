@@ -11,9 +11,11 @@ export class DynamicSimpleModalComponent {
   @Input() modalButtonLabel: string;
   @Input() modalVisible: boolean;
   @Input() useDynamicContent = false;
+  @Input() showModalButtons: boolean = true;
   @Input() zIndex: any;
 
   @Output() actionEmitter: EventEmitter<void> = new EventEmitter<void>();
+
 
   emitAction() {
 
