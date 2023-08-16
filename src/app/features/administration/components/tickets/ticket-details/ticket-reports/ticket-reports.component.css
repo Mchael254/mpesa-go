@@ -1,0 +1,7 @@
+.report-link {
+  margin: 2rem 0; font-size: 0.8em;
+}
+
+.report-link:hover {
+  font-weight: 700;
+}

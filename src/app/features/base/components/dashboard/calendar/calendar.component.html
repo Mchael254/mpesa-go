@@ -226,16 +226,20 @@
           </div>
           <div class="col-sm-2">
             <button
-              class="btn btn-link text-primary"
+              class="btn text-end-view"
               (click)="activateCreateEvent('DAY')"
-            >Back
+            >
+            <i class="fa-solid fa-circle-arrow-left"></i>
+            Back
             </button>
           </div>
           <div class="col-sm-2 offset-sm-8 text-end">
-            <button
-              class="btn btn-link text-primary"
+            <i class="fa fa-floppy-o" aria-hidden="true"></i><button
+              class="btn text-end-view"
               (click)="createEvent()"
-            >Save</button>
+            >
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save</button>
           </div>
         </div>
       </form>

@@ -383,7 +383,7 @@ export class ViewTicketsComponent implements OnInit {
     if(event){
       this.dt.reset();
       this.toggleReassignModal(false);
-      console.log('Reassign dto received: ', event);
+      log.info('Reassign dto received: ', event);
     }
   }
 }
