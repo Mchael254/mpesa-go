@@ -127,10 +127,11 @@
 
     </p-tabPanel>
     <p-tabPanel header="Reports">
-      Reports
+      <app-ticket-reports></app-ticket-reports>
     </p-tabPanel>
     <p-tabPanel header="Documents">
-      Documents
+      <app-ticket-documents [currentTicket]="currentTicket">
+      </app-ticket-documents>
     </p-tabPanel>
   </p-tabView>
 </div>

@@ -11,12 +11,17 @@ import {AuthService} from "../../../../../shared/services/auth.service";
 
 const log = new Logger('ViewTicketsComponent');
 
+import {ActivatedRoute} from "@angular/router";
+
 @Component({
   selector: 'app-ticket-details',
   templateUrl: './ticket-details.component.html',
   styleUrls: ['./ticket-details.component.css']
 })
 export class TicketDetailsComponent implements OnInit {
+  ticketId: any;
+  ticketModule: any;
+  currentTicket: NewTicketDto;
 
   selectedTicket: NewTicketDto;
   public policyDetails: PolicyDetailsDTO;
@@ -33,13 +38,18 @@ export class TicketDetailsComponent implements OnInit {
     private ticketService: TicketsService,
     private globalMessagingService: GlobalMessagingService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private activatedRoute: ActivatedRoute,
   ) {}
   ngOnInit(): void {
     this.selectedTicket = this.localStorageService.getItem('ticketDetails');
     this.fetchPolicyDetails(this.selectedTicket.policyCode);
+    this.ticketId = this.activatedRoute.snapshot.params['id'];
+    this.ticketModule = this.activatedRoute.snapshot.params['module'];
+    this.currentTicket = this.ticketService.currentTicketDetail();
+  
   }
-
+  
   fetchPolicyDetails(batchNumber: number) {
     this.ticketService.getPolicyDetails(/*batchNumber*/2019102)
       .pipe(take(1))
@@ -240,7 +250,6 @@ export class TicketDetailsComponent implements OnInit {
         modalBackdrop.classList.add('show');
       }
     }
-  }
-
+  
 
 }

@@ -86,7 +86,6 @@ export class StaffModalComponent implements OnInit, OnDestroy{
     }
     else {
       if (!name) {
-        this.dt2.reset();
         return;
       }
       // otherwise, loop through the array and remove the elements that do not have a matching name property
@@ -113,8 +112,6 @@ export class StaffModalComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
     this.staffData = this.staffList;
-    this.dt1.reset();
-    this.dt2.reset();
   }
 
   handleEnteredValue(event: KeyboardEvent, value: string) {
