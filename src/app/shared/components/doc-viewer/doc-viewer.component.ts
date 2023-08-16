@@ -48,6 +48,7 @@ export class DocViewerComponent implements OnInit {
           'data:' + this.mimeType + ';base64,' + this.base64String
           : this.srcUrl;
 
+    log.info('Element url: ', elementUrl);
     if (elementUrl != null) {
       this.docPath = this._sanitizer.bypassSecurityTrustResourceUrl(elementUrl);
     }

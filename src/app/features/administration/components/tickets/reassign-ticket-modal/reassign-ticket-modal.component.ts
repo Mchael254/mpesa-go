@@ -151,8 +151,6 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
         };
       });
 
-      console.log('Tickets reassign dto: ,' , ticketsToReassign);
-
       this.ticketsService
         .reassignTickets(ticketsToReassign)
         .pipe(untilDestroyed(this),)
