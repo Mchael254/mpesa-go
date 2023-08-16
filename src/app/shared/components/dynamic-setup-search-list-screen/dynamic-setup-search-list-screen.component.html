@@ -1,0 +1,65 @@
+<div class="card">
+    <div class="card-body">
+      
+        <div class="row">
+            <div class="col-8"><p class="title1">Parameters</p></div>
+            <div class="col-4" ><p class="text-right"  data-toggle="modal" data-target="#exampleModalCenter"  style="cursor:pointer"><a style="color:#00529B;">New</a></p></div>
+        </div>
+        
+     <!-- Modal -->
+        <!-- <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <form class="border-light p-4" [formGroup]="paramForm">
+                <p class="mb-4" id="title">New Parameter</p>
+                
+               
+                <label for="input"> Parameter Name:</label>
+                <input type="text"  class="form-control form-control-sm mb-1"  formControlName="name">
+                
+                <label for="input"> Parameter Value:</label>
+                <input type="text"  class="form-control form-control-sm mb-1"   formControlName="value">
+                <label for="input"> Parameter Status:</label>
+                <select id="status" class="form-control form-control-sm mb-1" formControlName="status">   
+                    <option value="ACTIVE">Active </option>  
+                    <option value="INACTIVE">Inactive</option>
+                  </select >  
+                <label for="input"> Description:</label>
+                <textarea class="form-control form-control-sm rounded-0 mb-4"  id="exampleFormControlTextarea2" rows="3" formControlName="description"></textarea>
+                              
+                                    
+                <div class="row">
+                    <div class="col-6"><button id="cancel" class="btn"  data-dismiss="modal">Cancel</button></div>
+                    <div class="col-6"><button id="save" class="btn" style="margin-left:130px" (click)="addParam()" >Save</button></div>
+                  </div>
+                
+              </form>
+            </div>
+          </div>
+        </div> -->
+ 
+
+        <form class="form-inline  form-sm mb-3 ms-1"  [formGroup]="searchForm" style="margin-top: 15px;">
+           <div class="row">
+            <div class="col-xl-8">
+                <input class="form-control form-control-sm mr-4 " formControlName="search" type="text" placeholder="Search Parameters" aria-label="Search"  [(ngModel)]="filterBy">
+            </div>
+            <div class="col-xl-4">
+                <i class="pi pi-search" id="search"></i>
+            </div>
+           </div>
+          </form>
+          
+         <div class="paramlist">
+          <ul class="list-group list-group-light" *ngFor="let data of paramsList" >
+            <li class="list-group-item  list-group-item-action px-3 border-0" (click) = "loadParam(data.code,data)" [ngClass]="{activity:isActive(data)}" id="paramsList">{{data.name | lowercase }}</li>
+          </ul>
+          <div class="d-flex justify-content-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+         </div>
+          
+    </div>
+  </div>

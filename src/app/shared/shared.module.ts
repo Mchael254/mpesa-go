@@ -39,6 +39,7 @@ import { StepperComponent } from './components/stepper/stepper.component';
 import { VerticalStepperComponent } from './components/stepper/vertical-stepper/vertical-stepper.component';
 import { HorizontalStepperComponent } from './components/stepper/horizontal-stepper/horizontal-stepper.component';
 import { DynamicSetupFormScreenComponent } from './components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
+import { DynamicSetupSearchListScreenComponent } from './components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -113,7 +114,8 @@ const SERVICES = [
     StepperComponent,
     VerticalStepperComponent,
     HorizontalStepperComponent,
-    DynamicSetupFormScreenComponent
+    DynamicSetupFormScreenComponent,
+    DynamicSetupSearchListScreenComponent
   ],
     imports: [
         CommonModule,
