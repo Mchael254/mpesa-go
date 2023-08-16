@@ -25,6 +25,12 @@ html,body {
   margin-right: 5px;
 }
 
+.btn-success {
+  border-radius: 0;
+  color: #fff;
+  margin-right: 5px;
+}
+
 .btn-outline-secondary {
   border-radius: 0;
 }
