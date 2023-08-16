@@ -11,6 +11,7 @@ import { GlobalMessagingService } from 'src/app/shared/services/messaging/global
 import { throwError } from 'rxjs';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
 import {Table} from "primeng/table";
+import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -48,10 +49,10 @@ export class ViewTicketsComponent implements OnInit {
     private ticketsService: TicketsService,
     private cdr: ChangeDetectorRef,
     private appConfig: AppConfigService,
-
     private route: ActivatedRoute,
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
+    private localStorageService: LocalStorageService
   )
   {
 
@@ -95,8 +96,8 @@ export class ViewTicketsComponent implements OnInit {
       // ]
     }
 
-    this.cubejsApi.load(query).then(resutlSet => {
-      const ticketData = resutlSet.chartPivot().map((c) => c.xValues);
+    this.cubejsApi.load(query).then(resultSet => {
+      const ticketData = resultSet.chartPivot().map((c) => c.xValues);
       const labels = [
         "intermediaryName",
         "clientName",
@@ -346,6 +347,8 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   goToTicketDetails(ticket: NewTicketDto) {
+    this.localStorageService.setItem('ticketDetails', ticket);
+    this.router.navigate([`home/administration/ticket/details/${ticket.ticketID}`]);
     this.ticketsService.currentTicketDetail.set(ticket);
 
     let ticketId = ticket?.ticketID;

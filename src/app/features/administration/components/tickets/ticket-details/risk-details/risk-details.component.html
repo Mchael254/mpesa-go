@@ -1,1 +1,40 @@
-<p>risk-details works!</p>
+<div class="title">
+  <div class="row">
+    <div class="col-sm-6">
+      <p>
+        <label class="label">Property ID: </label>
+        <span class="desc">{{ risk?.propertyDesc }}</span>
+      </p>
+    </div>
+    <div class="col-sm-6">
+      <p>
+        <label class="label">Cover Type: </label>
+        <span class="desc">{{ risk?.covertypeDesc }}</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="risk-details my-2">
+  <table class="table table-borderless">
+    <thead>
+    <tr>
+      <th>Description</th>
+      <th>Limit Amount</th>
+      <th>Free Limit</th>
+      <th class="currency">Rate</th>
+      <th class="currency">Premium (KSH)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let sectionDetail of risk?.sectionsDetails">
+      <td>{{ sectionDetail?.sectionDesc | titlecase }}</td>
+      <td  class="currency">{{ sectionDetail.limitAmount | number: '1.2-2'}}</td>
+      <td class="currency">{{ sectionDetail.freeLimit | number: '1.2-2' }}</td>
+      <td class="currency">{{ sectionDetail.pilPremRate | number: '1.2-2' }}</td>
+      <td class="currency"> {{ sectionDetail.premium | number: '1.2-2'}} </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+

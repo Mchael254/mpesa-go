@@ -1,0 +1,17 @@
+.label {
+  width: 140px;
+  margin-right: 10px;
+}
+
+.desc {
+  font-weight: bold;
+}
+
+.risk-details table thead {
+  background: #00529b;
+  color: #fff;
+}
+
+th, td {
+  padding: 5px;
+}
