@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -7,8 +7,14 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./dynamic-setup-search-list-screen.component.css']
 })
 export class DynamicSetupSearchListScreenComponent {
-  paramsList:any = [];
-  paramDetails:any = []; 
+
+  @Input() dynamicTitle: string = 'Default Title';
+  @Input() placeHolder: string = 'Search Parameters';
+  @Input() dynamicButtonLabel: string = 'New';
+  @Input() paramsList: any[] = [];
+  @Output() newButtonClick: EventEmitter<void> = new EventEmitter<void>();
+  
+  paramDetails:any = [];
   selected :any;
   filterBy: any;
   searchForm:FormGroup;
@@ -21,10 +27,14 @@ export class DynamicSetupSearchListScreenComponent {
   ngOnInit(): void {
     this.loadAllParams();
   }
+
+  onNewButtonClick() {
+    this.newButtonClick.emit();
+  }
   loadAllParams(){
      }
    loadParam(id:any,item: any){
-    
+
    }
    isActive(item: any) {
   }
@@ -34,6 +44,6 @@ export class DynamicSetupSearchListScreenComponent {
     })
    }
 
-  
+
 
 }
