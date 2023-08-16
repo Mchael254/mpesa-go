@@ -1,0 +1,28 @@
+<div class="card">
+    <div class="card-body">
+        <p class="text-right" style="color:#00529B;"><a>Report</a></p>
+        <p style="color:#00529B;" class="card-title mb-4" id="title">System Parameter Details</p>
+        <form [formGroup]="editParamForm"  >
+            <label for="input"><span class="required">*</span>Parameter Name:</label>
+                  <input type="text"  class="form-control form-control-sm mb-1"  formControlName="name" id="paramformControlName" required>
+                
+                  <label for="input"><span class="required">*</span>Parameter Value:</label>
+                  <input type="text"  class="form-control form-control-sm mb-1"  formControlName="value" required>
+                  
+                  <label for="input"> <span class="required">*</span>Parameter Status:</label>
+                  <select id="status" class="form-control form-control-sm mb-1" formControlName="status" required>   
+                    <option value="ACTIVE">Active </option>  
+                    <option value="INACTIVE">Inactive</option>
+                  </select >
+                    
+                  <label for="input"> Description:</label>
+                  <textarea class="form-control form-control-sm rounded-0" id="exampleFormControlTextarea2"  rows="3" formControlName="description" required></textarea>
+                  
+                  <br><br>
+                  <div class="rowButton">
+                      <div class="col-xl-6"><button class="btn" id="cancel" (click)="cancel()">Cancel</button></div>
+                      <div class="col-xl-6"><button class="btn" id="save" (click)=" updateParam()">Save</button></div>
+                    </div>
+        </form>
+    </div>
+  </div>
