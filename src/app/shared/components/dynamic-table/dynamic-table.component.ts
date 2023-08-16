@@ -8,6 +8,11 @@ import {LazyLoadEvent} from "primeng/api";
 
 const log = new Logger('DynamicTableComponent');
 
+export interface DynamicTableModalData<T> {
+  showModal: boolean,
+  value: T
+}
+
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
@@ -24,6 +29,7 @@ export class DynamicTableComponent {
   @ViewChild('dt1') dt1: Table | undefined;
   @Input() public tableDetails: TableDetail;
   @Output() onLazyLoad = new EventEmitter<LazyLoadEvent|TableLazyLoadEvent> ();
+  @Output() showCustomModalEmitter: EventEmitter<DynamicTableModalData<any>> = new EventEmitter<DynamicTableModalData<any>>();
 
   clear(table: Table) {
     table.clear();
@@ -49,5 +55,9 @@ export class DynamicTableComponent {
     const dataValue = parseFloat(val);
     // log.info(`dataValue >>>`, dataValue, typeof dataValue);
     return !isNaN(dataValue);
+  }
+
+  showCustomModal(data: any) {
+    this.showCustomModalEmitter.emit({showModal: true, value: data});
   }
 }
