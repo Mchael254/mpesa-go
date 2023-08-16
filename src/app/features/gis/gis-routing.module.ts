@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { DynamicSetupFormScreenComponent } from 'src/app/shared/components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 
 const routes: Routes = [
   {
@@ -14,6 +15,10 @@ const routes: Routes = [
     path: 'claim',
     loadChildren: () => import('./components/claim/claim.module').then(m => m.ClaimModule),
   },
+  {
+    path: 'dynamic-test',
+    component:DynamicSetupFormScreenComponent
+  }
 ];
 
 @NgModule({
