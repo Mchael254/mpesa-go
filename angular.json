@@ -20,7 +20,9 @@
               "crypto-js",
               "moment",
               "cubejs-client",
-              "cross-fetch"
+              "cross-fetch",
+              "dayjs",
+              "url-search-params-polyfill"
            ],
             "polyfills": [
               "zone.js"

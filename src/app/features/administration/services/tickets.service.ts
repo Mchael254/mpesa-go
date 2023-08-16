@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {SystemsDto} from "../../../shared/data/common/systemsDto";
@@ -31,6 +31,7 @@ export class TicketsService {
   private selectedTicket: TicketsDTO | null = null;
 
   currentTicket$ = this.ticketsDetail$.asObservable();
+  currentTicketDetail = signal<NewTicketDto>({});
 
   setSelectedTicket(ticket: TicketsDTO) {
     this.selectedTicket = ticket;

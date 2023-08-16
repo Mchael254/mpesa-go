@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" *ngIf="showModalButtons">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="emitAction()">Close</button>
         <button type="button" class="btn btn-primary" (click)="emitAction()">{{ modalButtonLabel }}</button>
       </div>

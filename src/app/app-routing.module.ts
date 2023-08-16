@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ExtraOptions, RouterModule, Routes } from '@angular/router';
+import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/auth/home/home.component';
 
 
@@ -23,7 +23,8 @@ export const routes: Routes = [
 
 const config: ExtraOptions = {
   useHash: false,
-  enableTracing: true
+  enableTracing: true,
+  preloadingStrategy: PreloadAllModules,
 };
 
 @NgModule({
