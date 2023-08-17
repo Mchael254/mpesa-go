@@ -116,11 +116,10 @@ const SERVICES = [
     StepperComponent,
     VerticalStepperComponent,
     HorizontalStepperComponent,
+    DynamicSetupFormScreenComponent,
+    DynamicSetupSearchListScreenComponent,
     DynamicSimpleModalComponent,
-    DynamicFormModalComponent,
-    DynamicSetupFormScreenComponent,
-    DynamicSetupFormScreenComponent,
-    DynamicSetupSearchListScreenComponent
+    DynamicFormModalComponent
   ],
     imports: [
         CommonModule,
