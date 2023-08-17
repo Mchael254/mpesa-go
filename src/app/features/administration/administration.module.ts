@@ -15,7 +15,6 @@ import { TicketDetailsComponent } from './components/tickets/ticket-details/tick
 import {EntitiesModule} from "../entities/entities.module";
 import { ReassignTicketModalComponent } from './components/tickets/reassign-ticket-modal/reassign-ticket-modal.component';
 import {TabViewModule} from "primeng/tabview";
-import { FullTicketDetailsComponent } from './components/tickets/ticket-details/full-ticket-details/full-ticket-details.component';
 import { TicketReportsComponent } from './components/tickets/ticket-details/ticket-reports/ticket-reports.component';
 import { TicketDocumentsComponent } from './components/tickets/ticket-details/ticket-documents/ticket-documents.component';
 import {DialogModule} from "primeng/dialog";
@@ -31,7 +30,6 @@ import {DialogModule} from "primeng/dialog";
     TaxDetailsComponent,
     TicketDetailsComponent,
     ReassignTicketModalComponent,
-    FullTicketDetailsComponent,
     TicketReportsComponent,
     TicketDocumentsComponent
   ],

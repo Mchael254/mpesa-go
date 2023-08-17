@@ -1,5 +1,5 @@
 .label {
-  width: 140px;
+  /*width: 140px;*/
   margin-right: 10px;
 }
 
@@ -7,11 +7,12 @@
   font-weight: bold;
 }
 
-.risk-details table thead {
+.risk-details table thead tr th {
   background: #00529b;
   color: #fff;
 }
 
 th, td {
   padding: 5px;
+  font-weight: bold;
 }

@@ -12,6 +12,8 @@
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 5px;
+  border-radius: 2px;
+  box-shadow: 1px 1px #eee;
 }
 
 .view-more {
@@ -20,6 +22,11 @@
 
 .action-buttons .col-sm-7 {
   text-align: right;
+}
+
+.total-premium table thead tr td{
+  color: #00529b;
+  font-weight: bold;
 }
 
 
