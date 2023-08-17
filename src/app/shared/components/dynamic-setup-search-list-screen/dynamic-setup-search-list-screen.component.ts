@@ -12,7 +12,7 @@ export class DynamicSetupSearchListScreenComponent {
   @Input() placeHolder: string = 'Search Parameters';
   @Input() dynamicButtonLabel: string = 'New';
   @Input() paramsList: any[] = [];
-  @Output() newButtonClick: EventEmitter<void> = new EventEmitter<void>();
+  @Output() newButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
   
   paramDetails:any = [];
   selected :any;
@@ -21,29 +21,20 @@ export class DynamicSetupSearchListScreenComponent {
 
   constructor(
     public fb: FormBuilder,
-    public cdr: ChangeDetectorRef
   ) { }
-
-  ngOnInit(): void {
-    this.loadAllParams();
-  }
-
   onNewButtonClick() {
-    this.newButtonClick.emit();
-  }
-  loadAllParams(){
-     }
-   loadParam(id:any,item: any){
-
-   }
-   isActive(item: any) {
+    this.newButtonClick.emit(true);
   }
   createClassForm(){
      this.searchForm = this.fb.group({
       search:['']
     })
    }
+   loadParam(id:any,item: any){
+    
 
-
-
+   }
+   isActive(item: any) {
+    return this.selected === item;
+   }
 }

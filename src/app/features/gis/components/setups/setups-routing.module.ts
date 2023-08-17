@@ -4,47 +4,47 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: 'class-subclass',
-    loadChildren: () => import('./class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
+    loadChildren: () => import('./components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
   },
   {
     path: 'clause',
-    loadChildren: () => import('./clause/clause.module').then(m => m.ClauseModule),
+    loadChildren: () => import('./components/clause/clause.module').then(m => m.ClauseModule),
   },
   {
     path: 'client-insured',
-    loadChildren: () => import('./client-insured/client-insured.module').then(m => m.ClientInsuredModule),
+    loadChildren: () => import('./components/client-insured/client-insured.module').then(m => m.ClientInsuredModule),
   },
   {
     path: 'covertype-setup',
-    loadChildren: () => import('./covertype-setup/covertype-setup.module').then(m => m.CovertypeSetupModule),
+    loadChildren: () => import('./components/covertype-setup/covertype-setup.module').then(m => m.CovertypeSetupModule),
   },
   {
     path: 'general-parameter',
-    loadChildren: () => import('./general-parameter/general-parameter.module').then(m => m.GeneralParameterModule),
+    loadChildren: () => import('./components/general-parameter/general-parameter.module').then(m => m.GeneralParameterModule),
   },
   {
     path: 'peril-territory',
-    loadChildren: () => import('./peril-territory/peril-territory.module').then(m => m.PerilTerritoryModule),
+    loadChildren: () => import('./components/peril-territory/peril-territory.module').then(m => m.PerilTerritoryModule),
   },
   {
     path: 'premium-rate',
-    loadChildren: () => import('./premium-rate/premium-rate.module').then(m => m.PremiumRateModule),
+    loadChildren: () => import('./components/premium-rate/premium-rate.module').then(m => m.PremiumRateModule),
   },
   {
     path: 'product',
-    loadChildren: () => import('./product/product.module').then(m => m.ProductModule),
+    loadChildren: () => import('./components/product/product.module').then(m => m.ProductModule),
   },
   {
     path: 'schedule',
-    loadChildren: () => import('./schedule/schedule.module').then(m => m.ScheduleModule),
+    loadChildren: () => import('./components/schedule/schedule.module').then(m => m.ScheduleModule),
   },
   {
     path: 'short-period',
-    loadChildren: () => import('./short-period/short-period.module').then(m => m.ShortPeriodModule),
+    loadChildren: () => import('./components/short-period/short-period.module').then(m => m.ShortPeriodModule),
   },
   {
     path: 'tax',
-    loadChildren: () => import('./tax/tax.module').then(m => m.TaxModule),
+    loadChildren: () => import('./components/tax/tax.module').then(m => m.TaxModule),
   },
 ];
 
