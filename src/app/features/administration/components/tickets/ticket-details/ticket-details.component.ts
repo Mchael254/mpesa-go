@@ -11,7 +11,8 @@ import {AuthService} from "../../../../../shared/services/auth.service";
 
 const log = new Logger('ViewTicketsComponent');
 
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 
 @Component({
   selector: 'app-ticket-details',
@@ -33,6 +34,21 @@ export class TicketDetailsComponent implements OnInit {
   showAdditionalColumns = true;
   showSpinner: boolean = false;
 
+  breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard'
+    },
+    {
+      label: 'Tickets',
+      url: '/home/administration/tickets',
+    },
+    {
+      label: 'Ticket Details',
+      url: '/home/administration/ticket/details'
+    }
+  ];
+
   constructor(
     private localStorageService: LocalStorageService,
     private ticketService: TicketsService,
@@ -40,18 +56,21 @@ export class TicketDetailsComponent implements OnInit {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
-  ) {}
+    private router: Router
+  ) {
+  }
+
   ngOnInit(): void {
     this.selectedTicket = this.localStorageService.getItem('ticketDetails');
     this.fetchPolicyDetails(this.selectedTicket.policyCode);
     this.ticketId = this.activatedRoute.snapshot.params['id'];
     this.ticketModule = this.activatedRoute.snapshot.params['module'];
     this.currentTicket = this.ticketService.currentTicketDetail();
-  
+
   }
-  
+
   fetchPolicyDetails(batchNumber: number) {
-    this.ticketService.getPolicyDetails(/*batchNumber*/2019102)
+    this.ticketService.getPolicyDetails(batchNumber)
       .pipe(take(1))
       .subscribe((policyDetails) => {
         this.policyDetails = policyDetails;
@@ -87,7 +106,6 @@ export class TicketDetailsComponent implements OnInit {
             return matchingModule && result.response.premium !== null &&
               result.response.premium > matchingModule.maximumAuthorizationAmount;
           });
-
 
 
           if (!generateOtp) {
@@ -134,7 +152,7 @@ export class TicketDetailsComponent implements OnInit {
           .toPromise()
           .then((response) => {
             log.info('Quotation Method Response:', response);
-            return { sysModule, response };
+            return {sysModule, response};
           });
       } else if (sysModule === 'C') {
         log.info('Calling claim Method...');
@@ -143,7 +161,7 @@ export class TicketDetailsComponent implements OnInit {
           .toPromise()
           .then((response) => {
             log.info('Claim Method Response:', response);
-            return { sysModule, response };
+            return {sysModule, response};
           });
       } else {
         log.info('Calling default method...');
@@ -152,7 +170,7 @@ export class TicketDetailsComponent implements OnInit {
           .toPromise()
           .then((response) => {
             log.info('Default Method Response:', response);
-            return { sysModule, response };
+            return {sysModule, response};
           });
       }
     });
@@ -168,7 +186,7 @@ export class TicketDetailsComponent implements OnInit {
     const ticketCodes = this.selectedTickets.map(ticket => ticket.ticketID);
     const username = this.authService.getCurrentUserName();
 
-    const ticket = { ticketIds: ticketCodes }; // Format the data as an object with an array of ticket ids
+    const ticket = {ticketIds: ticketCodes}; // Format the data as an object with an array of ticket ids
     this.ticketService.authorizeTicket(ticket, username)
       .pipe(
         take(1),
@@ -233,7 +251,7 @@ export class TicketDetailsComponent implements OnInit {
       .pipe(take(1))
       .subscribe(response => {
         log.info("my otp >>>", response);
-        if(response){
+        if (response) {
           // this.globalMessagingService.displaySuccessMessage('Success', 'OTP successfully sent to your Email');
           // this.messageService.add({severity: 'success', summary:'Success', detail:'OTP successfully sent to your Email'});
         }
@@ -250,6 +268,11 @@ export class TicketDetailsComponent implements OnInit {
         modalBackdrop.classList.add('show');
       }
     }
-  
 
+
+  }
+
+  backToPrevious(): void {
+    this.router.navigate(['/home/administration/tickets'])
+  }
 }

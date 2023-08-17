@@ -1,4 +1,10 @@
 <div class="base-content-section">
+
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+
   <p-tabView>
     <p-tabPanel header="Ticket Details">
       <div class="row">
@@ -72,12 +78,13 @@
         </div>
       </div>
 
-      <div class="risks">
-        <ng-container *ngIf="policyDetails?.riskInformation">
-          <app-risk-details
-            [risk]="policyDetails?.riskInformation[0]"
-          ></app-risk-details>
+      <div class="risks" *ngIf="policyDetails?.riskInformation">
+        <ng-container>
+          <!--preloader goes here-->
         </ng-container>
+        <app-risk-details
+          [risk]="policyDetails?.riskInformation[0]"
+        ></app-risk-details>
         <div class="view-more">
           <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()" >View more</button>
         </div>
@@ -87,25 +94,26 @@
         <table class="table table-borderless">
           <thead>
           <tr *ngIf="policyDetails?.premium">
-            <td>Total premium on {{ policyDetails?.riskInformation.length }} risks</td>
+            <td>Total premium on {{ policyDetails?.riskInformation.length }} risk(s)</td>
             <td style="text-align: right">{{ policyDetails?.premium | number: '1.2-2' }}</td>
           </tr>
           </thead>
         </table>
       </div>
 
-      <div class="taxes">
-        <ng-container *ngIf="policyDetails?.taxInformation">
-          <app-tax-details
-            [taxInformation]="policyDetails?.taxInformation"
-            [totalPremium]="policyDetails?.total_premium"
-          ></app-tax-details>
+      <div class="taxes" *ngIf="policyDetails?.taxInformation">
+        <ng-container>
+          <!--preloader goes here-->
         </ng-container>
+        <app-tax-details
+          [taxInformation]="policyDetails?.taxInformation"
+          [totalPremium]="policyDetails?.total_premium"
+        ></app-tax-details>
       </div>
 
       <div class="row action-buttons my-2 p-1">
         <div class="col-sm-5">
-          <button class="btn btn-light">Back</button>
+          <button class="btn btn-outline-secondary" (click)="backToPrevious()">Back</button>
         </div>
         <div class="col-sm-7">
           <button
