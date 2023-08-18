@@ -13,13 +13,14 @@
   font-weight: bold;
   text-decoration: underline;
 }
-/* .nav-item > .nav-link {
-  background-color: #00539b0a;
+.nav-item > .nav-link {
+  color: #000000;
 
-} */
+}
 
-/* .nav-item > .nav-link:hover {
-} */
+.nav-item > .nav-link:hover {
+  font-weight: 800;
+}
 
 .dropdown-menu {
   border-radius: 0;
@@ -28,7 +29,7 @@
 }
 
 .dropdown-item:hover {
-  background-color: #00539b0c;
+  background-color: #0000000c;
   font-weight: 600;
   border-right: #00529B solid 2px;
 }

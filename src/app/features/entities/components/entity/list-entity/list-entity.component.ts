@@ -10,6 +10,7 @@ import { EntityService } from '../../../services/entity/entity.service';
 import { Logger } from 'src/app/shared/services/logger.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('ListEntityComponent');
 
@@ -57,7 +58,10 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     private entityService: EntityService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-  ) {}
+    private spinner: NgxSpinnerService
+  ) {
+
+  }
 
   ngOnInit(): void {
     this.tableDetails = {
@@ -71,12 +75,11 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       urlIdentifier: 'id',
       isLazyLoaded: true
     }
+    this.spinner.show();
   }
 
   lazyLoadEntity(event: LazyLoadEvent | TableLazyLoadEvent) {
-
     let sortField: string = '';
-
     if ('sortField' in event) {
       if (Array.isArray(event.sortField)) {
         sortField = event.sortField[0];
@@ -110,7 +113,13 @@ export class ListEntityComponent implements OnInit, OnDestroy {
           else {
             // this.searchEntity(searchTerm);
           }
+          this.spinner.hide();
+
+        },
+        error => {
+          this.spinner.hide();
         }
+
     );
   }
 

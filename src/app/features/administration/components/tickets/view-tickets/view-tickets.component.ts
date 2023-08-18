@@ -12,6 +12,7 @@ import { throwError } from 'rxjs';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
 import {Table} from "primeng/table";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -52,7 +53,8 @@ export class ViewTicketsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private spinner: NgxSpinnerService
   )
   {
 
@@ -62,6 +64,7 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   getAllTicketsFromCubeJs() {
+    this.spinner.show();
     const assignee = this.authService.getCurrentUserName()
     const query = {
       "dimensions":[
@@ -145,7 +148,9 @@ export class ViewTicketsComponent implements OnInit {
       this.filteredTickets = this.allTickets;
         log.info(`allTickets >>>`, this.allTickets);
         this.cdr.detectChanges();
-
+        this.spinner.hide();
+    }).catch(() =>{
+      this.spinner.hide();
     })
 
   }

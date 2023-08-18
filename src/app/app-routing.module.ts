@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/auth/home/home.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 
 
@@ -23,12 +24,16 @@ export const routes: Routes = [
 
 const config: ExtraOptions = {
   useHash: false,
-  enableTracing: true,
+  // enableTracing: true,
   preloadingStrategy: PreloadAllModules,
 };
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, config)],
+  imports: [
+    RouterModule.forRoot(routes, config),
+    NgxSpinnerModule.forRoot({ type: 'ball-circus' })
+
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {

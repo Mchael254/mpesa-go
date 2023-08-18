@@ -11,6 +11,7 @@ import {SortFilterService} from "../../../../../shared/services/sort-filter.serv
 import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('ListStaffComponent');
 
@@ -87,7 +88,9 @@ export class ListStaffComponent implements OnInit, OnDestroy {
               private sortFilterService: SortFilterService,
               private fb: FormBuilder,
               private router: Router,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private spinner:NgxSpinnerService
+              ) {
     this.groupStaff = [];
     this.tableDetails = {
       globalFilterFields: this.globalFilterFields, paginator: false, showFilter: false, showSorting: false,
@@ -109,6 +112,8 @@ export class ListStaffComponent implements OnInit, OnDestroy {
       urlIdentifier: 'id',
       isLazyLoaded: true
     }
+
+    this.spinner.show();
 
     this.getStaffData(0)
       .pipe(
@@ -134,7 +139,13 @@ export class ListStaffComponent implements OnInit, OnDestroy {
         (data: Pagination<StaffDto>) => {
           this.refreshStaffData(data);
           this.cdr.detectChanges();
+          this.spinner.hide();
+
+        },
+        error => {
+          this.spinner.hide();
         }
+
       );
 
   }

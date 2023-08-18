@@ -34,16 +34,19 @@
     </nav>
     <div class="tab-content" id="nav-tabContent">
       <div class="tab-pane fade" id="nav-ind" role="tabpanel" aria-labelledby="nav-ind-tab"
-           [ngClass]="{ 'active':activeTab()==='Individual', 'show':activeTab()==='Individual'}">
+           [ngClass]="{ 'active':activeTab()==='Individual', 'show':activeTab()==='Individual'}" style="position: relative;">
         <!-- Dynamic Table -->
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
         <app-dynamic-table
           [tableDetails]="tableDetails"
           (onLazyLoad)="loadStaff($event)">
         </app-dynamic-table>
       </div>
       <div class="tab-pane fade" id="nav-group" role="tabpanel" aria-labelledby="nav-group-tab"
-           [ngClass]="{ 'active':activeTab()==='Group', 'show':activeTab()=='Group'}">
+           [ngClass]="{ 'active':activeTab()==='Group', 'show':activeTab()=='Group'}" style="position: relative;">
         <!-- Dynamic Table -->
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
         <app-dynamic-table
           [tableDetails]="tableDetails"
           (onLazyLoad)="loadStaff($event)">

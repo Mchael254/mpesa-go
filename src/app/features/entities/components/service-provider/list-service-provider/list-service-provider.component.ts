@@ -9,6 +9,7 @@ import { tap } from 'rxjs';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-list-service-provider',
@@ -47,7 +48,8 @@ export class ListServiceProviderComponent {
   constructor(
     private service: ServiceProviderService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -72,6 +74,7 @@ export class ListServiceProviderComponent {
       urlIdentifier: 'id',
       isLazyLoaded: true
     }
+    this.spinner.show();
   }
 
 
@@ -104,7 +107,9 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
       this.tableDetails.rows = this.ServiceProviderDetails?.content;
       this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
       this.cdr.detectChanges();
-      }
+      this.spinner.hide();
+      },
+      error => {this.spinner.hide();}
     );
   }
 
@@ -113,7 +118,7 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
       {queryParams: {entityType: 'Service Provider'}}).then(r => {
     })
   }
-  
+
   ngOnDestroy(): void {
   }
 }
