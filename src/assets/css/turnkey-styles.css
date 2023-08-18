@@ -324,3 +324,14 @@ h5.htxt {
 /**Modal ends**/
 
 
+.help{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 17px;
+text-decoration: underline;
+
+
+color: #00529B;
+}
