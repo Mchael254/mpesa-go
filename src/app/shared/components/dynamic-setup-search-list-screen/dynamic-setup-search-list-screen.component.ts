@@ -13,9 +13,8 @@ export class DynamicSetupSearchListScreenComponent {
   @Input() dynamicButtonLabel: string = 'New';
   @Input() paramsList: any[] = [];
   @Output() newButtonClick: EventEmitter<boolean> = new EventEmitter<boolean>();
-  
-  paramDetails:any = [];
-  selected :any;
+  @Output() loadParamAction: EventEmitter<any> = new EventEmitter<any>();
+
   filterBy: any;
   searchForm:FormGroup;
 
@@ -31,10 +30,11 @@ export class DynamicSetupSearchListScreenComponent {
     })
    }
    loadParam(id:any,item: any){
-    
+    let loadDetails = {
+      id:id,
+      item:item
+    }
+    this.loadParamAction.emit(loadDetails)
 
-   }
-   isActive(item: any) {
-    return this.selected === item;
    }
 }

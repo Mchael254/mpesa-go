@@ -133,7 +133,7 @@ export class MenuService{
     name: 'Class',
     nameSlug: 'favoriteSetups',
     icon: 'fa-solid fa-magnifying-glass-chart',
-    menuItems: [],
+    menuItems: [{name:'My Tasks', link:""},],
     collapsed:true,
   },
   {
