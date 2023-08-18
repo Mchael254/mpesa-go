@@ -42,6 +42,7 @@ import { DynamicSimpleModalComponent } from './components/dynamic-simple-modal/d
 import { DynamicFormModalComponent } from './components/dynamic-form-modal/dynamic-form-modal.component';
 import { DynamicSetupFormScreenComponent } from './components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 import { DynamicSetupSearchListScreenComponent } from './components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
+import { DynamicSetupTableScreenComponent } from './components/dynamic-setup-table-screen/dynamic-setup-table-screen.component';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -119,7 +120,8 @@ const SERVICES = [
     DynamicSetupFormScreenComponent,
     DynamicSetupSearchListScreenComponent,
     DynamicSimpleModalComponent,
-    DynamicFormModalComponent
+    DynamicFormModalComponent,
+    DynamicSetupTableScreenComponent
   ],
     imports: [
         CommonModule,
