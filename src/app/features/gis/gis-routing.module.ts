@@ -39,7 +39,7 @@ const routes: Routes = [
 
     
     path:'classes-subclasses',
-    loadChildren: () => import('./components/setups/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
+    loadChildren: () => import('./components/setups/components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
 
   }
 

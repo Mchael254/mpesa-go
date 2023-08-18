@@ -2,13 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ClassSubclassRoutingModule } from './class-subclass-routing.module';
-import { ClassesSetupWizardComponent } from './classes-setup-wizard/classes-setup-wizard.component';
 import { DynamicSetupWizardWelcomeScreenComponent } from 'src/app/shared/components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
+import { ClassSetupWizardComponent } from './class-setup-wizard/class-setup-wizard.component';
 
 @NgModule({
   declarations: [
-    ClassesSetupWizardComponent,
-    DynamicSetupWizardWelcomeScreenComponent
+    DynamicSetupWizardWelcomeScreenComponent,
+    ClassSetupWizardComponent
   ],
   imports: [
     CommonModule,
