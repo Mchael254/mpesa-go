@@ -1,0 +1,40 @@
+<div class="my-4 mx-4">
+  <div class="card">
+    <div class="card-body">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fa-solid fa-plus"></i> Add</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="modal" data-target="#addModal">
+            <i class="fa-solid fa-pen-to-square"></i> Edit</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link">
+            <i class="fa-solid fa-delete-left"></i> Delete</a>
+        </li>
+
+      </ul>
+      <app-dynamic-table
+        [tableDetails]="tableDetails">
+      </app-dynamic-table>
+    </div>
+  </div>
+</div>
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <app-dynamic-form
+          [formFields]="formFields"
+          [fieldsPerRow]="1"
+          [title]="'Add/Edit'"
+          [actionButtonConfig]="buttonConfig"
+        ></app-dynamic-form>
+      </div>
+    </div>
+  </div>
+</div>
