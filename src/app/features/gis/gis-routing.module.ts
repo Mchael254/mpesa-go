@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DynamicSetupFormScreenComponent } from 'src/app/shared/components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 import { DynamicSetupSearchListScreenComponent } from 'src/app/shared/components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
+import {
+  DynamicSetupTableScreenComponent
+} from "../../shared/components/dynamic-setup-table-screen/dynamic-setup-table-screen.component";
 
 const routes: Routes = [
   {
@@ -27,6 +30,10 @@ const routes: Routes = [
   {
     path: 'dynamic-list',
     component:DynamicSetupSearchListScreenComponent
+  },
+  {
+    path: 'dynamic-setup-table',
+    component:DynamicSetupTableScreenComponent
   }
 ];
 
