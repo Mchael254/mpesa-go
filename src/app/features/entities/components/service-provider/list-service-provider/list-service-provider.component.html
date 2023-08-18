@@ -15,14 +15,16 @@
         <button type="button" class="btn btn-primary rounded-1 px-3 me-3" (click)="gotoEntityPage()">New Service Provider</button>
         <button type="button" class="btn btn-outline-primary px-4 me-3">Import Service Provider</button>
         <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
-        
+
       </div>
 
-      <div class="my-4 ms-4">
+      <div class="my-4 ms-4" style="position: relative;">
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
         <app-dynamic-table
           [tableDetails]="tableDetails"
           (onLazyLoad)="lazyLoadServiceProviders($event)">
         </app-dynamic-table>
       </div>
-    
+
 </div>

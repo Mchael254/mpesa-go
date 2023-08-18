@@ -1,4 +1,4 @@
-import {ModuleWithProviders, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModule} from '@angular/core';
 import {APP_BASE_HREF, CommonModule, NgOptimizedImage, PlatformLocation} from '@angular/common';
 import {MessageService} from "primeng/api";
 import {CookieService} from "ngx-cookie-service";
@@ -43,6 +43,7 @@ import { DynamicFormModalComponent } from './components/dynamic-form-modal/dynam
 import { DynamicSetupFormScreenComponent } from './components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 import { DynamicSetupSearchListScreenComponent } from './components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
 import { DynamicSetupTableScreenComponent } from './components/dynamic-setup-table-screen/dynamic-setup-table-screen.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
@@ -133,7 +134,8 @@ const SERVICES = [
         ButtonModule,
         ChipsModule,
         ChartModule,
-        RouterLink
+        RouterLink,
+        NgxSpinnerModule
     ],
   exports: [
     ErrorComponent,
@@ -151,8 +153,10 @@ const SERVICES = [
     DynamicBreadcrumbComponent,
     StepperComponent,
     DynamicSimpleModalComponent,
-    DynamicFormModalComponent
+    DynamicFormModalComponent,
+    NgxSpinnerModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {
   public static forRoot(): ModuleWithProviders<SharedModule> {

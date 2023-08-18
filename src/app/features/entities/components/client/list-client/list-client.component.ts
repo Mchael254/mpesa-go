@@ -11,6 +11,7 @@ import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
 import {tap} from "rxjs/operators";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('ListClientComponent');
 
@@ -56,7 +57,8 @@ export class ListClientComponent implements OnInit {
     private clientService: ClientService,
     private sortFilterService: SortFilterService,
     // private accountService: AccountService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner:NgxSpinnerService
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -82,6 +84,8 @@ export class ListClientComponent implements OnInit {
       urlIdentifier: 'id',
       isLazyLoaded: true
     }
+    this.spinner.show();
+
   }
 
   getClients(pageIndex: number,
@@ -115,6 +119,10 @@ export class ListClientComponent implements OnInit {
           this.tableDetails.rows = this.clientsData?.content;
           this.tableDetails.totalElements = this.clientsData?.totalElements;
           this.cdr.detectChanges();
+          this.spinner.hide();
+        },
+        error => {
+          this.spinner.hide();
         }
       );
   }

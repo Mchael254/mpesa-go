@@ -14,7 +14,9 @@
       <button type="button" class="btn btn-primary rounded-0 px-3 me-3" (click)="createEntity()"><i class="fa-solid fa-plus"></i>&nbsp; New Entity</button>
       <button type="button" class="btn filter-btn rounded-0 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
     </div>
-    <div class="my-4 ms-4 me-4">
+    <div class="my-4 ms-4 me-4" style="position: relative;">
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
         <app-dynamic-table
             [tableDetails]="tableDetails"
             (onLazyLoad)="lazyLoadEntity($event)">

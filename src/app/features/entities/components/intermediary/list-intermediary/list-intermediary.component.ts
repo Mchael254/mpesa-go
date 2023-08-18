@@ -12,6 +12,7 @@ import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {TableDetail} from "../../../../../shared/data/table-detail";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('ListIntermediaryComponent');
 
@@ -57,7 +58,8 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     private intermediaryService: IntermediaryService,
     private sortFilterService: SortFilterService,
     // private accountService: AccountService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -81,7 +83,8 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       url: '/home/entity/edit',
       urlIdentifier: 'id',
       isLazyLoaded: true
-    }
+    },
+    this.spinner.show();
   }
 
   getAgents(pageIndex: number,
@@ -111,7 +114,9 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
           this.tableDetails.rows = this.intermediaries?.content;
           this.tableDetails.totalElements = this.intermediaries?.totalElements;
           this.cdr.detectChanges();
-        }
+          this.spinner.hide();
+        },
+        error => { this.spinner.hide(); }
       );
   }
 
