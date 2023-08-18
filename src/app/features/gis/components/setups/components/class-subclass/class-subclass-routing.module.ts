@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ClassesSetupWizardComponent } from './classes-setup-wizard/classes-setup-wizard.component';
-
+import { Class } from 'leaflet';
+import { ClassSetupWizardComponent } from './class-setup-wizard/class-setup-wizard.component';
 const routes: Routes = [
   {
     path:'setup-wizard',
-    component:ClassesSetupWizardComponent
+    component: ClassSetupWizardComponent
   }
 ];
 
