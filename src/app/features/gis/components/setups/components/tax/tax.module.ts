@@ -1,14 +1,16 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { TaxRoutingModule } from './tax-routing.module';
+import { DynamicBreadcrumbComponent } from 'src/app/shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    // DynamicBreadcrumbComponent
+  ],
   imports: [
     CommonModule,
-    TaxRoutingModule
+    TaxRoutingModule,
   ]
 })
 export class TaxModule { }
