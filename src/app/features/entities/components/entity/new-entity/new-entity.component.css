@@ -3,11 +3,11 @@
     font-family: 'Roboto', serif;
     text-align: center;
     background-color: white;
-    color: #00529B;
+    color: var(--primary-color);
     padding: 0.5rem;
     border-radius: 0.3rem;
     cursor: pointer;
-    border: 1px solid #00529B;
+    border: 1px solid var(--primary-color);
     border-radius: 2px 1px 2px 2px;
 
     .fa {
@@ -17,7 +17,7 @@
 }
 
 .img_edit {
-    color: #00529B;
+    color: var(--primary-color);
     font-size: 14px;
 }
 

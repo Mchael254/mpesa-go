@@ -6,9 +6,26 @@
           </button>
           <span class="brand-name" style="font-size: 13px; font-weight: 900;">TURNQUEST</span>
       </a>
-      <div class="profile">
+      <div style="color: white; padding: 0 0rem; display: flex; font-size: 1.5rem;">
+        <div class="dropdown" style="padding: 0 1rem;">
+          <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+          <div class="dropdown-content" style="min-width: 40px; font-size: 1.6rem; ">
+            <div *ngFor="let language of languages">
+              <a (click)="selectLanguage(language)">
+                <span [class]="language.class"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown profile" style="padding: 0 1rem">
           <img src="../../../../../assets/images/jane-doe.png" alt="john doe">
-          <span>Jane Doe</span>
+          <div class="dropdown-content" style="font-size: 12px; min-width: 80px;">
+            <a href="#">Profile</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+          </div>
+        </div>
+
       </div>
 
   </div>

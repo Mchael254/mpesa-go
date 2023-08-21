@@ -1,5 +1,5 @@
 .user-app-card:hover{
-  background-color:  #00529B;
+  background-color:  var(--primary-color);
   border-radius: 5px;
   cursor: pointer;
 
