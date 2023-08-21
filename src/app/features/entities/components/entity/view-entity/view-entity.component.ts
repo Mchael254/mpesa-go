@@ -20,6 +20,7 @@ import { ClientService } from '../../../services/client/client.service';
 import { Logger } from 'src/app/shared/services/logger.service';
 import { ClientDTO } from '../../../data/ClientDTO';
 import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger("ViewEntityComponent")
 
@@ -91,11 +92,14 @@ export class ViewEntityComponent implements OnInit {
     // private datePipe: DatePipe,
     private messageService: MessageService,
     private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) {
+    this.spinner.show();
     this.selectedRole = {};
   }
 
   ngOnInit(): void {
+    
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -206,7 +210,9 @@ export class ViewEntityComponent implements OnInit {
                    'data:image/jpeg;base64,' + this.entityPartyIdDetails.profileImage
                   : '';
         this.cdr.detectChanges();
-      }
+        this.spinner.hide();
+      },
+      error => {this.spinner.hide();}
     )
   }
 

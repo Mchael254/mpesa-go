@@ -58,17 +58,17 @@
 }
 
 .days li span.active, .active {
-  background: #00529B;
+  background: var(--primary-color);
   color: #fff;
 }
 
 .days li span.selected {
   background: #b8cfe3;
-  color: #00529B;
+  color: var(--primary-color);
 }
 
 .days li span.view-more {
-  color: #00529B;
+  color: var(--primary-color);
   font-weight: bold;
   padding-top: 10px
 }

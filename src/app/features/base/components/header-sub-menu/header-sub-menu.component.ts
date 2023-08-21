@@ -3,6 +3,7 @@ import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Logger } from 'src/app/shared/services';
 import { Router } from '@angular/router';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 const log = new Logger("HeaderSubMenuComponent")
 @Component({
@@ -12,6 +13,7 @@ const log = new Logger("HeaderSubMenuComponent")
   encapsulation: ViewEncapsulation.None
 
 })
+@AutoUnsubscribe
 export class HeaderSubMenuComponent implements OnInit {
   defaultSidebar: SidebarMenu | undefined;
   administationSubMenuList: SidebarMenu[];
@@ -19,26 +21,38 @@ export class HeaderSubMenuComponent implements OnInit {
   claimSubMenuList: SidebarMenu[];
   reinsuranceubMenuList: SidebarMenu[];
   accountSubMenuList: SidebarMenu[];
+  searchTerm: any;
+  nameSearchTerm:any;
+  idSearchTerm:any;
 
-constructor(private menuService: MenuService, private router:Router){
-  this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
-}
+  constructor(private menuService: MenuService, private router:Router){
+    this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
+  }
 
 
-ngOnInit(): void {
+  ngOnInit(): void {
+    this.administationSubMenuList = this.menuService.administationSubMenuList();
+    this.teamSubMenuList = this.menuService.teamSubMenuList();
+    this.claimSubMenuList = this.menuService.teamSubMenuList();
+    this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
+    this.accountSubMenuList = this.menuService.accountSubMenuList();
+  }
+
+  dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
+    if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
+    this.menuService.updateSidebarMainMenu(sidebarMenu.value)
+  }
 
 
-  this.administationSubMenuList = this.menuService.administationSubMenuList();
-  this.teamSubMenuList = this.menuService.teamSubMenuList();
-  this.claimSubMenuList = this.menuService.teamSubMenuList();
-  this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
-  this.accountSubMenuList = this.menuService.accountSubMenuList();
-}
+  navLink(menuLink:string){
+    this.router.navigate([menuLink])
+  }
 
-dynamicSideBarMenu(sidebarMenu: SidebarMenu, isLink = false) {
-  console.log(sidebarMenu);
-  if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
-  this.menuService.updateSidebarMainMenu(sidebarMenu.value)
-}
-
+  onSearch(){
+      this.searchTerm = this.nameSearchTerm || this.idSearchTerm;
+      localStorage.setItem('searchTerm', this.searchTerm)
+      this.nameSearchTerm = '';
+      this.idSearchTerm = '';
+      this.navLink('/home/entity/list');
+  }
 }

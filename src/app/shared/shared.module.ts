@@ -49,6 +49,9 @@ export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service';
 // export { JwtService } from './services/jwt.service';
 export { RoleGuard, AuthGuard } from './services/guard';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import { HttpLoaderFactory } from './utils/httpLoaderFactory';
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
@@ -135,7 +138,9 @@ const SERVICES = [
         ChipsModule,
         ChartModule,
         RouterLink,
-        NgxSpinnerModule
+        NgxSpinnerModule,
+        TranslateModule,
+        
     ],
   exports: [
     ErrorComponent,
@@ -154,7 +159,9 @@ const SERVICES = [
     StepperComponent,
     DynamicSimpleModalComponent,
     DynamicFormModalComponent,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    TranslateModule,
+   
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
