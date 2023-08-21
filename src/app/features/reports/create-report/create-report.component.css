@@ -3,7 +3,7 @@
 }
 
 .left p, #sub-category-name {
-  color: #00529b;
+  color: var(--primary-color);
   font-weight: bold;
   cursor: pointer;
 }
@@ -22,7 +22,7 @@
 }
 
 .preview-nav {
-  background: #00529B0A;
+  background: var(--primary-color)0A;
   padding: 10px 0 10px 20px;
 }
 
@@ -62,7 +62,7 @@
 .chart-type:hover {
   cursor: pointer;
   font-size: 1.1em;
-  color: #00529B;
+  color: var(--primary-color);
   margin-bottom: 5px;
   text-transform: capitalize;
 }
@@ -103,7 +103,7 @@
 
 #saveReportModal li i, #saveReportModal .report-item i {
   margin-right: 5px;
-  color: #00529b;
+  color: var(--primary-color);
 }
 
 .criteria-preview {
@@ -130,7 +130,7 @@
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {
   padding: 0.5em;
   font-size: 0.9em;
-  color: #00529b!important;
+  color: var(--primary-color)!important;
 }
 
 .sub-category:hover,

@@ -29,6 +29,7 @@ import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 import { BankBranchDTO, BankDTO, FundSourceDTO } from 'src/app/shared/data/common/bank-dto';
 import { SectorService } from 'src/app/shared/services/setups/sector.service';
 import { TableLazyLoadEvent } from 'primeng/table';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit',
@@ -111,6 +112,7 @@ export class EditComponent implements OnInit{
     private cdr: ChangeDetectorRef,
     private router: Router,
     private datePipe: DatePipe,
+    private translate: TranslateService
   ) {
   }
 

@@ -12,15 +12,15 @@
     margin-left: 35px;
 }
 #cancel{
-    color: #00529B;
-    border-color: #00529B;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 .activity{
     background-color: rgb(0, 82, 155, 0.2) ;
     color: #000;
 }
 #search{
-    background-color: #00529B;
+    background-color: var(--primary-color);
     color: white;
     padding: 7px;
     border-radius: 3px;
@@ -47,7 +47,7 @@ cursor:pointer;
     font-weight: 700;
     font-size: 16px;
     line-height: 19px;
-    color: #00529B;
+    color: var(--primary-color);
 
 }
 label{
@@ -96,8 +96,8 @@ label{
 
   .text-right {
   width: 4rem;
-  border: 1px solid #00529B;
-  color: #00529B;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
   border-radius: 0;
   background-color: white;
   font-size: 12px;
@@ -107,5 +107,5 @@ label{
 
  .text-right:hover {
   color: #ffffff !important;
-  background-color: #00529B;
+  background-color: var(--primary-color);
  }

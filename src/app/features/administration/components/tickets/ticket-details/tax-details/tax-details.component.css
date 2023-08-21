@@ -1,9 +1,9 @@
 table thead tr td {
-  color: #00529b;
+  color: var(--primary-color);
   font-weight: bold;
 }
 table tbody tr th {
-  background: #00529b;
+  background: var(--primary-color);
   color: #ffffff;
 }
 

@@ -51,7 +51,7 @@ h6 {
   font-size: 12px;
   text-align: center;
   text-transform: uppercase;
-  color: #00529B;
+  color: var(--primary-color);
 }
 
 .modal-title {
@@ -61,7 +61,7 @@ h6 {
   font-size: 16px;
   display: flex;
   align-items: center;
-  color: #00529B;
+  color: var(--primary-color);
 }
 
  /* Assign Supervisor Modal Table */
@@ -101,7 +101,7 @@ h6 {
 
 .assign-supervisor-btn {
   border-radius: 2px;
-  border: 1px solid #00529B;
+  border: 1px solid var(--primary-color);
   background: rgba(0, 82, 155, 0.8);
   color: #ffffff;
   font-style: normal;
