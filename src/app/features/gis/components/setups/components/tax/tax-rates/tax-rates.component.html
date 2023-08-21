@@ -1,0 +1,645 @@
+<div class="row">
+    <div class="col-6">
+        <div class="d-flex justify-content-between my-4 ms-4 top-elements">
+            <!-- <h6 class="top-header-text">New Client</h6> -->
+        <div class="me-4">
+          <app-dynamic-breadcrumb [breadCrumbItems]="taxBreadCrumbItems"></app-dynamic-breadcrumb>
+        </div>
+       </div>
+    </div>
+    <div class="col-6">
+      <p class="text-right" style="color:#00529B;"><a>Help <i class="pi pi-question-circle"></i></a></p>
+    </div>
+  
+  </div>
+   <!-- Top Header Text and Breadcrumb !-->
+    
+<div class="row mb-4">
+    <div class="col-xl-3">
+      <div class="card" id="left">
+        <div class="card-body">
+          <div class="row  mb-2">
+            <div class="col-7 ">
+              <p class="title2">Tax Description</p>
+            </div>
+            <div class="col-5 ">
+              <p class="report">Reports</p>
+            </div>
+          </div>
+          <br>
+          <div class="TransactionList">
+            <!-- <app-dynamic-setup-search-list-screen>
+
+            </app-dynamic-setup-search-list-screen> -->
+            <ul class="list-group list-group-light" >
+              <!-- <li class="list-group-item list-group-item-action px-3 border-0" (click)="selectedTaxRate(data.code, data)" id="TransactionList">{{ data.description }}</li> -->
+            </ul>
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+  
+      </div>
+    </div>
+    <div class="col-xl-9">
+        <div class="card">
+            <div class="card-body">
+                  <ul class="nav nav-pills mt-2" id="pills-tab" role="tablist">
+                    <li class="nav-item nav-tab">
+                      <a class="nav-link active " id="pills-ChargesDeductibles-tab" data-bs-toggle="pill"
+                        href="#pills-ChargesDeductibles" role="tab" aria-controls="pills-ChargesDeductibles"
+                        aria-selected="true">Charges & Deductibles</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pills-TaxExcludedProducts-tab" data-bs-toggle="pill" href="#pills-TaxExcludedProducts"
+                        role="tab" aria-controls="pills-TaxExcludedProducts" aria-selected="false">Tax Excluded Products</a>
+                    </li>
+                  </ul>
+                  
+                  <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-ChargesDeductibles" role="tabpanel"
+                      aria-labelledby="pills-ChargesDeductibles-tab">
+                      <hr>
+    
+                      <ul class="nav">
+                        <li class="nav-item ">
+                          <button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#AddCharges" >adds</button>
+                          <a class="nav-link nav-miniTab active" id="links" aria-current="page" (click)="test()">+Add</a>
+                        </li>
+                        <li class="nav-item">
+                          <button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#updateCharges" >edits</button>
+                          <a class="nav-link nav-miniTab" id="links" (click)="test()">Edit</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link nav-miniTab" id="links" (click)="deleteChargesDeductibles()">Delete</a>
+                        </li>
+                      </ul>
+                      <div class="modal fade" id="AddCharges" tabindex="-1" role="dialog"
+                        aria-labelledby="AddCharges" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                          <div class="modal-content" id="AddChargesContent">
+                            <div class="">
+                              <h5 class="modal-title" id="AddChargesTitle">Add / Edit Charges & Deductibles</h5>
+                            </div>
+                            <div class="modal-body ml-4">
+                              <br>
+                              <form [formGroup]="taxRateForm">
+                                <!-- **ROW 1** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel">Application Area</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="applicationArea">
+                                          <option value="U">Underwriting</option>
+                                          <option value="R">Reinsuarance</option>
+                                          <option value="C">Claims</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel">Application Level</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="applicationLevel">
+                                          <option value="P">Policy Level</option>
+                                          <option value="R">Risk Level</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel">Transaction Type</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="transactionLevelCode">
+                                          <option value="UP">Underwriting Premium</option>
+                                          <option value="SI">Sum Insured</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 2** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> Range From</label>
+                                      <div class="col-7">
+                                        <input type="number"id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeFrom">                            
+                                      </div>
+                            <!-- ghg -->           
+                                <div *ngIf="f['rangeFrom']?.invalid && (f['rangeFrom']?.dirty || f['rangeFrom']?.touched)" class="form-text text-danger">
+                                <div *ngIf="f['rangeFrom']?.errors['required']">field is required</div>
+                            <!-- ghg -->
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> Range To</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeTo">                            
+                                      </div>
+                                      <div *ngIf="f['rangeTo']?.invalid && (f['rangeTo']?.dirty || f['rangeTo']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['rangeTo']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Minimum Amount</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="minimumAmount">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 3** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> Rate</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rate">                            
+                                      </div>
+                                      <div *ngIf="f['rate']?.invalid && (f['rate']?.dirty || f['rate']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['rate']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> Rate Description</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateDescription">
+                                          <option value="Percent">Percent</option>
+                                          <option value="Per Mile">Per Mille</option>
+                                          <option value="Amount">Amount</option>
+                                          <option value="Others">Others</option>
+                                        </select>                            
+                                      </div>
+                                      <div *ngIf="f['rateDescription']?.invalid && (f['rateDescription']?.dirty || f['rateDescription']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['rateDescription']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span>*</span>Tax Type</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateType">
+                                          <option value="FXD">Fixed</option>
+                                          <option value="RCU">Recurring</option>
+                                          <option value="STEP">Range(step)</option>
+                                          <option value="ABS">Range(Abs)</option>
+                                        </select>                               
+                                      </div>
+                                      <div *ngIf="f['rateType']?.invalid && (f['rateType']?.dirty || f['rateType']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['rateType']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 4** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> WEF</label>
+                                      <div class="col-7">
+                                        <input type="date" class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="dateWithEffectFrom">                            
+                                      </div>
+                                      <div *ngIf="f['dateWithEffectFrom']?.invalid && (f['dateWithEffectFrom']?.dirty || f['dateWithEffectFrom']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['dateWithEffectFrom']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">WET</label>
+                                      <div class="col-7">
+                                        <input type="date" class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="dateWithEffectTo">                            
+                                    
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Rate Category</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateCategory">
+                                          <option value="TX">Tax</option>
+                                          <option value="AC">Additional Charge</option>
+                                          <option value="DT">Deductible</option>
+                                        </select>                               
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+          
+                              <div class="row mt-3 mb-2">
+                                <div class="col-6 ">
+                                  <button type="button" class="btn btn-outline-primary " id="cancel"
+                                    data-dismiss="modal" (click)="cancel()">Cancel</button>
+                                </div>
+                                <div class="col-6">
+                                  <div class="row">
+                                    <div class="col-8">
+                                    </div>
+                                    <div class="col-4">
+                                      <button type="button" class="btn btn-primary" id="ok" data-dismiss="modal" (click)="AddChargeDeductibles()" >Ok</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal fade" id="UpdateCharges" tabindex="-1" role="dialog"
+                        aria-labelledby="UpdateCharges" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                          <div class="modal-content" id="UpdateChargesContent">
+                            <div class="">
+                              <h5 class="modal-title" id="UpdateChargesTitle">Add / Edit Charges & Deductibles</h5>
+                            </div>
+                            <div class="modal-body ml-4">
+                              <br>
+                              <form [formGroup]="taxRateForm">
+                                <!-- **ROW 1** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel">Application Area</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="applicationArea">
+                                          <option value="U">Underwriting</option>
+                                          <option value="R">Reinsuarance</option>
+                                          <option value="C">Claims</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel"><span id="req">*</span> Application Level</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="applicationLevel">
+                                          <option value="P">Policy Level</option>
+                                          <option value="R">Risk Level</option>
+                                        </select>
+                                      </div>
+                                      <div *ngIf="f['applicationLevel']?.invalid && (f['applicationLevel']?.dirty || f['applicationLevel']?.touched)" class="form-text text-danger">
+                                        <div *ngIf="f['applicationLevel']?.errors['required']">field is required</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="addChargesInput" class="col-5 col-form-label" id="addChargesLabel">Transaction Type</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="transactionLevelCode">
+                                          <option value="UP">Underwriting Premium</option>
+                                          <option value="SI">Sum Insured</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 2** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Range From</label>
+                                      <div class="col-7">
+                                        <input type="number"id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeFrom">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Range To</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeTo">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Minimum Amount</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="minimumAmount">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 3** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Rate</label>
+                                      <div class="col-7">
+                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rate">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Rate Description</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateDescription">
+                                          <option value="Percent">Percent</option>
+                                          <option value="Per Mile">Per Mille</option>
+                                          <option value="Amount">Amount</option>
+                                          <option value="Others">Others</option>
+                                        </select>                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Tax Type</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateType">
+                                          <option value="FXD">Fixed</option>
+                                          <option value="RCU">Recurring</option>
+                                          <option value="STEP">Range(step)</option>
+                                          <option value="ABS">Range(Abs)</option>
+                                        </select>                               
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- **ROW 4** -->
+                                <div class="row">
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">WEF</label>
+                                      <div class="col-7">
+                                        <input type="date" class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="dateWithEffectFrom">                            
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">WET</label>
+                                      <div class="col-7">
+                                        <input type="date" class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="dateWithEffectTo">                            
+                                    
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-xl-4">
+                                    <div class="form-group row">
+                                      <label for="minmax-buttons" class="col-5 col-form-label" id="addChargesLabel">Rate Category</label>
+                                      <div class="col-7">
+                                        <select class="form-control form-control-sm mb-1" id="addChargesInput" formControlName="rateCategory">
+                                          <option value="TX">Tax</option>
+                                          <option value="AC">Additional Charge</option>
+                                          <option value="DT">Deductible</option>
+                                        </select>                               
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+          
+                              <div class="row mt-3 mb-2">
+                                <div class="col-6 ">
+                                  <button type="button" class="btn btn-outline-primary " id="cancel"
+                                    data-dismiss="modal" #editchargeDeductables>Cancel</button>
+                                </div>
+                                <div class="col-6">
+                                  <div class="row">
+                                    <div class="col-8">
+                                    </div>
+                                    <div class="col-4">
+                                      <button type="button" class="btn btn-primary" id="ok" data-dismiss="modal" (click)="UpdateChargesDeductibles()" >Ok</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+          
+                      <!-- <p-table #dt1 [value]="selectedTaxRateDetails" selectionMode="single" [resizableColumns]="true"
+                        styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+                        [paginator]="true" [rows]="10" [scrollable]="true" scrollDirection="horizontal"
+                        [showCurrentPageReport]="true" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                        [globalFilterFields]="['description']">
+          
+                        <ng-template pTemplate="header">
+                          <tr>
+                    
+                            <th pSortableColumn="applicationLevel ">Application Level <p-sortIcon field="applicationLevel"></p-sortIcon></th>
+                            <th pSortableColumn="applicationArea">Application Area<p-sortIcon field="applicationArea"></p-sortIcon></th>
+                            <th pSortableColumn="transactionLevelCode">Transaction Type <p-sortIcon field="transactionLevelCode"></p-sortIcon></th>
+                            <th pSortableColumn="rangeFrom">Range From <p-sortIcon field="rangeFrom"></p-sortIcon></th>
+                            <th pSortableColumn="rangeTo">Range To <p-sortIcon field="rangeTo"></p-sortIcon></th>
+                            <th pSortableColumn="minimumAmount">Minimum Amount<p-sortIcon field="minimumAmount"></p-sortIcon></th>
+                            <th pSortableColumn="rate">Rate <p-sortIcon field="rate"></p-sortIcon></th>
+                            <th pSortableColumn="rateDescription">Rate Description <p-sortIcon field="rateDescription"></p-sortIcon></th>
+                            <th pSortableColumn="taxType">Tax Type<p-sortIcon field="taxType"></p-sortIcon></th>
+                            <th pSortableColumn="dateWithEffectTo">WET<p-sortIcon field="dateWithEffectTo"></p-sortIcon></th>
+                            <th pSortableColumn="divisionFactor">Division Factor<p-sortIcon field="divisionFactor"></p-sortIcon></th>
+                            <th pSortableColumn="dateWithEffectFrom">WEF<p-sortIcon field="dateWithEffectFrom"></p-sortIcon></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template let-taxRateList pTemplate="body">
+                          <tr style="border-bottom:none;" [pSelectableRow]="selected" (click)="loadTaxesRates(taxRateList.code)">
+                            <td>{{taxRateList.applicationLevel}}</td>
+                            <td>{{taxRateList.applicationArea}}</td>
+                            <td>{{taxRateList.transactionLevelCode}}</td>
+                            <td>{{taxRateList.rangeFrom}}</td>
+                            <td>{{taxRateList.rangeTo}}</td>
+                            <td>{{taxRateList.minimumAmount}}</td>
+                            <td>{{taxRateList.rate}}</td>
+                            <td>{{taxRateList.rateDescription}}</td>
+                            <td>{{taxRateList.taxType}}</td>
+                            <td>{{taxRateList.dateWithEffectTo}}</td>
+                            <td>{{taxRateList.divisionFactor}}</td>
+                            <td>{{taxRateList.dateWithEffectFrom}}</td>
+          
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="1"></td>
+          
+                            <td colspan="10" style="padding:200px;padding-left: 200px;" id="empty">No data to display.</td>
+                          </tr>
+          
+                        </ng-template>
+                        <ng-template pTemplate="paginatorleft">
+                          <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                        </ng-template>
+                        <ng-template pTemplate="paginatorright">
+                          <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                        </ng-template>
+                      </p-table> -->
+                    </div>
+                    <div class="tab-pane fade" id="pills-TaxExcludedProducts" role="tabpanel"
+                      aria-labelledby="pills-TaxExcludedProducts-tab">
+                      <hr>
+                      <div class="row">
+                        <div class="col-xl-8">
+                          <ul class="nav ">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="links" aria-current="page" data-toggle="modal"
+                                data-target="#exampleModalCenter">Add Product</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" id="links" data-toggle="modal" data-target=".bd-example2-modal-lg"(click)="deleteProductExcludedTax()">Delete</a>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-xl-4">
+                          <ul class="nav ">
+                            <li class="nav-item">
+                              <a class="nav-link active" id="links" aria-current="page" data-toggle="modal"
+                                data-target=".bd-example-modal-lg">Detach</a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" id="links" data-toggle="modal" data-target=".bd-example2-modal-lg">View</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                          <div class="modal-content">
+                            <div class="">
+                              <h5 class="modal-title" id="exampleModalLongTitle">Add Product</h5>
+                            </div>
+                            <div class="modal-body ml-4">
+                              <br>
+                              <!-- <p-table 
+                              #dt2 [value]="ProductList" 
+                              [(selection)]="selectedProductsExcluded"
+                              selectionMode="single" 
+                              [resizableColumns]="true"
+                              styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+                                [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
+                                [showCurrentPageReport]="true" currentPageReportTemplate=" {first} - {last} of {totalRecords}">
+          
+                                <ng-template pTemplate="header">
+                                  <tr>
+                                    <th
+                                      style="background:rgba(255, 255, 255);border:2px solid rgba(140, 140, 140, 0.59);border-radius: 2px;">
+                                      <input pInputText type="text" (input)="dt2.filter($event.target.value, 'code', 'contains')"
+                                        [value]="dt2.filters['code']?.value" placeholder="Search by Code" class="w-full"
+                                        style="outline: none; border: none;">
+                                    </th>
+                                    <th
+                                      style="background:rgba(255, 255, 255);border:2px solid rgba(140, 140, 140, 0.59);border-radius: 2px;">
+                                      <input pInputText type="text" (input)="dt2.filter($event.target.value, 'description', 'contains')"
+                                        [value]="dt2.filters['description']?.value" placeholder="Search by Description" class="w-full"
+                                        style="outline: none; border: none;">
+                                     
+          
+                                    </th>
+                                  </tr>
+                                  <tr id="product">
+                                    <th style="background:rgba(255, 255, 255);">Product Id</th>
+                                    <th style="background:rgba(255, 255, 255);">Product Desc</th>
+                                  </tr>
+                                </ng-template>
+          
+                                <ng-template let-productList pTemplate="body">
+                                  <tr id="productData" [pSelectableRow]="selected" [value]="productList"
+                                  (click)="selectedEvent(productList.code)">
+                                   
+                                    <td style="border:2px solid rgba(140, 140, 140, 0.59);border-radius: 2px;">
+                                      {{ productList.code }}
+                                    </td>
+                                    <td style="padding: 0.5rem;
+                                                max-width: 30px;
+                                                white-space: nowrap;
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                                border:2px solid rgba(140, 140, 140, 0.59);
+                                                border-radius: 2px;">
+                                      {{ productList.description | lowercase }}
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                                
+                                
+                                
+          
+                                <ng-template pTemplate="paginatorleft">
+                                  <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                                </ng-template>
+                                <ng-template pTemplate="paginatorright">
+                                  <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                                </ng-template>
+                              </p-table> -->
+          
+                              <div class="row mt-3 mb-2">
+                                <div class="col-6 ">
+                                  <button type="button" class="btn btn-outline-primary " id="cancel"
+                                    data-dismiss="modal">Cancel</button>
+                                </div>
+                                <div class="col-6">
+                                  <div class="row">
+                                    <div class="col-6">
+                                      <button type="button" class="btn btn-primary" id="ok" data-dismiss="modal"  (click)="createProductExcludedTax()">Ok</button>
+          
+                                    </div>
+                                    <div class="col-6">
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- <p-table #dt3 [value]="assignedProductExcludedTaxes" selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
+                        responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [paginator]="true" [rows]="10"
+                        [scrollable]="true" scrollDirection="horizontal" [showCurrentPageReport]="true"
+                        currentPageReportTemplate=" {first} - {last} of {totalRecords}" [globalFilterFields]="['description']">
+          
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th pSortableColumn="Product Id ">Product Id<p-sortIcon field="Product Id"></p-sortIcon></th>
+                            <th pSortableColumn="Product Desc">Product Desc<p-sortIcon field="Product Desc"></p-sortIcon></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template let-assignedProductExcludedTaxe pTemplate="body">
+                          <tr style="border-bottom:none;" [pSelectableRow]="selected" [value]="assignedProductExcludedTaxe"
+                            (click)="selectProductExcluded(assignedProductExcludedTaxe.code)">
+                            <td>{{assignedProductExcludedTaxe.code}}</td>
+                            <td>{{assignedProductExcludedTaxe.description}}</td>
+                            
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="1"></td>
+                            <td colspan="10" style="padding:200px;" id="empty">No data to display.</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="paginatorleft">
+                          <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                        </ng-template>
+                        <ng-template pTemplate="paginatorright">
+                          <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                        </ng-template>
+                      </p-table> -->
+                    </div>
+          
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>   
