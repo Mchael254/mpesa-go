@@ -2,9 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DynamicSetupFormScreenComponent } from 'src/app/shared/components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 import { DynamicSetupSearchListScreenComponent } from 'src/app/shared/components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
-import {
-  DynamicSetupTableScreenComponent
-} from "../../shared/components/dynamic-setup-table-screen/dynamic-setup-table-screen.component";
+import {DynamicSetupTableScreenComponent} from "../../shared/components/dynamic-setup-table-screen/dynamic-setup-table-screen.component";
+import { DynamicTableComponent } from 'src/app/shared/components/dynamic-table/dynamic-table.component';
 import { DynamicSetupWizardWelcomeScreenComponent } from 'src/app/shared/components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
 
 const routes: Routes = [
@@ -41,7 +40,15 @@ const routes: Routes = [
     path:'classes-subclasses',
     loadChildren: () => import('./components/setups/components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
 
-  }
+  },
+  {
+    path:'class-subclass',
+    loadChildren: () => import('./components/setups/components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
+   },
+  {
+    path:'tax-rate',
+    loadChildren:() => import('./components/setups/components/tax/tax.module').then(m => m.TaxModule),
+   },
 
 ];
 
