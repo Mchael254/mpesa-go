@@ -5,6 +5,7 @@ import { DynamicSetupSearchListScreenComponent } from 'src/app/shared/components
 import {DynamicSetupTableScreenComponent} from "../../shared/components/dynamic-setup-table-screen/dynamic-setup-table-screen.component";
 import { DynamicTableComponent } from 'src/app/shared/components/dynamic-table/dynamic-table.component';
 import { DynamicSetupWizardWelcomeScreenComponent } from 'src/app/shared/components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
+import {ClausesComponent} from "./components/setups/components/clause/clauses/clauses.component";
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
     path:'classes-subclasses',
     loadChildren: () => import('./components/setups/components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
 
+  },
+  {
+    path: 'clauses',
+    component:ClausesComponent
   },
   {
     path:'class-subclass',

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { DynamicFormFields } from '../../utils/dynamic.form.fields';
 
@@ -7,9 +7,10 @@ import { DynamicFormFields } from '../../utils/dynamic.form.fields';
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.css']
 })
-export class DynamicFormComponent {
+export class DynamicFormComponent implements OnChanges{
 
   @Input() formFields: DynamicFormFields[];
+  // @Input() getFormFields: DynamicFormFields[];
   @Output() formSubmitted: EventEmitter<any> = new EventEmitter<any>();
   @Output() goBackButton: EventEmitter<any> = new EventEmitter<any>();
   @Output() centerButton: EventEmitter<any> = new EventEmitter<any>();
@@ -72,4 +73,21 @@ export class DynamicFormComponent {
   }
 
   onCenterAction(){}
+
+  get getFormFields() {
+    return this.formFields
+  }
+
+  @Input()
+  set setFormFields(item: DynamicFormFields[]) {
+    this.formFields = item
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['setFormFields'] && !changes['setFormFields'].firstChange) {
+      // Update the local property with the new form fields
+      this.formFields = changes['setFormFields'].currentValue;
+      console.log(changes['setFormFields'].currentValue)
+    }
+  }
 }
