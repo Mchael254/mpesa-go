@@ -28,7 +28,7 @@
               <div class="paramlist">
                   <ul class="list-group list-group-light" *ngIf="paramsList.length > 0">
                       <li class="list-group-item list-group-item-action px-3 border-0"
-                          *ngFor="let data of paramsList" (click)="loadParam(data.code, data)"
+                          *ngFor="let data of paramsList" (click)="loadParam(data)"
                            id="paramsList">{{ data.name | lowercase }}</li>
                   </ul>
                   <div class="d-flex justify-content-center" *ngIf="paramsList.length === 0">

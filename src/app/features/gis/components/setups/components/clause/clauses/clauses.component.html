@@ -1,0 +1,134 @@
+<div class="container">
+  <div class="col-md-12">
+
+    <div class="row">
+      <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+
+              <div class="col-xl-6">
+                <label><span class="clause-label">Clauses</span></label>
+              </div>
+              <div class="col-xl-6">
+                <div class="row">
+                  <div class="col-xl-6">
+                    <button style="border: none; background-color: transparent;"  (click)="createNewClause()"><span class="clause-links">New</span></button>
+                  </div>
+                  <div class="col-xl-6">
+                    <button style="border: none; background-color: transparent;" (click)="deleteClause()"><span class="clause-links">Delete</span></button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="mt-2">
+              <!--<p-listbox [options]="allClauses | filter:filterby" [(ngModel)]="selected" optionLabel="heading"
+                         [style]="{'width':'17rem', 'height':'450px', 'overflow-y':'auto', '-webkit-scrollbar': '6px'}"
+                         (onClick)="selectedClause()" class="select">
+
+              </p-listbox>-->
+              <app-dynamic-setup-search-list-screen
+              [dynamicTitle]="'Clauses'"
+              [paramsList]="allClauses"
+              (loadParamAction)="receiveData($event)">
+              </app-dynamic-setup-search-list-screen>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-xl-8">
+                <label>Details</label>
+              </div>
+              <div class="col-xl-4">
+                <a href="/" class="claus"><span class="clause-links">Report</span></a>
+              </div>
+            </div>
+            <div *ngIf="show">
+              <app-dynamic-form
+                [formFields]="formFields"
+                [fieldsPerRow]="1"
+                [title]="'Details'"
+                [actionButtonConfig]="buttonConfig"
+                (formSubmitted)="save($event)"
+              ></app-dynamic-form>
+              <!--<form [formGroup]="clauseForm">
+                <div>
+                  <label><span class="clause-label">ID</span></label>
+                  <input class="form-control" formControlName="code" readonly>
+                </div>
+                <div>
+                  <label><span class="clause-label">Current</span></label>
+                  <select class="form-control" formControlName="isCurrent">
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label><span class="clause-label">Heading</span></label>
+                  <input class="form-control" formControlName="heading">
+                </div>
+                <div>
+                  <label><span class="clause-label">Type</span></label>
+                  <select class="form-control" formControlName="type">
+                    <option value="CL">Clause</option>
+                    <option value="WA">Warranty</option>
+                    <option value="SP">Special Conditions</option>
+                    <option value="EX">Excess</option>
+                    <option value="PE">Peril</option>
+                    <option value="EC">Exclusion</option>
+                    <option value="ET">Extension</option>
+                    <option value="MM">Memo</option>
+                  </select>
+                </div>
+                <div>
+                  <label><span class="clause-label">Clause Editable?</span></label>
+                  <select class="form-control" formControlName="isEditable">
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                  </select>
+                </div>
+                <div>
+                  <label><span class="clause-label">Wording</span></label>
+                  <textarea class="form-control" formControlName="wording"></textarea>
+                </div>
+                <div class="row mt-4">
+                  <div class="col-xl-6">
+                    <button class="but-revise" (click)="reviseClause()"><span class="revise-text">Revise</span></button>
+                  </div>
+                  <div class="col-xl-6">
+                    <button class="but-save" (click)="save()"><span class="savetext">Save</span></button>
+                  </div>
+                </div>
+              </form>-->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-xl-7">
+                <label><span class="clause-label">Last Edited by:</span></label>
+              </div>
+              <div class="col-xl-5">
+                <label><span class="clause-label">{{editedBy}}</span></label>
+              </div>
+              <div class="col-xl-7">
+                <label><span class="clause-label">Last Edited Date:</span></label>
+              </div>
+              <div class="col-xl-5">
+                <label><span class="clause-label">{{dateEdited}}</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
