@@ -7,7 +7,7 @@
 }
 
 .nav-link.active {
-    color: #00529B;
+    color: var(--primary-color);
 }
 
 .entityTitle {
@@ -26,7 +26,7 @@
 .entityTitle #rolesDropDown {
     font-weight: 400;
     font-size: 14px;
-    color: #00529B;
+    color: var(--primary-color);
     border: none;
     outline: none;
     background-color: white;
@@ -42,10 +42,10 @@
     font-family: 'Roboto', serif;
     text-align: center;
     background-color: white;
-    color: #00529B;
+    color: var(--primary-color);
     border-radius: 0.3rem;
     cursor: pointer;
-    border: 1px solid #00529B;
+    border: 1px solid var(--primary-color);
     border-radius: 50%;
     float: inline-start;
 
@@ -104,7 +104,7 @@
     margin: 5px auto;
     text-align: center;
     background-color: white;
-    color: #00529B;
+    color: var(--primary-color);
     cursor: pointer;
 
     .pi {
@@ -115,7 +115,7 @@
 }
 
 .card-header {
-    color: #00529B;
+    color: var(--primary-color);
     font-weight: bold;
     font-size: 12px;
     line-height: 20px;
@@ -210,7 +210,7 @@
     font-family: 'Roboto', serif;
     text-align: center;
     background: #FAFAFA;
-    color: #00529B;
+    color: var(--primary-color);
     padding: 0.5rem;
     border-radius: 0.3rem;
     cursor: pointer;

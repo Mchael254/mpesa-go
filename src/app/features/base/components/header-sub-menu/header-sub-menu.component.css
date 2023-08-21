@@ -8,7 +8,7 @@
 
 
 .base-content .content-nav .navbar #chart ul li a{
-  color: #00529B!important;
+  color: var(--primary-color)!important;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: underline;
@@ -26,12 +26,22 @@
   border-radius: 0;
   font-size: 12px;
   border: 0;
+  z-index: 100000;
+
 }
 
 .dropdown-item:hover {
   background-color: #0000000c;
   font-weight: 600;
-  border-right: #00529B solid 2px;
+  border-right: var(--primary-color) solid 2px;
+}
+
+.label-text {
+  font-weight: 600; color:var(--primary-color); cursor:pointer
+}
+
+.label-text:hover {
+  border-bottom: 0.5px solid var(--primary-color);
 }
 
 

@@ -7,12 +7,12 @@
     font-size: 14px;
     font-weight: 500;
   }
-  
+
   .btn-next-kin {
     float: right;
-    color: #00529B
+    color: var(--primary-color)
   }
-  
+
   .table {
     width: 100%;
     margin-bottom: 1.5rem;
@@ -31,11 +31,11 @@
     padding: 1px 10px;
     vertical-align: middle;
   }
-  
+
   .top-elements{
     position: inherit;
     white-space: nowrap;
-  
+
     .top-header-text{
       font-family: 'Roboto', serif;
       font-style: normal;
@@ -43,7 +43,7 @@
       font-size: 20px;
       line-height: 30px;
       display: inline-block;
-  
+
       color: #323A46;
     }
   }
@@ -59,41 +59,41 @@
     color: #3F4254;
     opacity: 7.5;
     padding-bottom: 16px;
-  
+
     nb-icon {
       opacity: 0.4;
       padding-right: 5px;
       height: 20px;
       vertical-align: middle;
     }
-  
+
   }
-  
+
   #profile-photo {
     width: 50px;
     height: 50px;
     margin-right: 16px;
     border-radius: 50%;
   }
-  
+
   .img_upload {
     display: inline-block;
     font-family: 'Roboto', serif;
     text-align: center;
     background-color: white;
-    color: #00529B;
+    color: var(--primary-color);
     padding: 0.5rem;
     border-radius: 0.3rem;
     cursor: pointer;
-    border: 1px solid #00529B;
+    border: 1px solid var(--primary-color);
     border-radius: 2px 1px 2px 2px;
   }
-  
+
   .img_edit {
-    color: #00529B;
+    color: var(--primary-color);
     font-size: 14px;
   }
-  
+
   .img_edit:hover {
     text-decoration: underline;
   }
@@ -103,7 +103,7 @@
     font-size: 9px;
     color: #8a8a8d;
   }
-  
+
   .card-header {
     font-style: normal;
     font-weight: 600;
@@ -112,8 +112,8 @@
   }
   .btn-primary {
     color: #fff;
-    background-color: #00529b;
-    border-color: #00529b;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
   }
   .form-control {
     font-size: 14px;

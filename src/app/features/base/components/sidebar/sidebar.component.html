@@ -11,7 +11,7 @@
             class="fa-solid fa-house"
             style="font-size: 15px; padding-right: 9px"
           ></i>
-          Home
+          {{'lang.home' | translate}}
         </span>
       </button>
     </li>
@@ -42,7 +42,7 @@
                 (click)="clickURL(menuItem.link)"
                 class="link-dark rounded"
                 style="font-size: 12px"
-                >{{ menuItem.name }}</a
+                >{{ menuItem.name | translate }}</a
               >
             </li>
           </ul>

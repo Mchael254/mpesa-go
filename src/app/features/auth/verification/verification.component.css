@@ -52,6 +52,6 @@
 }
 
 .selected {
-    background-color: #00529B;
+    background-color: var(--primary-color);
     color: white;
 }

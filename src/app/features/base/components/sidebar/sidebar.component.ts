@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Router } from '@angular/router';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None
 
 })
+@AutoUnsubscribe
 export class SidebarComponent {
   sidebarMainMenuList: SidebarMenu[];
   constructor(private menuService:MenuService, private router: Router){

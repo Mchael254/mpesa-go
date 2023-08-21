@@ -5,17 +5,17 @@
 }
 .text-end-view {
   border-radius: 2px;
-  border: 1px solid #00529B;
+  border: 1px solid var(--primary-color);
   background-color: #ffffff;
-  color: #00529B;
+  color: var(--primary-color);
   padding: 0.6rem 1.3rem;
   font-size: 12px;
 }
 
 
 .text-end-view:hover {
-  border: 1px solid #00529B;
-  background-color: #00529B;
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
   color: white;
   padding: 0.6rem 1.3rem;
   font-size: 12px;

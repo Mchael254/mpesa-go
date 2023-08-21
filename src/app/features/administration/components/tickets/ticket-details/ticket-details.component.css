@@ -25,7 +25,7 @@
 }
 
 .total-premium table thead tr td{
-  color: #00529b;
+  color: var(--primary-color);
   font-weight: bold;
 }
 

@@ -11,6 +11,7 @@ import { Logger } from 'src/app/shared/services/logger.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 const log = new Logger('ListEntityComponent');
 
@@ -22,6 +23,7 @@ type CustomLazyLoadEvent = LazyLoadEvent & { sortField: string | string[] };
   templateUrl: './list-entity.component.html',
   styleUrls: ['./list-entity.component.css']
 })
+@AutoUnsubscribe
 export class ListEntityComponent implements OnInit, OnDestroy {
 
   entities: Pagination<EntityDto> = <Pagination<EntityDto>>{};

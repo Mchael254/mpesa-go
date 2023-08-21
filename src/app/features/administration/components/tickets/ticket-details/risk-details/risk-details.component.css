@@ -8,7 +8,7 @@
 }
 
 .risk-details table thead tr th {
-  background: #00529b;
+  background: var(--primary-color);
   color: #fff;
 }
 

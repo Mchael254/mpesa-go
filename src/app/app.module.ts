@@ -14,7 +14,10 @@ import { SharedModule } from './shared/shared.module';
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {ChartModule} from "primeng/chart";
-
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient} from '@angular/common/http';
+import { HttpLoaderFactory } from './shared/utils/httpLoaderFactory';
 export function loadConfig(
   config: AppConfigService,
   configLoader: ConfigurationLoader,
@@ -42,7 +45,14 @@ const cubejsOptions = {
     SharedModule.forRoot(),
     ConfirmDialogModule,
     FontAwesomeModule,
-    ChartModule
+    ChartModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+  })
   ],
   providers: [
     {
