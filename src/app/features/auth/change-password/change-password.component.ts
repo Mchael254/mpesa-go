@@ -25,6 +25,11 @@ export class ChangePasswordComponent {
               public globalMessagingService: GlobalMessagingService,
               private sessionStorageService: SessionStorageService) { }
 
+  /**
+   * Initialize component by:
+   * 1. Creating the form
+   * 2. Setting the form validators
+   */
   ngOnInit(): void {
     this.form = this.formBuilder.group({
         // password: ['', Validators.required],
@@ -37,8 +42,14 @@ export class ChangePasswordComponent {
     );
   }
 
+  /**
+   * Convenience getter for easy access to form fields
+   */
   get f() { return this.form.controls; }
 
+  /**
+   * Save the password details if form is valid and route to login page
+   */
   onSave() {
     const extras = JSON.parse(this.sessionStorageService.getItem("extras"));
     const username = extras.username;
