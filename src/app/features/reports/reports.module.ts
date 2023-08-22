@@ -10,6 +10,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
 import { ReportDashboardComponent } from './report-dashboard/report-dashboard.component';
+import { MyReportsComponent } from './my-reports/my-reports.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { ReportDashboardComponent } from './report-dashboard/report-dashboard.co
     ReportsComponent,
     CreateReportComponent,
     CriteriaPillComponent,
-    ReportDashboardComponent
+    ReportDashboardComponent,
+    MyReportsComponent,
   ],
   imports: [
     CommonModule,

@@ -38,6 +38,10 @@ export class ReportService {
     return this.http.get<Report[]>(`/${baseUrl}/chart/charts`);
   }
 
+  getReportsByFolderId(): Observable<Report[]> {
+    return null;
+  }
+
   getReport(id: number): Observable<Report> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<Report>(`/${baseUrl}/chart/charts/${id}`);
