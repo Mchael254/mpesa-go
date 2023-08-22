@@ -1,0 +1,67 @@
+<div class="base-content-section mt-2">
+  <div class="row">
+    <div class="col-sm-12 ">
+      <div class="reports-content-div">
+        <form [formGroup]="searchForm">
+          <div class="row top-row">
+            <div class="col-sm-2">
+              <p class="fw-bold">File Uploads</p>
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group">
+                <input
+                  formControlName="searchTerm"
+                  class="form-control"
+                  aria-describedby="saveReportSearch"
+                  placeholder="Search report"
+                >
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <hr>
+
+        <div class="row">
+          <div class="col-sm-2 left">
+            <ul *ngFor="let folder of folders">
+              <li (click)="selectFolder(folder)"
+                  [ngStyle]="{'backgroundColor': folder.active ? '#D0DAE3' : '#ffffff' }"
+              >
+                <span>
+                  <i class="pi pi-folder"></i>{{ folder.name }}
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-sm-10 right">
+            <div class="row">
+              <ng-container *ngFor="let report of reports$ | async">
+                <div
+                  class="col-sm-3 report-item"
+                  (click)="selectReport(report)"
+                >
+                  <div class="p-2"
+                    [ngStyle]="{'backgroundColor': report?.active ? '#D0DAE3' : '#ffffff' }"
+                  >
+                    <i class="pi pi-folder"></i>
+                    <span class="report-name">{{ report.reportName }}</span>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row button-row">
+          <div class="col-sm-3 offset-9 mb-2" style="text-align: right">
+            <button class="btn btn-primary" (click)="viewReport()">Proceed</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
