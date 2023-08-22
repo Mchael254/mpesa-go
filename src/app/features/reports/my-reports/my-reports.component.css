@@ -1,0 +1,53 @@
+.reports-content-div {
+  background: #fff;
+}
+.row {
+  padding: 20px 20px 0 20px;
+  color: #00529b;
+}
+
+.left {
+  border-right: solid 1px #eee;
+}
+
+.left ul {
+  margin: 0;
+  padding-left: 0;
+}
+
+.left ul li {
+  list-style-type: none;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.left ul li span {
+  padding: 5px;
+}
+
+.left ul li span i {
+  margin-right: 10px;
+}
+
+.right {
+  max-height: 70vh;
+  overflow-y: scroll;
+}
+
+.right .report-item {
+  margin: 0.5rem 0;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.right .row i {
+  margin-right: 5px;
+}
+
+.report-name {
+  color: gray;
+}
+
+.button-row {
+  padding: 0;
+}
