@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.title1 {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 29px;
+    color: #00529B;
+}
+
+#help {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    text-decoration: underline;
+
+
+    color: #00529B;
+}
+
+#tabbed {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 14px;
+    cursor: pointer;
+}
+
+#new {
+    color: #00529B;
+    background-color: white;
+    width: 81px;
+    height: 30px;
+    font-family: 'Lato';
+    font-size: 14px;
+    border: 1px solid #00529B;
+    padding: 1px;
+    border-radius: 2px;
+}
+
+.reports {
+    float: right;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 14px;
+    /* identical to box height */
+    text-decoration-line: underline;
+    color: #00529B;
+}
+
+.iserach {
+    width: 43px;
+    height: 30px;
+    background: #00529B;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    /* center horizontally */
+    align-items: center;
+    float: right;
+}
+::ng-deep{
+    .p-datatable.p-datatable-sm .p-datatable-thead>tr>th {
+      padding: 0.5rem;
+      font-size: small;
+  }
+  .p-tree {
+    border: 0px;
+  }
+  }
+.nav-pills .nav-item .nav-link.active {
+    background-color: #00529B;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.nav-pills .nav-item .nav-link {
+    color: #00529B;
+}
+
+.nav-link {
+    text-decoration: none;
+    font-size: 13px;
+}
+
+#headder {
+    background-color: #FFFFFF;
+    height: 70px
+}
+
+.label2 {
+
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 17px;
+    /* identical to box height */
+
+
+    color: #00529B;
+}
+
+.labels {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 14px;
+
+    color: #000000;
+}
+
+#delete {
+    background-color: #00529B;
+    color: white;
+    font-family: 'Lato';
+    font-size: 14px;
+    width: 81px;
+    height: 30px;
+    padding: 1px;
+    border-radius: 2px;
+    float: right;
+}
+
+#new {
+    color: #00529B;
+    background-color: white;
+    width: 81px;
+    height: 30px;
+    font-family: 'Lato';
+    font-size: 14px;
+    border: 1px solid #00529B;
+    padding: 1px;
+    border-radius: 2px;
+}
+
+#more-info {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 150%;
+    /* or 18px */
+
+    text-align: center;
+
+    color: #000000;
+}
+
+#more {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 17px;
+    /* identical to box height */
+    text-decoration: none;
+    color: #00529B;
+    cursor: pointer;
+}
+.add{
+    cursor: pointer;
+  }
