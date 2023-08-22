@@ -85,14 +85,14 @@
           <div class="row preview-top">
             <div class="col-sm-4">
               <button
-                type="button" class="btn btn-primary" id="criteria-btn"
+                type="button" class="btn" id="criteria-btn"
                 [ngClass]="{'active-btn': isCriteriaButtonActive, 'inactive-btn': !isCriteriaButtonActive}"
                 (click)="toggleCriteriaPreview('criteria')"
               >
               <i class="fa-solid fa-chart-bar"></i>&nbsp; &nbsp; Criteria
               </button>
               <button
-                type="button" class="btn btn-outline-secondary" id="preview"
+                type="button" class="btn" id="preview"
                 [ngClass]="{'active-btn': !isCriteriaButtonActive, 'inactive-btn': isCriteriaButtonActive}"
                 (click)="toggleCriteriaPreview('preview')"
               >

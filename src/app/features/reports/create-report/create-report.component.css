@@ -21,6 +21,20 @@
   padding: 10px;
 }
 
+.inactive-btn {
+  border: solid 1px #343A4080;
+  color: grey;
+  margin: 0 5px;
+  border-radius: 0;
+}
+
+.active-btn {
+  background: #00529b;
+  color: #fff;
+  margin: 0 5px;
+  border-radius: 0;
+}
+
 .preview-nav {
   background: var(--primary-color)0A;
   padding: 10px 0 10px 20px;

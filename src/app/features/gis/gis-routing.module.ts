@@ -36,8 +36,6 @@ const routes: Routes = [
     path: 'dynamic-setup-table',
     component:DynamicSetupTableScreenComponent
     },{
-
-    
     path:'classes-subclasses',
     loadChildren: () => import('./components/setups/components/class-subclass/class-subclass.module').then(m => m.ClassSubclassModule),
 

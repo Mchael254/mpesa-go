@@ -16,7 +16,7 @@ import {Observable} from "rxjs";
 import {Report} from "../../../shared/data/reports/report";
 import {AuthService} from "../../../shared/services/auth.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 const log = new Logger('CreateReportComponent');
 
@@ -79,9 +79,21 @@ export class CreateReportComponent implements OnInit{
     private appConfig: AppConfigService,
     private authService: AuthService,
     private localStorage: LocalStorageService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {}
   ngOnInit(): void {
+    this.activatedRoute.queryParams
+      .pipe(
+        take(1)
+      ).subscribe((params) => {
+      this.reportId = params['reportId'];
+      log.info(`params >>> `, params, this.reportId);
+      if (this.reportId !== undefined) {
+        this.getReport();
+      }
+    });
+
     this.getSubjectAreas();
     this.createSearchForm();
     this.createSaveReportForm();
@@ -179,6 +191,7 @@ export class CreateReportComponent implements OnInit{
 
   toggleCriteriaPreview(selected: string): void {
     this.isCriteriaButtonActive = selected === 'criteria' ? true : false;
+    log.info(`isCriteriaButtonActive`, this.isCriteriaButtonActive)
     if (selected === 'preview') {
       this.loadChart();
     }
