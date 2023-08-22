@@ -4,7 +4,6 @@ import { Logger, UtilService } from 'src/app/shared/services';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { AuthVerification } from 'src/app/core/auth/auth-verification';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('VerificationComponent');
@@ -23,10 +22,15 @@ export class VerificationComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     public utilService: UtilService,
-    // private sessionStorageService: SessionStorageService,
     private localStorageService: LocalStorageService,
   ) {}
 
+  /**
+   * Initialize component by:
+   * 1. Get extras from local storage
+   * 2. Create account verification types populated with extras
+   * 3. Set selected account to the first account verification type by default
+   */
   ngOnInit(): void {
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
 
@@ -53,6 +57,12 @@ export class VerificationComponent implements OnInit {
     this.accountVerification = verificationsTypes;
   }
 
+
+  /**
+   * Select account of type AuthVerification and send OTP to the selected account
+   * Upon successful OTP sent, navigate to OTP screen
+   * @param account
+   */
   onSelectAccount(account: AuthVerification) {
     this.selectedAccount = account;
     this.isLoading = true;
@@ -80,9 +90,9 @@ export class VerificationComponent implements OnInit {
 
   }
 
-  getOtp(){
-    // this.router.navigate(['/auth/otp']);
-  }
+  /**
+   * Destroy component
+   */
   ngOnDestroy(): void {
   }
 
