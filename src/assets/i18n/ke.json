@@ -2,7 +2,16 @@
   "lang": {
     "home":"nyumbani",
     "my_dashbaord":"dashibodi yangu",
+    "dashboard": "dashibodi",
+    "accounts": "Akaunti",
     "tickets": "Tiketi",
-    "no_of_tickets": "Idadi ya Tiketi"
+    "team": "Timu",
+    "administration": "Utawala",
+    "new_chart": "grafu_mpya",
+    "analytics": "Uchambuzi",
+    "reinsurance": "Bima ya kurejesha",
+    "no_of_tickets": "Idadi ya Tiketi",
+    "view_all": "ANGALIA YOTE",
+    "summary" : "Muhtasari"
   }
 }
