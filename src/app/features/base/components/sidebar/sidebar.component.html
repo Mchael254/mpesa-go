@@ -29,7 +29,7 @@
               class="{{ item.icon }}"
               style="font-size: 15px; padding-right: 9px"
             ></i>
-            {{ item.name }}
+            {{ item.name | translate}}
           </span>
         </button>
         <div class="collapse sub-title" [id]="item.nameSlug">

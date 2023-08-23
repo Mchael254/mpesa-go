@@ -1,17 +1,17 @@
 {
   "lang": {
-    "home":"home",
-    "my_dashbaord":"my dashboard",
+    "home": "inicio",
+    "my_dashbaord": "mi panel",
     "dashboard": "panel de control",
     "accounts": "cuentas",
+    "tickets": "Boletos",
     "team": "equipo",
     "administration": "administración",
     "new_chart": "nuevo gráfico",
     "analytics": "analítica",
     "reinsurance": "reaseguro",
-    "tickets": "Tickets",
-    "no_of_tickets": "No. of Tickets",
-    "view_all": "VIEW ALL",
-    "summary" : "Summary"
-  }
+    "no_of_tickets": "Número de entradas",
+    "view_all": "VER TODO",
+    "summary": "resumen"
+}
 }

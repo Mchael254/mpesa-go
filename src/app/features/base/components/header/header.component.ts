@@ -11,7 +11,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 })
 @AutoUnsubscribe
 export class HeaderComponent {
-  defaultLanguage: string = 'fi fi-ng fis';
+  defaultLanguage: string = 'fi fi-gb fis';
   constructor(private translate:TranslateService){}
 
   selectLanguage(value){
@@ -21,11 +21,12 @@ export class HeaderComponent {
   }
 
   languages = [
-    { code: 'ng', class: 'fi fi-ng fis'},
-    { code: 'ke', class: 'fi fi-ke fis'},
-    { code: 'en', class: 'fi fi-gb fis'},
-    { code: 'fr', class: 'fi fi-fr fis'},
-    { code: 'cn', class: 'fi fi-cn fis'}
+    { code: 'de', class: 'fi fi-de fis', lang:"German"},
+    { code: 'ke', class: 'fi fi-ke fis', lang:"Swahili"},
+    { code: 'en', class: 'fi fi-gb fis', lang:"English"},
+    { code: 'fr', class: 'fi fi-fr fis', lang:"French"},
+    { code: 'cn', class: 'fi fi-cn fis', lang:"Mandarin"},
+    { code: 'es', class: 'fi fi-es fis', lang:"Espanyol"}
   ];
 
 }
