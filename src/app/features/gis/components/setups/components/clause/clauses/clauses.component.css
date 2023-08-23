@@ -1,0 +1,27 @@
+#search{
+  background-color: #00529B;
+  color: white;
+  padding: 7px;
+  padding-left: 9px;
+  width: 34px;
+  height: 30px;
+  border-radius: 2px
+}
+#search-input{
+  width:75%;
+}
+.clause-links {
+  /*font-family: 'Lato';*/
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 13px;
+  color: #00529B;
+}
+.clause-label{
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  color: #000000;
+}
