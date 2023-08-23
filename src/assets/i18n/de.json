@@ -12,6 +12,8 @@
     "tickets": "Tickets",
     "no_of_tickets": "Anzahl der Tickets",
     "view_all": "ALLE ANSEHEN",
-    "summary" : "Zusammenfassung"
+    "summary" : "Zusammenfassung",
+    "my_policies": "Meine Richtlinien",
+    "my_quotations": "Meine Angebote"
   }
 }

@@ -12,6 +12,9 @@
     "reinsurance": "reaseguro",
     "no_of_tickets": "Número de entradas",
     "view_all": "VER TODO",
-    "summary": "resumen"
+    "summary": "resumen",
+    "my_policies": "Mis Pólizas",
+    "my_quotations": "Mis Cotizaciones"
+
 }
 }
