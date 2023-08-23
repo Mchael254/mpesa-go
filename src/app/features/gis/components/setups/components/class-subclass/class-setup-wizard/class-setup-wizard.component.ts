@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { setupListItem, setupWizard } from 'src/app/shared/data/common/setup-wizard';
+import { DynamicFormFields } from 'src/app/shared/utils/dynamic.form.fields';
 
 @Component({
   selector: 'app-class-setup-wizard',
@@ -7,17 +8,19 @@ import { setupListItem, setupWizard } from 'src/app/shared/data/common/setup-wiz
   styleUrls: ['./class-setup-wizard.component.css']
 })
 export class ClassSetupWizardComponent {
-  classesSetupWizard: setupWizard[] = [
+  wizardConfig: setupWizard[] = [
     {
       tabTitle: 'Classes and Subclasses',
-      url: '/home/dashboard'
+      url: '/home/gis/setup/class-subclass/classes'
     }
   
   ];
   classesListItem: setupListItem[]=[
     {
       listLabel:'Classes Setup',
-      listPosition:'1'
+      listPosition:'1',
+      formName:'classForm'
+
     },
     {
       listLabel:'Subclass Setup',
@@ -30,6 +33,18 @@ export class ClassSetupWizardComponent {
     {
       listLabel:'Class Excesses',
       listPosition:'4'
+    }
+  ]
+  formContent: DynamicFormFields[]=[
+    { name: 'classCode',
+      label: 'code',
+      type:'text',
+      required: true,
+      disabled:false,
+      placeholder:'Enter Class Code',
+      pattern:null,
+      value:null,
+      options:null
     }
   ]
 }
