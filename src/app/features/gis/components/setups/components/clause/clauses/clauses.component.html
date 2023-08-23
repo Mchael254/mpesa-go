@@ -28,11 +28,32 @@
                          (onClick)="selectedClause()" class="select">
 
               </p-listbox>-->
-              <app-dynamic-setup-search-list-screen
+                <form class="row form-sm mb-3"  [formGroup]="searchForm" style="margin-top: 15px;">
+
+                  <input class="form-control form-control-sm mx-4" formControlName="search" type="text"
+                         placeholder="Search Clauses" aria-label="Search" id="search-input" [(ngModel)]="filterby">
+                  <i class="pi pi-search" id="search"></i>
+                </form>
+
+              <div class="paramlist" style="overflow-y: scroll; max-height: 393px;">
+                <ul class="list-group list-group-light" *ngFor="let data of allClauses">
+                  <li class="list-group-item  list-group-item-action px-3 border-0 mr-4"
+                      (click)="selectedClause(data.code, data.updated_at, data.updated_by)"
+                      [ngClass]="{activity:isActive(data)}"
+                      id="paramsList">{{data.heading | lowercase }}
+                  </li>
+                </ul>
+                <div class="d-flex justify-content-center">
+                  <div class="spinner-border text-primary" *ngIf="!isDisplayed"  role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+              <!--<app-dynamic-setup-search-list-screen
               [dynamicTitle]="'Clauses'"
               [paramsList]="allClauses"
               (loadParamAction)="receiveData($event)">
-              </app-dynamic-setup-search-list-screen>
+              </app-dynamic-setup-search-list-screen>-->
             </div>
           </div>
         </div>
@@ -42,24 +63,24 @@
           <div class="card-body">
             <div class="row">
               <div class="col-xl-8">
-                <label>Details</label>
+                <label class="clause-label">Details</label>
               </div>
               <div class="col-xl-4">
                 <a href="/" class="claus"><span class="clause-links">Report</span></a>
               </div>
             </div>
-            <div *ngIf="show">
-              <app-dynamic-form
+            <div>
+              <!--<app-dynamic-form
                 [formFields]="formFields"
                 [fieldsPerRow]="1"
                 [title]="'Details'"
                 [actionButtonConfig]="buttonConfig"
                 (formSubmitted)="save($event)"
-              ></app-dynamic-form>
-              <!--<form [formGroup]="clauseForm">
+              ></app-dynamic-form>-->
+              <form [formGroup]="clauseForm">
                 <div>
                   <label><span class="clause-label">ID</span></label>
-                  <input class="form-control" formControlName="code" readonly>
+                  <input class="form-control" type="text" formControlName="code" readonly>
                 </div>
                 <div>
                   <label><span class="clause-label">Current</span></label>
@@ -98,13 +119,13 @@
                 </div>
                 <div class="row mt-4">
                   <div class="col-xl-6">
-                    <button class="but-revise" (click)="reviseClause()"><span class="revise-text">Revise</span></button>
+                    <button class="text-plain" (click)="reviseClause()"><span class="revise-text">Revise</span></button>
                   </div>
                   <div class="col-xl-6">
-                    <button class="but-save" (click)="save()"><span class="savetext">Save</span></button>
+                    <button class="btn btn-primary rounded-0 px-3 me-3" (click)="save()"><span class="savetext">Save</span></button>
                   </div>
                 </div>
-              </form>-->
+              </form>
             </div>
           </div>
         </div>
@@ -117,13 +138,13 @@
                 <label><span class="clause-label">Last Edited by:</span></label>
               </div>
               <div class="col-xl-5">
-                <label><span class="clause-label">{{editedBy}}</span></label>
+                <label><span>{{editedBy}}</span></label>
               </div>
               <div class="col-xl-7">
                 <label><span class="clause-label">Last Edited Date:</span></label>
               </div>
               <div class="col-xl-5">
-                <label><span class="clause-label">{{dateEdited}}</span></label>
+                <label><span>{{dateEdited}}</span></label>
               </div>
             </div>
           </div>
