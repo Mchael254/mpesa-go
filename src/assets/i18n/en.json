@@ -2,7 +2,16 @@
   "lang": {
     "home":"home",
     "my_dashbaord":"my dashboard",
+    "dashboard":"dashboard",
+    "accounts":"Accounts",
     "tickets": "Tickets",
-    "no_of_tickets": "No. of Tickets"
+    "team": "Team",
+    "administration": "Administration",
+    "new_chart": "new_chart",
+    "analytics": "Analytics",
+    "reinsurance": "Tickets",
+    "no_of_tickets": "No. of Tickets",
+    "view_all": "VIEW ALL",
+    "summary" : "Summary"
   }
 }
