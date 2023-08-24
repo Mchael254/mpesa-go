@@ -1,1 +1,91 @@
-<p>liability works!</p>
+<div class="base-content-section setups">
+  <div class="row">
+    <div class="col-sm-3 left">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-12 mt-3">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search screen codes"
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterLiabilities($event)"
+              >
+              <span class="input-group-text">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+            <div class="listing">
+              <ul>
+                <li
+                  *ngFor="let liability of liabilities"
+                >
+                  {{ liability | titlecase }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 right">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-4">
+            <button
+              type="button" class="btn btn-primary"
+            >
+              Schedule Details
+            </button>
+          </div>
+          <div class="col-sm-5 offset-sm-2">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search code, id, prefix..."
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterLiabilities($event)"
+              >
+              <span class="input-group-text">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+          </div>
+          <div class="col-sm-1 calendar-icon" style="padding: 5px;">
+            <span class="" >
+              <i class="fa-solid fa-calendar-days"></i>
+            </span>
+          </div>
+          <hr class="my-3">
+        </div>
+        <div class="row action-buttons">
+          <div class="col-sm-8">
+            <button class="btn btn-link text-primary">
+              <i class="fa-solid fa-plus"></i>Add
+            </button>
+            <button class="btn btn-link text-primary">
+              <i class="fa-solid fa-pencil"></i>Edit
+            </button>
+            <button class="btn btn-link text-primary">
+              <i class="fa-solid fa-minus"></i>Delete
+            </button>
+          </div>
+          <div class="col-sm-2 offset-sm-2 text-end">
+            <button class="btn btn-link text-primary">
+              <i class="fa-solid fa-chart-area"></i>Reports
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          table goes here...
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

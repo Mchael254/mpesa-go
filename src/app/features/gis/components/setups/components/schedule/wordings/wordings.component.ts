@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import {Logger} from "../../../../../../../shared/services";
+
+const log = new Logger('WordingsComponent');
 
 @Component({
   selector: 'app-wordings',
@@ -7,4 +10,15 @@ import { Component } from '@angular/core';
 })
 export class WordingsComponent {
 
+  public wordings = ['ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND'];
+  public modalTitle: string = '';
+
+  filterWordings($event: KeyboardEvent) {
+
+  }
+
+  callActionsModal(action: string) {
+    log.info(`called action >>>`, action);
+    this.modalTitle = action === 'add' ? 'add' : action === 'edit' ? 'edit' : '';
+  }
 }

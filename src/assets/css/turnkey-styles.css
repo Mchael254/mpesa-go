@@ -59,6 +59,37 @@ html,body {
 .form-select {
   border-radius: 0;
 }
+
+.setups {}
+
+.setups .card {
+  padding: 20px;
+  border-radius: 0;
+}
+
+.setups .listing {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.setups .listing ul {
+  padding-left: 0.5rem;
+}
+
+.setups .listing ul li {
+  list-style-type: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.setups .listing ul li:hover {
+  background: #00529b;
+  color: #fff;
+  padding: 2px 5px;
+  margin-right: 10px
+}
+
+
 /* Root (global) ends*/
 
 
