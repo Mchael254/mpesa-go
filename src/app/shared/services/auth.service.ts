@@ -18,6 +18,7 @@ import "./http/http.service";
 import { OauthToken } from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
 import { UserDetailsDTO } from 'src/app/features/administration/data/user-details';
+import { LocalStorageService } from './local-storage/local-storage.service';
 
 
 const log = new Logger('AuthService');
@@ -43,6 +44,7 @@ export class AuthService implements OnDestroy {
     private appConfigService: AppConfigService,
     private router: Router,
     private browserStorage: BrowserStorage,
+    private localStorageService: LocalStorageService,
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -107,6 +109,7 @@ export class AuthService implements OnDestroy {
     } else if (this.utilService.isUserClient(user)) {
       this.browserStorage.storeObj('activeUser', 'CLIENT');
     }
+    this.localStorageService.setItem('loginUserProfile', user);
     this.currentUserSubject.next(user);
     // set isAuthenticated
     this.isAuthenticatedSubject.next(!!user);
