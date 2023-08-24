@@ -1,6 +1,7 @@
 import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject} from "rxjs/internal/BehaviorSubject";
+import {Observable} from "rxjs/internal/Observable";
 import {SystemsDto} from "../../../shared/data/common/systemsDto";
 import {Logger, UtilService} from "../../../shared/services";
 import {Pagination} from "../../../shared/data/common/pagination";

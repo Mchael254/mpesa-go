@@ -4,7 +4,7 @@ import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 import {Logger} from "../../../../../shared/services";
 import {TicketsService} from "../../../services/tickets.service";
-import {pipe, throwError} from "rxjs";
+import { throwError} from "rxjs";
 import {catchError, take} from "rxjs/operators";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {AuthService} from "../../../../../shared/services/auth.service";

@@ -38,15 +38,6 @@
       line-height: 20px;
       opacity: 0.5;
 
-      a {
-        color: #3F4254;;
-        padding-right: 10px;
-        text-decoration: none;
-      }
-
-      a:active{
-        opacity: 1 !important;
-      }
     }
   }
 

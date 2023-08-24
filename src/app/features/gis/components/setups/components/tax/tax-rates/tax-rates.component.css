@@ -46,7 +46,7 @@
     font-size: 14px;
     line-height: 17px;
     color: #00529B;
-        
+
 }
 .report{
     font-family: 'Roboto';
@@ -106,22 +106,22 @@
     height:7px;
     margin-left:200px
   }
-  
+
   /* Track */
   ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 3px grey; 
+    box-shadow: inset 0 0 3px grey;
     border-radius: 10px;
   }
-   
+
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #D9D9D9; 
+    background: #D9D9D9;
     border-radius: 10px;
   }
-  
+
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 30, 187, 0.1); 
+    background: rgba(0, 30, 187, 0.1);
   }
   .nav-pills .nav-item .nav-link.active {
     background-color: #00529B;
@@ -150,7 +150,7 @@
     font-style: normal;
     font-weight: 500;
     font-size: 12px;
-    line-height: 14px;   
+    line-height: 14px;
 }
 .nav-miniTab{
     color: #00529B;
@@ -170,64 +170,9 @@ line-height: normal;
     border-radius: 2px;
     padding-left: 21px;
    padding-right: 21px;
-    
-}
-/* #pills-ChargesDeductibles-tab{
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    text-decoration: none;
-    color: #00529B;
 
 }
 
-#pills-TaxExcludedProducts-tab{
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    text-decoration: none;
-    color: #00529B;
-
-}
-::ng-deep{
-
-    .nav-pills .nav-link.active{
-        color: #FFFFFF;
-        background: #00529B;
-        border-radius: 2px;
-    }
-  
-    .nb-theme-turnkey-crm a {
-        color: #00529B;
-    }
-    .p-paginator .p-paginator-current{
-        font-size: small;
-    }
-    .pi{
-        font-size: small;
-    }
-    .p-paginator .p-paginator-pages .p-paginator-page{
-        font-size: small;
- 
-    }
-    /* // .p-datatable .p-datatable-tbody>tr>td {
-    //     padding: 0;
-    //     text-align: center;
-    // }
-    // .p-datatable .p-datatable-thead>tr>th{
-    //     text-align: center;
-
-    // }       
-    
-    // .p-component, .p-component *{
-    //     height: 32px;
-
-    // } */
-/* } */ 
 #links{
     font-family: 'Roboto';
     font-style: normal;
@@ -250,7 +195,7 @@ td{
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
-    color: #1E293B;  
+    color: #1E293B;
 }
 #empty{
     font-family: 'Roboto';
@@ -324,7 +269,6 @@ td{
 }
 .custom-placeholder::placeholder {
     color: #000000;
-    
 }
 #productSearch{
  padding: 2px;
@@ -374,7 +318,7 @@ td{
     font-style: normal;
     font-weight: 400;
     font-size: 13px;
-    line-height: 150%;  
+    line-height: 150%;
     color: #ED0614;
     padding: 0.5rem;
 }

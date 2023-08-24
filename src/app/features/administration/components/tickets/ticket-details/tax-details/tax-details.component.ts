@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {TicketsService} from "../../../../services/tickets.service";
-import {take} from "rxjs/operators";
+import {take} from "rxjs/internal/operators/take";
 import {Logger} from "../../../../../../shared/services";
 
 const log = new Logger('TaxDetailsComponent');
