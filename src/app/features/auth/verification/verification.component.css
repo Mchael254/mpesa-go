@@ -46,9 +46,6 @@
   height: 2em;
   color: #FFFFFF;
   opacity: 50%;
-  svg {
-    vertical-align: middle;
-  }
 }
 
 .selected {

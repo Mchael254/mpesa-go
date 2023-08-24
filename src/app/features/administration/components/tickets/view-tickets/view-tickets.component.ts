@@ -1,16 +1,16 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {NewTicketDto, TicketModuleDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
-import {catchError} from "rxjs/operators";
+import {catchError} from "rxjs/internal/operators/catchError";
 import {Logger} from "../../../../../shared/services";
 import {TicketsService} from "../../../services/tickets.service";
 import cubejs from "@cubejs-client/core";
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { throwError } from 'rxjs';
+import { throwError } from 'rxjs/internal/observable/throwError';
 import {untilDestroyed} from "src/app/shared/services/until-destroyed";
-import {Table} from "primeng/table";
+import {Table} from "primeng/table/table";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 import { NgxSpinnerService } from 'ngx-spinner';
 

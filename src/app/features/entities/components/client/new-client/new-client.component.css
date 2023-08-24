@@ -60,13 +60,6 @@
     opacity: 7.5;
     padding-bottom: 16px;
 
-    nb-icon {
-      opacity: 0.4;
-      padding-right: 5px;
-      height: 20px;
-      vertical-align: middle;
-    }
-
   }
 
   #profile-photo {

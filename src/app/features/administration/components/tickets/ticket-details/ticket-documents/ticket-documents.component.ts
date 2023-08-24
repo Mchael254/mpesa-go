@@ -7,7 +7,7 @@ import {allTicketModules} from "../../../../data/ticketModule";
 import {DynamicTableModalData} from "../../../../../../shared/components/dynamic-table/dynamic-table.component";
 import {TableDetail} from "../../../../../../shared/data/table-detail";
 import {untilDestroyed} from "../../../../../../shared/shared.module";
-import {take} from "rxjs/operators";
+import {take} from "rxjs/internal/operators/take";
 
 @Component({
   selector: 'app-ticket-documents',

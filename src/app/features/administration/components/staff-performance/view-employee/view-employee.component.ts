@@ -9,7 +9,6 @@ import {Router} from "@angular/router";
 import {takeUntil, tap} from "rxjs/operators";
 import {AggregatedEmployeeData} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
-import {StaffDto} from "../../../../entities/data/StaffDto";
 
 const log = new Logger('ViewEmployeeComponent');
 

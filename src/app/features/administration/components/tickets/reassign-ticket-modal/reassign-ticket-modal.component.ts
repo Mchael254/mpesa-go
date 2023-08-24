@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {StaffDto} from "../../../../entities/data/StaffDto";
 import {NewTicketDto, TicketReassignDto, TicketsDTO} from "../../../data/ticketsDTO";
 import {untilDestroyed} from "../../../../../shared/shared.module";
-import {Observable} from "rxjs";
+import {Observable} from "rxjs/internal/Observable";
 import {StaffService} from "../../../../entities/services/staff/staff.service";
 import {TicketsService} from "../../../services/tickets.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
