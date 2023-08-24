@@ -1,9 +1,9 @@
 export interface setupWizard{
-    tabTitle:String
+    tabTitle:string
     url:string
 }
 export interface setupListItem{
-    listLabel:String
-    listPosition:String
-    formName?:string
+    listLabel:string
+    listPosition:string
+    
 }

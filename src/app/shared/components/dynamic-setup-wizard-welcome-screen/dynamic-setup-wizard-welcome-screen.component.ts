@@ -14,7 +14,7 @@ export class DynamicSetupWizardWelcomeScreenComponent {
       @Input() formContent: DynamicFormFields[]
       page:String 
       active:boolean = true;
-
+      cardTitle:String
       constructor(
        
          public cdr: ChangeDetectorRef,
@@ -24,7 +24,7 @@ export class DynamicSetupWizardWelcomeScreenComponent {
       selectCard(card:String): void {
         this.page = card
         this.cdr.detectChanges();
-        
+        // this.cardTitle = card
       }
 
        buttonConfig : DynamicFormButtons[] =[

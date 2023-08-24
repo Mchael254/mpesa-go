@@ -1,4 +1,4 @@
-<div class="card">
+<!-- <div class="card">
     <div class="card-body">
         <p class="text-right" style="color:#00529B;"><a>Report</a></p>
         <p style="color:#00529B;" class="card-title mb-4" id="title">System Parameter Details</p>
@@ -25,4 +25,53 @@
                     </div>
         </form>
     </div>
+  </div> -->
+
+<form [formGroup]="dynamicForm">
+ 
+  <div class="row" [ngClass]="'row-cols-md-' + fieldsPerRow + ' gx-md-4'">
+    <ng-container *ngFor="let field of formFields">
+      <div class="col mb-3"> <!-- Add margin-bottom for spacing between fields -->
+        <div class="form-group px-3"> <!-- Add horizontal padding to each field -->
+          <div class="row">
+          
+              <label *ngIf="field.type !== 'checkbox'"  [for]="field.name" class="form-label" [class.required]="field.required">{{ field.label }}</label>
+
+          
+              <input *ngIf="field.type === 'file'" [formControlName]="field.name" [type]="field.type" class="form-control" [placeholder]="field.placeholder" [id]="field.name" multiple>
+  
+            <!-- Input type text -->
+            <input *ngIf="field.type === 'text'" [formControlName]="field.name" [type]="field.type || 'text'" class="form-control" [placeholder]="field.placeholder" >
+  
+            <!-- Input type number -->
+            <input *ngIf="field.type === 'number'" [formControlName]="field.name" type="number" class="form-control" [placeholder]="field.placeholder" >
+  
+            <!-- Input type date -->
+            <input *ngIf="field.type === 'date'" [formControlName]="field.name" type="date" class="form-control" [placeholder]="field.placeholder" >
+  
+            <!-- Textarea -->
+            <textarea *ngIf="field.type === 'textarea'" [formControlName]="field.name" class="form-control" [placeholder]="field.placeholder" ></textarea>
+  
+            <!-- Dropdown -->
+            <select *ngIf="field.type === 'dropdown'" [formControlName]="field.name" class="form-select" >
+              <option *ngFor="let option of field.options" [value]="option.value">{{ option.label }}</option>
+            </select>
+  
+
+
+            </div>
+
+            
+
+          <!-- Checkbox -->
+          <div *ngIf="field.type === 'checkbox'" class="form-check form-switch">
+            <input [formControlName]="field.name" type="checkbox" role="switch" class="form-check-input" checked>
+            <label class="form-check-label">{{ field.label }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </div>
+</form>
+
+
