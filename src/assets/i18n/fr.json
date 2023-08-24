@@ -2,7 +2,18 @@
   "lang": {
     "home":"maison",
     "my_dashbaord":"Mon tableau de bord",
-    "tickets": "Des billets",
-    "no_of_tickets": "Nombre de billets"
+    "dashboard": "tableau de bord",
+    "accounts": "comptes",
+    "tickets": "billets",
+    "team": "équipe",
+    "administration": "administration",
+    "new_chart": "nouveau graphique",
+    "analytics": "analytique",
+    "reinsurance": "réassurance",
+    "no_of_tickets": "Nombre de billets",
+    "view_all": "VOIR TOUT",
+    "summary" : "Résumé",
+    "my_policies": "Mes Polices",
+    "my_quotations": "Mes Devis"
   }
 }

@@ -1,0 +1,59 @@
+
+.card {
+  padding: 20px;
+  border-radius: 0;
+}
+
+.left, .right {
+  padding: 5px;
+}
+
+.input-group span {
+  background: #00529b;
+  color: #fff;
+}
+
+.screen-code-listing {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.screen-code-listing ul {
+  padding-left: 1rem;
+}
+
+.screen-code-listing ul li {
+  list-style-type: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.screen-code-listing ul li:hover {
+  background: #00529b;
+  color: #fff;
+  padding: 2px 5px;
+  margin-right: 10px
+}
+
+.inactive-btn {
+  border: solid 1px #343A4080;
+  color: grey;
+  margin: 0 5px;
+  border-radius: 0;
+}
+
+.active-btn {
+  background: #00529b;
+  color: #fff;
+  margin: 0 5px;
+  border-radius: 0;
+}
+
+hr {
+  background: #eee;
+}
+
+.form-div {
+  border: solid 1px #eee;
+  padding: 20px;
+}

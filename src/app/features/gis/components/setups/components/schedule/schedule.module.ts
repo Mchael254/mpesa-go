@@ -2,13 +2,26 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ScheduleRoutingModule } from './schedule-routing.module';
+import { ScreenCodesComponent } from './screen-codes/screen-codes.component';
+import { LiabilityComponent } from './liability/liability.component';
+import { WordingsComponent } from './wordings/wordings.component';
+import {ListboxModule} from "primeng/listbox";
+import {ReactiveFormsModule} from "@angular/forms";
+import {NgxSpinnerModule} from "ngx-spinner";
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    ScreenCodesComponent,
+    LiabilityComponent,
+    WordingsComponent
+  ],
   imports: [
     CommonModule,
-    ScheduleRoutingModule
+    ScheduleRoutingModule,
+    ListboxModule,
+    ReactiveFormsModule,
+    NgxSpinnerModule
   ]
 })
 export class ScheduleModule { }

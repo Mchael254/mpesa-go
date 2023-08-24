@@ -63,17 +63,21 @@ export class AdministrationComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       phoneNumber: ['', Validators.required],
-      id: ['', Validators.required],
-      pinNumber: ['', Validators.required],
-      email: ['', Validators.required],
-      status: ['', Validators.required]
+      // id: ['', Validators.required],
+      id: [{ value: '', disabled: true }, Validators.required],
+      // pinNumber: ['', Validators.required],
+      pinNumber: [{ value: '', disabled: true }, Validators.required],
+      // email: ['', Validators.required],
+      email: [{ value: '', disabled: true }, Validators.required],
+      // status: ['', Validators.required]
+      status: [{ value: '', disabled: true }, Validators.required],
     });
   }
 
   getUserDetails() {
-    this.user = this.authService.getCurrentUser();
+    // this.user = this.authService.getCurrentUser();
+    this.user = this.localStorageService.getItem("loginUserProfile")
 
-    console.log('Login User Details', this.user);
 
     if(this.utilService.isUserAdmin(this.user)) {
       const names = this.user.name.split(' ');

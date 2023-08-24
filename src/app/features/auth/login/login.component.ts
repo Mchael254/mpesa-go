@@ -37,6 +37,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  /**
+   * Initializes the component by:
+   *  1.Creating the login form
+   *  2.Checking if user is authenticated
+   *  3.Getting login details from local storage and if present, set them as default values for login form fields
+   */
   ngOnInit(): void {
     this.createForm();
     this.isAuthenticated$ = this.authService.isAuthenticated;
@@ -50,6 +56,14 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  /**
+   * Creates the login form
+   * Sets username and password as required fields
+   * Sets password minimum length to 6
+   * @returns void
+   * @memberof LoginComponent
+   */
   createForm() {
       this.loginForm = this.fb.group({
         username: ['', [Validators.required, Validators.email]],
@@ -58,10 +72,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Toggles password visibility
+   * @returns void
+   */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
+  /**
+   * Authenticates user
+   * Saves login details in local storage if remember me is checked as loginDetails
+   * Saves response data in local storage as extras which contains action, phone, email and username
+   * Routes to verify page if authentication is successful
+   * @returns void
+   */
   authAttempt() {
     this.isLoading = true
     this.errorOccurred = false;
@@ -137,9 +162,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Destroys the component
+   */
   ngOnDestroy() {
   }
 
+  /**
+   * Redirects to resets password page after successful OTP verification
+   */
   resetPassword() {
     const extras = JSON.parse(this.sessionStorageService.getItem("extras"));
     const username = extras.email;

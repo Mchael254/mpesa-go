@@ -17,7 +17,7 @@
                 placeholder="Select Subject Area"
               >
                 <ng-template let-subjectArea pTemplate="item">
-                  <div class="flex align-items-center gap-2" style="font-size: 12px;">
+                  <div class="flex align-items-center gap-2" style="font-size: 13px;">
                     <div
                       (click)="getCategoriesBySubjectAreaId(subjectArea)">
                       {{ subjectArea.subjectAreaName }}
@@ -55,7 +55,7 @@
                     aria-expanded="false"
                     aria-controls="collapseExample2"
                   >
-                    <li class="dropdown-toggle" id="sub-category-name" style="font-size: 12px;">
+                    <li class="dropdown-toggle" id="sub-category-name" style="font-size: 13px;">
                       {{ subCategory.name }}
                     </li>
                   </ul>

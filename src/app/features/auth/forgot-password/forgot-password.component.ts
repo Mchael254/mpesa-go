@@ -30,6 +30,10 @@ export class ForgotPasswordComponent implements OnInit{
     this.createForm();
   }
 
+  /**
+   * Create verify details form
+   * Sets email and phone number as required fields
+   */
   createForm(){
     this.form = this.fb.group(
       {
@@ -38,8 +42,15 @@ export class ForgotPasswordComponent implements OnInit{
       });
   }
 
+  /**
+   * Convenience getter for easy access to form fields
+   */
   get f() { return this.form.controls; }
 
+  /**
+   * Check if form is valid and verify account details
+   * If form is valid, verify account details and route to change password page
+   */
   onSubmit() {
     this.submitted = true;
 
