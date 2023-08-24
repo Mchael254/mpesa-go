@@ -383,7 +383,7 @@ export class EditComponent implements OnInit{
       physicalAddress: this.partyAccountDetails.userDto?.physicalAddress,
       mobileNumber: this.partyAccountDetails.userDto?.phoneNumber,
       emailAddress: this.partyAccountDetails.userDto?.emailAddress,
-      clientTitle: this.partyAccountDetails.contactDetails?.id,
+      clientTitle: this.partyAccountDetails.contactDetails?.title.id,
       name: this.partyAccountDetails.userDto?.name,
       partyType: this.partyAccountDetails.category?.toLowerCase() === 'corporate' ? 'C' : 'I',
       pinNumber: this.partyAccountDetails.pinNumber,

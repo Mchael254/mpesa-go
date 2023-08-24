@@ -59,7 +59,8 @@
               <div class="col-md-4">
                 <select id="inputTitle" class="form-select" formControlName="clientTitle">
                   <option value="" selected>Title</option>
-                  <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles">
+                  <option *ngFor="let titles of titlesData" [value]="titles.id">
+                  <!-- <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles"> -->
                     {{ titles.description }}
                   </option>
                 </select>
