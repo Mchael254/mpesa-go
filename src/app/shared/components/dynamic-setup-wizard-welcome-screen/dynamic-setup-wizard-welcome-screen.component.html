@@ -64,14 +64,9 @@
                             <li id="header"><span id="num" style="color:#00529B;border:1px solid #00529B">{{data.listPosition}}</span>{{data.listLabel}}</li>                   
                             </ul>
                         </div> 
-                        <div class="card-body text-center">
+                        <div class="card-body">
 
-                             <app-dynamic-form
-                                [formFields]="formContent"
-                                [fieldsPerRow]="1"
-                                [title]="'Client Details'"
-                                [actionButtonConfig]="buttonConfig">
-                            </app-dynamic-form> 
+                            <app-dynamic-setup-form-screen [formFields]="formContent" [fieldsPerRow]="2"></app-dynamic-setup-form-screen> 
                         </div>
                     </div>
                 </div>

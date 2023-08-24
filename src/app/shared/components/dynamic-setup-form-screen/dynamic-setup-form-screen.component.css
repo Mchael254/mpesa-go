@@ -57,9 +57,7 @@ label{
     font-size: 14px;
     line-height: 17px;
 }
-.required{
-    color:#ED0614;    ;
-}
+
 /* width */
 ::-webkit-scrollbar {
     width: 4px;
