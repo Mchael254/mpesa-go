@@ -117,7 +117,7 @@ export class MenuService{
     name: 'Class',
     nameSlug: 'favoriteSetups',
     icon: 'fa-solid fa-magnifying-glass-chart',
-    menuItems: [{name:'My Tasks', link:""},],
+    link:'/home/gis/setup/class-subclass/setup-wizard',
     collapsed:true,
   },
   {
