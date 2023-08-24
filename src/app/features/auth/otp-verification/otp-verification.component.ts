@@ -22,14 +22,26 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
+  /**
+   * Initialize component by:
+   *  - getting the otp process from the query params
+   */
   ngOnInit(): void {
     this.otpProcess = this.route.snapshot.queryParamMap.get('referrer');
     log.info(`OTP Process: ${this.otpProcess}`);
   }
 
+  /**
+   * Destroy component
+   */
   ngOnDestroy(): void {
   }
 
+  /**
+   * Get OTP verification result and redirect to the appropriate page based on the otp process
+   * @param event
+   * @return void
+   */
   verifyOtp(event: any) {
     if(event === true){
 

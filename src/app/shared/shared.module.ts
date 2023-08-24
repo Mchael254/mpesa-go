@@ -43,10 +43,11 @@ import { DynamicFormModalComponent } from './components/dynamic-form-modal/dynam
 import { DynamicSetupFormScreenComponent } from './components/dynamic-setup-form-screen/dynamic-setup-form-screen.component';
 import { DynamicSetupSearchListScreenComponent } from './components/dynamic-setup-search-list-screen/dynamic-setup-search-list-screen.component';
 import { DynamicSetupTableScreenComponent } from './components/dynamic-setup-table-screen/dynamic-setup-table-screen.component';
+import { DynamicSetupWizardWelcomeScreenComponent } from './components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 export { Logger, LogLevel } from './services/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
-export { UtilService } from './services/util.service';
+export { UtilService } from './services/util.service'
 // export { JwtService } from './services/jwt.service';
 export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
@@ -125,7 +126,8 @@ const SERVICES = [
     DynamicSetupSearchListScreenComponent,
     DynamicSimpleModalComponent,
     DynamicFormModalComponent,
-    DynamicSetupTableScreenComponent
+    DynamicSetupTableScreenComponent,
+    DynamicSetupWizardWelcomeScreenComponent
   ],
     imports: [
         CommonModule,
@@ -162,6 +164,7 @@ const SERVICES = [
         NgxSpinnerModule,
         DynamicSetupSearchListScreenComponent,
     TranslateModule,
+   DynamicSetupWizardWelcomeScreenComponent
    
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

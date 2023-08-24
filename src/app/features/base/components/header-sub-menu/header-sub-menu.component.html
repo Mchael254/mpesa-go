@@ -17,7 +17,7 @@
                 class="fa-solid fa-house-chimney"
                 style="padding-right: 6px"
               ></i
-              >{{ "Dashboard" | uppercase }}</a
+              >{{ "lang.dashboard" | translate | uppercase }}</a
             >
           </li>
           <li class="nav-item dropdown">
@@ -32,7 +32,7 @@
                 class="fa-solid fa-file-invoice-dollar"
                 style="padding-right: 6px; font-size: 16px"
               ></i
-              >{{ "Accounts" | uppercase }}
+              >{{ "lang.accounts" | translate | uppercase }}
             </a>
             <ul class="dropdown-menu" style="width: 300px; padding: 1em 2em 1em 0.5em; border-radius: 0.2em; border-right: 2px solid #00539b67;">
               <div class="d-flex justify-content-between">
@@ -100,7 +100,7 @@
                 class="fa-solid fa-handshake-angle"
                 style="padding-right: 6px; font-size: 16px"
               ></i
-              >{{ "Reinsurance" | uppercase }}
+              >{{ "lang.reinsurance" | translate | uppercase }}
             </a>
             <ul class="dropdown-menu">
               <ng-container *ngFor="let claim of reinsuranceubMenuList">
@@ -136,7 +136,7 @@
                 class="fa-solid fa-people-group"
                 style="padding-right: 6px; font-size: 16px"
               ></i
-              >{{ "Team" | uppercase }}
+              >{{ "lang.team" | translate | uppercase }}
             </a>
             <ul class="dropdown-menu">
               <ng-container *ngFor="let team of teamSubMenuList">
@@ -161,7 +161,7 @@
                 class="fa-solid fa-toolbox"
                 style="padding-right: 6px; font-size: 16px"
               ></i
-              >{{ "Administration" | uppercase }}
+              >{{ "lang.administration" | translate | uppercase }}
             </a>
             <ul class="dropdown-menu">
               <ng-container *ngFor="let admin of administationSubMenuList">
@@ -184,7 +184,7 @@
                   class="fa-solid fa-chart-simple"
                   style="padding-right: 6px; font-size: 20px"
                 ></i
-                >{{ "New Chart" | uppercase }}</a
+                >{{ "lang.new_chart"| translate | uppercase }}</a
               >
             </li>
             <li class="nav-item">
@@ -193,7 +193,7 @@
                   class="fa-solid fa-chart-pie"
                   style="padding-right: 6px; font-size: 20px"
                 ></i
-                >{{ "Analytics" | uppercase }}</a
+                >{{ "lang.analytics" | translate | uppercase }}</a
               >
             </li>
           </ul>

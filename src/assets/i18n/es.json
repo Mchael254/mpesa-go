@@ -1,0 +1,20 @@
+{
+  "lang": {
+    "home": "inicio",
+    "my_dashbaord": "mi panel",
+    "dashboard": "panel de control",
+    "accounts": "cuentas",
+    "tickets": "Boletos",
+    "team": "equipo",
+    "administration": "administración",
+    "new_chart": "nuevo gráfico",
+    "analytics": "analítica",
+    "reinsurance": "reaseguro",
+    "no_of_tickets": "Número de entradas",
+    "view_all": "VER TODO",
+    "summary": "resumen",
+    "my_policies": "Mis Pólizas",
+    "my_quotations": "Mis Cotizaciones"
+
+}
+}

@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {Clause, Record1} from "../../../data/gisDTO";
 import {MessageService} from "primeng/api";
 import {DynamicFormFields} from "../../../../../../../shared/utils/dynamic.form.fields";
@@ -36,6 +36,7 @@ export class ClausesComponent {
   dateEdited: any;
   editedBy: any;
   show: boolean = false;
+  searchForm:FormGroup;
 
   formFields: DynamicFormFields[];
   public buttonConfig: DynamicFormButtons;
@@ -51,8 +52,8 @@ export class ClausesComponent {
     this.getAllClauses();
     this.getSingleClause();
     this.createForm();
-    this.formFields = this.clausesForm();
-    this.buttonConfig = this.actionButtonConfig();
+    // this.formFields = this.clausesForm();
+    // this.buttonConfig = this.actionButtonConfig();
   }
 
   record: Record1 = {
@@ -66,7 +67,7 @@ export class ClausesComponent {
   createForm() {
 
     const randomString = Math.random().toString(36).substring(2, 5);
-    /*this.clauseForm = this.fb.group({
+    this.clauseForm = this.fb.group({
       code: new FormControl(''),
       isCurrent: new FormControl(''),
       heading: new FormControl(''),
@@ -81,32 +82,36 @@ export class ClausesComponent {
       version: 1,
       updated_at: "2022-04-12",
       updated_by: "TQUEST",
-    })*/
+    })
 
   }
 
+  isActive(item: any) {
+    return this.selected === item;
+  }
 
   //get all the clauses
   getAllClauses() {
     this.clauseService.getClauses().pipe(retryWhen((_) => interval(1000)),
       tap(() => (this.isDisplayed = true)),).subscribe(data => {
-      this.allClauses = data._embedded.clause_dto_list.map(data => {
+      /*this.allClauses = data._embedded.clause_dto_list.map(data => {
         let temp = data;
         temp['name'] = data.heading;
         return temp;
-      });
+      });*/
+      this.allClauses = data._embedded.clause_dto_list;
       console.log("all clauses", this.allClauses)
       this.isDisplayed = true;
       this.cdr.detectChanges();
     })
   }
-  selectedClause() {
-    //console.log("this is the selected clause", this.selected.code)
-    this.clauseService.setClauseCode(this.selected.code)
-    const dateTimeStr = this.selected.updated_at;
+  selectedClause(code: any, updatedAt: any, updatedBy: any) {
+    console.log("this is the selected clause", code)
+    this.clauseService.setClauseCode(code)
+    const dateTimeStr = updatedAt ? updatedAt : '';
     const dateStr = dateTimeStr.substr(0, 10);
     this.dateEdited = dateStr
-    this.editedBy = this.selected.updated_by
+    this.editedBy = updatedBy
   }
   //get a single clause details
   getSingleClause() {
@@ -114,25 +119,24 @@ export class ClausesComponent {
       this.selectedCode = id;
       this.clauseService.getSingleClause(this.selectedCode).subscribe(data => {
         this.singleClauseDetails = data
-        console.log("this is the selected clause", this.singleClauseDetails)
-        // this.clauseForm.patchValue(this.singleClauseDetails)
+        console.log("this is the selected clauseee", this.singleClauseDetails)
+        this.clauseForm.patchValue(this.singleClauseDetails)
         this.cdr.detectChanges();
       })
     })
   }
   createNewClause() {
-    // this.clauseForm.reset();
+    this.clauseForm.reset();
     this.isupdate = false;
   }
-  save(data:any) {
+  save() {
     if (this.isupdate) {
       this.updateClause()
     }
     else {
       this.createClause()
-      // this.clauseForm.reset();
+      this.clauseForm.reset();
     }
-    console.log(data)
   }
   createClause() {
     const randomString = Math.random().toString(36).substring(2, 5);
@@ -204,7 +208,7 @@ export class ClausesComponent {
     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error Occured' });
   }
 
-  clausesForm(): DynamicFormFields[]{
+/*  clausesForm(): DynamicFormFields[]{
     return [
       {
         name: 'id',
@@ -276,7 +280,7 @@ export class ClausesComponent {
       },
 
     ];
-  }
+  }*/
 
   actionButtonConfig() : DynamicFormButtons{
     return {
@@ -287,15 +291,15 @@ export class ClausesComponent {
     };
   }
 
-  receiveData(data) {
+  /*receiveData(data) {
 
     this.show = false;
-    let temp = this.formFields
+    let temp = this.clauseForm
     temp[0].value = data.code;
     temp[2].value = data.heading;
     temp[5].value = data.wording;
-    this.formFields = temp;
+    this.clauseForm = temp;
     this.cdr.detectChanges();
     this.show = true;
-  }
+  }*/
 }

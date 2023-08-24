@@ -54,6 +54,11 @@
           <!-- <div class="mt-1 selectgroup">
             <p-tree class="w-full md:w-5rem"  [value]="response " selectionMode="single"></p-tree>
           </div> -->
+          <div class="row">
+            <div class="text-end">
+              <a class="text-primary" href="#">{{'lang.view_all' | translate }}</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -133,7 +138,7 @@
                 </div>
               </form>
               <label class="label2 mt-3">Product Details</label>
-             
+
               <div class="row">
                 <div *ngFor="let data of mandatoryFrontendScreens" class="col-6">
                   <form [formGroup]="productForm">
@@ -173,7 +178,7 @@
                   data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false"
                   aria-controls="collapseExample"> <i class="pi pi-chevron-up" style="font-size:13px"
                     *ngIf="!show"></i><i class="pi pi-chevron-down" style="font-size:13px" *ngIf="show"></i></span> </p>
-                    
+
               <div class="collapse" id="collapseExample">
                 <div class="row">
                   <div *ngFor="let data of optionalFrontendScreens" class="col-6">
@@ -236,7 +241,7 @@
                 [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
                 [showCurrentPageReport]="true" currentPageReportTemplate=" {first} - {last} of {totalRecords}"
                 [globalFilterFields]="['description']">
-                
+
                 <ng-template pTemplate="header">
                   <tr>
                     <th pSortableColumn="code">Sub Class Code<p-sortIcon field="isRiskLocationMandatory"></p-sortIcon>
@@ -332,7 +337,7 @@
                   </tr>
 
                 </ng-template>
-               
+
               </p-table>
 
 
@@ -393,14 +398,14 @@
                   </tr>
 
                 </ng-template>
-            
+
               </p-table>
 
 
 
             </div>
           </div>
-         
+
         </div>
       </div>
        <!-- Add product Subclass -->

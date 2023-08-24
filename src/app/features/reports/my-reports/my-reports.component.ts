@@ -8,6 +8,7 @@ import {Report} from "../../../shared/data/reports/report";
 import {Observable} from "rxjs";
 import {AuthService} from "../../../shared/services/auth.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import { NgxSpinnerService } from 'ngx-spinner';
 
 const log = new Logger('MyReportsComponent');
 @Component({
@@ -33,6 +34,7 @@ export class MyReportsComponent implements OnInit{
     private router: Router,
     private authService: AuthService,
     private fb: FormBuilder,
+    private spinner: NgxSpinnerService,
   ) {
   }
   ngOnInit(): void {
@@ -57,12 +59,14 @@ export class MyReportsComponent implements OnInit{
   }
 
   getReports(folderId: number) {
+    this.spinner.show();
     this.reports$ =  this.reportService.getReports()
       .pipe(
         map((reports) => reports.filter(report => report.folderId == folderId)),
         tap((reports) => {
           this.reports = reports;
           log.info(`reports >>> `, reports);
+          this.spinner.hide();
         })
       )
   }
@@ -76,6 +80,7 @@ export class MyReportsComponent implements OnInit{
 
   selectFolder(folder: Folder): void {
     // this.isPreviewResultAvailable = false;
+    log.info(`selected folder >>>`, folder);
     this.reports = [];
 
     this.folders.forEach((item) => {
