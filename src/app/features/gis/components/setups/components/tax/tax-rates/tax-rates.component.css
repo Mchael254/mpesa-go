@@ -1,19 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 ::ng-deep{
-    .breadcrumb-item+.breadcrumb-item:before{
+    .breadcrumb{
         color:#000000;
         content: ">";
 
     }
-    .breadcrumb-item.active{
-        font-family: 'Roboto';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 23px;
-        color: #00529B;
-    }
+}
+.breadcrumb{
+    font-size: 16px;
 }
 .nav-item{
     cursor:pointer
@@ -104,7 +99,7 @@
 }
 .TransactionList{
     overflow-y: scroll;
-    max-height: 547px;
+    max-height: 450px;
   }
   ::-webkit-scrollbar {
     width: 5px;
@@ -165,6 +160,18 @@ font-style: normal;
 font-weight: 500;
 line-height: normal;
 }
+#pills-ChargesDeductibles-tab{
+   margin-right: 20px;
+   border-radius: 2px;
+   padding-left: 21px;
+   padding-right: 21px;
+}
+#pills-TaxExcludedProducts-tab{
+    border-radius: 2px;
+    padding-left: 21px;
+   padding-right: 21px;
+    
+}
 /* #pills-ChargesDeductibles-tab{
     font-family: 'Roboto';
     font-style: normal;
@@ -220,7 +227,7 @@ line-height: normal;
     //     height: 32px;
 
     // } */
-/* } */ */
+/* } */ 
 #links{
     font-family: 'Roboto';
     font-style: normal;
@@ -261,7 +268,7 @@ td{
     line-height: 16px;
     color: #00529B;
     margin-top: 41px;
-    margin-left: 50px;
+    margin-left: 20px;
 }
 .modal-content{
     width:100%;
@@ -297,7 +304,7 @@ td{
     background: #00529B;
     border-radius: 2px;
     width: 88.84px;
-    margin-left: 30px;
+    /* margin-left: 30px; */
 
 }
 #product th{
@@ -307,6 +314,17 @@ td{
     font-size: 12px;
     line-height: 14px;
     color: #00529B;
+}
+#filter input{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+}
+.custom-placeholder::placeholder {
+    color: #000000;
+    
 }
 #productSearch{
  padding: 2px;
@@ -333,14 +351,23 @@ td{
     min-width: 120%;
 }
 #addChargesLabel{
-    font-size: 12px;
+    color: rgba(105, 105, 105, 0.65);
     font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
     font-weight: 700;
+    line-height: normal;
 }
 #addChargesInput{
-    font-size: 12px;
+    color: rgba(105, 105, 105, 0.65);
     font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
     font-weight: 500;
+    line-height: normal;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.30);
+    background: rgba(140, 140, 140, 0.08);
 }
 #required-alert{
     font-family: 'Roboto';
@@ -350,5 +377,13 @@ td{
     line-height: 150%;  
     color: #ED0614;
     padding: 0.5rem;
+}
+#taxTableHeaders th{
+    color: #1E293B;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
 }
 
