@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {TreeModule} from 'primeng/tree';
+import { ButtonModule } from 'primeng/button';
 
 import { ProductRoutingModule } from './product-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +18,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
     ReactiveFormsModule,
     TreeModule,
     SharedModule,
+    ButtonModule,
     TableModule,
     // Ng2SearchPipeModule,
     ProductRoutingModule
