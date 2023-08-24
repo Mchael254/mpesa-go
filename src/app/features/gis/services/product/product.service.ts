@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import { FormScreen, SubclassesDTO } from '../../components/setups/data/gisDTO';
+import { FormScreen, Product_group, Products, SubclassesDTO, productDocument } from '../../components/setups/data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,48 @@ export class ProductService {
       })
     );
   }
+  getProductGroupByCode(code: number): Observable<Product_group[]>{
+
+    return this.http.get<Product_group[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  
+  }
+  createProductgroup(data: any): Observable<Product_group> {
+    console.log(JSON.stringify(data))
+    return this.http.post<Product_group>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups`, JSON.stringify(data), this.httpOptions)
+      .pipe(
+    )
+  }
+  getAllProducts(): Observable<Products[]> {
+    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getSubclasses1(): Observable<SubclassesDTO[]> {
+    return this.http.get<SubclassesDTO[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes?pageNo=0&pageSize=10`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getProductByCode(code: number): Observable<Products[]>{
+    
+    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  
+  }
+  getProductDocument(code: number): Observable<any>{
+    
+    return this.http.get<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents?productCode=${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  
+  }
   getFormScreen(code: number): Observable<FormScreen>{
     
     return this.http.get<FormScreen>(`/${this.baseurl}/${this.setupsbaseurl}/forms/${code}`).pipe(
@@ -47,9 +89,15 @@ export class ProductService {
     )
   
   }
-  createProductSubclasses(data: any): Observable<SubclassesDTO> {
+  createProducts(data: any): Observable<Products> {
     console.log(JSON.stringify(data))
-    return this.http.post<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses`, JSON.stringify(data), this.httpOptions)
+    return this.http.post<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products`, JSON.stringify(data), this.httpOptions)
+      .pipe(
+    )
+  }
+  createProductSubclasses(data: any): Observable<any> {
+    // console.log(JSON.stringify(data))
+    return this.http.post<any>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses`, JSON.stringify(data), this.httpOptions)
       .pipe(
     )
   }
@@ -73,6 +121,13 @@ export class ProductService {
       catchError(this.errorHandl)
     )
   }
+  saveProductDocument(data:productDocument[]) {
+    return this.http.post<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents`, JSON.stringify(data),this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+    }
   // Error handling
 errorHandl(error: HttpErrorResponse) {
   let errorMessage = '';
