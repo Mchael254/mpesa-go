@@ -41,37 +41,91 @@
   </div>
 </div>
 
-<div class="base-content-section policies">
+<div class="base-content-section lms">
   <div class="row">
-      <div class="col-sm-6">
-          <p class="transactions">My Policies</p>
-          <div class="card">
-              <div class="card-body">
-                  <div class="row">
-                      <div class="col-sm-12">
-                        <app-dynamic-table
-                          [tableDetails]="policyDataTable"
-                        ></app-dynamic-table>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
+    <div class="col-sm-6">
+      <p class="transactions">{{'lang.my_policies' | translate}}</p>
+      <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="true">LMS</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="gis2-tab" data-bs-toggle="tab" href="#gis2" role="tab" aria-controls="gis2" aria-selected="false">GIS</a>
+        </li>
+      </ul>
 
-      <div class="col-sm-6">
-          <p class="transactions">My Quotations</p>
+      <div class="tab-content" id="myTabsContent">
+        <div class="tab-pane fade show active" id="lms" role="tabpanel" aria-labelledby="lms-tab">
+          <!-- Content for LMS tab goes here -->
           <div class="card">
-              <div class="card-body">
-                  <div class="row">
-                      <div class="col-sm-12">
-                        <app-dynamic-table
-                          [tableDetails]="quotationDataTable"
-                        ></app-dynamic-table>
-                      </div>
-                  </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+                </div>
               </div>
+            </div>
           </div>
+        </div>
+        <div class="tab-pane fade" id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
+          <!-- Content for GIS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="col-sm-6">
+      <p class="transactions">{{'lang.my_quotations' | translate}}</p>
+      <ul class="nav nav-tabs" id="myTabs2" role="tablist2">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="lms2-tab" data-bs-toggle="tab" href="#lms2" role="tab" aria-controls="lms2" aria-selected="true">LMS</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="gis-tab" data-bs-toggle="tab" href="#gis" role="tab" aria-controls="gis" aria-selected="false">GIS</a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabsContent2">
+        <div class="tab-pane fade show active" id="lms2" role="tabpanel" aria-labelledby="lms2-tab">
+          <!-- Content for LMS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+
+              <div class="tab-content" id="lmsTabsContent">
+                <div class="tab-pane fade show active" id="quotations" role="tabpanel" aria-labelledby="quotations-tab">
+                  <app-dynamic-table [tableDetails]="quotationDataTable"></app-dynamic-table>
+                </div>
+                <!-- Add more tab panes within the LMS tab content as needed -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="gis" role="tabpanel" aria-labelledby="gis-tab">
+          <!-- Content for GIS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+
+              <div class="tab-content" id="gisTabsContent">
+                <div class="tab-pane fade show active" id="quotations-gis" role="tabpanel" aria-labelledby="quotations-gis-tab">
+                  <app-dynamic-table [tableDetails]="quotationDataTable"></app-dynamic-table>
+                </div>
+                <!-- Add more tab panes within the GIS tab content as needed -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+
 

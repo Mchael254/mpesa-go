@@ -12,6 +12,8 @@
     "reinsurance": "réassurance",
     "no_of_tickets": "Nombre de billets",
     "view_all": "VOIR TOUT",
-    "summary" : "Résumé"
+    "summary" : "Résumé",
+    "my_policies": "Mes Polices",
+    "my_quotations": "Mes Devis"
   }
 }

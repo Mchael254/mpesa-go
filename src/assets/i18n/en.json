@@ -12,6 +12,8 @@
     "reinsurance": "Tickets",
     "no_of_tickets": "No. of Tickets",
     "view_all": "VIEW ALL",
-    "summary" : "Summary"
+    "summary" : "Summary",
+    "my_policies": "My Policies",
+    "my_quotations": "My Quotations"
   }
 }
