@@ -41,12 +41,23 @@ html,body {
   border-radius: 0;
 }
 
+.btn-outline-primary {
+  border-radius: 0;
+  background: #fff;
+  border: solid 1px #00529b;
+  color: #00529b;
+}
+
 .btn-link, a {
   text-decoration: none;
 }
 
 .btn-full-width {
     width: 100%;
+}
+
+.form-select {
+  border-radius: 0;
 }
 /* Root (global) ends*/
 
