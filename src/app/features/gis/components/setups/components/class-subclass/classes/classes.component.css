@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+.page
+{
+    color: yellow;
+}.title1{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 19px;
+color: #00529B;
+}
+.subtitle{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 19px;
+color: #00529B;
+
+}
+#alert{
+
+  background: rgba(0, 82, 155, 0.1);
+  width: 100%;
+  }
+  #alertmsg{
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 150%;  
+  color: #000000;
+  }
+#required-alert{
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 150%;  
+  color: #ED0614;
+  padding: 0.5rem;
+}
+
+#title2{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 19px;
+margin-right: 8px;
+
+}
+#delete{
+    background-color:#00529B;
+    color:white;
+    font-family: 'Lato';
+    font-size: 14px;
+    width: 81px;
+    height: 30px;
+    padding:1px;
+    border-radius: 2px;
+    
+}
+#new{
+    color: #00529B;
+    background-color: white;
+    width: 81px;
+    height: 30px;
+    font-family: 'Lato';
+    font-size: 14px;
+    border: 1px solid #00529B;
+    padding:1px;
+    border-radius: 2px;
+}
+label {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 17px;
+   
+}
+.required{
+    color:#ED0614;    ;
+}
+#report{
+  text-decoration: underline;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 14px;
+  color: #00529B;
+  cursor: pointer;
+}
+
+.activity{
+    background-color: #00529B;
+    color: white;
+    border-radius: 2px;
+    
+}
+li{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    cursor: pointer; 
+}
+
+th{
+    
+    font-family: 'Lato' !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
+    font-size: 12px;
+  
+
+}
+.print{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+}
+.nav-item{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 13px;
+line-height: 17px;
+color: #00529B;
+}
+.nav-pills .nav-item .nav-link.active {
+  color: #00529B;
+}
+.nav-pills .nav-link.active{
+  background-color: #00529B;
+  color:#FFFFFF;;
+}
+
+  /* width */
+  :host ::ng-deep ::-webkit-scrollbar {
+    width: 7px;
+    height:7px
+  }
+  .selected{
+    background-color: rgba(0, 30, 187, 0.1);
+  }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px #00529B !important; 
+    border-radius: 10px !important;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #3d3d3d !important; 
+    border-radius: 10px !important;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background:#00529B !important; 
+  }
+  td.activity{
+    background-color: #00529B;
+    color: white;
+    border-radius: 2px;
+    
+}
+.actives{
+  background-color: #00529B;
+  color: #FFFFFF;
+}
+.inactive{
+  background-color: #8C8C8C !important;
+  color: #FFFFFF;
+}
+.nav-pills .nav-item .nav-link.active {
+  background-color: #00529B;
+  color:#FFFFFF;
+}
+#vesselTypeModalLabel{
+  font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 16px;
+display: flex;
+color: #00529B;
+}
+#tabbed{
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  
+   
+  }
+  .p-tableCheckbox{
+    margin-top: 500px !important;
+  }
+  .active-screen{
+    color: #00529B;
+   
+    padding-bottom: 10px;
+    border-bottom: 2px solid #00529B; 
+}
+a{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    cursor: pointer;
+    text-decoration: none;
+    color:#00529B
+}
+tr{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    /* // color: #696969a6; */
+    width:500px;
+    color: rgba(105, 105, 105, 0.65);
+
+}
+/* // :host ::ng-deep .test th{
+//   color:#ED0614
+// }
+
+// .nav-pills{
+//   height:40px
+// } */
+
+input::placeholder {
+  font-size: 14px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+}
+.ui-datatable * {
+  border : 0px !important;
+}
+#search-input{
+  width: 200px;
+  height: 30px;
+  left:20%
+
+}
+
+#save{
+  color: #00529B;
+  width: 81px;
+  height: 30px;
+  border: 1px solid #00529B;
+  border-radius: 2px;
+  padding:1px;
+  font-family: 'Lato';
+  font-size: 14px;
+}
+#addPerilTitle{
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 16px;
+display: flex;
+color: #00529B;
+
+}
+#addPerilsLabel{
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 16px;
+}
+.modal-lg {
+  max-width: 1187px !important;
+}
+#getPerilModal{
+  max-width: 320px !important;
+  left:320px !important;
+  
+}
+#content{
+ 
+
+  width: 408px !important;
+  height: 307px !important;
+  left:30px !important;
+}
+#addExcesses{
+  width:1000px;
+  
+}
+#modalbtn{
+ position: absolute;
+/* //  left: 46.81%;
+//  right: 46.81%; */
+ top: 80%;
+ left: 10%;
+/* //  bottom: 51.66%; */
+
+
+}
+
+#iconStyle{
+color:#FF3D00;
+
+
+}
+#deleteCancel{
+  color: #00529B;
+  background-color: white;
+  width: 81px;
+  height: 30px;
+  font-family: 'Lato';
+  font-size: 14px;
+  border: 1px solid #00529B;
+  padding:1px;
+  border-radius: 2px;
+}
+#deleteOk{
+  background-color:#00529B;
+  color:white;
+  font-family: 'Lato';
+  font-size: 14px;
+  width: 81px;
+  height: 30px;
+  padding:1px;
+  border-radius: 2px;
+}
+#ok{
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+}
+
+#btn{
+background: #00529B;
+border-radius: 5px;
+width:100px;
+height:35px;
+color: #FFFFFF;
+}
+#excessTitle1{
+  color: #00529B;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+}
+#addPerilsInput{
+width: 215px;
+background: #FFFFFF;
+border-radius: 5px;
+}
+#addExcessesLabel{
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 16px;
+}
+#excessestitle{
+  font-family: 'Roboto';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 16px;
+display: flex;
+color: #00529B;
+}
+#tbInput{
+  width: 100%;
+}
+#excessesContent{
+  max-width: 1350px !important;
+  padding:20px
+}
+#addExcessesInput{
+  width: 80%;
+
+}
+#conditions{
+
+height: 256px;
+}
+#addconditions{
+background: #289B00;
+color:white;
+font-family: 'Lato';
+font-size: 14px;
+width: 120px;
+height: 35px;
+padding:1px;
+border-radius: 2px;
+}
+#addClassPeril{
+  padding:20px;
+}
+#addPerilbtn{
+width: 120px;
+height: 35px;
+background: #00529B;
+padding:1px;
+border-radius: 5px;
+
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+}
