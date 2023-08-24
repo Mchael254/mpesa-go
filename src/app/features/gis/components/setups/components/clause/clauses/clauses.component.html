@@ -35,7 +35,7 @@
                   <i class="pi pi-search" id="search"></i>
                 </form>
 
-              <div class="paramlist" style="overflow-y: scroll; max-height: 393px;">
+              <div class="paramlist" style="overflow-y: scroll; max-height: 68vh;">
                 <ul class="list-group list-group-light" *ngFor="let data of allClauses">
                   <li class="list-group-item  list-group-item-action px-3 border-0 mr-4"
                       (click)="selectedClause(data.code, data.updated_at, data.updated_by)"
@@ -115,7 +115,7 @@
                 </div>
                 <div>
                   <label><span class="clause-label">Wording</span></label>
-                  <textarea class="form-control" formControlName="wording"></textarea>
+                  <textarea class="form-control" formControlName="wording" style="height: 26vh"></textarea>
                 </div>
                 <div class="row mt-4">
                   <div class="col-xl-6">

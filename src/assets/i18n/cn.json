@@ -12,6 +12,8 @@
     "reinsurance": "再保险",
     "no_of_tickets": "门票数量",
     "view_all": "查看全部",
-    "summary" : "概括"
+    "summary" : "概括",
+    "my_policies": "我的保单",
+    "my_quotations": "我的报价"
   }
 }
