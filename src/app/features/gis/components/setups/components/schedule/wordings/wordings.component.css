@@ -1,0 +1,8 @@
+.action-buttons button{
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+.action-buttons button i {
+  margin-right: 5px;
+}

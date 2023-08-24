@@ -1,1 +1,156 @@
-<p>wordings works!</p>
+<div class="base-content-section setups">
+  <div class="row">
+    <div class="col-sm-3 left">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-12 mt-3">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search screen codes"
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterWordings($event)"
+              >
+              <span class="input-group-text">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+            <div class="listing">
+              <ul>
+                <li
+                  *ngFor="let wording of wordings"
+                >
+                  {{ wording }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 right">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-4">
+            <button
+              type="button" class="btn btn-primary"
+            >
+              Details
+            </button>
+          </div>
+          <div class="col-sm-6 offset-sm-2">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search code, id, prefix..."
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterWordings($event)"
+              >
+              <span class="input-group-text">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+          </div>
+          <hr class="my-3">
+        </div>
+        <div class="row action-buttons">
+          <div class="col-sm-8">
+            <button
+              class="btn btn-link text-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#actionsModal"
+              (click)="callActionsModal('add')"
+            >
+              <i class="fa-solid fa-plus"></i>Add
+            </button>
+            <button
+              class="btn btn-link text-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#actionsModal"
+              (click)="callActionsModal('edit')"
+            >
+              <i class="fa-solid fa-pencil"></i>Edit
+            </button>
+            <button
+              class="btn btn-link text-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#actionsModal"
+              (click)="callActionsModal('delete')"
+            >
+              <i class="fa-solid fa-minus"></i>Delete
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          table goes here...
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--confirm delete modal-->
+<div class="modal fade" id="actionsModal" tabindex="-1" aria-labelledby="actionsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius: 0">
+      <div class="modal-body text-center">
+
+        <h5 class="text-start">{{ modalTitle | titlecase }}</h5>
+
+        <ng-container *ngIf="modalTitle === ''">
+          <i class="fa-solid fa-triangle-exclamation text-danger" style="font-size: 4rem"></i>
+          <p class="text-dark fw-bold mt-3">Are you sure you want to delete?</p>
+        </ng-container>
+
+        <ng-container *ngIf="modalTitle === 'add' || modalTitle === 'edit'">
+          <div class="row text-dark text-start">
+            <div class="col-sm-12">
+              <div class="row mb-3">
+                <label for="subclass" class="col-sm-4 col-form-label">Subclass</label>
+                <div class="col-sm-8">
+                  <select class="form-select" id="subclass">
+                    <option value="Q">Quotation</option>
+                    <option value="U">U/W</option>
+                    <option value="C">Claims</option>
+                    <option value="p-table">Product</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="templateName" class="col-sm-4 col-form-label">Template Name</label>
+                <div class="col-sm-8">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="templateName"
+                  >
+                </div>
+              </div>
+              <div class="row mb-3">
+                <label for="wordings" class="col-sm-4 col-form-label">Wordings</label>
+                <div class="col-sm-8">
+                  <textarea
+                    class="form-control"
+                    id="wordings"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

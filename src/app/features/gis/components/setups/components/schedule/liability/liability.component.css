@@ -1,0 +1,20 @@
+
+.calendar-icon {
+  padding: 5px;
+}
+
+.calendar-icon i {
+  background: #00529b;
+  padding: 7px 10px;
+  color: #fff;
+  border-radius: 5px
+}
+
+.action-buttons button{
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+.action-buttons button i {
+  margin-right: 5px;
+}

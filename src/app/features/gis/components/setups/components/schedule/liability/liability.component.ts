@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class LiabilityComponent {
 
+  public liabilities = ['private motors', 'private motors', 'private motors', 'private motors', 'private motors']
+
+  filterLiabilities($event: KeyboardEvent) {
+
+  }
 }
