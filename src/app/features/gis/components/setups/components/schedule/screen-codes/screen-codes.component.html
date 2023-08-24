@@ -1,0 +1,292 @@
+<div class="base-content-section">
+  <div class="row">
+    <div class="col-sm-3 left">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-8">
+            <p class="fw-bold">Screen Codes</p>
+          </div>
+          <div class="col-sm-4">
+            <button style="float:right;" class="btn btn-outline-primary text-primary" (click)="resetForm()">New</button>
+          </div>
+
+          <div class="col-sm-12 mt-3">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search screen codes"
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterScreenCodes($event)"
+              >
+              <span class="input-group-text" id="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+            <div class="spinner" style="position: relative">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            </div>
+            <div class="screen-code-listing">
+              <ul>
+                <li
+                  *ngFor="let screenCode of filteredScreenCodes"
+                  (click)="selectScreenCode(screenCode)"
+                >
+                  {{screenCode.code}}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-9 right">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-12">
+            <button
+              type="button" class="btn" id="criteria-btn"
+              [ngClass]="{'active-btn': isDetailsViewActive, 'inactive-btn': !isDetailsViewActive}"
+              (click)="toggleDetails('details')"
+            >
+              Details
+            </button>
+            <button
+              type="button" class="btn" id="preview"
+              [ngClass]="{'active-btn': !isDetailsViewActive, 'inactive-btn': isDetailsViewActive}"
+              (click)="toggleDetails('schedule')"
+            >
+              Schedules
+            </button>
+          </div>
+          <hr class="my-3">
+        </div>
+
+        <ng-container *ngIf="isDetailsViewActive">
+          <div class="row">
+            <div class="form-div">
+              <form [formGroup]="screenForm">
+                <div class="row">
+                  <div class="col-sm-5">
+                    <div class="row mb-3">
+                      <label for="itemCode" class="col-sm-4 col-form-label"><span class="text-danger">*</span>Item Code</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="code"
+                          id="itemCode"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="level" class="col-sm-4 col-form-label"><span class="text-danger">*</span>Level</label>
+                      <div class="col-sm-8">
+                        <select class="form-select" formControlName="level" id="level">
+                          <option value="Q">Quotation</option>
+                          <option value="U">U/W</option>
+                          <option value="C">Claims</option>
+                          <option value="p-table">Product</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="scheduleReport" class="col-sm-4 col-form-label">Schedule Report</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="schedule_report_name"
+                          id="scheduleReport"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="renewalCert" class="col-sm-4 col-form-label">Renewal Certificates</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="renewalCertificates"
+                          id="renewalCert"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="coverNotes" class="col-sm-4 col-form-label">Cover Notes</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="cover_summary_name"
+                          id="coverNotes"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="screenTitle" class="col-sm-4 col-form-label">Screen Title</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="screen_title"
+                          id="screenTitle"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="scheduleReq" class="col-sm-4 col-form-label">Schedule Required</label>
+                      <div class="col-sm-8">
+                        <select class="form-select" formControlName="is_schedule_required" id="scheduleReq">
+                          <option value="N">NO</option>
+                          <option value="Y">YES</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="showRisks" class="col-sm-4 col-form-label">Show Default No. Risks</label>
+                      <div class="col-sm-8">
+                        <select class="form-select" formControlName="show_default_risks" id="showRisks">
+                          <option value="N">NO</option>
+                          <option value="Y">YES</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="showSi" class="col-sm-4 col-form-label">Show S.I.</label>
+                      <div class="col-sm-8">
+                        <select class="form-select" formControlName="show_sum_insured" id="showSi">
+                          <option value="N">NO</option>
+                          <option value="Y">YES</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6 offset-sm-1">
+                    <div class="row mb-3">
+
+                      <label for="itemDesc" class="col-sm-4 col-form-label"><span class="text-danger">*</span>Item Desc</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="screen_description"
+                          id="itemDesc"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="screenName" class="col-sm-4 col-form-label">Screen Name</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="screen_name"
+                          id="screenName"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="endorseSch" class="col-sm-4 col-form-label">Endorsement Schedule</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="endorsement_schedule"
+                          id="endorseSch"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="renewalNotice" class="col-sm-4 col-form-label">Renewal Notice</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="renewalNotice"
+                          id="renewalNotice"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="coverNote" class="col-sm-4 col-form-label">Cover Note</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="cover_summary_name"
+                          id="coverNote"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="polDoc" class="col-sm-4 col-form-label">Pol Document Report</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="policy_document_name"
+                          id="polDoc"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="helpContent" class="col-sm-4 col-form-label">Help Content</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="help_content"
+                          id="helpContent"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="certReports" class="col-sm-4 col-form-label">Certificate Reports</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="claim_schedule_report"
+                          id="certReports"
+                        >
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="defaultRisks" class="col-sm-4 col-form-label">Default No. of Risks</label>
+                      <div class="col-sm-8">
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="number_of_risks"
+                          id="defaultRisks"
+                        >
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="row mt-1">
+                  <div class="col-sm-6">
+                    <button class="btn btn-outline-primary">Cancel</button>
+                  </div>
+                  <div class="col-sm-6" style="text-align: right">
+                    <button class="btn btn-primary" (click)="createUpdateScreenCode()">Save</button>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isDetailsViewActive">
+          table here...
+        </ng-container>
+
+      </div>
+    </div>
+  </div>
+</div>
