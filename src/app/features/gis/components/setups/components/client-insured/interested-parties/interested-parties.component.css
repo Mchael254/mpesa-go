@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+ 
+
+.title1{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 29px;
+
+    color: #00529B;
+}
+#arrow{
+font-size: 1.3rem;
+}
+.text-right{
+    color: #00529B;
+font-family: 'Lato';
+font-size: 14px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+}
+
+.title2{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 17px;
+    color: #00529B;
+    }
+    #delete{
+        background-color:#00529B;
+        color:white;
+        font-family: 'Lato';
+        font-size: 14px;
+        width: 71px;
+        height: 25px;
+        padding:1px;
+        border-radius: 2px;
+        margin-left: -10px;
+        
+    }
+    ::ng-deep{
+        .p-dropdown-filter {
+            height: 40px;
+        }
+        .p-dropdown .p-dropdown-label.p-placeholder{
+            margin-top: -6px;
+            color: #FF0000;
+        }
+        .p-dropdown-panel .p-component .ng-star-inserted{
+            background-color: aquamarine;
+        }
+        .p-dropdown-items-wrapper {
+            background-color: aquamarine;
+        }
+        .p-overlay-content {
+            transform-origin: inherit;
+            width: 230px;
+        }
+       
+    }
+    #new{
+        color: #00529B;
+        background-color: white;
+        width: 55px;
+        height: 25px;
+        font-family: 'Lato';
+        font-size: 14px;
+        border: 1px solid #00529B;
+        border-radius: 2px;
+        box-sizing: border-box;
+        padding:1px;
+
+    }
+    #clear{
+        color: #00529B;
+        background-color: white;
+        width: 80px;
+        height: 30px;
+        font-family: 'Lato';
+        font-size: 12px;
+        font-weight: 700;
+        border: 1px solid #00529B;
+        border-radius: 2px;
+        box-sizing: border-box;
+        padding:1px;
+    }
+    #save{
+        background-color:#00529B;
+        color:white;
+        font-family: 'Lato';
+        font-size: 12px;
+        font-weight: 700;
+        width: 80px;
+        height: 30px;
+        padding:1px;
+        border-radius: 2px;
+        
+    }
+    
+.report{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 17px;
+    color: #696969;
+}    
+.title3{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+
+}
+.inputtext{
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    
+}
+.required{
+    color: #FF0000;
+}
+#left{
+    
+    height: 500px;
+    background: #FFFFFF;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+}
+
+ 

@@ -52,6 +52,10 @@ const routes: Routes = [
     path:'tax-rate',
     loadChildren:() => import('./components/setups/components/tax/tax.module').then(m => m.TaxModule),
    },
+   {
+    path:'interested-parties',
+    loadChildren:() => import('./components/setups/components/client-insured/client-insured.module').then(m => m.ClientInsuredModule),
+   },
 
 ];
 
