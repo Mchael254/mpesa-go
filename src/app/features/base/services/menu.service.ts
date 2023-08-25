@@ -169,7 +169,9 @@ export class MenuService{
     name: 'Clauses',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-circle-nodes',
-    menuItems: [{name:'Clauses', link:"home/gis/clauses"},],
+    menuItems: [
+      {name:'Clauses', link:"home/gis/clauses"},
+      {name:'Subclass Clauses', link:"home/gis/subclass-clauses"},],
     collapsed:true,
   },
   {

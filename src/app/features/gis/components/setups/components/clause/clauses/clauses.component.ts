@@ -139,16 +139,16 @@ export class ClausesComponent {
     }
   }
   createClause() {
-    const randomString = Math.random().toString(36).substring(2, 5);
-    const requestBody: Clause = this.clauseForm.value;
-    requestBody.version = 2;
-    requestBody.short_description = randomString
-    requestBody.is_lien = "Y"
-    requestBody.ins = "Y"
-    requestBody.merge = "Y"
-    requestBody.organization_code = 2
+    // const randomString = Math.random().toString(36).substring(2, 5);
+    // const requestBody: Clause = this.clauseForm.value;
+    // requestBody.version = 2;
+    // requestBody.short_description = randomString
+    // requestBody.is_lien = "Y"
+    // requestBody.ins = "Y"
+    // requestBody.merge = "Y"
+    // requestBody.organization_code = 2
     try {
-      this.clauseService.createClause(requestBody).subscribe(data => {
+      this.clauseService.createClause(this.clauseForm.value).subscribe(data => {
 
         this.showSuccess
         console.log("Created Clause", data)
