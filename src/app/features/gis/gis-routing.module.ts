@@ -6,6 +6,9 @@ import {DynamicSetupTableScreenComponent} from "../../shared/components/dynamic-
 import { DynamicTableComponent } from 'src/app/shared/components/dynamic-table/dynamic-table.component';
 import { DynamicSetupWizardWelcomeScreenComponent } from 'src/app/shared/components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
 import {ClausesComponent} from "./components/setups/components/clause/clauses/clauses.component";
+import {
+  SubclassClausesComponent
+} from "./components/setups/components/clause/subclass-clauses/subclass-clauses.component";
 
 const routes: Routes = [
   {
@@ -43,6 +46,10 @@ const routes: Routes = [
   {
     path: 'clauses',
     component:ClausesComponent
+  },
+  {
+    path: 'subclass-clauses',
+    component:SubclassClausesComponent
   },
   {
     path:'class-subclass',

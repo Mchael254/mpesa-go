@@ -1,0 +1,43 @@
+#search{
+  background-color: #00529B;
+  color: white;
+  padding: 7px;
+  padding-left: 9px;
+  width: 34px;
+  height: 30px;
+  border-radius: 2px
+}
+#search-input{
+  width:75%;
+}
+.nav-item{
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 22px;
+  color: #00529B;
+  text-decoration: none
+;
+}
+.nav-pills .nav-item .nav-link.active {
+  color: #00529B;
+}
+.nav-pills .nav-link.active{
+  background-color: #00529B;
+  color:#FFFFFF;;
+}
+a.nav-link{
+  color: #00529B
+}
+#modal-title{
+  color: #00529B;
+  font-family: Lato;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+.card-header{
+  background-color: white;
+}
