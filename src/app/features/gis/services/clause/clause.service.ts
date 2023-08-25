@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, retry, throwError} from "rxjs";
 import {catchError} from "rxjs/operators";
-import {Clause, Clauses} from "../../components/setups/data/gisDTO";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {
+  Clause,
+  Clauses,
+  coverType,
+  subclassClauses,
+  subclassCoverTypeToClauses,
+  Subclasses
+} from "../../components/setups/data/gisDTO";
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from "../../../../core/config/app-config-service";
 
 @Injectable({
@@ -42,7 +49,7 @@ export class ClauseService {
   }
 
   getClauses(): Observable<Clauses> {
-    return this.http.get<Clauses>(`/${this.baseurl}/${this.setupsbaseurl}/clauses?pageNo=0&pageSize=294`).pipe(
+    return this.http.get<Clauses>(`/${this.baseurl}/${this.setupsbaseurl}/clauses?pageNo=0&pageSize=1000`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -89,5 +96,94 @@ export class ClauseService {
   }
   getClauseCode(){
     return this.clauseCode.asObservable();
+  }
+
+  /* SUBCLASSES SETUPS */
+
+  getAllSubclasses(): Observable<Subclasses[]>{
+    let page = 0;
+    let size = 100;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`,{
+      params:params,
+      headers:headers
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+
+  getSubclasses(code: any): Observable<Subclasses>{
+    return this.http.get<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  createSubClass(data:Subclasses[]) {
+    console.log(JSON.stringify(data))
+    return this.http.post<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`, JSON.stringify(data),this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+  updateSubClass(data:Subclasses,id:any){
+    console.log(JSON.stringify(data))
+    return this.http.put<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, JSON.stringify(data), this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+  deleteSubClass(id:any){
+    return this.http.delete<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+  getAllSubclassClauses(){
+    return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getSubclassClause(code, subCode):Observable<subclassClauses[]>{
+    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses/${code}/${subCode}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  updateSubclassClause(data:subclassClauses,id:any, subClassCode:number): Observable<subclassClauses> {
+    console.log(JSON.stringify(data))
+    return this.http.put<subclassClauses>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses/${id}/${subClassCode}`, JSON.stringify(data), this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+  getSingleSubclassCovertype(code: any){
+    return this.http.get<coverType>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getSubclassCovertypeBySCode(code: any): Observable<any>{
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/?pageNo=0&pageSize=100000&subClassCode=${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getCovertypeToClauses():Observable<subclassCoverTypeToClauses>{
+    return this.http.get<subclassCoverTypeToClauses>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-clauses/`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
   }
 }

@@ -1,0 +1,443 @@
+<div class="justify-content-between my-4 ms-4">
+  <p class="title">Clauses</p>
+  <div class="row">
+    <div class="col-xl-4">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="subclassForm">
+            <label for="code" id="subclass-label">Code</label>
+            <input type="text" class="form-control form-control-sm mb-3" id="code" formControlName="code" aria-describedby="code" placeholder="Subclass Code">
+            <label for="code" id="subclass-label">Subclass</label>
+            <input type="text" class="form-control form-control-sm" id="code" formControlName="description" aria-describedby="code" placeholder="Subclass ">
+
+          </form>
+        </div>
+      </div>
+      <br>
+      <div class="card">
+        <div class="card-body">
+          <p class="title1">Sub Classes and Clauses</p>
+          <form class="row form-sm mb-3"   style="margin-top: 15px;">
+
+            <input class="form-control form-control-sm mx-4"  type="text"
+                   placeholder="Search Subclass" aria-label="Search" id="search-input"  [(ngModel)]="filterBy">
+            <i class="pi pi-search" id="search"></i>
+          </form>
+
+          <div class="subclassList" style="overflow-y: scroll; max-height: 353px;">
+            <ul class="list-group list-group-light" *ngFor="let data of subclassList" >
+              <li class="list-group-item  list-group-item-action px-3 border-0 mr-4"
+                  (click)="loadSubclass(data.code);
+                  loadAllSubclassClauses(data.code);
+                  loadSubclassCovertypes(data.code)"
+                  [ngClass]="{activity:isActive(data)}" id="subclassList">
+                {{data.description | lowercase }}
+              </li>
+            </ul>
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border text-primary" *ngIf="!isDisplayed"  role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-8">
+      <div class="card">
+        <div class="card-header">
+          <nav class="nav nav-pills">
+            <a class="nav-item nav-link active" data-bs-toggle="pill" role="tab"
+               href="#clauses" aria-selected="true">Clauses
+            </a>
+            <a class="nav-item nav-link" data-bs-toggle="pill" role="tab"
+               href="#covertypes" aria-selected="false">Cover Types
+            </a>
+            <a class="nav-item nav-link" data-bs-toggle="pill" role="tab"
+               href="#covertypeclauses" aria-selected="false">Covertype clauses
+            </a>
+            <form class="row form-sm"  >
+              <div class="input-group ml-4"  id="search-input" >
+                <input class="form-control py-2 border-0" style="background-color: #F8FAFC;"
+                       pInputText type="search" placeholder="search code,id...">
+                <span class="input-group-append" style="margin:auto;">
+                  <button class="border-0"  style="background-color: #F8FAFC;">
+                    <i class="fa fa-search" style="color:#8C8C8C; margin:auto;"></i>
+                  </button>
+                </span>
+              </div>
+            </form>
+            <!--<form class="row form-sm mb-3">
+
+              <input class="form-control form-control-sm mx-4"  type="text"
+                     placeholder="Search Subclass" aria-label="Search" id="search-input"  [(ngModel)]="filterBy">
+              <i class="pi pi-search" id="search"></i>
+            </form>-->
+          </nav>
+        </div>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="clauses" role="tabpanel" aria-labelledby="clauses">
+
+            <ul class="nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#addClauseModal"
+                   (click)="loadClauses()">
+                  <i class="fa-solid fa-plus"></i>Add
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" data-bs-toggle="modal" data-bs-target="#editClauseModal">Edit</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page">Delete</a>
+              </li>
+            </ul>
+
+            <!--Add Clause Modal -->
+            <div class="modal fade" id="addClauseModal" tabindex="-1" role="dialog" aria-labelledby="addClauseModal" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                  <div class="modal-body">
+                    <p id="modal-title">Add Subclass Clause</p>
+
+                    <p-table
+                      [value]="allClauses"
+                      responsiveLayout="scroll"
+                      [showCurrentPageReport]="true"
+                      currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                      [paginator]="true"
+                      [rows]="5"
+                      styleClass="p-datatable-sm"
+                      selectionMode="single"
+                    >
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>Select</th>
+                          <th>Mandatory</th>
+                          <th>Clause ID</th>
+                          <th>Clause</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-data>
+                        <tr>
+                          <td>
+                            <p-tableCheckbox [value]="data" (click)="loadsingleclause(data.clauseCode, data.subClassCode)"></p-tableCheckbox>
+                          </td>
+                          <td>
+                            <p-cellEditor>
+                              <ng-template pTemplate="input" >
+                                <p-dropdown [options]="mandatory" appendTo="body" [(ngModel)]="data.isMandatory" [style]="{'width':'100%'}"></p-dropdown>
+                              </ng-template>
+                              <ng-template pTemplate="output">
+                                <p-dropdown [options]="mandatory" appendTo="body" [(ngModel)]="data.isMandatory" [style]="{'width':'100%'}"></p-dropdown>                                            </ng-template>
+                            </p-cellEditor>
+                          </td>
+                          <td>{{data.clauseCode}}</td>
+                          <td>{{data.shortDescription}}</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <div class="row">
+                      <div class="col-md-9">
+                        <button class="text-plain" id="outline" data-bs-dismiss="modal" >Back</button>
+                      </div>
+                      <div class="col-md-3">
+                        <button class="btn btn-primary rounded-0 px-3 me-3" id="fill">Next</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--Edit  Modal -->
+            <div class="modal fade" id="editClauseModal" tabindex="-1" role="dialog" aria-labelledby="editClauseModal" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <p id="modal-title">Edit Subclass Clause</p>
+                    <form [formGroup]="editClauseForm">
+
+                      <div class="row">
+                        <label for="clauseId" class="col-sm-4 col-form-label" id="edit-subclass-label" >Clause ID</label>
+                        <div class="form-group col-md-8 ">
+
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="clauseCode" id="clauseId">
+
+                        </div>
+
+                        <label for="clause" class="col-sm-4 col-form-label" id="edit-subclass-label" >Clause </label>
+                        <div class="form-group col-md-8 ">
+
+                          <input type="text" class="form-control form-control-sm mb-2" formControlName="shortDescription" id="clause">
+
+                        </div>
+
+                        <label for="IsMandatory" class="col-sm-4 col-form-label" id="edit-subclass-label" >Mandatory?</label>
+                        <div class="form-group col-md-8 ">
+
+                          <select id="status" class="form-control form-control-sm mb-2" id="IsMandatory" formControlName="isMandatory">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+
+                        <label for="isLien" class="col-sm-4 col-form-label" id="edit-subclass-label">Is Lien Cause?</label>
+                        <div class="form-group col-md-8 ">
+
+                          <select id="status" class="form-control form-control-sm mb-2" id="isLien" formControlName="isLienClause">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+
+                        <!-- <label for="clauseNo" class="col-sm-4 col-form-label">Clause No</label>
+                        <div class="form-group col-md-8 ">
+
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="clauseNo" id="clauseNo">
+
+                        </div> -->
+                      </div>
+                    </form>
+                    <div class="row">
+                      <div class="col-md-9">
+                        <button class="text-plain" id="outline" data-bs-dismiss="modal" >Cancel</button>
+                      </div>
+                      <div class="col-md-3">
+                        <button class="btn btn-primary rounded-0 px-3 me-3" id="fill" (click)="updateSubclassClauses()">Update</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p-table [value]="finalList"
+                     selectionMode="single"
+                     [resizableColumns]="true"
+                     styleClass="p-datatable-sm"
+                     class='ui-datatable'
+                     [autoLayout]="true"
+                     [globalFilterFields]="['code']"
+                     [rows]="5">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="code" style="width:20%;color: #8C8C8C;font-size: 12px;">Short Desc<p-sortIcon field="code"></p-sortIcon></th>
+                  <th pSortableColumn="heading" style="width:20%;color: #8C8C8C;font-size: 12px;">Heading<p-sortIcon field="heading"></p-sortIcon></th>
+                  <th pSortableColumn="lien" style="width:20%;color: #8C8C8C;font-size: 12px;">Lien<p-sortIcon field="lien"></p-sortIcon></th>
+                  <th></th>
+                </tr>
+              </ng-template>
+
+              <ng-template let-clauseList pTemplate="body">
+                <tr [pSelectableRow]="clauseList" (click)="loadSingleSubclassClause(clauseList.code)"  style="border-bottom:none;">
+                  <td>{{clauseList.short_description}}</td>
+                  <td>{{clauseList.heading}}</td>
+                  <td>{{clauseList.is_lien}}</td>
+                  <td colspan="8"></td>
+                </tr>
+              </ng-template>
+              <ng-template  pTemplate="emptymessage">
+                <tr>
+                  <td  colspan="1"></td>
+
+                  <td colspan="8"  style="padding:100px;" id="empty">No records Found</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div class="tab-pane fade" id="covertypes" role="tabpanel" aria-labelledby="covertypes">
+            <ul class="nav mt-1 mb-1">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" data-bs-toggle="modal" data-bs-target="#addEditCoverTypeModal">
+                  <i class="fa-solid fa-plus"></i>Add</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page">Edit</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page">Delete</a>
+              </li>
+            </ul>
+            <!--Add/Edit cover type Modal -->
+            <div class="modal fade" id="addEditCoverTypeModal" tabindex="-1" role="dialog" aria-labelledby="addEditCoverTypeModal" aria-hidden="true">
+              <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                  <div class="modal-body">
+                    <p id="modal-title">Add/Update Cover Date</p>
+
+                    <form [formGroup]="editClauseForm">
+
+                      <div class="row">
+                        <label for="coverTypeId" class="col-sm-2 col-form-label" id="edit-subclass-label" >ID</label>
+                        <div class="form-group col-md-2 ">
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="coverTypeId" id="coverTypeId">
+                        </div>
+
+                        <label for="coverType" class="col-sm-2 col-form-label" id="edit-subclass-label" >Cover Type </label>
+                        <div class="form-group col-md-2">
+                          <input type="text" class="form-control form-control-sm mb-2" formControlName="coverType" id="coverType">
+                        </div>
+
+                        <label for="description" class="col-sm-2 col-form-label" id="edit-subclass-label" >Description</label>
+                        <div class="form-group col-md-2">
+                          <input type="text" class="form-control form-control-sm mb-2" formControlName="description" id="description">
+                        </div>
+
+                        <label for="default" class="col-sm-2 col-form-label" id="edit-subclass-label">Default</label>
+                        <div class="form-group col-md-2 ">
+
+                          <select id="default" class="form-control form-control-sm mb-2" formControlName="default">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+
+                        <label for="defaultSi" class="col-sm-2 col-form-label" id="edit-subclass-label">Default SI</label>
+                        <div class="form-group col-md-2 ">
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="defaultsSi" id="defaultSi">
+                        </div>
+
+                        <label for="exchangeRate" class="col-sm-2 col-form-label" id="edit-subclass-label">Exchange Rate</label>
+                        <div class="form-group col-md-2 ">
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="exchangeRate" id="exchangeRate">
+                        </div>
+
+                        <label for="currency" class="col-sm-2 col-form-label" id="edit-subclass-label">Currency</label>
+                        <div class="form-group col-md-2 ">
+
+                          <select id="currency" class="form-control form-control-sm mb-2" formControlName="currency">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+
+                        <label for="paymentInstallPct" class="col-sm-2 col-form-label" id="edit-subclass-label">Payment Install Pct</label>
+                        <div class="form-group col-md-2 ">
+
+                          <select id="paymentInstallPct" class="form-control form-control-sm mb-2" formControlName="paymentInstallPct">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+
+                        <label for="maxInstall" class="col-sm-2 col-form-label" id="edit-subclass-label">Max Install</label>
+                        <div class="form-group col-md-2 ">
+                          <input type="number" class="form-control form-control-sm mb-2" formControlName="maxInstall" id="maxInstall">
+                        </div>
+
+                        <label for="installmentPeriods" class="col-sm-2 col-form-label" id="edit-subclass-label">Installment Periods</label>
+                        <div class="form-group col-md-2 ">
+
+                          <select id="installmentPeriods" class="form-control form-control-sm mb-2" formControlName="installmentPeriods">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                          </select>
+                        </div>
+                      </div>
+                    </form>
+                    <div class="row mt-3">
+                      <div class="col-md-9">
+                        <button class="text-plain" id="outline" data-bs-dismiss="modal" >Cancel</button>
+                      </div>
+                      <div class="col-md-3">
+                        <button class="btn btn-primary rounded-0 px-3 me-3" id="fill">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p-table [value]="subclassCovertype"
+                     selectionMode="single"
+                     [resizableColumns]="true"
+                     styleClass="p-datatable-sm"
+                     class='ui-datatable'
+                     [autoLayout]="true"
+                     [globalFilterFields]="['description']"
+                     [rows]="5">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="coverTypeShortDescription" style="width:20%;color: #8C8C8C;font-size: 12px;">Cover Type <p-sortIcon field="coverTypeShortDescription"></p-sortIcon></th>
+                  <th pSortableColumn="description" style="width:20%;color: #8C8C8C;font-size: 12px;">Description<p-sortIcon field="description"></p-sortIcon></th>
+                  <th pSortableColumn="isDefault" style="width:20%;color: #8C8C8C;font-size: 12px;">Default<p-sortIcon field="isDefault"></p-sortIcon></th>
+                  <th pSortableColumn="defaultSumInsured" style="width:20%;color: #8C8C8C;font-size: 12px;">Default SI<p-sortIcon field="defaultSumInsured"></p-sortIcon></th>
+                  <th pSortableColumn="sumInsuredExchangeRate" style="width:20%;color: #8C8C8C;font-size: 12px;">Exchange Rate<p-sortIcon field="sumInsuredExchangeRate"></p-sortIcon></th>
+                  <th pSortableColumn="sumInsuredCurrencyCode" style="width:20%;color: #8C8C8C;font-size: 12px;">Currency<p-sortIcon field="sumInsuredCurrencyCode"></p-sortIcon></th>
+                  <th pSortableColumn="installmentType" style="width:20%;color: #8C8C8C;font-size: 12px;">Installment Type<p-sortIcon field="installmentType"></p-sortIcon></th>
+                  <th pSortableColumn="maximumInstallments" style="width:20%;color: #8C8C8C;font-size: 12px;">Max Installment<p-sortIcon field="maximumInstallments"></p-sortIcon></th>
+                  <th pSortableColumn="paymentInstallmentPercentage" style="width:20%;color: #8C8C8C;font-size: 12px;">Payment Installment<p-sortIcon field="paymentInstallmentPercentage"></p-sortIcon></th>
+                  <th pSortableColumn="installmentPeriod" style="width:20%;color: #8C8C8C;font-size: 12px;">Installment Period<p-sortIcon field="installmentPeriod"></p-sortIcon></th>
+                </tr>
+              </ng-template>
+
+              <ng-template let-clauseList pTemplate="body">
+                <tr [pSelectableRow]="clauseList" (click)="singleSCoverType(clauseList.code)"  style="border-bottom:none;">
+                  <td>{{clauseList.coverTypeShortDescription}}</td>
+                  <td>{{clauseList.description}}</td>
+                  <td>{{clauseList.isDefault}}</td>
+                  <td>{{clauseList.defaultSumInsured}}</td>
+                  <td>{{clauseList.sumInsuredExchangeRate}}</td>
+                  <td>{{clauseList.sumInsuredCurrencyCode}}</td>
+                  <td>{{clauseList.installmentType}}</td>
+                  <td>{{clauseList.maximumInstallments}}</td>
+                  <td>{{clauseList.paymentInstallmentPercentage}}</td>
+                  <td>{{clauseList.installmentPeriod}}</td>
+                </tr>
+              </ng-template>
+              <ng-template  pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2"></td>
+
+                  <td colspan="8"  style="padding:100px;" id="empty">No records Found</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div class="tab-pane fade" id="covertypeclauses" role="tabpanel" aria-labelledby="covertypeclauses">
+            <div class="m-4">
+              <p-pickList
+                [source]="covertypetoclauseList"
+                [target]="mandatorysubclassCovertype"
+                sourceHeader="Clauses"
+                targetHeader="Cover Type Mandatory Clauses"
+                [dragdrop]="true"
+                [responsive]="true"
+                breakpoint="1400px"
+                [showTargetControls]="false"
+                [showSourceControls]="false"
+                [metaKeySelection]="false"
+              >
+                <ng-template let-data pTemplate="item">
+                  <p-table #table [value]="data" [scrollable]="true" scrollHeight="200px">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Test</th>
+
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData>
+                      <tr>
+                        <td>
+                          {{rowData.code}}
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </ng-template>
+              </p-pickList>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
