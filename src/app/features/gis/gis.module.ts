@@ -13,12 +13,17 @@ import { TabViewModule } from 'primeng/tabview';
 import { ClausesComponent } from './components/setups/components/clause/clauses/clauses.component';
 import {ListboxModule} from "primeng/listbox";
 import {SharedModule} from "../../shared/shared.module";
+import {
+  SubclassClausesComponent
+} from "./components/setups/components/clause/subclass-clauses/subclass-clauses.component";
+import {PickListModule} from "primeng/picklist";
 
 
 @NgModule({
   declarations: [
     TaxRatesComponent,
-    ClausesComponent
+    ClausesComponent,
+    SubclassClausesComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +38,7 @@ import {SharedModule} from "../../shared/shared.module";
     FormsModule,
     ListboxModule,
     SharedModule,
-
+    PickListModule,
 
   ],
   schemas: [
