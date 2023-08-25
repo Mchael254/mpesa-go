@@ -1,0 +1,172 @@
+<div class="row mx-3 my-2">
+    <div class="row">
+        <div class="col-6">
+          <p class="title1">
+            <!-- <nb-icon icon="arrow-circle-left" id="iconStyle" class="mb-3" style="font-size:1.5rem;"></nb-icon> -->
+            Client and Insured Setups</p>
+        </div>
+        <div class="col-6 d-flex justify-content-end">
+          <p class="text-right" style="color:#00529B;"><a>Help <i class="pi pi-question-circle"></i></a></p>
+      
+        </div>
+      </div>
+        <div class="row mb-4">
+            <div class="col-xl-3">
+            <div class="card" id="left">   
+            <div class="card-body">
+             <div class="row  mb-2">
+                <div class="col-7 "><p class="title2">Interested Parties</p></div>
+                <div class="col-5 "><p class="report">Report</p></div>
+              </div>
+             <div class="row mb-3">
+                    <div class="col-xl-7 "><button class="btn btn waves-effect waves-light" id="new" (click)="newParty()" >New</button></div>
+                    <br><br>
+                    <!-- <div class="col-xl-5"><button class="btn" id="delete" (click)="deleteParty()" class="text-center border-0" >Delete</button></div> -->
+              </div>
+              
+              <div class="card flex justify-content-center">
+                    <p-dropdown [options]="interestedPartiesData"
+                                [(ngModel)]="selected"
+                                optionLabel="name"
+                                (click)="selected && loadInterestedParties(selected.code)" 
+                                [showClear]="true"
+                                [style]="{'height':'40px','width':'100%'}"
+                                placeholder="Select an option">
+                    </p-dropdown>
+              </div>
+              
+              
+              
+              <!-- <div class="flex justify-content-center"  >
+                <p-dropdown [options]="interestedPartiesData" [(ngModel)]="selected" optionLabel="name"
+                 [filter]="true" filterBy="name"(click)="selected && loadInterestedParties(selected.code)" 
+                 [showClear]="true" [style]="{'height':'30px','width':'100%'}">
+                        <ng-template pTemplate="selectedItem">
+                          <div class="flex align-items-center gap-2" *ngIf="selected">
+                            <div style="font-size: 13px;margin-top: -8px;">{{ selected.name }}</div>
+                          </div>
+                        </ng-template>
+                        <ng-template let-partyList pTemplate="item">
+                          <div class="flex align-items-center gap-2" style="margin-bottom: -10px;">
+                            <div style="font-size: 13px;">{{ partyList.name }}</div>
+                          </div>
+                        </ng-template>
+                 </p-dropdown>
+                
+              </div>  -->
+            </div>
+            </div>
+        </div>
+        <br>
+        <div class="col-xl-9">
+            <div class="card" style="box-sizing: border-box;
+              background: #FFFFFF;
+              border: 1px solid rgba(220, 220, 220, 0.85);
+              border-radius: 5px;">
+              <div class="card-body">
+                  <p class="title3" >Interested Parties</p>
+                  <hr>
+              <div class="content"  >
+                  <form [formGroup]="partyForm">
+                   <div class="row">
+                    
+                    <div class="col-xl-6">
+                          <div class="row">
+                            <div class="col-xl-4">
+                              <label class="form-label" for="input"><span class="inputtext"><span class="required">*</span> Name:</span></label>
+                            </div>
+                            <div class="col-xl-8">
+                              <input type="text" class="form-control form-control-sm mb-1" formControlName="name">
+                            </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                              <div class="col-xl-4">
+                                <label class="form-label" for="input"><span class="inputtext">Postal Address:</span></label>
+                              </div>
+                              <div class="col-xl-8">
+                                <input type="text" class="form-control form-control-sm mb-1" formControlName="postal_address" >
+                              </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                              <div class="col-xl-4">
+                                <label class="form-label" for="input"><span class="inputtext">Email:</span></label>
+                              </div>
+                              <div class="col-xl-8">
+                                <input type="text" class="form-control form-control-sm mb-1" formControlName="email" >
+                              </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                              <div class="col-xl-4">
+                                <label class="form-label" for="input"><span class="inputtext">Remarks:</span></label>
+                              </div>
+                              <div class="col-xl-8">
+                                <textarea class="form-control form-control-sm rounded-0" id="exampleFormControlTextarea2"  rows="3" formControlName="remark" ></textarea>
+                              </div>
+                            </div>
+                            <br>
+                      </div>
+              
+                    <div class="col-xl-6">
+                      <div class="row">
+                        <div class="col-xl-4">
+                          <label class="form-label" for="input"><span class="inputtext"><span class="required">*</span> Branch Name:</span></label>
+                        </div>
+                        <div class="col-xl-8">
+                          <input type="text" class="form-control form-control-sm mb-1" formControlName="branch_name" required  >
+                        </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                          <div class="col-xl-4">
+                            <label class="form-label" for="input"><span class="inputtext">Postal Code:</span></label>
+                          </div>
+                          <div class="col-xl-8">
+                            <input type="text" class="form-control form-control-sm mb-1" formControlName="postal_code">
+                          </div>
+                      </div>
+                      <br>
+                      <div class="row">
+                        <div class="col-xl-4">
+                          <label class="form-label" for="input"><span class="inputtext">Mobile No:</span></label>
+                        </div>
+                        <div class="col-xl-8">
+                          <input class="form-control form-control-sm mb-1" formControlName="">
+                        </div>
+                    </div>
+                    <br>
+                    </div>
+                   </div>
+                  </form>
+                  <br>
+                  <hr>
+                  <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                      <div class="row">
+                        <div class="col-xl-6 "><button class="btn btn waves-effect waves-light" id="clear" (click)="newParty()" >Clear</button></div>
+                        <br><br>
+                        <div class="col-xl-6"><button class="btn btn waves-effect waves-light" id="save" (click)="save()">Save</button></div>
+                      </div>
+                    </div>
+                  </div>
+      
+                </div>
+              </div>
+              </div>
+            </div>
+        
+        </div>
+</div>
+
+    
+  
+  
+    
+  
+  
+  
+  
+  
