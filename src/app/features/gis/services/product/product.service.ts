@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import { FormScreen, Product_group, Products, SubclassesDTO, productDocument } from '../../components/setups/data/gisDTO';
+import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +65,9 @@ export class ProductService {
       catchError(this.errorHandl)
     )
   }
+  getAllScheduleReports(): Observable<any>{
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe();
+  }
   getProductByCode(code: number): Observable<Products[]>{
     
     return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
@@ -124,6 +127,20 @@ export class ProductService {
   saveProductDocument(data:productDocument[]) {
     return this.http.post<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents`, JSON.stringify(data),this.httpOptions)
       .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+    }
+     /* REPORT GROUP */
+
+     getReportGroup(){
+      return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+    }
+    getReportGroupDetails(code:any):Observable<report[]>{
+      return this.http.get<report[]>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups/${code}`).pipe(
         retry(1),
         catchError(this.errorHandl)
       )

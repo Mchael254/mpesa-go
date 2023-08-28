@@ -1,0 +1,421 @@
+    <!-- Top Header Text and Breadcrumb !-->
+    <div class="d-flex justify-content-between my-4 ms-4">
+      <div class="mr-auto p-2">
+        <p class="title1">
+          Product Setups <i class="pi pi-angle-right"> </i>Product definition</p>
+      </div>
+      <div class="me-4">
+        <p class="text-right" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
+      </div>
+    </div>
+    <div class="row my-4 ms-4 me-4">
+        <div class="col-sm-4">
+          <div class="card">
+            <div class="card-body">
+                <div class="row">
+                  <div class="col-xl-4">
+                    <p id="tabbed" class="activate">Setup Wizard </p>
+                  </div>
+                  <div class="col-xl-8">
+                    <p id="tabbed" routerLink="/home/gis/product-setup">Product Groups and Products</p>
+                  </div> 
+                </div>
+                <div id="info" class="p-2 mt-2">
+                    <p id="intro">In this quick wizard we will take you through setting up products.</p>
+                    <p id="get-started"  (click)="hideParent()" (click)="selectedScreen('2')" >Get Started <span class="ml-3"><i class="pi pi-arrow-right mr-2 mt-1" style="font-size: 0.8rem;"></i></span></p>
+                </div>
+                <!-- <ol class="mt-4">
+                  <li (click)="selectCard(1)" [ngClass]="{ 'active': selectedCard === 1 }">
+                    <span [ngClass]="{ 'checked': selectedCard === 2 ||selectedCard === 3||selectedCard === 4 }" class="mr-2">
+                      <span class="circle" *ngIf="selectedCard !== 2 && selectedCard !== 3 && selectedCard !== 4">{{ 1 }}</span>
+                      <span class="tick" *ngIf="selectedCard === 2 || selectedCard == 3 || selectedCard == 4">&#10003;</span>
+                    </span>
+                    Product details
+                  </li>
+                  <li (click)="selectCard(2)" [ngClass]="{ 'active': selectedCard === 2 }">
+                    <span [ngClass]="{ 'checked': selectedCard === 3 ||selectedCard === 4}" class="mr-2">
+                      <span class="circle" *ngIf="selectedCard !== 3 && selectedCard !== 4">{{ 2 }}</span>
+                      <span class="tick" *ngIf="selectedCard === 3 || selectedCard === 4">&#10003;</span>
+                    </span>
+                    Product Sub Classes</li>
+                  <li (click)="selectCard(3)" [ngClass]="{ 'active': selectedCard === 3 }">
+                    <span [ngClass]="{ 'checked': selectedCard === 4 }" class="mr-2">
+                      <span class="circle" *ngIf="selectedCard !== 4">{{ 3 }}</span>
+                      <span class="tick" *ngIf="selectedCard === 4">&#10003;</span>
+                    </span>
+                    Product document</li>
+                </ol> 
+             
+                -->
+                <ul class="mt-4">
+                  <li (click)="selectedScreen('2')" [class.active] = "detailsDone == false"><span id="num"><span *ngIf="detailsDone">1</span><span *ngIf="!detailsDone" style="color:#00529B"><i class="pi pi-check" style="font-size:10px;"></i></span></span>Product details</li>
+                  <li (click)="selectedScreen('3')" [class.active] = "subclassDone == false"><span id="num"><span *ngIf="subclassDone">2</span><span *ngIf="!subclassDone" style="color:#00529B"><i class="pi pi-check" style="font-size:10px;"></i></span></span>Product Sub Classes</li>
+                  <li (click)="selectedScreen('4')" ><span id="num">3</span> Product document</li>
+                
+                </ul>
+                  <p class="text-right" id="skip" routerLink="/home/gis/product-setup">Skip Wizard</p>
+            </div>
+          </div>
+        </div>
+    
+        <!--calendar-->
+        <div class="col-sm-8">
+            <div class="card" style="width:100%" *ngIf="page==null || page=='1'" >
+                <div class="card-body text-center">
+                  <p id="title1">Product Definition Setup Wizard</p>
+                  <p id="welcome">Welcome</p>
+                  <img src="assets/images/gis-setup-wizard.png">
+                  <p id="more-info">In this quick wizard we will take you through setting up a product and a <br> product subclass
+                    .For you to get started you need to set up a product.<br>
+                     Make sure to go through it to the end.</p>
+                     <button class="btn btn waves-effect waves-light mb-4" id="start" (click)="selectedScreen('2')" (click)="hideParent()">Get started<span class="ml-2"><i class="pi pi-arrow-right mr-2 mt-1" style="font-size: 0.8rem;"></i></span></button>
+                     <p id="skip" routerLink="/home/gis/product-setup">Skip Wizard</p>
+                </div>
+            </div>
+            <!-- Product Details -->
+            <div *ngIf="page=='2'" >
+                <div class="card" style="width:100%; background: white;">
+                    <div class="card-header" style="background: white;">
+                        <label class="label2">Product Group</label>
+                    </div>
+                    <div class="card-body" style="margin-bottom: -19px;">
+                      <form [formGroup]="productGroupForm">
+                        <div class="row">
+                          <div class="col-xl-8">
+                             <div class="row">
+                              <div class="col-xl-4">
+                                  <label class="labels">Product Code</label>
+                                  <input class="form-control form-control-sm mb-4" formControlName="code">
+                              </div>
+                              <div class="col-xl-4">
+                                  <label class="labels">Product Description</label>
+                                  <input class="form-control form-control-sm mb-4" formControlName="description" required>
+                              </div>
+                              <div class="col-xl-4">
+                                  <label class="labels">Group Type</label>
+                                  <select class="form-select form-select-sm mb-4" formControlName="type" required>
+                                    <option value="OTHERS">Others</option>
+                                    <option value="MOTOR">Motor</option>
+                                    <option value="MARINE">Marine</option>
+                                    <option value="FIRE">Fire</option>
+                                    <option value="GACC">General Accident</option>
+                                    <option value="OAG">Oil and Gas</option>
+                                    <option value="BONDS">Bonds</option>
+                                    <option value="ENGINE">Engineering</option>
+                                    <option value="MSCLN">Miscellaneous</option>
+                                    <option value="MEDICAL">Medical</option>
+                                    <option value="THEFT">Theft</option>
+                                    <option value="ACC">Accident</option>
+                                    <option value="TRAVEL">Travel</option>
+                                  </select>
+                              </div>
+                             </div>
+                          </div>
+                          <div class="col-xl-4">
+                              <div class="row mt-4">
+                                  <div class="col-xl-6 "><button class="btn btn waves-effect waves-light ml-4" id="new" (click)="productGroupForm.reset()">Clear</button></div>
+                                  <br><br>
+                                  <div class="col-xl-6"><button class="btn btn waves-effect waves-light" id="delete" (click)="createProdGroup()">Save</button></div>
+                                </div>
+                          </div>
+                      </div>
+                      </form>
+                        
+                    </div>
+                </div>
+                <div class="card mt-3" style="width:100%">
+                    <div class="card-header" style="background:white">
+                      <span class="circle1 mr-1" *ngIf="selectedCard == 1">{{ 1 }}</span>
+                        <label class="label2">Product Details</label>
+                    </div>
+                    <div class="card-body select">
+                      <div class="row">
+                        <div *ngFor="let data of mandatoryFrontendScreens" class="col-6">
+                          <form [formGroup]="productForm">
+                            <div class="mandatory">
+                              <div class="row">
+                                <label for="{{data.name}}" class="col-sm-4 col-form-label labels">{{data.label}}:</label>
+                                <div class="form-group col-md-8 ">
+                                  <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'scheduleOrder'">
+                                    <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                      formControlName="{{data.name}}">
+                                      <option *ngFor="let option of data.selectOptions" value="{{option.isSelected}}"
+                                        selected="{{option.isSelected}}">{{option.text}}</option>
+                                    </select>
+                                  </div>
+                            
+                                  <div *ngIf="data.type === 'select' && data.name == 'prerequisiteProductCode'">
+                                    <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                      formControlName="{{data.name}}">
+                                      <option *ngFor="let option of allProducts" value="{{option.code}}"
+                                        selected="{{option.code}}">{{option.description}}</option>
+                                    </select>
+                                  </div>
+                                  <div *ngIf="data.type === 'select' && data.name == 'scheduleOrder'">
+                                    <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                      formControlName="{{data.name}}">
+                                      <option *ngFor="let option of allScheduleReports" value="{{option.code}}"
+                                        selected="{{option.code}}">{{option.description}}</option>
+                                    </select>
+                                  </div>
+                                  <div *ngIf="data.type !== 'select'">
+                                    <input type="{{data.type}}" class="form-control form-control-sm mb-2"
+                                      formControlName="{{data.name}}" id="{{data.name}}">
+                                  </div>
+        
+        
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+        
+                      </div>
+                      <p (click)="show=!show" class="text-left" id="more" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+                        aria-expanded="false" aria-controls="collapseExample">More Details <span class="ml-1"
+                          data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false"
+                          aria-controls="collapseExample"> <i class="pi pi-chevron-up" style="font-size:13px"
+                            *ngIf="!show"></i><i class="pi pi-chevron-down" style="font-size:13px" *ngIf="show"></i></span> </p>
+                            
+                      <div class="collapse" id="collapseExample">
+                        <div class="row">
+                          <div *ngFor="let data of optionalFrontendScreens" class="col-6">
+                            <form [formGroup]="productForm">
+                              <div class="mandatory">
+                                <div class="form-row">
+                                  <label for="{{data.name}}" class="col-sm-4 col-form-label">{{data.label}}:</label>
+                                  <div class="form-group col-md-8 ">
+        
+                                    <input type="{{data.type}}" class="form-control form-control-sm mb-2"
+                                      formControlName="{{data.name}}" id="{{data.name}}">
+        
+                                  </div>
+                                </div>
+                              </div>
+        
+        
+        
+        
+        
+                            </form>
+        
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card-footer">
+                        <div class="row mt-1">
+                            <div class="col-xl-6">
+                                <button class="btn btn waves-effect waves-light" id="new" (click)="selectedScreen('1')" (click)="hideParent()">Back</button>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="row">
+                                    <div class="col-xl-4 "><button class="btn btn waves-effect waves-light ml-5" id="new" (click)="productForm.reset()">Clear</button></div>
+                                    <br><br>
+                                    <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-5" id="delete" (click)="createProduct()">Save</button></div>
+                                    <br><br>
+                                    <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-3" id="delete" (click)="selectCard(2)" (click)="selectedScreen('3');detailsDone=!detailsDone" (click)="hideSubclass()" >Next</button></div>
+                                  </div>
+                            </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+          </div>
+
+            <!-- Product Subclasses -->
+            <div class="card" style="width:100%" *ngIf="page=='3'">
+                <div class="card-header" style="background:white">
+                  <span class="circle1 mr-1" *ngIf="selectedCard == 2">{{ 2 }}</span>
+                  <label class="label2">Add Product Subclasses</label>
+                </div>
+                <div class="card-body">
+                  
+                <p-table
+                #dt
+                [value]="allSubclasses"
+                [(selection)]="selected"
+                dataKey="code"
+                [rowHover]="true"
+                styleClass="p-datatable-sm"
+                [rows]="5"
+                [showCurrentPageReport]="true"
+                [paginator]="true"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                [filterDelay]="0"
+                [globalFilterFields]="['code', 'description']"
+                >
+                <ng-template pTemplate="header">
+                    <tr>
+                          <th style="width: 4rem">
+                              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                          </th>
+                          <th pSortableColumn="code" style="min-width: 8rem">
+                              <div class="flex justify-content-between align-items-center subclasslables">
+                                  Subclass Code
+                                  <p-sortIcon field="code"></p-sortIcon>
+                              </div>
+                          </th>
+                          <th pSortableColumn="description" style="min-width: 20rem">
+                              <div class="flex justify-content-between align-items-center subclasslables">
+                                  Subclass
+                                  <p-sortIcon field="description" class="subclasslables"></p-sortIcon>
+                              </div>
+                          </th>
+                          <th style="width: 5rem"></th>
+                      </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-customer>
+                    <tr class="p-selectable-row tabledata">
+                        <td>
+                            <p-tableCheckbox [value]="customer"></p-tableCheckbox>
+                        </td>
+                        <td>
+                          {{ customer.code}}
+                        </td>
+                        <td>
+                          {{customer.description}}
+                      </td>
+                      <td></td>
+                    </tr>
+                </ng-template>
+            
+                  <ng-template pTemplate="emptymessage">
+                      <tr>
+                          <td colspan="8">No records found.</td>
+                      </tr>
+                  </ng-template>
+                  <ng-template pTemplate="paginatorleft" class="mt-4">
+                 
+                    <!-- <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button> -->
+                    <p id="setup" routerLink="/home/gis/classSetupsWizard/3">Set up a subclass</p>
+                </ng-template>
+                  </p-table>
+               
+                </div>
+                <div class="card-footer">
+                <div class="row mt-1">
+                  <div class="col-xl-6">
+                      <div class="col-xl-6 "><button class="btn btn waves-effect waves-light" id="new" (click)="selectedScreen('2')" (click)="hideSubclass()">Back</button></div>
+                  </div>
+                  <div class="col-xl-6">
+                      <div class="row">
+                          <div class="col-xl-4 "><button class="btn btn waves-effect waves-light ml-5" id="new">Clear</button></div>
+                          <br><br>
+                          <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-5" id="delete" (click)="createProductSubclass()">Save</button></div>
+                          <br><br>
+                          <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-3" id="delete" (click)="selectCard(3)" (click)="selectedScreen('4');subclassDone=!subclassDone" (click)="hideProductDocument()">Next</button></div>
+                        </div>
+                  </div>
+              </div>
+              </div>
+  
+              </div>
+               <!-- Product document -->
+            <div class="card" style="width:100%" *ngIf="page=='4'">
+                <div class="card-header" style="background:white">
+                  <span class="circle1 mr-1" *ngIf="selectedCard == 3">{{ 3 }}</span>
+                  <label class="label2">Add Product Documents</label>
+                </div>
+                <div class="card-body">
+                  <form [formGroup]="productdocumentform">
+                    <div class="row">
+                                
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">Product Group</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <select class="form-control form-control-sm mb-1">
+                              <option value="Y">Yes</option>
+                              <option value="N">No</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                      </div>
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">Product</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <input type="text"  class="form-control form-control-sm mb-2" formControlName="productCode" required>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <div class="row mt-2">
+                                
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">File Name</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <input type="file"  class="form-control-file" formControlName="name" (change)="handleUpload($event)" required>
+          
+                          </div>
+                        </div>
+                        
+                      </div>
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">*WEF</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <input type="date"  class="form-control form-control-sm mb-2" formControlName="dateWithEffectFrom" required>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                    <div class="row mt-2">
+                                
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">*WET</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <input type="date"  class="form-control form-control-sm mb-2" formControlName="dateWithEffectTo" required>
+                          </div>
+                        </div>
+                        
+                      </div>
+                      <div class="col-xl-6">
+                        <div class="row">
+                          <div class="col-xl-5">
+                            <label class="labels" for="input">Subclass Precedence</label>
+                          </div>
+                          <div class="col-xl-7">
+                            <select class="form-control form-control-sm mb-1" formControlName="precedence">
+                              <option value="Y">Yes</option>
+                              <option value="N">No</option>
+                            </select>
+                          </div>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <hr>
+                <div class="row mt-1">
+                  <div class="col-xl-6">
+                      <div class="col-xl-6 "><button class="btn btn waves-effect waves-light" style="margin-left: 10px;" id="new" (click)="selectedScreen('3')" (click)="hideProductDocument()">Back</button></div>
+                  </div>
+                  <div class="col-xl-6">
+                      <div class="row">
+                          <div class="col-xl-6 "><button class="btn btn waves-effect waves-light ml-5" id="new">Clear</button></div>
+                          <br><br>
+                          <div class="col-xl-6"><button class="btn btn waves-effect waves-light ml-5" style="margin-right: 10px;" id="delete" (click)="selectCard(4)" (click)="saveProductDocument()">Save</button></div>
+                         
+                        </div>
+                  </div>
+              </div>
+              </div>
+    </div>
+    </div>

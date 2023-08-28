@@ -8,10 +8,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductDefinitionComponent } from './product-definition/product-definition.component';
 import { TableModule } from 'primeng/table';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ProductSetupWizardComponent } from './product-setup-wizard/product-setup-wizard.component';
 
 
 @NgModule({
-  declarations: [ProductDefinitionComponent],
+  declarations: [ProductDefinitionComponent, ProductSetupWizardComponent],
   imports: [
     CommonModule,
     FormsModule,
