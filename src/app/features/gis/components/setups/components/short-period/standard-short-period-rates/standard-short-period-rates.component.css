@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+.nav-pills .nav-item .nav-link.active {
+    background-color: #00529B;
+    color:#FFFFFF;
+  }
+  .nav-link{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 17px;
+    color: #00529B;
+}
+#modalLabel{
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  display: flex;
+  color: #00529B;
+}  
+#label{
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 17px;
+ 
+}
+#addbtn{
+width: 120px;
+height: 35px;
+background: #00529B;
+padding:1px;
+border-radius: 5px;
+font-family: 'Roboto';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+}
+#title{
+background-color: #00529B;
+width: 170px;
+height: 40px;
+
+border-radius: 4px;
+color:#FFFFFF;
+}
+#btn{
+    background-color: #FFFFFF;
+    height: 43px;
+    border-radius: 0px;
+}
+.card-header{
+  background-color: #FFFFFF;
+}
