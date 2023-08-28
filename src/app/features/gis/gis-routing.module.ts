@@ -9,6 +9,7 @@ import {ClausesComponent} from "./components/setups/components/clause/clauses/cl
 import {
   SubclassClausesComponent
 } from "./components/setups/components/clause/subclass-clauses/subclass-clauses.component";
+import { StandardShortPeriodRatesComponent } from './components/setups/components/short-period/standard-short-period-rates/standard-short-period-rates.component';
 
 const routes: Routes = [
   {
