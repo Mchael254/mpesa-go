@@ -178,6 +178,7 @@ export class MenuService{
     name: 'Short Period',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-dumbbell',
+    link:'/home/gis/setup/short-period/standard-short-period-rates',
     menuItems: [],
     collapsed:true,
   },
