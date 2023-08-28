@@ -1,0 +1,143 @@
+<div class="base-content-section setups">
+    <div class="row">
+        <div>
+            <p class="float-start leftHeaderTitle">
+                <span class="circle-icon "><i class="fa-solid fa-arrow-left fa-sm icon-white"></i></span>
+                Cover Types and Sections
+            </p>
+            <p class="float-end mb-3" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
+        </div>
+        <div class="col-sm-3 left">
+            <div class="card">
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <p class="leftTitle">Sections</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="float-start btn btn-outline-primary text-primary"
+                            (click)="createNewSection()">New</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="float-end btn btn-primary">Delete</button>
+                    </div>
+                    <div class="col-sm-12 mt-3">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Search Sections" aria-label="search"
+                                aria-describedby="search" (keyup)="filterSections($event)">
+                            <span class="input-group-text" id="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </div>
+                        <div class="spinner" style="position: relative">
+                            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
+                                size="medium" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                        </div>
+                        <div class="listing">
+                            <ul>
+                                <li *ngFor="let data of filteredSection" (click)="selectedSection(data.code,data)">
+                                    {{ data.description | titlecase }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9 right">
+            <div class="card">
+                <div class="row">
+                    <div class="col">
+                        <p class="leftHeader">
+                            <span class="leftNum" style="color:#00529B;border:1px solid #00529B">1</span>
+                            Add a Section
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p class="float-end leftHeader">Reports</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="sectionForm">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label for="inputId" class="col-sm-5 col-form-label">Section Short Desc:</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="inputId"
+                                            formControlName="shortDescription">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label for="inputCover" class="col-sm-5 col-form-label">Description:</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="inputCover"
+                                            formControlName="description">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group row">
+                                    <label for="inputDetails" class="col-sm-5">Section Type:</label>
+                                    <div class="col-7">
+                                        <select class="form-select" id="inputDetails" formControlName="type">
+                                            <option selected>Type</option>
+                                            <option value="ES">Extension SI</option>
+                                            <option value="EL">Extension Limit</option>
+                                            <option value="SS">Section SI</option>
+                                            <option value="SL">Section Limit</option>
+                                            <option value="DI">Discount (Inclusive of other Discounts)</option>
+                                            <option value="ED">Discount (Exlusive of other Discounts)</option>
+                                            <option value="EL">Discount (Inclusive of other Discounts)</option>
+                                            <option value="L">Loading</option>
+                                            <option value="E">Escalation</option>
+                                            <option value="CD">No Claim Discount</option>
+                                            <option value="EQ">Earth Quake</option>
+                                            <option value="DO">Day One</option>
+                                            <option value="FL">No FAP Section Limit</option>
+                                            <option value="EP">Excess Protector</option>
+                                            <option value="RS">Rider Section SI</option>
+                                            <option value="LD">First Loss Discount</option>
+                                            <option value="OD">Loading on Declaration</option>
+                                            <option value="LL">Liability Loading</option>
+                                            <option value="CL">Seat Capacity Loading</option>
+                                            <option value="AL">Vehicle Age Loading/Discount</option>
+                                            <option value="LC">Cubic Capacity Loading</option>
+                                            <option value="ET">Emergency Treatment</option>
+                                            <option value="OL">Odometer Mileage Loading</option>
+                                            <option value="MD">Odometer Mileage Discount</option>
+                                            <option value="GL">Garage Loading</option>
+                                            <option value="GD">Garage Discount</option>
+                                            <option value="ND">No of Claims Discount</option>
+                                            <option value="DD">Driver Age Loading/Discount</option>
+                                            <option value="VD">Vehicle Usage Loading/Discount</option>
+                                            <option value="LD">Location Loading/Discount</option>
+                                            <option value="CB">CashBack</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-8">
+                                <button class="btn btn-outline-primary">Back</button>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row float-end">
+                                    <div class="col-sm-6">
+                                        <button class="btn btn-outline-primary" (click)="sectionForm.reset()">Clear</button>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button class="btn btn-primary" (click)="save()">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
