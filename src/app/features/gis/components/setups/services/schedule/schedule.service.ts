@@ -3,7 +3,6 @@ import {Observable, retry} from "rxjs";
 import {ScreenCode, ScreenCodes} from "../../data/gisDTO";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
-import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
