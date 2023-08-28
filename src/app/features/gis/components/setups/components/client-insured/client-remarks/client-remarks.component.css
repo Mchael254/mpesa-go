@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+ 
+/* 
+// .title1{
+//     font-family: 'Lato';
+//     font-style: normal;
+//     font-weight: 700;
+//     font-size: 22px;
+//     line-height: 29px;
+
+//     color: #00529B;
+// } */
+#arrow{
+font-size: 1.3rem;
+}
+.title2{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+
+}
+li a{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: #00529B;
+    text-decoration: none;
+
+}
+::ng-deep{
+    .breadcrumb-item+.breadcrumb-item:before{
+        color: #959595;
+        content: ">";
+    }
+    .breadcrumb-item.active{
+        font-family: 'Lato';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 19px;
+        color: #00529B;
+        text-decoration: none;
+    }
+    /* // .p-datatable.p-datatable-sm .p-datatable-tbody>tr>td {
+    //     padding: 0.5rem;
+    //     max-width: 30px;
+    //     white-space: nowrap;
+    //     overflow: hidden;
+    //     text-overflow: ellipsis;
+    //     max-width: 80px;
+    // } */
+}
+.breadcrumb{
+    background-color: transparent;
+}
+li a{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+}
+th{
+    font-size: 12px;
+}
+td{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    /* identical to box height */
+
+    /* //text-transform: lowercase; */
+
+    color: #000000;
+
+}
+.modal-title{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+}
+#addClientsTitle{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+
+}
+label{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+}
+.btn{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+    width: 88.836px;
+    border-radius: 2px;
+}
+.btn-primary{
+    color: #ffffff;
+    background: #00529B;
+}
+option{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+}

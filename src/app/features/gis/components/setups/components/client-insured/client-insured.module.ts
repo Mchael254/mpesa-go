@@ -5,18 +5,25 @@ import { ClientInsuredRoutingModule } from './client-insured-routing.module';
 import { InterestedPartiesComponent } from './interested-parties/interested-parties.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ClientRemarksComponent } from './client-remarks/client-remarks.component';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 
 
 @NgModule({
   declarations: [
-    InterestedPartiesComponent
+    InterestedPartiesComponent,
+    ClientRemarksComponent
   ],
   imports: [
     CommonModule,
     ClientInsuredRoutingModule,
     DropdownModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule
+
   ]
 })
 export class ClientInsuredModule { }

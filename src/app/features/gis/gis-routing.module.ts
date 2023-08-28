@@ -63,6 +63,11 @@ const routes: Routes = [
     path:'interested-parties',
     loadChildren:() => import('./components/setups/components/client-insured/client-insured.module').then(m => m.ClientInsuredModule),
    },
+   {
+    path:'client-remarks',
+    loadChildren:() => import('./components/setups/components/client-insured/client-insured.module').then(m => m.ClientInsuredModule),
+   },
+
 
 ];
 
