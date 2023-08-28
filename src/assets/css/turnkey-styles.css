@@ -60,8 +60,6 @@ html,body {
   border-radius: 0;
 }
 
-.setups {}
-
 .setups .card {
   padding: 20px;
   border-radius: 0;
@@ -397,3 +395,66 @@ color: #00529B;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
 }
+
+/**Gis Setup Start**/
+.leftHeaderTitle {
+  font-family: Lato;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 29px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.circle-icon {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background-color: #00529B;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  margin-right: 10px;
+}
+
+.icon-white {
+  color: white;
+}
+
+.leftTitle {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 19px;
+  color: #00529B;
+  width: 82px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #00529B;
+}
+
+.leftHeader {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: #00529B;
+}
+
+.leftNum {
+  margin-right: 10px;
+  border: 1px solid #000000;
+  background: white;
+  border-radius: 100%;
+  color: black;
+  display: inline-block;
+  padding: 4px 8px 5px 7px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+/**Gis Ends**/
