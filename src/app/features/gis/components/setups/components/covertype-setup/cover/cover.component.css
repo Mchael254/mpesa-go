@@ -1,0 +1,32 @@
+/* #header::before {
+
+    margin-left: -30px;
+    margin-right: 10px;
+    border: 1px solid #00529B;
+    content: counter(item);
+    background: white;
+    border-radius: 100%;
+    width: 19.5px;
+    height: 22px;
+    color: #00529B;
+    display: inline-block;
+    padding-left: 4px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    padding-left: 5px;
+    padding-top: 3px;
+
+} */
+
+
+/* #card-header {
+    height: 25px;
+    background-color: #ffff
+} */
+
+.card-header {
+    background-color: #ffff;
+}

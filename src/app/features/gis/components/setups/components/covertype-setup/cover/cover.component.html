@@ -1,0 +1,119 @@
+<div class="base-content-section setups">
+    <div class="row">
+        <div>
+            <p class="float-start leftHeaderTitle">
+                <span class="circle-icon "><i class="fa-solid fa-arrow-left fa-sm icon-white"></i></span>
+                Cover Types and Sections
+            </p>
+            <p class="float-end mb-3" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
+        </div>
+        <div class="col-sm-3 left">
+            <div class="card">
+                <div class="row">
+                    <div class="col-sm-12 mb-3">
+                        <p class="leftTitle">Cover Types</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="float-start btn btn-outline-primary text-primary"
+                            (click)="newCover()">New</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="float-end btn btn-primary" 
+                            (click)="deleteCover()">Delete</button>
+                    </div>
+
+                    <div class="col-sm-12 mt-3">
+                        <div class="input-group mb-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   placeholder="Search Cover"
+                                   aria-label="search" 
+                                   aria-describedby="search" 
+                                   (keyup)="filterCovers($event)">
+                            <span class="input-group-text" id="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                        </div>
+                        <div class="spinner" style="position: relative">
+                            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
+                                size="medium" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                        </div>
+                        <div class="listing">
+                            <ul>
+                                <li *ngFor="let data of filteredCover"
+                                    (click)="loadCoverType(data.code,data)">
+                                    {{ data.description | titlecase }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9 right">
+            <div class="card">
+                <div class="card-header">
+                    <p class="leftHeader"><span class="leftNum" style="color:#00529B;border:1px solid #00529B">1</span>
+                        Add a Section
+                    </p>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="coverForm">
+                        <div class="row g-3 mb-3">
+                            <div class="col-4">
+                                <div class="form-group row">
+                                    <label for="inputId" class="col-sm-5 col-form-label">ID:</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="inputId" formControlName="short_description">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group row">
+                                    <label for="inputCover" class="col-sm-5 col-form-label">Cover Types:</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="inputCover" formControlName="description">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group row">
+                                    <label for="inputMinSI" class="col-sm-5 col-form-label">Min SI:</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" id="inputMinSI" formControlName="minimum_sum_insured">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="inputDetails" class="col-sm-2">Details:</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control form-control-sm rounded-0" id="inputDetails" rows="3"
+                                    formControlName="details" placeholder="Enter Details" required>
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-8">
+                                <button class="btn btn-outline-primary">Cancel</button>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row float-end">
+                                    <div class="col-sm-6">
+                                        <button class="btn btn-outline-primary" (click)="newCover()">Clear</button>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button class="btn btn-primary" (click)="save()">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
