@@ -4,7 +4,7 @@ import {take} from "rxjs/operators";
 import {ScreenCode} from "../../../data/gisDTO";
 import {Logger} from "../../../../../../../shared/services";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import { NgxSpinnerService } from 'ngx-spinner';
+import {NgxSpinnerService} from 'ngx-spinner';
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 
 
@@ -18,9 +18,10 @@ const log = new Logger('ScreenCodesComponent');
 export class ScreenCodesComponent implements OnInit{
   private allScreenCodes: ScreenCode[];
   public filteredScreenCodes: ScreenCode[];
+  private selectedScreenCode: ScreenCode;
   public isDetailsViewActive: boolean = true;
   public screenForm: FormGroup;
-  isUpdate: boolean = true;
+  isUpdate: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -87,6 +88,8 @@ export class ScreenCodesComponent implements OnInit{
 
   selectScreenCode(screenCode: ScreenCode) {
     log.info(`selected Screen code >>>`, screenCode)
+    this.selectedScreenCode = screenCode;
+    this.isUpdate = true;
     this.screenForm.patchValue(screenCode);
   }
 
@@ -101,37 +104,40 @@ export class ScreenCodesComponent implements OnInit{
 
   createUpdateScreenCode() {
     const formValues = this.screenForm.getRawValue();
+
     const screenCode: ScreenCode = {
-      claimScheduleReport: formValues.claim_schedule_report,
-      code: "", // todo: fix this
+      code: formValues.code,
       coverSummaryName: formValues.cover_summary_name,
+      screen_description: formValues.screen_description,
+      claimScheduleReport: formValues.claim_schedule_report,
       endorsementSchedule: formValues.endorsement_schedule,
       fleetName: formValues.fleetName,
       helpContent: formValues.help_content,
-      isScheduleRequired: formValues.is_schedule_required,
       level: formValues.level,
       numberOfRisks: formValues.number_of_risks,
-      organizationCode: formValues.organizationCode,
       policyDocumentName: formValues.policy_document_name,
-      policyDocumentRiskNoteName: null, // todo: confirm
+      policyDocumentRiskNoteName: null,
       policySchedule: formValues.policySchedule,
+      riskReportName: formValues.riskReportName,
       renewalCertificates: formValues.renewalCertificates,
       renewalNotice: formValues.renewalNotice,
       riskNoteName: formValues.riskNoteName,
-      riskReportName: formValues.riskReportName,
+      xmlNiskNoteName: null, // todo: request backend to correct spelling
       scheduleReportName: formValues.schedule_report_name,
-      screenDescription: formValues.screen_description,
-      screenId: 2,
-      screenName: formValues.screen_name,
-      screenTitle: formValues.screen_title,
-      screenType: formValues.screenType,
+      isScheduleRequired: formValues.is_schedule_required,
       showDefaultRisks: formValues.show_default_risks,
+      screenTitle: formValues.screen_title,
       showSumInsured: formValues.show_sum_insured,
+      screenId: 2,
+      organization_code: 2,
       version: 2,
-      xmlRiskNoteName: null // todo: confirm
+      screenName: formValues.screen_name,
+      screenType: formValues.screenType,
     }
+    log.info(`screenCode >>> `, screenCode);
 
     if (this.isUpdate) {
+      screenCode.code = this.selectedScreenCode.code;
       this.updateScreenCode(screenCode);
     } else {
       this.createScreenCode(screenCode);
@@ -139,25 +145,29 @@ export class ScreenCodesComponent implements OnInit{
   }
 
   createScreenCode(screenCode: ScreenCode) {
-    const screenCodeToSave =  screenCode;
-    this.scheduleService.createScreenCode(screenCodeToSave)
+    this.scheduleService.createScreenCode(screenCode)
       .pipe(take(1))
-      .subscribe((res) => {
-        this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully created');
-      }, err => {
-        this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to create!');
+      .subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully created');
+        },
+        error: (e) => {
+          this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to create!');
+        }
       });
   }
 
   updateScreenCode(screenCode: ScreenCode) {
-    const screenCodeToUpdate = screenCode;
-    // screenCodeToUpdate.code = 0
-    this.scheduleService.updateScreenCode(screenCodeToUpdate, 0)
+    log.info(`screencode to update >>>`, screenCode)
+    this.scheduleService.updateScreenCode(screenCode)
       .pipe(take(1))
-      .subscribe((res) => {
-        this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully updated');
-      }, err => {
-        this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to update!');
-      });
+      .subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully updated');
+        },
+        error: (e) => {
+          this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to update!');
+        }
+      })
   }
 }

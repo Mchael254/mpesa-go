@@ -24,9 +24,9 @@ export class ScheduleService {
     return this.http.get<ScreenCodes>(`/${this.baseUrl}/setups/api/v1/screens?pageNo=0&pageSize=1000`)
   }
 
-  updateScreenCode(data:any, code:any): Observable<ScreenCode>{
+  updateScreenCode(screenCode: ScreenCode): Observable<ScreenCode>{
     return this.http.put<ScreenCode>(
-      `/${this.baseUrl}/setups/api/v1/screens/${code}`, JSON.stringify(data),
+      `/${this.baseUrl}/setups/api/v1/screens/${screenCode.code}`, JSON.stringify(screenCode),
       {headers: this.headers}
     )
   }
