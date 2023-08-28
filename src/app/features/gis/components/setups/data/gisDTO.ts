@@ -5,7 +5,7 @@ export interface ScreenCode {
     code: string,
     coverSummaryName: null,
     screenName: string,
-    screenDescription: string,
+    screen_description: string,
     claimScheduleReport: null,
     endorsementSchedule: string,
     fleetName: null,
@@ -19,7 +19,7 @@ export interface ScreenCode {
     renewalCertificates: null,
     renewalNotice:string,
     riskNoteName: null,
-    xmlRiskNoteName: null,
+    xmlNiskNoteName: null,
     scheduleReportName: string,
     isScheduleRequired: string,
     showDefaultRisks: string,
@@ -27,7 +27,7 @@ export interface ScreenCode {
     screenType: null,
     showSumInsured: string,
     screenId: number,
-    organizationCode: number,
+    organization_code: number,
     version: number,
 }
 export class ScreenCodes {
@@ -133,7 +133,7 @@ export interface Field {
     max: number,
     placeholder: string,
     toolTip: string,
-    type: string 
+    type: string
     formId: number,
     isEnabled: string,
     isHidden:string,
@@ -259,7 +259,7 @@ export interface Subclass {
     product_code: number;
     productShortDescription: string;
     underwriting_screen_code: string;
-    date_with_effect_from: string; 
+    date_with_effect_from: string;
     date_with_effect_to: string;
     version: number;
 }
@@ -645,7 +645,7 @@ export interface UWScreens{
 }
 
 export interface classPeril{
-    
+
     code: number,
     bindCode: String,
     bindType: String,
@@ -691,7 +691,7 @@ export interface classPeril{
     totaledPrl: String,
     ttBenPcts: String
 
-  
+
 }
 
 export interface Peril{
@@ -758,7 +758,7 @@ export interface subPerils{
     subclassSectionPerilsCode: number,
     subclassSectionPerilsMapCode: string
 }
- 
+
 export interface territories{
     code: number,
     description: string,
@@ -820,7 +820,7 @@ export interface Binders{
     version: number,
 }
 export interface Premiums{
-    
+
     code: number,
     sectionCode: number,
     sectionShortDescription: string,
@@ -863,7 +863,7 @@ export interface report{
         code:number,
         description:string,
         organizationCode:number
-      
+
 }
 
 export interface subclassClauses{
