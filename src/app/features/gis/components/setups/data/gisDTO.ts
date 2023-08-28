@@ -413,6 +413,12 @@ export interface CoverTypes{
     organization_code: number,
     version:number,
 }
+
+export class CoverType {
+    _embedded!: {
+        cover_type_dto_list: CoverTypes[]
+    }
+}
 export interface ClientInsured{
     branch_name:String,
     code: number,
