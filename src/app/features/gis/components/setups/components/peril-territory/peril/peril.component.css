@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+
+#save{
+    background-color:#00529B;
+    color:white;
+    font-family: 'Lato';
+    font-size: 14px;
+    width: 81px;
+    height: 30px;
+    padding:1px;
+    border-radius: 2px;
+    margin-left: 35px;
+}
+#cancel{
+    color: #00529B;
+    background-color: white;
+    width: 81px;
+    height: 30px;
+    font-family: 'Lato';
+    font-size: 14px;
+    border: 1px solid #00529B;
+    padding:1px;
+    border-radius: 2px;
+}
+.activity{
+    background-color: rgb(0, 82, 155, 0.2) ;
+    color: #000;
+}
+#search{
+    background-color: #00529B;
+    color: white;
+    padding: 7px;
+    padding-left: 9px;
+    width: 34px;
+    height: 30px;
+    border-radius: 2px
+}
+#search-input{
+  width:80%;
+}
+.title1{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 19px;
+color: #00529B;
+}
+#paramsList{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+cursor:pointer;
+}
+#title{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: #00529B;
+
+}
+label{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+}
+.required{
+    color:#ED0614;    ;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 4px;
+    height:7px;
+   
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgba(217, 217, 217, 0.33);
+    border-radius: 1px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(105, 105, 105, 0.65);; 
+    border-radius: 5px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00529B;
+  }
+  #table-responsive{
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    
+  }
+  .paramlist{
+    overflow-y: scroll;
+    max-height: 300px;
+
+  }
+  .new{
+    cursor: pointer;
+    color: #00529B;
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+  }

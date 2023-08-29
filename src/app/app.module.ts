@@ -34,6 +34,7 @@ const cubejsOptions = {
   declarations: [
     AppComponent,
     HomeComponent,
+    
   ],
   imports: [
     BrowserModule,

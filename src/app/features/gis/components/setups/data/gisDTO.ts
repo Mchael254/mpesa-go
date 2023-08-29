@@ -776,7 +776,7 @@ export interface territories{
     code: number,
     description: string,
     details:string,
-    organization_code:number
+    organizationCode:number
 }
 export interface zones{
     code:number,

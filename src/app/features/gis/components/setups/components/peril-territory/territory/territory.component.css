@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.title1{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 19px;
+
+color: #00529B;
+}
+.territoryList{
+  overflow-y: scroll;
+  max-height: 360px;
+}
+.activity{
+    background-color: rgb(0, 82, 155, 0.2) ;
+    color: #000;
+}
+label{
+  font-family: 'Lato';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 19px;
+}
+#tList{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+cursor:pointer;
+}
+#search{
+    background-color: #00529B;
+    color: white;
+    padding: 7px;
+    padding-left: 9px;
+    width: 34px;
+    height: 30px;
+    border-radius: 2px
+}
+
+
+#search-input{
+  width:80%;
+}
+.new{
+font-family: 'Lato';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+margin-left: 36px;
+
+color: #00529B;
+}
+#save{
+  background-color:#00529B;
+  color:white;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  width: 70px;
+  width: 89.93px;
+  height: 30px;
+}
+#cancel{
+  color: #00529B;
+  border-color: #00529B;
+  width: 89.93px;
+  height: 30px;
+  padding:2px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+
+}
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+  height:7px;
+ 
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(217, 217, 217, 0.33);
+  border-radius: 1px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(105, 105, 105, 0.65);; 
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #00529B;
+}

@@ -305,7 +305,7 @@ export class ClassSetupWizardComponent {
   getSubclass(code) {
     if(this.editCode!=null && this.page=='3'){
       console.log(code)
-      return this.gisService.getSubclasses(code).subscribe((res)=>{
+      return this.gisService.getSubclass(code).subscribe((res)=>{
         this.subClassDetails = res;
         this.testForm.patchValue(this.subClassDetails)
   
