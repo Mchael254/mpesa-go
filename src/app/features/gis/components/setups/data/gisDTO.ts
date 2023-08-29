@@ -402,6 +402,17 @@ export interface Record1 {
     version:number,
     code?: number
 }
+export interface CoverTypeLink{
+  deprecation: string,
+  href: string,
+  hreflang: string,
+  media: string,
+  name: string,
+  profile: string,
+  rel: any,
+  title: string,
+  type: string
+}
 
 export interface CoverTypes{
     code: number,
@@ -413,6 +424,7 @@ export interface CoverTypes{
     downgrade_on_suspension_to: String,
     organization_code: number,
     version:number,
+    links?: CoverTypeLink[]
 }
 
 export class CoverType {

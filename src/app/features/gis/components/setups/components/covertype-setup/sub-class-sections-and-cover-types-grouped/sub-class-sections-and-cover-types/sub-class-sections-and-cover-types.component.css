@@ -1,0 +1,9 @@
+.header { color: #00529B;}
+
+/***
+Navigation links
+ */
+.nav-pills .nav-item .nav-link.active {
+  background-color: #00529B !important;
+  color: #FFFFFF !important;
+}
