@@ -21,14 +21,14 @@ export class ScreenCodesComponent implements OnInit{
   private selectedScreenCode: ScreenCode;
   public isDetailsViewActive: boolean = true;
   public screenForm: FormGroup;
-  isUpdate: boolean = false;
+  private isUpdateScreenCode: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private spinner: NgxSpinnerService,
-    private globalMessagingService: GlobalMessagingService,
+    private messageService: GlobalMessagingService,
   ) {
   }
 
@@ -80,16 +80,16 @@ export class ScreenCodesComponent implements OnInit{
     })
   }
 
-  filterScreenCodes(event: any) {
+  filterScreenCodes(event: any): void {
     const searchValue = (event.target.value).toUpperCase();
     this.filteredScreenCodes = this.allScreenCodes.filter((el) => el.code.includes(searchValue));
     this.cdr.detectChanges();
   }
 
-  selectScreenCode(screenCode: ScreenCode) {
+  selectScreenCode(screenCode: ScreenCode): void {
     log.info(`selected Screen code >>>`, screenCode)
     this.selectedScreenCode = screenCode;
-    this.isUpdate = true;
+    this.isUpdateScreenCode = true;
     this.screenForm.patchValue(screenCode);
   }
 
@@ -97,12 +97,12 @@ export class ScreenCodesComponent implements OnInit{
     this.isDetailsViewActive = selected === 'details';
   }
 
-  resetForm() {
+  resetForm(): void {
     this.screenForm.reset()
-    this.isUpdate = false;
+    this.isUpdateScreenCode = false;
   }
 
-  createUpdateScreenCode() {
+  createUpdateScreenCode(): void {
     const formValues = this.screenForm.getRawValue();
 
     const screenCode: ScreenCode = {
@@ -136,7 +136,7 @@ export class ScreenCodesComponent implements OnInit{
     }
     log.info(`screenCode >>> `, screenCode);
 
-    if (this.isUpdate) {
+    if (this.isUpdateScreenCode) {
       screenCode.code = this.selectedScreenCode.code;
       this.updateScreenCode(screenCode);
     } else {
@@ -144,29 +144,29 @@ export class ScreenCodesComponent implements OnInit{
     }
   }
 
-  createScreenCode(screenCode: ScreenCode) {
+  createScreenCode(screenCode: ScreenCode): void {
     this.scheduleService.createScreenCode(screenCode)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully created');
+          this.messageService.displaySuccessMessage('success', 'Screen code successfully created');
         },
         error: (e) => {
-          this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to create!');
+          this.messageService.displayErrorMessage('error', 'Screen code failed to create!');
         }
       });
   }
 
-  updateScreenCode(screenCode: ScreenCode) {
+  updateScreenCode(screenCode: ScreenCode): void {
     log.info(`screencode to update >>>`, screenCode)
     this.scheduleService.updateScreenCode(screenCode)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Screen code successfully updated');
+          this.messageService.displaySuccessMessage('success', 'Screen code successfully updated');
         },
         error: (e) => {
-          this.globalMessagingService.displayErrorMessage('error', 'Screen code failed to update!');
+          this.messageService.displayErrorMessage('error', 'Screen code failed to update!');
         }
       })
   }

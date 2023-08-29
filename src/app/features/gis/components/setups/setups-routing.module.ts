@@ -46,6 +46,10 @@ const routes: Routes = [
     path: 'tax',
     loadChildren: () => import('./components/tax/tax.module').then(m => m.TaxModule),
   },
+  {
+    path: 'parameters',
+    loadChildren: () => import('./components/general-parameter/general-parameter.module').then(m => m.GeneralParameterModule),
+  },
 ];
 
 @NgModule({
