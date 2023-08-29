@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Classes,Subclasses,classPeril,Peril,fields
+import {Injectable, signal} from '@angular/core';
+import {
+  Classes, Subclasses, classPeril, Peril, fields, SubclassesDTO
 
- } from '../../data/gisDTO';
+} from '../../data/gisDTO';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
@@ -16,18 +17,16 @@ export class ClassesSubclassesService {
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService
-    
+
     ) { }
 
     httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
     }
-
-
 
   getAllSubclasses(): Observable<Subclasses[]>{
     let page = 0;
@@ -48,7 +47,15 @@ export class ClassesSubclassesService {
     )
   }
 
-  getSubclasses(code: any): Observable<Subclasses>{
+  //TODO: Decide on which of the two methods below or above to use
+  getSubclasses1(page: number = 0, pageSize: number = 10): Observable<SubclassesDTO[]> {
+    return this.http.get<SubclassesDTO[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes?pageNo=${page}&pageSize=${pageSize}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+
+  getSubclass(code: any): Observable<Subclasses>{
     return this.http.get<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -61,7 +68,7 @@ export class ClassesSubclassesService {
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updateSubClass(data:Subclasses,id:any){
       console.log(JSON.stringify(data))
       return this.http.put<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, JSON.stringify(data), this.httpOptions)
@@ -85,7 +92,7 @@ export class ClassesSubclassesService {
         catchError(this.errorHandl)
       )
     }
-  
+
     getClasses(code: number): Observable<Classes>{
       return this.http.get<Classes>(`/${this.baseurl}/${this.setupsbaseurl}/classes/${code}`).pipe(
         retry(1),
@@ -99,7 +106,7 @@ export class ClassesSubclassesService {
           retry(1),
           catchError(this.errorHandl)
         )
-      } 
+      }
       updateClass(data:Classes,id:any){
         console.log(JSON.stringify(data))
         return this.http.put<Classes>(`/${this.baseurl}/${this.setupsbaseurl}/classes/${id}`, JSON.stringify(data), this.httpOptions)
@@ -150,7 +157,7 @@ errorHandl(error: HttpErrorResponse) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     return this.http.get<classPeril[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils`,{
       params:params,
@@ -167,7 +174,7 @@ errorHandl(error: HttpErrorResponse) {
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updateClassPeril(data:classPeril,id:any){
       console.log(JSON.stringify(data))
       return this.http.put<classPeril>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils/${id}`, JSON.stringify(data), this.httpOptions)
@@ -204,7 +211,7 @@ errorHandl(error: HttpErrorResponse) {
           retry(1),
           catchError(this.errorHandl)
         )
-      } 
+      }
       updatePeril(data:Peril,id:any){
         console.log(JSON.stringify(data))
         return this.http.put<Peril>(`/${this.baseurl}/${this.setupsbaseurl}/perils/${id}`, JSON.stringify(data), this.httpOptions)
