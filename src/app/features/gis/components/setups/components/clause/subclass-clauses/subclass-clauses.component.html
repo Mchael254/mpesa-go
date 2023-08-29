@@ -380,7 +380,7 @@
               </ng-template>
 
               <ng-template let-clauseList pTemplate="body">
-                <tr [pSelectableRow]="clauseList" (click)="singleSCoverType(clauseList.code)"  style="border-bottom:none;">
+                <tr [pSelectableRow]="clauseList" (click)="singleSCoverType(clauseList.code);"  style="border-bottom:none;">
                   <td>{{clauseList.coverTypeShortDescription}}</td>
                   <td>{{clauseList.description}}</td>
                   <td>{{clauseList.isDefault}}</td>

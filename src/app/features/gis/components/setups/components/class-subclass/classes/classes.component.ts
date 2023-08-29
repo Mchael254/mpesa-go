@@ -190,7 +190,7 @@ getClass(event: any){
   //***SUBCLASSES***//
 onRowSelect(code) {
   console.log(code)
-  return this.classService.getSubclasses(code).subscribe((res)=>{
+  return this.classService.getSubclass(code).subscribe((res)=>{
     this.subClassDetails = res;
     console.log(this.subClassDetails)
 })

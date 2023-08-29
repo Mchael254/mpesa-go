@@ -1,0 +1,98 @@
+<div class="mx-4 mb-4 mt-4">
+    <p class="text-end mt-3 mr-4" style="color:#00529B;"><a>Help <i class="pi pi-question-circle"></i></a></p>
+        
+<div class="row mb-4 ">
+    <div class="col-xl-8 ml-4">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card" id="left">
+                    <div class="card-body">
+                      
+                        <div class="row">
+                            <div class="col-md-8"><p class="title1">Territories</p></div>
+                            <div class="col-md-4"><p class="new" (click)="New()">New</p></div>
+                        </div>
+                 
+    
+                        <!-- <form class="form-inline  form-sm mb-3 ms-1"  style="margin-top: 15px;">
+                           
+                            <input class="form-control form-control-sm mr-4" type="text" placeholder="Search Territories" aria-label="Search" id="search-input" [(ngModel)]="searchText" autofocus>
+                            <i class="pi pi-search" id="search" ></i>
+                          </form> -->
+
+
+
+                          <!-- <input type="email" class="form-control" id="search-text" aria-describedby="search-text" 
+                          [(ngModel)]="searchText" placeholder="Enter text to search" 
+                          autofocus> -->
+                          <i class="pi pi-search float-end" id="search"></i>
+                            <input class="form-control form-control-sm  w-75" type="text" placeholder="Search Parameters" (keyup)="filter($event)" aria-label="Search"  >
+                            
+                         
+                          
+                         <div class="territoryList mt-4">
+                          <ul class="list-group list-group-light"  >
+                           
+                            <li class="list-group-item  list-group-item-action px-3 border-0"  *ngFor="let data of filteredTerritories" (click) ="loadTerritory(data.code,data)"
+                              id="tList">{{data.description | lowercase}}</li>
+                          </ul>
+                          <!-- <div class="d-flex justify-content-center">
+                          <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </div> -->
+                         </div>
+                          
+                    </div>
+                  </div>
+            </div>
+            <div class="col-sm-6">
+              
+        <div class="card" id="right">
+            <div class="card-body">
+               
+              <div class="row">
+                <div class="col-md-8"><p class="title1">Territory Details</p></div>
+                <div class="col-md-4"><p class="new" style="text-decoration: underline;">Report</p></div>
+            </div>
+     
+                <form [formGroup]="territoryForm" >
+                  <label for="input">*Territory Desc:</label>
+                  <input type="text"  class="form-control form-control-sm mb-2"  formControlName="description"  required>
+                  
+                  <label for="input">Territory Details:</label>
+                  <input type="text"  class="form-control form-control-sm mb-2"  formControlName="details"  required>
+                
+                    <!-- <label for="input">ID:</label>
+                          <input type="text"  class="form-control form-control-sm mb-2"  formControlName="short_description" id="paramformControlName" required>
+                        
+                          <label for="input">Cover Types:</label>
+                          <input type="text"  class="form-control form-control-sm mb-2"  formControlName="description" required>
+
+                          <label for="input">Min SI:</label>
+                          <input type="text"  class="form-control form-control-sm mb-2"  formControlName="minimum_sum_insured" required>
+                            
+                          <label for="input"> Details:</label>
+                          <textarea class="form-control form-control-sm rounded-0" id="exampleFormControlTextarea2"  rows="3" formControlName="details" required></textarea>
+                          
+                          <br><br> -->
+                          <br><br>
+                          <div class="row">
+                              <div class="col-xl-8"><button class="btn" id="cancel">Cancel</button></div>
+
+                              <div class="col-xl-4"><button class="btn" id="save" class="text-center border-0" (click)="save()">Save</button></div>
+                            </div>
+                        
+                        
+                       
+                        
+
+                </form>
+            </div>
+          </div>
+    </div>
+            </div>
+          </div>
+
+    <div class="col-xl-4"></div>
+</div>

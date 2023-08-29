@@ -155,7 +155,11 @@ export class MenuService{
     name: 'Perils & Territories',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-sliders',
-    menuItems: [],
+    menuItems: [
+      {name:'Perils', link:"home/gis/setup/peril-territory/perils"},
+      {name:'Territories', link:"/home/gis/setup/peril-territory/territories"},
+      {name:'Quake Zones', link:'home/gis/setup/peril-territory/quake-zones'},
+    ],
     collapsed:true,
   },
   {

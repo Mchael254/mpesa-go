@@ -1,0 +1,109 @@
+<div class="mx-4 mb-4 mt-4">
+
+<p class="text-end" style="color:#00529B;"><a>Help <i class="pi pi-question-circle"></i></a></p>
+        
+
+   
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                  <p class="title1 float-start mb-3">Perils</p>
+                  <p class="new text-end mb-4" (click)="New()">New</p>
+                <!-- <div class="row">
+                    <div class="col-xl-6"><p class="title1">Perils</p></div>
+                    <div class="col-l-3 ml-4 mr-4" ><p class="text-right" style="cursor:pointer" (click)="New()"><a style="color:#00529B;">New</a></p></div>
+
+                    <div class="col-l-3" ><p class="text-right" style="cursor:pointer" (click)="delete()"><a style="color:#00529B;">Delete</a></p></div>
+                </div> -->
+                
+            
+         
+<!-- 
+                <form class="form-inline  form-sm mb-3 ms-1"  [formGroup]="searchForm" style="margin-top: 15px;">
+                   
+                    <input class="form-control form-control-sm mr-4" formControlName="search" type="text" placeholder="Search Perils" aria-label="Search" id="search-input"  [(ngModel)]="filterBy">
+                    <i class="pi pi-search" id="search"></i>
+                  </form> -->
+                  <i class="pi pi-search float-end" id="search"></i>
+                  <input class="form-control form-control-sm  w-75" type="text" (keyup)="filter($event)" placeholder="Search Parameters" aria-label="Search" >
+                            
+                 <div class="paramlist mt-4">
+                  <ul class="list-group list-group-light" *ngFor="let data of filteredPerils " >
+                    <li class="list-group-item  list-group-item-action px-3 border-0 mr-4" (click) = "loadPerils(data.code,data)" [ngClass]="{activity:isActive(data)}" id="paramsList">{{data.description }}</li>
+                  </ul>
+                  <div class="d-flex justify-content-center">
+                  <div class="spinner-border text-primary" *ngIf="!isDisplayed"  role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+                 </div>
+                  
+            </div>
+          </div>
+    </div>
+    <div class="col-md-8">
+      
+<div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-xl-8"><p style="color:#00529B;" class="card-title mb-4" id="title">Peril Details</p></div>
+        <div class="col-xl-4"><p class="text-right" style="color:#00529B;text-decoration: underline;"><a>Report</a></p></div>
+      </div>
+        
+        
+        <form [formGroup]="perilForm"  style="margin-top: 15px;">
+          <div class="row">
+            <div class="col-xl-6">
+              <label for="input" class="col-sm-4"><span class="required">*</span>ID:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  formControlName="shortDescription" id="paramformControlName" required>
+
+              <label for="input"> <span class="required">*</span>Full Description:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  formControlName="fullDescription" required>
+              
+              <label for="input"> Peril Liability Type:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  required>
+
+              <label for="input"> Peril WEF:</label>
+              <input type="date"  class="form-control form-control-sm mb-3"  formControlName="dateWithEffectFrom" required>
+              
+            </div>
+            <div class="col-xl-6">
+              <label for="input"><span class="required">*</span>Description:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  formControlName="description" required>
+              
+             
+              <label for="input"> Payment Type:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  formControlName="paymentType" required>
+
+             
+              <label for="input"> Peril Type:</label>
+              <input type="text"  class="form-control form-control-sm mb-3"  formControlName="perilType" required>
+
+             
+
+              <label for="input"> Peril WET:</label>
+              <input type="date"  class="form-control form-control-sm mb-3"  formControlName="dateWithEffectTo" required>
+            </div>
+          </div>
+         
+           
+                 
+                  <br><br>
+                  <div class="row">
+                      <div class="col-xl-9"><button class="btn" id="cancel">Cancel</button></div>
+                      <div class="col-xl-3"><button class="btn" (click)="save()" id="save">Save</button></div>
+                    </div>
+                
+                
+               
+                
+
+        </form>
+    </div>
+  </div>
+</div>
+
+  
+
+</div>
