@@ -31,7 +31,7 @@ export class SubclassClausesComponent implements OnInit{
   data:any[];
   singleClause:any;
   editClauseForm:FormGroup;
-
+ 
   constructor(
     private clauseService: ClauseService,
     public cdr: ChangeDetectorRef,
@@ -110,6 +110,9 @@ export class SubclassClausesComponent implements OnInit{
       console.log("final list", this.finalList);
     });
   }
+
+  
+  
 
 
   loadSingleSubclassClause(code){
