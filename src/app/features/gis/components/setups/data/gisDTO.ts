@@ -399,7 +399,8 @@ export interface Record1 {
     organizationCode:number,
     status: String,
     value: String,
-    version:number
+    version:number,
+    code?: number
 }
 
 export interface CoverTypes{
