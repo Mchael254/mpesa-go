@@ -5,10 +5,11 @@ import { SetupsRoutingModule } from './setups-routing.module';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+  ],
   imports: [
     CommonModule,
-    SetupsRoutingModule
+    SetupsRoutingModule,
   ]
 })
 export class SetupsModule { }

@@ -1,0 +1,128 @@
+<div class="base-content-section setups">
+  <div class="row">
+    <div class="col-sm-4 left">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-6">
+            <p class="fw-bold">Setup Wizard</p>
+          </div>
+          <div class="col-sm-6">
+            <button style="float:right;" class="btn btn-link text-primary fw-bold">Claims Setups</button>
+          </div>
+
+          <div class="col-sm-6">
+            <button class="btn btn-link text-primary">New</button>
+          </div>
+          <div class="col-sm-6">
+            <button style="float:right;" class="btn btn-link text-primary">Delete</button>
+          </div>
+
+          <div class="col-sm-12 mt-3">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search screen codes"
+                aria-label="search"
+                aria-describedby="search"
+                (keyup)="filterParams($event)"
+              >
+              <span class="input-group-text" id="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div>
+            <div class="spinner" style="position: relative">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            </div>
+            <div class="listing">
+              <ul>
+                <li
+                  *ngFor="let param of filteredParams"
+                  (click)="selectParam(param)"
+                >
+                  {{ param.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-8 right">
+      <div class="card">
+        <div class="row">
+          <div class="col-sm-8">
+            <p class="text-primary">System Parameter Details</p>
+          </div>
+          <div class="col-sm-4 text-end">
+            <p class="text-primary">Report</p>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="form-div">
+            <form [formGroup]="parameterForm">
+              <div class="row">
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <label for="paramName" class="form-label">Parameter Name</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="paramName"
+                      aria-describedby="paramName"
+                      formControlName="name"
+                    >
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <label for="paramValue" class="form-label">Parameter Value</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="paramValue"
+                      aria-describedby="paramValue"
+                      formControlName="value"
+                    >
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="mb-3">
+                    <label for="paramStatus" class="form-label">Parameter Status</label>
+                    <select id="paramStatus" class="form-select form-control-sm mb-1" formControlName="status" required>
+                      <option value="ACTIVE">Active </option>
+                      <option value="INACTIVE">Inactive</option>
+                    </select >
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <div class="mb-3">
+                    <label for="paramDesc" class="form-label">Parameter Description</label>
+                    <textarea
+                      class="form-control"
+                      id="paramDesc"
+                      rows="5"
+                      formControlName="description"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-1">
+                <div class="col-sm-6">
+                  <button class="btn btn-outline-primary btn-sm" (click)="resetForm()">Cancel</button>
+                </div>
+                <div class="col-sm-6" style="text-align: right">
+                  <button class="btn btn-primary btn-sm" (click)="saveParameter()">Save</button>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
