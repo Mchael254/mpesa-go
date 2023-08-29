@@ -4,7 +4,7 @@ import {MessageService} from "primeng/api";
 import {CookieService} from "ngx-cookie-service";
 import {BrowserStorage, LocalBrowserStorageService} from "./services/storage";
 import {JwtService} from "./services";
-import {ErrorComponent, HideMessageDirective} from "./custom-elements/custom-error-alert";
+import {ErrorComponent, HideMessageDirective} from "./custom-elements";
 import {LoaderComponent} from "./components/loader/loader.component";
 import {NotificationsComponent} from "./components/notifications/notifications.component";
 import {ToastModule} from "primeng/toast";
@@ -50,9 +50,8 @@ export { untilDestroyed } from './services/until-destroyed';
 export { UtilService } from './services/util.service'
 // export { JwtService } from './services/jwt.service';
 export { RoleGuard, AuthGuard } from './services/guard';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import { HttpLoaderFactory } from './utils/httpLoaderFactory';
+import {TranslateModule} from '@ngx-translate/core';
+import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
@@ -127,7 +126,8 @@ const SERVICES = [
     DynamicSimpleModalComponent,
     DynamicFormModalComponent,
     DynamicSetupTableScreenComponent,
-    DynamicSetupWizardWelcomeScreenComponent
+    DynamicSetupWizardWelcomeScreenComponent,
+    CustomFilterPipe
   ],
     imports: [
         CommonModule,
@@ -142,31 +142,32 @@ const SERVICES = [
         RouterLink,
         NgxSpinnerModule,
         TranslateModule,
-        
+
     ],
-    exports: [
-        ErrorComponent,
-        HideMessageDirective,
-        NotificationsComponent,
-        LoaderComponent,
-        FileExtensionPipe,
-        DocViewerComponent,
-        OtpComponent,
-        DynamicTableComponent,
-        CopyrightFooterComponent,
-        DynamicChartComponent,
-        SpinnerComponent,
-        DynamicFormComponent,
-        DynamicBreadcrumbComponent,
-        StepperComponent,
-        DynamicSimpleModalComponent,
-        DynamicFormModalComponent,
-        NgxSpinnerModule,
-        DynamicSetupSearchListScreenComponent,
+  exports: [
+    ErrorComponent,
+    HideMessageDirective,
+    NotificationsComponent,
+    LoaderComponent,
+    FileExtensionPipe,
+    DocViewerComponent,
+    OtpComponent,
+    DynamicTableComponent,
+    CopyrightFooterComponent,
+    DynamicChartComponent,
+    SpinnerComponent,
+    DynamicFormComponent,
+    DynamicBreadcrumbComponent,
+    StepperComponent,
+    DynamicSimpleModalComponent,
+    DynamicFormModalComponent,
+    NgxSpinnerModule,
+    DynamicSetupSearchListScreenComponent,
     TranslateModule,
-   DynamicSetupWizardWelcomeScreenComponent
-   
-    ],
+    DynamicSetupWizardWelcomeScreenComponent,
+    CustomFilterPipe
+
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {
