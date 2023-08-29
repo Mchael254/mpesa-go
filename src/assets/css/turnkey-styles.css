@@ -395,6 +395,9 @@ color: #00529B;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
 }
+.pointer {
+  cursor: pointer;
+}
 
 /**Gis Setup Start**/
 .leftHeaderTitle {
