@@ -1,0 +1,70 @@
+<div class="card" style="max-width: 290px;">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-5">
+            <p id="tabbed" class="fst-normal fw-bold fs-5 text-primary sub-class-header">
+              Sub Classes
+            </p>
+          </div>
+          <div class="col-7">
+            <p class="fst-normal fw-bold fs-5 text-primary text-end pointer sub-class-header">
+              Reports
+            </p>
+          </div>
+          <div class="row mt-3">
+            <div class="col-10">
+              <div class="input-group">
+                <input class="form-control form-control-sm mb-2 border-1 h-25" type="search"
+                       id="example-search-input" [(ngModel)]="filterBy">
+              </div>
+            </div>
+            <div class="col-2">
+              <button class="btn border-start-0 btn-primary d-flex justify-content-center align-items-center" type="button">
+                <i class="fa fa-search text-white fs-6"></i>
+              </button>
+            </div>
+          </div>
+          <form [formGroup]="subclassForm">
+            <div class="row">
+              <div class="col-xl-11">
+                <label for="input" class="lablestyle ml-2">Subclass Code</label>
+                <div class="input-group">
+                  <input class="form-control form-control-sm mb-1 ml-2" id="example-search-input"
+                         formControlName="code" [readOnly]="true">
+                </div>
+              </div>
+              <div class="col-xl-1">
+
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-11">
+                <label for="input" class="lablestyle ml-2">Subclass Desc</label>
+                <div class="input-group">
+                  <input class="form-control form-control-sm mb-1 ml-2" id="example-search-input"
+                         formControlName="description">
+                </div>
+              </div>
+              <div class="col-xl-1">
+
+              </div>
+            </div>
+          </form>
+
+          <div class="coverlist">
+            <ul class="list-group list-group-light d-flex flex-column ps-0 mb-0"
+                *ngFor="let data of subclassList | customFilter: filterBy ">
+              <li class="list-group-item  list-group-item-action px-3 border-0 pointer fst-normal"
+                  (click)="selectedSubclass(data)" id="coverList">{{data.description}}</li>
+            </ul>
+            <div class="d-flex justify-content-center">
+              <div *ngIf="!isDisplayed" class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
