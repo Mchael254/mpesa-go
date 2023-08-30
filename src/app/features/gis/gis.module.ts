@@ -25,22 +25,22 @@ import {PickListModule} from "primeng/picklist";
     ClausesComponent,
     SubclassClausesComponent
   ],
-  imports: [
-    CommonModule,
-    GisRoutingModule,
-    SharedModule,
-    TabViewModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    DropdownModule,
-    StepsModule,
-    TableModule,
-    FormsModule,
-    ListboxModule,
-    SharedModule,
-    PickListModule,
+    imports: [
+        CommonModule,
+        GisRoutingModule,
+        SharedModule,
+        TabViewModule,
+        InputTextModule,
+        ReactiveFormsModule,
+        DropdownModule,
+        StepsModule,
+        TableModule,
+        FormsModule,
+        ListboxModule,
+        SharedModule,
+        PickListModule,
 
-  ],
+    ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ]
