@@ -956,3 +956,33 @@ export interface PremiumRatesTable{
     type: string,
     ratesTableColumn: string
 }
+export interface SubclassCoverTypeClause {
+  code: number,
+  subClassCode: number,
+  subClassCoverTypeCode: number,
+  clausesShortDescription: string,
+  clauseCode: number,
+  isMandatory: string,
+  version: number
+}
+
+export interface subClassCoverTypeDto {
+  certificate_type_code: number,
+  certificate_type_short_description: string,
+  code: number,
+  cover_type_code: number,
+  cover_type_short_description: string,
+  default_sum_insured: number,
+  description: string,
+  installment_period: string,
+  installment_type: string,
+  is_default: string,
+  maximum_installments: number,
+  minimum_premium: number,
+  organization_code: number,
+  payment_installment_percentage: number,
+  sub_class_code: number,
+  sum_insured_currency_code: number,
+  sum_insured_exchange_rate: number,
+  survey_evaluation_required: string
+}

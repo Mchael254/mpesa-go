@@ -5,7 +5,7 @@ import {
   Clause,
   Clauses,
   coverType,
-  subclassClauses,
+  subclassClauses, SubclassCoverTypeClause, subClassCoverTypeDto,
   subclassCoverTypeToClauses,
   Subclasses
 } from "../../components/setups/data/gisDTO";
@@ -168,6 +168,15 @@ export class ClauseService {
         catchError(this.errorHandl)
       )
   }
+
+  addSubclassClause(data:subclassClauses): Observable<subclassClauses> {
+    console.log(JSON.stringify(data))
+    return this.http.post<subclassClauses>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses/`, JSON.stringify(data), this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
   getSingleSubclassCovertype(code: any){
     return this.http.get<coverType>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/${code}`).pipe(
       retry(1),
@@ -185,5 +194,40 @@ export class ClauseService {
       retry(1),
       catchError(this.errorHandl)
     )
+  }
+
+  createSubClassCoverTypeClause(data:SubclassCoverTypeClause[]) {
+    return this.http.post<SubclassCoverTypeClause[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-clauses`,
+      JSON.stringify(data),this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+
+  deleteCovertypeToClauses(id:number):Observable<subclassCoverTypeToClauses>{
+    return this.http.delete<subclassCoverTypeToClauses>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-clauses/${id}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+
+  updateSubclassCoverType(data:subClassCoverTypeDto,id:any): Observable<subClassCoverTypeDto> {
+    console.log(JSON.stringify(data))
+    return this.http.put<subClassCoverTypeDto>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/${id}`,
+      JSON.stringify(data), this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
+
+  deleteSingleSubclassCovertype(id:any): Observable<subClassCoverTypeDto> {
+    return this.http.put<subClassCoverTypeDto>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/${id}`,
+      this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
   }
 }
