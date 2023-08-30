@@ -5,17 +5,21 @@ import { GeneralParameterRoutingModule } from './general-parameter-routing.modul
 import {ReactiveFormsModule} from "@angular/forms";
 import {SystemParameterComponent} from "./system-parameter/system-parameter.component";
 import {NgxSpinnerModule} from "ngx-spinner";
-
-
+import { SystemSequencesComponent } from './system-sequences/system-sequences.component';
+import { TreeModule } from 'primeng/tree';
+import { TableModule } from 'primeng/table';
 @NgModule({
   declarations: [
-    SystemParameterComponent
+    SystemParameterComponent,
+    SystemSequencesComponent
   ],
   imports: [
     CommonModule,
     GeneralParameterRoutingModule,
     ReactiveFormsModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    TreeModule,
+    TableModule
   ]
 })
 export class GeneralParameterModule { }
