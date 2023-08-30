@@ -129,12 +129,16 @@ th{
     color: #00529B;
 }
 .nav-item{
-font-family: 'Lato';
-font-style: normal;
-font-weight: 700;
-font-size: 13px;
-line-height: 17px;
-color: #00529B;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 17px;
+  color: #00529B;
+}
+
+.nav-item .nav-link {
+  color: #00529B;
 }
 .nav-pills .nav-item .nav-link.active {
   color: #00529B;
