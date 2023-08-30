@@ -68,6 +68,10 @@ const routes: Routes = [
     path:'client-remarks',
     loadChildren:() => import('./components/setups/components/client-insured/client-insured.module').then(m => m.ClientInsuredModule),
    },
+   {
+    path:'premium-rate',
+    loadChildren:() => import('./components/setups/components/premium-rate/premium-rate.module').then(m => m.PremiumRateModule),
+   },
 
 
 ];

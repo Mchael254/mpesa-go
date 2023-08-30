@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { InterestedPartiesService } from '../../../services/interested-parties/interested-parties.service';
+import { Logger } from 'src/app/shared/shared.module';
+
+const log = new Logger('InterestedPartiesComponent');
 
 @Component({
   selector: 'app-interested-parties',
@@ -50,7 +53,7 @@ export class InterestedPartiesComponent {
     return this.partyService.getAllInterestedParties().subscribe(data=>{
       this.partyList=data;
       this.interestedPartiesData = this.partyList._embedded.interested_party_dto_list
-      console.log(this.partyList)
+      log.info(this.partyList)
 
       this.cdr.detectChanges();
     })
@@ -98,7 +101,7 @@ export class InterestedPartiesComponent {
   loadInterestedParties(id:any){
     return this.partyService.getInterestedParties(id).subscribe(res=>{
       this.selected = res;
-      console.log(this.selected,"Test")
+      log.info(this.selected,"Test")
       this.partyForm.patchValue(this.selected)
       this.partyForm.controls['organization_code'].setValue(2);
       this.partyForm.controls['version'].setValue(0);
@@ -113,13 +116,12 @@ export class InterestedPartiesComponent {
  * Subscribes to the response and handles success and error scenarios by displaying corresponding messages.
  */
   addParty(){
-    // console.log(this.partyForm.value)
     this.partyService.createParty(this.partyForm.value).subscribe((data:{})=>{
       try{
-        console.log(this.partyForm.value)
+        log.info(this.partyForm.value)
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
       }catch(error){
-        console.log(this.partyForm.value)
+        log.info(this.partyForm.value)
         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
 
       }
@@ -131,15 +133,15 @@ export class InterestedPartiesComponent {
  * Resets the party form after the operation.
  */
   updateParty(){
-    console.log(this.selected, "TEST IT OUT")
+    log.info(this.selected, "TEST IT OUT")
     let id = this.selected.code
     this.partyService.updateParty(this.partyForm.value,id).subscribe((data)=>{
       try{
         this.partyForm.reset();
-        console.log(this.partyForm.value)
+        log.info(this.partyForm.value)
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
       }catch(error){
-        console.log(this.partyForm.value)
+        log.info(this.partyForm.value)
         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
 
       }
@@ -152,10 +154,10 @@ export class InterestedPartiesComponent {
    */
     save(){
       if(this.new){
-        console.log("Create interested parties")
+        log.info("Create interested parties")
          this.addParty();
       }else{
-        console.log("update interested parties")
+        log.info("update interested parties")
          this.updateParty();
       }
     }  
@@ -168,7 +170,7 @@ export class InterestedPartiesComponent {
     //         this.messageService.add({severity:'success', summary: 'Success', detail: 'Client deleted'});
     //       },
     //       (error:HttpErrorResponse) => {
-    //         console.log(error);
+    //        log.info(error);
     //         this.messageService.add({severity:'error', summary: 'Error', detail: 'You cannot delete this client'});
     //         this.partyForm.reset();
     //       }
