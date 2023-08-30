@@ -110,7 +110,17 @@ export class MenuService{
     name: 'General Parameters',
     nameSlug: 'generalSetup',
     icon: 'fa-solid fa-align-center',
-    menuItems: [],
+    menuItems: [
+      {
+        name:'System Parameters',
+        link: '/home/gis/setup/general-parameter/system-parameters'
+      },
+      {
+        name: 'System Sequences',
+        link:'/home/gis/setup/general-parameter/system-sequences'
+      }
+
+    ],
     collapsed:true,
   },
   {
