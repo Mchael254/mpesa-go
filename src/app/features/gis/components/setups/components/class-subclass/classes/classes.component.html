@@ -1,81 +1,778 @@
-<div class="mx-4 mb-4 mt-4">
-    <p class="text-end mb-4" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
-    <br>         
-    <div class="row">
-        <div class="col-md-4" style="max-width: 290px;" >
-            <div class="card" style="max-width: 290px;">
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-xl-5">
-                        <p id="tabbed" routerLink="/home/gis/classSetupsWizard">Setup Wizard </p>
-                      </div>
-                      <div class="col-xl-7">
-                        <p id="tabbed" class="active-screen" >Classes & Subclasses</p>
-                      </div> 
-                      </div>
-                      <div id="alert" *ngIf="!classSelect">
-                        <p id="alertmsg" class="p-2">Select a class to proceed</p>
-                      
-                    </div>
-                      <div class="row mb-3 mt-4">
-                        <div class="col-xl-6 "><button class="btn btn waves-effect waves-light" id="new" (click)="newClass()">New</button></div>
-                        <br><br>
-            
-                      </div>
-                      <!-- <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                      </div> -->
-                      <select class="form-control form-control-sm mb-4" [(ngModel)]="selected" (ngModelChange)="getClass($event); getPerilByClassCode($event)">
-                        <option value=""><input type="text"></option>
-                       
-                        <option *ngFor="let class of classList" [value]="class.classCode" >{{class.classDescription}}</option>
-            
-                      </select>
-                      <div class="d-flex justify-content-center">
-                        <div *ngIf="!isDisplayed" class="spinner-border text-primary" role="status">
-                          <span class="sr-only">Loading...</span>
-                         </div>
-                      </div>
-                     
-                      <p id="report" class="text-right">Reports</p> 
-                      <p class="subtitle">Class Information</p>
-            
-                      <form  [formGroup]="classForm">
-                      <label for="input"> <span class="required">*</span>Class Code:</label>
-                      <input type="number"  class="form-control form-control-sm mb-2"  formControlName="classCode" readonly required>
-            
-            
-                      <label for="input"><span class="required" >*</span>Class Short Desc:</label>
-                      <input type="text"  class="form-control form-control-sm mb-1"  formControlName="shortDescription"  required>
-                      <div *ngIf="classForm && classForm['shortDescription'] && classForm['shortDescription'].invalid && (classForm['shortDescription'].dirty || classForm['shortDescription'].touched)">
-                        <div *ngIf="classForm?.['shortDescription'].errors?.['required']" id="required-alert">Class Short Description is required</div>
-                      </div>
-                      <label for="input"> <span class="required" >*</span>Class Details:</label>
-                      <input type="text"  class="form-control form-control-sm mb-2" formControlName="classDescription" required>
-                      <div *ngIf="classForm && classForm['classDescription'] && classForm['classDescription'].invalid && (classForm['classDescription'].dirty || classForm['classDescription'].touched)">                        <div *ngIf="classForm?.['classDescription'].errors?.['required']" id="required-alert"> Class Description is required</div>
-                      </div>
-                      <label for="input"> <span class="required">*</span>WEF Date:</label>
-                      <input type="date"  class="form-control form-control-sm mb-2" formControlName="dateWithEffectFrom" required>
-                      <div *ngIf="classForm && classForm['dateWithEffectFrom'] && classForm['dateWithEffectFrom'].invalid && (classForm['dateWithEffectFrom'].dirty || classForm['dateWithEffectFrom'].touched)">
-                        <div *ngIf="classForm?.['dateWithEffectFrom'].errors?.['required']" id="required-alert"> WEF is required</div>
-                      </div>
-                      <label for="input">WET Date:</label>
-                      <input type="date"  class="form-control form-control-sm mb-2"   formControlName="dateWithEffectTo" required>
-                      <label for="input">Policy Acc. Limit:</label>
-                      <input type="number"  class="form-control form-control-sm mb-2"  formControlName="maxPolicyAccumulationLimit" required>
-                      <label for="input">Insured Acc. Limit:</label>
-                      <input type="number"  class="form-control form-control-sm mb-4"  formControlName="maxInsuredAccumulationLimit" required>
-            
-                      <div class="row ">
-                        <div class="col-xl-6 "><button class="btn" id="save" (click)="save()">Save</button></div>
-                        <br><br>
-                        <div class="col-xl-6"><button class="btn"  id="delete" >Cancel</button></div>
-                      </div>
-                    </form>
-            </div>
-                </div>
-        </div>
-        <div class="col-sm-8">
-        </div>
+<div class="base-content-section setups">
+  <div class="row">
+    <div>
+      <p class="float-end mb-3" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
     </div>
+    <div class="col-sm-3 left">
+      <div class="card">
+        <div class="row">
+          <div class="row mb-3">
+            <div class="col">
+              <p id="tabbed" routerLink="/home/gis/setup/class-subclass/setup-wizard">Setup Wizard </p>
+            </div>
+            <div class="col">
+              <p id="tabbed" class="active-screen float-end">Classes & Subclasses</p>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <button class="float-start btn btn-outline-primary text-primary" (click)="newClass()">New</button>
+          </div>
+          <div class="col-sm-12 mt-3">
+            <!-- <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Search Sections" aria-label="search"
+                aria-describedby="search" (keyup)="filterSections($event)">
+              <span class="input-group-text" id="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </span>
+            </div> -->
+            <div class="spinner" style="position: relative">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+            </div>
+            <select class="form-control form-control-sm mb-4" [(ngModel)]="selected" (ngModelChange)="getClass($event); getPerilByClassCode($event)">
+              <option value=""><input type="text"></option>      
+              <option *ngFor="let class of classList" [value]="class.classCode" >{{class.classDescription}}</option>
+            </select>
+            <!-- <div class="d-flex justify-content-center">
+                <div *ngIf="!isDisplayed" class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+            </div> -->
+            <p id="report" class="text-right">Reports</p> 
+            <p class="subtitle">Class Information</p>
+            
+            <form  [formGroup]="classForm">
+              <label for="input"> <span class="required">*</span>Class Code:</label>
+              <input type="number"  class="form-control form-control-sm mb-2"  formControlName="classCode" readonly required>
+              <label for="input"><span class="required" >*</span>Class Short Desc:</label>
+              <input type="text"  class="form-control form-control-sm mb-1"  formControlName="shortDescription"  required>
+              <div *ngIf="classForm && classForm['shortDescription'] && classForm['shortDescription'].invalid && (classForm['shortDescription'].dirty || classForm['shortDescription'].touched)">
+                <div *ngIf="classForm?.['shortDescription'].errors?.['required']" id="required-alert">Class Short Description is required</div>
+              </div>
+              <label for="input"> <span class="required" >*</span>Class Details:</label>
+              <input type="text"  class="form-control form-control-sm mb-2" formControlName="classDescription" required>
+              <div *ngIf="classForm && classForm['classDescription'] && classForm['classDescription'].invalid && (classForm['classDescription'].dirty || classForm['classDescription'].touched)">
+                <div *ngIf="classForm?.['classDescription'].errors?.['required']" id="required-alert"> Class Description is required</div>
+              </div>
+              <label for="input"> <span class="required">*</span>WEF Date:</label>
+              <input type="date"  class="form-control form-control-sm mb-2" formControlName="dateWithEffectFrom" required>
+              <div *ngIf="classForm && classForm['dateWithEffectFrom'] && classForm['dateWithEffectFrom'].invalid && (classForm['dateWithEffectFrom'].dirty || classForm['dateWithEffectFrom'].touched)">
+                <div *ngIf="classForm?.['dateWithEffectFrom'].errors?.['required']" id="required-alert"> WEF is required</div>
+              </div>
+              <label for="input">WET Date:</label>
+              <input type="date"  class="form-control form-control-sm mb-2"   formControlName="dateWithEffectTo" required>
+              <label for="input">Policy Acc. Limit:</label>
+              <input type="number"  class="form-control form-control-sm mb-2"  formControlName="maxPolicyAccumulationLimit" required>
+              <label for="input">Insured Acc. Limit:</label>
+              <input type="number"  class="form-control form-control-sm mb-4"  formControlName="maxInsuredAccumulationLimit" required>
+            
+              <div class="row ">
+                <div class="col-xl-6 "><button class="btn" id="save" (click)="save()">Save</button></div>
+                <br><br>
+                <div class="col-xl-6"><button class="btn"  id="delete" >Cancel</button></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-9 right">
+      <div class="card">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-subclass-tab" data-bs-toggle="pill" data-bs-target="#pills-subclass" type="button"
+              role="tab" aria-controls="pills-subclass" aria-selected="true">Subclasses</button>
+          </li>
+          <li class="nav-item" role="presentation" click="toggle('classPeril')">
+            <button class="nav-link" id="pills-peril-tab" data-bs-toggle="pill" data-bs-target="#pills-peril" type="button"
+              role="tab" aria-controls="pills-peril" click="toggle('classPeril')" aria-selected="false">Class Perils</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-excesses-tab" data-bs-toggle="pill" data-bs-target="#pills-excesses" type="button"
+              role="tab" aria-controls="pills-excesses" aria-selected="false">Class Excesses</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-vessle-tab" data-bs-toggle="pill" data-bs-target="#pills-vessle"
+              type="button" role="tab" aria-controls="pills-vessle" aria-selected="false">Vessle Type</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="pills-subclass" role="tabpanel" aria-labelledby="pills-subclass-tab" tabindex="0">
+            <ul class="nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" routerLink="/home/gis/setup/class-subclass/setup-wizard/2">+Add</a>
+              </li>
+              <li class="nav-item">
+                <button id="openModalButton" [hidden]="true" data-bs-toggle="modal" data-bs-target="#addClassPeril">Open Modal</button>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="editSubclass()">Edit</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="deleteSubclass()">Delete</a>
+              </li>
+            </ul>
+            <p-table #dt1 
+              [value]="subclass" 
+              selectionMode="single" 
+              [resizableColumns]="true" 
+              styleClass="p-datatable-sm"
+              responsiveLayout="scroll" 
+              class='ui-datatable' 
+              [autoLayout]="true" 
+              [paginator]="true" 
+              [rows]="5" 
+              [scrollable]="true"
+              scrollDirection="horizontal" 
+              [showCurrentPageReport]="true"
+              currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+              [globalFilterFields]="['description','code','classCode','screenCode','claimPrefix']">
+            
+              <ng-template pTemplate="header">
+                <tr>
+                  <!-- <th style="width:40%"></th> -->
+                  <th pSortableColumn="code" style="width:20%">Sub Class Code<p-sortIcon field="code"></p-sortIcon></th>
+                  <th pSortableColumn="classCode" style="width:20%">Sub Class Id<p-sortIcon field="classCode"></p-sortIcon></th>
+                  <th pSortableColumn="description" style="width:20%">Sub Class<p-sortIcon field="description"></p-sortIcon></th>
+                  <th pSortableColumn="screenCode" style="width:20%">Screen Code<p-sortIcon field="screenCode"></p-sortIcon></th>
+                  <th pSortableColumn="claimPrefix" style="width:20%">Claim Prefix<p-sortIcon field="claimPrefix"></p-sortIcon></th>
+                  <th pSortableColumn="maxNoClaimDiscountLevel" style="width:20%">NCD Level<p-sortIcon
+                      field="maxNoClaimDiscountLevel"></p-sortIcon></th>
+                  <th pSortableColumn="isCashBackApplicable" style="width:20%">Cash Back Applicable<p-sortIcon
+                      field="isCashBackApplicable"></p-sortIcon></th>
+                  <th pSortableColumn="maxCashBackLevel" style="width:20%">Max CashBack Level<p-sortIcon
+                      field="maxCashBackLevel"></p-sortIcon></th>
+                  <th pSortableColumn="allowsDeclaration" style="width:20%">Declaration<p-sortIcon
+                      field="allowsDeclaration"></p-sortIcon></th>
+                  <th pSortableColumn="maximumRefund" style="width:20%">Max Refund<p-sortIcon field="maximumRefund"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="norisi" style="width:20%">Reinsure SI<p-sortIcon field="norisi"></p-sortIcon></th>
+                  <th pSortableColumn="uniqueRisk" style="width:20%">Unique Risk ID(Y/N)<p-sortIcon field="uniqueRisk"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="isQuakeRegionRequired" style="width:20%">Quake Region Required<p-sortIcon
+                      field="isQuakeRegionRequired"></p-sortIcon> </th>
+                  <th pSortableColumn="maxInsuredAccumulationLimit" style="width:20%">Inssured Acc Limit<p-sortIcon
+                      field="maxInsuredAccumulationLimit"></p-sortIcon></th>
+                  <th pSortableColumn="totalCompanyAccumulationLimit" style="width:20%">Company Acc Limit<p-sortIcon
+                      field="totalCompanyAccumulationLimit"></p-sortIcon></th>
+                  <th pSortableColumn="doesDisabilityScaleApply" style="width:20%">Disability Scale Appl<p-sortIcon
+                      field="doesDisabilityScaleApply"></p-sortIcon></th>
+                  <th pSortableColumn="doesReinsurancePoolApply" style="width:20%">Reinsurance Pool Appl<p-sortIcon
+                      field="doesReinsurancePoolApply"></p-sortIcon></th>
+                  <th pSortableColumn="declarationPenaltyPercentage" style="width:20%">Declaration Penalty %<p-sortIcon
+                      field="declarationPenaltyPercentage"></p-sortIcon></th>
+                  <th pSortableColumn="isSurveyValuationRequired" style="width:20%">Survey Required<p-sortIcon
+                      field="isSurveyValuationRequired"></p-sortIcon></th>
+                  <th pSortableColumn="isExcessOfLossApplicable" style="width:20%">Xol Applicable?<p-sortIcon
+                      field="isExcessOfLossApplicable"></p-sortIcon></th>
+                  <th pSortableColumn="claimReviewDays" style="width:20%">Claim Review Days<p-sortIcon
+                      field="claimReviewDays"></p-sortIcon></th>
+                  <th pSortableColumn="maxRefundPremiumPercentage" style="width:20%">Max Prem Refund<p-sortIcon
+                      field="maxRefundPremiumPercentage"></p-sortIcon></th>
+                  <th pSortableColumn="isStraightFlowEnabled" style="width:20%">Enable Straight Flow<p-sortIcon
+                      field="isStraightFlowEnabled"></p-sortIcon></th>
+                  <th pSortableColumn="generateCertificateAutomatically" style="width:20%">Auto Generate Cert?<p-sortIcon
+                      field="generateCertificateAutomatically"></p-sortIcon></th>
+                  <th pSortableColumn="enableSchedule" style="width:20%">Disable Schedule?<p-sortIcon
+                      field="enableSchedule"></p-sortIcon></th>
+                  <th pSortableColumn="glAccountGroupCode" style="width:20%">Account Group<p-sortIcon
+                      field="glAccountGroupCode"></p-sortIcon></th>
+                  <th pSortableColumn="industryCode" style="width:20%">Industry Subclass Code<p-sortIcon
+                      field="industryCode"></p-sortIcon></th>
+                  <th pSortableColumn="iBNRYear1" style="width:20%">Ibnr Year One<p-sortIcon field="iBNRYear1"></p-sortIcon></th>
+                  <th pSortableColumn="iBNRYear2" style="width:20%">Ibnr Year Two<p-sortIcon field="iBNRYear2"></p-sortIcon></th>
+                  <th pSortableColumn="iBNRYear3" style="width:20%">Ibnr Year Three<p-sortIcon field="iBNRYear3"></p-sortIcon></th>
+                  <th pSortableColumn="surveyLimitAccumulation" style="width:20%">Survey Limit Amount<p-sortIcon
+                      field="surveyLimitAccumulation"></p-sortIcon></th>
+                  <th pSortableColumn="claimGracePeriod" style="width:20%">Notification Grace Period<p-sortIcon
+                      field="claimGracePeriod"></p-sortIcon></th>
+                  <th pSortableColumn="isAgeRequired" style="width:20%">Age Required<p-sortIcon field="isAgeRequired"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="useCoverPeriodRate" style="width:20%">Use Period Range<p-sortIcon
+                      field="useCoverPeriodRate"></p-sortIcon></th>
+                  <th pSortableColumn="doesTerritoryApply" style="width:20%">Territory Mandatory?<p-sortIcon
+                      field="doesTerritoryApply"></p-sortIcon></th>
+                  <th pSortableColumn="minAgeLoading" style="width:20%">Min Age Loading<p-sortIcon
+                      field="minAgeLoading"></p-sortIcon></th>
+                  <th pSortableColumn="minCubicCapacityLoad" style="width:20%">Min CC Loading<p-sortIcon
+                      field="minCubicCapacityLoad"></p-sortIcon></th>
+                  <th pSortableColumn="minSeatCapacityLoad" style="width:20%">Min Seat Capacity Loading<p-sortIcon
+                      field="minSeatCapacityLoad"></p-sortIcon></th>
+                  <th pSortableColumn="classReportGroup" style="width:20%">Class Report Grp<p-sortIcon
+                      field="classReportGroup"></p-sortIcon></th>
+                  <th pSortableColumn="motorVerify" style="width:20%">Motor Subclass<p-sortIcon field="motorVerify"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="maxRiskCount" style="width:20%">Max Risk Count<p-sortIcon field="maxRiskCount"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="isRiskLocationMandatory" style="width:20%">Risk Location Mand?<p-sortIcon
+                      field="isRiskLocationMandatory"></p-sortIcon></th>
+                  <th pSortableColumn="isRiskAddressRequired" style="width:20%">Risk Address Mand?<p-sortIcon
+                      field="isRiskAddressRequired"></p-sortIcon></th>
+                </tr>
+              </ng-template>
+            
+              <ng-template let-subclass pTemplate="body">
+                <tr style="border-bottom:none;" (click)="onRowSelect(subclass.code)">
+                  <!-- <td>
+                    <p-tableCheckbox [value]="subclass"></p-tableCheckbox>
+            
+                  </td> -->
+            
+                  <td>{{subclass.code}}</td>
+                  <td>{{subclass.classCode}}</td>
+                  <td>{{subclass.description}}</td>
+                  <td>{{subclass.screenCode}}</td>
+                  <td>{{subclass.claimPrefix}}</td>
+                  <td>{{subclass.maxNoClaimDiscountLevel}}</td>
+                  <td>{{subclass.isCashBackApplicable}}</td>
+                  <td>{{subclass.maxCashBackLevel}}</td>
+                  <td>{{subclass.allowsDeclaration}}</td>
+                  <td>{{subclass.maximumRefund}}</td>
+                  <td>{{subclass.norisi}}</td>
+                  <td>{{subclass.uniqueRisk}}</td>
+                  <td>{{subclass.isQuakeRegionRequired}}</td>
+                  <td>{{subclass.maxInsuredAccumulationLimit}}</td>
+                  <td>{{subclass.totalCompanyAccumulationLimit}}</td>
+                  <td>{{subclass.doesDisabilityScaleApply}}</td>
+                  <td>{{subclass.doesReinsurancePoolApply}}</td>
+                  <td>{{subclass.declarationPenaltyPercentage}}</td>
+                  <td>{{subclass.isSurveyValuationRequired}}</td>
+                  <td>{{subclass.isExcessOfLossApplicable}}</td>
+                  <td>{{subclass.claimReviewDays}}</td>
+                  <td>{{subclass.maxRefundPremiumPercentage}}</td>
+                  <td>{{subclass.isStraightFlowEnabled}}</td>
+                  <td>{{subclass.generateCertificateAutomatically}}</td>
+                  <td>{{subclass.enableSchedule}}</td>
+                  <td>{{subclass.glAccountGroupCode}}</td>
+                  <td>{{subclass.industryCode}}</td>
+                  <td>{{subclass.iBNRYear1}}</td>
+                  <td>{{subclass.iBNRYear2}}</td>
+                  <td>{{subclass.iBNRYear3}}</td>
+                  <td>{{subclass.surveyLimitAccumulation}}</td>
+                  <td>{{subclass.claimGracePeriod}}</td>
+                  <td>{{subclass.isAgeRequired}}</td>
+                  <td>{{subclass.useCoverPeriodRate}}</td>
+                  <td>{{subclass.doesTerritoryApply}}</td>
+                  <td>{{subclass.minAgeLoading}}</td>
+                  <td>{{subclass.minCubicCapacityLoad}}</td>
+                  <td>{{subclass.minSeatCapacityLoad}}</td>
+                  <td>{{subclass.classReportGroup}}</td>
+                  <td>{{subclass.motorVerify}}</td>
+                  <td>{{subclass.maxRiskCount}}</td>
+                  <td>{{subclass.isRiskLocationMandatory}}</td>
+                  <td>{{subclass.isRiskAddressRequired}}</td>
+            
+            
+            
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1"></td>
+            
+                  <td colspan="10" style="padding:200px;padding-left: 350px;" id="empty">No records Found</td>
+                </tr>
+            
+              </ng-template>
+              <!-- <ng-template pTemplate="paginatorleft">
+                <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+              </ng-template>
+              <ng-template pTemplate="paginatorright">
+                <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+              </ng-template> -->
+            </p-table>
+          </div>
+          <div class="tab-pane fade" id="pills-peril" role="tabpanel" aria-labelledby="pills-peril-tab" tabindex="0">
+              <ul class="nav">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" routerLink="/home/gis/setup/class-subclass/setup-wizard/3">+Add</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#addClassPeril" (click)="editPeril()">Edit</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-bs-toggle="modal" (click)="deleteClassPeril()">Delete</a>
+                </li>
+                <ul class="nav nav-pills nav-fill" style="margin-bottom: 8px;">
+                  <li class="nav-item">
+                    <a class="nav-link" data-toggle="pill" href="#pills-sub" [ngClass]="status ? 'actives' : 'inactive'" role="tab"
+                      aria-controls="pills-sub" aria-selected="false" style="color:#fff">Sub Perils</a>
+                  </li>
+                  <br>
+                  <li class="nav-item ml-4" *ngIf="status">
+                    <a class="nav-link" data-toggle="pill" href="#pills-main" (click)="status=!status" role="tab"
+                      aria-controls="pills-main" aria-selected="false" style="color:#fff;background-color: #00529B;">Class Perils</a>
+                  </li>
+                </ul>
+              
+              </ul>
+              
+              <!-- Add Peril Modal -->
+              <div class="modal fade" id="addClassPeril" tabindex="-1" role="dialog" aria-labelledby="addClassPeril"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                  <div class="modal-content">
+              
+              
+              
+                    <div class="card" style="width:100%">
+              
+                      <div class="card-body">
+                        <h6 class="modal-title text- mb-4" id="addPerilTitle">Add Perils</h6>
+                        <form [formGroup]="PerilForm">
+              
+                          <!-- **ROW 1** -->
+                          <div class="row mb-1">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Sht Desc</label>
+                                <div class="col-8">
+                                  <input type="text" class="form-control form-control-sm" formControlName="subClPerilShtDesc"
+                                    id="addPerilsInput">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Expire on claim</label>
+                                <div class="col-8">
+                                  <select id="status" class="form-control form-control-sm" id="addPerilsInput"
+                                    Tooltip="Expire on Claim" formControlName="expireOnClaim" placement="right">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option value="Y">Yes</option>
+                                    <option value="N">No</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Benefit Per
+                                  Period</label>
+                                <div class="col-8">
+                                  <input type="text" class="form-control form-control-sm" formControlName="benefitPerPeriod"
+                                    id="addPerilsInput">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+              
+              
+              
+                          <!-- **ROW 2** -->
+                          <div class="row mb-1">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Peril</label>
+                                <div class="col-8">
+                                  <input type="text" class="form-control form-control-sm" id="addPerilsInput" (click)="getAllPerils()"
+                                    data-toggle="modal" formControlName="perCode" data-target="#getPerilModal">
+              
+                                </div>
+              
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Max Claim Period
+                                  Type</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" formControlName="maxClaimType"
+                                    id="addPerilsInput">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Personal Limit</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" formControlName="personLimit"
+                                    id="addPerilsInput">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+              
+              
+                          <!-- ** ROW 3 ** -->
+                          <div class="row mb-1">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Type</label>
+                                <div class="col-8">
+                                  <select id="status" class="form-control form-control-sm" id="addPerilsInput"
+                                    Tooltip="Expire on Claim" formControlName="perilType" placement="right">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option value="S">Self</option>
+                                    <option value="P">Third Party</option>
+                                    <option value="BO">Both</option>
+              
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Peril Id</label>
+                                <div class="col-8">
+                                  <input type="Text" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="perShtDescription" readonly>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Multiplier</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" formControlName="multiplier"
+                                    id="addPerilsInput">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <br>
+              
+              
+                          <!-- ** ROW 4 ** -->
+              
+                          <div class="row mb-1">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Peril Limit Scope</label>
+                                <div class="col-8">
+                                  <select id="status" class="form-control form-control-sm" id="addPerilsInput"
+                                    Tooltip="Expire on Claim" placement="right" formControlName="perilLimitScope">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option value="C">Claim Level</option>
+                                    <option value="P">Policy Level</option>
+              
+              
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Excess Section</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="excessSectCode" data-bs-toggle="modal" data-bs-target="#getExcessSections">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Limit Amount</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="perilLimitScope">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- ** ROW 5 ** -->
+                          <div class="row mb-1">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Limit Description</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="perilLimit">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">SI/Limit</label>
+                                <div class="col-8">
+                                  <select id="status" class="form-control form-control-sm" id="addPerilsInput"
+                                    Tooltip="Expire on Claim" placement="right" formControlName="sumInsuredOrLimit">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option value="RSI">Risk Sum Insured</option>
+                                    <option value="SL">Section SI/Limit</option>
+                                    <option value="PL">Peril Limit</option>
+                                    <option value="U">Unlimited</option>
+                                    <option value="GPA">GPA Total/Temp Disability</option>
+                                    <option value="PD">Permanent Disability</option>
+                                    <option value="WTD">Workmen Total/Temp Disability</option>
+                                    <option value="NR">Norminal Reserves</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Max Claim Period</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="maxClaimPeriod">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- ** ROW 6 ** -->
+                          <div class="row mb-4">
+                            <div class="col-xl-4">
+                              <div class="form-group row">
+                                <label for="addPerilsInput" class="col-4 col-form-label" id="addPerilsLabel">Deprici.Pct/Prd</label>
+                                <div class="col-8">
+                                  <input type="number" class="form-control form-control-sm" id="addPerilsInput"
+                                    formControlName="depreciationPercentage">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-xl-4">
+              
+                            </div>
+              
+                            <div class="col-xl-4">
+              
+                            </div>
+                          </div>
+              
+                          <div class="row mb-3">
+                            <div class="col-xl-10 "><button class="btn btn-primary waves-effect waves-light" id="addPerilbtn"
+                                data-bs-dismiss="modal">Cancel</button></div>
+              
+                            <div class="col-xl-2"><button class="btn btn-primary waves-effect waves-light ml-4"
+                                (click)="saveClassPeril()" id="addPerilbtn">Update</button></div>
+                          </div>
+              
+                        </form>
+              
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- delete Peril modal  -->
+              
+              <div class="modal fade" id="deleteClassPeril" tabindex="-1" role="dialog" aria-labelledby="deleteClassPeril"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content" id="content">
+                    <div class="modal-body">
+                      <button type="button" class="btn close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                      <div id="dismissAlert">
+                        <i class="pi pi-exclamation-triangle" id="iconStyle"></i>
+                        <p class="text-center" id="ok">Press Ok to Delete Peril</p>
+                      </div>
+              
+                      <div class="row ml-4" id="modalbtn">
+                        <div class="col-xl-6 "><button class="btn btn waves-effect waves-light" id="btn"
+                            data-dismiss="modal">Cancel</button></div>
+                        <br><br>
+                        <div class="col-xl-6"><button class="btn btn waves-effect waves-light" id="btn"
+                            (click)="deleteClassPeril()">Ok</button></div>
+                      </div>
+              
+                    </div>
+              
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Get Peril Modal -->
+              <div class="modal fade" id="getPerilModal" tabindex="-1" role="dialog" aria-labelledby="getPerilModal"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+              
+                    <div class="card" style="width:100%">
+              
+                      <div class="card-body">
+                        <h5 id="addPerilTitle">Perils</h5>
+                        <p-table [value]="Peril" selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
+                          responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th>Id</th>
+                              <th>Peril</th>
+              
+                            </tr>
+                          </ng-template>
+              
+                          <ng-template let-Peril pTemplate="body">
+                            <tr [pSelectableRow]="Peril" style="border-bottom:none;" (click)="getPeril(Peril.code)">
+                              <td>{{Peril.shortDescription}}</td>
+                              <td>{{Peril.description}}</td>
+              
+              
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+              
+                            <tr>
+                              <td colspan="2">No records Found</td>
+                            </tr>
+              
+                          </ng-template>
+                        </p-table>
+                        <div class="row">
+                          <div class="col">
+                            <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn"
+                              data-bs-dismiss="modal">Cancel</button>
+                          </div>
+                          <div class="col">
+                            <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-bs-dismiss="modal"
+                              (click)="savePeril()">Save</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              
+              <!-- Get Excesses sections Modal -->
+              <div class="modal fade" id="getExcessSections" tabindex="-1" role="dialog" aria-labelledby="getExcessSections"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+              
+                    <div class="card" style="width:100%">
+              
+                      <div class="card-body">
+                        <h5 id="addPerilTitle">Excesses Sections</h5>
+                        <p-table [value]="classexcesses" selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
+                          responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th>Sht Desc</th>
+                              <th>Description</th>
+                              <th>Type</th>
+              
+                            </tr>
+                          </ng-template>
+              
+                          <ng-template let-excesses pTemplate="body">
+                            <tr [pSelectableRow]="Peril" style="border-bottom:none;" (click)="excessesSelect(classexcesses)">
+                              <td>{{excesses.desc}}</td>
+                              <td>{{excesses.desc}}</td>
+                              <td>{{excesses.totalLossExcessRateType}}</td>
+              
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+              
+                            <tr>
+                              <td colspan="2">No records Found</td>
+                            </tr>
+              
+                          </ng-template>
+                        </p-table>
+                        <div class="row">
+                          <div class="col">
+                            <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn"
+                              data-bs-dismiss="modal">Cancel</button>
+                          </div>
+                          <div class="col">
+                            <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-dismiss="modal"
+                              (click)="addExcess()">Save</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <div *ngIf="show=='classPeril'">
+              <p-table [value]="classPeril" 
+                selectionMode="single" 
+                [resizableColumns]="true" 
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll" 
+                class='ui-datatable' 
+                [autoLayout]="true" 
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate=" {first} - {last} of {totalRecords}" 
+                [globalFilterFields]="['description']"
+                [paginator]="true" 
+                [rows]="5">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="perCode" style="width:20%">Id<p-sortIcon field="code"></p-sortIcon></th>
+                    <th pSortableColumn="perShtDescription" style="width:20%">Peril<p-sortIcon
+                        field="perShtDescription"></p-sortIcon></th>
+                    <th pSortableColumn="perShtDescription" style="width:20%">Sht Desc<p-sortIcon
+                        field="perShtDescription"></p-sortIcon></th>
+                    <th pSortableColumn="perType" style="width:20%">Type<p-sortIcon field="perType"></p-sortIcon></th>
+                    <th pSortableColumn="perilLimit" style="width:20%">SI/Limit<p-sortIcon field="perilLimit"></p-sortIcon></th>
+                    <th pSortableColumn="perilLimitScope" style="width:20%">Limit Desc<p-sortIcon
+                        field="perilLimitScope"></p-sortIcon></th>
+                    <th pSortableColumn="personLimit" style="width:20%">Personal Limit<p-sortIcon field="personLimit"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="claimLimit" style="width:20%">Claim Limit<p-sortIcon field="claimLimit"></p-sortIcon></th>
+                  </tr>
+                </ng-template>
+            
+                <ng-template let-classPeril pTemplate="body">
+                  <tr [pSelectableRow]="classPeril" style="border-bottom:none;"
+                    (click)="perilsSelect(classPeril.code);fetchSubperils(classPeril.code);status=!status">
+                    <td>{{classPeril.perCode}}</td>
+                    <td>{{classPeril.perShtDescription}}</td>
+                    <td>{{classPeril.perShtDescription}}</td>
+                    <td>{{classPeril.perType}}</td>
+                    <td>{{classPeril.perilLimit}}</td>
+                    <td>{{classPeril.perilLimitScope}}</td>
+                    <td>{{classPeril.personLimit}}</td>
+                    <td>{{classPeril.claimLimit}}</td>
+            
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+            
+                  <tr>
+                    <td colspan="2"></td>
+            
+                    <td colspan="8" style="padding:200px;" id="empty">No records Found</td>
+                  </tr>
+            
+            
+                </ng-template>
+                <!-- <ng-template pTemplate="paginatorleft">
+                  <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                </ng-template>
+                <ng-template pTemplate="paginatorright">
+                  <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                </ng-template> -->
+              </p-table>
+            </div>
+            <div *ngIf="show=='subperils'">
+              <p-table [value]="subperils" [tableStyle]="{'min-width': '60rem'}" [resizableColumns]="true"
+                styleClass="p-datatable-sm" responsiveLayout="scroll" class='ui-datatable'>
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="perilCode" style="width:20%">Peril Code <p-sortIcon field="perilCode"></p-sortIcon></th>
+                    <th pSortableColumn="perilShortDescription" style="width:20%">Sht Desc <p-sortIcon
+                        field="perilShortDescription"></p-sortIcon></th>
+                    <th pSortableColumn="perilType" style="width:20%">Peril Type <p-sortIcon field="perilType"></p-sortIcon></th>
+            
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>{{data.perilCode}}</td>
+                    <td>{{data.perilShortDescription}}</td>
+                    <td>{{data.perilType}}</td>
+            
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="pills-excesses" role="tabpanel" aria-labelledby="pills-excesses-tab" tabindex="0">
+            Class Excesses Table
+          </div>
+          <div class="tab-pane fade" id="pills-vessle" role="tabpanel" aria-labelledby="pills-vessle-tab" tabindex="0">
+            Vessle Type Table
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

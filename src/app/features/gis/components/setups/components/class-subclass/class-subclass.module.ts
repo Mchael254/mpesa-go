@@ -8,6 +8,7 @@ import { ClassesComponent } from './classes/classes.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 // import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 // import { DynamicFormComponent } from 'src/app/shared/components/dynamic-form/dynamic-form.component';
@@ -25,6 +26,7 @@ import { TableModule } from 'primeng/table';
     FormsModule,
     ReactiveFormsModule,
     TableModule,
+    ButtonModule,
     // Ng2SearchPipeModule
   ]
 })
