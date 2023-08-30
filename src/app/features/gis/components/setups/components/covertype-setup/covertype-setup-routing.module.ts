@@ -8,10 +8,10 @@ import {
 
 const routes: Routes = [
   {
-    path: 'cover', component: CoverComponent
+    path: 'covertypes', component: CoverComponent
   },
   {
-    path: 'section', component: SectionComponent
+    path: 'sections', component: SectionComponent
   },
   {
     path:'subclasses-sections-and-covertypes',
