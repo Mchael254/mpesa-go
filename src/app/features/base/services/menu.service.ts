@@ -140,7 +140,9 @@ export class MenuService{
     name: 'Taxes',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-group-arrows-rotate',
-    menuItems: [{name:'Taxes Rates (NB on Subclass)', link:"./home/gis/setup/tax/tax-rate"},],
+    menuItems: [
+      {name:'Taxes Rates (NB on Subclass)', link:"./home/gis/setup/tax/tax-rate"},
+    ],
     collapsed:true,
   },
 
@@ -148,7 +150,20 @@ export class MenuService{
     name: 'Client & Insured',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-sliders',
-    menuItems: [],
+    menuItems: [
+      {name:'Interested Parties', link:"./home/gis/setup/client-insured/interested-parties"},
+      {name:'Client Remarks', link:"./home/gis/setup/client-insured/client-remarks"}
+
+    ],
+    collapsed:true,
+  },
+  {
+    name: 'Premium Rates',
+    nameSlug: 'frequentlyViewed',
+    icon: 'fa-solid fa-sliders',
+    menuItems: [
+      {name:'Premium Rates', link:"./home/gis/setup/premium-rate/premium-rates"},
+    ],
     collapsed:true,
   },
   {
