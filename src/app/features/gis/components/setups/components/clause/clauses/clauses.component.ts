@@ -1,11 +1,13 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {Clause, Record1} from "../../../data/gisDTO";
-import {MessageService} from "primeng/api";
 import {DynamicFormFields} from "../../../../../../../shared/utils/dynamic.form.fields";
 import {DynamicFormButtons} from "../../../../../../../shared/utils/dynamic.form.button";
 import {ClauseService} from "../../../../../services/clause/clause.service";
 import {interval, retryWhen, tap} from "rxjs";
+import {NgxSpinnerService} from "ngx-spinner";
+import {AuthService} from "../../../../../../../shared/services/auth.service";
+import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 
 enum Types {
   clause = "CL",
@@ -37,6 +39,13 @@ export class ClausesComponent {
   editedBy: any;
   show: boolean = false;
   searchForm:FormGroup;
+  public filteredClauses: any;
+
+  today = new Date();
+  year = this.today.getFullYear(); // Get the current year
+  month = (this.today.getMonth() + 1).toString().padStart(2, '0'); // Get the current month and pad with leading zero if necessary
+  day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
+  dateToday = `${this.year}-${this.month}-${this.day}`;
 
   formFields: DynamicFormFields[];
   public buttonConfig: DynamicFormButtons;
@@ -45,13 +54,16 @@ export class ClausesComponent {
     public cdr: ChangeDetectorRef,
     public fb: FormBuilder,
     private clauseService: ClauseService,
-    private messageService: MessageService
+    private globalMessagingService: GlobalMessagingService,
+    private spinner: NgxSpinnerService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
     this.getAllClauses();
     this.getSingleClause();
     this.createForm();
+    this.spinner.show();
     // this.formFields = this.clausesForm();
     // this.buttonConfig = this.actionButtonConfig();
   }
@@ -80,8 +92,8 @@ export class ClausesComponent {
       merge: "string",
       organization_code: 2,
       version: 1,
-      updated_at: "2022-04-12",
-      updated_by: "TQUEST",
+      updated_at: [''],
+      updated_by: [''],
     })
 
   }
@@ -100,7 +112,9 @@ export class ClausesComponent {
         return temp;
       });*/
       this.allClauses = data._embedded.clause_dto_list;
-      console.log("all clauses", this.allClauses)
+      this.filteredClauses = this.allClauses;
+      console.log("all clauses", this.filteredClauses)
+      this.spinner.hide();
       this.isDisplayed = true;
       this.cdr.detectChanges();
     })
@@ -139,27 +153,29 @@ export class ClausesComponent {
     }
   }
   createClause() {
-    // const randomString = Math.random().toString(36).substring(2, 5);
-    // const requestBody: Clause = this.clauseForm.value;
-    // requestBody.version = 2;
-    // requestBody.short_description = randomString
-    // requestBody.is_lien = "Y"
-    // requestBody.ins = "Y"
-    // requestBody.merge = "Y"
-    // requestBody.organization_code = 2
+    const loggedInUser = this.authService.getCurrentUserName()
+    const randomString = Math.random().toString(36).substring(2, 5);
+    const requestBody: Clause = this.clauseForm.value;
+    requestBody.version = 2;
+    requestBody.short_description = randomString
+    requestBody.is_lien = "Y"
+    requestBody.ins = "Y"
+    requestBody.merge = "Y"
+    requestBody.organization_code = 2
+    requestBody.updated_at = this.dateToday
+    requestBody.updated_by = loggedInUser
     try {
-      this.clauseService.createClause(this.clauseForm.value).subscribe(data => {
+      this.clauseService.createClause(requestBody).subscribe(data => {
 
-        this.showSuccess
+        this.globalMessagingService.displaySuccessMessage( 'Success', 'Successfully created' );
         console.log("Created Clause", data)
-        this.cdr.detectChanges();
       })
 
     } catch (error) {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
 
     }
-
+    this.cdr.detectChanges();
   }
   /* update clauses */
 
@@ -173,10 +189,10 @@ export class ClausesComponent {
     try {
       this.clauseService.updateClause(requestBody, this.selectedCode).subscribe(data => {
         console.log("Updated successfully here")
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully updated' });
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated' );
       })
     } catch (error) {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+      this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
     }
 
   }
@@ -193,19 +209,21 @@ export class ClausesComponent {
     const requestBody: Clause = this.clauseForm.value
     this.clauseService.deleteClause(requestBody.code).subscribe(res =>{
       this.deleteSuccess()
+      this.getAllClauses();
+      this.clauseForm.reset();
     })
   }
   showSuccess() {
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Created' });
+    this.globalMessagingService.displaySuccessMessage('Success','Successfully Created' );
   }
   reviseSuccess() {
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Revised' });
+    this.globalMessagingService.displaySuccessMessage('Success','Successfully Revised' );
   }
   deleteSuccess() {
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Successfully Deleted' });
+    this.globalMessagingService.displaySuccessMessage('Success','Successfully Deleted' );
   }
   showError() {
-    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error Occured' });
+    this.globalMessagingService.displayErrorMessage('Error', 'Error Occured' );
   }
 
 /*  clausesForm(): DynamicFormFields[]{
@@ -302,4 +320,9 @@ export class ClausesComponent {
     this.cdr.detectChanges();
     this.show = true;
   }*/
+  filterClauses(event: any) {
+    const searchValue = (event.target.value).toUpperCase();
+    this.filteredClauses = this.allClauses.filter((el) => el.heading.includes(searchValue));
+    this.cdr.detectChanges();
+  }
 }

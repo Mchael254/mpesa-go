@@ -1,150 +1,150 @@
-<div class="container">
-  <div class="col-md-12">
+<div class="base-content-section setups">
+  <div class="container">
+    <div class="col-md-12">
 
-    <div class="row">
-      <div class="col-xl-4">
-        <div class="card">
-          <div class="card-body">
-            <div class="row">
+      <div class="row">
+        <div class="col-xl-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
 
-              <div class="col-xl-6">
-                <label><span class="clause-label">Clauses</span></label>
-              </div>
-              <div class="col-xl-6">
-                <div class="row">
-                  <div class="col-xl-6">
-                    <button style="border: none; background-color: transparent;"  (click)="createNewClause()"><span class="clause-links">New</span></button>
-                  </div>
-                  <div class="col-xl-6">
-                    <button style="border: none; background-color: transparent;" (click)="deleteClause()"><span class="clause-links">Delete</span></button>
-                  </div>
+                <div class="col-xl-6">
+                  <label><span class="clause-label">Clauses</span></label>
                 </div>
+                <div class="col-xl-6">
+                  <div class="row">
+                    <div class="col-xl-6">
+                      <button style="border: none; background-color: transparent;"  (click)="createNewClause()"><span class="clause-links">New</span></button>
+                    </div>
+                    <div class="col-xl-6">
+                      <button style="border: none; background-color: transparent;" (click)="deleteClause()"><span class="clause-links">Delete</span></button>
+                    </div>
+                  </div>
 
+                </div>
+              </div>
+              <div class="mt-2">
+
+                <div class="input-group mb-3">
+                  <input type="text"
+                         class="form-control"
+                         placeholder="Search Clauses"
+                         aria-label="search"
+                         aria-describedby="search"
+                         (keyup)="filterClauses($event)">
+                  <span class="input-group-text" id="search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                </div>
+                <div class="spinner" style="position: relative">
+                  <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B"
+                               size="medium" bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                </div>
+                <div class="listing">
+                  <ul>
+                    <li *ngFor="let data of filteredClauses"
+                        (click)="selectedClause(data.code, data.updated_at, data.updated_by)">
+                      {{ data.heading | titlecase }}
+                    </li>
+                  </ul>
+                </div>
+                <!--<app-dynamic-setup-search-list-screen
+                [dynamicTitle]="'Clauses'"
+                [paramsList]="allClauses"
+                (loadParamAction)="receiveData($event)">
+                </app-dynamic-setup-search-list-screen>-->
               </div>
             </div>
-            <div class="mt-2">
-              <!--<p-listbox [options]="allClauses | filter:filterby" [(ngModel)]="selected" optionLabel="heading"
-                         [style]="{'width':'17rem', 'height':'450px', 'overflow-y':'auto', '-webkit-scrollbar': '6px'}"
-                         (onClick)="selectedClause()" class="select">
-
-              </p-listbox>-->
-                <form class="row form-sm mb-3"  [formGroup]="searchForm" style="margin-top: 15px;">
-
-                  <input class="form-control form-control-sm mx-4" formControlName="search" type="text"
-                         placeholder="Search Clauses" aria-label="Search" id="search-input" [(ngModel)]="filterby">
-                  <i class="pi pi-search" id="search"></i>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-xl-8">
+                  <label class="clause-label">New Cover type</label>
+                </div>
+                <div class="col-xl-4">
+                  <a href="/" class="claus"><span class="clause-links">Report</span></a>
+                </div>
+              </div>
+              <div>
+                <!--<app-dynamic-form
+                  [formFields]="formFields"
+                  [fieldsPerRow]="1"
+                  [title]="'Details'"
+                  [actionButtonConfig]="buttonConfig"
+                  (formSubmitted)="save($event)"
+                ></app-dynamic-form>-->
+                <form [formGroup]="clauseForm">
+                  <div>
+                    <label><span class="clause-label">ID</span></label>
+                    <input class="form-control" type="text" formControlName="code" readonly>
+                  </div>
+                  <div>
+                    <label><span class="clause-label">Current</span></label>
+                    <select class="form-control" formControlName="isCurrent">
+                      <option value="Y">Yes</option>
+                      <option value="N">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label><span class="clause-label">Heading</span></label>
+                    <input class="form-control" formControlName="heading">
+                  </div>
+                  <div>
+                    <label><span class="clause-label">Type</span></label>
+                    <select class="form-control" formControlName="type">
+                      <option value="CL">Clause</option>
+                      <option value="WA">Warranty</option>
+                      <option value="SP">Special Conditions</option>
+                      <option value="EX">Excess</option>
+                      <option value="PE">Peril</option>
+                      <option value="EC">Exclusion</option>
+                      <option value="ET">Extension</option>
+                      <option value="MM">Memo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label><span class="clause-label">Clause Editable?</span></label>
+                    <select class="form-control" formControlName="isEditable">
+                      <option value="Y">Yes</option>
+                      <option value="N">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label><span class="clause-label">Wording</span></label>
+                    <textarea class="form-control" formControlName="wording" style="height: 26vh"></textarea>
+                  </div>
+                  <div class="row mt-4">
+                    <div class="col-xl-6">
+                      <button class="text-plain" (click)="reviseClause()"><span class="revise-text">Revise</span></button>
+                    </div>
+                    <div class="col-xl-6">
+                      <button class="btn btn-primary rounded-0 float-end" (click)="save()"><span class="savetext">Save</span></button>
+                    </div>
+                  </div>
                 </form>
-
-              <div class="paramlist" style="overflow-y: scroll; max-height: 68vh;">
-                <ul class="list-group list-group-light" *ngFor="let data of allClauses">
-                  <li class="list-group-item  list-group-item-action px-3 border-0 mr-4"
-                      (click)="selectedClause(data.code, data.updated_at, data.updated_by)"
-                      [ngClass]="{activity:isActive(data)}"
-                      id="paramsList">{{data.heading | lowercase }}
-                  </li>
-                </ul>
-                <div class="d-flex justify-content-center">
-                  <div class="spinner-border text-primary" *ngIf="!isDisplayed"  role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </div>
               </div>
-              <!--<app-dynamic-setup-search-list-screen
-              [dynamicTitle]="'Clauses'"
-              [paramsList]="allClauses"
-              (loadParamAction)="receiveData($event)">
-              </app-dynamic-setup-search-list-screen>-->
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-xl-4">
-        <div class="card">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-xl-8">
-                <label class="clause-label">Details</label>
-              </div>
-              <div class="col-xl-4">
-                <a href="/" class="claus"><span class="clause-links">Report</span></a>
-              </div>
-            </div>
-            <div>
-              <!--<app-dynamic-form
-                [formFields]="formFields"
-                [fieldsPerRow]="1"
-                [title]="'Details'"
-                [actionButtonConfig]="buttonConfig"
-                (formSubmitted)="save($event)"
-              ></app-dynamic-form>-->
-              <form [formGroup]="clauseForm">
-                <div>
-                  <label><span class="clause-label">ID</span></label>
-                  <input class="form-control" type="text" formControlName="code" readonly>
+        <div class="col-xl-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-xl-7">
+                  <label><span class="clause-label">Last Edited by:</span></label>
                 </div>
-                <div>
-                  <label><span class="clause-label">Current</span></label>
-                  <select class="form-control" formControlName="isCurrent">
-                    <option value="Y">Yes</option>
-                    <option value="N">No</option>
-                  </select>
+                <div class="col-xl-5">
+                  <label><span>{{editedBy}}</span></label>
                 </div>
-                <div>
-                  <label><span class="clause-label">Heading</span></label>
-                  <input class="form-control" formControlName="heading">
+                <div class="col-xl-7">
+                  <label><span class="clause-label">Last Edited Date:</span></label>
                 </div>
-                <div>
-                  <label><span class="clause-label">Type</span></label>
-                  <select class="form-control" formControlName="type">
-                    <option value="CL">Clause</option>
-                    <option value="WA">Warranty</option>
-                    <option value="SP">Special Conditions</option>
-                    <option value="EX">Excess</option>
-                    <option value="PE">Peril</option>
-                    <option value="EC">Exclusion</option>
-                    <option value="ET">Extension</option>
-                    <option value="MM">Memo</option>
-                  </select>
+                <div class="col-xl-5">
+                  <label><span>{{dateEdited}}</span></label>
                 </div>
-                <div>
-                  <label><span class="clause-label">Clause Editable?</span></label>
-                  <select class="form-control" formControlName="isEditable">
-                    <option value="Y">Yes</option>
-                    <option value="N">No</option>
-                  </select>
-                </div>
-                <div>
-                  <label><span class="clause-label">Wording</span></label>
-                  <textarea class="form-control" formControlName="wording" style="height: 26vh"></textarea>
-                </div>
-                <div class="row mt-4">
-                  <div class="col-xl-6">
-                    <button class="text-plain" (click)="reviseClause()"><span class="revise-text">Revise</span></button>
-                  </div>
-                  <div class="col-xl-6">
-                    <button class="btn btn-primary rounded-0 px-3 me-3" (click)="save()"><span class="savetext">Save</span></button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-4">
-        <div class="card">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-xl-7">
-                <label><span class="clause-label">Last Edited by:</span></label>
-              </div>
-              <div class="col-xl-5">
-                <label><span>{{editedBy}}</span></label>
-              </div>
-              <div class="col-xl-7">
-                <label><span class="clause-label">Last Edited Date:</span></label>
-              </div>
-              <div class="col-xl-5">
-                <label><span>{{dateEdited}}</span></label>
               </div>
             </div>
           </div>
@@ -153,3 +153,4 @@
     </div>
   </div>
 </div>
+
