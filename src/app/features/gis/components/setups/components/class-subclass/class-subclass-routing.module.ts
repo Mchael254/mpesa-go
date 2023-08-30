@@ -9,6 +9,10 @@ const routes: Routes = [
     component: ClassSetupWizardComponent
   },
   {
+    path:'setup-wizard/:num',
+    component: ClassSetupWizardComponent
+  },
+  {
     path:'classes',
     component:ClassesComponent
   }

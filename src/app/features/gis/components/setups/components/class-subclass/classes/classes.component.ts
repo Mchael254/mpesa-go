@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import {Router } from '@angular/router';
+import {NavigationExtras, Router } from '@angular/router';
 import { FormGroup,FormBuilder, FormControl, Validators } from '@angular/forms';
 import {MessageService} from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -7,6 +7,8 @@ import { tap } from 'rxjs/operators';
 import { interval } from 'rxjs';
 import {Peril,classPeril,Classes,Vessel,Conditions, Excesses} from '../../../data/gisDTO'
 import { ClassesSubclassesService } from '../../../services/classes-subclasses/classes-subclasses.service';
+import { TableDetail } from 'src/app/shared/data/table-detail';
+import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-classes',
   templateUrl: './classes.component.html',
@@ -26,7 +28,7 @@ export class ClassesComponent {
   selectedSubClass:any;
   classPerilList:any;
   isDisplayed:boolean;
-  classexcesses:Excesses[];
+  classexcesses: Excesses[];
   classPeril:classPeril[];
   classPerilDetails:any;
   excessesDetails:Excesses;
@@ -45,26 +47,63 @@ export class ClassesComponent {
   fields:any;
   subperils:any;
   status: boolean = false;
-  show:string;
+  show: string;
+  
+  tableDetails: TableDetail;
+
+  globalFilterFields = ['description','code','classCode','screenCode','claimPrefix'];
+
+  cols = [
+    { field: 'code', header: 'Sub Class Code' },
+    { field: 'classCode', header: 'Sub Class Id' },
+    { field: 'description', header: 'Sub Class' },
+    { field: 'screenCode', header: 'Screen Code' },
+    { field: 'claimPrefix', header: 'Claim Prefix' },
+  ];
 
   constructor(
-    
     public router:Router,
-    
     public classService:ClassesSubclassesService,
     public fb: FormBuilder,
     public messageService: MessageService,
     public cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
    
    //  private classPerilService:ClassPerilService,
    //  public excessesService:ExcessServiceService,
   
- ) { }
- ngOnInit(): void {
-  this.loadAllClasses();
-  this.createClassForm();
-  this.createClassPerilForm(); 
-  this.toggle('classPeril')
+  ) { 
+      this.tableDetails = {
+      cols: this.cols,
+      rows: this.subclass?.content,
+      globalFilterFields: this.globalFilterFields,
+      isLazyLoaded: false,
+      paginator: false,
+      showFilter: false,
+      showSorting: false
+    }
+  }
+  
+
+  ngOnInit(): void {
+    // this.tableDetails = {
+    //   cols: this.cols,
+    //   rows: this.subclass?.content,
+    //   globalFilterFields: this.globalFilterFields,
+    //   showFilter: false,
+    //   showSorting: true,
+    //   paginator: true,
+    //   url: '/home/entity/edit',
+    //   urlIdentifier: 'id',
+    //   isLazyLoaded: false
+    // },
+    this.spinner.show();
+    this.loadAllClasses();
+    this.createClassForm();
+    this.createClassPerilForm(); 
+    this.toggle('classPeril')
+    // this.createForm();  
+    this.toggle('classPeril')
  
 }
 
@@ -99,9 +138,10 @@ createClassForm(){
  }
 loadAllClasses(){
     return this.classService.getAllClasses().pipe(tap(() => (this.isDisplayed = true)),).subscribe((data: Classes[]) => {
-    this.classList = data;
-    this.isDisplayed = true; 
-    this.cdr.detectChanges();
+      this.classList = data;
+      this.isDisplayed = true; 
+      this.spinner.hide();
+      this.cdr.detectChanges();
    })  
 }
 
@@ -119,6 +159,7 @@ getClass(event: any){
       this.classForm.controls['organizationCode'].setValue(2);
       this.subclass = this.classDetails.subClasses
       this.isDisplayed = true; 
+      this.spinner.hide();
       this.cdr.detectChanges();
     
       
@@ -166,6 +207,7 @@ getClass(event: any){
     }
     console.log(this.new)
   }
+
    deleteClass(){
     if(this.selected == undefined){
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Class to continue'});
@@ -188,21 +230,35 @@ getClass(event: any){
    }
   }
   //***SUBCLASSES***//
-onRowSelect(code) {
-  console.log(code)
-  return this.classService.getSubclass(code).subscribe((res)=>{
-    this.subClassDetails = res;
-    console.log(this.subClassDetails)
-})
+  onRowSelect(code) {
+    console.log(code)
+    return this.classService.getSubclass(code).subscribe((res)=>{
+      this.subClassDetails = res;
+      console.log(this.subClassDetails)
+    })
  }
- editSubclass(){
-  try {
-    this.router.navigate(['/home/gis/classSetupsWizard/3', this.subClassDetails.code])
-  } catch (error) {
-    this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Subclass to continue'});
+  // editSubclass() {
+  //   try {
+  //     this.router.navigate(['/home/gis/setup/class-subclass/setup-wizard/2', this.subClassDetails.code])
+  //   } catch (error) {
+  //     this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Subclass to continue'});
+  //   }
+  // }
+  
+  editSubclass() {
+    console.log(this.subClassDetails);
+    try {
+      if (!this.subClassDetails) {
+        throw new Error('Select a Subclass to continue');
+      }
 
+      this.router.navigate(['/home/gis/setup/class-subclass/setup-wizard/3'], {
+        state: { subclassDetails: this.subClassDetails }
+      });
+    } catch (error) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: error.message });
+    }
   }
- }
 
 
 
@@ -391,6 +447,160 @@ editPeril(){
   console.log(this.perilDetails)
   this.new = false;
   
-}
+  }
+  
+  /* GET SUBPERILS  */
+  fetchSubperils(code){
+  
+    this.classService.getAllSubperils(code).subscribe(res=>{
+      this.subperils = res.content
+      console.log(this.subperils)
+    })
+  }
+
+    //***CLASS EXCESSES***//
+  
+  getByClassCode(event:any){
+    
+      return this.classService.getExcessesByClass(event).pipe(tap(() => (this.isDisplayed = true)),).subscribe((data: Excesses[]) => {
+      this.classexcesses = data;
+      this.isDisplayed = true; 
+      console.log(this.classexcesses)
+      this.cdr.detectChanges();
+     })  
+  
+  }
+
+  excessesSelect(code){
+    return this.classService.getExcessesDetails(code).subscribe((res)=>{
+      this.excessesDetails = res;
+      console.log(this.excessesDetails)
+    });
+  }
+
+  createExcessForm(){
+    this.ExcessForm = this.fb.group({
+
+          description:['',Validators.required],
+          classCode: ['',Validators.required],
+          dependLossType:['',Validators.required],
+          totalLossExcessRateType: ['',Validators.required],
+          totalLossExcessRate: ['',Validators.required],
+          totalLossExcessMin:['',Validators.required],
+          totalLossExcessMax: ['',Validators.required],
+          totalLossClaimExRateType: ['',Validators.required],
+          totalLossClaimExRate: ['',Validators.required],
+          totalLossClaimExMin: ['',Validators.required],
+          totalLossClaimExMax: ['',Validators.required],
+          partialLossExcessRateType: [''],
+          partialLossExcessRate: [''],
+          partialLossExcessMin:  [''],
+          partialLossExcessMax:  [''],
+          partialLossClaimExRateType:  [''],
+          partialLossClaimExRate:  [''],
+          partialLossClaimExMin:  [''],
+          partialLossClaimExMax:  [''],
+          conditions:  [''],
+          computationType:['',Validators.required],
+          wef:['',Validators.required],
+          wet:['',Validators.required]
+    })
+    this.ConditionsForm = this.fb.group({
+      name:[''],
+      operator:[''],
+      value:['']
+    })
+  }
+
+  addExcess(){
+    // console.log(this.classDetails.classCode);
+    // this.new = true
+    // this.ExcessForm.controls['classCode'].setValue(this.classDetails.classCode);
+    try {
+      console.log(this.classDetails.classCode);
+      this.new = true
+      this.ExcessForm.controls['classCode'].setValue(this.classDetails.classCode);
+    } catch (error) {
+      this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Class to continue'});
+    }
+  }
+  editExcess(){
+    this.new = false
+  
+      try {
+        this.PerilForm.controls['classCode'].setValue(this.classDetails.classCode);
+      this.ExcessForm.patchValue(this.excessesDetails)
+      console.log(this.ExcessForm.value)
+      } catch (error) {
+        this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Class to continue'});
+      }
+      
+      
+
+    // this.PerilForm.controls['classCode'].setValue(this.classDetails.classCode);
+    // this.ExcessForm.patchValue(this.excessesDetails)
+    // console.log(this.ExcessForm.value)
+  }
+  saveExcess(){
+    if(this.new==true){
+    console.log(this.classDetails.classCode)
+    this.ExcessForm.controls['classCode'].setValue(this.classDetails.classCode);
+    this.classService.createExcesses(this.ExcessForm.value).subscribe(res=>{
+    
+      try{
+        this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
+      }catch(error){
+        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+      
+      }
+    })
+    
+    }else{
+      this.classService.updateExcesses(this.ExcessForm.value,this.excessesDetails.code).subscribe((data: {}) => {
+        
+        try{
+          this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
+        }catch(error){
+          this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        
+        }
+      })
+    }
+    console.log(this.new)
+  }
+  deleteClassExcess(){
+    
+    try {
+      this.classService.deleteExcesses(this.excessesDetails.code).subscribe(
+            (res)=>{
+            this.messageService.add({severity:'success', summary: 'Success', detail: 'Class Excess deleted'});
+            this.classForm.reset(); 
+          },
+            (error: HttpErrorResponse) => {
+              console.log(error);
+              this.messageService.add({severity:'error', summary: 'Error', detail: 'You cannot delete this record '});
+              this.classForm.reset(); 
+            });
+      
+    } catch (error) {
+      this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Class Excess to continue'});
+
+    }
+    
+      
+    
+  
+  }
+  getConditions(){
+    this.classService.getConditions().subscribe(
+      res=>{
+        this.Conditions = res 
+        console.log(res)
+      }
+    )
+  }
+  addCondition(){
+    this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Condition to continue'});
+  }
 
 }

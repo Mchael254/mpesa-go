@@ -1,7 +1,6 @@
 import {Injectable, signal} from '@angular/core';
 import {
-  Classes, Subclasses, classPeril, Peril, fields, SubclassesDTO
-
+  Classes, Subclasses, classPeril, Peril, fields, SubclassesDTO, Excesses, Conditions, UWScreens
 } from '../../data/gisDTO';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -244,6 +243,106 @@ errorHandl(error: HttpErrorResponse) {
       }
       updateFields(fields:fields[]){
         return this.http.put<fields>(`/${this.baseurl}/${this.setupsbaseurl}/fields`, [fields],this.httpOptions)
+  }
+  /*SUBPERILS*/
+
+  getAllSubperils(Code:any):Observable<any>{
+        const params = new HttpParams()
+        .set('subclassSectionPerilCode', `${Code}`)
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        
+        })
+        return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/subperils`,{
+        params:params,
+        headers:headers
+      }).pipe(
+          retry(1),
+          catchError(this.errorHandl)
+        )
+  }
+
+   /* CLASS EXCESSES */
+        getAllExcesses(): Observable<Excesses[]>{
+          return this.http.get<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`,this.httpOptions).pipe(
+            retry(1),
+            catchError(this.errorHandl)
+          )
+        }
+      
+        getExcessesByClass(classCode:number){
+          const params = new HttpParams()
+          .set('classCode', `${classCode}`)
+          const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          
+          })
+          return this.http.get<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`,{
+            params:params,
+            headers:headers
+          }).pipe(
+            retry(1),
+            catchError(this.errorHandl)
+          )
+        }
+      
+        getExcessesDetails(code: number): Observable<Excesses>{
+          return this.http.get<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${code}`).pipe(
+            retry(1),
+            catchError(this.errorHandl)
+          )
+        }
+
+        createExcesses(data:Excesses[]) {
+          console.log(JSON.stringify(data))
+          return this.http.post<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`, JSON.stringify(data),this.httpOptions)
+            .pipe(
+              retry(1),
+              catchError(this.errorHandl)
+            )
+          } 
+          updateExcesses(data:Excesses,id:any){
+            console.log(JSON.stringify(data))
+            return this.http.put<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${id}`, JSON.stringify(data), this.httpOptions)
+            .pipe(
+              retry(1),
+              catchError(this.errorHandl)
+            )
+          }
+          deleteExcesses(id:any){
+            return this.http.delete<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${id}`, this.httpOptions)
+            .pipe(
+              retry(1),
+              catchError(this.errorHandl)
+            )
+  }
+        /* LOVs */
+
+      getConditions():Observable<Conditions>{
+        return this.http.get<Conditions>(`/${this.baseurl}/${this.setupsbaseurl}/excess-conditions`).pipe(
+          retry(1),
+          catchError(this.errorHandl)
+        )
       }
+    
+      getUWScreens():Observable<UWScreens>{
+        const params = new HttpParams()
+        .set('screenLevel', 'U')
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        
+        })
+        return this.http.get<UWScreens>(`/${this.baseurl}/${this.setupsbaseurl}/screens`,{
+          params:params,
+          headers:headers
+        }).pipe(
+          retry(1),
+          catchError(this.errorHandl)
+        )
+      }
+  
 }
 

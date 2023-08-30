@@ -132,7 +132,7 @@ export class MenuService{
     name: 'Cover Types & Sections',
     nameSlug: 'frequentlyViewed',
     icon: 'fa-solid fa-sliders',
-    menuItems: [],
+    menuItems: [{name:'Covers', link:"/home/gis/setup/covertype-setup/covertypes"}, {name:'Sections', link:"/home/gis/setup/covertype-setup/sections"}, {name:'subclasses-sections-and-covertypes', link:"/home/gis/setup/covertype-setup/subclasses-sections-and-covertypes"},],
     collapsed:true,
   },
 

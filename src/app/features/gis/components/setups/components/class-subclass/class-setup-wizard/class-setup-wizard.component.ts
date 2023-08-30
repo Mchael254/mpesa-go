@@ -91,14 +91,18 @@ export class ClassSetupWizardComponent {
   ) { }
 
   ngOnInit(): void {
-    this.sel()
-    this.createForm()
-    this.getFormFields()
-    this.createTestForm()
-    this.page =  this.route.snapshot.paramMap.get('num')
-    this.editCode = this.route.snapshot.paramMap.get('edit')
-    this.getSubclass(this.editCode)
-    console.log(this.editCode)
+    this.sel();
+    this.createForm();
+    this.getFormFields();
+    this.createTestForm();
+    this.page = this.route.snapshot.paramMap.get('num');
+    this.getSubclass(this.editCode);
+    const state = window.history.state;
+    if (state && state.subclassDetails) {
+      const subclassDetails = state.subclassDetails;
+      console.log('Subclass Details:', subclassDetails);
+      // Now you can use subclassDetails in your component
+    }
   }
   selectedCard: number = 1; 
 
