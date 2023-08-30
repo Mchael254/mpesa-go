@@ -1,0 +1,416 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+ 
+
+/* // .title1{
+//     font-family: 'Lato';
+//     font-style: normal;
+//     font-weight: 700;
+//     font-size: 22px;
+//     line-height: 29px;
+
+//     color: #00529B;
+// } */
+#arrow{
+font-size: 1.3rem;
+}
+.text-right{
+    color: #00529B;
+font-family: 'Lato';
+font-size: 14px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+text-decoration: underline;
+}
+.title2{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #000000;
+
+}
+li a{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    color: #00529B;
+    text-decoration: none;
+
+}
+/* ::ng-deep{
+    .breadcrumb-item+.breadcrumb-item:before{
+        color: #959595;
+        content: ">";
+    }
+    .breadcrumb-item.active{
+        font-family: 'Lato';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 19px;
+        color: #00529B;
+        text-decoration: none;
+    }
+} */
+.breadcrumb-item{
+    color: #00529B;
+    font-family: Lato;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.breadcrumb{
+    background-color: transparent;
+    
+}
+.card-title{
+    color: #000;
+    font-size: 12px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+#search-input{
+    border-radius: 2px;
+    border: 1px solid rgba(140, 140, 140, 0.89);
+    background: #FFF;
+    height: 30px;
+    color: rgba(140, 140, 140, 0.59);
+    font-size: 12px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    width:60%
+}
+#search{
+    background-color: #00529B;
+    color: white;
+    padding: 7px;
+    padding-left: 9px;
+    width: 34px;
+    height: 30px;
+    border-radius: 2px;
+}
+#subclass{
+    height: 394px;
+}
+#SubclassList{
+color: #000;
+font-family: Lato;
+font-size: 12px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+margin-left: -13px;
+}
+.SubClassList{
+    overflow-y: scroll;
+    max-height: 280px;
+  }
+  .SubClassList li:hover{
+    border-radius: 2px;
+border: 1px solid rgba(220, 220, 220, 0.85);
+background: rgba(0, 82, 155, 0.20);
+  }
+  ::-webkit-scrollbar {
+    width: 5px;
+    height:7px;
+    margin-left:200px
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px grey; 
+    border-radius: 10px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #D9D9D9; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 30, 187, 0.1); 
+  }
+
+
+.nav-pills .nav-link.active{
+    background-color: #00529B;
+    border-radius: 2px;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    color:#FFFFFF;;
+    }
+.nav-pills .nav-link{
+    color: #00529B;
+    font-size: 12px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    
+}
+#tab-search-input{
+    border-radius: 2px;
+    border: 1px solid rgba(140, 140, 140, 0.59);
+    background-color: #F8FAFC;
+    padding-left: 10px;
+    
+}
+#searchText{
+    color: rgba(105, 105, 105, 0.49);
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal; 
+}
+
+#binderTable th{
+    color: #1E293B;
+    font-size: 12px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+#binderTable td{
+    color: #000;
+    font-size: 12px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: capitalize;
+}
+#PremiumLinks .nav-item .nav-link{
+    color: #00529B;
+    font-size: 12px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+#AddPremium{
+    padding-left: 30px;
+    padding-right: 30px;
+}
+#AddChargesTitle{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+#addpremiumLabel{
+    color: #000;
+font-family: Lato;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+#addpremiumInput{
+    color: #000;
+    font-size: 12px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#updatePremium{
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#UpdatePremiumTitle{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+#cancel{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+    border: 1px solid #00529B;
+    border-radius: 2px;
+    width: 88.84px;
+    margin-left: 30px;
+
+}
+#cancelPremium{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+    border: 1px solid #00529B;
+    border-radius: 2px;
+    width: 88.84px;
+}
+#cancelPremium:hover{
+    background-color: #00529B;
+    color: #FFFFFF;
+}
+#cancel:hover{
+    background-color: #00529B;
+    color: #FFFFFF;
+}
+#save{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #FFFFFF;
+    background: #00529B;
+    border-radius: 2px;
+    width: 88.84px;
+}
+#PreiumRows{
+    margin-bottom: -10px;
+}
+.deleteMessage{
+    padding-top: 80px;
+    padding-bottom: 60px;
+    /* // padding-right: 40px; */
+    padding-left: 30px;
+    color: #000;
+    font-size: 12px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+#DeletePremium{
+    margin-top: 280px;
+    margin-left: 100px;
+}
+#Premiumcancel{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    color: #00529B;
+    border: 1px solid #00529B;
+    border-radius: 2px;
+    width: 88.84px;
+    
+}
+#Premiumcancel:hover{
+    background-color: #00529B;
+    color: #FFFFFF;
+}
+#showPremiumTitle{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    padding-left: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+.showTitle{
+    background-color: rgba(105, 105, 105, 0.15);
+    margin-top:10px;
+    margin-bottom:20px;
+    margin-left: -25px;
+}
+#showModal{
+    margin-top:-20px;
+}
+#descriptionLabel{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    padding-bottom: 10px;
+}
+#rateTable{
+    margin-top: 80px;
+}
+#capacityTitle{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: -10px;
+    margin-left: -10px;
+}
+/* #rateInput{
+    //max-width: 93px;
+    // background:rgba(255, 255, 255);
+    // border:2px solid rgba(140, 140, 140, 0.59);
+    //border-radius: 2px;
+    background-color: #FFF;
+    border: none;
+    
+} */
+
+#rateInputs{
+    max-width: 92px;
+    background:rgba(255, 255, 255);
+    border:2px solid rgba(140, 140, 140, 0.59);
+    margin-top: -50px;
+}
+/* // ::ng-deep{
+// input#rateInputs[_ngcontent-hdl-c320]:focus {
+//     border: 2px solid #00529B;
+// }
+// } */
+
+#rates th{
+    color: #00529B;
+    font-size: 14px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    border: none;
+    padding: 0;
+   
+
+}
+#rates{
+    border: none;
+}
+#ratesData{
+    border:1px solid rgba(0, 0, 0, 0.20);
+  
+}
+/* // #showPremium{
+//     min-width: 150%;
+//     margin-left: -260px;
+//     margin-top: 80px;
+// }
+// p-table, th, td {
+//     border: 1px solid black;
+//     border-spacing:15px;
+//     padding:10px;
+//   } */
