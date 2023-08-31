@@ -142,6 +142,7 @@ export class CoverComponent implements OnInit {
         this.coverTypesService.deleteCover(this.coverDetails.code).subscribe(
           (res)=>{
             this.globalMessagingService.displaySuccessMessage('success', 'Cover of code ${this.coverDetails.cod} successfully Deleted');
+            this.loadAllCovertypes();
         },
           (error: HttpErrorResponse) => {
             log.info(error);
