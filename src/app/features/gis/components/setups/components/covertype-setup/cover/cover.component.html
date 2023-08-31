@@ -53,63 +53,82 @@
 
         <div class="col-sm-9 right">
             <div class="card">
-                <div class="card-header">
+                <div>
                     <p class="leftHeader"><span class="leftNum" style="color:#00529B;border:1px solid #00529B">1</span>
                         Add a Section
                     </p>
                 </div>
                 <div class="card-body">
-                    <form [formGroup]="coverForm">
-                        <div class="row g-3 mb-3">
-                            <div class="col-4">
-                                <div class="form-group row">
-                                    <label for="inputId" class="col-sm-5 col-form-label">ID:</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="inputId" formControlName="short_description">
+                    <div class="row mt-3">
+                        <div class="form-div">
+                            <form [formGroup]="coverForm">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                <div class="mb-3">
+                                    <label for="inputId" class="form-label">Identification Document</label>
+                                    <input
+                                    type="text"
+                                    class="form-control"
+                                    id="inputId"
+                                    aria-describedby="inputId"
+                                    formControlName="short_description"
+                                    >
+                                </div>
+                                </div>
+                                <div class="col-sm-4">
+                                <div class="mb-3">
+                                    <label for="inputCover" class="form-label">Cover Types</label>
+                                    <input
+                                    type="text"
+                                    class="form-control"
+                                    id="inputCover"
+                                    aria-describedby="inputCover"
+                                    formControlName="description"
+                                    >
+                                </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="mb-3">
+                                        <label for="inputMinSI" class="form-label">Minimum Sum Insured</label>
+                                        <input 
+                                            type="text" 
+                                            class="form-control" 
+                                            id="inputMinSI" 
+                                            aria-describedby="inputMinSI" 
+                                            formControlName="minimum_sum_insured"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="mb-3">
+                                        <label for="inputDetails" class="form-label">Details</label>
+                                        <textarea
+                                        class="form-control"
+                                        id="inputDetails"
+                                        rows="5"
+                                        formControlName="details"
+                                        ></textarea>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group row">
-                                    <label for="inputCover" class="col-sm-5 col-form-label">Cover Types:</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="inputCover" formControlName="description">
+                            <div class="row mt-1">
+                                <div class="col-sm-8">
+                                    <button class="btn btn-outline-primary btn-sm">Cancel</button>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="row float-end">
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-outline-primary btn-sm" (click)="newCover()">Clear</button>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-primary btn-sm" (click)="save()">Save</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group row">
-                                    <label for="inputMinSI" class="col-sm-5 col-form-label">Min SI:</label>
-                                    <div class="col-sm-7">
-                                        <input type="text" class="form-control" id="inputMinSI" formControlName="minimum_sum_insured">
-                                    </div>
-                                </div>
-                            </div>
+                            </form>
                         </div>
-                        <div class="row">
-                            <label for="inputDetails" class="col-sm-2">Details:</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control form-control-sm rounded-0" id="inputDetails" rows="3"
-                                    formControlName="details" placeholder="Enter Details" required>
-                                </textarea>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-8">
-                                <button class="btn btn-outline-primary">Cancel</button>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="row float-end">
-                                    <div class="col-sm-6">
-                                        <button class="btn btn-outline-primary" (click)="newCover()">Clear</button>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <button class="btn btn-primary" (click)="save()">Save</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

@@ -94,15 +94,27 @@ export class ClassSetupWizardComponent {
     this.sel();
     this.createForm();
     this.getFormFields();
-    this.createTestForm();
+    // this.createTestForm();
     this.page = this.route.snapshot.paramMap.get('num');
     this.getSubclass(this.editCode);
+    this.route.queryParams.subscribe(params => {
+    const subclassCode = params['code'];
     const state = window.history.state;
+    
     if (state && state.subclassDetails) {
-      const subclassDetails = state.subclassDetails;
-      console.log('Subclass Details:', subclassDetails);
-      // Now you can use subclassDetails in your component
+      this.subClassDetails = state.subclassDetails;
+      this.createTestForm(this.subClassDetails); // Pass the data to patch
+    } else {
+      // If not in edit mode, create form without patching data
+      this.createTestForm();
     }
+  });
+    // const state = window.history.state;
+    // if (state && state.subclassDetails) {
+    //   const subclassDetails = state.subclassDetails;
+    //   console.log('Subclass Details:', subclassDetails);
+    //   // Now you can use subclassDetails in your component
+    // }
   }
   selectedCard: number = 1; 
 
@@ -212,24 +224,45 @@ export class ClassSetupWizardComponent {
     })
   }
 
-  createTestForm(){
-    this.gisService.getField(7).subscribe((res)=>{
-      this.fields = res
-       this.formFields = this.fields.fields
+  createTestForm(dataToPatch?: any) {
+    this.gisService.getField(7).subscribe((res) => {
+      this.fields = res;
+      this.formFields = this.fields.fields;
+      
       if (this.fields && this.fields.fields) {
-        const formControlsConfig = {}; 
-        this.formFields.forEach(field=>{
-          formControlsConfig[field.name]= ['', Validators.required];
-        })
+        const formControlsConfig = {};
+        this.formFields.forEach(field => {
+          formControlsConfig[field.name] = [dataToPatch ? dataToPatch[field.name] : '', Validators.required];
+        });
         this.testForm = this.fb.group(formControlsConfig);
-       
       }
-    this.mandatoryFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'Y');
-    this.optionalFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'N');
-    this.cdr.detectChanges();
-    })
-    
+      
+      this.mandatoryFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'Y');
+      this.optionalFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'N');
+      
+      this.cdr.detectChanges();
+    });
   }
+
+
+  // createTestForm(){
+  //   this.gisService.getField(7).subscribe((res)=>{
+  //     this.fields = res
+  //      this.formFields = this.fields.fields
+  //     if (this.fields && this.fields.fields) {
+  //       const formControlsConfig = {}; 
+  //       this.formFields.forEach(field=>{
+  //         formControlsConfig[field.name]= ['', Validators.required];
+  //       })
+  //       this.testForm = this.fb.group(formControlsConfig);
+       
+  //     }
+  //   this.mandatoryFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'Y');
+  //   this.optionalFrontendScreens = this.fields.fields.filter(field => field.isMandatory === 'N');
+  //   this.cdr.detectChanges();
+  //   })
+    
+  // }
 
   getClass(){
     return this.gisService.getAllClasses().pipe(tap(() => (this.isDisplayed = true)),).subscribe((data: Classes[]) => {
