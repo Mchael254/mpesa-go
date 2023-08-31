@@ -45,10 +45,10 @@
 
           </div> -->
 
-          <div>
+          <div class="mt-3">
             <label class="label2">Product Group and products</label>
           </div>
-          <div class="container mt-1 selectgroup">
+          <div class="container selectgroup">
             <p-tree class="w-full md:w-5rem" [value]="response" [filter]="true"  (onNodeSelect)="SelectNode($event)" selectionMode="single"></p-tree>
           </div>
           <!-- <div class="mt-1 selectgroup">
@@ -206,11 +206,10 @@
                     </div>
                     <div class="col-xl-6">
                         <div class="row">
-                            <div class="col-xl-4 "><button class="btn btn waves-effect waves-light ml-5" id="new" (click)="productForm.reset()">Clear</button></div>
+                            <div class="col-xl-8 "><button class="btn btn waves-effect waves-light ml-5" id="new" (click)="productForm.reset()">Clear</button></div>
                             <br><br>
                             <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-5" id="delete" (click)="createProduct()">Save</button></div>
-                            <br><br>
-                            <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-3" id="delete" (click)="selectCard(2)" (click)="selectedScreen('3');detailsDone=!detailsDone" (click)="hideSubclass()" >Next</button></div>
+
                           </div>
                     </div>
                 </div>
@@ -219,13 +218,13 @@
             <div class="tab-pane fade" id="pills-excesses" role="tabpanel" aria-labelledby="pills-excesses-tab">
               <ul class="nav">
                 <li class="nav-item add">
-                  <a class="nav-link active" aria-current="page" (click)="hideSubclass()">+Add</a>
+                  <a class="nav-link active" aria-current="page" (click)="hideSubclass()" style="color: #00529B;">+Add</a>
                 </li>
                 <!-- <li class="nav-item">
                               <a class="nav-link" (click)="editSubclass()">Edit</a>
                             </li> -->
                 <li class="nav-item add">
-                  <a class="nav-link" (click)="hideParent()">Edit</a>
+                  <a class="nav-link" (click)="hideParent()" style="color: #00529B;">Edit</a>
                 </li>
 
               </ul>
@@ -281,13 +280,13 @@
             <div class="tab-pane fade" id="pills-productdoc" role="tabpanel" aria-labelledby="pills-productdoc-tab">
               <ul class="nav">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" (click)="hideProductDocument()">+Add</a>
+                  <a class="nav-link active" aria-current="page" (click)="hideProductDocument()" style="color: #00529B;">+Add</a>
                 </li>
                 <!-- <li class="nav-item">
                               <a class="nav-link" (click)="editSubclass()">Edit</a>
                             </li> -->
                 <li class="nav-item">
-                  <a class="nav-link">Edit</a>
+                  <a class="nav-link" style="color: #00529B;">Edit</a>
                 </li>
 
               </ul>
@@ -342,13 +341,13 @@
             <div class="tab-pane fade" id="pills-document" role="tabpanel" aria-labelledby="pills-document-tab">
               <ul class="nav">
                 <li class="nav-item add">
-                  <a class="nav-link active " aria-current="page">+Add</a>
+                  <a class="nav-link active " aria-current="page" style="color: #00529B;">+Add</a>
                 </li>
                 <!-- <li class="nav-item">
                               <a class="nav-link" (click)="editSubclass()">Edit</a>
                             </li> -->
                 <li class="nav-item">
-                  <a class="nav-link">Edit</a>
+                  <a class="nav-link" style="color: #00529B;">Edit</a>
                 </li>
 
               </ul>
@@ -640,7 +639,7 @@
                   <label class="labels" for="input">File Name</label>
                 </div>
                 <div class="col-xl-7">
-                  <input type="file"  class="form-control-file" formControlName="name" (change)="handleUpload($event)" required>
+                  <input type="file"  class="form-control-file" formControlName="name" (change)="handleUpload($event)" required style="font-size: 12px;">
 
                 </div>
               </div>
