@@ -29,8 +29,8 @@
               <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
                 bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
             </div>
-            <select class="form-control form-control-sm mb-4" [(ngModel)]="selected" (ngModelChange)="getClass($event); getPerilByClassCode($event)">
-              <option value=""><input type="text"></option>      
+            <select class="form-select mb-4" [(ngModel)]="selected" (ngModelChange)="getClass($event); getPerilByClassCode($event)">
+              <option value="">Select a Class</option>
               <option *ngFor="let class of classList" [value]="class.classCode" >{{class.classDescription}}</option>
             </select>
             <!-- <div class="d-flex justify-content-center">
