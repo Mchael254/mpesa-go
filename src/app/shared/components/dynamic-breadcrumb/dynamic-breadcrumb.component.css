@@ -1,0 +1,8 @@
+.breadcrumb {
+  font-size: 0.9rem;
+}
+
+.breadcrumb li a {
+  color: #00529b;
+  font-weight: 500;
+}

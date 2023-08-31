@@ -1,13 +1,19 @@
 <div class="base-content-section setups">
+
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+
   <div class="row">
     <div class="col-sm-3 left">
       <div class="card">
         <div class="row">
           <div class="col-sm-8">
-            <p class="fw-bold">Screen Codes</p>
+            <button  class="btn btn-link text-dark fw-bold">Screen Codes</button>
           </div>
           <div class="col-sm-4">
-            <button style="float:right;" class="btn btn-outline-primary text-primary" (click)="resetForm()">New</button>
+            <button style="float:right;" class="btn btn-link text-primary" (click)="resetForm()">New</button>
           </div>
 
           <div class="col-sm-12 mt-3">
@@ -270,10 +276,10 @@
                 </div>
                 <div class="row mt-1">
                   <div class="col-sm-6">
-                    <button class="btn btn-outline-primary">Cancel</button>
+                    <button class="btn btn-outline-primary btn-standard-width">Cancel</button>
                   </div>
                   <div class="col-sm-6" style="text-align: right">
-                    <button class="btn btn-primary" (click)="createUpdateScreenCode()">Save</button>
+                    <button class="btn btn-primary btn-standard-width" (click)="createUpdateScreenCode()">Save</button>
                   </div>
                 </div>
 

@@ -6,6 +6,7 @@ import {Logger} from "../../../../../../../shared/services";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {NgxSpinnerService} from 'ngx-spinner';
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
 
 
 const log = new Logger('ScreenCodesComponent');
@@ -22,6 +23,21 @@ export class ScreenCodesComponent implements OnInit{
   public isDetailsViewActive: boolean = true;
   public screenForm: FormGroup;
   private isUpdateScreenCode: boolean = false;
+
+  public breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard'
+    },
+    {
+      label: 'GIS Setups',
+      url: '/home/gis/setup/schedule/screen-codes',
+    },
+    {
+      label: 'Screen codes',
+      url: '/home/gis/setup/schedule/screen-codes'
+    }
+  ];
 
   constructor(
     private scheduleService: ScheduleService,

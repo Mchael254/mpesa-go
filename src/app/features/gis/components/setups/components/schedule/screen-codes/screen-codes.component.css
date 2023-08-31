@@ -1,8 +1,3 @@
-.input-group span {
-  background: #00529b;
-  color: #fff;
-}
-
 .inactive-btn {
   border: solid 1px #343A4080;
   color: grey;
@@ -18,6 +13,5 @@
 }
 
 .form-div {
-  border: solid 1px #eee;
   padding: 20px;
 }

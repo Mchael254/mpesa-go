@@ -8,6 +8,7 @@ import { WordingsComponent } from './wordings/wordings.component';
 import {ListboxModule} from "primeng/listbox";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgxSpinnerModule} from "ngx-spinner";
+import {SharedModule} from "../../../../../../shared/shared.module";
 
 
 @NgModule({
@@ -16,12 +17,13 @@ import {NgxSpinnerModule} from "ngx-spinner";
     LiabilityComponent,
     WordingsComponent
   ],
-  imports: [
-    CommonModule,
-    ScheduleRoutingModule,
-    ListboxModule,
-    ReactiveFormsModule,
-    NgxSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        ScheduleRoutingModule,
+        ListboxModule,
+        ReactiveFormsModule,
+        NgxSpinnerModule,
+        SharedModule
+    ]
 })
 export class ScheduleModule { }

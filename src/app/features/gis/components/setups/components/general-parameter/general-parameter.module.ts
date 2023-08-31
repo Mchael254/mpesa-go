@@ -8,6 +8,9 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import { SystemSequencesComponent } from './system-sequences/system-sequences.component';
 import { TreeModule } from 'primeng/tree';
 import { TableModule } from 'primeng/table';
+import {SharedModule} from "../../../../../../shared/shared.module";
+
+
 @NgModule({
   declarations: [
     SystemParameterComponent,
@@ -19,7 +22,8 @@ import { TableModule } from 'primeng/table';
     ReactiveFormsModule,
     NgxSpinnerModule,
     TreeModule,
-    TableModule
+    TableModule,
+    SharedModule
   ]
 })
 export class GeneralParameterModule { }
