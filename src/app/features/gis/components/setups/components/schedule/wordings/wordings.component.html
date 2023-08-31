@@ -1,4 +1,10 @@
 <div class="base-content-section setups">
+
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+
   <div class="row">
     <div class="col-sm-3 left">
       <div class="card">
@@ -74,7 +80,7 @@
               data-bs-target="#actionsModal"
               (click)="callActionsModal('edit')"
             >
-              <i class="fa-solid fa-pencil"></i>Edit
+              <!--<i class="fa-solid fa-pencil"></i>-->Edit
             </button>
             <button
               class="btn btn-link text-primary"
@@ -82,7 +88,7 @@
               data-bs-target="#actionsModal"
               (click)="callActionsModal('delete')"
             >
-              <i class="fa-solid fa-minus"></i>Delete
+              <!--<i class="fa-solid fa-minus"></i>-->Delete
             </button>
           </div>
         </div>

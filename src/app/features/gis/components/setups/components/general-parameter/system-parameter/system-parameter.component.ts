@@ -6,6 +6,7 @@ import {Logger} from "../../../../../../../shared/services";
 import {NgxSpinnerService} from 'ngx-spinner';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
 
 
 const log = new Logger();
@@ -21,8 +22,22 @@ export class SystemParameterComponent implements OnInit {
   public filteredParams: Params[];
   public selectedParam: Params;
   public parameterForm: FormGroup;
-
   private isUpdateParam: boolean = false;
+
+  public breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard'
+    },
+    {
+      label: 'GIS Setups',
+      url: '/home/gis/setup/parameters/system-parameters',
+    },
+    {
+      label: 'System Parameters',
+      url: '/home/gis/setup/parameters/system-parameters'
+    }
+  ];
 
   constructor(
     private paramsService: ParametersService,
@@ -129,5 +144,20 @@ export class SystemParameterComponent implements OnInit {
   resetForm(): void {
     this.parameterForm.reset();
     this.isUpdateParam = false;
+  }
+
+  deleteParameter() {
+    this.paramsService.deleteParameter(this.selectedParam.code)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.messageService.displaySuccessMessage('success', 'Parameter successfully updated')
+          this.getAllParams();
+        },
+        error: (e) => {
+          this.messageService.displayErrorMessage('error', 'Parameter failed to delete')
+        }
+      })
+    log.info(`selected parameter >>>`, this.selectedParam);
   }
 }
