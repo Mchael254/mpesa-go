@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {Logger} from "../../../../../../../shared/services";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
 
 const log = new Logger('WordingsComponent');
 
@@ -12,6 +13,21 @@ export class WordingsComponent {
 
   public wordings = ['ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND', 'ADVANCE PAYMENT BOND'];
   public modalTitle: string = '';
+
+  public breadCrumbItems: BreadCrumbItem[] = [
+    {
+      label: 'Home',
+      url: '/home/dashboard'
+    },
+    {
+      label: 'GIS Setups',
+      url: '/home/gis/setup/schedule/wordings',
+    },
+    {
+      label: 'Schedule Wordings',
+      url: '/home/gis/setup/schedule/wordings'
+    }
+  ];
 
   filterWordings($event: KeyboardEvent) {
 

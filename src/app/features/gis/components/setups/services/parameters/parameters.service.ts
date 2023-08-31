@@ -3,6 +3,7 @@ import {Observable, retry} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Params} from "../../data/gisDTO";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
+import {ParameterDto} from "../../../../../../shared/data/common/parameter-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -24,18 +25,23 @@ export class ParametersService {
   ) { }
 
   getAllParams(): Observable<Params[]>{
-    return this.http.get<Params[]>(`/${this.baseurl}/setups/api/v1/system-parameters?pageSize=100`)
+    return this.http.get<Params[]>(`/${this.baseurl}/setups/api/v1/system-parameters?pageSize=10000`)
   }
 
   getParam(code: any): Observable<Params[]>{
     return this.http.get<Params[]>(`/${this.baseurl}/setups/api/v1/system-parameters/${code}`);
   }
   createParam(param: Params) {
-    return this.http.post<Params>( `/${this.baseurl}/setups/api/v1/system-parameters`, JSON.stringify(param), this.httpOptions);
+    return this.http.post<Params>( `/${this.baseurl}/setups/api/v1/system-parameters`,
+      JSON.stringify(param), this.httpOptions);
   }
   updateParam(param: Params, code: number): Observable<Params> {
-    console.log(`param to update >>> `, param)
-    return this.http.put<Params>(`/${this.baseurl}/setups/api/v1/system-parameters/${code}`, JSON.stringify(param), this.httpOptions);
+    return this.http.put<Params>(`/${this.baseurl}/setups/api/v1/system-parameters/${code}`,
+      JSON.stringify(param), this.httpOptions);
+  }
+
+  deleteParameter(code: number): Observable<ParameterDto> {
+    return this.http.delete<ParameterDto>(`/${this.baseurl}/setups/api/v1/system-parameters/${code}`, this.httpOptions);
   }
 
 

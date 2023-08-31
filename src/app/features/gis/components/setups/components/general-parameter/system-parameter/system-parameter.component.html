@@ -1,48 +1,93 @@
 <div class="base-content-section setups">
+
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+
   <div class="row">
     <div class="col-sm-4 left">
+
       <div class="card">
         <div class="row">
-          <div class="col-sm-6">
-            <p class="fw-bold">Setup Wizard</p>
-          </div>
-          <div class="col-sm-6">
-            <button style="float:right;" class="btn btn-link text-primary fw-bold">Claims Setups</button>
-          </div>
-
-          <div class="col-sm-6">
-            <button class="btn btn-link text-primary">New</button>
-          </div>
-          <div class="col-sm-6">
-            <button style="float:right;" class="btn btn-link text-primary">Delete</button>
-          </div>
-
-          <div class="col-sm-12 mt-3">
-            <div class="input-group mb-3">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search screen codes"
-                aria-label="search"
-                aria-describedby="search"
-                (keyup)="filterParams($event)"
+          <ul class="nav nav-underline" id="parameterTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link"
+                id="setup-wizard-tab"
+                data-bs-toggle="tab"
+                href="#setup-wizard"
+                role="tab"
+                aria-controls="setup-wizard"
+                aria-selected="true"
               >
-              <span class="input-group-text" id="search">
+                Setup Wizard
+              </a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a
+                class="nav-link active"
+                id="claim-setup-tab"
+                data-bs-toggle="tab"
+                href="#claim-setup"
+                role="tab"
+                aria-controls="claim-setup"
+                aria-selected="false"
+              >
+                Claims Setups
+              </a>
+            </li>
+          </ul>
+
+          <div class="tab-content" id="parameterTabsContent">
+            <div class="tab-pane fade" id="setup-wizard" role="tabpanel" aria-labelledby="setup-wizard-tab">
+              <div class="row">
+
+              </div>
+            </div>
+            <div class="tab-pane fade show active" id="claim-setup" role="tabpanel" aria-labelledby="claim-setup-tab">
+              <div class="row">
+                <div class="col-sm-6">
+                  <button class="btn btn-link text-primary">New</button>
+                </div>
+                <div class="col-sm-6">
+                  <button
+                    style="float:right;"
+                    class="btn btn-link text-primary"
+                    data-bs-toggle="modal" data-bs-target="#delete-modal"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div class="col-sm-12 mt-3">
+                  <div class="input-group mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Search screen codes"
+                      aria-label="search"
+                      aria-describedby="search"
+                      (keyup)="filterParams($event)"
+                    >
+                    <span class="input-group-text" id="search">
                 <i class="fa-solid fa-magnifying-glass"></i>
               </span>
-            </div>
-            <div class="spinner" style="position: relative">
-              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-            </div>
-            <div class="listing">
-              <ul>
-                <li
-                  *ngFor="let param of filteredParams"
-                  (click)="selectParam(param)"
-                >
-                  {{ param.name }}
-                </li>
-              </ul>
+                  </div>
+                  <div class="spinner" style="position: relative">
+                    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+                  </div>
+                  <div class="listing">
+                    <ul>
+                      <li
+                        *ngFor="let param of filteredParams"
+                        (click)="selectParam(param)"
+                      >
+                        {{ param.name }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -122,6 +167,27 @@
           </div>
         </div>
 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete Parameter Modal -->
+<div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="text-center text-danger">Confirm Delete!</h5>
+        <p class="text-primary text-center">{{ this.selectedParam?.name }}</p>
+        <div class="row">
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+          <div class="col-sm-4 offset-sm-5">
+            <button type="button" class="btn btn-danger" (click)="deleteParameter()">Confirm Delete</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
