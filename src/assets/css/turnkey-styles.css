@@ -452,7 +452,7 @@ color: #00529B;
   color: #00529B;
   width: 82px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #00529B;
+  /* border-bottom: 2px solid #00529B; */
 }
 
 .leftHeader {

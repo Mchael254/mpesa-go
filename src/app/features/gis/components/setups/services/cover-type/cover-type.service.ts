@@ -42,7 +42,7 @@ export class CoverTypeService {
   
   getAllCovertypes(): Observable<CoverType>{
     let page = 0;
-    let size = 10
+    let size = 1000
     const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -50,10 +50,10 @@ export class CoverTypeService {
       })
       const params = new HttpParams()
       .set('page', `${page}`)
-        .set('pageSize', `${size}`)
+      .set('pageSize', `${size}`)
       return this.http.get<CoverType>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types`,{
         headers:headers,
-        // params:params
+        params:params
       }).pipe(
         retry(1),
         catchError(this.errorHandl)

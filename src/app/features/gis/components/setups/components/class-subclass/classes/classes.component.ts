@@ -19,7 +19,7 @@ export class ClassesComponent {
   classList: Classes[];
   classDetails:Classes;
   classForm: FormGroup;
-  selected:any;
+  selected: string = '';
   subClassList :any;
   subclass:any;
   isLoading: boolean = true;
