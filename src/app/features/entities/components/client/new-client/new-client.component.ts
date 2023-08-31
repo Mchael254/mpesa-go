@@ -29,6 +29,7 @@ import { ClientTitleDTO } from 'src/app/shared/data/common/client-title-dto';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { AccountService } from '../../../services/account/account.service';
+import { DatePipe } from '@angular/common';
 const log =  new Logger("CreateClientComponent")
 
 @Component({
@@ -150,7 +151,7 @@ export class NewClientComponent implements OnInit{
     private activatedRoute: ActivatedRoute,
     private entityService: EntityService,
     private mandatoryFieldsService: MandatoryFieldsService,
-    // private datePipe: DatePipe,
+    private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
     private utilService: UtilService
   ) { }
@@ -383,23 +384,23 @@ export class NewClientComponent implements OnInit{
       ),
 
     });
-    // this.entityService
-    // .currentEntity$
-    // .pipe(
-    //   takeUntil(this.destroyed$),
-    // )
-    // .subscribe(
-    //   currentEntity => this.entityDetails = currentEntity
-    // );
+    this.entityService
+    .currentEntity$
+    .pipe(
+      takeUntil(this.destroyed$),
+    )
+    .subscribe(
+      currentEntity => this.entityDetails = currentEntity
+    );
 
-    // this.clientRegistrationForm.patchValue({
-    //   surname: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
-    //   otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
-    //   pinNumber: this.entityDetails?.pinNumber,
-    //   dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
-    //   idNumber: this.entityDetails?.identityNumber,
-    //   identity_type: this.entityDetails?.modeOfIdentity?.name,
-    // });
+    this.clientRegistrationForm.patchValue({
+      surname: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
+      otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
+      pinNumber: this.entityDetails?.pinNumber,
+      dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
+      idNumber: this.entityDetails?.identityNumber,
+      identity_type: this.entityDetails?.modeOfIdentity?.name,
+    });
   }
 
 

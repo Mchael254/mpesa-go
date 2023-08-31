@@ -17,7 +17,7 @@
                         <ng-container *ngIf="visibleStatus.category === 'Y'">
                             <div class="col-md-4 pad-1" >
                                 <label for="category">Party Type</label>
-                                <select id="category" class="form-control" placeholder="Select Party Type"
+                                <select id="category" class="form-select" placeholder="Select Party Type"
                                     formControlName="category"
                                     [ngClass]="{ 'is-invalid': f['category'].invalid && (f['category'].dirty || f['category'].touched) }">
                                     <option value="" selected>Primary Party Type</option>
@@ -66,7 +66,7 @@
                         <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
                             <div class="col-md-4 pad-1">
                                 <label for="mode_of_identity">Primary ID Type</label>
-                                <select id="mode_of_identity" class="form-control" placeholder="Primary ID Type"
+                                <select id="mode_of_identity" class="form-select" placeholder="Primary ID Type"
                                     formControlName="mode_of_identity"
                                     [ngClass]="{ 'is-invalid': f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched) }">
                                     <option value="" selected disabled>Primary ID Type</option>
