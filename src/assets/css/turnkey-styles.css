@@ -37,6 +37,10 @@ html,body {
   margin-right: 5px;
 }
 
+.btn-danger {
+  border-radius: 0;
+}
+
 .btn-outline-secondary {
   border-radius: 0;
 }
@@ -48,12 +52,23 @@ html,body {
   color: #00529b;
 }
 
+.btn-outline-primary:hover {
+  border-radius: 0;
+  background: #00529b;
+  border: solid 1px #00529b;
+  color: #fff;
+}
+
 .btn-link, a {
   text-decoration: none;
 }
 
 .btn-full-width {
     width: 100%;
+}
+
+.btn-standard-width {
+  width: 120px
 }
 
 .form-select {
@@ -87,6 +102,10 @@ html,body {
   margin-right: 10px
 }
 
+.input-group span {
+  background: #00529b;
+  color: #fff;
+}
 
 /* Root (global) ends*/
 
