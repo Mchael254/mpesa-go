@@ -6,14 +6,11 @@
 <!-- <div class="container"> -->
   <div class="mx-4 mt-4">
 
-    <div class="row">
-        <div class="col-md-10">
+    <p class="float-end" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
             <p id="title">Classes & Subclass Setups</p>
-        </div>
-        <div class="col-md-2 float-end">
-            <p class="text-right" id="help"><a>Help <i class="pi pi-question-circle"></i></a></p>
-        </div>
-    </div>
+        
+       
+   
     <div class="row">
         <div class="col-xl-4">
             <div class="card">
@@ -216,7 +213,7 @@
                               <label for="classCode" class="col-sm-4 col-form-label"> Class:</label>
                               <div class="form-group col-md-8 ">
                              
-                                <input type="text" class="form-control form-control-sm mb-4" (click)="getClass()" formControlName="classCode" id="classCode" data-toggle="modal" data-target="#getClassModal">
+                                <input type="text" class="form-control form-control-sm mb-4" (click)="getClass()" formControlName="classCode" id="classCode" data-bs-toggle="modal" data-bs-target="#getClassModal">
                              
                             </div>
     
@@ -274,7 +271,7 @@
                             <label for="shortDescription" class="col-sm-4 col-form-label"> Peril:</label>
                               <div class="form-group col-md-8">
                              
-                                <input type="text" class="form-control form-control-sm mb-4" id="addPerilsInput" (click)="getAllPerils()" data-toggle="modal" formControlName="perCode" data-target="#getPerilModal"  >
+                                <input type="text" class="form-control form-control-sm mb-4" id="addPerilsInput" (click)="getAllPerils()" data-bs-toggle="modal" formControlName="perCode" data-bs-target="#getPerilModal"  >
                              
                             </div>
                             <label for="personLimit" class="col-sm-4 col-form-label">Person Limit:</label>
@@ -423,10 +420,10 @@
                                           </p-table>
                                           <div class="row">
                                             <div class="col">
-                                              <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-dismiss="modal">Cancel</button>
+                                              <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-bs-dismiss="modal">Cancel</button>
                                             </div>
                                             <div class="col"> 
-                                              <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-dismiss="modal" (click)="chooseClass()">Save</button>
+                                              <button class="btn btn-primary waves-effect waves-light" id="addPerilbtn" data-bs-dismiss="modal" (click)="chooseClass()">Save</button>
                                             </div>
                                           </div>
                                           </div>
@@ -536,7 +533,7 @@
                          
                             <label for="{{data.id}}"   class="col-sm-4 col-form-label"> {{data.label}}</label>
                             <div class="form-group col-md-8 ">
-                            <select  id="{{data.id}}" class="form-control form-control-sm mb-4 "
+                            <select  id="{{data.id}}" class="form-select form-select-sm mb-4 "
                                     formControlName="{{data.name}}">
                                     <option selected="true" disabled="disabled"></option>     
 
@@ -576,7 +573,7 @@
                              
                                 <label for="{{data.id}}"   class="col-sm-4 col-form-label"> {{data.label}}</label>
                                 <div class="form-group col-md-8 ">
-                                <select  id="{{data.id}}" class="form-control form-control-sm mb-4 "
+                                <select  id="{{data.id}}" class="form-select form-select-sm mb-4 "
                                         formControlName="{{data.name}}">
                                         <option selected="true" disabled="disabled"></option>     
 
