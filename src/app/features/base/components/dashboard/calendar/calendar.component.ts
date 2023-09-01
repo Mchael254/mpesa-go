@@ -293,6 +293,7 @@ export class CalendarComponent implements OnInit {
 
   getEvents(dateString: string): void {
     const userName= this.loggedInUser;
+    log.info(`logged In User >>>`, this.loggedInUser);
     this.calendarService.getCalendarEvent(userName)
       .pipe(
         take(1)

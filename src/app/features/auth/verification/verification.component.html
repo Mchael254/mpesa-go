@@ -12,13 +12,15 @@
         </div>
         <form class="verify-text">
             <div *ngFor="let account of accountVerification">
-                <div class="verify-button" [class.selected]="account === selectedAccount"
-                    (click)="onSelectAccount(account)">
-                    <div>
+                <div
+                  class="verify-button row" [class.selected]="account === selectedAccount"
+                  (click)="onSelectAccount(account)"
+                >
+                    <div class="col-sm-2 text-start">
                         <i class="fa-solid {{account.icon}}"></i>
                     </div>
-                    <div class="account-info">
-                        <span>{{ account.type | titlecase}}</span> <br>
+                    <div class="col-sm-10 text-start account-info">
+                        <span>{{ account.type }}</span> <br>
                         <span>{{ account.name | lowercase}}</span>
                     </div>
                 </div>

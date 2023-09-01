@@ -99,7 +99,7 @@ export class ViewEntityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -429,7 +429,7 @@ export class ViewEntityComponent implements OnInit {
   }
 
   goToViewPayments() {
-    this.router.navigate(['home/payments']);
+    // this.router.navigate(['home/payments']);
   }
 
   goToEntityRoleDefinitions() {

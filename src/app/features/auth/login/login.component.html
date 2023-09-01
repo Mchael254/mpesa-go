@@ -31,9 +31,11 @@
             formControlName='password'
           />
           <div class="input-group-append" data-password="false">
-            <div class="input-group-text">
+            <div class="input-group-text border-radius-none">
               <span>
-                <i class="fa fa-eye" [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"></i>
+                <i class="fa fa-eye text-dark"
+                   [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"
+                ></i>
               </span>
             </div>
           </div>

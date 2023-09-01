@@ -107,6 +107,10 @@ html,body {
   color: #fff;
 }
 
+.border-radius-none {
+  border-radius: 0;
+}
+
 /* Root (global) ends*/
 
 
@@ -246,6 +250,7 @@ html,body {
 .base-content .base-content-section .calendar .card-header {
   background: var(--primary-color);
   color: #fff;
+  border-radius: 0;
 }
 
 .base-content .base-content-section .calendar .form-select {

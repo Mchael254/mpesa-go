@@ -38,8 +38,8 @@ export class VerificationComponent implements OnInit {
     if(extras?.phone){
       const verificationsType: AuthVerification = {
         name: extras.phone.substr(0,4)+ '********'+extras.phone.slice(-2),
-        type: "Via sms:",
-        icon: "fa-mobile",
+        type: "Via SMS:",
+        icon: "fa-mobile-retro",
         selected: true
 
       }
@@ -48,7 +48,7 @@ export class VerificationComponent implements OnInit {
     if(extras.email){
       const verificationsType: AuthVerification = {
         name: extras.email.substr(0,2)+'*****'+extras.email.slice(extras.email.lastIndexOf('@')),
-        type: "Via email:",
+        type: "Via Email:",
         icon: "fa-envelope",
 
       }
