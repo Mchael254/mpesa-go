@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import {  
+import {
   ContactsDTO,
-  
-         ProviderTypeDto, 
+
+         ProviderTypeDto,
          ServiceProviderDTO,
-         ServiceProviderRequestDTO, 
+         ServiceProviderRequestDTO,
         } from '../../../data/ServiceProviderDTO';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
 import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
@@ -30,6 +30,7 @@ import {MandatoryFieldsService} from 'src/app/shared/services/mandatory-fields.s
 import { SectorService } from 'src/app/shared/services/setups/sector.service';
 import { ClientService } from '../../../services/client/client.service';
 import { OccupationService } from 'src/app/shared/services/setups/occupation.service';
+import {EntityService} from "../../../services/entity/entity.service";
 @Component({
   selector: 'app-new-service-provider',
   templateUrl: './new-service-provider.component.html',
@@ -134,7 +135,7 @@ export class NewServiceProviderComponent {
     premiumFrequency: 'Y',
     distributeChannel: 'Y'
   };
-  
+
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
@@ -151,7 +152,8 @@ export class NewServiceProviderComponent {
     private mandatoryService:MandatoryFieldsService,
     private sectorService:SectorService,
     private clientService:ClientService,
-    private occupationService:OccupationService
+    private occupationService:OccupationService,
+    private entityService: EntityService,
   ) { }
 
   ngOnInit(): void {
@@ -170,8 +172,8 @@ export class NewServiceProviderComponent {
     console.log(`userType >>>`, this.agentType, e.target.value)
   }
 
-  get f() { 
-    return this.newServiceProviderForm.controls; 
+  get f() {
+    return this.newServiceProviderForm.controls;
   }
 
 
@@ -261,8 +263,8 @@ export class NewServiceProviderComponent {
       ),
 
     });
-    // this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
-    this.serviceProviderService
+    this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
+    this.entityService
       .currentEntity$
       .pipe(
         takeUntil(this.destroyed$),
@@ -636,7 +638,7 @@ export class NewServiceProviderComponent {
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Service Provider');
           // this.serviceProviders = serviceProviderData;
-          this.router.navigate(['home/service-providers']);
+          this.router.navigate(['home/entity/service-provider/list']);
         });
 
     });

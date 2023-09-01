@@ -12,7 +12,7 @@
       <form [formGroup]="newServiceProviderForm" novalidate>
         <div class="card mb-3">
             <div class="card-header bg-transparent">
-                Prime Identity 
+                Prime Identity
               </div>
             <div class="card-body">
                 <div class="mb-2">
@@ -26,16 +26,16 @@
                                value="C" (click)="selectUserType($event)">
                         <label class="form-check-label" for="corporate">Corporate</label>
                       </div>
-    
+
                 </div>
-               
+
 
 
                 <div class="row">
                     <ng-container *ngIf="visibleStatus?.providerType === 'Y'">
                         <div class="col-sm-4">
                           <label for="providerType" class="label col-form-label">Provider Types</label>
-                          <select id="providerType" class="form-control" formControlName="providerType"
+                          <select id="providerType" class="form-select" formControlName="providerType"
                                   [ngClass]="{ 'is-invalid': f['providerType']?.invalid && (f['providerType']?.dirty || f['providerType']?.touched) }">
                             <option value="" disabled selected>Select option</option>
                             <option *ngFor="let providerType of providerTypeData" value="{{ providerType.code }}">{{ providerType.name}}</option>
@@ -64,7 +64,7 @@
                         <ng-container *ngIf="visibleStatus['citizenship'] === 'Y'">
                           <div class="col-sm-4">
                             <label for="citizenship" class="label col-form-label">Citizenship</label>
-                            <select id="citizenship" class="form-control" formControlName="citizenship"
+                            <select id="citizenship" class="form-select" formControlName="citizenship"
                                     [ngClass]="{ 'is-invalid': f['citizenship']?.invalid && (f['citizenship']?.dirty || f['citizenship']?.touched) }">
                               <option value="" disabled selected>Select option</option>
                               <option *ngFor="let country of countryData" value="{{ country.id }}">{{ country.name }}</option>
@@ -122,7 +122,7 @@
                           <ng-container *ngIf="visibleStatus?.gender === 'Y'">
                             <div class="col-sm-4">
                               <label for="gender" class="label col-form-label">Gender</label>
-                              <select id="gender" class="form-control" formControlName="gender"
+                              <select id="gender" class="form-select" formControlName="gender"
                                       [ngClass]="{ 'is-invalid': f['txtIdNo']?.invalid && (f['txtIdNo']?.dirty || f['txtIdNo']?.touched) }">
                                 <option value="" disabled selected>Select option</option>
                                 <option value="MALE" aria-selected="true">Male</option>
@@ -208,20 +208,20 @@
                         </div>
                       </ng-container>
                 </div>
-                  
+
             </div>
           </div>
           <div class="card mb-3">
             <div class="card-header bg-transparent">
-                Contact Details  
+                Contact Details
               </div>
               <div class="card-body" formGroupName="contact_details">
                 <div class="form-group row"  >
                     <ng-container *ngIf="visibleStatus['clientTitle'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="clientTitle" class="label col-form-label">Title</label>
-        
-                        <select id="clientTitle" class="form-control" formControlName="clientTitle"
+
+                        <select id="clientTitle" class="form-select" formControlName="clientTitle"
                                 [ngClass]="{ 'is-invalid': f['contact_details']?.['clientTitle']?.invalid && (f['contact_details']?.['clientTitle']?.dirty || f['contact_details']?.['clientTitle']?.touched) }">
                           <option value=""  selected>Select option</option>
                           <option *ngFor="let clientTitles of clientTitlesData" value="{{ clientTitles.description }}">{{ clientTitles.description}}</option>
@@ -264,7 +264,7 @@
                     <ng-container *ngIf="visibleStatus?.['channel'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="channel" class="label col-form-label">Preferred contact channel</label>
-                        <select id="channel" class="form-control" formControlName="channel"
+                        <select id="channel" class="form-select" formControlName="channel"
                                 [ngClass]="{ 'is-invalid': f['contact_details']?.['channel']?.invalid && (f['contact_details']?.['channel']?.dirty || f['contact_details']?.['channel']?.touched) }">
                           <option value="" disabled selected>Select option</option>
                           <option value="sms" aria-selected="true">SMS</option>
@@ -278,7 +278,7 @@
                     <ng-container *ngIf="visibleStatus['eDocuments'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="eDocuments" class="label col-form-label">E-Docs</label>
-                        <select id="eDocuments" class="form-control" formControlName="eDocuments"
+                        <select id="eDocuments" class="form-select" formControlName="eDocuments"
                                 [ngClass]="{ 'is-invalid': f['contact_details']?.['eDocuments']?.invalid && (f['contact_details']?.['eDocuments']?.dirty || f['contact_details']?.['eDocuments']?.touched) }">
                           <option value="" disabled selected>Select option</option>
                           <option></option>
@@ -288,8 +288,8 @@
                         </div>
                         <p>NB: If consented to E-documents</p>
                       </div>
-                    </ng-container> 
-        
+                    </ng-container>
+
                   </div>
               </div>
           </div>
@@ -297,14 +297,14 @@
             <div class="card-header bg-transparent">
               Postal Address details
             </div>
-            <div class="card-body" formGroupName="ad">
+            <div class="card-body" formGroupName="address">
               <div class="form-group row">
                 <ng-container *ngIf="visibleStatus?.['txtProviderPostalAddress'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="txtProviderPostalAddress" class="label col-form-label">P.O. Box Number</label>
                     <input type="text" id="txtProviderPostalAddress" name="postal" placeholder="P.O. Box Number" class="form-control" formControlName="txtProviderPostalAddress"
                            [ngClass]="{ 'is-invalid': f['address']?.['txtProviderPostalAddress']?.invalid && (f['address']?.['txtProviderPostalAddress']?.dirty || f['address']?.['txtProviderPostalAddress']?.touched) }">
-    
+
                     <div *ngIf="f['address']?.['txtProviderPostalAddress']?.invalid && (f['address']?.['txtProviderPostalAddress']?.dirty || f['address']?.['txtProviderPostalAddress']?.touched)" class="form-text text-danger">
                       <div *ngIf="f['address']?.['txtProviderPostalAddress']?.errors['required']">P.O Box is required</div>
                     </div>
@@ -341,7 +341,7 @@
                     <div *ngIf="f?.['address']?.['county']?.invalid && (f?.['address']?.['county']?.dirty || f?.['address']?.['county']?.touched)" class="form-text text-danger">
                       <div *ngIf="f?.['address']?.['county']?.errors.required">County is required</div>
                     </div>
-                  
+
                   </div>
                 </ng-container>
                 <ng-container *ngIf="visibleStatus?.['town'] === 'Y'">
@@ -357,7 +357,7 @@
                     <div *ngIf="f?.['address']?.['town']?.invalid && (f?.['address']?.['town']?.dirty || f?.['address']?.['town']?.touched)" class="form-text text-danger">
                       <div *ngIf="f?.['address']?.['town']?.errors.required">Town is required</div>
                     </div>
-                   
+
                   </div>
                 </ng-container>
                 <ng-container *ngIf="visibleStatus?.['physical_address'] === 'Y'">
@@ -392,7 +392,7 @@
                     <div *ngIf="f?.['address']?.['town']?.invalid && (f?.['address']?.['town']?.dirty || f?.['address']?.['town']?.touched)" class="form-text text-danger">
                       <div *ngIf="f?.['address']?.['town']?.errors.required">Town is required</div>
                     </div>
-                  
+
                   </div>
                 </ng-container>
                 <ng-container *ngIf="visibleStatus?.['road'] === 'Y'">
@@ -428,7 +428,7 @@
                 <ng-container *ngIf="visibleStatus?.['is_utility_address'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="is_utility_address" class="label col-form-label">Upload Utility Bill</label>
-                    <select id="is_utility_address" class="form-control" formControlName="is_utility_address"
+                    <select id="is_utility_address" class="form-select" formControlName="is_utility_address"
                             (click)="selectUtilityBill($event)"
                             [ngClass]="{ 'is-invalid': f?.['address']?.['is_utility_address']?.invalid && (f?.['address']?.['is_utility_address']?.dirty || f?.['address']?.['is_utility_address']?.touched) }">
                       <option value="" disabled selected>Select option</option>
@@ -520,7 +520,7 @@
                 <ng-container *ngIf="visibleStatus?.['currency'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="currency" class="label col-form-label">Currency</label>
-                    <select id="currency" class="form-control" formControlName="currency"
+                    <select id="currency" class="form-select" formControlName="currency"
                             [ngClass]="{ 'is-invalid': f?.['payment_details']?.['currency']?.invalid && (f?.['payment_details']?.['currency']?.dirty || f?.['payment_details']?.['currency']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option *ngFor="let currencies of currenciesData" value="{{ currencies.id }}">{{ currencies.name}}</option>
@@ -575,7 +575,7 @@
                 <ng-container *ngIf="visibleStatus?.['is_default_channel'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="is_default_channel" class="label col-form-label">Preferred Channel</label>
-                    <select id="is_default_channel" class="form-control" formControlName="is_default_channel"
+                    <select id="is_default_channel" class="form-select" formControlName="is_default_channel"
                             [ngClass]="{ 'is-invalid': f?.['payment_details']?.['is_default_channel']?.['is_default_channel']?.invalid && (f?.['payment_details']?.['is_default_channel']?.dirty || f?.['payment_details']?.['is_default_channel']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option value="N">Mobile Money</option>
@@ -599,7 +599,7 @@
                 <ng-container *ngIf="visibleStatus?.['wealth_citizenship'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="wealth_citizenship" class="label col-form-label">Citizenship</label>
-                    <select id="wealth_citizenship" class="form-control" formControlName="wealth_citizenship"
+                    <select id="wealth_citizenship" class="form-select" formControlName="wealth_citizenship"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['wealth_citizenship']?.invalid && (f?.['wealth_details']?.['wealth_citizenship']?.dirty || f?.['wealth_details']?.['wealth_citizenship']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option *ngFor="let country of countryData" value="{{ country.id }}">{{ country.name }}</option>
@@ -612,7 +612,7 @@
                 <ng-container *ngIf="visibleStatus?.['marital_status'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="marital_status" class="label col-form-label">Marital Status</label>
-                    <select id="marital_status" class="form-control" formControlName="marital_status"
+                    <select id="marital_status" class="form-select" formControlName="marital_status"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['marital_status']?.invalid && (f?.['wealth_details']?.['marital_status']?.dirty || f?.['wealth_details']?.['marital_status']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option value="SINGLE">Single</option>
@@ -639,7 +639,7 @@
                 <ng-container *ngIf="visibleStatus?.['typeOfEmployment'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="typeOfEmployment" class="label col-form-label">Type of Employment</label>
-                    <select id="typeOfEmployment" class="form-control" formControlName="typeOfEmployment"
+                    <select id="typeOfEmployment" class="form-select" formControlName="typeOfEmployment"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['typeOfEmployment']?.invalid && (f?.['wealth_details']?.['typeOfEmployment']?.dirty || f?.['wealth_details']?.['typeOfEmployment']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option value="N">Employed</option>
@@ -653,7 +653,7 @@
                 <ng-container *ngIf="visibleStatus?.['economic_sector'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="economic_sector" class="label col-form-label">Economic Sector</label>
-                    <select id="economic_sector" class="form-control" formControlName="economic_sector"
+                    <select id="economic_sector" class="form-select" formControlName="economic_sector"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['economic_sector']?.invalid && (f?.['wealth_details']?.['economic_sector']?.dirty || f?.['wealth_details']?.['economic_sector']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option *ngFor="let sector of sectorData" value="{{ sector.id }}">{{ sector.name}}</option>
@@ -666,7 +666,7 @@
                 <ng-container *ngIf="visibleStatus?.['occupation'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="occupation" class="label col-form-label">Occupation</label>
-                    <select id="occupation" class="form-control" formControlName="occupation"
+                    <select id="occupation" class="form-select" formControlName="occupation"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['occupation']?.invalid && (f?.['wealth_details']?.['occupation']?.dirty || f?.['wealth_details']?.['occupation']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option *ngFor="let occupation of occupationData" value="{{ occupation.id }}">{{ occupation.name}}</option>
@@ -689,7 +689,7 @@
                 <ng-container *ngIf="visibleStatus?.['premiumFrequency'] === 'Y'">
                   <div class="col-sm-4">
                     <label for="premiumFrequency" class="label col-form-label">Premium Frequency</label>
-                    <select id="premiumFrequency" class="form-control" formControlName="premiumFrequency"
+                    <select id="premiumFrequency" class="form-select" formControlName="premiumFrequency"
                             [ngClass]="{ 'is-invalid': f?.['wealth_details']?.['premiumFrequency']?.invalid && (f?.['wealth_details']?.['premiumFrequency']?.dirty || f?.['wealth_details']?.['premiumFrequency']?.touched) }">
                       <option value="" disabled selected>Select option</option>
                       <option value="1">Weekly</option>
@@ -713,7 +713,7 @@
               </div>
 
             </div>
-          </div> 
+          </div>
           <button id= "saveServiceProviderBtn" class="btn float-end rounded-1 px-3 mb-2 btn-primary" (click)="saveServiceProvider()">Save</button>
 
       </form>
