@@ -9,24 +9,31 @@
     max-height: 90px;
     /* left: 110px;
     top: 450px; */
-    border-radius: 6px;
+    border-radius: 0;
     display: flex;
     /* align-items: center; */
     background-color: #cdd2da;
     /* vertical-align: middle; */
-    margin-bottom: 16px;
+    margin-bottom: 5px;
     padding: 10px 0;
     cursor: pointer;
 }
 
-/* .account-info {
-    display: flex;
+.verify-button:hover {
+  background: #00529b;
+  color: #fff;
+  transition: background-color 2s;
+}
+
+ .account-info {
+    /*display: flex;
     flex-direction: column;
-    align-items: flex-start;
-} */
+    align-items: flex-start;*/
+   padding-left: 80px
+}
 
 .verify-button div:nth-child(1) {
-    margin-right: 70px;
+    /*margin-right: 70px;*/
 }
 
 /* .verify-button span {
@@ -38,14 +45,15 @@
     color: #000000;
 }
 
+
 .fa-solid {
   margin-left: 20px;
-  font-size: 1.5rem;
+  font-size: 2rem;
   line-height: 2;
   width: 2em;
   height: 2em;
   color: #FFFFFF;
-  opacity: 50%;
+  /*opacity: 50%;*/
 }
 
 .selected {

@@ -70,8 +70,8 @@
                 <div class="event">
                   <div class="row">
                     <div class="col-sm-10">
-                      <p>{{event?.title | titlecase}}</p>
-                      <p>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</p>
+                      <span class="fw-medium">{{event?.title | titlecase}}</span> <br>
+                      <span>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</span>
                     </div>
                     <div class="col-sm-2">
                   <span class="inactive mr-2" style="font-size: 0.9em">
@@ -185,7 +185,7 @@
                 <div class="row mb-3">
                   <div class="col-sm-6">
                     <label for="timeFrom" class="form-label">Time From</label>
-                    <select class="form-control" id="timeFrom" formControlName="fromDate">
+                    <select class="form-select" id="timeFrom" formControlName="fromDate">
                       <option *ngFor="let time of slicedTime" [value]="time">
                         <span>{{ time | date: 'shortTime' }}</span>
                       </option>
@@ -193,7 +193,7 @@
                   </div>
                   <div class="col-sm-6">
                     <label for="timeTo" class="form-label">Time To</label>
-                    <select class="form-control" id="timeTo" formControlName="toDate">
+                    <select class="form-select" id="timeTo" formControlName="toDate">
                       <option *ngFor="let time of slicedTime" [value]="time">
                         <span>{{ time | date: 'shortTime' }}</span>
                       </option>

@@ -4,7 +4,7 @@ import { ListClaimsComponent } from './components/list-claims/list-claims.compon
 
 const routes: Routes = [
   {
-    path: 'list', component:ListClaimsComponent
+    path: 'list/:id', component:ListClaimsComponent
   },
 ];
 

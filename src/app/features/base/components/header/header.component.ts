@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {AuthService} from "../../../../shared/services/auth.service";
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,10 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 @AutoUnsubscribe
 export class HeaderComponent {
   defaultLanguage: string = 'fi fi-gb fis';
-  constructor(private translate:TranslateService){}
+  constructor(
+    private translate:TranslateService,
+    private authService: AuthService
+  ){}
 
   selectLanguage(value){
     this.translate.use(value.code)
@@ -29,4 +33,7 @@ export class HeaderComponent {
     { code: 'es', class: 'fi fi-es fis', lang:"Espanyol"}
   ];
 
+  logout(): void {
+    this.authService.purgeAuth();
+  }
 }
