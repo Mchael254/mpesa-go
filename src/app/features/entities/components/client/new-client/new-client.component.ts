@@ -1,10 +1,9 @@
 // import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-// import { AddressDTO, ClientBranchesDto, ClientDetailsDto, ClientsDTO, ContactsDTO, IdentityModeDto, PaymentDTO, WealthDTO } from 'src/app/pages/layout/clients/models/clients';
 import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO } from 'src/app/shared/data/common/bank-dto';
 import { CountryDto, StateDto, TownDto, } from 'src/app/shared/data/common/countryDto';
 import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
@@ -15,12 +14,8 @@ import { BankService } from 'src/app/shared/services/setups/bank.service';
 import { CountryService } from 'src/app/shared/services/setups/country.service';
 import { OccupationService } from 'src/app/shared/services/setups/occupation.service';
 import { SectorService } from 'src/app/shared/services/setups/sector.service';
-// import { AccountService } from '../../account.service';
-//import { ClientTitleDTO } from '../../accountDTO';
 import { EntityService } from '../../../services/entity/entity.service';
-// import { EntityDto } from '../../entity/entityDto';
 import { ClientService } from '../../../services/client/client.service';
-// import {ClientTypeDTO} from '../clientDTO';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { MandatoryFieldsService } from 'src/app/shared/services/mandatory-fields.service';
 import { UtilService } from 'src/app/shared/services';
@@ -300,19 +295,19 @@ export class NewClientComponent implements OnInit{
     this.clientRegistrationForm = this.fb.group({
       partyTypeShtDesc: "CLIENT",
       partyId: 16673590,
-      identity_type: [''],
+      identity_type: new FormControl({value: '', disabled: true}),
       citizenship: [''],
-      surname: [''],
+      surname: new FormControl({value: '', disabled: true}),
       certRegNo: [''],
       regName: [''],
       tradeName: [''],
       regDate: [''],
       countryOfIncorporation: [''],
       parentCompany: [''],
-      otherName: [''],
-      dateOfBirth: [''],
-      idNumber: [''],
-      pinNumber: [''],
+      otherName: new FormControl({value: '', disabled: true}),
+      dateOfBirth: new FormControl({value: '', disabled: true}),
+      idNumber: new FormControl({value: '', disabled: true}),
+      pinNumber: new FormControl({value: '', disabled: true}),
       gender: [''],
       clientTypeId: [''],
 
@@ -576,7 +571,7 @@ export class NewClientComponent implements OnInit{
       effectiveDateTo: null,
       id: 0,
       createdBy: null,
-      // partyId: this.entityDetails.id,
+      partyId: this.entityDetails.id,
       partyTypeShortDesc: "CLIENT",
       paymentDetails: payment,
       clientDetails: clientDetails,
@@ -590,9 +585,9 @@ export class NewClientComponent implements OnInit{
       countryId: clientFormValues.citizenship,
       dateCreated: null,
       accountType: 21,
-      // dateOfBirth: this.entityDetails?.dateOfBirth,
+      dateOfBirth: this.entityDetails?.dateOfBirth,
       organizationId: 2,
-      // modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
+      modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
       nextOfKinDetailsList: null,
 
       }

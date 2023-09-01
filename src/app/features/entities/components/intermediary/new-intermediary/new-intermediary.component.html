@@ -7,7 +7,7 @@
     </app-dynamic-breadcrumb>
   </div>
 </div>
-<div [formGroup]="createIntermediaryForm" novalidate #formContainer class="my-4 ms-4">
+<div [formGroup]="createIntermediaryForm" novalidate #formContainer class="my-4 mx-4">
   <div class="row">
     <div class="col-md-12">
       <div class="card mb-3">
@@ -70,7 +70,7 @@
                 <div class="form-group col-md-4">
                   <label for="surname">Surname</label>
                   <input type="text" class="form-control" id="surname" placeholder="Doe" formControlName="surname"
-                         [ngClass]="{ 'is-invalid': f['surname']?.invalid && (f['surname']?.dirty || f['surname']?.touched) }" [disabled]="true">
+                         [ngClass]="{ 'is-invalid': f['surname']?.invalid && (f['surname']?.dirty || f['surname']?.touched) }">
                   <div *ngIf="f['surname']?.invalid && (f['surname']?.dirty || f['surname']?.touched)" class="form-text text-danger">
                     <div *ngIf="f['surname']?.errors['required']">Surname is required</div>
                   </div>
@@ -80,7 +80,7 @@
                 <div class="form-group col-md-4">
                   <label for="otherName">Other Names</label>
                   <input type="text" class="form-control" id="otherName" placeholder="John" formControlName="otherName"
-                         [ngClass]="{ 'is-invalid': f['otherName']?.invalid && (f['otherName']?.dirty || f['otherName']?.touched) }" [disabled]="true">
+                         [ngClass]="{ 'is-invalid': f['otherName']?.invalid && (f['otherName']?.dirty || f['otherName']?.touched) }">
                   <div *ngIf="f['otherName']?.invalid && (f['otherName']?.dirty || f['otherName']?.touched)" class="form-text text-danger">
                     <div *ngIf="f['otherName']?.errors['required']">Other name is required</div>
                   </div>
@@ -91,7 +91,7 @@
                   <label for="dateOfBirth">Date of Birth</label>
                   <input type="text" class="form-control" placeholder="14 APR 2022"
                          onfocus="(this.type='date')" onblur="(this.type='text')" id="dateOfBirth" formControlName="dateOfBirth"
-                         [ngClass]="{ 'is-invalid': f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched) }" [disabled]="true"
+                         [ngClass]="{ 'is-invalid': f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched) }"
                   >
                   <div *ngIf="f['dateOfBirth']?.invalid && (f['dateOfBirth']?.dirty || f['dateOfBirth']?.touched)" class="form-text text-danger">
                     <div *ngIf="f['dateOfBirth']?.errors['required']">Date of birth is required</div>
@@ -106,7 +106,7 @@
               <div class="form-group col-md-4">
                 <label for="idNumber">ID Number</label>
                 <input type="text" class="form-control" id="idNumber" placeholder="30567890" formControlName="idNumber"
-                       [ngClass]="{ 'is-invalid': f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched) }" [disabled]="true">
+                       [ngClass]="{ 'is-invalid': f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched) }">
                 <div *ngIf="f['idNumber']?.invalid && (f['idNumber']?.dirty || f['idNumber']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['idNumber']?.errors['required']">ID Number is required</div>
                 </div>
@@ -116,7 +116,7 @@
               <div class="form-group col-md-4">
                 <label for="pinNumber">Pin Number</label>
                 <input type="text" class="form-control" id="pinNumber" placeholder="A12345678Y" formControlName="pinNumber"
-                       [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }" [disabled]="true">
+                       [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }">
                 <div *ngIf="f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['pinNumber']?.errors['required']">PIN is required</div>
                 </div>
@@ -417,7 +417,6 @@
                     <input type="file" id="inputUploadUtilityBill" formControlName="uploadUtilityBill" hidden/>
                     <label *ngIf="url===''" for="inputUploadUtilityBill" class="img_upload">
                       <span><i class="fa fa-cloud-upload" aria-hidden="true"></i></span>
-                      <i class="fa fa-cloud-upload"></i>
                       Upload
                     </label>
                     <label for="inputUploadUtilityBill" *ngIf="url !==''" class="img_edit">Edit</label>
@@ -860,5 +859,5 @@
       </div>
     </div>
   </div>
-  <button type="submit" id="#saveIntermediaryBtn" class="btn btn-primary float-end" (click)="saveIntermediary()">Save</button>
+  <button type="submit" id="#saveIntermediaryBtn" class="btn btn-primary float-end mb-3" (click)="saveIntermediary()">Save</button>
 </div>
