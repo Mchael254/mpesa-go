@@ -1,13 +1,7 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import {
-  ContactsDTO,
-
-         ProviderTypeDto,
-         ServiceProviderDTO,
-         ServiceProviderRequestDTO,
-        } from '../../../data/ServiceProviderDTO';
+import { ContactsDTO, ProviderTypeDto, ServiceProviderDTO, ServiceProviderRequestDTO } from '../../../data/ServiceProviderDTO';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
 import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
 import { DatePipe } from '@angular/common';
@@ -182,19 +176,19 @@ export class NewServiceProviderComponent {
       account_type: [''],
       account_type_id: [''],
       providerType: [''],
-      identityType: [''],
+      identityType: new FormControl({value: '', disabled: true}),
       citizenship: [''],
-      firstName: [''],
+      firstName: new FormControl({value: '', disabled: true}),
       certRegNo: [''],
       regName: [''],
       tradeName: [''],
       regDate: [''],
       countryOfIncorporation: [''],
       parentCompany: [''],
-      otherName: [''],
-      dateOfBirth: [''],
-      txtIdNo: [''],
-      pinNumber: [''],
+      otherName: new FormControl({value: '', disabled: true}),
+      dateOfBirth: new FormControl({value: '', disabled: true}),
+      txtIdNo: new FormControl({value: '', disabled: true}),
+      pinNumber: new FormControl({value: '', disabled: true}),
       gender: [''],
 
       contact_details: this.fb.group(

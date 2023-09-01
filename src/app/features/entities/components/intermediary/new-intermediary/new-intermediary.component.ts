@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CountryService} from "../../../../../shared/services/setups/country.service";
 import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
@@ -195,11 +195,11 @@ export class NewIntermediaryComponent implements OnInit{
       accountType: [''],
       identityType: [''],
       citizenship: [''],
-      surname: [''],
-      otherName: [''],
-      dateOfBirth: [''],
-      idNumber: [''],
-      pinNumber: [''],
+      surname: new FormControl({value: '', disabled: true}),
+      otherName: new FormControl({value: '', disabled: true}),
+      dateOfBirth: new FormControl({value: '', disabled: true}),
+      idNumber: new FormControl({value: '', disabled: true}),
+      pinNumber: new FormControl({value: '', disabled: true}),
       gender: [''],
 
       contactDetails: this.fb.group(
