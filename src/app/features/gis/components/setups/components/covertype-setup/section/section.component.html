@@ -87,39 +87,9 @@
                                     <div class="col-sm-4">
                                         <div class="mb-3">
                                             <label for="inputSectionType" class="form-label">Section Type</label>
-                                            <select id="inputSectionType" class="form-select form-control-sm mb-1" formControlName="type" required>
+                                            <select id="inputSectionType" class="form-select mb-1" formControlName="type" required>
                                                 <option value="" selected>Select Type</option>
-                                                <option value="ES">Extension SI</option>
-                                                <option value="EL">Extension Limit</option>
-                                                <option value="SS">Section SI</option>
-                                                <option value="SL">Section Limit</option>
-                                                <option value="DI">Discount (Inclusive of other Discounts)</option>
-                                                <option value="ED">Discount (Exlusive of other Discounts)</option>
-                                                <option value="EL">Discount (Inclusive of other Discounts)</option>
-                                                <option value="L">Loading</option>
-                                                <option value="E">Escalation</option>
-                                                <option value="CD">No Claim Discount</option>
-                                                <option value="EQ">Earth Quake</option>
-                                                <option value="DO">Day One</option>
-                                                <option value="FL">No FAP Section Limit</option>
-                                                <option value="EP">Excess Protector</option>
-                                                <option value="RS">Rider Section SI</option>
-                                                <option value="LD">First Loss Discount</option>
-                                                <option value="OD">Loading on Declaration</option>
-                                                <option value="LL">Liability Loading</option>
-                                                <option value="CL">Seat Capacity Loading</option>
-                                                <option value="AL">Vehicle Age Loading/Discount</option>
-                                                <option value="LC">Cubic Capacity Loading</option>
-                                                <option value="ET">Emergency Treatment</option>
-                                                <option value="OL">Odometer Mileage Loading</option>
-                                                <option value="MD">Odometer Mileage Discount</option>
-                                                <option value="GL">Garage Loading</option>
-                                                <option value="GD">Garage Discount</option>
-                                                <option value="ND">No of Claims Discount</option>
-                                                <option value="DD">Driver Age Loading/Discount</option>
-                                                <option value="VD">Vehicle Usage Loading/Discount</option>
-                                                <option value="LD">Location Loading/Discount</option>
-                                                <option value="CB">CashBack</option>
+                                                <option *ngFor="let section of sectionTypeOptions" [value]="section.value">{{ section.label }}</option>
                                             </select>
                                         </div>
                                     </div>
