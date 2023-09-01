@@ -19,23 +19,6 @@ import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 export class ServiceProviderService {
 
   baseUrl = this.appConfig.config.contextPath.accounts_services;
-  private entity$ = new BehaviorSubject({
-    partyTypeId: 0,
-    profilePicture: "",
-    categoryName: "",
-    countryId: 0,
-    dateOfBirth: "",
-    effectiveDateFrom: "",
-    effectiveDateTo: "",
-    id: 0,
-    modeOfIdentity: undefined,
-    identityNumber: 0,
-    name: "",
-    organizationId: 0,
-    pinNumber: "",
-    profileImage: ""
-  });
-  currentEntity$ = this.entity$.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -78,7 +61,7 @@ export class ServiceProviderService {
     return this.http.post<ServiceProviderDTO[]>(`/${this.baseUrl}/accounts/accounts`, JSON.stringify(serviceProviderData), {headers:headers})
 
   }
- 
+
 
   getClientTitles(): Observable<ClientTitlesDto[]> {
     const headers = new HttpHeaders({
@@ -106,7 +89,7 @@ export class ServiceProviderService {
   //       params:params,
   //     });
   // }
- 
+
   getServiceProviderType(): Observable<ProviderTypeDto[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

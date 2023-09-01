@@ -148,7 +148,7 @@ export class NewIntermediaryComponent implements OnInit{
     private entityService: EntityService,
     private mandatoryFieldsService: MandatoryFieldsService,
     private bankService: BankService,
-    // private datePipe: DatePipe,
+    private datePipe: DatePipe,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
     private utilService: UtilService
@@ -267,7 +267,7 @@ export class NewIntermediaryComponent implements OnInit{
         }
       )
     });
-    // this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
+    this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
     this.entityService
       .currentEntity$
       .pipe(
@@ -410,14 +410,14 @@ export class NewIntermediaryComponent implements OnInit{
         })
         this.cdr.detectChanges();
       });
-    /*this.createIntermediaryForm.patchValue({
+    this.createIntermediaryForm.patchValue({
       identityType: this.entityDetails?.modeOfIdentity?.id,
       otherName: this.entityDetails?.name.substring(0, this.entityDetails.name.indexOf(' ')),
       surname: this.entityDetails?.name.substring(this.entityDetails.name.indexOf(' ') + 1),
       dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
       idNumber: this.entityDetails?.identityNumber,
       pinNumber: this.entityDetails?.pinNumber,
-    });*/
+    });
   }
 
   toggleCreditAllowed() {
@@ -638,7 +638,7 @@ export class NewIntermediaryComponent implements OnInit{
         .subscribe( data => {
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Agent');
-          this.router.navigate(['/home/intermediary']);
+          this.router.navigate(['/home/entity/intermediary/list']);
 
         });
       // } else {

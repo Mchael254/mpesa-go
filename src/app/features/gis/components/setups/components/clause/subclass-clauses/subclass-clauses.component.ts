@@ -1,12 +1,11 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ClauseService} from "../../../../../services/clause/clause.service";
-import {CoverType, CoverTypes, SubclassCoverTypeClause} from "../../../data/gisDTO";
+import {SubclassCoverTypeClause} from "../../../data/gisDTO";
 import {untilDestroyed} from "../../../../../../../shared/services/until-destroyed";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 import {CurrencyDTO} from "../../../../../../../shared/data/common/bank-dto";
-import {takeUntil} from "rxjs/operators";
 import {BankService} from "../../../../../../../shared/services/setups/bank.service";
 import {CoverTypeService} from "../../../services/cover-type/cover-type.service";
 
@@ -133,7 +132,7 @@ export class SubclassClausesComponent implements OnInit{
       .pipe(untilDestroyed(this))
       .subscribe(res => {
       this.subclassClauses = res;
-      console.log("res", res);
+      // console.log("res", res);
 
       const result = this.subclassClauses.filter(obj => {
         return obj.subClassCode === code;
@@ -145,6 +144,7 @@ export class SubclassClausesComponent implements OnInit{
         this.clauseService.getSingleClause(i.clauseCode).subscribe(res => {
           this.clauseList = res;
           this.finalList.push(this.clauseList);
+          this.cdr.detectChanges();
         });
       }
 
@@ -152,8 +152,8 @@ export class SubclassClausesComponent implements OnInit{
     });
   }
 
-  
-  
+
+
 
 
   loadSingleSubclassClause(code){
@@ -215,6 +215,15 @@ export class SubclassClausesComponent implements OnInit{
       console.log(this.allClauses)
     })
   }
+
+  deleteSubClassClause() {
+    this.clauseService.deleteSubclassClause(this.editClauseForm.value.clauseCode, this.subclass.code)
+      .pipe(untilDestroyed(this))
+      .subscribe(res=>{
+        this.allClauses = res
+        console.log(this.allClauses)
+      })
+  }
   loadsingleclause(code, subCode){
     this.clauseService.getSubclassClause(code, subCode)
       .subscribe(res=>{
@@ -252,7 +261,7 @@ export class SubclassClausesComponent implements OnInit{
       })
   }
   updateSubclassCoverType(){
-    console.log(this.addEditCoverTypeForm.value.code)
+    // console.log(this.addEditCoverTypeForm.value.code)
     const updateSubClassCoverTypeValues = this.addEditCoverTypeForm.getRawValue();
     const updateSubclassCoverType: any = {
       code: null,
