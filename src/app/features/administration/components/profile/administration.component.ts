@@ -30,16 +30,24 @@ export class AdministrationComponent {
   submitted = false;
   changeSuccess = false;
   formDisabled: boolean = true;
-  showTabs: boolean;
+  // showTabs: boolean;
+  showTabs = true;
 
     constructor(
-    private fb: FormBuilder,
-    private utilService: UtilService,
-    private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private localStorageService: LocalStorageService,
-    private messageService: MessageService) {}
+      private fb: FormBuilder,
+      private utilService: UtilService,
+      private authService: AuthService,
+      private router: Router,
+      private route: ActivatedRoute,
+      private localStorageService: LocalStorageService,
+      private messageService: MessageService
+    ) {
+      this.route.queryParams.subscribe((params) => {
+        if (params['showTabs'] === 'false') {
+          this.showTabs = false;
+        }
+      });
+    }
 
   ngOnInit(): void {
     this.createUserDetailsForm();
@@ -53,9 +61,9 @@ export class AdministrationComponent {
       validator: ConfirmedValidator('newPassword', 'confirmNewPassword')
     });
 
-    this.route.queryParams.subscribe(params => {
-      this.showTabs = params['showTabs'] !== 'false';
-    });
+    // this.route.queryParams.subscribe(params => {
+    //   this.showTabs = params['showTabs'] !== 'false';
+    // });
   }
 
   createUserDetailsForm() {
