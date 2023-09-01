@@ -80,6 +80,10 @@
   border-radius: 0.2em;
 }
 
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
 /* Change the background color of the dropdown button when the dropdown content is shown */
 /* .dropdown:hover .dropbtn {background-color: #3e8e41;} */
 
@@ -115,4 +119,10 @@
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
   }
+}
+
+.dropdown-toggle:active
+.dropdown-toggle:focus
+.dropdown-toggle:hover {
+  border-color: #00529B;
 }
