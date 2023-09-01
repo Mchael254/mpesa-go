@@ -168,6 +168,15 @@ export class ClauseService {
         catchError(this.errorHandl)
       )
   }
+  deleteSubclassClause(clauseCode:number, subClassCode:number): Observable<subclassClauses> {
+    return this.http
+      .delete<subclassClauses>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses/${clauseCode}/${subClassCode}`,
+      this.httpOptions)
+      .pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+  }
 
   addSubclassClause(data:subclassClauses): Observable<subclassClauses> {
     console.log(JSON.stringify(data))

@@ -1,5 +1,4 @@
 <div class="base-content-section setups">
-  <div class="justify-content-between my-4 ms-4">
     <p class="title">Clauses</p>
     <div class="row">
       <div class="col-xl-4">
@@ -115,7 +114,7 @@
                   <a class="nav-link" aria-current="page" data-bs-toggle="modal" data-bs-target="#editClauseModal">Edit</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page">Delete</a>
+                  <a class="nav-link active" aria-current="page" (click)="deleteSubClassClause()">Delete</a>
                 </li>
               </ul>
 
@@ -205,7 +204,7 @@
                           <label for="IsMandatory" class="col-sm-4 col-form-label" id="edit-subclass-label" >Mandatory?</label>
                           <div class="form-group col-md-8 ">
 
-                            <select id="status" class="form-control form-control-sm mb-2" id="IsMandatory" formControlName="isMandatory">
+                            <select id="status" class="form-select form-select-sm mb-2" id="IsMandatory" formControlName="isMandatory">
                               <option selected="true" disabled="disabled"></option>
                               <option value="Y">Yes</option>
                               <option value="N">No</option>
@@ -215,7 +214,7 @@
                           <label for="isLien" class="col-sm-4 col-form-label" id="edit-subclass-label">Is Lien Cause?</label>
                           <div class="form-group col-md-8 ">
 
-                            <select id="status" class="form-control form-control-sm mb-2" id="isLien" formControlName="isLienClause">
+                            <select id="status" class="form-select form-select-sm mb-2" id="isLien" formControlName="isLienClause">
                               <option selected="true" disabled="disabled"></option>
                               <option value="Y">Yes</option>
                               <option value="N">No</option>
@@ -309,7 +308,7 @@
                           <label for="coverType" class="col-sm-2 col-form-label" id="edit-subclass-label" >Cover Type </label>
                           <div class="form-group col-md-2">
 <!--                            <input type="text" class="form-control form-control-sm mb-2" formControlName="coverTypeShortDescription" id="coverType">-->
-                            <select id="coverType" class="form-control form-control-sm mb-2" formControlName="coverTypeShortDescription">
+                            <select id="coverType" class="form-select form-select-sm mb-2" formControlName="coverTypeShortDescription">
                               <option value="" selected>Select Cover Type</option>
                               <option *ngFor="let coverType of coverTypeData" [value]="coverType.code">{{ coverType.short_description }}</option>
                             </select>
@@ -317,7 +316,7 @@
 
                           <label for="description" class="col-sm-2 col-form-label" id="edit-subclass-label" >Description</label>
                           <div class="form-group col-md-2">
-                            <input type="text" class="form-control form-control-sm mb-2" formControlName="description" id="description">
+                            <input type="text" class="form-control form-control-sm-sm mb-2" formControlName="description" id="description">
                           </div>
 
                           <label for="isDefault" class="col-sm-2 col-form-label" id="edit-subclass-label">Default</label>
@@ -334,13 +333,13 @@
 
                           <label for="exchangeRate" class="col-sm-2 col-form-label" id="edit-subclass-label">Exchange Rate</label>
                           <div class="form-group col-md-2 ">
-                            <input type="text" class="form-control form-control-sm mb-2" formControlName="sumInsuredExchangeRate" id="exchangeRate">
+                            <input type="text" class="form-control form-select-sm mb-2" formControlName="sumInsuredExchangeRate" id="exchangeRate">
                           </div>
 
                           <label for="sumInsuredCurrencyCode" class="col-sm-2 col-form-label" id="edit-subclass-label">Currency</label>
                           <div class="form-group col-md-2 ">
 <!--                            <input type="text" class="form-control form-control-sm mb-2" formControlName="sumInsuredCurrencyCode" id="sumInsuredCurrencyCode">-->
-                            <select id="currency" class="form-control form-control-sm mb-2" formControlName="sumInsuredCurrencyCode">
+                            <select id="currency" class="form-select form-select-sm mb-2" formControlName="sumInsuredCurrencyCode">
                               <option value="" selected>Select Currency</option>
                               <option *ngFor="let currency of currenciesData" [value]="currency.id">{{ currency.name }}</option>
                             </select>
@@ -462,6 +461,5 @@
         </div>
       </div>
     </div>
-  </div>
 </div>
 

@@ -604,7 +604,7 @@ export class NewClientComponent implements OnInit{
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
           // this.clients = clientData;
-          this.router.navigate(['home/client']);
+          this.router.navigate(['home/entity/client/list']);
         });
 
     });
