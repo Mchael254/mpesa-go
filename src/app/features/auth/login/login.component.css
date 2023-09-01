@@ -28,3 +28,11 @@
   }
 }
 
+.input-group-text span {
+  background: #fff;
+}
+
+.input-group-text:hover, .input-group-text span:hover {
+  background: #00529b;
+}
+

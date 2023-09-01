@@ -151,7 +151,7 @@ export class SystemParameterComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          this.messageService.displaySuccessMessage('success', 'Parameter successfully updated')
+          this.messageService.displaySuccessMessage('success', 'Parameter successfully deleted')
           this.getAllParams();
         },
         error: (e) => {

@@ -4,7 +4,7 @@ import { ListPoliciesComponent } from './components/list-policies/list-policies.
 
 const routes: Routes = [
   {
-    path: 'list', component:ListPoliciesComponent
+    path: 'list/:id', component:ListPoliciesComponent
   },
 ];
 
