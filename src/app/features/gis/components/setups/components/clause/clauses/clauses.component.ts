@@ -188,7 +188,6 @@ export class ClausesComponent {
     requestBody.short_description = randomString
     try {
       this.clauseService.updateClause(requestBody, this.selectedCode).subscribe(data => {
-        console.log("Updated successfully here")
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated' );
       })
     } catch (error) {

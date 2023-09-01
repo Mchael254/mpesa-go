@@ -1,15 +1,3 @@
-#search{
-  background-color: #00529B;
-  color: white;
-  padding: 7px;
-  padding-left: 9px;
-  width: 34px;
-  height: 30px;
-  border-radius: 2px
-}
-#search-input{
-  width:75%;
-}
 .nav-item{
   font-family: 'Lato';
   font-style: normal;
@@ -29,6 +17,9 @@
 }
 a.nav-link{
   color: #00529B
+}
+a {
+  cursor:pointer;
 }
 #modal-title{
   color: #00529B;
