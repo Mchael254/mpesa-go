@@ -25,3 +25,27 @@
     </li>
   </ul>
 </div>
+
+<p-dialog header="Events" [(visible)]="visible" [style]="{width: '30vw'}">
+  <div class="event" style="vertical-align: center">
+    <ng-container *ngFor="let event of selectedDayInMonthView?.event">
+      <div class="row" style="margin-bottom: 15px">
+        <div class="col-sm-8" style="color: #00529B; font-weight: bold; padding-top: 10px">
+          {{event?.title | titlecase}}
+        </div>
+        <div class="col-sm-4">
+          <span class="inactive mr-2" style="font-size: 0.9em">
+            {{ event?.startDate | date: 'EE '}}
+          </span>
+          <span style="color: #00529B; font-weight: bold; font-size: 1.1em">
+            {{ event?.startDate | date: 'dd'}}
+          </span>
+          <br>
+          <span style="font-size: 0.8em">
+            {{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</p-dialog>

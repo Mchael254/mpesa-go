@@ -18,19 +18,21 @@ import { CommonModule } from '@angular/common';
 import { CalendarComponent } from './components/dashboard/calendar/calendar.component';
 import { CalendarLayoutComponent } from './components/dashboard/calendar-layout/calendar-layout.component';
 import {CalendarModule} from "primeng/calendar";
+import {DialogModule} from "primeng/dialog";
 
 
 @NgModule({
-  imports: [
-    BaseRoutingModule,
-    DragDropModule,
-    SharedModule,
-    ChartModule,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    CalendarModule,
-  ],
+    imports: [
+        BaseRoutingModule,
+        DragDropModule,
+        SharedModule,
+        ChartModule,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        CalendarModule,
+        DialogModule,
+    ],
   declarations: [
     BaseComponent,
     DashboardLayoutComponent,
