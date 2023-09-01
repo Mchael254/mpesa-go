@@ -449,7 +449,10 @@
                       <div (change)="onUpload($event)">
                         <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo"/>
                         <input type="file" class="form-control" id="imageUpload" hidden/>
-                        <label *ngIf="url===''" for="imageUpload" class="img_upload">Upload</label>
+                        <label *ngIf="url===''" for="imageUpload" class="img_upload">
+                          <span><i class="fa fa-cloud-upload" aria-hidden="true"></i></span>
+                          Upload
+                        </label>
                         <label for="imageUpload" *ngIf="url !==''" class="img_edit">Edit</label>
                       </div>
                     </div>
