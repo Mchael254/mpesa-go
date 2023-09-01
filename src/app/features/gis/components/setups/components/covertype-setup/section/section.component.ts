@@ -22,6 +22,40 @@ export class SectionComponent implements OnInit {
   public sectionDetails: any
   public isUpdate: boolean = true;
 
+  sectionTypeOptions = [
+    { value: 'ES', label: 'Extension SI' },
+    { value: 'EL', label: 'Extension Limit' },
+    { value: 'SS', label: 'Section SI' },
+    { value: 'SL', label: 'Section Limit' },
+    { value: 'DI', label: 'Discount (Inclusive of other Discounts)' },
+    { value: 'ED', label: 'Discount (Exlusive of other Discounts)' },
+    { value: 'EL', label: 'Discount (Inclusive of other Discounts)' },
+    { value: 'L', label: 'Loading' },
+    { value: 'E', label: 'Escalation' },
+    { value: 'CD', label: 'No Claim Discount' },
+    { value: 'EQ', label: 'Earth Quake' },
+    { value: 'DO', label: 'Day One' },
+    { value: 'FL', label: 'No FAP Section Limit' },
+    { value: 'EP', label: 'Excess Protector' },
+    { value: 'RS', label: 'Rider Section SI' },
+    { value: 'LD', label: 'First Loss Discount' },
+    { value: 'OD', label: 'Loading on Declaration' },
+    { value: 'LL', label: 'Liability Loading' },
+    { value: 'CL', label: 'Seat Capacity Loading' },
+    { value: 'AL', label: 'Vehicle Age Loading/Discount' },
+    { value: 'LC', label: 'Cubic Capacity Loading' },
+    { value: 'ET', label: 'Emergency Treatment' },
+    { value: 'OL', label: 'Odometer Mileage Loading' },
+    { value: 'MD', label: 'Odometer Mileage Discount' },
+    { value: 'GL', label: 'Garage Loading' },
+    { value: 'GD', label: 'Garage Discount' },
+    { value: 'ND', label: 'No of Claims Discount' },
+    { value: 'DD', label: 'Driver Age Loading/Discount' },
+    { value: 'VD', label: 'Vehicle Usage Loading/Discount' },
+    { value: 'LD', label: 'Location Loading/Discount' },
+    { value: 'CB', label: 'CashBack' }
+  ];
+
   constructor(
     public coverTypesService: CoverTypeService,
     private globalMessagingService: GlobalMessagingService,
