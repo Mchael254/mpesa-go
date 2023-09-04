@@ -1,4 +1,12 @@
-import {ChangeDetectorRef, Component, ElementRef, ViewChild} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter, OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {CreateStaffDto, StaffDto} from "../../../data/StaffDto";
@@ -10,17 +18,17 @@ import {StaffService} from "../../../services/staff/staff.service";
 import {EntityService} from "../../../services/entity/entity.service";
 import {CountryService} from "../../../../../shared/services/setups/country.service";
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields.service";
-import {AppService} from "../../../../../shared/services/setups/app.service";
 import {DepartmentService} from "../../../../../shared/services/setups/department.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {ActivatedRoute, Router} from "@angular/router";
 import {Logger, UtilService} from "../../../../../shared/services";
 import {BranchService} from "../../../../../shared/services/setups/branch.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {DatePipe} from "@angular/common";
 import {CreateAccountDTO, NewAccountCreatedResponse} from "../../../data/accountDTO";
 import {TableLazyLoadEvent} from "primeng/table";
-import {Dropdown} from "primeng/dropdown";
+import {FormStateService} from "../../../../../shared/services/form-state/form-state.service";
+import {FormState} from "../../../../../shared/data/form-state";
+import {AuthService} from "../../../../../shared/services/auth.service";
 
 const log = new Logger('StaffProfileComponent');
 
@@ -29,9 +37,22 @@ const log = new Logger('StaffProfileComponent');
   templateUrl: './staff-profile.component.html',
   styleUrls: ['./staff-profile.component.css']
 })
-export class StaffProfileComponent {
+export class StaffProfileComponent implements OnInit, OnDestroy{
   @ViewChild('cancelSupervisorSelection', {read: ElementRef}) cancelSupervisorSelect: ElementRef;
-  @ViewChild('countryDropdown') countriesDropdown?: Dropdown;
+  @Output() saved = new EventEmitter<boolean>();
+
+  public staffRegistrationForm: FormGroup;
+  staffProfileTempData: any;
+
+  staffProfileFormState: FormState = {
+    componentName: 'StaffProfile',
+    formName: 'staff-profile',
+    persisted: false,
+    data: null,
+    currentUser: this.authService.getCurrentUserName()
+  }
+  staffProfileFormStateKey: string = this.staffProfileFormState.formName
+    + '_' + this.staffProfileFormState?.currentUser;
 
   visibleStatus: any = {
     firstName: 'Y',
@@ -57,7 +78,6 @@ export class StaffProfileComponent {
     idNumber: 'Y'
   };
 
-  public staffRegistrationForm: FormGroup;
   viewUsers: Pagination<StaffDto> = <Pagination<StaffDto>>{};
 
   selectedUser: StaffDto;
@@ -68,11 +88,9 @@ export class StaffProfileComponent {
   towns: TownDto[] = [];
   departments: DepartmentDto[] = [];
   branches: OrganizationBranchDto[] = [];
-  assignedApps: number[] = [];
   apps: any[] = [];
 
   profileDetails: any;
-  entityId: number;
   groupId: string = 'staffTab';
   submitted = false;
   savedStaffDetails: boolean = false;
@@ -83,8 +101,6 @@ export class StaffProfileComponent {
 
   private _listFilter: string;
   private _usernameFilter: string;
-  selectedCountry: any;
-
   set usernameFilter(value: string) {
     this._usernameFilter = value;
     this.searchUsers(value);
@@ -108,38 +124,57 @@ export class StaffProfileComponent {
               private entityService: EntityService,
               private countryService: CountryService,
               private mandatoryFieldsService: MandatoryFieldsService,
-              private appService: AppService,
-
               private departmentService: DepartmentService,
               private globalMessagingService: GlobalMessagingService,
               private cdr: ChangeDetectorRef,
-              private route: ActivatedRoute,
-              private router: Router,
               private utilService: UtilService,
-              private branchService: BranchService) {
+              private branchService: BranchService,
+              private formStateService: FormStateService,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
+    this.fetchFormStateValues();
     this.fetchEntityById();
     this.fetchCountries();
-    this.fetchSystemApps();
     this.fetchDepartments();
     this.fetchBranches();
     this.createUserRegForm();
   }
 
-  fetchEntityById(){
-    this.entityService.currentEntity$
-      .pipe(untilDestroyed(this))
-      .subscribe( data => {
-         log.info('>>>>> entity data from service: ', data);
-          this.entityDetails = data;
-        }
-      );
+  /**
+   * This method is used to fetch the form state values
+   */
+  fetchFormStateValues(){
+    this.staffProfileTempData = this.formStateService.getFormState(this.staffProfileFormStateKey);
+
+    if(this.staffProfileTempData?.persisted)
+      this.staffProfileTempData = null;
   }
 
+  /**
+   * This method is used to fetch the entity by id
+   */
+  fetchEntityById(){
+    if(!!this.entityService.currentEntity$){
+      this.entityService.currentEntity$
+        .pipe(untilDestroyed(this))
+        .subscribe( data => {
+            log.info('>>>>> entity data from service: ', data);
+            this.entityDetails = data;
+          }
+        );
+    }
+    else {
+
+    }
+
+  }
+
+  /**
+   * This method is used to fetch the countries
+   */
   fetchCountries(){
-    log.info('Fetching countries list');
     this.countryService.getCountries()
       .pipe(untilDestroyed(this))
       .subscribe( (data) => {
@@ -147,15 +182,9 @@ export class StaffProfileComponent {
       });
   }
 
-  fetchSystemApps(){
-    log.info('Fetching app list');
-    log.info('Current base ref: ',location.href);
-    this.apps = this.appService.getApps();
-    this.apps.forEach(app =>  {
-      app.clicked = false;
-    });
-  }
-
+  /**
+   * This method is used to fetch the departments
+   */
   fetchDepartments(){
     this.departmentService.getDepartments(2)
       .pipe(untilDestroyed(this))
@@ -166,6 +195,9 @@ export class StaffProfileComponent {
       )
   }
 
+  /**
+   * This method is used to fetch the organization branches
+   */
   fetchBranches() {
     this.branchService
       .getBranches(2)
@@ -176,10 +208,15 @@ export class StaffProfileComponent {
       });
   }
 
+  /**
+   * This method is used to create the user registration form
+   * It sets the mandatory fields as required
+   * It also patches the form with the values from the temp data stored in the form state service or the entity details from the entity service
+   */
   createUserRegForm() {
     this.staffRegistrationForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
+      firstName: [{value: '', disabled: true}],
+      lastName: [{value: '', disabled: true}],
       username: [''],
       userType: [''],
       contact_details: this.fb.group(
@@ -195,18 +232,20 @@ export class StaffProfileComponent {
       ),
       employment_details: this.fb.group({
         departmentCode: [''],
-        manager: [''],
+        manager: [{value: '', disabled: true}],
         branch: [''],
         personelRank: ['']
       }),
       telNo: [''],
       postalCode: [''],
-      pinNumber: [''],
+      pinNumber: [{value: '', disabled: true}],
       gender: [''],
       dateOfBirth: [''],
       idNumber: ['']
     });
     this.profileDetails = JSON.parse(sessionStorage.getItem('partyProfileDetails'));
+
+    let staffProfileFormValue = this.formStateService.getFormState(this.staffProfileFormStateKey);
 
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId)
       .pipe(untilDestroyed(this)
@@ -269,28 +308,44 @@ export class StaffProfileComponent {
         this.cdr.detectChanges();
       });
 
-    this.staffRegistrationForm.patchValue({
-      userType: this.entityDetails.categoryName == 'Individual' ? 'U' :
-        (this.entityDetails.categoryName == 'Corporate' ? 'G' : ''),
-      firstName: this.entityDetails.name.substring(0, this.entityDetails.name.indexOf(' ')),
-      lastName: this.entityDetails.name.substring(this.entityDetails.name.indexOf(' ') + 1),
-      pinNumber: this.entityDetails.pinNumber
-    });
+    if(staffProfileFormValue){
+      this.patchStaffTempData(staffProfileFormValue.data);
+      log.info('>>>>> staffProfileFormValue: ', staffProfileFormValue);
+    }
+    else{
+      this.staffRegistrationForm.patchValue({
+        userType: this.entityDetails.categoryName == 'Individual' ? 'U' :
+          (this.entityDetails.categoryName == 'Corporate' ? 'G' : ''),
+        firstName: this.entityDetails.name.substring(0, this.entityDetails.name.indexOf(' ')),
+        lastName: this.entityDetails.name.substring(this.entityDetails.name.indexOf(' ') + 1),
+        pinNumber: this.entityDetails.pinNumber
+      });
 
-    if(this.entityDetails.identityNumber){
-      this.staffRegistrationForm.get('idNumber').disable();
-      this.staffRegistrationForm.get('idNumber').patchValue(this.entityDetails.identityNumber);
+      if(this.entityDetails.identityNumber){
+        this.staffRegistrationForm.get('idNumber').disable();
+        this.staffRegistrationForm.get('idNumber').patchValue(this.entityDetails.identityNumber);
+      }
+
+      if(this.entityDetails?.dateOfBirth){
+        this.staffRegistrationForm.get('dateOfBirth').disable();
+        // this.staffRegistrationForm.get('dateOfBirth').patchValue(this.entityDetails?.dateOfBirth);
+        const datePipe = new DatePipe('en-GB'); //TODO: Proper way to fetch locales via constructor injection token
+        this.staffRegistrationForm.get('dateOfBirth').patchValue(datePipe.transform(this.entityDetails?.dateOfBirth, 'yyyy-MM-dd'));
+      }
     }
 
-    if(this.entityDetails?.dateOfBirth){
-      this.staffRegistrationForm.get('dateOfBirth').disable();
-      // this.staffRegistrationForm.get('dateOfBirth').patchValue(this.entityDetails?.dateOfBirth);
-      const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
-      this.staffRegistrationForm.get('dateOfBirth').patchValue(datePipe.transform(this.entityDetails?.dateOfBirth, 'yyyy-MM-dd'));
-    }
-    this.cdr.detectChanges();
+    this.staffRegistrationForm.valueChanges.subscribe( newValues => {
+      this.staffProfileTempData = this.staffRegistrationForm.getRawValue();
+      this.staffProfileFormState.data = {formData: this.staffRegistrationForm.getRawValue(), entityDetails: this.entityDetails};
+      this.staffProfileFormState.uniqueKey = this.entityDetails?.id;
+      this.formStateService.saveFormState(this.staffProfileFormStateKey, this.staffProfileFormState);
+    })
   }
 
+  /**
+   * This method is used to fetch the towns for the selected country
+   * @param countryId - The country id
+   */
   fetchTownsByCountry(countryId:number){
     log.info(`Fetching towns list for country, ${countryId}`);
     this.countryService.getTownsByCountry(countryId)
@@ -299,6 +354,10 @@ export class StaffProfileComponent {
       })
   }
 
+  /**
+   * This method is used to fetch the city states for the selected country
+   * @param countryId - The country id
+   */
   fetchCityStatesByCountry(countryId: number){
     this.countryService.getMainCityStatesByCountry(countryId)
       .pipe(untilDestroyed(this))
@@ -307,18 +366,27 @@ export class StaffProfileComponent {
       });
   }
 
+  /**
+   * This method is used to handle the country change event
+   * It fetches the city states and towns for the selected country
+   * @param event
+   */
   onCountryChange(event: { value: any; }) {
     let selectedCountry = event.value;
 
-    console.log('Selected country: ', event);
     if(selectedCountry ){
       this.fetchCityStatesByCountry(selectedCountry);
       this.fetchTownsByCountry(selectedCountry);
     }
   }
 
+  /**
+   * This method is used to save the staff profile
+   * It checks if staff profile form is valid
+   * If valid, it saves the staff profile
+   * If not valid, it displays an error message and highlights the invalid fields
+   */
   onSubmit(){
-    this.submitted = true;
     this.staffRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
     setTimeout(() => {
@@ -357,8 +425,6 @@ export class StaffProfileComponent {
       }
 
       const staffFormValues = this.staffRegistrationForm.getRawValue();
-      // if(this.staffRegistrationForm.valid){
-
 
       const staff: CreateStaffDto = {
         id: staffFormValues.id,
@@ -430,20 +496,24 @@ export class StaffProfileComponent {
           this.currentStaff = savedUser.accountCode;
           this.savedStaff.id = savedUser.accountCode;
 
-          this.staffService.currentStaff.set(savedUser?.accountCode);
+          this.submitted = true;
 
-          sessionStorage.setItem('staffDetails', JSON.stringify(savedUser));
-          // this.stepperComponent.next()
+          this.staffService.currentStaff.set(savedUser?.accountCode);
+          this.staffService.newlyCreatedStaff.set(this.savedStaff);
+          this.staffProfileFormState.persisted = true;
+          this.formStateService.destroyFormState(this.staffProfileFormStateKey);
+
+          this.saved.emit(true);
         });
     });
   }
 
   get f() { return this.staffRegistrationForm.controls; }
 
-  getControl(control: string){
-    return this.staffRegistrationForm.get(control);
-  }
-
+  /**
+   * This method is used to load all users
+   * @param event
+   */
   lazyLoadAllUsers(event:TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
@@ -457,16 +527,23 @@ export class StaffProfileComponent {
       })
   }
 
-  ngOnDestroy(): void {
-  }
-
-
+  /**
+   * This method is used to get the list of individual users
+   * @param pageIndex - The page index
+   * @param sortList - The sort list
+   * @param order -  The sort order as desc or asc
+   */
   getIndividualUsers(pageIndex: number,
                      sortList: any = 'dateCreated',
                      order: string = 'desc') {
     return this.staffService.getStaff(pageIndex, this.staffSize, 'U', sortList, order, null)
       .pipe(untilDestroyed(this));
   }
+
+  /**
+   * This method is used to select a supervisor
+   * @param event
+   */
   onSupervisorSelect(event) {
     const nestedControl = this.staffRegistrationForm.get('employment_details.manager');
     nestedControl.patchValue(event.data.name);
@@ -480,11 +557,18 @@ export class StaffProfileComponent {
     nestedControl.patchValue('');
   }
 
+  /**
+   * This method is used to save the selected supervisor
+   */
   saveSelectedSupervisor() {
     const cancelBtn = this.cancelSupervisorSelect.nativeElement;
     cancelBtn.click();
   }
 
+  /**
+   * This method is used to search for users by name
+   * @param name - The name of the user to search for
+   */
   searchUsers(name:string){
     this.staffService.searchStaff(0,5,null, name)
       .pipe(untilDestroyed(this))
@@ -492,5 +576,54 @@ export class StaffProfileComponent {
         this.viewUsers = data;
       })
 
+  }
+
+  /**
+   * This method is used to patch the form with the values from the temp data stored in the form state service
+   * @param staffProfileValues
+   * @private
+   */
+
+  private patchStaffTempData(staffProfileValues: any) {
+    this.staffRegistrationForm.patchValue({
+      userType: staffProfileValues.formData.userType,
+      firstName: staffProfileValues.formData.firstName,
+      lastName: staffProfileValues.formData.lastName,
+      pinNumber: staffProfileValues.formData.pinNumber,
+      username: staffProfileValues.formData.username,
+      contact_details: {
+        countryCode: staffProfileValues.formData.contact_details.countryCode,
+        townCode: staffProfileValues.formData.contact_details.townCode,
+        city: staffProfileValues.formData.contact_details.city,
+        physicalAddress: staffProfileValues.formData.contact_details.physicalAddress,
+        phoneNumber: staffProfileValues.formData.contact_details.phoneNumber,
+        otherPhone: staffProfileValues.formData.contact_details.otherPhone,
+        email: staffProfileValues.formData.contact_details.email
+        },
+      employment_details: {
+        departmentCode: staffProfileValues.formData.employment_details.departmentCode,
+        manager: staffProfileValues.formData.employment_details.manager,
+        branch: staffProfileValues.formData.employment_details.branch,
+        personelRank: staffProfileValues.formData.employment_details.personelRank
+      },
+      telNo: staffProfileValues.formData.telNo,
+      postalCode: staffProfileValues.formData.postalCode,
+      gender: staffProfileValues.formData.gender,
+      dateOfBirth: staffProfileValues.formData.dateOfBirth,
+      idNumber: staffProfileValues.formData.idNumber
+    });
+
+    this.entityDetails = staffProfileValues.entityDetails;
+
+    // if(!this.entityDetails){
+    //   this.entityDetails.id = this.staffProfileFormState.uniqueKey;
+    //   this.entityService.getEntityById(this.entityDetails.id)
+    //     .pipe(untilDestroyed(this))
+    //     .subscribe( entity => this.entityDetails = entity);
+    // }
+  }
+
+  ngOnDestroy(){
+    this.formStateService.destroyFormState(this.staffProfileFormStateKey);
   }
 }

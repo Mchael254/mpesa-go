@@ -1,5 +1,5 @@
-import {Component, OnInit, signal} from '@angular/core';
-import {AssignAppsRequest, CreateStaffDto} from "../../../data/StaffDto";
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {AssignAppsRequest} from "../../../data/StaffDto";
 import {AppService} from "../../../../../shared/services/setups/app.service";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
@@ -8,12 +8,18 @@ import {StaffService} from "../../../services/staff/staff.service";
 
 const log = new Logger('AssignAppsComponent');
 
+/**
+ * Component to assign apps to staff
+ */
+
 @Component({
   selector: 'app-assign-apps',
   templateUrl: './assign-apps.component.html',
   styleUrls: ['./assign-apps.component.css']
 })
 export class AssignAppsComponent  implements OnInit{
+  @Output() assigned = new EventEmitter<void>();
+
   assignedApps: number[] = [];
   apps: any[] = [];
 
@@ -23,19 +29,28 @@ export class AssignAppsComponent  implements OnInit{
               private router: Router,) {
   }
 
+
+  /**
+   * Fetch apps list
+   */
   fetchSystemApps(){
-    log.info('Fetching app list');
-    log.info('Current base ref: ',location.href);
     this.apps = this.appService.getApps();
     this.apps.forEach(app =>  {
       app.clicked = false;
     });
   }
 
+  /**
+   * Initialize component by: fetching apps list
+   */
   ngOnInit(): void {
     this.fetchSystemApps();
   }
 
+  /**
+   * Select or unselect app
+   * @param i - index of app in the list
+   */
   selectApp(i: number) {
     if (this.apps[i]) {
       this.apps[i]['clicked'] = !this.apps[i]['clicked']; //set  to selected or unselected
@@ -51,6 +66,11 @@ export class AssignAppsComponent  implements OnInit{
     }
   }
 
+  /**
+   * Assign apps to staff
+   * Ensures staff details are saved before proceeding
+   * Emits event to parent component to refresh staff list
+   */
   assignApps() {
     let savedStaffDetails = this.staffService.newlyCreatedStaff();
 
@@ -65,9 +85,7 @@ export class AssignAppsComponent  implements OnInit{
       this.staffService.assignUserSystemApps(userId, asssignAppReq)
         .subscribe( (data) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Hooray!! You have successfully assigned apps' );
-          setTimeout( () => {
-            this.router.navigate(['home/entity/staff/list'])
-          },1000);
+          this.assigned.emit();
         });
     }
   }

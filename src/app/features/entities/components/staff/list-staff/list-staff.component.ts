@@ -100,6 +100,9 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Initialize the component by retrieving the list of staffs, and displaying them in the table
+   */
   ngOnInit(): void {
     this.tableDetails = {
       cols: this.cols,
@@ -177,6 +180,8 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   selectTab(activeTab: string): void {
     this.activeTab.set(activeTab);
     this.userType = (this.activeTab() === 'Individual') ? 'user' : 'group';
+
+    this.spinner.show();
     this.getStaffData(0)
       .pipe(
         untilDestroyed(this),
@@ -184,6 +189,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
       .subscribe(
         (data: Pagination<StaffDto>) => {
           this.refreshStaffData(data);
+          this.spinner.hide();
         }
       );
     this.cdr.detectChanges();
