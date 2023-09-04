@@ -11,7 +11,7 @@
               <div class="col-sm-4">
                 <label for="lastName" class="label col-form-label">Surname</label>
                 <input type="text"  id="lastName" name="lastName" placeholder="Surname" class="form-control" formControlName="lastName"
-                       [ngClass]="{ 'is-invalid': f['lastName']?.invalid && (f['lastName']?.dirty || f['lastName']?.touched) }" [disabled]="true">
+                       [ngClass]="{ 'is-invalid': f['lastName']?.invalid && (f['lastName']?.dirty || f['lastName']?.touched) }">
                 <div *ngIf="f['lastName']?.invalid && (f['lastName']?.dirty || f['lastName']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['lastName']?.errors['required']">Last Name is required</div>
                 </div>
@@ -20,8 +20,8 @@
             <ng-container *ngIf="visibleStatus.firstName === 'Y'">
               <div class="col-sm-4">
                 <label for="firstName" class="label col-form-label">Other names</label>
-                <input type="text"  nbInput fullWidth id="firstName" name="firstName" placeholder="Other names" class="form-control" formControlName="firstName"
-                       [ngClass]="{ 'is-invalid': f['firstName']?.invalid && (f['firstName']?.dirty || f['firstName']?.touched) }" [disabled]="true">
+                <input type="text"  id="firstName" name="firstName" placeholder="Other names" class="form-control" formControlName="firstName"
+                       [ngClass]="{ 'is-invalid': f['firstName']?.invalid && (f['firstName']?.dirty || f['firstName']?.touched) }">
                 <div *ngIf="f['firstName']?.invalid && (f['firstName']?.dirty || f['firstName']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['firstName']?.errors['required']">First Name is required</div>
                 </div>
@@ -82,7 +82,7 @@
                   <option value="F">Female</option>
                 </select>
                 <div *ngIf="f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['gender']?.errors['required']">PIN Number is required</div>
+                  <div *ngIf="f['gender']?.errors['required']">Gender is required</div>
                 </div>
               </div>
             </ng-container>
@@ -90,7 +90,7 @@
               <div class="col-sm-4">
                 <label for="pinNumber" class="label col-form-label">PIN</label>
                 <input type="text"  class="form-control" id="pinNumber" name="pinNumber" placeholder="PIN" class="form-control" formControlName="pinNumber"
-                       [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }" [disabled]="true">
+                       [ngClass]="{ 'is-invalid': f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched) }">
                 <div *ngIf="f['pinNumber']?.invalid && (f['pinNumber']?.dirty || f['pinNumber']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['pinNumber']?.errors['required']">PIN Number is required</div>
                 </div>
@@ -108,12 +108,6 @@
             <ng-container *ngIf="visibleStatus.countryCode === 'Y'">
               <div class="col-sm-4">
                 <label for="countryCode" class="label col-form-label">Country</label>
-<!--                <select id="countryCode" class="form-control" formControlName="countryCode"-->
-<!--                        (change)="onCountryChange($event.target.value)"-->
-<!--                        [ngClass]="{ 'is-invalid': f['contact_details'].get('countryCode')?.invalid && (f['contact_details'].get('countryCode')?.dirty || f['contact_details'].get('countryCode')?.touched) }">-->
-<!--                  <option value="" selected disabled>Country</option>-->
-<!--                  <option *ngFor="let country of countries " value="{{ country?.id }}">{{ country?.name }}</option>-->
-<!--                </select>-->
                 <p-dropdown [options]="countries"
                             optionLabel="name" optionValue="id"
                             [style]="{ width: '100%' }" name="countryCode"
@@ -224,7 +218,7 @@
               <div class="col-sm-4">
                 <label for="manager" class="label col-form-label">Supervisor</label>
                 <div class="dropdown-wrapper">
-                  <input type="text" id="manager" name="manager" placeholder="Supervisor" class="w-100 box-sizing-border-box  staff-supervisor-input" formControlName="manager" [disabled]="true"
+                  <input type="text" id="manager" name="manager" placeholder="Supervisor" class="w-100 box-sizing-border-box  staff-supervisor-input" formControlName="manager"
                          [ngClass]="{ 'is-invalid': f['employment_details'].get('manager')?.invalid && (f['employment_details'].get('manager')?.dirty || f['employment_details'].get('manager')?.touched) }">
                   <i class="pi pi-angle-down position-absolute top-50 translate-middle-y staff-manager-dropdown-icon" data-bs-toggle="modal" data-bs-target="#supervisorsModal"></i>
                 </div>
@@ -316,10 +310,9 @@
         </p-table>
       </div>
       <div class="modal-footer d-block border-top-0">
-        <button class="btn btn-primary cancelBtn supervisors-bottom-btn"
-                data-bs-dismiss="modal" aria-label="Close"
+        <button class="btn btn-outline-primary float-end reassign supervisors-bottom-btn" aria-label="Save" (click)="saveSelectedSupervisor()">Save</button>
+        <button class="btn btn-primary cancelBtn supervisors-bottom-btn float-end" data-bs-dismiss="modal" aria-label="Close"
                 #cancelSupervisorSelection>Cancel</button>
-        <button class="btn btn-outline-primary float-right reassign supervisors-bottom-btn" aria-label="Close" (click)="saveSelectedSupervisor()">Save</button>
       </div>
     </div>
   </div>

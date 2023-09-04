@@ -12,7 +12,7 @@
       </div>
 
       <div class="row">
-        <div class="col-4 my-4" *ngFor="let app of apps;let i = index">
+        <div class="col-md-3 col-sm-12 my-4" *ngFor="let app of apps;let i = index">
           <div class="card user-app-card">
             <div class="card-body text-center user-app-card-body">
               <input type="checkbox" [checked]="app?.clicked" (click)="selectApp(i)" class="float-start user-app-checked"/>

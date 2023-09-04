@@ -1,16 +1,18 @@
  <!-- Stepper component !-->
+
+<ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
 <div class="my-5 mx-5">
     <p-steps
       class="customstepper"
-      [model]="steps" [(activeIndex)]="activeIndex" [readonly]="false"
-      (activeIndexChange)="onStepChange($event)"></p-steps>
+      [model]="steps" [(activeIndex)]="activeIndex" [readonly]="true"
+      (activeIndexChange)="changeStep($event)"></p-steps>
   </div>
 
 
   <ng-container *ngFor="let item of steps; let i = index">
     <!-- Staff Profile Form !-->
-    <app-staff-profile *ngIf="i == activeIndex && i == 0"></app-staff-profile>
+    <app-staff-profile *ngIf="i == activeIndex && i == 0" (saved)="submitStaffProfile($event)"></app-staff-profile>
 
     <!-- Assign Apps To Staff Form !-->
-    <app-assign-apps *ngIf="i == activeIndex && i == 1"></app-assign-apps>
+    <app-assign-apps *ngIf="i == activeIndex && i == 1" (assigned)="submitAssignedApps($event)"></app-assign-apps>
   </ng-container>
