@@ -111,7 +111,7 @@ export interface CreateAccountDTO {
   pinNumber?: string,
   dateCreated?: string
   clientDetails?:ClientDetailsDto,
-  serviceProviderRequest?: ServiceProviderDTO
+  serviceProviderRequest?: ServiceProviderDTO,
   userRequest?: CreateStaffDto,
 }
 
