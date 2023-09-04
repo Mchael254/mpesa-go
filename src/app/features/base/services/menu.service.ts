@@ -24,7 +24,13 @@ export class MenuService{
       name: 'Account',
       nameSlug: 'accountSetup',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'Entities', link:"/home/entity/list"}, {name:'Staff', link:"/home/entity/staff/list"}, {name:'Clients', link:"/home/entity/client/list"}, {name:'Agents', link:"/home/entity/intermediary/list"}, {name:'Service Providers', link:"/home/entity/service-provider/list"}],
+        menuItems: [
+          { name: 'Entities', link: "/home/entity/list" },
+          { name: 'Staff', link: "/home/entity/staff/list" },
+          { name: 'Clients', link: "/home/entity/client/list" },
+          { name: 'Agents', link: "/home/entity/intermediary/list" },
+          { name: 'Service Providers', link: "/home/entity/service-provider/list" }
+        ],
       collapsed:true,
     }
 
@@ -93,7 +99,14 @@ export class MenuService{
     name: 'CRM',
     nameSlug: 'crm',
     icon: 'fa-solid fa-keyboard',
-    menuItems: [{name:'My Tasks', link:""}, {name:'My Dashboard', link:""}, {name:'My Transactions', link:""}, {name:'My Policies', link:""}, {name:'My Quotations', link:""}, {name:'My Renewals', link:""}],
+      menuItems: [
+        { name: 'My Tasks', link: "" },
+        { name: 'My Dashboard', link: "" },
+        { name: 'My Transactions', link: "" },
+        { name: 'My Policies', link: "" },
+        { name: 'My Quotations', link: "" },
+        { name: 'My Renewals', link: "" }
+      ],
 
     collapsed:true,
   }],
@@ -293,16 +306,16 @@ claimSubMenuList(): SidebarMenu[]{
     }];
 }
 accountSubMenuList(): SidebarMenu[]{
-  return  [
-    {
-      name:"Create Account",
-      link: "home/entity/new",
-      value: "ACC_SETUP"
-    },
+  return [
     {
       name:"View Account",
       link:"home/entity/list",
       value: "ACC_SETUP"
     },
+    {
+      name:"Create Account",
+      link: "home/entity/new",
+      value: "ACC_SETUP"
+    }
   ]}
 }

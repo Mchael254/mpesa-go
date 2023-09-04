@@ -23,5 +23,5 @@
   },
 
   "dmsDefaultUrl": "http://192.0.1.140:9080/alfrescoServices",
-  "cubejsDefaultUrl": "https://ekwe.turnkeyafrica.com/cubejs-api/v1"
+  "cubejsDefaultUrl": "http://10.176.18.211:4000/cubejs-api/v1"
 }
