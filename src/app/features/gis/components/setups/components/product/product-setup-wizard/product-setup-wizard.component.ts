@@ -20,6 +20,7 @@ export class ProductSetupWizardComponent implements OnInit {
   productGroupForm: FormGroup
   productdocumentform: FormGroup
   productGroupCode: Product_group
+  productCode: Products
   selected: any;
   updateFormFields!:FormScreen
   testForm: FormGroup = new FormGroup<any>({});
@@ -34,6 +35,7 @@ export class ProductSetupWizardComponent implements OnInit {
   allProducts: Products[]
   allScheduleReports: any;
   allSubclasses: any;
+  allScreens: any
   page: any;
   file: File
   report: any;
@@ -52,6 +54,7 @@ export class ProductSetupWizardComponent implements OnInit {
     this.createProductForm()
     this.createProductGroupForm()
     this.getForms()
+    this.getAllScreens()
     this.getAllProducts()
     this.getAllScheduleReports()
     this.getAllSubclasses()
@@ -105,6 +108,11 @@ export class ProductSetupWizardComponent implements OnInit {
       console.log (this.allScheduleReports, "all reports")
     })
    }
+   getAllScreens(){
+    this.gisService.getAllScreens().subscribe(data =>{
+      this.allScreens = data._embedded.screen_dto_list;
+    })
+   }
   createProductDocument(){
     this.productdocumentform = this.fb.group({
       dateWithEffectFrom: ['', Validators.required],
@@ -131,7 +139,7 @@ export class ProductSetupWizardComponent implements OnInit {
       underwritingScreenCode: ['', Validators.required],
       claimScreenCode:null,
       expires: "Y",
-      doesCashBackApply:"Y",
+      doesCashBackApply:['', Validators.required],
       minimumSubClasses: 1,
       acceptsMultipleClasses: "N",
       minimumPremium: null,
@@ -150,7 +158,7 @@ export class ProductSetupWizardComponent implements OnInit {
       policyAccumulationLimit: null,
       insuredAccumulationLimit: null,
       totalCompanyAccumulationLimit: null,
-      enableSpareParts: "N",
+      enableSpareParts: ['', Validators.required],
       prerequisiteProductCode: null,
       allowMotorClass: "N",
       allowSameDayRenewal: "N",
@@ -159,17 +167,17 @@ export class ProductSetupWizardComponent implements OnInit {
       webDetails: null,
       showOnWebPortal: "N",
       areInstallmentAllowed: "Y",
-      interfaceType: "ACCRUAL",
+      interfaceType: ['', Validators.required],
       isMarine: null,
       allowOpenPolicy: "N",
       order: null,
       isDefault: "N",
-      prorataType: null,
+      prorataType: ['', Validators.required],
       doFullRemittance: null,
       productType: null,
       checkSchedule: null,
       scheduleOrder: 1,
-      isPinRequired: "Y",
+      isPinRequired: ['', Validators.required],
       maximumExtensions: null,
       autoGenerateCoverNote: "N",
       commissionRate: null,
@@ -208,10 +216,11 @@ export class ProductSetupWizardComponent implements OnInit {
     console.log(this.productForm.value)
     const requestBody: any = this.productForm.value
     requestBody.code = null
-    requestBody.productGroupCode = 16678633
+    requestBody.productGroupCode = this.productGroupCode
+    requestBody.organizationCode = 2
     console.log(this.productGroupCode, "Product group code")
-    this.gisService.createProducts(requestBody).subscribe((data: {}) => {
-
+    this.gisService.createProducts(requestBody).subscribe((data: any) => {
+      this.productCode = data.code
       try {
         console.log(this.productForm.value)
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved' });
@@ -279,15 +288,15 @@ export class ProductSetupWizardComponent implements OnInit {
       
       const  sectionsArray: any = {
         code: null,
-        isMandatory: element.isMandatory,
+        is_mandatory: element.isMandatory,
         sub_class_code: element.code,
-        policyDocumentOrderNumber: 2,
-        product_group_code: 700,
-        product_code: 3967,
+        policy_document_order_number: 2,
+        product_group_code: this.productGroupCode,
+        product_code: this.productCode,
         product_short_description: null,
-        underwriting_screenCode: element.underwritingScreenCode,
+        underwriting_screen_code: element.underwritingScreenCode,
         date_with_effect_from: element.withEffectFrom, 
-        date_with_effect_to: element.withEffectTo,
+        date_with_effect_to: "2024-06-25",
         version: 1,
         } 
         return this.gisService.createProductSubclasses(sectionsArray);
@@ -307,6 +316,7 @@ export class ProductSetupWizardComponent implements OnInit {
   saveProductDocument(){
     
     const doc = this.productdocumentform.value
+    doc.productCode = this.productCode
     doc.document = this.base64Data
     doc.name = this.file?.name;
     console.log(doc)
