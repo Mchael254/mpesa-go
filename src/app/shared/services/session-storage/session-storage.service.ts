@@ -13,7 +13,7 @@ export class SessionStorageService {
     sessionStorage.setItem(key, encryptedValue);
   }
 
-  getItem(key: string): string {
+  getItem(key: string): any {
     const encryptedValue = sessionStorage.getItem(key);
     return encryptedValue ? this.en.decrypt(encryptedValue) : null;
   }
