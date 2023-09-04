@@ -30,6 +30,9 @@ import { BankBranchDTO, BankDTO, FundSourceDTO } from 'src/app/shared/data/commo
 import { SectorService } from 'src/app/shared/services/setups/sector.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateService } from '@ngx-translate/core';
+import { Logger } from 'src/app/shared/services/logger.service';
+
+const log = new Logger('EditComponent');
 
 @Component({
   selector: 'app-edit',
@@ -245,6 +248,7 @@ export class EditComponent implements OnInit{
       .pipe(take(1))
       .subscribe( (data) => {
         this.titlesData = data;
+        log.info(`All Clients Title`, this.titlesData);
         // this.selectedTitle = this.titlesData[0];
       });
   }
@@ -297,7 +301,7 @@ export class EditComponent implements OnInit{
         )
         .subscribe((data: PartyAccountsDetails) => {
           this.partyAccountDetails = data
-          console.log('Fetch account data using accountCode >>>>>', this.partyAccountDetails);
+          log.info('Fetch account data using accountCode >>>>>', this.partyAccountDetails);
           let partyAccountType: string = this.partyAccountDetails?.partyType?.partyTypeName;
           if(this.partyAccountDetails?.userDto){
             this.fetchSupervisorDetails();
@@ -378,7 +382,6 @@ export class EditComponent implements OnInit{
     })
   }
   staffDetails() {
-    // throw new Error('Method not implemented.');
     this.entityDetailsForm.patchValue({
       physicalAddress: this.partyAccountDetails.userDto?.physicalAddress,
       mobileNumber: this.partyAccountDetails.userDto?.phoneNumber,
@@ -390,13 +393,15 @@ export class EditComponent implements OnInit{
       idNumber: this.partyAccountDetails.modeOfIdentityNumber,
       passportNumber: this.partyAccountDetails.modeOfIdentityNumber,
       staffDepartment: this.partyAccountDetails?.userDto?.departmentCode,
-      dateOfBirth: this.datePipe.transform(this.partyAccountDetails?.dateOfBirth, 'yyyy-MM-dd')
+      dateOfBirth: this.datePipe.transform(this.partyAccountDetails?.dateOfBirth, 'dd-MM-yyy')
       // dateOfBirth: this.datePipe.transform(this.partyAccountDetails.userDto?.dateOfBirth, 'dd-MM-yyy'),
     });
   }
 
   updatePersonalInfo() {
     const personalInfoValue = this.entityDetailsForm.getRawValue();
+    const clntTitle = this.titlesData.filter(res => personalInfoValue.clientTitle == res.id)[0]
+    log.info(`form data`, clntTitle, this.titlesData, personalInfoValue.clientTitle);
 
     //Preparing Personal Information DTO
     const personalInfo: PersonalDetailsUpdateDTO = {
@@ -412,11 +417,13 @@ export class EditComponent implements OnInit{
       phoneNumber: personalInfoValue.mobileNumber,
       physicalAddress: personalInfoValue.physicalAddress,
       pinNumber: personalInfoValue.pinNumber,
-      title: personalInfoValue.clientTitle,
+      title: clntTitle,
       category: personalInfoValue?.partyType,
       departmentId: personalInfoValue?.staffDepartment,
       supervisorId: this.selectedUser?.id
     }
+
+    log.info(`Personal Infor`, personalInfo.title);
 
     //calling updating service
     this.accountService.updatePersonalDetails(personalInfo, this.partyAccountDetails.id)
