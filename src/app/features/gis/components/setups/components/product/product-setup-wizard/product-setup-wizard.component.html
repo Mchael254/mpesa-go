@@ -136,11 +136,11 @@
                               <div class="row">
                                 <label for="{{data.name}}" class="col-sm-4 col-form-label labels">{{data.label}}:</label>
                                 <div class="form-group col-md-8 ">
-                                  <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'scheduleOrder'">
+                                  <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'productReportGroupsCode' && data.name !== 'scheduleReportCode'">
                                     <select id="{{data.id}}" class="form-select form-select-sm mb-2"
                                       formControlName="{{data.name}}">
-                                      <option *ngFor="let option of data.selectOptions" value="{{option.isSelected}}"
-                                        selected="{{option.isSelected}}">{{option.text}}</option>
+                                      <option *ngFor="let option of data.selectOptions" value="{{option.value}}"
+                                        selected="{{option.value}}">{{option.text}}</option>
                                     </select>
                                   </div>
                             
@@ -151,11 +151,18 @@
                                         selected="{{option.code}}">{{option.description}}</option>
                                     </select>
                                   </div>
-                                  <div *ngIf="data.type === 'select' && data.name == 'scheduleOrder'">
+                                  <div *ngIf="data.type === 'select' && data.name == 'productReportGroupsCode'">
                                     <select id="{{data.id}}" class="form-select form-select-sm mb-2"
                                       formControlName="{{data.name}}">
                                       <option *ngFor="let option of allScheduleReports" value="{{option.code}}"
                                         selected="{{option.code}}">{{option.description}}</option>
+                                    </select>
+                                  </div>
+                                  <div *ngIf="data.type === 'select' && data.name == 'scheduleReportCode'">
+                                    <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                      formControlName="{{data.name}}">
+                                      <option *ngFor="let option of allScreens" value="{{option.code}}"
+                                        selected="{{option.code}}">{{option.screen_description}}</option>
                                     </select>
                                   </div>
                                   <div *ngIf="data.type !== 'select'">
@@ -182,21 +189,53 @@
                           <div *ngFor="let data of optionalFrontendScreens" class="col-6">
                             <form [formGroup]="productForm">
                               <div class="mandatory">
-                                <div class="form-row">
-                                  <label for="{{data.name}}" class="col-sm-4 col-form-label">{{data.label}}:</label>
+                                <div class="row">
+                                  <label for="{{data.name}}" class="col-sm-4 col-form-label labels">{{data.label}}:</label>
                                   <div class="form-group col-md-8 ">
-        
-                                    <input type="{{data.type}}" class="form-control form-control-sm mb-2"
-                                      formControlName="{{data.name}}" id="{{data.name}}">
-        
+                                    <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'productReportGroupsCode' && data.name !== 'scheduleReportCode' && data.name !== 'interfaceType'">
+                                      <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                        formControlName="{{data.name}}">
+                                        <option *ngFor="let option of data.selectOptions" value="{{option.value}}"
+                                          selected="{{option.value}}">{{option.text}}</option>
+                                      </select>
+                                    </div>
+                                    <div *ngIf=" data.name === 'interfaceType'">
+                                      <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                        formControlName="{{data.name}}">
+                                        <option *ngFor="let option of data.selectOptions" [value]="option.value"> {{option.text}} </option>
+                                      </select>
+                                    </div>
+                                    <div *ngIf="data.type === 'select' && data.name == 'prerequisiteProductCode'">
+                                      <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                        formControlName="{{data.name}}">
+                                        <option *ngFor="let option of allProducts" value="{{option.code}}"
+                                          selected="{{option.code}}">{{option.description}}</option>
+                                      </select>
+                                    </div>
+                                    
+                                    <div *ngIf="data.type === 'select' && data.name == 'productReportGroupsCode'">
+                                      <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                        formControlName="{{data.name}}">
+                                        <option *ngFor="let option of allScheduleReports" value="{{option.code}}"
+                                          selected="{{option.code}}">{{option.description}}</option>
+                                      </select>
+                                    </div>
+                                    <div *ngIf="data.type === 'select' && data.name == 'scheduleReportCode'">
+                                      <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                        formControlName="{{data.name}}">
+                                        <option *ngFor="let option of allScreens" value="{{option.code}}"
+                                          selected="{{option.code}}">{{option.screen_description}}</option>
+                                      </select>
+                                    </div>
+                                    <div *ngIf="data.type !== 'select'">
+                                      <input type="{{data.type}}" class="form-control form-control-sm mb-2"
+                                        formControlName="{{data.name}}" id="{{data.name}}">
+                                    </div>
+          
+          
                                   </div>
                                 </div>
                               </div>
-        
-        
-        
-        
-        
                             </form>
         
                           </div>
@@ -225,7 +264,7 @@
             <!-- Product Subclasses -->
             <div class="card" style="width:100%" *ngIf="page=='3'">
                 <div class="card-header" style="background:white">
-                  <span class="circle1 mr-1" *ngIf="selectedCard == 2">{{ 2 }}</span>
+                  <span class="circle1 mr-1" *ngIf="selectedCard == 2" style="margin-right: 5px">{{ 2 }}</span>
                   <label class="label2">Add Product Subclasses</label>
                 </div>
                 <div class="card-body">
@@ -313,7 +352,7 @@
                <!-- Product document -->
             <div class="card" style="width:100%" *ngIf="page=='4'">
                 <div class="card-header" style="background:white">
-                  <span class="circle1 mr-1" *ngIf="selectedCard == 3">{{ 3 }}</span>
+                  <span class="circle1 mr-1" *ngIf="selectedCard == 3" style="margin-right: 5px;">{{ 3 }}</span>
                   <label class="label2">Add Product Documents</label>
                 </div>
                 <div class="card-body">
@@ -326,10 +365,7 @@
                             <label class="labels" for="input">Product Group</label>
                           </div>
                           <div class="col-xl-7">
-                            <select class="form-control form-control-sm mb-1">
-                              <option value="Y">Yes</option>
-                              <option value="N">No</option>
-                            </select>
+                            <input type="text"  class="form-control form-control-sm mb-2" formControlName="productCode" required>
                           </div>
                         </div>
                         
@@ -391,10 +427,7 @@
                             <label class="labels" for="input">Subclass Precedence</label>
                           </div>
                           <div class="col-xl-7">
-                            <select class="form-control form-control-sm mb-1" formControlName="precedence">
-                              <option value="Y">Yes</option>
-                              <option value="N">No</option>
-                            </select>
+                            <input type="text"  class="form-control form-control-sm mb-2" formControlName="precedence" required>
                           </div>
                         </div>
                         

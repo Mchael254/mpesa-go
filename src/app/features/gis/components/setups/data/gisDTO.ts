@@ -214,7 +214,7 @@ export interface Products {
     autoGenerateCoverNote: string;
     commissionRate: number;
     autoPostReinsurance: string;
-    insuranceType: number;
+    insuranceType: string;
     years: number;
     enableWeb: number;
     doesEscalationReductionApply: number;

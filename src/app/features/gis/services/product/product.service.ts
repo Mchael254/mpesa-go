@@ -68,6 +68,9 @@ export class ProductService {
   getAllScheduleReports(): Observable<any>{
     return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe();
   }
+  getAllScreens(): Observable<any>{
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/screens`).pipe();
+  }
   getProductByCode(code: number): Observable<Products[]>{
     
     return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
