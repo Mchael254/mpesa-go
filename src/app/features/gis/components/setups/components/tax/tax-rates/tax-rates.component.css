@@ -33,6 +33,13 @@
 #arrow{
     font-size: 1.3rem;
 }
+#search-input{
+    font-size: 12px;
+}
+#search{
+    border-radius: 2px;
+background: #00529B;
+}
 #left{
     background: #FFFFFF;
     border: 1px solid rgba(220, 220, 220, 0.85);
@@ -57,20 +64,8 @@
     color: #00529B;
 
 }
-#example-search-input{
-    border: 1px solid #DCDCDC;
-    border-radius: 2px;
-    height: 25px;
-}
-.isearch{
-    width: 31px;
-    height: 25px;
-    background: #00529B;
-    border-radius: 2px;
-    display: flex;
-    justify-content: center; /* center horizontally */
-    align-items: center;
-}
+
+
 #search{
     color: #FFFFFF;
 }
@@ -87,6 +82,7 @@
     border-radius: 2px;
     height: 25px;
 }
+
 #TransactionList {
     font-family: 'Roboto';
     font-style: normal;
@@ -96,6 +92,10 @@
     cursor: pointer;
     padding-top: 3px;
     padding-left: 3px;
+    margin-left: -15px;
+}
+#TransactionList:hover{
+    color: #00529B;
 }
 .TransactionList{
     overflow-y: scroll;
@@ -232,7 +232,7 @@ td{
     border: 1px solid #00529B;
     border-radius: 2px;
     width: 88.84px;
-    margin-left: 30px;
+    /* margin-left: 30px; */
 
 }
 #cancel:hover{
@@ -303,15 +303,15 @@ td{
     line-height: normal;
 }
 #addChargesInput{
-    color: rgba(105, 105, 105, 0.65);
+    color: black;
     font-family: Roboto;
     font-size: 12px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: normal;
     border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.30);
-    background: rgba(140, 140, 140, 0.08);
+    background-color: rgba(140, 140, 140, 0.08); 
 }
 #required-alert{
     font-family: 'Roboto';

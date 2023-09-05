@@ -43,9 +43,12 @@ line-height: normal;
         margin-left: -10px;
         
     }
-    ::ng-deep{
+    /* ::ng-deep{
         .p-dropdown-filter {
             height: 40px;
+        }
+        .p-dropdown-panel .p-dropdown-items .p-dropdown-item{
+            color:red;
         }
         .p-dropdown .p-dropdown-label.p-placeholder{
             margin-top: -6px;
@@ -62,7 +65,7 @@ line-height: normal;
             width: 230px;
         }
        
-    }
+    } */
     #new{
         color: #00529B;
         background-color: white;
