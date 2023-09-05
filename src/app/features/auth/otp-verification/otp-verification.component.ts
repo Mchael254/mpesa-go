@@ -52,18 +52,6 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
         const details = JSON.parse(this.localStorageService.getItem('details'));
         this.authService.attemptAuth(details);
       }
-
-      // switch(this.otpProcess) {
-      //   case 'password-reset': {
-      //     this.router.navigate(['/auth/change-password']).then(r => {});
-      //     break;
-      //   }
-      //   default: {
-      //     const details = JSON.parse(this.sessionStorage.getItem('details'));
-      //     this.authService.attemptAuth(details);
-      //     break;
-      //   }
-      // }
      }else{
       return;
     }
