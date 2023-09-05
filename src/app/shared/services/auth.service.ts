@@ -9,7 +9,6 @@ import {WebAdmin} from '../data/web-admin';
 import {Logger} from './logger.service';
 import {JwtService} from './jwt/jwt.service';
 import {UtilService} from './util.service';
-import {AppConfigService} from 'src/app/core/config/app-config-service';
 import {Router} from '@angular/router';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Message} from 'primeng/api';
@@ -19,6 +18,7 @@ import {OauthToken} from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
 import {UserDetailsDTO} from 'src/app/features/administration/data/user-details';
 import {LocalStorageService} from './local-storage/local-storage.service';
+import {AppConfigService} from "../../core/config/app-config-service";
 
 
 const log = new Logger('AuthService');
