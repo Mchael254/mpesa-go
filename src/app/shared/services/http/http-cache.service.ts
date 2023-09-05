@@ -6,8 +6,9 @@
 
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { each } from 'lodash-es';
+// import { each } from 'lodash-es';
 import { Logger } from '../logger.service';
+import {each} from "chart.js/helpers";
 
 const cachePersistenceKey = 'httpCache';
 
