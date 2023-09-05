@@ -53,6 +53,7 @@ export class TaxRatesComponent {
   transactionForm:FormGroup;
   editTransactionForm:FormGroup;
   filteredTransactionList: any;
+  filteredTransaction:any;
   
 
   searchForm:FormGroup;
@@ -191,8 +192,14 @@ export class TaxRatesComponent {
       this.filteredTransactionList = this.transactionList.filter((transaction: any) => {
         return transaction.isItApplicableToSubclass === "N";
       });
+      this.filteredTransaction=this.filteredTransactionList;
       this.cdr.detectChanges();
     });
+  }
+  filterTransaction(event: any) {
+    const searchValue = (event.target.value).toUpperCase();
+    this.filteredTransaction = this.filteredTransactionList.filter((el) => el.description.includes(searchValue));
+    this.cdr.detectChanges();
   }
 
   /**
