@@ -12,6 +12,15 @@ describe('CriteriaPillComponent', () => {
     });
     fixture = TestBed.createComponent(CriteriaPillComponent);
     component = fixture.componentInstance;
+    component.queryObject = {
+      category: '',
+      categoryName: '',
+      subcategory: '',
+      subCategoryName: '',
+      transaction: '',
+      query: '',
+      queryName: '',
+    }
     fixture.detectChanges();
   });
 

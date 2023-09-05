@@ -38,7 +38,7 @@ export class VerificationComponent implements OnInit {
     if(extras?.phone){
       const verificationsType: AuthVerification = {
         name: extras.phone.substr(0,4)+ '********'+extras.phone.slice(-2),
-        type: "Via SMS:",
+        type: "SMS",
         icon: "fa-mobile-retro",
         selected: true
 
@@ -48,7 +48,7 @@ export class VerificationComponent implements OnInit {
     if(extras.email){
       const verificationsType: AuthVerification = {
         name: extras.email.substr(0,2)+'*****'+extras.email.slice(extras.email.lastIndexOf('@')),
-        type: "Via Email:",
+        type: "Email",
         icon: "fa-envelope",
 
       }
@@ -67,7 +67,8 @@ export class VerificationComponent implements OnInit {
     this.selectedAccount = account;
     this.isLoading = true;
     log.debug('Selected Verification Type:', this.selectedAccount)
-    const verificationType = this.selectedAccount.type.includes("Email".toLocaleLowerCase())? "email": "sms"
+    // const verificationType = this.selectedAccount.type.includes("Email".toLocaleLowerCase())? "email": "sms"
+    const verificationType = this.selectedAccount.type === 'SMS' ? 'sms' : 'email';
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
     let username = extras.username;
     this.authService.sentVerificationOtp(username, verificationType)

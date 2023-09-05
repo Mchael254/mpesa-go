@@ -4,7 +4,7 @@ import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {Logger} from "../../../../../shared/services";
 import {TicketsService} from "../../../services/tickets.service";
-import cubejs from "@cubejs-client/core";
+import cubejs, {Query} from "@cubejs-client/core";
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
@@ -66,8 +66,8 @@ export class ViewTicketsComponent implements OnInit {
   getAllTicketsFromCubeJs() {
     this.spinner.show();
     const assignee = this.authService.getCurrentUserName()
-    const query = {
-      "dimensions":[
+    const query: Query = {
+      dimensions: [
         "General_Ticket_Details.intermediaryName",
         "General_Ticket_Details.clientName",
         "General_Ticket_Details.ticketAssignee",
@@ -92,11 +92,10 @@ export class ViewTicketsComponent implements OnInit {
         "General_Ticket_Details.policyCode",
         "General_Ticket_Details.ticketType",
         "General_Ticket_Details.usrCode"
+      ],
+      filters: [
+        {member:"General_Ticket_Details.ticketAssignee","operator":"contains","values": [assignee]},
       ]
-      // ,
-      // "filters": [
-      //   {"member":"General_Ticket_Details.ticketAssignee","operator":"contains","values": [assignee]},
-      // ]
     }
 
     this.cubejsApi.load(query).then(resultSet => {
