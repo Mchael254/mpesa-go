@@ -61,7 +61,7 @@ export class VerificationComponent implements OnInit {
   /**
    * Select account of type AuthVerification and send OTP to the selected account
    * Upon successful OTP sent, navigate to OTP screen
-   * @param account
+   * @param account - Account of type AuthVerification
    */
   onSelectAccount(account: AuthVerification) {
     this.selectedAccount = account;
