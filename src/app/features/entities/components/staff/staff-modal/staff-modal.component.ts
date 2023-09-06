@@ -6,6 +6,10 @@ import {untilDestroyed} from "../../../../../shared/shared.module";
 import {Table, TableLazyLoadEvent} from "primeng/table";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
+/**
+ * Component to display staff data in a modal
+ */
+
 @Component({
   selector: 'app-staff-modal',
   templateUrl: './staff-modal.component.html',
@@ -52,6 +56,10 @@ export class StaffModalComponent implements OnInit, OnDestroy{
   constructor( private staffService: StaffService, private globalMessagingService: GlobalMessagingService) {
   }
 
+  /**
+   * Lazy load staff data
+   * @param event
+   */
   lazyLoadAllUsers(event:TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
@@ -64,6 +72,12 @@ export class StaffModalComponent implements OnInit, OnDestroy{
       })
   }
 
+  /**
+   * Fetch individual users from backend
+   * @param pageIndex
+   * @param sortList
+   * @param order
+   */
   getIndividualUsers(pageIndex: number,
                      sortList: any = 'dateCreated',
                      order: string = 'desc') {
@@ -71,11 +85,19 @@ export class StaffModalComponent implements OnInit, OnDestroy{
       .pipe(untilDestroyed(this));
   }
 
+  /**
+   * Select staff/user from the table and emit the selected user
+   * @param event
+   */
   onUserRowSelect(event) {
     this.globalMessagingService.displayInfoMessage('User Selected', event.data.name);
     this.userSelected.emit(event.data);
   }
 
+  /**
+   * Search users by name
+   * @param name
+   */
   searchUsers(name:string){
     if(this.isLazyLoaded){
       this.staffService.searchStaff(0,5,null, name)
@@ -98,6 +120,9 @@ export class StaffModalComponent implements OnInit, OnDestroy{
 
   }
 
+  /**
+   * Save selected user and close modal
+   */
   saveSelectedUser() {
     const cancelBtn = this.cancelSupervisorSelect.nativeElement;
     if (this.selectedUser) {
@@ -114,6 +139,11 @@ export class StaffModalComponent implements OnInit, OnDestroy{
     this.staffData = this.staffList;
   }
 
+  /**
+   * Trigger user search when enter key is pressed
+   * @param event - the keyboard event
+   * @param value - the entered value
+   */
   handleEnteredValue(event: KeyboardEvent, value: string) {
     if (event.key === 'Enter'){
       this.searchUsers(value);
