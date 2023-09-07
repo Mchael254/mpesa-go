@@ -1,13 +1,14 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {LazyLoadEvent} from "primeng/api";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import { untilDestroyed } from 'src/app/shared/shared.module';
-import { QuotationsService } from 'src/app/features/gis/services/quotations/quotations.service';
+import {untilDestroyed} from "../../../../../../shared/shared.module";
+import {QuotationsService} from '../../../../../../features/gis/services/quotations/quotations.service'
 import {tap} from "rxjs/operators";
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
-import { Logger } from 'src/app/shared/shared.module';
+import {QuotationsDTO} from '../../../../../../features/gis/data/quotations-dto'
+import {Pagination} from '../../../../../../shared/data/common/pagination'
+import {Logger} from '../../../../../../shared/services'
 import {ActivatedRoute} from "@angular/router";
+import {BreadCrumbItem} from '../../../../../../shared/data/common/BreadCrumbItem'
 
 const log = new Logger('QuotationsComponent');
 @Component({

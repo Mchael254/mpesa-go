@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import {AppConfigService} from '../../../../core/config/app-config-service'
 import { ClaimsDTO } from '../../data/claims-dto';
 
 @Injectable({
