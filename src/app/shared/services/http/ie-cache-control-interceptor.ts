@@ -21,7 +21,7 @@ export class IeCacheControlInterceptor implements HttpInterceptor {
       const request = req.clone({
         setHeaders: {
           'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
+          // Pragma: 'no-cache',
         },
       });
 

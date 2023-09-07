@@ -485,3 +485,105 @@ color: #00529B;
 }
 
 /**Gis Ends**/
+.required::after {
+  content: '*'; /* Display an asterisk (*) to indicate required field */
+  color: red; /* Change the color to red (you can customize as per your preference) */
+  font-size: 14px; /* Increase the font size for better visibility */
+  font-weight: bold; /* Use bold style for the asterisk */
+  margin-left: 5px; /* Add some space between the label and the asterisk */
+}
+
+.full-border {
+  border: 1px solid #ccc; /* Adjust border style and color as per your preference */
+  padding: 2rem; /* Add padding to create space between form elements and the border */
+  border-radius: 5px; /* Optional: Add border radius for rounded corners */
+  margin: 10px;
+  background-color: white;
+}
+
+.action-buttons-container {
+  margin-top: 10px; /* Adjust the margin as needed to bring the buttons closer */
+  margin-bottom: 20px; /* Adjust the margin as needed to bring the buttons closer */
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+
+.card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  padding: 20px;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th,
+.custom-table td {
+  border-bottom: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Styles for Desktop (Screen width > 768px) */
+@media screen and (min-width: 769px) {
+  .mobile-card {
+    display: none; /* Hide card layout on desktop */
+  }
+}
+
+/* Styles for Mobile (Screen width <= 768px) */
+@media screen and (max-width: 768px) {
+  .desktop-table {
+    display: none; /* Hide table layout on mobile */
+  }
+}
+
+
+.text-end {
+  cursor: pointer;
+
+
+}
+.text-end-view {
+  border-radius: 2px;
+  border: 1px solid var(--primary-color);
+  background-color: #ffffff;
+  color: var(--primary-color);
+  padding: 0.6rem 1.3rem;
+  font-size: 12px;
+}
+
+
+.text-end-view:hover {
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.6rem 1.3rem;
+  font-size: 12px;
+}

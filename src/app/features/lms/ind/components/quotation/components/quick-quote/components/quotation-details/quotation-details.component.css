@@ -1,0 +1,6 @@
+.px-3 > label {
+  color: black
+}
+.stepsDownToggle {
+  transform: translateY(30px);
+}

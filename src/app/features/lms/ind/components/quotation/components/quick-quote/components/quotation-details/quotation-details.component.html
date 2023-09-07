@@ -1,0 +1,243 @@
+<div class="container-fluid" >
+  <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+  <div style="position: relative;">
+    <div class="mt-4 full-border" >
+      <form [formGroup]="quotationDetailForm" >
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <!-- Add a container div to align items -->
+          <h3 class="mb-2 fs-6 fw-bold">{{ "Quotation Details" | uppercase }}</h3>
+          <!-- Replace "Dynamic Form" with your desired title -->
+          <hr />
+          <div>
+            <!-- Add any additional content or buttons here if needed -->
+          </div>
+        </div>
+        <div class="row" [ngClass]="'row-cols-md-' + 2 + ' gx-md-4'">
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="product" class="required">Product</label>
+              <select
+                id="product"
+                formControlName="product"
+                class="form-select"
+                (change)="selectProduct($event)"
+              >
+                <ng-container *ngFor="let product of productList">
+                  <option [value]="product?.product_code">
+                    {{ product?.product_description }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="option" class="required">Option</label>
+              <select
+                id="option"
+                formControlName="option"
+                class="form-select"
+                (change)="selectOption($event)"
+              >
+                <ng-container *ngFor="let option of productOptionList">
+                  <option [value]="option['code']">
+                    {{ option.description }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="term" class="required">Term</label>
+              <select id="term" formControlName="term" class="form-select">
+                <ng-container *ngFor="let option of []">
+                  <option [value]="option.value" (change)="selectOption(option)">
+                    {{ option.label }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="freq_pay" class="required">Frequency of Payment</label>
+              <select
+                id="freq_pay"
+                formControlName="freq_pay"
+                class="form-select"
+              >
+                <ng-container *ngFor="let option of []">
+                  <option
+                    [value]="option['p_code']"
+                    (change)="selectOption(option)"
+                  >
+                    {{ option.description }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="cover_type">Cover Type(s)</label>
+              <!-- <label for="cover_type">Cover Type(s)</label>
+                <select id="cover_type"  formControlName="cover_type" class="form-select" >
+                  <ng-container *ngFor="let option of []" >
+                    <option [value]="option.value" (click) = selectProduct(option)>{{ option.label }} </option>
+                  </ng-container>
+                </select> -->
+
+              <div
+
+                formArrayName="cover_type"
+                (click)="toggleShowCSS()"
+                style="
+                  display: flex;
+                  border: 1px solid rgb(214, 213, 213);
+                  padding: 0.4rem;
+                  cursor: pointer;
+                  color: black;
+                "
+              >
+                <div
+                  id="dropdownMenuButton"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="true"
+                >
+                  Select Cover Type(s)
+                </div>
+                <ul *ngIf="coverTypeList().length > 0"
+                  (click)="stopPropagation($event)"
+                  class="dropdown-menu {{
+                    showCSS ? 'show stepsDownToggle' : ''
+                  }}"
+                  aria-labelledby="dropdownMenuButton"
+                  style="
+                    font-size: 0.8em;
+                    width: 41.5em;
+                    border: 1px solid rgb(170, 170, 170);
+                    padding: 1rem;
+                  "
+                >
+                  <li
+                    *ngFor="
+                      let control of getCoverTypeFormArray.controls;
+                      let i = index
+                    "
+                    class="form-check"
+                  >
+                  <input
+                      [id]="'checkbox-' + coverTypeList()[i]?.description"
+                      [formControlName]="i"
+                      class="form-check-input"
+                      type="checkbox"
+                      id="{{ 'checkbox-' + coverTypeList()[i]?.description }}"
+                      (change)="updateCheckboxValue(control, i)"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="{{ 'checkbox-' + coverTypeList()[i]?.description }}"
+                      >{{ coverTypeList()[i]?.description }}</label
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col mb-3">
+            <div class="form-group px-3">
+              <label for="sum_assured">Sum Assured</label>
+              <select
+                id="sum_assured"
+                formControlName="sum_assured"
+                class="form-select"
+              >
+                <ng-container *ngFor="let option of isSumAssuredOrPremium">
+                  <option [value]="option.value" (click)="selectOption(option)">
+                    {{ option.label }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+        </div>
+      </form>
+      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
+    </div>
+
+    <div *ngIf="coverTypeListSelected().length > 0" class="mt-4 full-border">
+      <div class="card-content" style="padding-top: 1rem;">
+        <div style="font-weight: 800; font-size: 1rem;">{{'Cover Type(s)' | uppercase}}</div>
+        <!-- Table Layout (Visible on Desktop) -->
+        <table class="custom-table desktop-table">
+          <thead>
+            <tr>
+              <th>CODE</th>
+              <th>DESCRIPTION</th>
+              <th>AMOUNT</th>
+              <th>DELETE</th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let cover of coverTypeListSelected(); let i = index">
+            <tr>
+              <td>{{cover.code}}</td>
+              <td>{{cover.description}}</td>
+              <td>{{10000}}</td>
+              <td style="color: red; font-size: 1rem;"><i class="fa-solid fa-trash-can"></i></td>
+              <!-- <td>Data 4</td> -->
+            </tr>
+            <!-- Add more rows as needed -->
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="d-flex justify-content-between mt-3 action-buttons-container">
+      <button style="padding: 0.6em;"
+        type="button"
+        (click)="toPersonalDetailsForm()"
+        class="btn btn-primary btn-sm"
+      >
+        <i class="fa-solid fa-arrow-left"></i> Previous
+      </button>
+      <button style="padding: 0.6em;"
+        type="button"
+        (click)="onSubmitQuotationDetailForm()"
+        [disabled]="quotationDetailForm.invalid"
+        class="btn btn-primary btn-sm"
+      >
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- <app-dynamic-form
+    [fieldsPerRow]=2
+    [title]="'Quotation Details'"
+    (formSubmitted)="saveButton($event)"
+    [formFields]="quotationDetailsFormfields"
+    [actionButtonConfig]="buttonConfig"
+    >
+    </app-dynamic-form> -->
+  </div>
+</div>

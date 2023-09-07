@@ -14,6 +14,7 @@
     "view_all": "VIEW ALL",
     "summary" : "Summary",
     "my_policies": "My Policies",
-    "my_quotations": "My Quotations"
+    "my_quotations": "My Quotations",
+    "quotation": "Quotation"
   }
 }

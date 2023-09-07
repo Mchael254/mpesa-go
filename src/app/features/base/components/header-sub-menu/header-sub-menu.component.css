@@ -2,20 +2,18 @@
   background: #fff;
 }
 
-.base-content .content-nav #navbar .nav-item{
+.base-content .content-nav #navbar .nav-item {
   margin-right: 20px;
 }
 
-
-.base-content .content-nav .navbar #chart ul li a{
-  color: var(--primary-color)!important;
+.base-content .content-nav .navbar #chart ul li a {
+  color: var(--primary-color) !important;
   font-size: 0.9em;
   font-weight: bold;
   text-decoration: underline;
 }
 .nav-item > .nav-link {
   color: #000000;
-
 }
 
 .nav-item > .nav-link:hover {
@@ -27,7 +25,6 @@
   font-size: 12px;
   border: 0;
   z-index: 100000;
-
 }
 
 .dropdown-item:hover {
@@ -37,40 +34,31 @@
 }
 
 .label-text {
-  font-weight: 600; color:var(--primary-color); cursor:pointer
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
 }
 
 .label-text:hover {
   border-bottom: 0.5px solid var(--primary-color);
 }
 
+.card-modal {
+  /* border: 2px solid var(--primary-color); */
+  border-radius: 0;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
 
+.sub-card {
+  padding: 2rem;
+  margin-right: 1em;
+  font-weight: 700;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.sub-card:hover {
+  border: 2px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: #fff;
+}

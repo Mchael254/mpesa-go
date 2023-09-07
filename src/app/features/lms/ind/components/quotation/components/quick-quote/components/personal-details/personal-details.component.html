@@ -1,0 +1,75 @@
+<div class="container-fluid">
+  <div style="display: flex; padding-top: 1rem; justify-content: end;">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+
+    <div class="col-md-12">
+      <app-stepper [currentStep] = 1 [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div class="full-border ">
+    <div [formGroup]="searchForm">
+      <label>
+        <input type="radio" formControlName="client" value="N"> New Client
+      </label>
+      &nbsp;
+      <label>
+        <input type="radio" formControlName="client" value="E"> Existing Client
+      </label>
+    </div>
+    <div style="display:flex">
+      <div
+  *ngIf="clientControl.value === 'E'"
+  [class]="clientControl.value === 'N' ? '' : 'mt-4 full-border col-2'"
+  style="padding: 1rem 4px;"
+>
+  <input
+    style="font-size: 0.9em;"
+    type="text"
+    class="form-control"
+    placeholder="Type to search..."
+    (input)="onInputChange($event)"
+    (focus)="openTable()"
+    (blur)="closeTable()"
+  />
+
+  <table class="table" *ngIf="isTableOpen && tableData.length > 0">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Field 2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of tableData">
+        <td>{{ row.field1 }}</td>
+        <td>{{ row.field2 }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+      <div  [class]="clientControl.value==='N'?'col-12': 'col-9'">
+        <app-dynamic-form
+        [fieldsPerRow]=2
+        [title]="'Personal Details'"
+        (formSubmitted)="saveButton($event)"
+        [formFields]="personalDetailFormfields"
+        [actionButtonConfig]="buttonConfig"
+        >
+
+        </app-dynamic-form>
+      </div>
+    </div>
+
+
+
+  </div>
+
+</div>
+
+

@@ -34,60 +34,180 @@
               ></i
               >{{ "lang.accounts" | translate | uppercase }}
             </a>
-            <ul class="dropdown-menu" style="width: 300px; padding: 1em 2em 1em 0.5em; border-radius: 0.2em; border-right: 2px solid #00539b67;">
+            <ul
+              class="dropdown-menu"
+              style="
+                width: 300px;
+                padding: 1em 2em 1em 0.5em;
+                border-radius: 0.2em;
+                border-right: 2px solid #00539b67;
+              "
+            >
               <div class="d-flex justify-content-between">
-                <label for="top-left" class="label-text" (click)="dynamicSideBarMenu(accountSubMenuList[0])"> Accounts</label>
+                <label
+                  for="top-left"
+                  class="label-text"
+                  (click)="dynamicSideBarMenu(accountSubMenuList[0])"
+                >
+                  Accounts</label
+                >
 
-                <label for="top-right" class="label-text" (click)="navLink('/home/entity/new')">New Entity <i class="fa-solid fa-plus"></i></label>
-            </div>
-            <div class="my-2"></div>
-            <div class="row">
-                <div class="col-3 d-flex justify-content-end align-items-center">
-                    <label for="input1" class="form-label label-text">Name: </label>
+                <label
+                  for="top-right"
+                  class="label-text"
+                  (click)="navLink('/home/entity/new')"
+                  >New Entity <i class="fa-solid fa-plus"></i
+                ></label>
+              </div>
+              <div class="my-2"></div>
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-end align-items-center"
+                >
+                  <label for="input1" class="form-label label-text"
+                    >Name:
+                  </label>
                 </div>
-                <div class="col-9" style="padding: 0.5rem 0;">
-                    <input [(ngModel)]="nameSearchTerm" (keyup.enter)="onSearch()" style="border-radius: 0.3rem; font-size: 10px;" type="text" class="form-control" id="input1" placeholder="Search Name">
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="nameSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                    id="input1"
+                    placeholder="Search Name"
+                  />
                 </div>
-            </div>
+              </div>
 
-            <div class="row">
-                <div class="col-3 d-flex justify-content-end align-items-center" >
-                    <label for="input2" class="form-label label-text" >ID: </label>
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-end align-items-center"
+                >
+                  <label for="input2" class="form-label label-text">ID: </label>
                 </div>
-                <div class="col-9" style="padding: 0.5rem 0; ">
-                    <input [(ngModel)]="idSearchTerm" (keyup.enter)="onSearch()" style="border-radius: 0.3rem; font-size: 10px;" type="text" class="form-control" id="input2" placeholder="Search ID">
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                    id="input2"
+                    placeholder="Search ID"
+                  />
                 </div>
-            </div>
-            <div class="my-4"></div>
+              </div>
+              <div class="my-4"></div>
 
-            <div class="d-flex justify-content-end ">
-                <label (click)="navLink('/home/entity/list')" class="text-plain" for="bottom-right">View Entities</label>
-            </div>
+              <div class="d-flex justify-content-end">
+                <label
+                  (click)="navLink('/home/entity/list')"
+                  class="text-plain"
+                  for="bottom-right"
+                  >View Entities</label
+                >
+              </div>
 
-            <!-- Add space at the bottom -->
-            <div class="mb-3"></div>
+              <!-- Add space at the bottom -->
+              <div class="mb-3"></div>
             </ul>
           </li>
-          <!-- <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Quotations
-                      </a>
-                      <ul class="dropdown-menu">
-                        <ng-container *ngFor="let claim of claimSubMenuList">
-                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
-                        </ng-container>
-                      </ul>
-                  </li>
-                  <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Policies
-                      </a>
-                      <ul class="dropdown-menu">
-                        <ng-container *ngFor="let claim of claimSubMenuList">
-                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
-                        </ng-container>
-                      </ul>
-                  </li> -->
+
+
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i class="fa-solid fa-quote-right" style="padding-right: 6px; font-size: 16px"></i>{{ "lang.quotation" | translate | uppercase }}
+            </a>
+            <ul
+              class="dropdown-menu"
+              style="
+                width: 300px;
+                padding: 1em 2em 1em 0.5em;
+                border-radius: 0.2em;
+                border-right: 2px solid #00539b67;
+              "
+            >
+              <div class="d-flex justify-content-between">
+                <label
+                  for="top-left"
+                  class="label-text"
+                  (click)="dynamicSideBarMenu(quotationSubMenuList[0])"
+                >
+                  Quotation</label
+                >
+
+                <label
+                  data-bs-toggle="modal"
+                  data-bs-target="#NewQuoteModal"
+                  for="top-right"
+                  class="label-text"
+                  (click)="navLink('/home/lms/ind/quotation/list')"
+                  >New Quotation <i class="fa-solid fa-plus"></i
+                ></label>
+              </div>
+              <div class="my-2"></div>
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-end align-items-center"
+                >
+                  <label for="input2" class="form-label label-text">Pol. ID: </label>
+                </div>
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                    id="input2"
+                    placeholder="Search By Policy ID"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div
+                  class="col-3 d-flex justify-content-end align-items-center"
+                >
+                  <label for="input2" class="form-label label-text">Quot. ID: </label>
+                </div>
+                <div class="col-9" style="padding: 0.5rem 0">
+                  <input
+                    [(ngModel)]="idSearchTerm"
+                    (keyup.enter)="onSearch()"
+                    style="border-radius: 0.3rem; font-size: 10px"
+                    type="text"
+                    class="form-control"
+                    id="input2"
+                    placeholder="Search By Quotation ID"
+                  />
+                </div>
+              </div>
+              <div class="my-4"></div>
+
+              <div class="d-flex justify-content-end">
+                <label
+                  (click)="navLink('/home/lms/ind/quotation/list')"
+                  class="text-plain"
+                  for="bottom-right"
+                  >View Quotations</label
+                >
+              </div>
+
+              <!-- Add space at the bottom -->
+              <div class="mb-3"></div>
+            </ul>
+          </li>
+
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -182,17 +302,14 @@
               <a class="nav-link" routerLink="./reports/create-report"
                 ><i
                   class="fa-solid fa-chart-simple"
-                  style="padding-right: 6px;"
+                  style="padding-right: 6px"
                 ></i
-                >{{ "lang.new_chart"| translate | uppercase }}</a
+                >{{ "lang.new_chart" | translate | uppercase }}</a
               >
             </li>
             <li class="nav-item" style="font-size: 15px">
               <a class="nav-link" routerLink="./reports"
-                ><i
-                  class="fa-solid fa-chart-pie"
-                  style="padding-right: 6px;"
-                ></i
+                ><i class="fa-solid fa-chart-pie" style="padding-right: 6px"></i
                 >{{ "lang.analytics" | translate | uppercase }}</a
               >
             </li>
@@ -201,4 +318,21 @@
       </div>
     </div>
   </nav>
+</div>
+
+
+
+<div class="modal fade" id="NewQuoteModal" tabindex="-1" role="dialog" aria-labelledby="NewQuoteModalTitle"
+  aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered" role="document" >
+    <div class="modal-content" style="border: 0.2px solid var(--primary-color);">
+      <!-- <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div> -->
+      <div class="modal-body card-modal">
+        <div class="card sub-card" routerLink="/home/lms/ind/quotation/quick-quote/quick" (click)="closeModal()" style="font-size: 1.6rem;">LMS</div>
+        <div class="card sub-card" (click)="closeModal()" style="font-size: 1.7rem;">GIS</div>
+      </div>
+    </div>
+  </div>
 </div>

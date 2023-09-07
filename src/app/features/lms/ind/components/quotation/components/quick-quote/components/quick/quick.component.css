@@ -1,0 +1,33 @@
+.font-grey__font-eight__700 {
+  color: grey;
+  font-weight: 500;
+  padding-right: 2rem;
+}
+
+.font-small__color_primary {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.form-check > input {
+  border: 2px solid black;
+}
+
+/* Add this CSS in your component's CSS file or your global CSS file */
+.icon-container {
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, fill 0.3s ease; /* Add a transition effect */
+}
+
+.bd-line {
+  border-right: 1px solid rgba(136, 136, 136, 0.317);
+}
+.form-check-input:checked {
+  background-color: #000000;
+}
+
+.card-modal {
+  padding: 3rem;
+}

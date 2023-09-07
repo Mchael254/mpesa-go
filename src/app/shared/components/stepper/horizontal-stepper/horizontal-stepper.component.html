@@ -1,11 +1,28 @@
-<section class="rt-container">
-  <div class="container-fluid">
-    <div class="row justify-content-center">
-      <div class="col-2 text-center step" *ngFor="let step of stepperData; let i = index"
+<!-- <section class="rt-container">
+  <div class="container">
+    <div class="text-center step link" style="display: flex; flex-direction: row; flex-wrap:wrap; justify-content: space-between; flex-grow: 1;">
+      <div  *ngFor="let step of stepperData; let i = index"
       [ngClass]="getStepClasses(i+1)" (click)="navigateToPage(step.link)">
         <div class="circle">{{step.number}}</div>
         <div class="title step-link" >{{step.title}}</div>
       </div>
+    </div>
+
+  </div>
+</section> -->
+
+<section class="rt-container">
+  <div class="container-fluid">
+    <div class="stepper">
+      <ng-container *ngFor="let step of stepperData; let i = index">
+        <div class="step" (click)="navigateToPage(step.link)">
+          <div class="circle" [ngClass]="getStepClasses(i+1)">
+            <div>{{ step.number }}</div>
+          </div>
+          <div class="title step-link">{{ step.title }}</div>
+        </div>
+        <!-- <div [ngClass]="getStepClasses(i + 1)"></div> -->
+      </ng-container>
     </div>
   </div>
 </section>
