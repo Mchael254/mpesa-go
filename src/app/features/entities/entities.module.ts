@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule} from '@angular/common';
 
 import { EntitiesRoutingModule } from './entities-routing.module';
 import { NewClientComponent } from './components/client/new-client/new-client.component';
