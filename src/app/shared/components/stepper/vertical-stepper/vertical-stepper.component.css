@@ -24,10 +24,11 @@
   padding-left: 1em;
 }
 .step.step-active {
-  color: #010101
+  color: var(--primary-color);
 }
 .step.step-active .circle {
-  background-color: #efd700;
+  background-color: var(--primary-color);
+  color: #fff;
 }
 
 .step.done .circle {
@@ -42,7 +43,9 @@
   height: 1.5em;
   line-height: 1.5em;
   border-radius: 100%;
-  color: #fff;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+
   text-align: center;
   box-shadow: 0 0 0 3px #fff;
 }

@@ -128,6 +128,8 @@ const SERVICES = [
     DynamicSetupTableScreenComponent,
     DynamicSetupWizardWelcomeScreenComponent,
     CustomFilterPipe
+
+
   ],
     imports: [
         CommonModule,
@@ -142,32 +144,34 @@ const SERVICES = [
         RouterLink,
         NgxSpinnerModule,
         TranslateModule,
+        ReactiveFormsModule
 
     ],
-  exports: [
-    ErrorComponent,
-    HideMessageDirective,
-    NotificationsComponent,
-    LoaderComponent,
-    FileExtensionPipe,
-    DocViewerComponent,
-    OtpComponent,
-    DynamicTableComponent,
-    CopyrightFooterComponent,
-    DynamicChartComponent,
-    SpinnerComponent,
-    DynamicFormComponent,
-    DynamicBreadcrumbComponent,
-    StepperComponent,
-    DynamicSimpleModalComponent,
-    DynamicFormModalComponent,
-    NgxSpinnerModule,
-    DynamicSetupSearchListScreenComponent,
-    TranslateModule,
-    DynamicSetupWizardWelcomeScreenComponent,
-    CustomFilterPipe
+    exports: [
+        ErrorComponent,
+        HideMessageDirective,
+        NotificationsComponent,
+        LoaderComponent,
+        FileExtensionPipe,
+        DocViewerComponent,
+        OtpComponent,
+        DynamicTableComponent,
+        CopyrightFooterComponent,
+        DynamicChartComponent,
+        SpinnerComponent,
+        DynamicFormComponent,
+        DynamicBreadcrumbComponent,
+        StepperComponent,
+        DynamicSimpleModalComponent,
+        DynamicFormModalComponent,
+        NgxSpinnerModule,
+        DynamicSetupSearchListScreenComponent,
+        TranslateModule,
+        DynamicSetupWizardWelcomeScreenComponent,
+        ReactiveFormsModule,
+        CustomFilterPipe
 
-  ],
+    ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {

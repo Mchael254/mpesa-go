@@ -126,3 +126,12 @@
 .dropdown-toggle:hover {
   border-color: #00529B;
 }
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+  background-color: rgba(255, 255, 255, 0);
+  border: 0;
+}
