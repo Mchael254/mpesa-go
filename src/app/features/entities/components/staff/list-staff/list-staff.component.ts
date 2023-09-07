@@ -26,7 +26,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
 
   tableDetails: TableDetail;
 
-  activeTab = signal('Individual');
+  activeTab2: string = 'Individual';
   userType: 'user' | 'group' = 'user';
   staffPageSize = 5;
 
@@ -129,6 +129,10 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Lazy load staff data when triggered by primeng table event
+   * @param event - the event object of type TableLazyLoadEvent
+   */
   loadStaff(event: LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
@@ -154,18 +158,27 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Get the list of staffs from the backend
+   * @param [pageIndex=0] - the page index of the data to retrieve
+   * @param [sortList=dateCreated] - the field to sort the data by
+   * @param [order=desc] -  the order to sort the data by
+   */
   getStaffData(pageIndex: number = 0,
                sortList: any = 'dateCreated',
                order: string = 'desc'){
     return this.staffService
       .getStaff(pageIndex,
                 this.staffPageSize,
-        this.activeTab() === 'Group' ? 'G':  'U',
+                 this.activeTab2 ===  'Group' ? 'G':  'U',
                  sortList,
-                order, null)
-      .pipe(untilDestroyed(this));
+                order, null);
   }
 
+  /**
+   * Refresh the staff data in the dynamic table
+   * @param data
+   */
   refreshStaffData(data: Pagination<StaffDto>){
       this.indivData = data;
       this.indivData?.content.forEach( staff => {
@@ -177,9 +190,13 @@ export class ListStaffComponent implements OnInit, OnDestroy {
       this.tableDetails.totalElements = this.indivData?.totalElements;
   }
 
+  /**
+   * Select the active tab and refresh the staff data
+   * @param activeTab
+   */
   selectTab(activeTab: string): void {
-    this.activeTab.set(activeTab);
-    this.userType = (this.activeTab() === 'Individual') ? 'user' : 'group';
+    this.activeTab2 = activeTab;
+    this.userType = (this.activeTab2 === 'Individual') ? 'user' : 'group';
 
     this.spinner.show();
     this.getStaffData(0)
@@ -195,7 +212,9 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  // To be modified
+  /**
+   * Navigate to New Entity Page when creating a new staff
+   */
   gotoEntityPage() {
     this.router.navigate(['/home/entity/new'],
       {queryParams: {entityType: 'Staff'}}).then(r => {

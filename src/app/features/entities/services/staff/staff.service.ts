@@ -1,12 +1,12 @@
 import {Injectable, signal} from '@angular/core';
-import {AppConfigService} from "../../../../core/config/app-config-service";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {UtilService} from "../../../../shared/services";
-import {AuthService} from "../../../../shared/services/auth.service";
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto, StaffResDto} from "../../data/StaffDto";
 import {CreateAccountDTO, NewAccountCreatedResponse} from "../../data/accountDTO";
+import {AuthService} from "../../../../shared/services/auth.service";
+import {AppConfigService} from "../../../../core/config/app-config-service";
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +35,16 @@ export class StaffService {
   constructor(private appConfig: AppConfigService, private http: HttpClient,
               private utilService: UtilService,private authService: AuthService) { }
 
+  /**
+   * Method to fetch staff data
+   * @param {number} [page="0"] - page number
+   * @param {number} [size="10"] - page size
+   * @param {string} userType - user type
+   * @param {string} [sortList="dateCreated"] - sort list
+   * @param {string} [order="desc"] - sort order asc or desc
+   * @param {number} supervisor - supervisor id
+   * @return {Observable<Pagination<StaffDto>>} - staff data
+   */
   getStaff(
     page: number = 0,
     size: number = 10,
@@ -64,10 +74,20 @@ export class StaffService {
     });
   }
 
+  /**
+   * Fetch staff by id
+   * @param {number} id
+   * @returns {Observable<StaffDto>}
+   */
   getStaffById(id: number): Observable<StaffDto> {
     return this.http.get<StaffDto>(`/${this.baseStaffUrl}/administration/users/` + id);
   }
 
+  /**
+   * Create a new staff entity
+   * @param {CreateAccountDTO} staffAccount - staff account data
+   * @returns {Observable<NewAccountCreatedResponse>} - newly created staff account data
+   */
   createUserAccount(staffAccount: CreateAccountDTO): Observable<NewAccountCreatedResponse> {
     const userData = JSON.stringify(staffAccount);
     const headers = new HttpHeaders({
@@ -77,6 +97,12 @@ export class StaffService {
     return this.http.post<NewAccountCreatedResponse>(`/${this.baseAccountsUrl}/accounts/accounts`, userData, {headers});
   }
 
+  /**
+   * Assign apps to a user
+   * @param userId - staff/user id
+   * @param assignedSystems - assigned apps
+   * @returns {Observable<AssignAppsDto[]>} - assigned apps
+   */
   assignUserSystemApps(userId: number, assignedSystems: AssignAppsRequest): Observable<AssignAppsDto[]>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -86,6 +112,16 @@ export class StaffService {
     return this.http.post<AssignAppsDto[]>(`/${this.baseStaffUrl}/administration/users/${userId}/systems`, JSON.stringify(assignedSystems), {headers});
   }
 
+  /**
+   * Search staff
+   * @param {number} page page number
+   * @param {number} size size of page
+   * @param {string} userType user type
+   * @param {string} name name of staff
+   * @param {number} groupId group id
+   * @param {string} username username
+   * @returns {Observable<Pagination<StaffDto>>} staff data
+   */
   searchStaff(
     page: number = 0,
     size: number = 5,
@@ -115,6 +151,15 @@ export class StaffService {
     });
   }
 
+  /**
+   * Fetch staff with supervisor
+   * @param page
+   * @param size
+   * @param userType
+   * @param sortList
+   * @param order
+   * @returns {Observable<Pagination<StaffResDto>>} - staff data
+   */
   getStaffWithSupervisor(
     page: number = 0,
     size: number,
@@ -152,6 +197,11 @@ export class StaffService {
     });
   }
 
+  /**
+   * Fetch staff by staff group
+   * @param staffGroupId - staff group id
+   * @returns {Observable<StaffDto[]>} - staff data
+   */
   getStaffByGroup(staffGroupId: number): Observable<StaffDto[]>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
