@@ -45,12 +45,13 @@
 <!--          {{ rowData[col.field] }}-->
         </td>
         <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
-          <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]">View</a>
+          <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]"><i class="fa-regular fa-eye" style="font-size: 17px;"></i></a>
           <!-- Use routerLink with the input properties -->
         </td>
         <td *ngIf="tableDetails?.showCustomModalOnView">
           <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
-            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
           </button>
         </td>
 
@@ -115,13 +116,15 @@
         <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
           <a  style="font-size: 0.9em; border-radius: 4px;" [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">
 
-            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
           </a>
           <!-- Use routerLink with the input properties -->
         </td>
         <td *ngIf="tableDetails?.showCustomModalOnView">
           <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
-            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
           </button>
         </td>
       </tr>

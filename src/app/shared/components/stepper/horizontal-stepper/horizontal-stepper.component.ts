@@ -51,6 +51,12 @@ export class HorizontalStepperComponent {
       'step-active': index === this.currentStep
     };
   }
+  // getStepClasses(index: number) {
+  //   return {
+  //     'line': index === index,
+  //     'line-black': index === index,
+  //   };
+  // }
 
   navigateToPage(link: string){
     this.router.navigate([link], { relativeTo: this.route });

@@ -21,6 +21,7 @@ export class HeaderSubMenuComponent implements OnInit {
   claimSubMenuList: SidebarMenu[];
   reinsuranceubMenuList: SidebarMenu[];
   accountSubMenuList: SidebarMenu[];
+  quotationSubMenuList: SidebarMenu[];
   searchTerm: any;
   nameSearchTerm:any;
   idSearchTerm:any;
@@ -36,6 +37,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.claimSubMenuList = this.menuService.teamSubMenuList();
     this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
     this.accountSubMenuList = this.menuService.accountSubMenuList();
+    this.quotationSubMenuList = this.menuService.quotationSubMenuList();
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
@@ -54,5 +56,21 @@ export class HeaderSubMenuComponent implements OnInit {
       this.nameSearchTerm = '';
       this.idSearchTerm = '';
       this.navLink('/home/entity/list');
+  }
+
+  openModal() {
+    // Open the Bootstrap modal programmatically
+    const modal = document.getElementById('NewQuoteModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }
+  closeModal() {
+    // Close the Bootstrap modal programmatically
+    const modal = document.getElementById('NewQuoteModal');
+    if (modal) {
+      modal.classList.remove('show'); // Remove the 'show' class to hide the modal
+      modal.setAttribute('aria-hidden', 'true');
+    }
   }
 }

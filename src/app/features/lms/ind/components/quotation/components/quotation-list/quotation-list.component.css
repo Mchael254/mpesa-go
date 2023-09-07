@@ -1,0 +1,36 @@
+/* Stepper container */
+.vertical-stepper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 50px auto;
+}
+
+/* Stepper circle item */
+.step-item {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+/* Active step */
+.step-item.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Step labels */
+.step-label {
+  text-align: center;
+  font-weight: bold;
+}
