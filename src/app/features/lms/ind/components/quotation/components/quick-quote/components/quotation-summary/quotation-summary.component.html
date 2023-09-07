@@ -1,0 +1,135 @@
+<div class="container-fluid ">
+  <div style="display: flex; padding-top: 1rem; justify-content: end;">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <!-- Stepper column (covers 20% of the width) -->
+    <div class="col-md-12">
+      <app-stepper [currentStep] = 3 [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div >
+
+
+    <div class="card" style="border-radius: 0;">
+      <div class="card-header">
+        <h2 class="card-title">Your "Product" Quote is ready</h2>
+        <p class="card-subtitle">Take a moment to review the information provided below</p>
+      </div>
+      <div class="card-content" style="padding-top: 6rem;">
+        <!-- Table Layout (Visible on Desktop) -->
+        <table class="custom-table desktop-table">
+          <thead>
+            <tr>
+              <th>Field 1</th>
+              <th>Field 2</th>
+              <th>Field 3</th>
+              <th>Field 4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data 1</td>
+              <td>Data 2</td>
+              <td>Data 3</td>
+              <td>Data 4</td>
+            </tr>
+            <tr>
+              <td>Data 1</td>
+              <td>Data 2</td>
+              <td>Data 3</td>
+              <td>Data 4</td>
+            </tr>
+            <tr>
+              <td>Data 1</td>
+              <td>Data 2</td>
+              <td>Data 3</td>
+              <td>Data 4</td>
+            </tr>
+            <tr>
+              <td>Data 1</td>
+              <td>Data 2</td>
+              <td>Data 3</td>
+              <td>Data 4</td>
+            </tr>
+            <!-- Add more rows as needed -->
+          </tbody>
+        </table>
+
+        <!-- Card Layout (Visible on Mobile) -->
+        <div class="card mobile-card">
+          <div class="card-content">
+            <p><strong>Field 1:</strong> Data 1</p>
+            <p><strong>Field 2:</strong> Data 2</p>
+            <p><strong>Field 3:</strong> Data 3</p>
+            <p><strong>Field 4:</strong> Data 4</p>
+            <!-- Add more details as needed -->
+          </div>
+          <div class="card-content">
+            <p><strong>Field 1:</strong> Data 1</p>
+            <p><strong>Field 2:</strong> Data 2</p>
+            <p><strong>Field 3:</strong> Data 3</p>
+            <p><strong>Field 4:</strong> Data 4</p>
+            <!-- Add more details as needed -->
+          </div>
+          <div class="card-content">
+            <p><strong>Field 1:</strong> Data 1</p>
+            <p><strong>Field 2:</strong> Data 2</p>
+            <p><strong>Field 3:</strong> Data 3</p>
+            <p><strong>Field 4:</strong> Data 4</p>
+            <!-- Add more details as needed -->
+          </div>
+          <div class="card-content">
+            <p><strong>Field 1:</strong> Data 1</p>
+            <p><strong>Field 2:</strong> Data 2</p>
+            <p><strong>Field 3:</strong> Data 3</p>
+            <p><strong>Field 4:</strong> Data 4</p>
+            <!-- Add more details as needed -->
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; padding: 2rem;">
+        <div style="font-size: 1rem; font-weight: 800; align-self: center; padding-right: 0.5rem;">Premium Amount: </div>
+        <div style="font-size: 2rem; font-weight: 800;"> $62000</div>
+      </div>
+      <div class="d-flex justify-content-center action-buttons-container">
+        <div class="row col-md-3">
+          <div class="form-group px-3" [formGroup]="emailForm" >
+            <label for="freq_pay" class="required">HOW DO I SEND NOTIFICATION ?</label>
+            <select id="freq_pay"  formControlName="email_type" class="form-select" >
+              <ng-container *ngFor="let option of [{value:'P', label: 'BY PHONE NO.'}, {value:'E', label: 'BY EMAIL'}]" >
+                <option [value]="option.value" >{{ option.label }} </option>
+              </ng-container>
+
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+  </div>
+
+  <div class="d-flex justify-content-between mt-3 action-buttons-container" style="padding-bottom: 2rem;">
+    <button routerLink="/home/lms/ind/quotation/quick-quote/quotation-details" type="button" class="btn btn-primary btn-sm" style="padding: 0.6em;">
+      <i class="fa-solid fa-arrow-left"></i>  Previous
+    </button>
+    <div>
+      <button type="button"  class="btn btn-primary btn-sm" *ngIf="emailTypeControl.value!==''" style="padding: 0.6em;">
+        Send {{emailTypeControl.value==='P'?' Message ':'Email'}} to Client <i class="fa-regular fa-envelope"></i>
+      </button>
+      <button type="button"  class="btn btn-primary btn-sm" style="padding: 0.6em;">
+        Accept <i class="fa-regular fa-circle-check"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+

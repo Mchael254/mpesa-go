@@ -43,31 +43,24 @@
 
 <div class="base-content-section lms">
   <div class="row">
+    <!-- BEGINS QUOTATION LIST (LMS/GIS) -->
     <div class="col-sm-6">
       <p class="transactions">{{'lang.my_policies' | translate}}</p>
+
       <ul class="nav nav-tabs" id="myTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="true">LMS</a>
+          <a class="nav-link active" id="gis2-tab" data-bs-toggle="tab" href="#gis2" role="tab" aria-controls="gis2" aria-selected="true">GIS</a>
         </li>
         <li class="nav-item" role="presentation">
-          <a class="nav-link" id="gis2-tab" data-bs-toggle="tab" href="#gis2" role="tab" aria-controls="gis2" aria-selected="false">GIS</a>
+          <a class="nav-link " id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="false">LMS</a>
         </li>
+
       </ul>
 
+
+
       <div class="tab-content" id="myTabsContent">
-        <div class="tab-pane fade show active" id="lms" role="tabpanel" aria-labelledby="lms-tab">
-          <!-- Content for LMS tab goes here -->
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
+        <div class="tab-pane fade show active" id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
           <!-- Content for GIS tab goes here -->
           <div class="card">
             <div class="card-body">
@@ -79,9 +72,70 @@
             </div>
           </div>
         </div>
+        <div class="tab-pane fade " id="lms" role="tabpanel" aria-labelledby="lms-tab">
+          <!-- Content for LMS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+
+                  <!-- BEGINS INDIVIDUAL LIST (LMS/GIS) -->
+                  <div>
+
+                    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="ind-tab" data-bs-toggle="tab" href="#ind" role="tab" aria-controls="ind" aria-selected="true">INDIVIDUAL</a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="grp-tab" data-bs-toggle="tab" href="#grp" role="tab" aria-controls="grp" aria-selected="false">GROUP</a>
+                      </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabsContentInner">
+                      <div class="tab-pane fade show active" id="ind" role="tabpanel" aria-labelledby="ind-tab">
+                        <div class="card">
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-sm-12">
+                                <!-- IND -->
+                                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+
+                      <div class="tab-content" id="myTabsContentInner">
+                        <div class="tab-pane fade" id="grp" role="tabpanel" aria-labelledby="grp-tab">
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-sm-12">
+                                  <!-- GRRRR -->
+                                    <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- BEGINS GROUP LIST (LMS/GIS) -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
+    <!-- END QUOTATION LIST (LMS/GIS) -->
 
+    <!-- BEGINS POLICY LIST (LMS/GIS) -->
     <div class="col-sm-6">
       <p class="transactions">{{'lang.my_quotations' | translate}}</p>
       <ul class="nav nav-tabs" id="myTabs2" role="tablist2">
@@ -101,7 +155,7 @@
 
               <div class="tab-content" id="lmsTabsContent">
                 <div class="tab-pane fade show active" id="quotations" role="tabpanel" aria-labelledby="quotations-tab">
-                  <app-dynamic-table [tableDetails]="quotationDataTable"></app-dynamic-table>
+                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
                 </div>
                 <!-- Add more tab panes within the LMS tab content as needed -->
               </div>
@@ -115,7 +169,7 @@
 
               <div class="tab-content" id="gisTabsContent">
                 <div class="tab-pane fade show active" id="quotations-gis" role="tabpanel" aria-labelledby="quotations-gis-tab">
-                  <app-dynamic-table [tableDetails]="quotationDataTable"></app-dynamic-table>
+                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
                 </div>
                 <!-- Add more tab panes within the GIS tab content as needed -->
               </div>
@@ -124,7 +178,7 @@
         </div>
       </div>
     </div>
-
+    <!-- END POLICY LIST (LMS/GIS) -->
   </div>
 </div>
 

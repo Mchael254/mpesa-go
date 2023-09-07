@@ -37,8 +37,18 @@
             *ngIf="item.menuItems?.length > 0"
             class="btn-toggle-nav list-unstyled pb-1"
           >
+          <li *ngFor="let menuItem of item.menuItems">
+            <a *ngIf="!menuItem?.isModal"
+              (click)="clickURL(menuItem.link)"
+              class="link-dark rounded"
+              style="font-size: 12px"
+              >{{ menuItem.name | translate }}</a
+            >
+          </li>
             <li *ngFor="let menuItem of item.menuItems">
-              <a
+              <a *ngIf="menuItem.isModal"
+                data-bs-toggle="modal"
+              [attr.data-bs-target]="menuItem.target"
                 (click)="clickURL(menuItem.link)"
                 class="link-dark rounded"
                 style="font-size: 12px"

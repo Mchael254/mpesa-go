@@ -49,36 +49,37 @@
 <div class="d-flex justify-content-between mt-3 action-buttons-container">
   <!-- Left Buttons -->
   <ng-container *ngIf="actionButtonConfig.back.alignment === 'start'">
-    <button *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i> {{ actionButtonConfig.back.label }}
+    <button style="padding: 0.6em;" *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i [class]="actionButtonConfig.back?.icon"></i> {{ actionButtonConfig.back.label }}
     </button>
   </ng-container>
 
   <ng-container *ngIf="actionButtonConfig.submit.alignment === 'start'">
-    <button *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
-      {{ actionButtonConfig.submit.label }} <i class="bi bi-check"></i>
+    <button style="padding: 0.6em;" *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.submit.label }} <i [class]="actionButtonConfig.submit?.icon"></i>
     </button>
   </ng-container>
 
   <!-- Center Button -->
   <div class="flex-grow-1"></div>
   <ng-container *ngIf="actionButtonConfig.center.alignment === 'center'">
-    <button *ngIf="actionButtonConfig.center.visible" type="button" (click)="onCenterAction()" class="btn btn-primary btn-sm">
-      {{ actionButtonConfig.center.label }} <i class="bi bi-check"></i>
+    <button style="padding: 0.6em;" *ngIf="actionButtonConfig.center.visible" type="button" (click)="onCenterAction()" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.center.label }} <i [class]="actionButtonConfig.center?.icon"></i>
     </button>
   </ng-container>
   <div class="flex-grow-1"></div>
 
   <!-- Right Buttons -->
   <ng-container *ngIf="actionButtonConfig.submit.alignment === 'end'">
-    <button *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
-      {{ actionButtonConfig.submit.label }} <i class="bi bi-check"></i>
+    <button style="padding: 0.6em;" *ngIf="actionButtonConfig.submit.visible" type="button" (click)="onSubmitForm()" [disabled]="dynamicForm.invalid" class="btn btn-primary btn-sm">
+      {{ actionButtonConfig.submit.label }} <i [class]="actionButtonConfig.submit?.icon"></i>
     </button>
   </ng-container>
 
   <ng-container *ngIf="actionButtonConfig.back.alignment === 'end'">
-    <button *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i> {{ actionButtonConfig.back.label }}
+    <button style="padding: 0.6em;" *ngIf="actionButtonConfig.back.visible" type="button" class="btn btn-secondary btn-sm" (click)="goBack()">
+      <i [class]="actionButtonConfig.back?.icon"></i>  {{ actionButtonConfig.back.label }}
     </button>
   </ng-container>
+
 </div>

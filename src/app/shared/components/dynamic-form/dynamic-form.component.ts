@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { DynamicFormFields } from '../../utils/dynamic.form.fields';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -23,7 +24,7 @@ export class DynamicFormComponent implements OnChanges{
   rows: any[]; // To store rows of form fields
   dynamicForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private location:Location) { }
 
   ngOnInit() {
     this.rows = this.chunkArray(this.formFields, this.fieldsPerRow);
@@ -63,6 +64,7 @@ export class DynamicFormComponent implements OnChanges{
       this.formSubmitted.emit(formValues); // Emit the event with formValues
     }
   }
+
 
   chunkArray(array: any[], chunkSize: number) {
     const result = [];

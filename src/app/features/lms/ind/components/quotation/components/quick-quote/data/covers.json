@@ -1,0 +1,145 @@
+[
+  {
+      "wcvtMainCover": "N",
+      "code": 2021783,
+      "p_code": 85,
+      "sht_description": "MUTUAL CI",
+      "description": "CRITICAL ILLNESS"
+  },
+  {
+      "wcvtMainCover": "N",
+      "code": 2021786,
+      "p_code": 85,
+      "sht_description": "PA MAIN",
+      "description": "PERSONAL ACCIDENT MEDICAL EXPENSES"
+  },
+  {
+      "wcvtMainCover": "N",
+      "code": 2021788,
+      "p_code": 85,
+      "sht_description": "DB ACC",
+      "description": "DOUBLE ACCIDENT COVER"
+  },
+  {
+      "wcvtMainCover": "N",
+      "code": 2021778,
+      "p_code": 85,
+      "sht_description": "TPD",
+      "description": "TOTAL & PERMANENT DISABILITY"
+  },
+
+  {
+    "wcvtMainCover": "N",
+    "code": 2021783,
+    "p_code": 89,
+    "sht_description": "MUTUAL CI",
+    "description": "CRITICAL ILLNESS"
+},
+{
+    "wcvtMainCover": "N",
+    "code": 2021784,
+    "p_code": 89,
+    "sht_description": "MUTUAL ACCIDENT",
+    "description": "ACCIDENTAL MEDICAL EXPENSE"
+},
+{
+    "wcvtMainCover": "N",
+    "code": 2021778,
+    "p_code": 89,
+    "sht_description": "TPD",
+    "description": "TOTAL & PERMANENT DISABILITY"
+},
+
+{
+  "wcvtMainCover": "N",
+  "code": 2021783,
+  "p_code": 90,
+  "sht_description": "MUTUAL CI",
+  "description": "CRITICAL ILLNESS"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021784,
+  "p_code": 90,
+  "sht_description": "MUTUAL ACCIDENT",
+  "description": "ACCIDENTAL MEDICAL EXPENSE"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021778,
+  "p_code": 90,
+  "sht_description": "TPD",
+  "description": "TOTAL & PERMANENT DISABILITY"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021783,
+  "p_code": 91,
+  "sht_description": "MUTUAL CI",
+  "description": "CRITICAL ILLNESS"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021784,
+  "p_code": 91,
+  "sht_description": "MUTUAL ACCIDENT",
+  "description": "ACCIDENTAL MEDICAL EXPENSE"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021778,
+  "p_code": 91,
+  "sht_description": "TPD",
+  "description": "TOTAL & PERMANENT DISABILITY"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021783,
+  "p_code": 92,
+  "sht_description": "MUTUAL CI",
+  "description": "CRITICAL ILLNESS"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021784,
+  "p_code": 92,
+  "sht_description": "MUTUAL ACCIDENT",
+  "description": "ACCIDENTAL MEDICAL EXPENSE"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021778,
+  "p_code": 92,
+  "sht_description": "TPD",
+  "description": "TOTAL & PERMANENT DISABILITY"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2022840,
+  "p_code": 86,
+  "sht_description": "CHB EXP",
+  "description": "CHILD BIRTH EXPENSE"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021779,
+  "p_code": 86,
+  "sht_description": "MEEP CHDIS",
+  "description": "MUTUAL ENDOWMENT CHILD ACCIDENTAL MEDICAL EXPENSES "
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2022840,
+  "p_code": 87,
+  "sht_description": "CHB EXP",
+  "description": "CHILD BIRTH EXPENSE"
+},
+{
+  "wcvtMainCover": "N",
+  "code": 2021779,
+  "p_code": 87,
+  "sht_description": "MEEP CHDIS",
+  "description": "MUTUAL ENDOWMENT CHILD ACCIDENTAL MEDICAL EXPENSES "
+}
+
+]

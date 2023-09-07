@@ -35,6 +35,26 @@ export class MenuService{
     }
 
   ],
+
+  "QUOTATION":[
+    {
+      name: 'Actions',
+      nameSlug: 'actions',
+      icon: 'fa-solid fa-gears',
+      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},],
+
+      collapsed:true,
+    },
+    {
+      name: 'Quotation',
+      nameSlug: 'quotation',
+      icon: 'fa-solid fa-quote-right',
+      menuItems: [ {name:'Quotation List', link:"/home/lms/ind/quotation/list"}],
+      collapsed:true,
+    }
+
+
+  ],
     "STAFF_PERF":[{
     name: 'My Emloyees',
     nameSlug: 'emloyees',
@@ -153,7 +173,7 @@ export class MenuService{
   },
   {
     name: 'Cover Types & Sections',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'CoverTypesSections',
     icon: 'fa-solid fa-sliders',
     menuItems: [{name:'Covers', link:"/home/gis/setup/covertype-setup/covertypes"}, {name:'Sections', link:"/home/gis/setup/covertype-setup/sections"}, {name:'subclasses-sections-and-covertypes', link:"/home/gis/setup/covertype-setup/subclasses-sections-and-covertypes"},],
     collapsed:true,
@@ -161,7 +181,7 @@ export class MenuService{
 
   {
     name: 'Taxes',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'Taxes',
     icon: 'fa-solid fa-group-arrows-rotate',
     menuItems: [
       {name:'Taxes Rates (NB on Subclass)', link:"./home/gis/setup/tax/tax-rate"},
@@ -171,7 +191,7 @@ export class MenuService{
 
   {
     name: 'Client & Insured',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'ClientInsured',
     icon: 'fa-solid fa-sliders',
     menuItems: [
       {name:'Interested Parties', link:"./home/gis/setup/client-insured/interested-parties"},
@@ -182,7 +202,7 @@ export class MenuService{
   },
   {
     name: 'Premium Rates',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'PremiumRates',
     icon: 'fa-solid fa-sliders',
     menuItems: [
       {name:'Premium Rates', link:"./home/gis/setup/premium-rate/premium-rates"},
@@ -191,7 +211,7 @@ export class MenuService{
   },
   {
     name: 'Perils & Territories',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'PerilsTerritories',
     icon: 'fa-solid fa-sliders',
     menuItems: [
       {name:'Perils', link:"home/gis/setup/peril-territory/perils"},
@@ -202,14 +222,14 @@ export class MenuService{
   },
   {
     name: 'Schedules',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'Schedules',
     icon: 'fa-regular fa-calendar-days',
     menuItems: [],
     collapsed:true,
   },
   {
     name: 'Clauses',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'Clauses',
     icon: 'fa-solid fa-circle-nodes',
     menuItems: [
       {name:'Clauses', link:"home/gis/clauses"},
@@ -218,7 +238,7 @@ export class MenuService{
   },
   {
     name: 'Short Period',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'ShortPeriod',
     icon: 'fa-solid fa-dumbbell',
     link:'/home/gis/setup/short-period/standard-short-period-rates',
     menuItems: [],
@@ -226,7 +246,7 @@ export class MenuService{
   },
   {
     name: 'Reinsurance',
-    nameSlug: 'frequentlyViewed',
+    nameSlug: 'Reinsurance',
     icon: 'fa-solid fa-ranking-star',
     menuItems: [],
     collapsed:true,
@@ -318,4 +338,20 @@ accountSubMenuList(): SidebarMenu[]{
       value: "ACC_SETUP"
     }
   ]}
+
+quotationSubMenuList(): SidebarMenu[]{
+  return  [
+    {
+      name:"Create Quick Quote",
+      link: "/home/lms/ind/quotation/list",
+      value: "QUOTATION"
+    },
+    {
+      name:"View Quotations",
+      link:"/home/lms/ind/quotation/list",
+      value: "QUOTATION"
+    },
+  ]}
+
+
 }

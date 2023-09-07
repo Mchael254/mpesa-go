@@ -27,14 +27,14 @@ export class HeaderComponent implements OnInit {
     private localStorageService: LocalStorageService,
     private authService: AuthService
   ) { }
-  
+
   ngOnInit(): void {
     this.user = this.localStorageService.getItem("loginUserProfile")
     this.getUserImage();
   }
 
     getUserImage() {
-    if (this.user.image) {
+    if (this.user?.image) {
       return this.user.image;
     } else {
       const initials = this.user.name.split(' ').map((name: string) => name.charAt(0)).join('');

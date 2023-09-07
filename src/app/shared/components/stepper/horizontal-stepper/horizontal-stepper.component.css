@@ -22,26 +22,16 @@
   margin-right: 0; /* Remove right margin for the last step */
 }
 
-.step.step-active {
-  color: #010101;
-}
-
-.step.step-active .circle {
-  background-color: var(--primary)
-}
-
-.step.done .circle {
-  background-color: #0cdd08;
-}
 
 /* Circle */
 .circle {
-  background: rgb(0, 0, 0);
+  background: rgb(255, 255, 255);
   width: 2em;
   height: 2em;
   line-height: 2em;
   border-radius: 100%;
-  color: #fff;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
   text-align: center;
   box-shadow: 0 0 0 3px #fff;
   margin-bottom: 0.5em;
@@ -65,4 +55,131 @@
   font-weight: bold;
   font-size: 0.8rem;
   margin-top: 0.5em; /* Add margin-top for the title */
+}
+
+.link {
+  color: var(--primary);
+  cursor: pointer;
+}
+
+
+
+/* ----------- */
+
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.step {
+  position: relative;
+}
+
+.circle {
+  width: 40px;
+  height: 40px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  z-index: 2;
+
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  /* background-color: #000; */
+  z-index: 1;
+}
+
+.line-black {
+  flex: 1;
+  height: 2px;
+  background-color: #000;
+  z-index: 1;
+  transform: translateY(-15px);
+}
+
+
+
+
+
+/* Your existing CSS for the stepper and steps */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.circle {
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.circle.active {
+  background-color: #28a745; /* Change color for active step */
+}
+
+/* Updated CSS for the lines to connect start and end steps */
+.line {
+  flex: 1;
+  height: 2px;
+  background-color: #000; /* Change line color to black */
+  z-index: 1;
+}
+
+.line:first-child {
+  margin-left: 20px; /* Add margin to the left of the first line */
+}
+
+.line:last-child {
+  margin-right: 20px; /* Add margin to the right of the last line */
+}
+
+
+.step-active  {
+  background-color: #0824814b;
+  color: #fff;
+  border: 0;
+}
+
+.done > .circle {
+  background-color: black;
+  color: #fff;
+}
+
+.done > .title {
+  color: black;
+}
+
+.done {
+  background-color: var(--primary-color);
+  color:#fff
+}
+
+.step-link {
+  cursor: pointer;
+  color: black;
 }
