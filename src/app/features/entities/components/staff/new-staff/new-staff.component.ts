@@ -122,7 +122,7 @@ export class NewStaffComponent implements OnInit, OnDestroy {
       } else {
         // show an error message
         this.activeIndex = invalidStep;
-        alert('Please complete the previous steps before proceeding.');
+        this.globalMessagingService.displayErrorMessage('Error','Please complete the previous steps before proceeding.');
 
         return;
       }
