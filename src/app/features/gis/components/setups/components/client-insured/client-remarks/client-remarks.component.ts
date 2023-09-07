@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ClientRemarksService } from '../../../services/client-remarks/client-remarks.service';
-
+import {TicketsService} from "../../../../../../../../app/features/administration/services/tickets.service"
 @Component({
   selector: 'app-client-remarks',
   templateUrl: './client-remarks.component.html',
@@ -31,6 +31,8 @@ export class ClientRemarksComponent {
   client: any;
   agent: any;
   filterBy: any;
+  claimList:any;
+  claimListData:any;
 
   new: boolean = true;
   dropdownOptions: { id: string, name: string }[] = [];
@@ -40,7 +42,8 @@ export class ClientRemarksComponent {
     public fb: FormBuilder,
     public remarkService: ClientRemarksService,
     public cdr: ChangeDetectorRef,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private ticketService:TicketsService
   ) { }
 
    /**
@@ -55,6 +58,8 @@ export class ClientRemarksComponent {
     this.loadAllclients();
     this.loadAllAgents();
     this.selectedLabel = 'Client:';
+
+    this.loadAllClaims();
   }
 
   /**
@@ -251,6 +256,25 @@ loadAllAgents() {
     this.cdr.detectChanges();
   });
 }
+loadAllClaims() {
+  this.ticketService.getAllClaims().subscribe(data => {
+    this.claimList = data;
+    this.claimListData = this.claimList.content.map(claim => ({
+      claim_no: claim.claim_no,
+      name: claim.claim_no,
+    }));
+    this.dropdownOptions = this.claimListData;
+    console.log(this.claimListData, "List of Claims");
+
+    this.cdr.detectChanges();
+  });
+}
+// loadAllClaims(){
+//   this.ticketService.getAllClaims().subscribe(data =>{
+//     this.claimList=data;
+//     console.log(this.claimList, "Claim Lists")
+//   })
+// }
 
 /**
  * Loads agent details by ID and updates the form with the agent information.
@@ -281,13 +305,10 @@ loadAgentList(id: any) {
       this.loadAllAgents();
       this.selectedLabel = 'Agent:';
     } else if (commentType === '3') {
-      // Load policy options
-      // ...
-      this.selectedLabel = 'Policy Label:';
+     
     } else if (commentType === '4') {
-      // Load claim options
-      // ...
-      this.selectedLabel = 'Claim Label:';
+      this.loadAllClaims();
+      this.selectedLabel = 'Claims:';
     } else {
       this.dropdownOptions = [];
       this.selectedLabel = '';

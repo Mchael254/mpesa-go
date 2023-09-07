@@ -431,6 +431,19 @@ export class TicketsService {
       });
 
   }
+  getAllClaims(): Observable<any[]>{
+    const  baseUrl = this.appConfig.config.contextPath.gis_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+
+    return this.http.get<any[]>(`/${baseUrl}/claims/api/v1/claims/view`,
+      {
+        headers: headers,
+      });
+
+  }
 
   getUnderWriting(batchNo: string) {
     const  baseUrl = this.appConfig.config.contextPath.gis_services;
