@@ -26,7 +26,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
 
   tableDetails: TableDetail;
 
-  activeTab = signal('Individual');
+  activeTab2: string = 'Individual';
   userType: 'user' | 'group' = 'user';
   staffPageSize = 5;
 
@@ -170,10 +170,9 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     return this.staffService
       .getStaff(pageIndex,
                 this.staffPageSize,
-        this.activeTab() === 'Group' ? 'G':  'U',
+                 this.activeTab2 ===  'Group' ? 'G':  'U',
                  sortList,
-                order, null)
-      .pipe(untilDestroyed(this));
+                order, null);
   }
 
   /**
@@ -196,8 +195,8 @@ export class ListStaffComponent implements OnInit, OnDestroy {
    * @param activeTab
    */
   selectTab(activeTab: string): void {
-    this.activeTab.set(activeTab);
-    this.userType = (this.activeTab() === 'Individual') ? 'user' : 'group';
+    this.activeTab2 = activeTab;
+    this.userType = (this.activeTab2 === 'Individual') ? 'user' : 'group';
 
     this.spinner.show();
     this.getStaffData(0)

@@ -1,9 +1,8 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {AssignAppsRequest} from "../../../data/StaffDto";
+import {AssignAppsRequest, CreateStaffDto} from "../../../data/StaffDto";
 import {AppService} from "../../../../../shared/services/setups/app.service";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {Router} from "@angular/router";
 import {StaffService} from "../../../services/staff/staff.service";
 
 const log = new Logger('AssignAppsComponent');
@@ -18,15 +17,16 @@ const log = new Logger('AssignAppsComponent');
   styleUrls: ['./assign-apps.component.css']
 })
 export class AssignAppsComponent  implements OnInit{
-  @Output() assigned = new EventEmitter<void>();
+  @Output() assigned = new EventEmitter<boolean>();
+
+  newlyCreatedStaff: CreateStaffDto;
 
   assignedApps: number[] = [];
   apps: any[] = [];
 
   constructor(private appService: AppService,
               private globalMessagingService: GlobalMessagingService,
-              public staffService: StaffService,
-              private router: Router,) {
+              public staffService: StaffService) {
   }
 
 
@@ -44,7 +44,17 @@ export class AssignAppsComponent  implements OnInit{
    * Initialize component by: fetching apps list
    */
   ngOnInit(): void {
+    this.fetchNewStaff();
     this.fetchSystemApps();
+  }
+
+  /**
+   * Fetch newly created staff details from staff service
+   */
+  fetchNewStaff(){
+    this.staffService.newStaffObservable.subscribe((data) => {
+      this.newlyCreatedStaff = data;
+    });
   }
 
   /**
@@ -72,7 +82,7 @@ export class AssignAppsComponent  implements OnInit{
    * Emits event to parent component to refresh staff list
    */
   assignApps() {
-    let savedStaffDetails = this.staffService.newlyCreatedStaff();
+    let savedStaffDetails = this.newlyCreatedStaff;
 
     if(!savedStaffDetails?.id){
       this.globalMessagingService.displayErrorMessage("Staff Details Missing", "Staff Details missing. Fill in Staff Profile Details before proceeding");
@@ -85,7 +95,7 @@ export class AssignAppsComponent  implements OnInit{
       this.staffService.assignUserSystemApps(userId, asssignAppReq)
         .subscribe( (data) => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Hooray!! You have successfully assigned apps' );
-          this.assigned.emit();
+          this.assigned.emit(true);
         });
     }
   }
