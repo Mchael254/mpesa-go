@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import {AppConfigService} from '../../../../core/config/app-config-service'
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';

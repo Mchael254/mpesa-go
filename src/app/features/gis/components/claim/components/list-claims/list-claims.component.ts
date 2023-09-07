@@ -1,12 +1,12 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {LazyLoadEvent} from "primeng/api";
-import { ClaimsDTO } from 'src/app/features/gis/data/claims-dto';
-import { untilDestroyed } from 'src/app/shared/shared.module';
+import {untilDestroyed} from "../../../../../../shared/shared.module";
 import {tap} from "rxjs/operators";
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { Logger } from 'src/app/shared/services';
-import { ViewClaimService } from 'src/app/features/gis/services/claims/view-claim.service';
+import {ViewClaimService} from '../../../../../../features/gis/services/claims/view-claim.service'
+import {Pagination} from '../../../../../../shared/data/common/pagination'
+import {Logger} from '../../../../../../shared/services'
+import {ClaimsDTO} from '../../../../../../features/gis/data/claims-dto'
 import {ActivatedRoute} from "@angular/router";
 
 const log = new Logger('QuotationsComponent');
