@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { ClientRemarks, Clients, Agents } from '../../data/gisDTO';
 
 @Injectable({
@@ -150,6 +150,26 @@ return throwError(errorMessage);
         retry(1),
         catchError(this.errorHandl)
       )
+    }
+     /*******All Claims ******/
+     getAllClaims(): Observable<any>{
+      let page = 0;
+      let size = 10;
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      
+      })
+      const params = new HttpParams()
+      .set('page', `${page}`)
+        .set('pageSize', `${size}`)
+      return this.http.get<any>(`/${this.crmurl}/accounts/agents`,{
+        headers:headers,
+        params:params
+      }).pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      ) 
     }
 
 }
