@@ -1,9 +1,9 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDTO';
 import { Pagination } from 'src/app/shared/data/common/pagination';
+import {AppConfigService} from "../../../../core/config/app-config-service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class ClientService {
       sortField: string = 'createdDate',
       order: string = 'desc'
     ): Observable<Pagination<ClientDTO>> {
-    
+
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -31,7 +31,7 @@ export class ClientService {
         .set('organizationId', 2)
         .set('sortListFields', `${sortField}`)
         .set('order', `${order}`);
-    
+
       return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`,
         {
           headers: headers,
@@ -47,13 +47,13 @@ export class ClientService {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       });
-    
+
       const params = new HttpParams()
         .set('page', `${page}`)
         .set('size', `${size}`)
         .set('name', `${name}`)
         .set('organizationId', 2);
-    
+
       return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`, {
         headers: header,
         params: params,
