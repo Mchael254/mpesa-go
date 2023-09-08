@@ -14,29 +14,24 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {DynamicTableComponent} from "../../../../../shared/components/dynamic-table/dynamic-table.component";
 import {of, throwError} from "rxjs";
-import {newStaffDto, staffData, staffDto} from "../../../data/staffTestData/staffTestData";
+import {
+  MockAppConfigService,
+  MockAuthService, MockBrowserStorage,
+  MockGlobalMessagingService, MockLocalStorageService,
+  newStaffDto,
+  staffData
+} from "../../../data/staffTestData/staffTestData";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {BrowserStorage} from "../../../../../shared/services/storage";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 import {AppConfigService} from "../../../../../core/config/app-config-service";
-import {
-  MockAppConfigService,
-  MockAuthService,
-  MockBrowserStorage,
-  MockGlobalMessagingService,
-  MockLocalStorageService
-} from "../new-staff/new-staff.component.spec";
+
 import {SortFilterService} from "../../../../../shared/services/sort-filter.service";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {StaffDto} from "../../../data/StaffDto";
 import {LazyLoadEvent} from "primeng/api";
 
-const staffDtoPagination: Pagination<StaffDto> = {
-  first: true, last: true, number: 2, numberOfElements: 2, size: 5, totalPages: 1,
-  content: staffData,
-  totalElements: 2
-};
 
 const indivDataPagination: Pagination<StaffDto> = {
   first: true, last: true, number: 1, numberOfElements: 1, size: 5, totalPages: 1,
