@@ -58,6 +58,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  /**
+   * The ngOnInit function initializes various variables and calls several functions to retrieve data and set up the
+   * component.
+   */
   ngOnInit(): void {
 
     this.route.queryParams.subscribe(params => {
@@ -75,6 +79,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     this.getAllBusinessTransactions();
   }
 
+  /**
+   * The function creates a form for sorting data with fields for fromDate, toDate, amount, module, system, and
+   * transactionType.
+   */
   createSortForm() {
     this.sortingForm = this.fb.group({
       fromDate: '',
@@ -86,9 +94,18 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     });
   }
 
+  /**
+   * The ngOnDestroy function is a lifecycle hook in Angular that is called when a component is about to be destroyed.
+   */
   ngOnDestroy(): void {
   }
 
+  /**
+   * The searchModule function sets the module property to the selectedModule value, logs the selectedModule value, resets
+   * the transactionsTable, and detects changes.
+   * @param event - The event parameter is an object that represents the event that triggered the searchModule function. It
+   * could be an event object from a user interaction.
+   */
   searchModule(event) {
 
     this.module = this.selectedModule;
@@ -114,6 +131,19 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       )
   }*/
   //get all tickets for the logged in user
+  /**
+   * The function `getAllTransactions` retrieves transactions based on the provided parameters and updates the
+   * `transactions` variable.
+   * @param {number} pageIndex - The pageIndex parameter is used to specify the page index of the transactions to retrieve.
+   * It is typically a number that represents the page number.
+   * @param {string} queryColumn - The queryColumn parameter is a string that represents the column name to be used for
+   * querying the transactions. It is used as a filter to retrieve specific transactions based on a particular column in
+   * the database table.
+   * @param {string} username - The `username` parameter is a string that represents the username of the user for whom the
+   * transactions are being fetched.
+   * @param {string} module - The "module" parameter is a string that represents the module or category of the
+   * transactions. It is used to filter the transactions based on the specified module.
+   */
   getAllTransactions(pageIndex: number, queryColumn: string, username: string, module: string ) {
     if(module) { // checks if the module is not empty
       this.ticketsService.getAllTransactions(pageIndex, null, this.dateFrom, this.dateToday, username, module, queryColumn)
@@ -137,6 +167,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
         this.cdr.detectChanges();
       })
   }*/
+  /**
+   * The function `getAllSystems()` retrieves systems data from the tickets service and assigns it to the `systemsData`
+   * variable.
+   */
   getAllSystems() {
     this.ticketsService.getSystems()
       .pipe(
@@ -149,6 +183,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       )
   }
 
+  /**
+   * The function `sortEmployeeTransactions()` sorts employee transactions based on fromDate, toDate
+   * amount, module, system, transactionType, transactionType.
+   */
   sortEmployeeTransactions() {
     const sortValues = this.sortingForm.getRawValue();
     log.info('form value', sortValues);
@@ -178,6 +216,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getAllTicketModules()` retrieves all ticket modules from the tickets service and assigns the data to the
+   * `ticketModules` variable.
+   */
   getAllTicketModules(){
     this.ticketsService.getTicketModules()
       .pipe(untilDestroyed(this),
@@ -190,6 +232,10 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       );
   }
 
+  /**
+   * The function `getAllBusinessTransactions` retrieves business transactions using the `ticketsService` and assigns the
+   * result to the `businessTransactions` variable.
+   */
   getAllBusinessTransactions(){
     this.ticketsService.getBusinessTransactions()
       .pipe(untilDestroyed(this),
@@ -202,6 +248,9 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       );
   }
 
+  /**
+   * The `goBack()` function navigates the user back to the employees page in the administration section of the home page.
+   */
   goBack() {
     this.router.navigate([ `/home/administration/employees/`]);
   }
