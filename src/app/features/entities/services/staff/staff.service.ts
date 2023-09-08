@@ -1,12 +1,13 @@
 import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {UtilService} from "../../../../shared/services";
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto, StaffResDto} from "../../data/StaffDto";
 import {CreateAccountDTO, NewAccountCreatedResponse} from "../../data/accountDTO";
 import {AuthService} from "../../../../shared/services/auth.service";
 import {AppConfigService} from "../../../../core/config/app-config-service";
+import {AccountReqPartyId} from "../../data/entityDto";
 
 @Injectable({
   providedIn: 'root'
@@ -14,26 +15,21 @@ import {AppConfigService} from "../../../../core/config/app-config-service";
 export class StaffService {
   baseStaffUrl = this.appConfig.config.contextPath.users_services;
   baseAccountsUrl = this.appConfig.config.contextPath.accounts_services;
-  currentStaff = signal(0);
 
-  newlyCreatedStaff = signal<CreateStaffDto>({
-    activatedBy: "",
-    departmentCode: 0,
-    emailAddress: "",
-    granterUserId: 0,
-    id: 0,
-    organizationGroupId: 0,
-    otherPhone: 0,
-    personelRank: "",
-    profilePicture: "",
-    supervisorId: 0,
-    updateBy: "",
-    userType: "",
-    username: ""
-  })
+  private newStaffAccount = new BehaviorSubject<CreateStaffDto>({granterUserId: 0, organizationGroupId: 0, otherPhone: 0, userType: "", username: ""});
+  newStaffObservable = this.newStaffAccount.asObservable();
 
   constructor(private appConfig: AppConfigService, private http: HttpClient,
               private utilService: UtilService,private authService: AuthService) { }
+
+  /**
+   * Set new staff account observable
+   * @param newStaffAccount
+   */
+  setNewStaffAccount(newStaffAccount: CreateStaffDto){
+    this.newStaffAccount.next(newStaffAccount);
+  }
+
 
   /**
    * Method to fetch staff data

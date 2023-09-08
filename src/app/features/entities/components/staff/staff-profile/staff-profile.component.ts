@@ -158,17 +158,11 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
   fetchEntityById(){
     if(!!this.entityService.currentEntity$){
       this.entityService.currentEntity$
-        .pipe(untilDestroyed(this))
         .subscribe( data => {
-            log.info('>>>>> entity data from service: ', data);
             this.entityDetails = data;
           }
         );
     }
-    else {
-
-    }
-
   }
 
   /**
@@ -498,8 +492,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
 
           this.submitted = true;
 
-          this.staffService.currentStaff.set(savedUser?.accountCode);
-          this.staffService.newlyCreatedStaff.set(this.savedStaff);
+          this.staffService.setNewStaffAccount(this.savedStaff);
           this.staffProfileFormState.persisted = true;
           this.formStateService.destroyFormState(this.staffProfileFormStateKey);
 
