@@ -14,7 +14,6 @@ import {forkJoin, ReplaySubject} from "rxjs";
 import {OccupationService} from "../../../../../shared/services/setups/occupation.service";
 import {untilDestroyed} from "../../../../../shared/shared.module";
 import {BankBranchDTO, BankDTO, CurrencyDTO} from "../../../../../shared/data/common/bank-dto";
-import {Message} from "primeng/api";
 import {AccountTypeDTO, AddressDTO, AgentPostDTO, AgentRequestDTO, ContactDetailsDTO} from "../../../data/AgentDTO";
 import {CountryDto, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
 import {SectorDTO} from "../../../../../shared/data/common/sector-dto";
@@ -49,7 +48,7 @@ export class NewIntermediaryComponent implements OnInit{
   townData: TownDto[] = [];
   modeIdentityType: IdentityModeDTO[] = [];
   accountsType: AccountTypeDTO[] = [];
-  successMessages: Message[];
+  // successMessages: Message[];
   sectorData: SectorDTO[];
   currenciesData: CurrencyDTO[];
   occupationData: OccupationDTO[];
@@ -140,7 +139,7 @@ export class NewIntermediaryComponent implements OnInit{
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
+    public router: Router,
     private countryService: CountryService,
     private sectorService: SectorService,
     private occupationService: OccupationService,
@@ -154,6 +153,9 @@ export class NewIntermediaryComponent implements OnInit{
     private utilService: UtilService
   ) { }
 
+  /**
+   * The `ngOnInit` function initializes various data by making multiple API calls and subscribing to the responses.
+   */
   ngOnInit(): void {
     this.createIntermediaryRegForm();
     this.fetchCountries();
@@ -177,8 +179,17 @@ export class NewIntermediaryComponent implements OnInit{
         });
   }
 
+  /**
+   * The ngOnDestroy function is a lifecycle hook in Angular that is called when a component is about to be destroyed.
+   */
   ngOnDestroy(): void {}
 
+  /**
+   * The function `onUpload` reads and converts the contents of a file into a data URL.
+   * @param event - The event parameter is an object that represents the event that triggered the function. In this case,
+   * it is the event object that is generated when a file is uploaded. It contains information about the uploaded file,
+   * such as its name, size, and type.
+   */
   onUpload(event) {
     if (event.target.files) {
       var reader = new FileReader()
@@ -189,6 +200,11 @@ export class NewIntermediaryComponent implements OnInit{
     }
   }
 
+  /**
+   * The function `createIntermediaryRegForm()` creates a form using the FormBuilder module in Angular, sets up form
+   * controls and validators based on the response from an API call, and populates some fields with data from the session
+   * storage.
+   */
   createIntermediaryRegForm() {
     this.createIntermediaryForm =  this.fb.group({
       agentType: [''],
@@ -420,6 +436,9 @@ export class NewIntermediaryComponent implements OnInit{
     });
   }
 
+  /**
+   * The function toggles the visibility of certain inputs based on the selected option in a form.
+   */
   toggleCreditAllowed() {
     const formValue = this.createIntermediaryForm.getRawValue();
     const selectedOption = formValue.otherDetails.creditAllowed
@@ -431,17 +450,32 @@ export class NewIntermediaryComponent implements OnInit{
     }
   }
 
+  /**
+   * The function "selectUserType" sets the value of "agentType" based on the selected value from a target element and logs
+   * the selected value.
+   * @param e - The parameter "e" is an event object that is passed to the function when it is triggered by an event. It
+   * contains information about the event that occurred, such as the target element that triggered the event. In this case,
+   * it is used to get the value of the selected option from a dropdown
+   */
   selectUserType(e) {
     this.agentType = e.target.value;
     console.log(`userType >>>`, this.agentType, e.target.value)
   }
 
+  /**
+   * The function `selectWithHoldingTax()` retrieves the value of a checkbox and assigns it to a variable, then logs the
+   * value to the console.
+   */
   selectWithHoldingTax() {
     const formValue = this.createIntermediaryForm.getRawValue();
     this.isWithHoldingTaxApplcable = formValue.otherDetails.withHoldingTaxApplicable ? formValue.otherDetails.withHoldingTaxApplicable : null
     console.log(`Selected Option >>>`, this.isWithHoldingTaxApplcable);
   }
 
+  /**
+   * The function fetches a list of countries and updates the countryData variable, then updates the value of the country
+   * field in the intermediary form.
+   */
   fetchCountries(){
     log.info('Fetching countries list');
     this.countryService.getCountries()
@@ -455,6 +489,11 @@ export class NewIntermediaryComponent implements OnInit{
       });
   }
 
+  /**
+   * The function fetches a list of city states for a given country ID.
+   * @param {number} countryId - The countryId parameter is a number that represents the unique identifier of a country. It
+   * is used to fetch the city states list for a specific country.
+   */
   fetchMainCityStates(countryId: number){
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
@@ -463,6 +502,10 @@ export class NewIntermediaryComponent implements OnInit{
       })
   }
 
+  /**
+   * The function fetches a list of towns for a given city-state ID.
+   * @param {number} stateId - The stateId parameter is a number that represents the ID of a city-state.
+   */
   fetchTowns(stateId:number){
     log.info(`Fetching towns list for city-state, ${stateId}`);
     this.countryService.getTownsByMainCityState(stateId)
@@ -471,12 +514,16 @@ export class NewIntermediaryComponent implements OnInit{
       })
   }
 
+  /**
+   * The function "onCountryChange" resets the values of "county" and "town" in a form, calls a function to get banks based
+   * on the selected country, retrieves main city states data for the selected country, and triggers change detection.
+   */
   onCountryChange() {
     this.createIntermediaryForm.patchValue({
       county: null,
       town: null
     });
-    // Call getBanks with the selected country ID
+
     this.getBanks(this.selectedCountry);
     this.countryService.getMainCityStatesByCountry(this.selectedCountry)
       .pipe(untilDestroyed(this))
@@ -486,6 +533,10 @@ export class NewIntermediaryComponent implements OnInit{
     this.cdr.detectChanges();
   }
 
+  /**
+   * The function `onCityChange()` retrieves towns based on the selected city state and assigns the data to the `townData`
+   * variable.
+   */
   onCityChange() {
     this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
@@ -494,6 +545,11 @@ export class NewIntermediaryComponent implements OnInit{
       })
   }
 
+  /**
+   * The function `getBanks` retrieves bank data based on a country ID and assigns it to the `banksData` variable.
+   * @param {number} countryId - The `countryId` parameter is a number that represents the ID of a country. It is used as a
+   * parameter to fetch banks data specific to that country.
+   */
   getBanks(countryId: number) {
     this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
@@ -502,15 +558,23 @@ export class NewIntermediaryComponent implements OnInit{
       })
   }
 
+  /**
+   * The function "onBankSelection" resets the branch value in the intermediary form, calls the "getBankBranches" function
+   * with the selected bank ID, and triggers change detection.
+   */
   onBankSelection() {
     this.createIntermediaryForm.patchValue({
       branch: null
     });
-    // Call getBanksbranches with the selected bank ID
+
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
   }
 
+  /**
+   * The function retrieves bank branches based on a given bank ID and assigns the result to the bankBranchData variable.
+   * @param {number} bankId - The bankId parameter is a number that represents the unique identifier of a bank.
+   */
   getBankBranches(bankId: number) {
     if (bankId) {
       this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {
@@ -521,8 +585,16 @@ export class NewIntermediaryComponent implements OnInit{
     }
   }
 
+  /**
+   * The function returns the controls of the createIntermediaryForm.
+   * @returns The function `f()` is returning the controls of the `createIntermediaryForm`.
+   */
   get f() { return this.createIntermediaryForm.controls; }
 
+  /**
+   * The `saveIntermediary()` function is used to save intermediary details by validating the form inputs and making an API
+   * call to save the data.
+   */
   saveIntermediary() {
     this.submitted = true;
     this.createIntermediaryForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
@@ -646,6 +718,10 @@ export class NewIntermediaryComponent implements OnInit{
     });
   }
 
+  /**
+   * The function `selectUtilityBill` assigns the value of the selected utility bill to the `utilityBill` variable.
+   * @param e - The parameter "e" is an event object that is passed to the function when it is triggered.
+   */
   selectUtilityBill(e) {
     this.utilityBill = e.target.value;
     // log.info(`utilityBill >>>`, this.utilityBill, e.target.value)
