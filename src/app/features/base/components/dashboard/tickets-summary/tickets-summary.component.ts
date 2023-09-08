@@ -25,15 +25,24 @@ export class TicketsSummaryComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  /**
+   * The ngOnInit function is called when the component is initialized and it calls the getTicketCountPerModule function.
+   */
   ngOnInit(): void {
     this.getTicketCountPerModule();
   }
 
+  /**
+   * The function `goToViewTickets()` navigates to the tickets view in the administration section of the home page.
+   */
   goToViewTickets() {
     this.router.navigate([ `/home/administration/tickets`]);
   }
 
-  //get ticket count per module for the logged in user
+  /**
+   * The function `getTicketCountPerModule()` retrieves the ticket count per module for the logged in user from the tickets service and updates
+   * the ticket count and total count variables, then triggers change detection.
+   */
   getTicketCountPerModule() {
     this.ticketsService.getTicketCount()
       .pipe(
@@ -47,12 +56,21 @@ export class TicketsSummaryComponent implements OnInit {
       })
   }
 
+  /**
+   * The function calculates the total number of tickets by summing up the totalTickets property of each object in the
+   * ticketCount array.
+   * @returns the total count of tickets by summing up the `totalTickets` property of each object in the `ticketCount`
+   * array.
+   */
   addTicketCounts() {
     return this.ticketCount.reduce((acc, cur) => {
       return acc + cur.totalTickets
     }, 0);
   }
 
+  /**
+   * The ngOnDestroy function is a lifecycle hook in Angular that is called when a component is about to be destroyed.
+   */
   ngOnDestroy(): void {
 
   }
