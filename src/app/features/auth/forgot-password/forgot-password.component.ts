@@ -22,7 +22,6 @@ export class ForgotPasswordComponent implements OnInit{
     private fb: FormBuilder,
     private authService: AuthService,
     private globalMessagingService: GlobalMessagingService,
-    public utilService: UtilService,
     private sessionStorageService: SessionStorageService
   ) { }
 
