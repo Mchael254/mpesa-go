@@ -36,6 +36,9 @@ export class DynamicSetupTableScreenComponent implements OnInit{
     }
   }
 
+  /**
+   * The ngOnInit function initializes the form fields, button configuration, and table details for a rates form.
+   */
   ngOnInit(): void {
     this.formFields = this.ratesForm();
     this.buttonConfig = this.actionButtonConfig();
@@ -46,10 +49,19 @@ export class DynamicSetupTableScreenComponent implements OnInit{
     }
   }
 
+  /**
+   * The onSaveButtonClick function emits a saveButtonClick event.
+   */
   onSaveButtonClick() {
     this.saveButtonClick.emit();
   }
 
+  /**
+   * The `ratesForm` function returns an array of objects representing form fields with various properties such as name,
+   * label, type, required, disabled, placeholder, and value.
+   * @returns The function `ratesForm()` returns an array of objects, where each object represents a dynamic form field.
+   * Each object has properties such as `name`, `label`, `type`, `required`, `disabled`, `placeholder`, and `value`.
+   */
   ratesForm(): DynamicFormFields[]{
     return [
       {
@@ -106,6 +118,10 @@ export class DynamicSetupTableScreenComponent implements OnInit{
     ];
   }
 
+  /**
+   * The function `actionButtonConfig` returns an object with configuration options for dynamic form buttons.
+   * @returns The function `actionButtonConfig()` returns an object of type `DynamicFormButtons`.
+   */
   actionButtonConfig() : DynamicFormButtons{
     return {
       submit: { label: 'Save', visible: true, alignment: 'end' },
