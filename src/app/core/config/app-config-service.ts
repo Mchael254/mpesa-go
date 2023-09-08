@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable prefer-arrow/prefer-arrow-functions */
 import { Injectable, InjectionToken } from '@angular/core';
-import { from, Observable, throwError } from 'rxjs';
+import { from, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppConfig } from './app-config';
 import { ConfigurationLoader } from './app-config-loader';

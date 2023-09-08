@@ -21,7 +21,6 @@ export class ChangePasswordComponent {
   constructor(private router: Router,
               private formBuilder: FormBuilder,
               private authService: AuthService,
-              public utilService: UtilService,
               public globalMessagingService: GlobalMessagingService,
               private sessionStorageService: SessionStorageService) { }
 
@@ -73,7 +72,7 @@ export class ChangePasswordComponent {
             }, 3000);
           }
           else{
-            this.errorOccurred = false;
+            this.errorOccurred = true;
             this.errorMessage = "Something went wrong.Please try Again";
             this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong.Please try Again');
           }

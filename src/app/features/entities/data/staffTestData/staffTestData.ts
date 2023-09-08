@@ -1,6 +1,8 @@
 import {AddressDto, CreateAccountDTO, NewAccountCreatedResponse} from "../accountDTO";
 import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto} from "../StaffDto";
 import {Pagination} from "../../../../shared/data/common/pagination";
+import {of} from "rxjs";
+import {EntityDto} from "../entityDto";
 
 export const newAccountResponse: NewAccountCreatedResponse = {
     accountId: 1,
@@ -203,3 +205,111 @@ export const apps = [
     },
 ];
 
+export const mockEntityDto: EntityDto = {
+    categoryName: "Some Category",
+    countryId: 123,
+    dateOfBirth: "1990-01-01",
+    effectiveDateFrom: "2022-01-01",
+    effectiveDateTo: "2022-12-31",
+    id: 456,
+    modeOfIdentity: {
+        // Assuming IdentityModeDTO has its own properties
+        // Replace with actual values as needed
+        // Example:
+        id: 789,
+        name: "Some Mode of Identity"
+    },
+    modeOfIdentityName: "Some Mode of Identity Name",
+    identityNumber: 1234567890,
+    name: "John Doe",
+    organizationId: 987,
+    pinNumber: "ABC123",
+    profilePicture: "path/to/profile/picture.jpg",
+    profileImage: "path/to/profile/image.jpg",
+    partyTypeId: 321
+};
+
+
+export class MockFormStateService {
+    getFormState = jest.fn();
+    saveFormState = jest.fn();
+}
+
+export class MockEntityService {
+    currentEntity$ = jest.fn().mockReturnValue(of(mockEntityDto));
+}
+
+export class MockCountryService {
+    getCountries = jest.fn().mockReturnValue(of([]));
+}
+
+export class MockMandatoryFieldsService {
+    getMandatoryFieldsByGroupId = jest.fn().mockReturnValue(of([]));
+}
+
+export class MockDepartmentService {
+    getDepartments = jest.fn().mockReturnValue(of([]));
+}
+
+export class MockUtilService {
+    isUserAdmin = jest.fn().mockReturnValue(true);
+    isUserAgent = jest.fn().mockReturnValue(false);
+    isUserClient = jest.fn().mockReturnValue(false);
+
+    findScrollContainer = jest.fn();
+}
+
+export class MockBranchService {
+    getBranches = jest.fn().mockReturnValue(of([]));
+}
+
+export class MockStaffService{
+    createUserAccount = jest.fn().mockReturnValue(of(null));
+    getStaff = jest.fn().mockReturnValue(of(staffDto))
+
+    newStaffObservable = of(newStaffDto);
+    setNewStaffAccount = jest.fn();
+}
+
+export class MockGlobalMessagingService{
+    displayErrorMessage = jest.fn((summary,detail ) => {
+        return;
+    });
+}
+
+export class NgxSpinnerServiceStub{
+    show = jest.fn();
+    hide = jest.fn();
+}
+
+const mockUser = {
+    // Provide a valid user object with the necessary properties
+    acccUsername: 'acccUser',
+    acwaUsername: 'acwaUser',
+    username: 'adminUser',
+};
+
+export class MockAuthService{
+    getCurrentUserName = jest.fn().mockReturnValue('testUser');
+    getCurrentUser = jest.fn().mockReturnValue(mockUser);
+}
+
+export class MockBrowserStorage{
+
+}
+
+export class MockLocalStorageService{
+    getItem = jest.fn().mockReturnValue(null);
+}
+
+export class MockAppConfigService {
+    get config() {
+        return {
+            contextPath: {
+                "accounts_services": "crm",
+                "users_services": "user",
+                "auth_services": "oauth"
+            },
+        };
+    }
+}

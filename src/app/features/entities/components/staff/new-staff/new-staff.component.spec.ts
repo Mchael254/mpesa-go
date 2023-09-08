@@ -4,9 +4,6 @@ import { NewStaffComponent } from './new-staff.component';
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {NgxSpinnerModule, NgxSpinnerService} from "ngx-spinner";
 import {Router} from "@angular/router";
-import {newAccountResponse, newStaffDto, staffAccount, staffDto} from "../../../data/staffTestData/staffTestData";
-import {of} from "rxjs";
-import {CreateAccountDTO} from "../../../data/accountDTO";
 import {StepsModule} from "primeng/steps";
 import {AssignAppsComponent} from "../assign-apps/assign-apps.component";
 import {StaffProfileComponent} from "../staff-profile/staff-profile.component";
@@ -22,51 +19,18 @@ import {By} from "@angular/platform-browser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {DebugElement} from "@angular/core";
 import {NoopAnimationsModule} from "@angular/platform-browser/animations";
+// @ts-ignore
+import {
+  MockAppConfigService, MockAuthService,
+  MockBrowserStorage, MockGlobalMessagingService, MockLocalStorageService,
+  newAccountResponse,
+  staffAccount,
+  staffDto
+} from "../../../data/staffTestData/staffTestData";
+import {MockStaffService} from "../list-staff/list-staff.component.spec";
 
 const mockStaffAccount = staffAccount;
 const mockCreatedAccountResponse = newAccountResponse;
-
-export class MockStaffService{
-  createUserAccount = jest.fn().mockReturnValue(of(mockCreatedAccountResponse));
-  getStaff = jest.fn().mockReturnValue(of(staffDto))
-
-  newStaffObservable = of(newStaffDto);
-  setNewStaffAccount = jest.fn();
-}
-
-export class MockGlobalMessagingService{
-  displayErrorMessage = jest.fn((summary,detail ) => {
-    return;
-  });
-}
-
-export class NgxSpinnerServiceStub{
-  show = jest.fn();
-  hide = jest.fn();
-}
-
-export class MockAuthService{
-  getCurrentUserName = jest.fn().mockReturnValue('testUser');
-}
-
-export class MockBrowserStorage{
-
-}
-
-export class MockLocalStorageService{}
-
-export class MockAppConfigService {
-  get config() {
-    return {
-      contextPath: {
-        "accounts_services": "crm",
-        "users_services": "user",
-        "auth_services": "oauth"
-      },
-    };
-  }
-}
-
 
 describe('NewStaffComponent', () => {
   let component: NewStaffComponent;
