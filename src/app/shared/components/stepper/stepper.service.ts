@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Step } from 'src/app/core/models/steps';
+import {Step} from "../../data/steps";
 
 @Injectable({
   providedIn: 'root'
