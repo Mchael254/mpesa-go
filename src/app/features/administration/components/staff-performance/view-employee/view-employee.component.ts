@@ -43,16 +43,23 @@ export class ViewEmployeeComponent  implements OnInit {
     private cdr: ChangeDetectorRef,
     private staffService: StaffService,
     private ticketsService: TicketsService,
-    private router: Router,
+    public router: Router,
     private fb: FormBuilder,
   ) { }
 
+  /**
+   * The ngOnInit function is used to initialize the component by calling the getGrpEmployeeData and createSortForm
+   * functions.
+   */
   ngOnInit(): void {
 
     this.getGrpEmployeeData();
     this.createSortForm();
   }
 
+  /**
+   * The function creates a form for sorting data with two fields: fromDate and toDate.
+   */
   createSortForm() {
     this.sortingForm = this.fb.group({
       fromDate: '',
@@ -61,6 +68,19 @@ export class ViewEmployeeComponent  implements OnInit {
   }
 
   //get all employees under a supervisor
+  /**
+   * The function `getAllEmployees` retrieves a list of employees with their supervisors, based on the specified page
+   * index, sorting criteria, and order.
+   * @param {number} pageIndex - The pageIndex parameter is used to specify the page number of the data to retrieve. It is
+   * a number that indicates the index of the page to fetch.
+   * @param {string} [sortList=dateCreated] - The `sortList` parameter is used to specify the field by which the list of
+   * employees should be sorted. It accepts a string value representing the field name. For example, if you pass
+   * `'dateCreated'` as the value, the list will be sorted based on the date the employees were created
+   * @param {string} [order=desc] - The "order" parameter determines the order in which the data should be sorted. It can
+   * have two possible values: "asc" for ascending order and "desc" for descending order. By default, the value is set to
+   * "desc".
+   * @returns an Observable that emits the data fetched from the staffService.
+   */
   getAllEmployees(pageIndex: number, sortList: string = 'dateCreated',
                   order: string = 'desc' ) {
 
@@ -70,6 +90,12 @@ export class ViewEmployeeComponent  implements OnInit {
         tap((data) => log.info('Fetch transactions data>> ', data))
       );
   }
+  /**
+   * The function `lazyLoadEmployees` is a TypeScript function that is used to load employees lazily based on the provided
+   * event parameters.
+   * @param {LazyLoadEvent} event - The event parameter is of type LazyLoadEvent. It contains information about the lazy
+   * loading event triggered by the user. The properties of the LazyLoadEvent object are:
+   */
   lazyLoadEmployees(event:LazyLoadEvent) {
     /*const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
@@ -85,9 +111,10 @@ export class ViewEmployeeComponent  implements OnInit {
       })*/
   }
 
-  /*
-  * This method aggregates staff, transactions, & department data into an array
-  * The array is used to populate employees under a manager/supervisor table*/
+  /**
+   * The function `getGrpEmployeeData()` retrieves data for staff, transactions, and departments, aggregates the data based
+   * on certain conditions, and updates the `aggregatedEmployeeData` property.
+   */
   getGrpEmployeeData() {
     forkJoin(([
       this.staffService.getStaffWithSupervisor(0, null, null, 'dateCreated', 'desc'),
@@ -117,10 +144,22 @@ export class ViewEmployeeComponent  implements OnInit {
     })
   }
 
+  /**
+   * The ngOnDestroy function is a lifecycle hook in Angular that is called when a component is about to be destroyed.
+   */
   ngOnDestroy(): void {
 
   }
 
+  /**
+   * The function `goToViewEmployeeTransactions` navigates to the employee transactions view with the specified username,
+   * module, and name as query parameters.
+   * @param {string} username - The username parameter is a string that represents the username of the employee whose
+   * transactions you want to view.
+   * @param {string} module - The "module" parameter is a string that represents the module or section of the application
+   * that the user is currently in. It could be something like "sales", "inventory", or "finance".
+   * @param {string} name - The "name" parameter is a string that represents the name of the employee.
+   */
   goToViewEmployeeTransactions(username: string, module: string, name:string) {
     // this.ticketsService.transactionRouting = {username: username, module: module, name: name};
 
@@ -132,6 +171,10 @@ export class ViewEmployeeComponent  implements OnInit {
     })
   }
 
+  /**
+   * The function `dateSortEmployees()` sorts employees based on the selected date range and retrieves the corresponding
+   * employee data.
+   */
   dateSortEmployees() {
     const sortValues = this.sortingForm.getRawValue();
     log.info('form value', sortValues);
@@ -150,7 +193,11 @@ export class ViewEmployeeComponent  implements OnInit {
 
   }
 
-  //this sorts the aggregated data in the view employees table in asc/desc
+  /**
+   * The function `customSortEmployees` sorts an array of employee data based on the field specified in the `SortEvent`
+   * object.
+   * @param {SortEvent} event - The event parameter is an object that contains information about the sorting event.
+   */
   customSortEmployees(event: SortEvent) {
     log.info("data", event);
     event.data.sort((data1, data2) => {

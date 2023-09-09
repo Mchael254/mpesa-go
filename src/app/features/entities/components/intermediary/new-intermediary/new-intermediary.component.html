@@ -267,7 +267,7 @@
                             placeholder="Country"
                             formControlName="country" id="country"
                             [filter]="true" filterBy="name" [showClear]="true" appendTo="body"
-                            class="center-placeholder" (onChange)="onCountryChange()"
+                            class="center-placeholder" (onChange)="onCountryChange()"  ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['addressDetails']['controls']['country']['invalid'] && (f['addressDetails']['controls']['country']['dirty'] || f['addressDetails']['controls']['country']['touched']) }">
                 </p-dropdown>
                 <div *ngIf="f?.['addressDetails']['controls']['country']['invalid'] && (f['addressDetails']['controls']['country']['dirty'] || f['addressDetails']['controls']['country']['touched'])" class="form-text text-danger">
@@ -287,7 +287,7 @@
                             [style]="{ width: '100%', height: '50%' }" name="city" id="county"
                             [filter]="true" filterBy="name" [showClear]="true"
                             placeholder="County"
-                            appendTo="body" (onChange)="onCityChange()"
+                            appendTo="body" (onChange)="onCityChange()" ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['addressDetails']['controls']['county']['invalid'] && (f['addressDetails']['controls']['county']['dirty'] || f['addressDetails']['controls']['county']['touched']) }">
                 </p-dropdown>
                 <div *ngIf="f['addressDetails']['controls']['county']['invalid'] && (f['addressDetails']['controls']['county']['dirty'] || f['addressDetails']['controls']['county']['touched'])" class="form-text text-danger">
@@ -306,7 +306,7 @@
                             optionValue="id" formControlName="town"
                             [style]="{ width: '100%', height: '50%' }"
                             placeholder="Town" name="townCode" id="town" appendTo="body"
-                            [filter]="true" filterBy="name" [showClear]="true"
+                            [filter]="true" filterBy="name" [showClear]="true" ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['addressDetails']['controls']['town']['invalid'] && (f['addressDetails']['controls']['town']['dirty'] || f['addressDetails']['controls']['town']['touched']) }">
                 </p-dropdown>
                 <div *ngIf="f['addressDetails']['controls']['town']['invalid'] && (f['addressDetails']['controls']['town']['dirty'] || f['addressDetails']['controls']['town']['touched'])" class="form-text text-danger">
@@ -349,7 +349,7 @@
                             optionValue="id" formControlName="town"
                             [style]="{ width: '100%', height: '50%' }"
                             placeholder="Town" name="townCode" id="town" appendTo="body"
-                            [filter]="true" filterBy="name" [showClear]="true"
+                            [filter]="true" filterBy="name" [showClear]="true" ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['addressDetails']['controls']['town']['invalid'] && (f['addressDetails']['controls']['town']['dirty'] || f['addressDetails']['controls']['town']['touched']) }">
                 </p-dropdown>
                 <div *ngIf="f['addressDetails']['controls']['town']['invalid'] && (f['addressDetails']['controls']['town']['dirty'] || f['addressDetails']['controls']['town']['touched'])" class="form-text text-danger">
@@ -445,7 +445,7 @@
                             placeholder="Bank" name="bank" id="bank" appendTo="body"
                             [filter]="true" filterBy="name" [showClear]="true"
                             [(ngModel)]="selectedBank"
-                            (onChange)="onBankSelection()"
+                            (onChange)="onBankSelection()" ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['paymentDetails']['controls']['bank']['invalid'] && (f['paymentDetails']['controls']['bank']['dirty'] || f['paymentDetails']['controls']['bank']['touched']) }">
                 </p-dropdown>
                 <!--<select id="bank" class="form-control" formControlName="bank" (change)="onBankSelection($event)"
@@ -465,7 +465,7 @@
                             optionValue="id" formControlName="branch"
                             [style]="{ width: '100%', height: '50%' }"
                             placeholder="Branch" name="branch" id="branch" appendTo="body"
-                            [filter]="true" filterBy="name" [showClear]="true"
+                            [filter]="true" filterBy="name" [showClear]="true" ngDefaultControl
                             [ngClass]="{ 'is-invalid': f['paymentDetails']['controls']['branch']['invalid'] && (f['paymentDetails']['controls']['branch']['dirty'] || f['paymentDetails']['controls']['branch']['touched']) }">
                 </p-dropdown>
                 <!--<select id="branch" class="form-control" formControlName="branch"

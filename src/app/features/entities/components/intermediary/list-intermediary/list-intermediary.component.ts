@@ -7,7 +7,6 @@ import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
 import {tap} from "rxjs/operators";
 import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
-import {SortFilterService} from "../../../../../shared/services/sort-filter.service";
 import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
@@ -56,7 +55,7 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private intermediaryService: IntermediaryService,
-    private sortFilterService: SortFilterService,
+    // private sortFilterService: SortFilterService,
     // private accountService: AccountService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService
@@ -72,6 +71,9 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * The ngOnInit function initializes the tableDetails object and shows a spinner.
+   */
   ngOnInit(): void {
     this.tableDetails = {
       cols: this.cols,
@@ -87,6 +89,19 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     this.spinner.show();
   }
 
+  /**
+   * The function `getAgents` retrieves a paginated list of agents, with optional sorting parameters, from an intermediary
+   * service.
+   * @param {number} pageIndex - The pageIndex parameter is used to specify the index of the page to retrieve. It is a
+   * number that represents the page number.
+   * @param {any} [sortField=createdDate] - The `sortField` parameter is used to specify the field by which the agents
+   * should be sorted. It can be any value, but it is typically a string representing the name of a field in the `AgentDTO`
+   * object.
+   * @param {string} [sortOrder=desc] - The `sortOrder` parameter is a string that specifies the order in which the agents
+   * should be sorted. It can have two possible values: "asc" for ascending order and "desc" for descending order. By
+   * default, the sort order is set to "desc".
+   * @returns an Observable of type Pagination<AgentDTO>.
+   */
   getAgents(pageIndex: number,
             sortField: any = 'createdDate',
             sortOrder: string = 'desc'): Observable<Pagination<AgentDTO>> {
@@ -95,6 +110,12 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this));
   }
 
+  /**
+   * The function "lazyLoadAgents" is used to fetch agents with pagination and sorting, and update the UI with the fetched
+   * data.
+   * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent` or
+   * `TableLazyLoadEvent`. It is an object that contains information about the lazy loading event triggered by the user.
+   */
   lazyLoadAgents(event:LazyLoadEvent | TableLazyLoadEvent){
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
@@ -120,7 +141,13 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       );
   }
 
-  searchIntermediary(name: string) {
+  /**
+   * The function `searchIntermediary` searches for an intermediary agent by name and assigns the search results to the
+   * `intermediaries` variable.
+   * @param {string} name - The "name" parameter is a string that represents the name of the intermediary or agent you want
+   * to search for.
+   */
+  /*searchIntermediary(name: string) {
     this.intermediaryService.searchAgent(
       0,
       5,
@@ -130,8 +157,11 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       .subscribe( (data) => {
         this.intermediaries =  data;
       });
-  }
+  }*/
 
+  /**
+   * The function navigates to a new entity page with the entity type set to 'Agent'.
+   */
   gotoEntityPage() {
     this.router.navigate(['/home/entity/new'],
       {queryParams: {entityType: 'Agent'}}).then(r => {

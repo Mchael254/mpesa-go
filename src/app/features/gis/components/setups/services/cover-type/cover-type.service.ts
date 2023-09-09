@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { CoverType, CoverTypes, Sections } from '../../data/gisDTO';
+import {AppConfigService} from "../../../../../../core/config/app-config-service";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ export class CoverTypeService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      
+
     })
   }
 
@@ -38,15 +38,15 @@ export class CoverTypeService {
     console.log(errorMessage);
     return throwError(errorMessage);
   }
-  
-  
+
+
   getAllCovertypes(): Observable<CoverType>{
     let page = 0;
     let size = 1000
     const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
       const params = new HttpParams()
       .set('page', `${page}`)
@@ -57,7 +57,7 @@ export class CoverTypeService {
       }).pipe(
         retry(1),
         catchError(this.errorHandl)
-      ) 
+      )
   }
 
   getCoverType(code: any): Observable<CoverTypes[]>{
@@ -74,7 +74,7 @@ export class CoverTypeService {
       retry(1),
       catchError(this.errorHandl)
     )
-  } 
+  }
   updateCover(data:CoverTypes,id:any): Observable<CoverTypes> {
     console.log(JSON.stringify(data))
     return this.http.put<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${id}`, JSON.stringify(data), this.httpOptions)
@@ -102,7 +102,7 @@ export class CoverTypeService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    
+
     return this.http.get<Sections[]>(`/${this.baseurl}/${this.setupsbaseurl}/sections`,{
           headers:headers,
           params:params
