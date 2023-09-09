@@ -299,14 +299,14 @@ export class ClausesComponent {
     ];
   }*/
 
-  actionButtonConfig() : DynamicFormButtons{
+  /*actionButtonConfig() : DynamicFormButtons{
     return {
       submit: { label: 'Save', visible: true, alignment: 'end' },
       back: { label: 'Revise', visible: true, alignment: 'start' },
       center: { label: 'Center', visible: false, alignment: 'center' },
 
     };
-  }
+  }*/
 
   /*receiveData(data) {
 

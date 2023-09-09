@@ -12,13 +12,13 @@
 
   <!-- Top Buttons !-->
   <div class="d-flex my-4 ms-4">
-    <button type="button" class="btn btn-primary rounded-1 px-4 me-3" (click)="gotoEntityPage()">New Client</button>
+    <button type="button" class="btn btn-primary rounded-1 px-4 me-3" id="btn-new-client" (click)="gotoEntityPage()">New Client</button>
     <button type="button" class="btn btn-outline-primary px-4 me-3">Import Client</button>
     <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
   </div>
 
   <div class="my-4 ms-4 me-4" style="position: relative;">
-    
+
     <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
     <app-dynamic-table
