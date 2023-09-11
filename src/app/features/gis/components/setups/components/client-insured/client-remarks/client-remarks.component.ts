@@ -68,7 +68,7 @@ export class ClientRemarksComponent {
  *  Triggers change detection to update the component view.
  */
   loadAllclientRemarks() {
-    return this.remarkService.getAllClientRemarks().subscribe(data => {
+     this.remarkService.getAllClientRemarks().subscribe(data => {
       this.remarkList = data;
       this.clientRemarksData = this.remarkList._embedded.client_remark_dto_list;
       console.log(this.clientRemarksData,"Client Remarks");

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { InterestedPartiesService } from '../../../services/interested-parties/interested-parties.service';
-import { Logger } from 'src/app/shared/shared.module';
+import {Logger} from '../../../../../../../shared/shared.module'
 
 const log = new Logger('InterestedPartiesComponent');
 
