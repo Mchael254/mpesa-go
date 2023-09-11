@@ -1,9 +1,17 @@
 import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import {Logger, UtilService} from "../../services";
 
-import {DomSanitizer} from "@angular/platform-browser";
-
 const log = new Logger('DocViewerComponent');
+
+/**
+ * This component is used to display documents and images
+ * It takes in the following inputs:
+ * 1. srcUrl: The url of the document or image to be displayed
+ * 2. base64String: The base64 string of the document or image to be displayed
+ * 3. isBase64: A boolean value to indicate if the document or image is in base64 format
+ * 4. mimeType: The mime type of the document or image to be displayed
+ * 5. fileName: The name of the document or image to be displayed
+ */
 
 @Component({
   selector: 'ngx-doc-viewer',
@@ -18,19 +26,23 @@ export class DocViewerComponent implements OnInit {
   @Input() mimeType = '';
   @Input() fileName = '';
 
-  protected docPath: any;
+  docPath: any;
   public contentType: 'document' | 'image' | 'video' = 'document';
 
-  constructor(private utilService: UtilService,
-              private _sanitizer: DomSanitizer
+  constructor(private utilService: UtilService
               ) {
   }
 
   ngOnInit(): void {
   }
 
+  /**
+   * This method is called when data-bound input properties sets or resets
+   * It is called before ngOnInit() and whenever one or more data-bound input properties change.
+   * It generates the url for the document  or image to be displayed
+   * @param changes
+   */
   ngOnChanges(changes: SimpleChanges){
-    log.info('Setting up document from ', this.isBase64 ? 'base64 string value' : 'url');
     this.contentType = this.utilService.checkIfImage(this.mimeType) ?
       'image' :
       'document';
@@ -50,7 +62,7 @@ export class DocViewerComponent implements OnInit {
 
     log.info('Element url: ', elementUrl);
     if (elementUrl != null) {
-      this.docPath = this._sanitizer.bypassSecurityTrustResourceUrl(elementUrl);
+      this.docPath = elementUrl;
     }
   }
 
