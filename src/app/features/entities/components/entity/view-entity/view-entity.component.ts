@@ -17,7 +17,7 @@ import { IntermediaryService } from '../../../services/intermediary/intermediary
 import { DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ClientService } from '../../../services/client/client.service';
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { ClientDTO } from '../../../data/ClientDTO';
 import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
 import { NgxSpinnerService } from 'ngx-spinner';

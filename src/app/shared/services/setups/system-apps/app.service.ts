@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 
+/**
+ * Service class to get the list of apps/systems
+ */
+
 @Injectable({
   providedIn: 'root',
 })
@@ -82,6 +86,9 @@ export class AppService {
 
   constructor() { }
 
+  /**
+   * Returns the list of apps/systems
+   */
   getApps(): any{
       return this.apps;
   }

@@ -1,13 +1,13 @@
 /****************************************************************************
  **
- ** Author: Justus Muoka
- **
+ ** Jwt Service
+ * @description This is a service that handles the jwt token
  ****************************************************************************/
 
 import {Inject, Injectable} from '@angular/core';
-import {UtilService} from '../util.service';
+import {UtilService} from '../util/util.service';
 import {APP_BASE_HREF} from '@angular/common';
-import {Logger} from '../logger.service';
+import {Logger} from '../logger/logger.service';
 import {BrowserStorage} from "../storage";
 import {OauthToken} from "../../data/auth";
 import {SessionStorageService} from "../session-storage/session-storage.service";
@@ -34,6 +34,10 @@ export class JwtService {
     ) {
     }
 
+    /**
+     * Gets the refresh token
+     * @returns string - the refresh token
+     */
     getRefreshToken(): string | null {
         let refreshToken = null;
         // if (this.cookieService.check(REFRESH_TOKEN)) {
@@ -44,6 +48,10 @@ export class JwtService {
         return refreshToken;
     }
 
+    /**
+     * Gets the refresh token expiry
+     * @returns string - the refresh token expiry
+     */
     getTokenExpiry(): string | null {
         let expiry!: string;
         // if (this.cookieService.check(SESSION_TOKEN_EXPIRES_AT)) {
@@ -52,6 +60,10 @@ export class JwtService {
         return this.sessionStorage.getItem(SESSION_TOKEN_EXPIRES_AT);
     }
 
+    /**
+     * Gets the session token
+     * @returns string - the session token
+     */
     getToken(): string | null {
         let myToken = null;
         // if (this.cookieService.check(SESSION_TOKEN)) {
@@ -60,6 +72,11 @@ export class JwtService {
         return this.sessionStorage.getItem(SESSION_TOKEN);
     }
 /*TODO: Work on this later*/
+
+    /**
+     * Save the session token
+     * @param token OauthToken - the token to be saved
+     */
     saveToken(token: OauthToken) {
         if (this.utilService.isEmpty(token)) {
             this.destroyToken();
@@ -121,6 +138,9 @@ export class JwtService {
         }
     }
 
+    /**
+     * Destroys the session token
+     */
     destroyToken() {
         this.browserStorage.clearObj('SESSION_TOKEN');
         this.sessionStorage.removeItem(SESSION_TOKEN);
@@ -132,6 +152,9 @@ export class JwtService {
         // this.cookieService.delete(SESSION_TOKEN_EXPIRES_AT, path, domain);
     }
 
+    /**
+     * Destroys the refresh token
+     */
     destroyRefreshToken() {
         const domain = this.utilService.isIE() ? null : location.hostname;
         const path = this.tokenPath;
@@ -140,6 +163,10 @@ export class JwtService {
         // this.cookieService.delete(REFRESH_TOKEN, path, domain);
     }
 
+    /**
+     * Gets the token path
+     * @returns string - the token path
+     */
     get tokenPath(): string {
         let path = this.baseHref.length < 1 ? '/' : '/';
         if (this.baseHref.length === 1 && this.baseHref.startsWith('/')) {

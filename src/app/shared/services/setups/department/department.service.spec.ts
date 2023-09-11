@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
 import { DepartmentService } from './department.service';
-import {AppConfigService} from "../../../core/config/app-config-service";
-import {DepartmentDto} from "../../data/common/departmentDto";
+import {AppConfigService} from "../../../../core/config/app-config-service";
+import {DepartmentDto} from "../../../data/common/departmentDto";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {AuthService} from "../auth.service";
-import {BrowserStorage} from "../storage";
+import {AuthService} from "../../auth.service";
+import {BrowserStorage} from "../../storage";
 import {APP_BASE_HREF} from "@angular/common";
-import {UtilService} from "../util.service";
-import {JwtService} from "../jwt/jwt.service";
+import {UtilService} from "../../util/util.service";
+import {JwtService} from "../../jwt/jwt.service";
 import {Router} from "@angular/router";
-import {MockUtilService} from "../auth.service.spec";
+import {MockUtilService} from "../../auth.service.spec";
 import {of} from "rxjs";
 
 export class MockAppConfigService {

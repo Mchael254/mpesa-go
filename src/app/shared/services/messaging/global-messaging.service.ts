@@ -1,15 +1,24 @@
 import { Injectable } from '@angular/core';
-import {Logger} from "../logger.service";
+import {Logger} from "../logger/logger.service";
 import {MessageService} from "primeng/api";
 
 const log = new Logger('GlobalMessagingService');
 
+/**
+ * Global Message Interface
+ * @param messageSummary Message Summary
+ * @param message Message to be published
+ * @param severity Type of message as either info, warning, error or success
+ */
 export interface GlobalMessage{
   messageSummary: string,
   message: string,
   severity?: string
 }
 
+/**
+ * This service is used to display messages to the user
+ */
 @Injectable({
   providedIn: 'root'
 })

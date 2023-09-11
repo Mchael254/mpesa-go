@@ -1,13 +1,16 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {DmsDocument, SingleDmsDocument} from "../../../../../../shared/data/common/dmsDocument";
 import {DmsService} from "../../../../../../shared/services/dms/dms.service";
-import {ParameterService} from "../../../../../../shared/services/parameter.service";
 import {NewTicketDto} from "../../../../data/ticketsDTO";
 import {allTicketModules} from "../../../../data/ticketModule";
 import {DynamicTableModalData} from "../../../../../../shared/components/dynamic-table/dynamic-table.component";
 import {TableDetail} from "../../../../../../shared/data/table-detail";
 import {untilDestroyed} from "../../../../../../shared/shared.module";
 import {take} from "rxjs/internal/operators/take";
+
+/**
+ * Component to display a list of documents attached to a ticket and preview a document within the list
+ */
 
 @Component({
   selector: 'app-ticket-documents',
@@ -35,9 +38,14 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   ];
 
   constructor(private dmsService: DmsService,
-              private parameterService: ParameterService,) {
+  ) {
   }
 
+  /**
+   * Initialize component by:
+   *  1.Setting table details
+   *  2.Fetch documents for the selected ticket
+   */
   ngOnInit(): void {
     this.tableDetails = {
       paginator: false, showFilter: false, showSorting: false,
@@ -47,10 +55,12 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       showCustomModalOnView: true,
       noDataFoundMessage: 'No Documents Found'
     }
-    this.fetchDMSUrlParameters();
     this.fetchDocuments();
   }
 
+  /**
+   * Fetch documents according to the selected ticket's module
+   */
   fetchDocuments(){
     let ticketModule = this.currentTicket?.systemModule;
     switch (ticketModule) {
@@ -66,6 +76,11 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     }
   }
 
+  /**
+   * Fetch documents by quotation code
+   * @param quoteCode - Quotation Code
+   * @private
+   */
   private fetchQuotationDocuments(quoteCode: string){
     if(!quoteCode){
       this.viewDocs = [];
@@ -86,6 +101,11 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       );
   }
 
+  /**
+   * Fetch documents by Policy No
+   * @param policyNo - Policy no
+   * @private
+   */
   private fetchPolicyDocuments(policyNo: string) {
     if(!policyNo){
       this.viewDocs = [];
@@ -102,6 +122,11 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       });
   }
 
+  /**
+   * Fetch documents by claim no
+   * @param claimNo - Claim No
+   * @private
+   */
   private fetchClaimDocuments(claimNo: string) {
     if(!claimNo){
       this.viewDocs = [];
@@ -118,18 +143,10 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     );
   }
 
-  protected fetchDMSUrlParameters() {
-    // return this.parameterService
-    //   .getParameterValue('DMS_WEBSERVICE_URL', 2) // first fetch DMS Service Url from backend
-    //   .pipe(
-    //     take(1),
-    //     untilDestroyed(this)
-    //   )
-    //   .subscribe( paramValue => {
-    //     this.dmsService.setDmsUrlParameter(paramValue);
-    //   });
-  }
-
+  /**
+   * Toggle display of the modal
+   * @param display - Modal visibility status
+   */
   toggleDocumentModal(display: boolean){
     this.documentModalVisible = display;
   }
@@ -137,12 +154,19 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   ngOnDestroy(): void {
   }
 
+  /**
+   * Fetch and Show document modal triggered by an event
+   * @param event - Event  emitted
+   */
   showModal(event: DynamicTableModalData<DmsDocument>) {
     this.selectedDocument = event.value;
     this.previewDocument();
     this.toggleDocumentModal(true);
   }
 
+  /**
+   * Fetch document data for preview
+   */
   previewDocument(){
     return this.dmsService.getDocumentById(this.selectedDocument?.id)
       .pipe(
@@ -154,6 +178,10 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       });
   }
 
+  /**
+   * Hide document modal triggered by event emitted
+   * @param event - Event emitted from an Output Event Emitter
+   */
   processActionEmitted(event) {
     this.toggleDocumentModal(false);
   }

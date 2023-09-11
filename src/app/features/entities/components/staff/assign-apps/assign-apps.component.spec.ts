@@ -1,7 +1,7 @@
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
 
 import { AssignAppsComponent } from './assign-apps.component';
-import {AppService} from "../../../../../shared/services/setups/app.service";
+import {AppService} from "../../../../../shared/services/setups/system-apps/app.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {StaffService} from "../../../services/staff/staff.service";
 import {of} from "rxjs";
