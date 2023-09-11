@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from "../../../core/config/app-config-service";
+import { AppConfigService } from "../../../../core/config/app-config-service";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs/internal/Observable";
-import { Logger } from "../logger.service";
-import { OccupationDTO } from '../../data/common/occupation-dto';
+import { Logger } from "../../logger/logger.service";
+import { OccupationDTO } from '../../../data/common/occupation-dto';
 
 const log = new Logger('OccupationService');
+
+/**
+ * The service to manage occupation operations.
+ */
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +20,11 @@ export class OccupationService {
 
   constructor(private appConfig: AppConfigService, private http: HttpClient) { }
 
+  /**
+   * Get all occupations for a given organization.
+   * @param organizationId Organization ID
+   * @returns {Observable<OccupationDTO[]>} List of occupations
+   */
   getOccupations(organizationId: number): Observable<OccupationDTO[]> {
     log.info('Fetching Occupations');
     const header = new HttpHeaders({

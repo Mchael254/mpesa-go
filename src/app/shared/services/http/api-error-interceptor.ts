@@ -1,7 +1,8 @@
 /****************************************************************************
  **
  ** Author: Justus Muoka
- **
+ ** @description  This is an interceptor that handles errors from api calls
+ * @implements HttpInterceptor
  ****************************************************************************/
 
 import { Injectable } from '@angular/core';
@@ -18,8 +19,8 @@ import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, timeout } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {Message, MessageService} from "primeng/api";
-import { Logger } from '../logger.service';
-import { UtilService } from '../util.service';
+import { Logger } from '../logger/logger.service';
+import { UtilService } from '../util/util.service';
 
 const log = new Logger('ApiErrorInterceptor');
 
@@ -32,6 +33,12 @@ export class ApiErrorInterceptor implements HttpInterceptor {
     private utilService: UtilService
   ) {}
 
+  /**
+   * Intercept any http request and handle errors
+   * @param req HttpRequest<any> - the request
+   * @param next HttpHandler - the next handler
+   * @returns Observable<HttpEvent<any>> - the observable of the http event
+   */
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
@@ -107,6 +114,12 @@ export class ApiErrorInterceptor implements HttpInterceptor {
     );
   }
 
+  /**
+   * Prepare the error message
+   * @param err any | null - the error
+   * @returns Message[] - the message array
+   * @private
+   */
   private prepareApiError(err: any | null): Message[] {
     // this is an instance of ApiError
     let apiError = err;
@@ -137,6 +150,12 @@ export class ApiErrorInterceptor implements HttpInterceptor {
     return messages;
   }
 
+  /**
+   * Transform the severity of the error
+   * @param type string - the type of the error
+   * @returns string - the transformed type
+   * @private
+   */
   private transformSeverity(type: string) {
     if (type === 'warning') {
       return 'warn';

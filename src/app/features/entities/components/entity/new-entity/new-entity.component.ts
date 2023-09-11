@@ -6,14 +6,14 @@ import { EntityService } from '../../../services/entity/entity.service';
 import { EntityDetails } from '../../../data/entity-details-data';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { MandatoryFieldsService } from 'src/app/shared/services/mandatory-fields.service';
+import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import { UtilService } from 'src/app/shared/services/util.service';
+import { UtilService } from '../../../../../shared/services/util/util.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { EntityDto, EntityResDTO, IdentityModeDTO } from '../../../data/entityDto';
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../../shared/services/logger/logger.service';
 
 const log = new Logger('NewEntityComponent');
 

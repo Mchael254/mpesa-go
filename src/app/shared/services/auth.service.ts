@@ -6,9 +6,9 @@ import {BrowserStorage} from "./storage";
 import {AccountContact} from '../data/account-contact';
 import {ClientAccountContact} from '../data/client-account-contact';
 import {WebAdmin} from '../data/web-admin';
-import {Logger} from './logger.service';
+import {Logger} from './logger/logger.service';
 import {JwtService} from './jwt/jwt.service';
-import {UtilService} from './util.service';
+import {UtilService} from './util/util.service';
 import {Router} from '@angular/router';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Message} from 'primeng/api';
@@ -22,6 +22,10 @@ import {AppConfigService} from "../../core/config/app-config-service";
 
 
 const log = new Logger('AuthService');
+
+/**
+ * Provides a base for authentication workflow.
+ */
 
 @Injectable({
   providedIn: 'root'
@@ -56,10 +60,18 @@ export class AuthService implements OnDestroy {
 
  private _redirectUrl: string;
 
+  /**
+   * Gets the redirect URL from the browser storage
+   * @return {string} The redirect URL
+   */
   get redirectUrl(): string {
     return this.browserStorage.getObj('auth_redirect_uri') || this._redirectUrl;
   }
 
+  /**
+   * Sets the redirect URL in the browser storage
+   * @param value The redirect URL
+   */
   set redirectUrl(value: string) {
     this._redirectUrl = value;
 
@@ -100,6 +112,10 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  /**
+   * Sets the authentication data and authenticated status
+   * @param user {AccountContact | ClientAccountContact | WebAdmin} The user data
+   */
   setAuth(user: AccountContact | ClientAccountContact | WebAdmin) {
     // set current user data into observable
     if (this.utilService.isUserAdmin(user)) {
@@ -115,6 +131,10 @@ export class AuthService implements OnDestroy {
     this.isAuthenticatedSubject.next(!!user);
   }
 
+  /**
+   * Purges the authentication data and authenticated status
+   * @param expiredSession {boolean} Whether the session has expired
+   */
   purgeAuth(expiredSession: boolean = false) {
     if (this.jwtService.getToken()) {
       const token = this.jwtService.getToken();
@@ -161,6 +181,9 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  /**
+   * Refreshes the authentication token
+   */
   attemptRefreshToken() {
     this.isLoadingUserSubject.next(true);
     let headers: HttpHeaders;
@@ -178,6 +201,12 @@ export class AuthService implements OnDestroy {
     this.refreshAuthToken(refresh_token, headers);
   }
 
+  /**
+   * Attempts to authenticate the user
+   * @param credentials {UserCredential} The user credentials
+   * @param errorCallback {Function} The error callback
+   * @return {void}
+   */
   attemptAuth(
     credentials: UserCredential,
     errorCallback?: (msg: Message) => void,
@@ -205,6 +234,12 @@ export class AuthService implements OnDestroy {
 
   // getAuthVerification
 
+  /**
+   * Attempts to authenticate the user
+   * @param credentials {UserCredential} The user credentials
+   * @param AuthenticationResponse {Function} The data response
+   * @param errorCallback {Function} The error callback
+   */
   authenticateUser(
     credentials: UserCredential,
     AuthenticationResponse?: (data)  =>void,
@@ -249,6 +284,12 @@ export class AuthService implements OnDestroy {
   //       });
   // }
 
+  /**
+   * Generates OTP for user verification
+   * @param username {string} The user's username
+   * @param channel {string} The channel to send the OTP to
+   * @return {Observable<boolean>} The response
+   */
   sentVerificationOtp(username: string, channel: string): Observable<boolean> {
     const headers = new HttpHeaders({
       Accept: 'application/json',
@@ -263,9 +304,9 @@ export class AuthService implements OnDestroy {
 
   /**
    * Verify user contact details
-   * @param username
-   * @param phoneNo
-   * @return O
+   * @param username {string} The user's username
+   * @param phoneNo {string} The user's phone number
+   * @return {Observable<AccountVerifiedResponse>} The response
    */
   verifyAccount(username:string, phoneNo:string): Observable<AccountVerifiedResponse>{
     const headers = new HttpHeaders({
@@ -281,6 +322,13 @@ export class AuthService implements OnDestroy {
     return this.http.post<AccountVerifiedResponse>(`/${(baseUrl)}/verify-account`, JSON.stringify(body),{headers:headers})
   }
 
+  /**
+   * Verify received OTP
+   * @param username {string} The user's username
+   * @param otp {number} The OTP
+   * @param email {string} The user's email
+   * @return {Observable<boolean>} The response
+   */
   verifyResetOtp(username: string, otp: number, email: string = null): Observable<boolean> {
     let url: string = '';
     const headers = new HttpHeaders({
@@ -373,6 +421,16 @@ export class AuthService implements OnDestroy {
 
   ngOnDestroy() {
   }
+
+  /**
+   * Attempts to login user to obtain and save JWT Token.
+   * It also gets the user's profile details after successful login and route to the default dashboard page.
+   *
+   * @param userCredential {UserCredential} The user credentials
+   * @param headers {HttpHeaders} The headers
+   * @param errorCallback {Function} The error callback
+   * @private
+   */
   private getAuthToken(
     userCredential: UserCredential,
     headers: HttpHeaders,
@@ -491,6 +549,14 @@ export class AuthService implements OnDestroy {
       });
   }
 
+  /**
+   * Change user's password
+   * @param username {string} The user's username
+   * @param newPassword {string} The new password
+   * @param validateOldPassword {string} check old password
+   * @param email {string} The user's email
+   * @return {Observable<boolean>} The response
+   */
   resetPassword(username: string, newPassword: string, validateOldPassword: string, email: string = null){
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const headers = new HttpHeaders({
@@ -507,7 +573,13 @@ export class AuthService implements OnDestroy {
     return this.http.post<boolean>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
   }
 
-  //change Password when logged in
+  /**
+   * Change user's password
+   * @param username
+   * @param validateOldPassword
+   * @param newPassword
+   * @param confirmPassword
+   */
   changePassword(username: string, validateOldPassword: string, newPassword: string, confirmPassword: string){
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
     const headers = new HttpHeaders({
@@ -523,6 +595,11 @@ export class AuthService implements OnDestroy {
     return this.http.post<string>(`/${(baseUrl)}/new-password`, JSON.stringify(body), {headers:headers});
   }
 
+  /**
+   * Update user profile
+   * @param userData {UserDetailsDTO} The user's profile data
+   * @return {Observable<string>} The response
+   */
   updateUserProfile(userData:UserDetailsDTO){
     const baseUrl = this.appConfigService.config.contextPath.users_services;
     const headers = new HttpHeaders({
@@ -532,6 +609,13 @@ export class AuthService implements OnDestroy {
     return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
   }
 
+  /**
+   * Refreshes the authentication token
+   * @param refresh_token {string} The refresh token
+   * @param headers {HttpHeaders} The headers
+   * @param errorCallback {Function} The error callback
+   * @private
+   */
   private refreshAuthToken(
       refresh_token: string,
       headers: HttpHeaders,

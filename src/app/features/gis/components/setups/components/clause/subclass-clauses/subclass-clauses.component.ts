@@ -6,7 +6,7 @@ import {untilDestroyed} from "../../../../../../../shared/services/until-destroy
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 import {CurrencyDTO} from "../../../../../../../shared/data/common/bank-dto";
-import {BankService} from "../../../../../../../shared/services/setups/bank.service";
+import {BankService} from "../../../../../../../shared/services/setups/bank/bank.service";
 import {CoverTypeService} from "../../../services/cover-type/cover-type.service";
 
 @Component({

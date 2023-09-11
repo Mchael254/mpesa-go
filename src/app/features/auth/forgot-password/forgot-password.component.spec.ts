@@ -12,11 +12,11 @@ import {NgxSpinnerModule} from "ngx-spinner";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {CopyrightFooterComponent} from "../../../shared/components/copyright-footer/copyright-footer.component";
 
-import {StaffService} from "../../entities/services/staff/staff.service";
-import {MockStaffService} from "../../entities/components/staff/list-staff/list-staff.component.spec";
 import {BrowserStorage} from "../../../shared/services/storage";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import {AppConfigService} from "../../../core/config/app-config-service";
+
+import {of} from "rxjs";
 import {
   MockAppConfigService,
   MockAuthService,
@@ -24,7 +24,6 @@ import {
   MockGlobalMessagingService,
   MockLocalStorageService, MockSessionStorageService
 } from "../authTestData/authTestData";
-import {of} from "rxjs";
 
 describe('ForgotPasswordComponent', () => {
   let component: ForgotPasswordComponent;

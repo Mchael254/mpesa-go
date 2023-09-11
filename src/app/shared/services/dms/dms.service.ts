@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Logger} from "../logger.service";
+import {Logger} from "../logger/logger.service";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {DmsDocument, SingleDmsDocument} from "../../data/common/dmsDocument";
-import {ParameterService} from "../parameter.service";
+import {ParameterService} from "../system-parameters/parameter.service";
 import {environment} from "../../../../environments/environment";
 import {AppConfigService} from "../../../core/config/app-config-service";
 
@@ -15,6 +15,10 @@ const dmsEndpoints = {
   getDocsByPolicyNo: 'getNBDocByPolicyNo',
   getDocsByClaimNo: 'getClaimsDocsByClaimNo',
 }
+
+/**
+ * Service that fetches documents from DMS (Document Management System)
+ */
 
 @Injectable({
   providedIn: 'root'

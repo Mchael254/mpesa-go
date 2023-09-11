@@ -1,5 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * Pipe to get the file extension
+ * @example
+ * {{'example.pdf' | fileExtension}} // returns 'pdf'
+ */
+
 @Pipe({
   name: 'fileExtension'
 })

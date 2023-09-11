@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
-import {AppConfigService} from "../../../core/config/app-config-service";
+import {AppConfigService} from "../../../../core/config/app-config-service";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {DepartmentDto} from "../../data/common/departmentDto";
+import {DepartmentDto} from "../../../data/common/departmentDto";
+
+/**
+ * This service is used to manage staff departments
+ */
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +18,11 @@ export class DepartmentService {
               private http: HttpClient)
   { }
 
+  /**
+   * This method is used to get all departments in an organization
+   * @param organizationId Organization ID
+   * @returns {Observable<DepartmentDto[]>} List of departments
+   */
   getDepartments(organizationId: number) :Observable<DepartmentDto[]>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -28,6 +37,11 @@ export class DepartmentService {
     });
   }
 
+  /**
+   * Get department by ID
+   * @param departmentId Department ID
+   * @returns {Observable<DepartmentDto>} Department
+   */
   getDepartmentById(departmentId: number):Observable<DepartmentDto>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -36,6 +50,11 @@ export class DepartmentService {
     return this.http.get<DepartmentDto>(`/${this.baseUrl}/setups/departments/${departmentId}`);
   }
 
+  /**
+   * Create a new Department
+   * @param department Department
+   * @returns {Observable<DepartmentDto>} Department
+   */
   saveDepartment(department: DepartmentDto):Observable<DepartmentDto>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -44,6 +63,11 @@ export class DepartmentService {
     return this.http.post<DepartmentDto>(`/${this.baseUrl}/setups/departments`, JSON.stringify(department), {headers:headers});
   }
 
+  /**
+   * Update a department
+   * @param department Department
+   * @returns {Observable<DepartmentDto>} Updated Department
+   */
   updateDepartment(department: DepartmentDto): Observable<DepartmentDto>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
