@@ -56,7 +56,7 @@
               <form class="form-inline form-sm" style="float: right;">
                 <div class="input-group mb-2" id="search-input" style="max-width: 100%;">
                   <input class="form-control py-2 border-0" style="background-color: #F8FAFC;"
-                         type="search" placeholder="search code,id..." [(ngModel)]="filterby">
+                         type="search" placeholder="search code,id..." [(ngModel)]="filterby" [ngModelOptions]="{standalone: true}">
                   <span class="input-group-append">
                                         <button class="border-0" style="background-color: #F8FAFC;">
                                             <i class="fa fa-search" style="color:#8C8C8C"></i>
