@@ -1,6 +1,5 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild} from '@angular/core';
 import {Logger} from "../../../../../../../../shared/services";
-import {ClassesSubclassesService} from "../../../../services/classes-subclasses/classes-subclasses.service";
 import {SubClassSectionsService} from "../../../../services/sub-class-sections/sub-class-sections.service";
 import {SubClassCoverTypesService} from "../../../../services/sub-class-cover-types/sub-class-cover-types.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
@@ -10,7 +9,6 @@ import {
   SubClassCoverTypesSectionsService
 } from "../../../../services/sub-class-cover-types-sections/sub-class-cover-types-sections.service";
 import {combineLatest, forkJoin} from "rxjs";
-import {ProductSubclassService} from "../../../../services/product-subclass/product-subclass.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {CoverTypesService} from "../../../../services/cover-types/cover-types.service";
 import {CurrencyService} from "../../../../../../../../shared/services/setups/currency/currency.service";
@@ -61,12 +59,10 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
 
   constructor(
     public fb: FormBuilder,
-    private gisClassesService: ClassesSubclassesService,
     private subclassSectionsService: SubClassSectionsService,
     private subclassCoverTypesService: SubClassCoverTypesService,
     private subClassCoverTypeSectionService: SubClassCoverTypesSectionsService,
     private sectionsService: SectionsService,
-    private productSubClassService: ProductSubclassService,
     private coverTypeService: CoverTypesService,
     private currencyService: CurrencyService,
     private messageService: GlobalMessagingService,
@@ -208,7 +204,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
 
   /**
    * Load cover types by subclass code
-   * @param code of type number
+   * @param code {number} subclass code
    */
   loadCovertypeBySubclassCode(code: number) {
     this.subclassCoverTypesService
@@ -366,7 +362,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to fetch all cover types
+   * Fetch all cover types
    */
   getAllCovertypes() {
     this.coverTypeService.getAllCovertypes1().subscribe(data => {
@@ -375,7 +371,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /***
-   * Method to fetch all currencies
+   * Fetch all currencies
    */
   getAllCurrencies() {
     this.currencyService.getAllCurrencies().subscribe(data => {
@@ -384,7 +380,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to update a cover type
+   * Update a subclass cover type
    */
   updateCovertype(){
     const cancelUpdate = this.cancelCovertypeUpdateTask.nativeElement
@@ -404,7 +400,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to create a cover type
+   * Create a subclass cover type
    */
   createCovertype() {
 
@@ -426,7 +422,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to get selected cover type and patch it to the form
+   * Get selected cover type and patch it to the form
    * and fetch all subclass covertype sections for the selected cover type
    * @param item which is the selected cover type
    */
@@ -440,7 +436,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to get changed cover type and patch the details to the cover type form
+   * Get changed cover type and patch the details to the cover type form
    * @param event
    */
   onCovertypesChange(event: any) {
@@ -454,7 +450,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to get changed section and patch the details to the subclass section form
+   * Get changed section and patch the details to the subclass section form
    * @param event
    */
   onSectionChange(event: any){
@@ -468,19 +464,18 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to get selected section and retrieve subclass sections by the current sub class ode
+   * Get selected section and retrieve subclass sections by the current sub class ode
    * @param event
    */
   onselectSection(event: any){
     this.getSubclassSecByCode(this.subclassCode)
     this.selected = event
     this.sections.patchValue( this.selected)
-    console.log( this.selected)
   }
 
   /**
-   * Method to retrieve sub class setion details by its code
-   * @param code which is the sub class section code
+   * Retrieve subclass section details by its code
+   * @param code which is the subclass section code
    */
   getSubclassSecByCode(code: any) {
     console.log(this.loadSubclassSection)
@@ -493,7 +488,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to update a sub class section
+   * Update a sub class section
    */
   updateSubSections(){
     const cancelUpdate = this.cancelSectionUpdateTask.nativeElement
@@ -511,7 +506,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to create subclass section from modal when clicking save button
+   * Create subclass section from modal when clicking save button
    */
   onclickSelect(){
 
@@ -553,8 +548,8 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   }
 
   /**
-   * Method to get selected subclass and load all sections by subclass code
-   * It alsoloads all cover types by the selected subclass code
+   * Get selected subclass and load all sections by subclass code.
+   * It also loads all cover types by the selected subclass code
    * @param event of type number
    */
   getSelectedSubclass(event: number) {
@@ -565,7 +560,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
 
 
   /**
-   * Method to select the current active tab
+   * Select the current active tab
    * @param activeTab of type string
    */
   selectTab(activeTab: string) {

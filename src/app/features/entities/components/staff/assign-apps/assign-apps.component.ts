@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AssignAppsRequest, CreateStaffDto} from "../../../data/StaffDto";
-import {AppService} from "../../../../../shared/services/setups/app.service";
+import {AppService} from "../../../../../shared/services/setups/system-apps/app.service";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {StaffService} from "../../../services/staff/staff.service";

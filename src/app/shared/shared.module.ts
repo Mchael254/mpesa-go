@@ -11,7 +11,7 @@ import {ToastModule} from "primeng/toast";
 import {ProgressBarModule} from "primeng/progressbar";
 import {HTTP_INTERCEPTORS, HttpClient} from "@angular/common/http";
 import {LoaderService} from "./services/loader.service";
-import { FileExtensionPipe } from './pipes/file-extension.pipe';
+import { FileExtensionPipe } from './pipes/file-extension/file-extension.pipe';
 import { DocViewerComponent } from './components/doc-viewer/doc-viewer.component';
 import { AuthService } from './services/auth.service';
 import { HttpService } from './services/http/http.service';
@@ -45,13 +45,14 @@ import { DynamicSetupSearchListScreenComponent } from './components/dynamic-setu
 import { DynamicSetupTableScreenComponent } from './components/dynamic-setup-table-screen/dynamic-setup-table-screen.component';
 import { DynamicSetupWizardWelcomeScreenComponent } from './components/dynamic-setup-wizard-welcome-screen/dynamic-setup-wizard-welcome-screen.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
-export { Logger, LogLevel } from './services/logger.service';
+export { Logger, LogLevel } from './services/logger/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
-export { UtilService } from './services/util.service'
+export { UtilService } from './services/util/util.service'
 // export { JwtService } from './services/jwt.service';
 export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateModule} from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
+import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
@@ -127,7 +128,8 @@ const SERVICES = [
     DynamicFormModalComponent,
     DynamicSetupTableScreenComponent,
     DynamicSetupWizardWelcomeScreenComponent,
-    CustomFilterPipe
+    CustomFilterPipe,
+    SafeResourceUrlPipe
 
 
   ],
@@ -169,7 +171,8 @@ const SERVICES = [
         TranslateModule,
         DynamicSetupWizardWelcomeScreenComponent,
         ReactiveFormsModule,
-        CustomFilterPipe
+        CustomFilterPipe,
+        SafeResourceUrlPipe
 
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

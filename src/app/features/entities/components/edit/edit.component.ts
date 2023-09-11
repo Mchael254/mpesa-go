@@ -8,8 +8,8 @@ import {DepartmentDto} from "../../../../shared/data/common/departmentDto";
 import {DynamicFormFields} from "../../../../shared/utils/dynamic.form.fields";
 import {DynamicFormButtons} from "../../../../shared/utils/dynamic.form.button";
 import { EntityDetails } from '../../data/entity-details-data'
-import {DepartmentService} from "../../../../shared/services/setups/department.service";
-import {OccupationService} from "../../../../shared/services/setups/occupation.service";
+import {DepartmentService} from "../../../../shared/services/setups/department/department.service";
+import {OccupationService} from "../../../../shared/services/setups/occupation/occupation.service";
 import { AccountService } from '../../services/account/account.service';
 import { AccountReqPartyId, IdentityModeDTO } from '../../data/entityDto';
 import { AmlWealthDetailsUpdateDTO, BankDetailsUpdateDTO, NextKinDetailsUpdateDTO, PartyAccountsDetails, PersonalDetailsUpdateDTO, WealthDetailsUpdateDTO } from '../../data/accountDTO';
@@ -22,15 +22,15 @@ import { GlobalMessagingService } from 'src/app/shared/services/messaging/global
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { LazyLoadEvent } from 'primeng/api';
-import { CountryService } from 'src/app/shared/services/setups/country.service';
-import { BankService } from 'src/app/shared/services/setups/bank.service';
+import { CountryService } from '../../../../shared/services/setups/country/country.service';
+import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
 import { BankBranchDTO, BankDTO, FundSourceDTO } from 'src/app/shared/data/common/bank-dto';
-import { SectorService } from 'src/app/shared/services/setups/sector.service';
+import { SectorService } from '../../../../shared/services/setups/sector/sector.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { TranslateService } from '@ngx-translate/core';
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../shared/services/logger/logger.service';
 
 const log = new Logger('EditComponent');
 
@@ -48,7 +48,7 @@ export class EditComponent implements OnInit{
   public nextKinDetailsForm: FormGroup;
   public showExtraStaffDetails: boolean = false;
   showSupervisorModal: boolean = false;
-  
+
   totalRecords: number;
   page = 1;
   pageSize = 5;

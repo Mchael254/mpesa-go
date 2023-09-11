@@ -8,7 +8,7 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 
 const log = new Logger('LoaderInterceptor');
 

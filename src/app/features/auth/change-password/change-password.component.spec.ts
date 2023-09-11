@@ -6,15 +6,8 @@ import {SessionStorageService} from "../../../shared/services/session-storage/se
 import {Router} from "@angular/router";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthService} from "../../../shared/services/auth.service";
-import {UtilService} from "../../../shared/services";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
-import {
-  MockAppConfigService,
-  MockAuthService,
-  MockBrowserStorage,
-  MockGlobalMessagingService,
-  MockLocalStorageService, MockSessionStorageService, MockUtilService
-} from "../authTestData/authTestData";
+
 import {BrowserStorage} from "../../../shared/services/storage";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import {AppConfigService} from "../../../core/config/app-config-service";
@@ -22,6 +15,13 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {NgxSpinnerModule} from "ngx-spinner";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {of} from "rxjs";
+import {
+  MockAppConfigService,
+  MockAuthService,
+  MockBrowserStorage,
+  MockGlobalMessagingService,
+  MockLocalStorageService, MockSessionStorageService
+} from "../authTestData/authTestData";
 
 describe('ChangePasswordComponent', () => {
   let component: ChangePasswordComponent;

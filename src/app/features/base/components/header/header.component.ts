@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../shared/services/logger/logger.service';
 
 const log = new Logger("HeaderComponent");
 

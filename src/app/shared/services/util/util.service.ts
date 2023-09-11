@@ -6,10 +6,10 @@
 
 import {Injectable} from '@angular/core';
 import {AbstractControl, FormArray} from '@angular/forms';
-import {ClientAccountContact} from "../data/client-account-contact";
-import {AccountContact} from "../data/account-contact";
-import {WebAdmin} from "../data/web-admin";
-import {TqClient} from "../data/tq-client";
+import {ClientAccountContact} from "../../data/client-account-contact";
+import {AccountContact} from "../../data/account-contact";
+import {WebAdmin} from "../../data/web-admin";
+import {TqClient} from "../../data/tq-client";
 import {HttpParams} from "@angular/common/http";
 import {DatePipe} from "@angular/common";
 
@@ -21,6 +21,9 @@ export interface FullName {
   clntOtherNames: string;
 }
 
+/**
+ * Utility service class to provide common utility methods
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -228,6 +231,11 @@ export class UtilService {
     );
   }
 
+  /**
+   * Concatenates names
+   * @param names {string[]} - names to be concatenated
+   * @returns {string} - concatenated names
+   */
   concatNames(...names: string[]): string {
     if (!names) {
       return '';
@@ -294,6 +302,10 @@ export class UtilService {
     return `${window.location.origin + baseHref + myUrl}`;
   }
 
+  /**
+   * Checks if  IE browser
+   * @returns {boolean}
+   */
   isIE(): boolean {
     if (/MSIE 10/i.test(navigator.userAgent)) {
       // This is internet explorer 10
@@ -346,8 +358,9 @@ export class UtilService {
   }
 
   /**
-   *
-   * @param base64String
+   * Converts a base64 string to a blob
+   * @param base64String base64 string
+   * @returns {Blob} generated blob
    */
   blobPdfFromBase64String(base64String: string) {
     const byteArray = Uint8Array.from(
@@ -358,6 +371,11 @@ export class UtilService {
     return new Blob([byteArray], { type: 'application/pdf' });
   }
 
+  /**
+   * Converts a blob to a base64 string
+   * @param blob
+   * @returns {string} base64 string
+   */
   blobToString(blob: Blob): string {
     let url, xmlHttpRequest;
     url = URL.createObjectURL(blob);
@@ -384,8 +402,9 @@ export class UtilService {
   }
 
   /**
-   *
-   * @param inputs
+   * Checks if any of the inputs has a value
+   * @param inputs {any[]} - inputs to check
+   * @returns {boolean} - true if any of the inputs has a value
    */
   checkAnyHasValue(...inputs: any[]): boolean {
     for (const input in inputs) {
@@ -417,7 +436,8 @@ export class UtilService {
 
   /**
    * Use the method to convert object values to UPPERCASE
-   *
+   * @param webObject {any} - object to be converted
+   * @returns {any} - converted object
    */
   objToUpperCase(webObject: { [x: string]: string; }) {
     let upperCaseObject = webObject;
@@ -435,7 +455,8 @@ export class UtilService {
 
   /**
    * Use the method to convert object values to titleCase
-   *
+   * @param webObject {any} - object to be converted
+   * @returns {any} - converted object
    */
   objToTitleCase(webObject: { [x: string]: any; }) {
     let titleCaseObject = webObject;
@@ -453,6 +474,11 @@ export class UtilService {
     return titleCaseObject;
   }
 
+  /**
+   * Use the method to convert object values to lowercase
+   * @param str {any} - object to be converted
+   * @returns {string} - converted object
+   */
   strToTitleCase(str: { toString: () => string; }): string {
     let titleStr = str.toString().toLowerCase();
     const words = titleStr.split(' ');
@@ -472,6 +498,11 @@ export class UtilService {
   //   return titleStr.join(' ');
   // }
 
+  /**
+   * Generates a random string
+   * @param length {number} - length of the string to be generated
+   * @returns {string} - generated string
+   */
   getRandomString(length: number) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -482,14 +513,20 @@ export class UtilService {
     return result;
   }
 
+  /**
+   * Get the current year
+   * @returns {number} - current year
+   */
   getCurrentYear() {
     const date = new Date();
     return date.getFullYear();
   }
 
-  /*
-  * Method to remove null values from url query parameters
-  * */
+  /**
+   * Removes null values from query params
+   * @param params {HttpParams} - query params
+   * @returns {any} - query params without null values
+   */
   removeNullValuesFromQueryParams(params: HttpParams) {
     return params ? params.keys().reduce((queryParams:any, key) => {
       // getting value from map
@@ -510,7 +547,7 @@ export class UtilService {
   /**
    * Check if a document is an image
    * @param mimeType
-   * @return boolean
+   * @return boolean - true if document is an image
    */
   checkIfImage(mimeType: string){
     return mimeType?.includes('jpg') || mimeType?.includes('png') || mimeType?.includes('jpeg');
@@ -519,7 +556,7 @@ export class UtilService {
   /**
    * Check if a document is a pdf
    * @param mimeType
-   * @return boolean
+   * @return boolean - true if document is a pdf
    */
   checkIfPdf(mimeType: string) {
     return mimeType?.includes('pdf');
@@ -529,6 +566,7 @@ export class UtilService {
    * Method to generate File URL from a base64 string value
    * @param mimeType in the format type/subtyepe e.g 'ímage/png' according to MIME types defined and standardized in IETF's RFC 6838.
    * @param base64String which is the file data represented as a base64 string
+   * @returns {string} URL of the file
    */
   generateURLFromBase64String(mimeType: string,
                               base64String : string){
@@ -556,11 +594,20 @@ export class UtilService {
     return URL.createObjectURL(blob);
   }
 
+  /**
+   * Checks if a value is a number
+   * @param val {any} - value to be checked
+   * @returns {boolean} - true if value is a number
+   */
   isNumber(val: any): boolean {
     return typeof val === 'number';
   }
 
   /*Method scrolls vertically to the section of a form where an input is required*/
+  /**
+   * Scrolls vertically to the section of a form where an input is required
+   * @param element {HTMLElement} - element to be scrolled to
+   */
   findScrollContainer(element: HTMLElement): HTMLElement | null {
     while (element.parentElement) {
       element = element.parentElement;
@@ -580,6 +627,12 @@ export class UtilService {
   }
 
   // format date in typescript
+  /**
+   * Formats a date
+   * @param date  {Date} - date to be formatted
+   * @param format {string} - format to be used
+   * @returns {string} - formatted date
+   */
   getFormattedDate(date: Date, format: string) {
     const datePipe = new DatePipe('en-US');
     return datePipe.transform(date, format);

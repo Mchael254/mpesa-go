@@ -5,7 +5,7 @@
  ****************************************************************************/
 
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 import { AbstractBrowserStorage } from './abstract-browser-storage';
 
 const log = new Logger('LocalBrowserStorageService');

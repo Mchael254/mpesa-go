@@ -7,11 +7,15 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 // import { each } from 'lodash-es';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 import {each} from "chart.js/helpers";
 
 const cachePersistenceKey = 'httpCache';
 
+/**
+ * HttpCacheEntry is the type of the object stored as a value in the cache.
+ * It contains the last update date and the data itself.
+ */
 export interface HttpCacheEntry {
   lastUpdated: Date;
   data: HttpResponse<any>;
@@ -19,6 +23,11 @@ export interface HttpCacheEntry {
 
 const log = new Logger('HttpCacheService');
 
+/**
+ * @description HttpCacheService is a service that provides a cache for HTTP requests.
+ * It can be used to cache GET requests and to retrieve the cached data for subsequent requests.
+ * The cache can be persisted in the local or session storage, or it can be only in-memory.
+ */
 @Injectable()
 export class HttpCacheService {
   private cachedData: { [key: string]: HttpCacheEntry } = {};
@@ -111,6 +120,10 @@ export class HttpCacheService {
     this.loadCacheData();
   }
 
+  /**
+   * Saves the cache data to the storage.
+   * @private
+   */
   private saveCacheData() {
     if (this.storage) {
       log.info(`Saving cache ${JSON.stringify(this.cachedData)}`);
@@ -118,6 +131,10 @@ export class HttpCacheService {
     }
   }
 
+  /**
+   * Loads the cache data from the storage.
+   * @private
+   */
   private loadCacheData() {
     const data = this.storage ? this.storage[cachePersistenceKey] : null;
     this.cachedData = data ? JSON.parse(data) : {};
