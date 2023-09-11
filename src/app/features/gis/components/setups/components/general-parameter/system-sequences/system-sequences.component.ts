@@ -6,7 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { FormGroup,FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
-import { BranchService } from 'src/app/shared/services/setups/branch.service';
+import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { ThisReceiver } from '@angular/compiler';
 @Component({
   selector: 'app-system-sequences',
@@ -38,14 +38,14 @@ export class SystemSequencesComponent {
 
 
   constructor(
-    private sequenceService: SequenceService, 
+    private sequenceService: SequenceService,
     private productService: ProductService,
     private branchService:BranchService,
     private messageService: MessageService,
     private agentService: IntermediaryService,
     public cdr: ChangeDetectorRef,
     public fb: FormBuilder,
-    
+
   ) { }
 
 ngOnInit(): void {
@@ -68,9 +68,9 @@ ngOnInit(): void {
   }
   SelectNode(event: any){
      this.selectedNode = event.node;
-    
+
     if(this.selectedNode.key != undefined){
-     
+
       this.getSequenceByCode(this.selectedNode.key);
     }
 
@@ -79,14 +79,14 @@ ngOnInit(): void {
     this.sequenceService.getSequenceByCode(code).subscribe( data => {
       this.seq = data;
       console.log(this.seq)
-      this.sequenceForm.patchValue(this.seq) 
+      this.sequenceForm.patchValue(this.seq)
       this.changeForm.controls['oldNextValue'].setValue(this.seq.next_number)
       this.cdr.detectChanges();
     });
   }
 
   getSequences(){
-    
+
     this.sequenceService.getSequenceList().subscribe(data =>{
       this.sequences = data;
       this.data = this.sequences._embedded.system_sequence_dto_list.map((item) => ({
@@ -138,12 +138,12 @@ ngOnInit(): void {
       oldNextValue: ['', Validators.required],
       remarks: ['', Validators.required],
       user: ['', Validators.required]
-     
+
     })
   }
 
   getBranchesOrganizationId(){
-    
+
     this.branchService.getBranches(2).subscribe(data =>{
       this.branch = data;
     })
@@ -166,48 +166,48 @@ ngOnInit(): void {
     this.createForm.controls['organization_code'].setValue(2)
     this.sequenceService.createSequence(this.createForm.value).subscribe(res=>{
       try{
-        
+
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
       }catch(error){
-       
+
         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
-      
+
       }
     })
   }
   saveAllocateForm(){
     this.allocateForm.controls['sequenceCode'].setValue(this.selectedNode.key)
-   
+
       this.sequenceService.allocate(this.selectedNode.key,this.allocateForm.value).subscribe(res=>{
         try{
-        
+
           this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
         }catch(error){
-         
+
           this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
-        
+
         }
       })
-    
-   
-    
-    
+
+
+
+
   }
 
   saveChangeForm(){
     try{
       this.sequenceService.change(this.selectedNode.key,this.changeForm.value).subscribe(res=>{
-       
+
           console.log(this.allocateForm.value)
           this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
-       
+
       })
     }catch(error){
-         
+
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, select a sequence to proceed'});
-    
+
     }
-    
+
   }
 
 }

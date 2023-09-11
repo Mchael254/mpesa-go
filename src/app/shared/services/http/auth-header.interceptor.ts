@@ -2,13 +2,19 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { mergeMap, withLatestFrom } from 'rxjs/operators';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 import { AuthService } from '../auth.service';
-import { UtilService } from '../util.service';
-// import { retryIfLoadingUser } from '../utils';
+import { UtilService } from '../util/util.service';
 
 const log = new Logger('AuthHeaderInterceptor');
 
+/**
+ * Auth Header Interceptor
+ * @description Adds the Authorization header to every request if there is a logged-in user.
+ * @implements HttpInterceptor
+ * @param {UtilService} utilService - UtilService
+ * @param {AuthService} authService - AuthService
+ */
 @Injectable()
 export class AuthHeaderInterceptor implements HttpInterceptor {
   constructor(
@@ -17,6 +23,11 @@ export class AuthHeaderInterceptor implements HttpInterceptor {
   ) {
   }
 
+    /**
+     * Intercepts an outgoing HTTP request, and set the Authorization header if there is a logged-in user.
+     * @param req HttpRequest<any>  - The outgoing HTTP request
+     * @param next HttpHandler - The next interceptor in the chain, or the backend if no interceptors remain in the chain.
+     */
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler

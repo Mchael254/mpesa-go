@@ -1,7 +1,8 @@
 /****************************************************************************
  **
  ** Author: Justus Muoka
- **
+ *  @description This is an interceptor that adds the token to the header of every request
+ *  @implements HttpInterceptor
  ****************************************************************************/
 
 import {
@@ -12,7 +13,7 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 import { JwtService } from '../jwt/jwt.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
@@ -25,6 +26,11 @@ export class TokenInterceptor implements HttpInterceptor {
     private deviceDetectorService: DeviceDetectorService
   ) {}
 
+  /**
+   * @description intercepts the request and adds the token to the Authorization header
+   * @param req HttpRequest<any> - the request to be intercepted
+   * @param next HttpHandler - the next handler
+   */
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler

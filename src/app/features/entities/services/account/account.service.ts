@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs/internal/Observable";
 import { AppConfigService } from "../../../../core/config/app-config-service";
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../shared/services/logger/logger.service';
 import {
           AmlWealthDetailsUpdateDTO,
           BankDetailsUpdateDTO, ClientTitleDTO,

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {SubclassesDTO} from "../../../../data/gisDTO";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {ClassesSubclassesService} from "../../../../services/classes-subclasses/classes-subclasses.service";
@@ -6,6 +6,13 @@ import {tap} from "rxjs/operators";
 import {Logger} from "../../../../../../../../shared/services";
 
 const log = new Logger('SubClassListingComponent');
+
+/**
+ * Component to list all subclasses
+ * Output: selectedSubclassEvent - emits the selected subclass code
+ * @implements {OnInit}
+ *
+ */
 
 @Component({
   selector: 'app-sub-class-listing',
@@ -59,7 +66,7 @@ export class SubClassListingComponent implements OnInit {
    * Load all subclasses to be listed
    */
   loadAllSubclasses() {
-    return this.gisClassesService.getSubclasses1()
+    this.gisClassesService.getSubclasses1()
       .pipe(
       tap(() => (this.isDisplayed = true))
       )

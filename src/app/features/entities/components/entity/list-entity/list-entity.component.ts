@@ -7,7 +7,7 @@ import { LazyLoadEvent } from 'primeng/api';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { tap } from 'rxjs';
 import { EntityService } from '../../../services/entity/entity.service';
-import { Logger } from 'src/app/shared/services/logger.service';
+import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';

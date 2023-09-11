@@ -18,12 +18,12 @@ import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
 import { PaymentDetailsDTO, WealthAmlDTO } from '../../../data/accountDTO';
 import { AddressDTO } from '../../../data/AgentDTO';
-import { BankService } from 'src/app/shared/services/setups/bank.service';
-import { CountryService } from 'src/app/shared/services/setups/country.service';
-import {MandatoryFieldsService} from 'src/app/shared/services/mandatory-fields.service'
-import { SectorService } from 'src/app/shared/services/setups/sector.service';
+import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
+import { CountryService } from '../../../../../shared/services/setups/country/country.service';
+import {MandatoryFieldsService} from '../../../../../shared/services/mandatory-fields/mandatory-fields.service'
+import { SectorService } from '../../../../../shared/services/setups/sector/sector.service';
 import { ClientService } from '../../../services/client/client.service';
-import { OccupationService } from 'src/app/shared/services/setups/occupation.service';
+import { OccupationService } from '../../../../../shared/services/setups/occupation/occupation.service';
 import {EntityService} from "../../../services/entity/entity.service";
 @Component({
   selector: 'app-new-service-provider',

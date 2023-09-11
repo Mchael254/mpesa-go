@@ -16,8 +16,8 @@ import {
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
-import { Logger } from '../logger.service';
-import { UtilService } from '../util.service';
+import { Logger } from '../logger/logger.service';
+import { UtilService } from '../util/util.service';
 import { retryIfLoadingUser } from '../../utils';
 
 const log  = new Logger('RoleGuard');

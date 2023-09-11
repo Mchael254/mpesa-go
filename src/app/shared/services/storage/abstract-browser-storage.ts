@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { BrowserStorage, DEFAULT_KEY } from './browser-storage';
-import { Logger } from '../logger.service';
+import { Logger } from '../logger/logger.service';
 
 const log = new Logger('BrowserStorage');
 
