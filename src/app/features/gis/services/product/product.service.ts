@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
 
 @Injectable({
