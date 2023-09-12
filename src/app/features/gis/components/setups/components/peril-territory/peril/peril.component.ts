@@ -113,25 +113,6 @@ export class PerilComponent {
    }
     delete(){
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Unable to delete Peril'});
-  //   if(this.selected==undefined){
-  //     this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a peril to continue'});
-  //   }else{
-      
-  //       this.service.deletePeril(this.perilDetails.code).subscribe(
-  //         (res)=>{
-  //         this.messageService.add({severity:'success', summary: 'Success', detail: 'Cover type deleted'});
-  //       },
-  //         (error: HttpErrorResponse) => {
-  //           console.log(error);
-  //           this.messageService.add({severity:'error', summary: 'Error', detail: 'Unable to delete Peril.Try again later'});
-  //           this.perilForm.reset(); 
-  //         }
-    
-        
-  //       )
-      
-    
-  //  }
   }  
   filter(event: any) {
     const searchValue = (event.target.value).toUpperCase();
