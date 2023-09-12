@@ -3,7 +3,7 @@ import { shortPeriod } from '../../data/gisDTO';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 @Injectable({
   providedIn: 'root'
 })
@@ -47,8 +47,8 @@ errorHandl(error: HttpErrorResponse) {
       catchError(this.errorHandl)
     )
   }
-  getSPRates(code:number):Observable<shortPeriod[]>{
-    return this.http.get<shortPeriod[]>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates/${code}`).pipe(
+  getSPRates(code:number):Observable<shortPeriod>{
+    return this.http.get<shortPeriod>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
