@@ -99,12 +99,12 @@ export class ServiceProviderService {
   }
 
     /*Get a Service Provider by Id*/
-  getServiceProviderById(id: number): Observable<ServiceProviderRes> {
+  getServiceProviderById(id: number){
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     })
-    return this.http.get<ServiceProviderRes>(`/${this.baseUrl}/accounts/service-providers/${id}`,
+    return this.http.get(`/${this.baseUrl}/accounts/service-providers/${id}`,
       {
         headers: headers,
       });
