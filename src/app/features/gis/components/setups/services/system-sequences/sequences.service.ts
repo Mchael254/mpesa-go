@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Sequence } from '../../data/gisDTO';
 import { allocateform,changeForm } from '../../data/gisDTO';
 @Injectable({
@@ -35,8 +35,8 @@ export class SequenceService {
         catchError(this.errorHandl)
       );
     }
-    getSequenceByCode(code: number): Observable<Sequence>{
-      return this.http.get<Sequence>(`/${this.baseurl}/${this.setupsbaseurl}/system-sequences/${code}`);
+    getSequenceByCode(code: number){
+      return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/system-sequences/${code}`);
     }
     createSequence(data: Sequence): Observable<Sequence> {
       console.log(JSON.stringify(data))
