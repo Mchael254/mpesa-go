@@ -167,8 +167,7 @@ export class MenuService{
     name: 'Products',
     nameSlug: 'pendingSetups',
     icon: 'fa-solid fa-peseta-sign',
-    menuItems: [{name:'My Tasks', link:""}, {name:'My Dashboard', link:""}, {name:'My Transactions', link:""}, {name:'My Policies', link:""}, {name:'My Quotations', link:""}, {name:'My Renewals', link:""}],
-
+    link:'/home/gis/setup/product/product-wizard',
     collapsed:true,
   },
   {

@@ -8,6 +8,10 @@ const routes: Routes = [
     path: 'product-definition', component: ProductDefinitionComponent,
   },
   {
+    path:'product-wizard/:num',
+    component: ProductSetupWizardComponent
+  },
+  {
     path: 'product-wizard', component: ProductSetupWizardComponent,
   }
 ];
