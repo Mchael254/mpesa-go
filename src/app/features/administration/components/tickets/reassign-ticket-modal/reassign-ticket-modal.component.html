@@ -22,6 +22,10 @@
                 <i class="fa fa-angle-down"></i>
               </button>
             </div>
+
+            <div  *ngIf="f['modalUserAssignTo'].invalid && (f['modalUserAssignTo'].dirty || f['modalUserAssignTo'].touched)" class="form-text text-danger form-error-text" [ngClass]="{ 'is-invalid': f['modalUserAssignTo'].errors }">
+              <div *ngIf="f['modalUserAssignTo'].errors['required']">Main user is required</div>
+            </div>
           </div>
 
           <div *ngIf="showDefaultUser" class="row mt-2">

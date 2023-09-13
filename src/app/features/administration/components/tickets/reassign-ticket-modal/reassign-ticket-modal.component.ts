@@ -7,7 +7,6 @@ import {Observable} from "rxjs/internal/Observable";
 import {StaffService} from "../../../../entities/services/staff/staff.service";
 import {TicketsService} from "../../../services/tickets.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {ConfirmedValidator} from "../../../../../core/validators/confirmed.validator";
 
 @Component({
   selector: 'app-reassign-ticket-modal',
@@ -46,25 +45,15 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
   }
 
   createReassignTicketsForm() {
-    // this.reassignTicketForm = this.fb.group( {
-    //   modalUserAssignTo: {value: '', disabled: true, validators: Validators.required},
-    //   modalDefaultGroupUser:   {value: '', disabled: true},
-    //   modalTicketComments: ['']
-    // });
 
     this.reassignTicketForm = this.fb.group({
-      modalUserAssignTo: { value: '', disabled: true, validators: Validators.required },
-      modalDefaultGroupUser: { value: '', disabled: true, validators: Validators.required },
+      modalUserAssignTo: ['', Validators.required],
+      modalDefaultGroupUser: [''] ,
       modalTicketComments: ['']
     });
 
-    // this.reassignTicketForm = this.fb.group({
-    //       // password: ['', Validators.required],
-    //       modalUserAssignTo: ['', [Validators.required]],
-    //       modalDefaultGroupUser: [''],
-    //       modalTicketComments: ['']
-    //     });
-
+    this.reassignTicketForm.controls['modalUserAssignTo'].disable();
+    this.reassignTicketForm.controls['modalDefaultGroupUser'].disable();
     this.setRequiredFields();
     this.clearForm();
   }
@@ -200,6 +189,8 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
       modalDefaultGroupUser: event?.name
     })
   }
+
+  get f() { return this.reassignTicketForm.controls; }
 
   ngOnDestroy(): void {
   }
