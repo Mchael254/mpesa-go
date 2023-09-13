@@ -2,11 +2,11 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ScheduleService} from "../../../services/schedule/schedule.service";
 import {take} from "rxjs/operators";
 import {ScreenCode} from "../../../data/gisDTO";
-import {Logger} from "../../../../../../../shared/services";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {NgxSpinnerService} from 'ngx-spinner';
 import {GlobalMessagingService} from "../../../../../../../shared/services/messaging/global-messaging.service";
 import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {Logger} from "../../../../../../../shared/services/logger/logger.service";
 
 
 const log = new Logger('ScreenCodesComponent');
