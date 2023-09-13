@@ -335,8 +335,8 @@ export interface coverType{
   surveyEvaluationRequired: string
 }
 export interface subSections{
-  description: any;
-  name: any;
+  description?: any;
+  name?: any;
   code: number,
   declaration: string,
   excessDetails: string,
