@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Step } from '../../data/steps';
 
+/**
+ *  Service class to get the list of steps
+ */
+
 @Injectable({
   providedIn: 'root'
 })

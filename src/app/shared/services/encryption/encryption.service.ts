@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AES, enc } from 'crypto-js';
 
+/**
+ * Encryption service
+ * @description Encrypts and decrypts data
+ * @export class EncryptionService
+ */
 
 @Injectable({
   providedIn: 'root'

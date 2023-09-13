@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Creates the login form
+   * Creates the login form.
    * Sets username and password as required fields
    * Sets password minimum length to 6
    * @returns void
