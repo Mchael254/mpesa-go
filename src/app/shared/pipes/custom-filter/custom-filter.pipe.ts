@@ -1,5 +1,37 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * Pipe to filter an array of objects
+ *
+ * Usage:
+ *  array | customFilter: term: excludes
+ *  term: string to filter by
+ *  excludes: array of object keys to exclude from filter
+ *
+ *  Example:
+ *    <input type="text" [(ngModel)]="searchTerm">
+ *      <div *ngFor="let item of items | customFilter:searchTerm:['id','name']">
+ *        {{item | json}}
+ *        <hr>
+ *          </div>
+ *          searchTerm = 'foo'
+ *          items = [
+ *          {id: 1, name: 'foo', description: 'lorem ipsum'},
+ *          {id: 2, name: 'bar', description: 'lorem ipsum'},
+ *          {id: 3, name: 'baz', description: 'lorem ipsum'},
+ *          {id: 4, name: 'foobar', description: 'lorem ipsum'},
+ *          {id: 5, name: 'foobaz', description: 'lorem ipsum'},
+ *          {id: 6, name: 'barbaz', description: 'lorem ipsum'},
+ *          {id: 7, name: 'lorem', description: 'lorem ipsum'},
+ *          ]
+ *          Result:
+ *          {id: 1, name: 'foo', description: 'lorem ipsum'}
+ *          {id: 4, name: 'foobar', description: 'lorem ipsum'}
+ *          {id: 5, name: 'foobaz', description: 'lorem ipsum'}
+ *
+ * Pipe will filter by all object keys by default
+ */
+
 @Pipe({
   name: 'customFilter'
 })

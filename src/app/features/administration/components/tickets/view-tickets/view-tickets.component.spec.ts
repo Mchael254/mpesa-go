@@ -18,6 +18,11 @@ import {BrowserModule} from "@angular/platform-browser";
 import {APP_BASE_HREF} from "@angular/common";
 import {MessageService} from "primeng/api";
 import {NewTicketDto} from "../../../data/ticketsDTO";
+import {
+  DynamicSimpleModalComponent
+} from "../../../../../shared/components/dynamic-simple-modal/dynamic-simple-modal.component";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {StaffModalComponent} from "../../../../entities/components/staff/staff-modal/staff-modal.component";
 import {CubejsApi} from "@cubejs-client/core";
 
 
@@ -72,14 +77,15 @@ describe('ViewTicketsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ViewTicketsComponent, ReassignTicketModalComponent],
+      declarations: [ViewTicketsComponent, ReassignTicketModalComponent, DynamicSimpleModalComponent, StaffModalComponent],
       imports: [
         TableModule,
         HttpClientTestingModule,
         NgxSpinnerModule.forRoot(),
         RouterTestingModule,
         BrowserModule,
-
+        FormsModule,
+        ReactiveFormsModule
       ],
       providers: [
         { provide: AuthService, MockAuthService },
@@ -202,4 +208,34 @@ describe('ViewTicketsComponent', () => {
     //   expect(errorMessageMock).toHaveBeenCalledWith('Warning', 'Please select at least one ticket to reassign');
     // }
   });
+
+  it('should toggle the reassign modal if selected tickets exist', () => {
+    jest.spyOn(component, 'processReassignTask');
+    jest.spyOn(component, 'checkSelectedTickets').mockReturnValue(true);
+    jest.spyOn(component, 'toggleReassignModal');
+
+    // Act
+    const button = fixture.nativeElement.querySelector('#btn-reassign-task');
+    button.click();
+
+    // Assert
+    expect(component.processReassignTask).toHaveBeenCalled();
+    expect(component.checkSelectedTickets).toHaveBeenCalled();
+    expect(component.toggleReassignModal).toHaveBeenCalledWith(true);
+    expect(component.showReassignTicketsModal).toBeTruthy();
+  });
+
+  it('should not toggle the reassign modal if no selected tickets exist', () => {
+    // Arrange
+    jest.spyOn(component, 'checkSelectedTickets').mockReturnValue(false);
+    jest.spyOn(component, 'toggleReassignModal');
+
+    // Act
+    component.processReassignTask();
+
+    // Assert
+    expect(component.checkSelectedTickets).toHaveBeenCalled();
+    expect(component.toggleReassignModal).not.toHaveBeenCalled();
+  });
+
 });

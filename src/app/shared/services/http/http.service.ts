@@ -84,6 +84,13 @@ export const HTTP_DYNAMIC_INTERCEPTORS = new InjectionToken<HttpInterceptor>(
   'HTTP_DYNAMIC_INTERCEPTORS'
 );
 
+
+/**
+ * @description Extends HttpClient with per request configuration using dynamic interceptors.
+ * @param httpHandler The original HttpHandler to chain with interceptors.
+ * @param injector The application injector, required to dynamically fetch the interceptors.
+ * @param interceptors The interceptors to apply to the request.
+ */
 @Injectable()
 export class HttpService extends HttpClient {
   constructor(
@@ -105,6 +112,11 @@ export class HttpService extends HttpClient {
     }
   }
 
+  /**
+   * Enables caching for this request.
+   * @param options The cache options.
+   * @return {HttpClient} The new instance.
+   */
   override cache(options?: {
     update?: boolean;
     persistence?: 'local' | 'session';
@@ -115,18 +127,36 @@ export class HttpService extends HttpClient {
     return this.addInterceptor(cacheInterceptor);
   }
 
+  /**
+   * Skips default error handler for this request.
+   * @return {HttpClient} The new instance.
+   */
   override skipErrorHandler(): HttpClient {
     return this.removeInterceptor(ApiErrorInterceptor);
   }
 
+  /**
+   * Skips default loader for this request.
+   * @return {HttpClient} The new instance.
+   */
   override skipLoaderInterceptor(): HttpClient {
     return this.removeInterceptor(LoaderInterceptor);
   }
 
+  /**
+   * Skips all dynamic interceptors.
+   * @return {HttpClient} The new instance.
+   */
   override skipAllInterceptors(): HttpClient {
     return new HttpService(this.httpHandler, this.injector, []);
   }
 
+  /**
+   * Performs HTTP request with dynamic interceptors.
+   * @param method The HTTP method.
+   * @param url The URL.
+   * @param options The HTTP options.
+   */
   // Override the original method to wire interceptors when triggering the request.
   override request(method?: any, url?: any, options?: any): any {
     const handler = this.interceptors.reduceRight(
@@ -136,6 +166,12 @@ export class HttpService extends HttpClient {
     return new HttpClient(handler).request(method, url, options);
   }
 
+  /**
+   * Removes given interceptor to the interceptors chain.
+   * @param interceptorType The interceptor type.
+   * @return {HttpClient} The new instance.
+   * @private
+   */
   private removeInterceptor(interceptorType: Function): HttpService {
     return new HttpService(
       this.httpHandler,
@@ -144,6 +180,12 @@ export class HttpService extends HttpClient {
     );
   }
 
+  /**
+   * Adds given interceptor to the interceptors chain.
+   * @param interceptor The interceptor instance.
+   * @return {HttpClient} The new instance.
+   * @private
+   */
   private addInterceptor(interceptor: HttpInterceptor): HttpService {
     return new HttpService(
       this.httpHandler,
