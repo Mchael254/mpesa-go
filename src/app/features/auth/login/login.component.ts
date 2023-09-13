@@ -3,11 +3,11 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message } from 'primeng/api';
 import { Observable } from 'rxjs';
-import { UtilService } from '../../../shared/services';
-import { AuthService } from '../../../shared/services/auth.service';
 import { UserCredential } from '../../base/util';
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
+import {UtilService} from "../../../shared/services";
+import {AuthService} from "../../../shared/services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private sessionStorageService: SessionStorageService,
     private localStorageService: LocalStorageService,
-    public utilService: UtilService,
+    public  utilService: UtilService,
     private cdr: ChangeDetectorRef
   ) {
   }

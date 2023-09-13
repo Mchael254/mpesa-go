@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Logger} from "../../../shared/services";
 import {Criteria} from "../../../shared/data/reports/criteria";
+import {Logger} from "../../../shared/services";
 
 const log = new Logger('CriteriaPillComponent')
 @Component({

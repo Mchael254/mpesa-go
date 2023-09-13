@@ -6,9 +6,7 @@ import {BrowserStorage} from "./storage";
 import { AccountContact } from '../data/account-contact';
 import { ClientAccountContact } from '../data/client-account-contact';
 import { WebAdmin } from '../data/web-admin';
-import { Logger } from './logger.service';
 import { JwtService } from './jwt/jwt.service';
-import { UtilService } from './util.service';
 import { AppConfigService } from '../../core/config/app-config-service';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
@@ -19,6 +17,8 @@ import { OauthToken } from '../data/auth';
 import {AccountVerifiedResponse} from "../../core/auth/auth-verification";
 import {UserDetailsDTO} from 'src/app/features/administration/data/user-details';
 import {LocalStorageService} from './local-storage/local-storage.service';
+import {Logger} from "./logger/logger.service";
+import {UtilService} from "./util/util.service";
 
 
 const log = new Logger('AuthService');

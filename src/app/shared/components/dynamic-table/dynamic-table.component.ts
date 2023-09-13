@@ -1,9 +1,10 @@
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Table, TableLazyLoadEvent} from "primeng/table";
 import {Router} from "@angular/router";
-import {Logger, UtilService} from "../../services";
 import {TableDetail} from "../../data/table-detail";
 import {LazyLoadEvent} from "primeng/api";
+import {Logger} from "../../services/logger/logger.service";
+import {UtilService} from "../../services/util/util.service";
 
 
 const log = new Logger('DynamicTableComponent');

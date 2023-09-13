@@ -6,9 +6,9 @@ import {ClientTitleDTO} from "../../../../shared/data/common/client-title-dto";
 
 import { Pagination } from '../../../../shared/data/common/pagination';
 import { AccountReqPartyId, EntityDto, EntityResDTO, IdentityModeDTO, ReqPartyById } from '../../data/entityDto';
-import { UtilService } from '../../../../shared/services';
 import { PartyTypeDto } from '../../data/partyTypeDto';
 import { PartyAccountsDetails } from '../../data/accountDTO';
+import {UtilService} from "../../../../shared/services/util/util.service";
 
 @Injectable({
   providedIn: 'root'
