@@ -1,12 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
+import { IntermediaryService } from '../../../../../../entities/services/intermediary/intermediary.service';
 import { SequenceService } from '../../../services/system-sequences/sequences.service';
 import { Sequence } from '../../../data/gisDTO';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { FormGroup,FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
-import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
+import { ProductService } from '../../../../../../gis/services/product/product.service';
+import { BranchService } from '../../../../../../../shared/services/setups/branch.service';
 import { ThisReceiver } from '@angular/compiler';
 @Component({
   selector: 'app-system-sequences',
@@ -157,7 +157,6 @@ ngOnInit(): void {
   getAgents() {
     this.agentService.getAgents().subscribe(data => {
       this.agents = data.content
-      console.log(this.agents)
     })
   }
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 import { territories } from '../../../data/gisDTO';
 @Injectable({
   providedIn: 'root'
@@ -47,8 +47,8 @@ errorHandl(error: HttpErrorResponse) {
       catchError(this.errorHandl)
     )
   }
-  getTerritory(code:number):Observable<territories[]>{
-    return this.http.get<territories[]>(`/${this.baseurl}/${this.setupsbaseurl}/territories/${code}`).pipe(
+  getTerritory(code:number):Observable<territories>{
+    return this.http.get<territories>(`/${this.baseurl}/${this.setupsbaseurl}/territories/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
