@@ -20,7 +20,6 @@ import {CountryService} from "../../../../../shared/services/setups/country/coun
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
 import {DepartmentService} from "../../../../../shared/services/setups/department/department.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
-import {Logger, UtilService} from "../../../../../shared/services";
 import {BranchService} from "../../../../../shared/services/setups/branch/branch.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {DatePipe} from "@angular/common";
@@ -29,6 +28,8 @@ import {TableLazyLoadEvent} from "primeng/table";
 import {FormStateService} from "../../../../../shared/services/form-state/form-state.service";
 import {FormState} from "../../../../../shared/data/form-state";
 import {AuthService} from "../../../../../shared/services/auth.service";
+import {Logger} from "../../../../../shared/services/logger/logger.service";
+import {UtilService} from "../../../../../shared/services/util/util.service";
 
 const log = new Logger('StaffProfileComponent');
 

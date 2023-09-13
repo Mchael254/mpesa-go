@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
-import {Logger, UtilService} from "../../services";
+import {Logger, UtilService} from '../../shared.module';
 
 const log = new Logger('DocViewerComponent');
 

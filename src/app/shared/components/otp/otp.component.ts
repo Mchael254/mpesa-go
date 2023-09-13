@@ -3,11 +3,10 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../../services/auth.service";
 import {GlobalMessagingService} from "../../services/messaging/global-messaging.service";
-import {Logger, UtilService} from "../../services";
 import {untilDestroyed} from "../../services/until-destroyed";
-import {SessionStorageService} from "../../services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../services/local-storage/local-storage.service";
-import { finalize } from 'rxjs';
+import {UtilService} from "../../services/util/util.service";
+import {Logger} from "../../services/logger/logger.service";
 
 const log = new Logger('OtpVerificationComponent');
 
