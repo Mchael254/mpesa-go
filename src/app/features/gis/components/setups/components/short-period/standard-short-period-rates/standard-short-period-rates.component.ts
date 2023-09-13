@@ -69,34 +69,12 @@ export class StandardShortPeriodRatesComponent {
   edit(){
     console.log(this.rate)
     try {
-      // this.rateForm.controls['organizationCode'].setValue(2)
-      // this.rateForm.controls['version'].setValue(0)
-      // this.rateForm.controls['rateDivisionFactor'].setValue(this.rate.rate_division_factor)
-      // this.rateForm.controls['minimumDays'].setValue(this.rate.minimum_days)
-      // this.rateForm.controls['maximumDays'].setValue(this.rate.maximum_days)
-      // this.rateForm.controls['dateWithEffectTo'].setValue(this.rate.date_with_effect_to)
-      // this.rateForm.controls['annualPremiumRate'].setValue(this.rate.annual_premium_rate)
-      // this.rateForm.controls['dateWithEffectFrom'].setValue(this.rate.date_with_effect_from)
-      // this.rateForm.controls['code'].setValue(this.rate.code)
       this.rateForm.patchValue(this.rate)
-  
-    
       this.new = false;
-      
     } catch (error) {
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Short Period rate to edit'});
       this.new = true;
     }
-   
-
-    // if(this.rate==undefined){
-    //   alert("error")
-    // }else{
-    //   this.new = false;
-    // console.log(this.rate)
-    // }
-    // this.new = false;
-    // console.log(this.rate)
   }
 
   save(){

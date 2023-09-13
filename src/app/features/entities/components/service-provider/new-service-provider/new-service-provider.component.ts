@@ -1,21 +1,20 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
 import { ContactsDTO, ProviderTypeDto, ServiceProviderDTO, ServiceProviderRequestDTO } from '../../../data/ServiceProviderDTO';
-import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
-import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
+import { CountryDto, StateDto, TownDto } from '../../../../../shared/data/common/countryDto';
+import { BankBranchDTO, BankDTO, CurrencyDTO } from '../../../../../shared/data/common/bank-dto';
 import { DatePipe } from '@angular/common';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceProviderService } from '../../../services/service-provider/service-provider.service';
 import {takeUntil} from "rxjs/operators";
 import { ReplaySubject } from 'rxjs';
-import { untilDestroyed } from 'src/app/shared/shared.module';
-import { UtilService } from 'src/app/shared/shared.module';
-import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
+import { untilDestroyed,UtilService } from '../../../../../shared/shared.module';
+import { SectorDTO } from '../../../../../shared/data/common/sector-dto';
 import { ClientTitlesDto } from '../../../data/ClientDTO';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
-import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
+import { OccupationDTO } from '../../../../../shared/data/common/occupation-dto';
 import { PaymentDetailsDTO, WealthAmlDTO } from '../../../data/accountDTO';
 import { AddressDTO } from '../../../data/AgentDTO';
 import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
@@ -135,7 +134,6 @@ export class NewServiceProviderComponent {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private activatedRoute: ActivatedRoute,
     private globalMessagingService: GlobalMessagingService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
@@ -161,15 +159,38 @@ export class NewServiceProviderComponent {
     this.getServiceProviderType();
   }
 
+  /**
+ * Handles the selection of a user type.
+ * 
+ * @param {Event} e - The event triggered by the user's selection.
+ * @remarks
+ * This method is responsible for capturing the selected user type from an event and assigning it to the 'agentType' property.
+ * The 'agentType' property represents the chosen user type.
+ */
   selectUserType(e) {
     this.agentType = e.target.value;
-    console.log(`userType >>>`, this.agentType, e.target.value)
+  
   }
+  /**
+ * Getter function to access form controls within 'newServiceProviderForm'.
+ * @returns {AbstractControl} The form controls within the 'newServiceProviderForm' form group.
+ * @remarks
+ * This getter allows convenient access to the form controls within the 'newServiceProviderForm' form group.
+ */
 
   get f() {
     return this.newServiceProviderForm.controls;
   }
 
+
+/**
+ * Initializes and configures the service provider registration form.
+ * @remarks
+ * This method sets up and configures the 'newServiceProviderForm' using Angular's FormBuilder (fb).
+ * It defines the structure of the form, including form controls and nested form groups.
+ * The method also subscribes to relevant observables and fetches data to populate the form.
+ * Additionally, it handles form validation and displays asterisks for mandatory fields.
+ */
 
   serviceProviderRegForm() {
     this.newServiceProviderForm = this.fb.group({
@@ -383,6 +404,15 @@ export class NewServiceProviderComponent {
       identityType: this.entityDetails?.modeOfIdentity?.name,
     });
   }
+
+  /**
+ * Fetches a list of banks based on the selected country.
+ * 
+ * @param {number} countryId - The ID of the selected country.
+ * @remarks
+ * This method makes an HTTP request to retrieve a list of banks associated with the specified country.
+ * The fetched data is stored in the 'banksData' property for use in the form.
+ */
   getBanks(countryId: number) {
     this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
@@ -390,6 +420,12 @@ export class NewServiceProviderComponent {
         this.banksData = data
       })
   }
+  /**
+ * Handles changes when the selected country in the form changes.
+ * @remarks
+ * This method is triggered when the user selects a different country.
+ * It performs tasks such as resetting certain form values, fetching banks for the selected country, and updating city data.
+ */
   onCountryChange() {
     this.newServiceProviderForm.patchValue({
       county: null,
@@ -404,6 +440,12 @@ export class NewServiceProviderComponent {
       });
     this.cdr.detectChanges();
   }
+  /**
+ * Handles changes when the selected city/state in the form changes.
+ * @remarks
+ * This method is triggered when the user selects a different city/state.
+ * It fetches towns associated with the selected city/state and updates the town data accordingly.
+ */
   onCityChange() {
     this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
@@ -411,9 +453,26 @@ export class NewServiceProviderComponent {
         this.townData = data;
       })
   }
+  /**
+ * Handles the selection of a utility bill type.
+ * 
+ * @param {Event} e - The event triggered by the user's selection.
+ * @remarks
+ * This method captures the selected utility bill type from an event and assigns it to the 'utilityBill' property.
+ * The 'utilityBill' property represents the chosen utility bill type.
+ */
   selectUtilityBill(e) {
     this.utilityBill = e.target.value;
   }
+  /**
+ * Handles file upload events.
+ * 
+ * @param {Event} event - The file input change event.
+ * @remarks
+ * This method reads and processes a file selected by the user. It checks if files are present in the event,
+ * reads the selected file as a data URL, and assigns the result to the 'url' property.
+ * The 'url' property can be used to display or process the uploaded file.
+ */
   onUpload(event)
   {
     if (event.target.files) {
@@ -424,9 +483,15 @@ export class NewServiceProviderComponent {
       }
     }
   }
+  /**
+ * Handles changes when a bank is selected in the form.
+ * @remarks
+ * This method is responsible for handling changes when a bank is selected in the form.
+ * It sets the 'branch' form control to null, and then calls 'getBankBranches' to fetch and update bank branches based on the selected bank.
+ * Additionally, it triggers change detection.
+ */
   onBankSelection() {
-    /*const bankId = event.target.value; // Get the selected bank ID from the event
-    this.getBankBranches(bankId);*/
+    
     this.newServiceProviderForm.patchValue({
       branch: null
     });
@@ -434,6 +499,15 @@ export class NewServiceProviderComponent {
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
   }
+  /**
+ * Fetches and updates bank branches based on the selected bank.
+ * 
+ * @param {number} bankId - The ID of the selected bank.
+ * @remarks
+ * This method makes an HTTP request to retrieve a list of bank branches associated with the specified bank.
+ * The fetched branch data is stored in the 'bankBranchData' property for use in the form.
+ * If 'bankId' is falsy, indicating no bank is selected, it clears the 'bankBranchData'.
+ */
   getBankBranches(bankId: number) {
     if (bankId) {
       this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {
@@ -443,213 +517,230 @@ export class NewServiceProviderComponent {
       this.bankBranchData = [];
     }
   }
+/**
+ * Saves the service provider information submitted via the form.
+ * @remarks
+ * This method is responsible for saving the service provider information when the form is submitted.
+ * It performs form validation, checks for required fields, and constructs DTOs for various parts of the service provider data.
+ * After preparing the data, it makes an HTTP request to save the service provider.
+ * If the form is invalid, it displays an error message and scrolls to the first invalid field.
+ * If the form is valid and the service provider is saved successfully, it displays a success message and navigates to a new page.
+ */
+    saveServiceProvider() {
+      this.submitted = true;
+      this.newServiceProviderForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
-  saveServiceProvider() {
-    this.submitted = true;
-    this.newServiceProviderForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
+      console.log('FORM,>>', this.newServiceProviderForm.controls)
 
-    console.log('FORM,>>', this.newServiceProviderForm.controls)
+      setTimeout( () => {
+        if (this.newServiceProviderForm.invalid) {
+          const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
 
-    setTimeout( () => {
-      if (this.newServiceProviderForm.invalid) {
-        const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
+          let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
 
-        let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
-
-        for (const control of invalidControls) {
-          if (!control.value) {
-            firstInvalidUnfilledControl = control;
-            break;
-          }
-        }
-
-        if (firstInvalidUnfilledControl) {
-          firstInvalidUnfilledControl.focus(); // Set focus to the first invalid and unfilled field
-          const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
-          if (scrollContainer) {
-            scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop; // Scroll the scrollable container to the top of the first invalid and unfilled field
-          }
-        } else {
-          const firstInvalidControl = invalidControls[0];
-          if (firstInvalidControl) {
-            firstInvalidControl.focus(); // Set focus to the first invalid field
-            const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
-            if (scrollContainer) {
-              scrollContainer.scrollTop = firstInvalidControl.offsetTop; // Scroll the scrollable container to the top of the first invalid field
+          for (const control of invalidControls) {
+            if (!control.value) {
+              firstInvalidUnfilledControl = control;
+              break;
             }
           }
+
+          if (firstInvalidUnfilledControl) {
+            firstInvalidUnfilledControl.focus(); // Set focus to the first invalid and unfilled field
+            const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
+            if (scrollContainer) {
+              scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop; // Scroll the scrollable container to the top of the first invalid and unfilled field
+            }
+          } else {
+            const firstInvalidControl = invalidControls[0];
+            if (firstInvalidControl) {
+              firstInvalidControl.focus(); // Set focus to the first invalid field
+              const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
+              if (scrollContainer) {
+                scrollContainer.scrollTop = firstInvalidControl.offsetTop; // Scroll the scrollable container to the top of the first invalid field
+              }
+            }
+          }
+
+          this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
+          return; // Exit the method if the form is invalid
         }
 
-        this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
-        return; // Exit the method if the form is invalid
-      }
+        const serviceproviderFormValues = this.newServiceProviderForm.getRawValue();
+        // Preparing address dto
+        const address: AddressDTO ={
+          /* Todo:
+              fax- no field for it but its on endpoint
+              postal_code - no field for it but its on endpoint
+              zip - no field for it but its on endpoint
+              residential_address - no field for it but its on endpoint*/
+          box_number: serviceproviderFormValues.address.box_number,
+          country_id: serviceproviderFormValues.address.country,
+          estate: serviceproviderFormValues.address.country,
+          fax: "try",
+          house_number: serviceproviderFormValues.address.house_number,
+          id: 0,
+          is_utility_address: serviceproviderFormValues.address.is_utility_address ? serviceproviderFormValues.address.is_utility_address : null,
+          physical_address: serviceproviderFormValues.address.physical_address,
+          postal_code: "44",
+          residential_address: "kibera",
+          road: serviceproviderFormValues.address.road,
+          state_id: 2,
+          town_id: serviceproviderFormValues.address.town,
+          // utility_address_proof:serviceproviderFormValues.address.utility_address_proof,
+          zip: "1022",
+          // phoneNumber: serviceproviderFormValues.address.phoneNumber
+        }
+        //preparing  contact dto
 
-      const serviceproviderFormValues = this.newServiceProviderForm.getRawValue();
-      // Preparing address dto
-      const address: AddressDTO ={
-        /* Todo:
-            fax- no field for it but its on endpoint
-            postal_code - no field for it but its on endpoint
-            zip - no field for it but its on endpoint
-            residential_address - no field for it but its on endpoint*/
-        box_number: serviceproviderFormValues.address.box_number,
-        country_id: serviceproviderFormValues.address.country,
-        estate: serviceproviderFormValues.address.country,
-        fax: "try",
-        house_number: serviceproviderFormValues.address.house_number,
-        id: 0,
-        is_utility_address: serviceproviderFormValues.address.is_utility_address ? serviceproviderFormValues.address.is_utility_address : null,
-        physical_address: serviceproviderFormValues.address.physical_address,
-        postal_code: "44",
-        residential_address: "kibera",
-        road: serviceproviderFormValues.address.road,
-        state_id: 2,
-        town_id: serviceproviderFormValues.address.town,
-        // utility_address_proof:serviceproviderFormValues.address.utility_address_proof,
-        zip: "1022",
-        // phoneNumber: serviceproviderFormValues.address.phoneNumber
-      }
-      //preparing  contact dto
+        const contact: ContactsDTO = {
+          /*Todo: clientTitle - start end point,-philip/idah
+              channel - SMS/Email- Drop down,-John
+              pinNo - this is not necessary/ captured from  prime Identity,
+              eDocuments - Which documement? to discuss this
+              EmailFiled- to be provided,
+              received Document- Field to be provided*/
+          emailAddress: serviceproviderFormValues.contact_details.email, /*Todo: To add field for Email*/
+          id: 0,
+          phoneNumber: serviceproviderFormValues.contact_details.phone_number,
+          receivedDocuments: "N", /*Todo: provide field to capture*/
+          smsNumber: serviceproviderFormValues.contact_details.smsNumber,
+          titleShortDescription: "DR",
+          preferredChannel: null
+        }
+        //preparing payment dto
+        const payment: PaymentDetailsDTO = {
+          /* Todo:
+              bank: not captured in endpoint,
+              mpayNo: not captured in endpoint,
+              Iban: not captured in endpoint,*/
+          account_number: serviceproviderFormValues.payment_details.account_number,
+          bank_branch_id: serviceproviderFormValues.payment_details.branch,
+          currency_id: serviceproviderFormValues.payment_details.currency,
+          effective_from_date: serviceproviderFormValues.payment_details.effective_date_from,
+          effective_to_date: serviceproviderFormValues.payment_details.effective_date_to,
+          id: 0,
+          is_default_channel: "N"
+        }
+        const wealth: WealthAmlDTO = {
+          /* Todo:
+              typeOfEmployment: is of type LOV on frontend,
+              purposeinInsurance: not captured in endpoint,
+              premiumFrequency: not captured in endpoint,
+              distributeChannel: not captured in endpoint,
+              cr_form_required: not on frontend,
+              cr_form_year: not on frontend*/
+          citizenship_country_id: serviceproviderFormValues.wealth_details.wealth_citizenship,
+          cr_form_required: "N",
+          cr_form_year: 0,
+          funds_source: serviceproviderFormValues.wealth_details.funds_source,
+          id: 0,
+          is_employed: "N",
+          is_self_employed: "N",
+          marital_status: serviceproviderFormValues.wealth_details.marital_status ? serviceproviderFormValues.wealth_details.marital_status : null,
+          nationality_country_id: serviceproviderFormValues.wealth_details.country,
+          occupation_id: serviceproviderFormValues.wealth_details.occupation,
+          sector_id: serviceproviderFormValues.wealth_details.economic_sector,
+          certificate_registration_number: 0,
+          certificate_year_of_registration: '',
+          distributeChannel: '',
+          insurancePurpose: '',
+          operating_country_id: null,
+          parent_country_id: 0,
+          premiumFrequency: '',
+          registeredName: '',
+          source_of_wealth_id: 0,
+          tradingName: ''
+        }
+        const servProvider: ServiceProviderRequestDTO = {
+          // category: this.agentType,
+          parentCompany: serviceproviderFormValues.parentCompany,
+          systemId: 37,
+          systemShtDesc: "GIS",
+          tradeName: serviceproviderFormValues.tradeName,
+          // yearOfRegistration: null,
+          // citizenship_country_id: serviceproviderFormValues.citizenship,
+          // dateCreated: serviceproviderFormValues.regDate,
+          // effectiveDateFrom: null,
+          // gender: serviceproviderFormValues.gender,
+          id: 0,
+          // idNumber: serviceproviderFormValues.txtIdNo,
+          // modeOfIdentity: this.entityDetails.modeOfIdentity.name,
+          // name: serviceproviderFormValues.firstName + ' ' + serviceproviderFormValues.otherName,
+          // pinNumber: serviceproviderFormValues.pinNumber,
+          providerLicenseNo: null,
+          // providerStatus: "N",
+          // providerTypeId: serviceproviderFormValues.providerType,
+          // shortDescription: null,
+          // status: "N",
+          // type: null,
+          vatNumber: null
 
-      const contact: ContactsDTO = {
-        /*Todo: clientTitle - start end point,-philip/idah
-            channel - SMS/Email- Drop down,-John
-            pinNo - this is not necessary/ captured from  prime Identity,
-            eDocuments - Which documement? to discuss this
-            EmailFiled- to be provided,
-            received Document- Field to be provided*/
-        emailAddress: serviceproviderFormValues.contact_details.email, /*Todo: To add field for Email*/
-        id: 0,
-        phoneNumber: serviceproviderFormValues.contact_details.phone_number,
-        receivedDocuments: "N", /*Todo: provide field to capture*/
-        smsNumber: serviceproviderFormValues.contact_details.smsNumber,
-        titleShortDescription: "DR",
-        preferredChannel: null
-      }
-      //preparing payment dto
-      const payment: PaymentDetailsDTO = {
-        /* Todo:
-            bank: not captured in endpoint,
-            mpayNo: not captured in endpoint,
-            Iban: not captured in endpoint,*/
-        account_number: serviceproviderFormValues.payment_details.account_number,
-        bank_branch_id: serviceproviderFormValues.payment_details.branch,
-        currency_id: serviceproviderFormValues.payment_details.currency,
-        effective_from_date: serviceproviderFormValues.payment_details.effective_date_from,
-        effective_to_date: serviceproviderFormValues.payment_details.effective_date_to,
-        id: 0,
-        is_default_channel: "N"
-      }
-      const wealth: WealthAmlDTO = {
-        /* Todo:
-            typeOfEmployment: is of type LOV on frontend,
-            purposeinInsurance: not captured in endpoint,
-            premiumFrequency: not captured in endpoint,
-            distributeChannel: not captured in endpoint,
-            cr_form_required: not on frontend,
-            cr_form_year: not on frontend*/
-        citizenship_country_id: serviceproviderFormValues.wealth_details.wealth_citizenship,
-        cr_form_required: "N",
-        cr_form_year: 0,
-        funds_source: serviceproviderFormValues.wealth_details.funds_source,
-        id: 0,
-        is_employed: "N",
-        is_self_employed: "N",
-        marital_status: serviceproviderFormValues.wealth_details.marital_status ? serviceproviderFormValues.wealth_details.marital_status : null,
-        nationality_country_id: serviceproviderFormValues.wealth_details.country,
-        occupation_id: serviceproviderFormValues.wealth_details.occupation,
-        sector_id: serviceproviderFormValues.wealth_details.economic_sector,
-        certificate_registration_number: 0,
-        certificate_year_of_registration: '',
-        distributeChannel: '',
-        insurancePurpose: '',
-        operating_country_id: null,
-        parent_country_id: 0,
-        premiumFrequency: '',
-        registeredName: '',
-        source_of_wealth_id: 0,
-        tradingName: ''
-      }
-      const servProvider: ServiceProviderRequestDTO = {
-        // category: this.agentType,
-        parentCompany: serviceproviderFormValues.parentCompany,
-        systemId: 37,
-        systemShtDesc: "GIS",
-        tradeName: serviceproviderFormValues.tradeName,
-        // yearOfRegistration: null,
-        // citizenship_country_id: serviceproviderFormValues.citizenship,
-        // dateCreated: serviceproviderFormValues.regDate,
-        // effectiveDateFrom: null,
-        // gender: serviceproviderFormValues.gender,
-        id: 0,
-        // idNumber: serviceproviderFormValues.txtIdNo,
-        // modeOfIdentity: this.entityDetails.modeOfIdentity.name,
-        // name: serviceproviderFormValues.firstName + ' ' + serviceproviderFormValues.otherName,
-        // pinNumber: serviceproviderFormValues.pinNumber,
-        providerLicenseNo: null,
-        // providerStatus: "N",
-        // providerTypeId: serviceproviderFormValues.providerType,
-        // shortDescription: null,
-        // status: "N",
-        // type: null,
-        vatNumber: null
-
-      }
-      //preparing Service provider DTO
-      const saveServiceProvider = {
-        address: address,
-        contactDetails: contact,
-        createdBy: null,
-        effectiveDateFrom: null,
-        effectiveDateTo: null,
-        id: 0,
-        organizationId: 2,
-        category: this.agentType,
-        countryId: serviceproviderFormValues.citizenship,
-        gender: serviceproviderFormValues.gender ? serviceproviderFormValues.gender : null,
-        status: "A",
-        dateCreated: serviceproviderFormValues.regDate,
-        pinNumber: serviceproviderFormValues.pinNumber,
-        accountType: serviceproviderFormValues.providerType,
-        firstName: serviceproviderFormValues.firstName,
-        lastName: serviceproviderFormValues.otherName,
-        dateOfBirth: this.entityDetails?.dateOfBirth,
-        name:null,
-        partyId: this.entityDetails.id,
-        partyTypeShortDesc: "SPR",
-        modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
-        paymentDetails: payment,
-        serviceProviderRequest: servProvider,
-        wealthAmlDetails: wealth
+        }
+        //preparing Service provider DTO
+        const saveServiceProvider = {
+          address: address,
+          contactDetails: contact,
+          createdBy: null,
+          effectiveDateFrom: null,
+          effectiveDateTo: null,
+          id: 0,
+          organizationId: 2,
+          category: this.agentType,
+          countryId: serviceproviderFormValues.citizenship,
+          gender: serviceproviderFormValues.gender ? serviceproviderFormValues.gender : null,
+          status: "A",
+          dateCreated: serviceproviderFormValues.regDate,
+          pinNumber: serviceproviderFormValues.pinNumber,
+          accountType: serviceproviderFormValues.providerType,
+          firstName: serviceproviderFormValues.firstName,
+          lastName: serviceproviderFormValues.otherName,
+          dateOfBirth: this.entityDetails?.dateOfBirth,
+          name:null,
+          partyId: this.entityDetails.id,
+          partyTypeShortDesc: "SPR",
+          modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
+          paymentDetails: payment,
+          serviceProviderRequest: servProvider,
+          wealthAmlDetails: wealth
 
 
-      }
-      this.serviceProviderService.saveServiceProvider(saveServiceProvider)
-        .pipe(
-          takeUntil(this.destroyed$),
-        )
-        .subscribe(serviceProviderData => {
-          this.globalMessagingService.clearMessages();
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Service Provider');
-          // this.serviceProviders = serviceProviderData;
-          this.router.navigate(['home/entity/service-provider/list']);
-        });
+        }
+        this.serviceProviderService.saveServiceProvider(saveServiceProvider)
+          .pipe(
+            takeUntil(this.destroyed$),
+          )
+          .subscribe(serviceProviderData => {
+            this.globalMessagingService.clearMessages();
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Service Provider');
+            // this.serviceProviders = serviceProviderData;
+            this.router.navigate(['home/entity/service-provider/list']);
+          });
 
-    });
-  }
-
+      });
+    }
+  
+    /**
+     * Fetches a list of countries and populates the 'countryData' property.
+     * @remarks
+     * This method sends an HTTP request to retrieve a list of countries from the 'countryService'.
+     * Upon receiving the data, it assigns the result to the 'countryData' property for use in the component.
+     * Additionally, it logs a message indicating that the countries list is being fetched.
+     */
   fetchCountries(){
     console.log('Fetching countries list');
     this.countryService.getCountries()
       .subscribe( (data) => {
         this.countryData = data;
-        // if(this.countryData){
-        //   this.newServiceProviderForm.patchValue({
-        //     country: this.entityDetails.countryId
-        //   });
-        // }
       });
   }
+  /**
+ * Fetches a list of sectors and populates the 'sectorData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of sectors from the 'sectorService'.
+ * It uses the 'untilDestroyed' pipe to automatically unsubscribe from the observable when the component is destroyed.
+ * Upon receiving the data, it assigns the result to the 'sectorData' property for use in the component.
+ */
   getSectors() {
     this.sectorService.getSectors(2)
       .pipe(
@@ -657,11 +748,17 @@ export class NewServiceProviderComponent {
       )
       .subscribe(
         (data) => {
-          console.log("Testing data->", data)
           this.sectorData = data;
         },
       );
   }
+  /**
+ * Fetches a list of currencies and populates the 'currenciesData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of currencies from the 'bankService'.
+ * It uses the 'takeUntil' operator to unsubscribe from the observable when the 'destroyed$' subject emits.
+ * Upon receiving the data, it assigns the result to the 'currenciesData' property for use in the component.
+ */
   getCurrencies() {
     this.bankService.getCurrencies()
       .pipe(
@@ -673,6 +770,13 @@ export class NewServiceProviderComponent {
         },
       );
   }
+  /**
+ * Fetches a list of client titles and populates the 'clientTitlesData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of client titles from the 'serviceProviderService'.
+ * It uses the 'takeUntil' operator to unsubscribe from the observable when the 'destroyed$' subject emits.
+ * Upon receiving the data, it assigns the result to the 'clientTitlesData' property for use in the component.
+ */
   getClientTitles() {
     this.serviceProviderService.getClientTitles()
       .pipe(
@@ -684,6 +788,14 @@ export class NewServiceProviderComponent {
         },
       );
   }
+  
+/**
+ * Fetches a list of identity types and populates the 'identityTypeData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of identity types from the 'clientService'.
+ * It uses the 'takeUntil' operator to unsubscribe from the observable when the 'destroyed$' subject emits.
+ * Upon receiving the data, it assigns the result to the 'identityTypeData' property for use in the component.
+ */
   getIdentityType() {
     this.clientService.getIdentityType()
       .pipe(
@@ -695,6 +807,13 @@ export class NewServiceProviderComponent {
         },
       );
   }
+  /**
+ * Fetches a list of occupations and populates the 'occupationData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of occupations from the 'occupationService'.
+ * It uses the 'takeUntil' operator to unsubscribe from the observable when the 'destroyed$' subject emits.
+ * Upon receiving the data, it assigns the result to the 'occupationData' property for use in the component.
+ */
   getOccupation() {
     this.occupationService.getOccupations(2)
       .pipe(
@@ -706,6 +825,14 @@ export class NewServiceProviderComponent {
         },
       );
   }
+  /**
+ * Fetches a list of service provider types and populates the 'providerTypeData' property.
+ * @remarks
+ * This method sends an HTTP request to retrieve a list of service provider types from the 'serviceProviderService'.
+ * It uses the 'takeUntil' operator to unsubscribe from the observable when the 'destroyed$' subject emits.
+ * Upon receiving the data, it assigns the result to the 'providerTypeData' property for use in the component.
+ * Additionally, it logs the provider type data for debugging purposes.
+ */
   getServiceProviderType() {
     this.serviceProviderService.getServiceProviderType()
       .pipe(

@@ -77,6 +77,18 @@ export class ListServiceProviderComponent {
     this.spinner.show();
   }
 
+  /**
+ * Retrieves a list of service providers with pagination and sorting options.
+ * 
+ * @param {number} pageIndex - The index of the page to retrieve.
+ * @param {string} sortField - The field by which to sort the results (default: 'createdDate').
+ * @param {string} sortOrder - The sorting order, either 'asc' or 'desc' (default: 'desc').
+ * @returns {Observable<Pagination<ServiceProviderDTO>>} An observable that emits a paginated list of service providers.
+ * @remarks
+ * This method makes an HTTP request to fetch a list of service providers with pagination and sorting options.
+ * The retrieved data is encapsulated in a Pagination object and emitted as an observable.
+ * 
+ */
 
   getServiceProviders(pageIndex: number,
     sortField: any = 'createdDate',
@@ -87,7 +99,17 @@ export class ListServiceProviderComponent {
     untilDestroyed(this),
     );
   }
+/**
+ * Handles lazy loading of service providers based on table events.
+ * 
+ * @param {LazyLoadEvent | TableLazyLoadEvent} event - The event containing table loading information.
+ * @remarks
+ * This method is triggered when a table component requests lazy loading of service provider data.
+ * It extracts pagination and sorting information from the event and calls the 'getServiceProviders' method.
+ * The retrieved data is processed and updated in the component.
+ * 
 
+ */
 lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
   const pageIndex = event.first / event.rows;
   const sortField = event.sortField;
@@ -112,7 +134,12 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
       error => {this.spinner.hide();}
     );
   }
-
+/**
+ * Navigates to the entity creation page for a new service provider.
+ * @remarks
+ * This method is used to navigate to the entity creation page for a new service provider.
+ * It sets the query parameter 'entityType' to 'Service Provider' for the route.
+ */
   gotoEntityPage() {
     this.router.navigate(['/home/entity/new'],
       {queryParams: {entityType: 'Service Provider'}}).then(r => {
