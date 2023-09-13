@@ -34,6 +34,13 @@ const untilDestroyedSymbol = Symbol('untilDestroyed');
 //  * }
 //  * ```
 //  */
+
+/**
+ * RxJS operator function that unsubscribe from observables on destroy.
+ * @param instance The parent Angular component or object instance.
+ * @param destroyMethodName The method to hook on (default: 'ngOnDestroy').
+ * @returns {Observable<T>} The source Observable modified so that it unsubscribes
+ */
 export function untilDestroyed(
   instance: any,
   destroyMethodName: string = 'ngOnDestroy'

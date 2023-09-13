@@ -4,6 +4,18 @@
  **
  ****************************************************************************/
 
+/**
+ * AuthGuardService
+ * @description Activates routes if user is authenticated
+ * @export class AuthGuardService
+ * @implements {CanActivate}
+ * @implements {CanActivateChild}
+ * @param {Router} router
+ * @param {AuthService} authService
+ * @param {JwtService} jwtService
+ * @returns {boolean | UrlTree}
+ */
+
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,

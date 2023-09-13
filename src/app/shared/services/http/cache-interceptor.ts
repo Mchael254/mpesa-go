@@ -1,7 +1,10 @@
 /****************************************************************************
  **
  ** Author: Justus Muoka
- **
+ ** CacheInterceptor
+ * @description This is an interceptor that caches http requests
+ * @param {HttpCacheService} httpCacheService This is the service that handles caching
+ * @implements {HttpInterceptor}
  ****************************************************************************/
 
 import {
@@ -43,6 +46,11 @@ export class CacheInterceptor implements HttpInterceptor {
     return instance;
   }
 
+  /**
+   * Intercepts http requests and caches them
+   * @param request
+   * @param next
+   */
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler

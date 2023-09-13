@@ -358,11 +358,11 @@
                  aria-labelledby="pills-excesses-tab" [ngClass]="{ 'active':activeTab()==='Cover-Types', 'show':activeTab()==='Cover-Types'}">
               <ul class="nav">
                 <li class="nav-item">
-                  <a class="nav-link active pointer" aria-current="page" data-bs-toggle="modal"
-                     data-bs-target="#addSubclassCovertype" (click)="coverTypeForm.reset()">+Add</a>
+                  <a class="nav-link active pointer" data-bs-toggle="modal" id="add-subclass-cover-type-link"
+                     data-bs-target="#addSubclassCovertype" (click)="setCoverTypeAction('add')">+Add</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link pointer" data-bs-toggle="modal" data-bs-target="#addClassPeril">Edit</a>
+                  <a class="nav-link pointer" id="edit-subclass-cover-type-link" data-bs-toggle="modal" data-bs-target="#addClassPeril" (click)="setCoverTypeAction('update')">Edit</a>
                 </li>
 
               </ul>
@@ -447,446 +447,433 @@
             </div>
 
           </div>
+
           <!-- Update Subclass Covertype -->
           <div class="modal fade" id="addClassPeril" tabindex="-1" role="dialog"
                aria-labelledby="addClassPeril" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-              <div class="modal-content" style="left:-90px; top: 20px">
+              <div class="modal-content">
+                <h6 class="modal-title text- my-4 ms-4" id="addPerilTitle">Update Cover Type</h6>
+                <form [formGroup]="updateCoverTypeForm" class="m-4">
 
-                <div class="card" style="width:145%">
-
-                  <div class="card-body">
-                    <h6 class="modal-title text- mb-4" id="addPerilTitle">Update Cover Type</h6>
-                    <form [formGroup]="coverTypeForm">
-
-                      <!-- **ROW 1** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">ID</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     readonly>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Description</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="coverTypeShortdescription">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Default SI</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="defaultSumInsured">
-                            </div>
-                          </div>
+                  <!-- **ROW 1** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeID" class="col-4 col-form-label"
+                               id="coverTypeIdLabel">ID</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeID"
+                                 readonly>
                         </div>
                       </div>
-
-
-
-                      <!-- **ROW 2** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Cover Types</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="description"
-                                      (change)="onCovertypesChange($event)">
-                                <option *ngFor="let CT of allCovertypes"
-                                        [value]="CT.description">{{CT.description}}</option>
-                              </select>
-
-                            </div>
-
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Default</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="isDefault">
-                                <option value="Y">YES</option>
-                                <option value="N">NO</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Installment Type</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="installmentType">
-                                <option value="NONE">NONE</option>
-                                <option value="PYMT">PAYMENT</option>
-                                <option value="DBTG">DEBITING</option>
-                              </select>
-                            </div>
-                          </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeDesc" class="col-4 col-form-label"
+                               id="coverTypeDescLabel">Description</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeDesc"
+                                 formControlName="coverTypeShortdescription">
                         </div>
                       </div>
-
-
-                      <!-- ** ROW 3 ** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Exchange Rate</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="sumInsuredExchangeRate">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Installment Period</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="installmentPeriod">
-                                <option value="A">Annual</option>
-                                <option value="S">Semi Annual</option>
-                                <option value="Q">Quaterly</option>
-                                <option value="M">Monthly</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Survey/Valuation Required</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="surveyEvaluationRequired">
-                                <option value="Y">YES</option>
-                                <option value="N">NO</option>
-                              </select>
-                            </div>
-                          </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeSumInsured" class="col-4 col-form-label"
+                               id="coverTypeSumInsuredLabel">Default SI</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeSumInsured"
+                                 formControlName="defaultSumInsured">
                         </div>
                       </div>
-                      <!-- ROW 4 -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Currency</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="sumInsuredCurrencyCode">
-                                <option *ngFor="let cur of currencies" [value]="cur.id">
-                                  {{cur.name}}</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Minimum Premium</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="minimumPremium">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Payment Install</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="paymentInstallmentPercentage">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- ** ROW 5 ** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Max Install</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="maximumInstallments">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Survey/Valuation Amount</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="surveyEvaluationRequired">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-
-                          </div>
-                        </div>
-                      </div>
-                      <br>
-                      <div class="modal-footer d-flex">
-                        <button class="btn btn-secondary p-2 float-end" id="new"
-                        data-bs-dismiss="modal" #cancelUpdateCovertype>Cancel</button>
-
-                        <button class="btn btn-primary p-2 float-end"
-                                id="delete" (click)="updateCovertype()">Update</button>
-                      </div>
-
-                    </form>
-
+                    </div>
                   </div>
-                </div>
+
+                  <!-- **ROW 2** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeList" class="col-4 col-form-label"
+                               id="coverTypeListLabel">Cover Types</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="description" id="coverTypeList"
+                                  (change)="onCovertypesChange($event)">
+                            <option *ngFor="let CT of allCovertypes"
+                                    [value]="CT.description">{{CT.description}}</option>
+                          </select>
+
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeDefault" class="col-4 col-form-label"
+                               id="coverTypeDefaultLabel">Default</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1" id="coverTypeDefault"
+                                  formControlName="isDefault">
+                            <option value="Y">YES</option>
+                            <option value="N">NO</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeInstallType" class="col-4 col-form-label"
+                               id="coverTypeInstallTypeLabel">Installment Type</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1" id="coverTypeInstallType"
+                                  formControlName="installmentType">
+                            <option value="NONE">NONE</option>
+                            <option value="PYMT">PAYMENT</option>
+                            <option value="DBTG">DEBITING</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ** ROW 3 ** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeExchangeRate" class="col-4 col-form-label"
+                               id="coverTypeExchangeRateLabel">Exchange Rate</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeExchangeRate"
+                                 formControlName="sumInsuredExchangeRate">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeInstallPeriod" class="col-4 col-form-label"
+                               id="coverTypeInstallPeriodLabel">Installment Period</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1" id="coverTypeInstallPeriod"
+                                  formControlName="installmentPeriod">
+                            <option value="A">Annual</option>
+                            <option value="S">Semi Annual</option>
+                            <option value="Q">Quaterly</option>
+                            <option value="M">Monthly</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeSurveyRequired" class="col-4 col-form-label"
+                               id="coverTypeSurveyRequiredLabel">Survey/Valuation Required</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1" id="coverTypeSurveyRequired"
+                                  formControlName="surveyEvaluationRequired">
+                            <option value="Y">YES</option>
+                            <option value="N">NO</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ROW 4 -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeCurrency" class="col-4 col-form-label"
+                               id="coverTypeCurrencyLabel">Currency</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1" id="coverTypeCurrency"
+                                  formControlName="sumInsuredCurrencyCode">
+                            <option *ngFor="let cur of currencies" [value]="cur.id">
+                              {{cur.name}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeMinPremium" class="col-4 col-form-label"
+                               id="coverTypeMinPremiumLabel">Minimum Premium</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeMinPremium"
+                                 formControlName="minimumPremium">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypePaymentInstall" class="col-4 col-form-label"
+                               id="coverTypePaymentInstallLabel">Payment Install</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypePaymentInstall"
+                                 formControlName="paymentInstallmentPercentage">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ** ROW 5 ** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeMaxInstall" class="col-4 col-form-label"
+                               id="coverTypeMaxInstallLabel">Max Install</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeMaxInstall"
+                                 formControlName="maximumInstallments">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="coverTypeSurveyRequired2" class="col-4 col-form-label"
+                               id="coverTypeSurveyRequired2Label">Survey/Valuation Amount</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1" id="coverTypeSurveyRequired2"
+                                 formControlName="surveyEvaluationRequired">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="modal-footer d-flex">
+                    <button class="btn btn-secondary p-2 float-end" id="btnCancelUpdateCoverType"
+                            data-bs-dismiss="modal" #cancelUpdateCovertype>Cancel</button>
+
+                    <button class="btn btn-primary p-2 float-end"
+                            id="btnUpdateCoverType" (click)="updateCovertype()">Update</button>
+                  </div>
+
+                </form>
               </div>
             </div>
           </div>
+
           <!-- Add subclass covertype -->
           <div class="modal fade" id="addSubclassCovertype" tabindex="-1" role="dialog"
                aria-labelledby="addSubclassCovertype" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-              <div class="modal-content" style="left:-90px; top: 20px">
+              <div class="modal-content">
+                <h6 class="modal-title text- my-4 ms-4" id="addPerilTitle">Add Cover Type</h6>
+                <form [formGroup]="coverTypeForm" class="m-4">
 
-                <div class="card" style="width:145%">
-
-                  <div class="card-body">
-                    <h6 class="modal-title text- mb-4" id="addPerilTitle">Add Cover Type</h6>
-                    <form [formGroup]="coverTypeForm">
-
-                      <!-- **ROW 1** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">ID</label>
-                            <div class="col-8">
-                              <input type="text" class="form-control form-control-sm"
-                                     formControlName="subClPerilShtDesc" id="addPerilsInput">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Description</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="coverTypeShortdescription">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Default SI</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="defaultSumInsured">
-                            </div>
-                          </div>
+                  <!-- **ROW 1** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypesID">ID</label>
+                        <div class="col-8">
+                          <input type="text" class="form-control form-control-sm"
+                                 id="addPerilsInput">
                         </div>
                       </div>
-
-
-
-                      <!-- **ROW 2** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Cover Types</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="description"
-                                      (change)="onCovertypesChange($event)">
-                                <option *ngFor="let CT of allCovertypes"
-                                        [value]="CT.description">{{CT.description}}</option>
-                              </select>
-                            </div>
-
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Default</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="isDefault">
-                                <option value="Y">YES</option>
-                                <option value="N">NO</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Installment Type</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="installmentType">
-                                <option value="NONE">NONE</option>
-                                <option value="PYMT">PAYMENT</option>
-                                <option value="DBTG">DEBITING</option>
-                              </select>
-                            </div>
-                          </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypesDescription">Description</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="coverTypeShortdescription">
                         </div>
                       </div>
-
-
-                      <!-- ** ROW 3 ** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Exchange Rate</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="sumInsuredExchangeRate">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Installment Period</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="installmentPeriod">
-                                <option value="A">Annual</option>
-                                <option value="S">Semi Annual</option>
-                                <option value="Q">Quaterly</option>
-                                <option value="M">Monthly</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Survey/Valuation Required</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="surveyEvaluationRequired">
-                                <option value="Y">YES</option>
-                                <option value="N">NO</option>
-                              </select>
-                            </div>
-                          </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypesSumInsured">Default SI</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="defaultSumInsured">
                         </div>
                       </div>
-                      <!-- ROW 4 -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Currency</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="sumInsuredCurrencyCode">
-                                <option *ngFor="let cur of currencies" [value]="cur.id">
-                                  {{cur.name}}</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Minimum Premium</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="minimumPremium">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Payment Install</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="paymentInstallmentPercentage">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- ** ROW 5 ** -->
-                      <div class="row mb-1">
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Max Install</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="maximumInstallments">
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Survey/Valuation Required</label>
-                            <div class="col-8">
-                              <select class="form-control form-control-sm mb-1"
-                                      formControlName="surveyEvaluationRequired">
-                                <option value="Y">YES</option>
-                                <option value="N">NO</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-xl-4">
-                          <div class="form-group row">
-                            <label for="addPerilsInput" class="col-4 col-form-label"
-                                   id="addPerilsLabel">Payment Install</label>
-                            <div class="col-8">
-                              <input class="form-control form-control-sm mb-1"
-                                     formControlName="paymentInstallmentPercentage">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <br>
-                      <div class="modal-footer d-flex">
-                        <button class="btn btn-secondary p-2 float-end" id="new"
-                                data-bs-dismiss="modal" #cancelCreateCovertype>Cancel</button>
-                        <button class="btn btn-primary p-2 float-end"
-                                id="delete" (click)="createCovertype()">Save</button>
-                      </div>
-
-                    </form>
-
+                    </div>
                   </div>
-                </div>
+
+
+                  <!-- **ROW 2** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypeCoverType">Cover Types</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="description"
+                                  (change)="onCovertypesChange($event)">
+                            <option *ngFor="let CT of allCovertypes"
+                                    [value]="CT.description">{{CT.description}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypeDefault">Default</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="isDefault">
+                            <option value="Y">YES</option>
+                            <option value="N">NO</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypeInstallmentType">Installment Type</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="installmentType">
+                            <option value="NONE">NONE</option>
+                            <option value="PYMT">PAYMENT</option>
+                            <option value="DBTG">DEBITING</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ** ROW 3 ** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypeExchangeRate">Exchange Rate</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="sumInsuredExchangeRate">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="coverTypeInstalType">Installment Period</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="installmentPeriod">
+                            <option value="A">Annual</option>
+                            <option value="S">Semi Annual</option>
+                            <option value="Q">Quaterly</option>
+                            <option value="M">Monthly</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypeSurveyRequired">Survey/Valuation Required</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="surveyEvaluationRequired">
+                            <option value="Y">YES</option>
+                            <option value="N">NO</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ROW 4 -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypeCurrency">Currency</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="sumInsuredCurrencyCode">
+                            <option *ngFor="let cur of currencies" [value]="cur.id">
+                              {{cur.name}}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypeMinPremium">Minimum Premium</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="minimumPremium">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypePaymentInstall">Payment Install</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="paymentInstallmentPercentage">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ** ROW 5 ** -->
+                  <div class="row mb-1">
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypeMaxInstall">Max Install</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="maximumInstallments">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypeSurveyRequired">Survey/Valuation Required</label>
+                        <div class="col-8">
+                          <select class="form-control form-control-sm mb-1"
+                                  formControlName="surveyEvaluationRequired">
+                            <option value="Y">YES</option>
+                            <option value="N">NO</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-xl-4">
+                      <div class="form-group row">
+                        <label for="addPerilsInput" class="col-4 col-form-label"
+                               id="addCoverTypePaymentInstall">Payment Install</label>
+                        <div class="col-8">
+                          <input class="form-control form-control-sm mb-1"
+                                 formControlName="paymentInstallmentPercentage">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <br>
+                  <div class="modal-footer d-flex">
+                    <button class="btn btn-secondary p-2 float-end" id="btnCreateCoverType"
+                            data-bs-dismiss="modal" #cancelCreateCovertype>Cancel</button>
+                    <button class="btn btn-primary p-2 float-end"
+                            id="btnCreateCoverType" (click)="createCovertype()">Save</button>
+                  </div>
+
+                </form>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
