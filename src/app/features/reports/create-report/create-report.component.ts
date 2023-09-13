@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
-import {Logger} from "../../../shared/services";
 import {ReportService} from "../services/report.service";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {map, take, tap} from "rxjs/operators";
@@ -17,6 +16,7 @@ import {Report} from "../../../shared/data/reports/report";
 import {AuthService} from "../../../shared/services/auth.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {Logger} from "../../../shared/services";
 
 const log = new Logger('CreateReportComponent');
 

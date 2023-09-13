@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {Logger} from "../../../../../../../shared/services";
 import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {Logger} from "../../../../../../../shared/services/logger/logger.service";
 
 const log = new Logger('WordingsComponent');
 

@@ -1,13 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { IntermediaryService } from '../../../../../../entities/services/intermediary/intermediary.service';
 import { SequenceService } from '../../../services/system-sequences/sequences.service';
-import { Sequence } from '../../../data/gisDTO';
-import { HttpErrorResponse } from '@angular/common/http';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { FormGroup,FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ProductService } from '../../../../../../gis/services/product/product.service';
-import { BranchService } from '../../../../../../../shared/services/setups/branch.service';
-import { ThisReceiver } from '@angular/compiler';
+import {BranchService} from "../../../../../../../shared/services/setups/branch/branch.service";
 @Component({
   selector: 'app-system-sequences',
   templateUrl: './system-sequences.component.html',
