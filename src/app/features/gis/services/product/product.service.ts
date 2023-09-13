@@ -65,6 +65,13 @@ export class ProductService {
       catchError(this.errorHandl)
     )
   }
+  updateProductGroupbyCode(data:any,code:any): Observable<Product_group>{
+    return this.http.put<Product_group>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups/${code}`, JSON.stringify(data), this.httpOptions)
+    .pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
   getAllScheduleReports(): Observable<any>{
     return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe();
   }
@@ -99,6 +106,13 @@ export class ProductService {
     console.log(JSON.stringify(data))
     return this.http.post<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products`, JSON.stringify(data), this.httpOptions)
       .pipe(
+    )
+  }
+  editProducts (data:any,code:any): Observable<Products> {
+    return this.http.put<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`, JSON.stringify(data), this.httpOptions)
+    .pipe(
+      retry(1),
+      catchError(this.errorHandl)
     )
   }
   createProductSubclasses(data: any): Observable<any> {
