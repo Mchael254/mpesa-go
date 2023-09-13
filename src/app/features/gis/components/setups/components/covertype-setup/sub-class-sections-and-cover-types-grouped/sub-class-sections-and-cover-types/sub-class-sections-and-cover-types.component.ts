@@ -35,8 +35,10 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
 
   sections: FormGroup;
   coverTypeForm: FormGroup;
+  updateCoverTypeForm: FormGroup;
+
   allSubclassSections: any
-  selectedSection: any
+  selectedSection: any[];
   selected: any
   selectedCovertype: any
   allSections: any
@@ -48,14 +50,16 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   unassignedSection: any;
   allCovertypes: any;
   currencies: any;
-  filtersect: any;
-  subFilter: any;
+  filtersect: any[];
+  subFilter: any[];
 
   subclassList: SubclassesDTO[];
   filterSubCovSec: any[];
   subclassSections: any = [];
   loadSubclassSection: any = [];
   sourceSubCovSec: any[];
+
+  private coverTypeOperation: string =  'add';
 
   constructor(
     public fb: FormBuilder,
@@ -74,6 +78,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
     this.getAllCovertypes()
     this.getAllCurrencies()
     this.createCoverTypeForm()
+    this.createUpdateCoverTypeForm();
   }
 
 
@@ -83,24 +88,47 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   createCoverTypeForm() {
     this.coverTypeForm = this.fb.group({
       certificateTypeCode: 20,
+      certificateTypeShortDescription: ['private'],
+      code: null,
+      coverTypeCode: [''],
+      coverTypeShortdescription: [''],
+      defaultSumInsured: [''],
+      description: [''],
+      installmentPeriod: [''],
+      installmentType: [''],
+      isDefault: [''],
+      maximumInstallments: [''],
+      minimumPremium: [''],
+      organizationCode: 2,
+      paymentInstallmentPercentage: [''],
+      subClassCode: 201,
+      sumInsuredCurrencyCode: [''],
+      sumInsuredExchangeRate: [''],
+      surveyEvaluationRequired: ['']
+    })
+  }
+
+  createUpdateCoverTypeForm() {
+    this.updateCoverTypeForm = this.fb.group({
+      certificateTypeCode: 20,
       certificateTypeShortDescription: "private",
       code: null,
-      coverTypeCode: new FormControl(''),
-      coverTypeShortdescription: new FormControl(''),
-      defaultSumInsured: new FormControl(''),
-      description: new FormControl(''),
-      installmentPeriod: new FormControl(''),
-      installmentType: new FormControl(''),
-      isDefault: new FormControl(''),
-      maximumInstallments: new FormControl(''),
-      minimumPremium: new FormControl(''),
+      coverTypeCode:[''],  //new FormControl(''),
+      coverTypeShortdescription: [''], //new FormControl(''),
+      defaultSumInsured: [''],
+      description: [''],
+      installmentPeriod: [''],
+      installmentType: [''],
+      isDefault: [''],
+      maximumInstallments: [''],
+      minimumPremium: [''],
       organizationCode: 2,
-      paymentInstallmentPercentage: new FormControl(''),
+      paymentInstallmentPercentage: [''],
       subClassCode: 201,
-      sumInsuredCurrencyCode: new FormControl(''),
-      sumInsuredExchangeRate: new FormControl(''),
-      surveyEvaluationRequired: new FormControl(''),
-    })
+      sumInsuredCurrencyCode: [''],
+      sumInsuredExchangeRate: [''],
+      surveyEvaluationRequired: ['']
+    });
   }
 
   sectionData: subclassCoverSections = {
@@ -122,19 +150,19 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   createSubSections() {
     this.sections = this.fb.group({
       code: null,
-      declaration: new FormControl(''),
-      excessDetails: new FormControl(''),
+      declaration: [''],
+      excessDetails: [''],
       newSectionCode: 0,
-      newSectionShortDescription: "string",
-      sectionCode: new FormControl(''),
-      sectionShortDescription: "string",
-      sectionType: new FormControl(''),
+      newSectionShortDescription: [''],
+      sectionCode: [''],
+      sectionShortDescription: [''],
+      sectionType: [''],
       subclassCode: 121,
       szaCode: 0,
-      szaShortDesc: "string",
+      szaShortDesc: [''],
       version: 0,
-      wef: new FormControl(''),
-      wet: new FormControl('')
+      wef: [''],
+      wet:['']
     })
   }
 
@@ -215,7 +243,10 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
     })
   }
 
-
+  /**
+   * Method to select an unassigned section
+   * @param code
+   */
   onRowSelect(code: any){
     this.covertypeCode = code
 
@@ -231,7 +262,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
       this.filterSubCovSec = this.allSubCovSec.filter(sub => sub.subClassCode === this.subclassCode
         && sub.coverTypeCode === this.covertypeCode
       );
-      this.subclassCoverType.setFilteredArray(this.filterSubCovSec)
+      this.subclassSectionsService.setFilteredArray(this.filterSubCovSec)
       this.cdr.detectChanges();
       console.log(this.filterSubCovSec,this.subclassCode ,this.covertypeCode, "Hello")
     })
@@ -264,11 +295,10 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
       );
     });
   }
+
   onMoveItems(event){
     console.log("Event listening", event.items)
     const movedItem = event.items[0];
-    console.log(this.covertypeCode, "getsubclass  this.covertypeCode");
-    console.log(this.subclassCode, "getsubclass  this.covertypeCode");
     this.sectionData = {
       code: null,
       coverTypeCode: this.covertypeCode,
@@ -366,7 +396,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
    */
   getAllCovertypes() {
     this.coverTypeService.getAllCovertypes1().subscribe(data => {
-      this.allCovertypes = data._embedded.cover_type_dto_list
+      this.allCovertypes = data?._embedded?.cover_type_dto_list
     })
   }
 
@@ -384,7 +414,8 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
    */
   updateCovertype(){
     const cancelUpdate = this.cancelCovertypeUpdateTask.nativeElement
-    const requestBody: coverType = this.coverTypeForm.value;
+    // const requestBody: coverType = this.coverTypeForm.value;
+    const requestBody: coverType = this.updateCoverTypeForm.value;
     const updateCode = requestBody.code
     requestBody.code = null;
     requestBody.organizationCode = 2;
@@ -392,7 +423,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
       this.subclassCoverTypesService.updateSubCovertype(requestBody, updateCode).subscribe(data =>{
         cancelUpdate.click()
         this.messageService
-          .displaySuccessMessage( 'Success',  'Successfully created');
+          .displaySuccessMessage( 'Success',  'Successfully updated subclass cover type');
       })
     } catch (error) {
       this.messageService.displayErrorMessage( 'Error',  'Error, try again later');
@@ -414,7 +445,7 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
     try {
       this.subclassCoverTypesService.createSubCovertype(requestBody).subscribe(data =>{
         cancelCovertypeBtn.click()
-        this.messageService.displaySuccessMessage( 'Success',  'Successfully created' );
+        this.messageService.displaySuccessMessage( 'Success',  'Successfully created subclass cover type' );
       })
     } catch (error) {
       this.messageService.displayErrorMessage( 'Error',  'Error, try again later' );
@@ -428,11 +459,12 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
    */
   onSelectCovertype(item: any){
     this.selectedCovertype = item;
-    this.covertypeCode =  this.selectedCovertype.coverTypeCode
-    console.log(this.covertypeCode)
-    this.coverTypeForm.patchValue(this.selectedCovertype)
-    this.getallSubCovSections()
-    this.compareSections()
+    this.covertypeCode =  this.selectedCovertype.coverTypeCode;
+    console.log(this.covertypeCode);
+    // this.coverTypeForm.patchValue(this.selectedCovertype);
+    this.updateCoverTypeForm.patchValue(this.selectedCovertype);
+    this.getallSubCovSections();
+    this.compareSections();
   }
 
   /**
@@ -442,11 +474,11 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
   onCovertypesChange(event: any) {
     let value = (event.target as HTMLSelectElement).value;
     const selectedCovertypes = this.allCovertypes.find((CT) => CT.description === value);
-    if (selectedCovertypes) {
-      this.coverTypeForm.get('coverTypeCode').setValue(selectedCovertypes.code);
-    } else {
-      this.coverTypeForm.get('coverTypeCode').setValue('');
-    }
+
+    const formControl = this.coverTypeOperation === 'update' ? this.updateCoverTypeForm.get('coverTypeCode') :
+      this.coverTypeForm.get('coverTypeCode');
+
+    formControl.setValue(selectedCovertypes?.code || '');
   }
 
   /**
@@ -565,5 +597,9 @@ export class SubClassSectionsAndCoverTypesComponent implements OnInit{
    */
   selectTab(activeTab: string) {
     this.activeTab.set(activeTab);
+  }
+
+  setCoverTypeAction(action: string) {
+    this.coverTypeOperation = action;
   }
 }
