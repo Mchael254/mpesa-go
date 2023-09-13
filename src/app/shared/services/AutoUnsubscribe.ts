@@ -1,5 +1,9 @@
 import { OnDestroy } from '@angular/core';
 
+/**
+ * Function to unsubscribe from all subscriptions when the component/service is destroyed
+ * @param constructor The component/service class
+ */
 export function AutoUnsubscribe(constructor: any) {
   // Get a reference to the original ngOnDestroy function of the component/service
   const original = constructor.prototype.ngOnDestroy;

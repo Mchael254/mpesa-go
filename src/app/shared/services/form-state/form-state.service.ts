@@ -4,7 +4,12 @@ import {FormState} from "../../data/form-state";
 import {SessionStorageService} from "../session-storage/session-storage.service";
 
 /**
- * This service is used to save the state of a form in session storage
+ * Form state service
+ * @description Saves and retrieves form state from session storage
+ * @export class FormStateService
+ * @param {LocalStorageService} localStorageService - Local storage service
+ * @param {SessionStorageService} sessionStorageService - Session storage service
+ *
  */
 
 @Injectable({
@@ -17,8 +22,8 @@ export class FormStateService {
 
   /**
    * Saves the form state to session storage
-   * @param formStateKey
-   * @param formValues
+   * @param formStateKey - the key to the form state of type string
+   * @param formValues - the form state of type FormState
    */
   saveFormState(formStateKey, formValues: FormState){
     this.sessionStorageService.setItem(formStateKey, formValues);
@@ -42,7 +47,7 @@ export class FormStateService {
 
   /**
    * Checks if the form state exists in session storage and returns true if it does
-   * @param formStateKey
+   * @param formStateKey - the key to the form state of type string
    */
   formStateExists(formStateKey): boolean {
     return (!!this.getFormState(formStateKey));

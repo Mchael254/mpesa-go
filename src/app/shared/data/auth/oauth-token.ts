@@ -1,7 +1,12 @@
 /****************************************************************************
- **
- ** Author: denisbgitonga@gmail.com
- **
+ ** This is a data class that represents the oauth token:
+ *
+ * accessToken: string - the access token
+ * tokenType: string - the token type
+ * refreshToken: string - the refresh token
+ * expiresIn: number - the expiry time in seconds
+ * scope: string - the scope
+ * refreshExpiresIn: number - the refresh expiry time in seconds
  ****************************************************************************/
 
 export interface OauthToken {
