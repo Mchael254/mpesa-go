@@ -15,7 +15,7 @@
         <div class="card-body">
           <div class="row">
             <div class="col-sm-4">
-              <p id="tabbed" routerLink="/home/gis/product">Setup Wizard </p>
+              <p id="tabbed" routerLink="/home/gis/setup/product/product-wizard">Setup Wizard </p>
             </div>
             <div class="col-sm-8">
               <p id="tabbed" class="prod">Product Groups and Products</p>
@@ -23,7 +23,7 @@
           </div>
           <div class="row mt-4">
             <div class="col-xl-6">
-              <button class="btn btn waves-effect waves-light" id="new" (click)="productGroupForm.reset()">New</button>
+              <button class="btn btn waves-effect waves-light" id="new" (click)="onNewButtonClick()">New</button>
             </div>
             <div class="col-xl-6">
               <a href="/" class="reports">Reports</a>
@@ -54,11 +54,11 @@
           <!-- <div class="mt-1 selectgroup">
             <p-tree class="w-full md:w-5rem"  [value]="response " selectionMode="single"></p-tree>
           </div> -->
-          <div class="row">
+          <!-- <div class="row">
             <div class="text-end">
               <a class="text-primary" href="#">{{'lang.view_all' | translate }}</a>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@
                           (click)="productGroupForm.reset()" style="float
                                                             :right">Clear</button></div>
                       <br><br>
-                      <div class="col-xl-6"><button class="btn btn waves-effect waves-light" id="delete" (click)="createProdGroup()">Save</button>
+                      <div class="col-xl-6"><button class="btn btn waves-effect waves-light" id="delete" (click)="save()">Save</button>
                       </div>
                     </div>
                   </div>
@@ -146,13 +146,14 @@
                       <div class="row">
                         <label for="{{data.name}}" class="col-sm-4 col-form-label labels">{{data.label}}:</label>
                         <div class="form-group col-md-8 ">
-                          <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode'">
+                          <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'productReportGroupsCode' && data.name !== 'scheduleReportCode'">
                             <select id="{{data.id}}" class="form-select form-select-sm mb-2"
                               formControlName="{{data.name}}">
-                              <option *ngFor="let option of data.selectOptions" value="{{option.isSelected}}"
-                                selected="{{option.isSelected}}">{{option.text}}</option>
+                              <option *ngFor="let option of data.selectOptions" value="{{option.value}}"
+                                selected="{{option.value}}">{{option.text}}</option>
                             </select>
                           </div>
+                    
                           <div *ngIf="data.type === 'select' && data.name == 'prerequisiteProductCode'">
                             <select id="{{data.id}}" class="form-select form-select-sm mb-2"
                               formControlName="{{data.name}}">
@@ -160,10 +161,25 @@
                                 selected="{{option.code}}">{{option.description}}</option>
                             </select>
                           </div>
+                          <div *ngIf="data.type === 'select' && data.name == 'productReportGroupsCode'">
+                            <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                              formControlName="{{data.name}}">
+                              <option *ngFor="let option of allScheduleReports" value="{{option.code}}"
+                                selected="{{option.code}}">{{option.description}}</option>
+                            </select>
+                          </div>
+                          <div *ngIf="data.type === 'select' && data.name == 'scheduleReportCode'">
+                            <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                              formControlName="{{data.name}}">
+                              <option *ngFor="let option of allScreens" value="{{option.code}}"
+                                selected="{{option.code}}">{{option.screen_description}}</option>
+                            </select>
+                          </div>
                           <div *ngIf="data.type !== 'select'">
                             <input type="{{data.type}}" class="form-control form-control-sm mb-2"
                               formControlName="{{data.name}}" id="{{data.name}}">
                           </div>
+
 
                         </div>
                       </div>
@@ -177,26 +193,59 @@
                   data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false"
                   aria-controls="collapseExample"> <i class="pi pi-chevron-up" style="font-size:13px"
                     *ngIf="!show"></i><i class="pi pi-chevron-down" style="font-size:13px" *ngIf="show"></i></span> </p>
-
+                    
               <div class="collapse" id="collapseExample">
                 <div class="row">
                   <div *ngFor="let data of optionalFrontendScreens" class="col-6">
-                    <form [formGroup]="testForm">
+                    <form [formGroup]="productForm">
                       <div class="mandatory">
-                        <div class="form-row">
+                        <div class="row">
                           <label for="{{data.name}}" class="col-sm-4 col-form-label labels">{{data.label}}:</label>
                           <div class="form-group col-md-8 ">
-                            <input type="{{data.type}}" class="form-control form-control-sm mb-2"
-                              formControlName="{{data.name}}" id="{{data.name}}">
-
+                            <div *ngIf="data.type === 'select'&& data.name !== 'prerequisiteProductCode' && data.name !== 'productReportGroupsCode' && data.name !== 'scheduleReportCode' && data.name !== 'interfaceType'">
+                              <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                formControlName="{{data.name}}">
+                                <option *ngFor="let option of data.selectOptions" value="{{option.value}}"
+                                  selected="{{option.value}}">{{option.text}}</option>
+                              </select>
+                            </div>
+                            <div *ngIf=" data.name === 'interfaceType'">
+                              <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                formControlName="{{data.name}}">
+                                <option *ngFor="let option of data.selectOptions" [value]="option.value"> {{option.text}} </option>
+                              </select>
+                            </div>
+                            <div *ngIf="data.type === 'select' && data.name == 'prerequisiteProductCode'">
+                              <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                formControlName="{{data.name}}">
+                                <option *ngFor="let option of allProducts" value="{{option.code}}"
+                                  selected="{{option.code}}">{{option.description}}</option>
+                              </select>
+                            </div>
+                            
+                            <div *ngIf="data.type === 'select' && data.name == 'productReportGroupsCode'">
+                              <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                formControlName="{{data.name}}">
+                                <option *ngFor="let option of allScheduleReports" value="{{option.code}}"
+                                  selected="{{option.code}}">{{option.description}}</option>
+                              </select>
+                            </div>
+                            <div *ngIf="data.type === 'select' && data.name == 'scheduleReportCode'">
+                              <select id="{{data.id}}" class="form-select form-select-sm mb-2"
+                                formControlName="{{data.name}}">
+                                <option *ngFor="let option of allScreens" value="{{option.code}}"
+                                  selected="{{option.code}}">{{option.screen_description}}</option>
+                              </select>
+                            </div>
+                            <div *ngIf="data.type !== 'select'">
+                              <input type="{{data.type}}" class="form-control form-control-sm mb-2"
+                                formControlName="{{data.name}}" id="{{data.name}}">
+                            </div>
+  
+  
                           </div>
                         </div>
                       </div>
-
-
-
-
-
                     </form>
 
                   </div>
@@ -211,7 +260,7 @@
                         <div class="row">
                             <div class="col-xl-8 "><button class="btn btn waves-effect waves-light ml-5" id="new" (click)="productForm.reset()">Clear</button></div>
                             <br><br>
-                            <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-5" id="delete" (click)="createProduct()">Save</button></div>
+                            <div class="col-xl-4"><button class="btn btn waves-effect waves-light ml-5" id="delete" (click)="saveProduct()">Save</button></div>
 
                           </div>
                     </div>
@@ -221,7 +270,7 @@
             <div class="tab-pane fade" id="pills-excesses" role="tabpanel" aria-labelledby="pills-excesses-tab">
               <ul class="nav">
                 <li class="nav-item add">
-                  <a class="nav-link active" aria-current="page" (click)="hideSubclass()" style="color: #00529B;">+Add</a>
+                  <a class="nav-link active" aria-current="page" routerLink="/home/gis/setup/product/product-wizard/3" style="color: #00529B;">+Add</a>
                 </li>
                 <!-- <li class="nav-item">
                               <a class="nav-link" (click)="editSubclass()">Edit</a>
@@ -283,7 +332,7 @@
             <div class="tab-pane fade" id="pills-productdoc" role="tabpanel" aria-labelledby="pills-productdoc-tab">
               <ul class="nav">
                 <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" (click)="hideProductDocument()" style="color: #00529B;">+Add</a>
+                  <a class="nav-link active" aria-current="page" routerLink="/home/gis/setup/product/product-wizard/4" style="color: #00529B;">+Add</a>
                 </li>
                 <!-- <li class="nav-item">
                               <a class="nav-link" (click)="editSubclass()">Edit</a>

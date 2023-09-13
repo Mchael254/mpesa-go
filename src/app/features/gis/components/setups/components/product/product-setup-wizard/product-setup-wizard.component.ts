@@ -2,10 +2,11 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Field, FormScreen, Product_group, Products, SubclassesDTO } from '../../../data/gisDTO';
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
+import { ProductService } from '../../../../../services/product/product.service';
 import { forkJoin } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 @Component({
   selector: 'app-product-setup-wizard',
   templateUrl: './product-setup-wizard.component.html',
@@ -46,6 +47,8 @@ export class ProductSetupWizardComponent implements OnInit {
   constructor(
     public fb: FormBuilder,
     public cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+     public router:Router,
     private messageService: MessageService,
     private gisService: ProductService
   ) { }
@@ -60,6 +63,8 @@ export class ProductSetupWizardComponent implements OnInit {
     this.getAllSubclasses()
     this.reportGroup()
     this.createProductDocument()
+    this.sel();
+    this.page = this.route.snapshot.paramMap.get('num');
   }
 
   hideParent() {
@@ -80,7 +85,7 @@ export class ProductSetupWizardComponent implements OnInit {
     reader.readAsDataURL(this.file);
     reader.onload = () => {
       this.base64Data = reader.result as string;
-      console.log(this.base64Data);
+      // console.log(this.base64Data);
     };
   }
   selectedScreen(cardNumber: string): void {
@@ -88,6 +93,13 @@ export class ProductSetupWizardComponent implements OnInit {
     this.page = cardNumber
     console.log(this.page)
     // this.cdr.detectChanges();
+  }
+  sel(){
+    
+    const cardNumber =  this.route.snapshot.paramMap.get('num')
+    console.log(cardNumber)
+    console.log(this.selectedCard)
+
   }
   createProductGroupForm(){
     this.productGroupForm = this.fb.group({
