@@ -18,4 +18,11 @@ describe('DynamicSetupTableScreenComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  it('should emit saveButtonClick event', () => {
+    const emitSpy = jest.spyOn(component.saveButtonClick, 'emit');
+
+    component.onSaveButtonClick();
+
+    expect(emitSpy).toHaveBeenCalled();
+  });
 });

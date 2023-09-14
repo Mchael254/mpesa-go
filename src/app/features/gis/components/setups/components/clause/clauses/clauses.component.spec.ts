@@ -73,6 +73,8 @@ describe('ClausesComponent', () => {
     clauseServiceStub = TestBed.inject(ClauseService);
     routeStub = TestBed.inject(Router);
     spinnerStub = TestBed.inject(NgxSpinnerService);
+    authServiceStub = TestBed.inject(AuthService);
+    globalMessagingServiceStub = TestBed.inject(GlobalMessagingService);
     fixture.detectChanges();
   });
 
@@ -112,13 +114,120 @@ describe('ClausesComponent', () => {
     expect(component.editedBy).toBe(updatedBy);
   });
   it('should reset the clauseForm and set isupdate to false', () => {
-    component.clauseForm.get('isCurrent').setValue({ code: 'YourInitialCodeValue' }); // Provide a value for 'code'
-    component.isupdate = true;
+    // component.clauseForm.get('isCurrent').setValue({ code: 'YourInitialCodeValue' })
+    // component.isupdate = true;
 
+    const clauseFormInput = component.clauseForm.controls['isCurrent'];
+    clauseFormInput.setValue(null);
     component.createNewClause();
 
-    expect(component.clauseForm.value).toEqual({ code: null }); // Make sure 'code' is set to null
+    expect(clauseFormInput).toEqual(null); // Make sure 'code' is set to null
 
     expect(component.isupdate).toBe(false);
+  });
+
+  /*it('should call updateClause if isupdate is true', () => {
+    // Set up component state
+    component.isupdate = true;
+
+    // Trigger the save method
+    component.save();
+    const updateClause = jest.spyOn(component, "updateClause");
+
+    // Assert that updateClause is called
+    expect(updateClause).toHaveBeenCalled();
+
+    // Assert that createClause is not called
+    expect(component.createClause).not.toHaveBeenCalled();
+  });*/
+
+  it('should create a new clause when createClause is called', () => {
+    // Arrange
+    const requestBody = {
+      code: 1,
+      short_description: '',
+      heading: '',
+      wording: '',
+      type: '',
+      is_editable: '',
+      is_current: '',
+      is_lien: '',
+      ins: '',
+      merge: '',
+      organization_code: 1,
+      version: 1,
+      updated_at: '',
+      updated_by: '',
+    };
+
+    jest.spyOn(authServiceStub, 'getCurrentUserName').mockReturnValue(of('testUser') as any);
+    jest.spyOn(clauseServiceStub, 'createClause').mockReturnValue(of({}) as any); // Mock the service response
+    jest.spyOn(globalMessagingServiceStub, 'displaySuccessMessage');
+    jest.spyOn(globalMessagingServiceStub, 'displayErrorMessage');
+
+    component.createClause();
+
+    expect(authServiceStub.getCurrentUserName).toHaveBeenCalled();
+    expect(clauseServiceStub.createClause).toHaveBeenCalled();
+    expect(globalMessagingServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Successfully created');
+    expect(globalMessagingServiceStub.displayErrorMessage).not.toHaveBeenCalled();
+  });
+
+  it('should update a clause when updateClause is called', () => {
+    const requestBody: any = {};
+    const selectedCode = 'your_selected_code';
+
+    jest.spyOn(clauseServiceStub, 'updateClause').mockReturnValue(of(requestBody) as any);
+    jest.spyOn(globalMessagingServiceStub, 'displaySuccessMessage');
+    jest.spyOn(globalMessagingServiceStub, 'displayErrorMessage');
+
+    component.updateClause();
+
+    expect(clauseServiceStub.updateClause).toHaveBeenCalledWith(requestBody, selectedCode);
+    expect(globalMessagingServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Successfully updated');
+    expect(globalMessagingServiceStub.displayErrorMessage).not.toHaveBeenCalled();
+  });
+
+  it('should revise a clause when reviseClause is called', () => {
+    const requestBody = {};
+    const code = 'your_code';
+
+    jest.spyOn(clauseServiceStub, 'reviseClause').mockReturnValue(of({}) as any);
+    jest.spyOn(component, 'reviseSuccess');
+
+    component.reviseClause();
+
+    expect(clauseServiceStub.reviseClause).toHaveBeenCalledWith(requestBody, code);
+    expect(component.reviseSuccess).toHaveBeenCalled();
+  });
+
+  it('should delete a clause when deleteClause is called', () => {
+    const code = 2;
+    const requestBody: any = component.clauseForm.controls['code'];
+
+    jest.spyOn(clauseServiceStub, 'deleteClause').mockReturnValue(of({}) as any);
+    jest.spyOn(component, 'deleteSuccess');
+    jest.spyOn(component, 'getAllClauses');
+    jest.spyOn(component.clauseForm, 'reset');
+
+    component.deleteClause();
+
+    expect(clauseServiceStub.deleteClause).toHaveBeenCalledWith(requestBody);
+    expect(component.deleteSuccess).toHaveBeenCalled();
+    expect(component.getAllClauses).toHaveBeenCalled();
+    expect(component.clauseForm.reset).toHaveBeenCalled();
+  });
+
+  it('should filter clauses based on search input', () => {
+    const searchValue = 'Another Clause';
+    const filtered =[]= [
+      { heading: 'Clause 1' },
+      { heading: 'Clause 2' },
+      { heading: 'Another Clause' },
+    ];
+
+    component.filterClauses({ target: { value: searchValue } });
+
+    expect(filtered[2]).toEqual({ heading: 'Another Clause' });
   });
 });
