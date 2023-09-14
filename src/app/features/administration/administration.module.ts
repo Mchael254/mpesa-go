@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AdministrationRoutingModule } from './administration-routing.module';
-import { AdministrationComponent } from './components/profile/administration.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { ViewEmployeeComponent } from './components/staff-performance/view-employee/view-employee.component';
 import {TableModule} from "primeng/table";
 import { ViewEmployeeTransactionsComponent } from './components/staff-performance/view-employee-transactions/view-employee-transactions.component';
@@ -22,7 +22,7 @@ import {DialogModule} from "primeng/dialog";
 
 @NgModule({
   declarations: [
-    AdministrationComponent,
+    UserProfileComponent,
     ViewEmployeeComponent,
     ViewEmployeeTransactionsComponent,
     ViewTicketsComponent,
