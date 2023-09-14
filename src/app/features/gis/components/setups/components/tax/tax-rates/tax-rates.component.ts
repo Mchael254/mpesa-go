@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
 import { ProductsExcludedTaxes } from '../../../data/gisDTO';
 import { TaxRatesService } from '../../../services/tax-rate/tax-rates.service';
 import { TransactionTypesService } from '../../../services/transaction-types/transaction-types.service';
@@ -105,7 +105,6 @@ export class TaxRatesComponent {
      this.TaxService.getAllTaxRates().subscribe(data =>{
       this.taxRateList=data;
       this.selectedTaxRateDetails = this.taxRateList.filter(tax => tax.transactionTypeCode === code);
-       console.log(this.selectedTaxRateDetails,"All Tax Rates");
       this.cdr.detectChanges();
 
     })
@@ -161,7 +160,6 @@ export class TaxRatesComponent {
   loadTaxesRates(id:any){
     return this.TaxService. getTaxRates(id).subscribe(res =>{
       this.selected = res;
-      // console.log(this.selected,"Tax Rates By Code")
       this.taxRateForm.patchValue(this.selected);
       this.SelectedChargesDeductible=id;
       this.new =false;
@@ -176,7 +174,6 @@ export class TaxRatesComponent {
  */
   selectedTaxRate(code:any,item: any){
     this.taxRateCode = code;
-    // console.log(this.taxRateCode)
     this.loadAllTaxRates(this.taxRateCode)
     this.loadAllProductsExcluded(this.taxRateCode)
   }
@@ -188,7 +185,6 @@ export class TaxRatesComponent {
   loadAllTransactions() {
     this.TransactionService.getAllTransactionTypes().subscribe(data => {
       this.transactionList = data;
-      // console.log(this.transactionList, "All Transaction Rates");
       this.filteredTransactionList = this.transactionList.filter((transaction: any) => {
         return transaction.isItApplicableToSubclass === "N";
       });
@@ -228,7 +224,6 @@ export class TaxRatesComponent {
   loadAllproducts(){
     this.ProductsService.getAllProducts().subscribe(data =>{
        this.ProductList = data;
-      //  console.log(this.ProductList, "All Products");
        this.cdr.detectChanges()
      })
   }
@@ -241,7 +236,6 @@ export class TaxRatesComponent {
   loadProducts(code:any){
     return this.ProductsService.getProductByCode(code).subscribe(res =>{
       this.selected=res;
-      // console.log(this.selected,"Test");
       this.taxRateForm.patchValue(this.selected);
 
       this.new=false;
@@ -256,7 +250,6 @@ export class TaxRatesComponent {
   loadAllProductsExcluded(code:any){
     this.ProductExcludedService.getAllProductsExcluded(code).subscribe(data=>{
     this.productsExcludedList=data;
-    // console.log(this.productsExcludedList,"product excluded taxes")
     let allProductsExcludedList = [];
     this.productsExcludedList.forEach(assignedProductExcluded =>{
       this.ProductList.forEach(prodList =>{
@@ -266,7 +259,6 @@ export class TaxRatesComponent {
       })
     })
     this.assignedProductExcludedTaxes = allProductsExcludedList;
-    // console.log(this.assignedProductExcludedTaxes,"product excluded taxes List")
     })
   }
 
@@ -277,7 +269,6 @@ export class TaxRatesComponent {
  */
   selectedEvent(event: any){
     this.selectedProductsExcluded = event
-    // console.log(this.selectedProductsExcluded)
   }
 
   /**
@@ -312,7 +303,6 @@ export class TaxRatesComponent {
  * or an error message if the operation fails.
  */
  deleteProductExcludedTax(){
-  console.log(this.SelectedDeleteProduct)
     this.ProductExcludedService.deleteProductExcluded(this.taxRateCode,this.SelectedDeleteProduct).subscribe(
       (res)=>{
       this.messageService.add({severity:'success', summary: 'Success', detail: 'Product Deleted Succesfully'});
@@ -333,11 +323,9 @@ export class TaxRatesComponent {
   charges.transactionTypeCode = this.taxRateCode
   this.TaxService.createTaxRate(charges).subscribe((data:{})=>{
     try{
-      console.log(this.taxRateForm.value)
       this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
       this.taxRateForm.reset()
     }catch(error){
-      console.log(this.taxRateForm.value)
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
       this.taxRateForm.reset()
 
@@ -367,11 +355,9 @@ test(){
   this.TaxService.updateTaxRate(this.taxRateForm.value,id).subscribe((data)=>{
     try{
       this.taxRateForm.reset();
-      console.log(this.taxRateForm.value)
       this.messageService.add({severity:'success', summary: 'Success', detail: 'Saved'});
       this.taxRateForm.reset()
     }catch(error){
-      console.log(this.taxRateForm.value)
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
       this.taxRateForm.reset()
     } 
@@ -409,7 +395,6 @@ test(){
       this.taxRateForm.reset();
       this.messageService.add({severity:'success', summary: 'Success', detail: 'Deleted Succesfully'});
     }catch(error){
-      console.log(this.taxRateForm.value)
       this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
 
     }
@@ -424,7 +409,6 @@ test(){
  * @param stringVal The filter key to apply the global filter on the DataTable.
  */
  applyFilterGlobal($event, stringVal) {
-  console.log(`calling global filter`, stringVal);
   this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
 }
 
