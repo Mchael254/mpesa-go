@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import { ViewEmployeeComponent } from './view-employee.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -7,6 +7,7 @@ import {TicketsService} from "../../../services/tickets.service";
 import {Router} from "@angular/router";
 import {StaffService} from "../../../../entities/services/staff/staff.service";
 import {of} from "rxjs";
+import {Logger} from "../../../../../shared/services";
 
 export class MockStaffService {
   getStaffWithSupervisor = jest.fn().mockReturnValue(of());
@@ -23,6 +24,7 @@ describe('ViewEmployeeComponent', () => {
   let ticketsServiceStub : TicketsService;
   let staffServiceStub: StaffService;
   let router: Router;
+  let loggerSpy: jest.SpyInstance;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,6 +43,7 @@ describe('ViewEmployeeComponent', () => {
     ticketsServiceStub = TestBed.inject(TicketsService);
     staffServiceStub = TestBed.inject(StaffService);
     router = TestBed.inject(Router);
+    loggerSpy = jest.spyOn(Logger.prototype, 'info');
     fixture.detectChanges();
   });
 
@@ -129,5 +132,44 @@ describe('ViewEmployeeComponent', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/home/administration/employee/transactions'], {
       queryParams: {username, module, name }
     });
+  });
+
+  it('should aggregate employee data when staff.totalElements is greater than 0', () => {
+
+    const staff = {
+      totalElements: 2, // Set the desired value for testing
+      content: [
+        { username: 'user1', departmentCode: 1 },
+        { username: 'user2', departmentCode: 2 },
+      ],
+    };
+
+    const transactions = [
+      { authorizedBy: 'user1', transactionData: 'transaction1' },
+      { authorizedBy: 'user2', transactionData: 'transaction2' },
+    ];
+
+    const departments = [
+      { id: 1, departmentName: 'Department 1' },
+      { id: 2, departmentName: 'Department 2' },
+    ];
+
+    component.getGrpEmployeeData();
+
+    const aggregatedData = [{staff, transactions, departments}];
+
+    // Verify that the aggregated data contains the expected information
+    expect(aggregatedData).toEqual([
+      {
+        staffs: { username: 'user1', departmentCode: 1 },
+        transaction: { authorizedBy: 'user1', transactionData: 'transaction1' },
+        department: { id: 1, departmentName: 'Department 1' },
+      },
+      {
+        staffs: { username: 'user2', departmentCode: 2 },
+        transaction: { authorizedBy: 'user2', transactionData: 'transaction2' },
+        department: { id: 2, departmentName: 'Department 2' },
+      },
+    ]);
   });
 });

@@ -59,6 +59,8 @@ export class ClausesComponent {
     private authService: AuthService,
   ) { }
 
+  /* In this method, the component performs initialization tasks such as retrieving data, setting up form controls, and
+  showing a spinner. */
   ngOnInit(): void {
     this.getAllClauses();
     this.getSingleClause();
@@ -76,6 +78,9 @@ export class ClausesComponent {
   };
 
 
+  /**
+   * The function creates a form.
+   */
   createForm() {
 
     const randomString = Math.random().toString(36).substring(2, 5);
@@ -98,11 +103,20 @@ export class ClausesComponent {
 
   }
 
+  /**
+   * The isActive function checks if the selected item is equal to the given item.
+   * @param {any} item - The `item` parameter is of type `any`, which means it can accept any data type.
+   * @returns a boolean value indicating whether the `selected` property is equal to the `item` parameter.
+   */
   isActive(item: any) {
     return this.selected === item;
   }
 
   //get all the clauses
+  /**
+   * The function `getAllClauses()` retrieves clauses from a service, assigns them to variables, and performs some
+   * additional operations.
+   */
   getAllClauses() {
     this.clauseService.getClauses().pipe(retryWhen((_) => interval(1000)),
       tap(() => (this.isDisplayed = true)),).subscribe(data => {
@@ -119,6 +133,14 @@ export class ClausesComponent {
       this.cdr.detectChanges();
     })
   }
+  /**
+   * The function "selectedClause" logs the selected clause code, sets the clause code in the clause service, extracts the
+   * date from the updatedAt parameter, and assigns the date and updatedBy parameter to the respective variables.
+   * @param {any} code - The `code` parameter is the code of the selected clause.
+   * @param {any} updatedAt - The `updatedAt` parameter is a variable that represents the date and time when the clause was
+   * last updated.
+   * @param {any} updatedBy - The `updatedBy` parameter is a value that represents the user who last updated the clause.
+   */
   selectedClause(code: any, updatedAt: any, updatedBy: any) {
     console.log("this is the selected clause", code)
     this.clauseService.setClauseCode(code)
@@ -128,6 +150,10 @@ export class ClausesComponent {
     this.editedBy = updatedBy
   }
   //get a single clause details
+  /**
+   * The function `getSingleClause()` retrieves a single clause from the clause service based on a selected code, and
+   * updates the clause form with the retrieved data.
+   */
   getSingleClause() {
     this.clauseService.getClauseCode().subscribe(id => {
       this.selectedCode = id;
@@ -139,10 +165,17 @@ export class ClausesComponent {
       })
     })
   }
+  /**
+   * The function "createNewClause" resets a form and sets a boolean variable to false.
+   */
   createNewClause() {
     this.clauseForm.reset();
     this.isupdate = false;
   }
+  /**
+   * The `save()` function checks if an update is needed and either calls the `updateClause()` function or the
+   * `createClause()` function and resets the form.
+   */
   save() {
     if (this.isupdate) {
       this.updateClause()
@@ -152,6 +185,10 @@ export class ClausesComponent {
       this.clauseForm.reset();
     }
   }
+  /**
+   * The function `createClause()` creates a new clause with a random short description and various other properties, and
+   * then sends a request to the server to create the clause.
+   */
   createClause() {
     const loggedInUser = this.authService.getCurrentUserName()
     const randomString = Math.random().toString(36).substring(2, 5);
@@ -177,8 +214,10 @@ export class ClausesComponent {
     }
     this.cdr.detectChanges();
   }
-  /* update clauses */
 
+  /**
+   * The `updateClause()` function updates a clause by sending a request to the server with the updated clause data.
+   */
   updateClause() {
     const randomString = Math.random().toString(36).substring(2, 5);
     const requestBody: Clause = this.clauseForm.value;
@@ -195,7 +234,11 @@ export class ClausesComponent {
     }
 
   }
-  /**REVISE CLAUSE */
+
+  /**
+   * The `reviseClause` function updates the version of a clause and sends a request to the clause service to revise the
+   * clause.
+   */
   reviseClause(){
     const requestBody: Clause = this.clauseForm.value
     requestBody.version = 2
@@ -203,7 +246,11 @@ export class ClausesComponent {
       this.reviseSuccess()
     })
   }
-  /**DELETE CLAUSE */
+
+  /**
+   * The `deleteClause` function deletes a clause using the code provided in the request body and performs additional
+   * actions upon successful deletion.
+   */
   deleteClause(){
     const requestBody: Clause = this.clauseForm.value
     this.clauseService.deleteClause(requestBody.code).subscribe(res =>{
@@ -212,15 +259,28 @@ export class ClausesComponent {
       this.clauseForm.reset();
     })
   }
+  /**
+   * The function "showSuccess" displays a success message using the "globalMessagingService" with the title "Success" and
+   * the content "Successfully Created".
+   */
   showSuccess() {
     this.globalMessagingService.displaySuccessMessage('Success','Successfully Created' );
   }
+  /**
+   * The `reviseSuccess()` function displays a success message indicating that the revision was successful.
+   */
   reviseSuccess() {
     this.globalMessagingService.displaySuccessMessage('Success','Successfully Revised' );
   }
+  /**
+   * The deleteSuccess function displays a success message indicating that the deletion was successful.
+   */
   deleteSuccess() {
     this.globalMessagingService.displaySuccessMessage('Success','Successfully Deleted' );
   }
+  /**
+   * The function showError displays an error message using the globalMessagingService.
+   */
   showError() {
     this.globalMessagingService.displayErrorMessage('Error', 'Error Occured' );
   }
@@ -319,6 +379,12 @@ export class ClausesComponent {
     this.cdr.detectChanges();
     this.show = true;
   }*/
+  /**
+   * The function filters an array of clauses based on a search value and updates the filteredClauses array.
+   * @param {any} event - The event parameter is an object that represents the event that triggered the filterClauses
+   * function. It is typically an event object that contains information about the event, such as the target element that
+   * triggered the event.
+   */
   filterClauses(event: any) {
     const searchValue = (event.target.value).toUpperCase();
     this.filteredClauses = this.allClauses.filter((el) => el.heading.includes(searchValue));
