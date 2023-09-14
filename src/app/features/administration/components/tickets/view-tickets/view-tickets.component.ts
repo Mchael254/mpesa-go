@@ -154,6 +154,13 @@ export class ViewTicketsComponent implements OnInit {
 
   }
 
+/**
+ * The function `getTicketCode` takes a code as input and returns the corresponding ticket code based
+ * on the system module.
+ * @param {string} code - The code parameter is a string that represents the system module code of a
+ * ticket.
+ * @returns the ticket code as a string.
+ */
   getTicketCode(code: string) {
     const ticket = this.allTickets.find(t => t.systemModule === code);
     let ticketCode: string;
@@ -165,6 +172,12 @@ export class ViewTicketsComponent implements OnInit {
     return ticketCode;
   }
 
+/**
+ * The function `onTicketSelect` takes a selected ticket as input and performs various operations based
+ * on the ticket's properties.
+ * @param {NewTicketDto} selectedTicket - The selectedTicket parameter is of type NewTicketDto, which
+ * is an object containing information about a ticket. It has the following properties:
+ */
   onTicketSelect(selectedTicket: NewTicketDto) {
     // this.ticketsService.setSelectedTicket(selectedTickets);
     const systemModule = selectedTicket.systemModule;
@@ -177,6 +190,12 @@ export class ViewTicketsComponent implements OnInit {
     // this.otpRequestCheck(selectedTicketCodes);
   }
 
+/**
+ * The function `generateAuthorizeOtp()` checks if any tickets are selected, and if so, it checks if an
+ * OTP (One-Time Password) needs to be generated for authorization. If an OTP is required, it sends the
+ * OTP to the user's email address.
+ * @returns The function does not explicitly return anything.
+ */
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
       const selectedTickets = this.selectedTickets;
@@ -227,6 +246,13 @@ export class ViewTicketsComponent implements OnInit {
           // Display an error message or take necessary action
         });
     }
+/**
+ * The `otpRequestCheck` function takes an array of ticket codes, retrieves corresponding ticket
+ * information, and makes different API calls based on the ticket's system module.
+ * @param {string[]} ticketCodes - An array of string values representing ticket codes.
+ * @returns The `otpRequestCheck` function returns a promise that resolves to an array of objects. Each
+ * object in the array contains the `sysModule` and `response` properties.
+ */
   otpRequestCheck(ticketCodes: string[]) {
       log.info('Value from selectedTickets:', ticketCodes);
 
@@ -270,9 +296,11 @@ export class ViewTicketsComponent implements OnInit {
 
   }
 
+/**
+ * The `authorizeTickets` function is responsible for authorizing selected tickets and displaying
+ * success or failure messages based on the response.
+ */
   authorizeTickets() {
-    // Show the spinner
-    // this.showSpinner = true;
     this.cdr.detectChanges();
 
     const ticketCodes = this.selectedTickets.map(ticket => ticket.ticketID);
@@ -283,8 +311,6 @@ export class ViewTicketsComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
         catchError(error => {
-          // Hide the spinner in case of an error
-          // this.showSpinner = false;
 
           // Handle error and display appropriate message
           this.globalMessagingService.displayErrorMessage('Error', "Failed to authorize ticket's");
@@ -307,8 +333,6 @@ export class ViewTicketsComponent implements OnInit {
               failedCount++;
             }
           });
-
-          // this.showSpinner = false; // Hide the spinner after the response is received
 
             if (successCount > 0 && failedCount > 0) {
               const successMessage = successCount > 1 ? `${successCount} tickets have been authorized` : `Selected ticket has been authorized`;
@@ -338,6 +362,15 @@ export class ViewTicketsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+ /**
+  * The function `sendVerificationOtp` sends a verification OTP (One-Time Password) to a specified
+  * username through a specified channel.
+  * @param {string} username - The username is a string that represents the user's username or email
+  * address.
+  * @param {string} channel - The channel parameter specifies the method through which the verification
+  * OTP (One-Time Password) will be sent. It could be an email, SMS, or any other communication
+  * channel.
+  */
   sendVerificationOtp(username: string, channel: string) {
     this.authService.sentVerificationOtp(username, channel)
       .pipe(untilDestroyed(this))
@@ -350,6 +383,13 @@ export class ViewTicketsComponent implements OnInit {
       })
   }
 
+ /**
+  * The function `goToTicketDetails` sets the ticket details in local storage, navigates to the ticket
+  * details page, sets the current ticket detail in the tickets service, and navigates to the ticket
+  * details page with query parameters.
+  * @param {NewTicketDto} ticket - The parameter `ticket` is of type `NewTicketDto`, which is an object
+  * containing information about a new ticket.
+  */
   goToTicketDetails(ticket: NewTicketDto) {
     this.localStorageService.setItem('ticketDetails', ticket);
     this.router.navigate([`home/administration/ticket/details/${ticket.ticketID}`]);

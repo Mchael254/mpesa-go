@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdministrationComponent } from './components/profile/administration.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import {ViewEmployeeComponent} from "./components/staff-performance/view-employee/view-employee.component";
 import {
   ViewEmployeeTransactionsComponent
@@ -9,10 +9,10 @@ import {ViewTicketsComponent} from "./components/tickets/view-tickets/view-ticke
 import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
 
 const routes: Routes = [
-  {
-  path: '',
-  component: AdministrationComponent
-},
+    {
+      path: '',
+      component: UserProfileComponent
+    },
     {
       path: 'employee/transactions',
       component: ViewEmployeeTransactionsComponent

@@ -98,67 +98,11 @@
                             </div>
                         </div>
                     </form>
-
-                    <!-- <form [formGroup]="userDetailsForm">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="firstName" class="label col-sm-3 col-form-label">First Name</label>
-                                    <input type="text" id="firstName" placeholder="First Name" class="form-control"
-                                        formControlName="firstName">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="lastName" class="label col-sm-3 col-form-label">Last Name</label>
-                                    <input type="text" id="lastName" placeholder="Last Name" class="form-control"
-                                        formControlName="lastName">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="phoneNumber" class="label col-sm-4 col-form-label">Phone Number</label>
-                                    <input type="text" id="phoneNumber" placeholder="Phone Number" class="form-control"
-                                        formControlName="phoneNumber">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="id" class="label col-sm-3 col-form-label">ID</label>
-                                    <input type="text" id="id" placeholder="ID" class="form-control" formControlName="id">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="pinNumber" class="label col-sm-3 col-form-label">Pin Number</label>
-                                    <input type="text" id="pinNumber" placeholder="Pin Number" class="form-control"
-                                        formControlName="pinNumber">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="email" class="label col-sm-3 col-form-label">Email</label>
-                                    <input type="email" id="email" placeholder="Email" class="form-control"
-                                        formControlName="email">
-                                </div>
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label for="status" class="label col-sm-3 col-form-label">This Account is</label>
-                                    <select id="status" class="form-control" placeholder="" formControlName="status">
-                                        <option value="">This Account is:</option>
-                                        <option value="A">Active</option>
-                                        <option value="I">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form> -->
                 </div>
                 <div class="mx-3 my-2">
                     <button type="button" class="btn btn-primary btn-md" id="updateUserButton"
                         (click)="updateUserDetails()">Update</button>
-                    <button type="button" class="btn btn-light btn-md" data-bs-toggle="modal"
+                    <button type="button" id="passChange" class="btn btn-light btn-md" data-bs-toggle="modal"
                         data-bs-target="#changePasswordModal">Change Password</button>
                 </div>
             </div>
@@ -235,7 +179,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn can" data-bs-dismiss="modal" (click)="onNewPassSave()">Save</button>
+                    <button type="button" id="saveNewPassButton" class="btn can" data-bs-dismiss="modal" (click)="onNewPassSave()">Save</button>
                 </div>
             </div>
         </div>
