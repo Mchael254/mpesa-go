@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Logger, UtilService } from 'src/app/shared/services';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { AuthVerification } from 'src/app/core/auth/auth-verification';
+import { AuthService } from '../../../shared/services/auth.service';
+import { untilDestroyed } from '../../../shared/services/until-destroyed';
+import { AuthVerification } from '../../../core/auth/auth-verification';
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
+import { Logger } from '../../../shared/services/logger/logger.service';
+import { UtilService } from '../../../shared/services/util/util.service';
 
 const log = new Logger('VerificationComponent');
 
@@ -32,6 +33,7 @@ export class VerificationComponent implements OnInit {
    * 3. Set selected account to the first account verification type by default
    */
   ngOnInit(): void {
+    // const extras = this.localStorageService.getItem("extras");
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
 
     const verificationsTypes: AuthVerification[] = []
@@ -69,6 +71,7 @@ export class VerificationComponent implements OnInit {
     log.debug('Selected Verification Type:', this.selectedAccount)
     // const verificationType = this.selectedAccount.type.includes("Email".toLocaleLowerCase())? "email": "sms"
     const verificationType = this.selectedAccount.type === 'SMS' ? 'sms' : 'email';
+    // const extras = this.localStorageService.getItem("extras");
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
     let username = extras.username;
     this.authService.sentVerificationOtp(username, verificationType)

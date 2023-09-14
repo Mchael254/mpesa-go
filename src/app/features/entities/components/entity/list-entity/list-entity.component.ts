@@ -1,17 +1,17 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { TableDetail } from 'src/app/shared/data/table-detail';
+import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
+import { Pagination } from '../../../../../shared/data/common/pagination';
+import { TableDetail } from '../../../../../shared/data/table-detail';
 import { EntityDto } from '../../../data/entityDto';
 import { LazyLoadEvent } from 'primeng/api';
-import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { tap } from 'rxjs';
 import { EntityService } from '../../../services/entity/entity.service';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { AutoUnsubscribe } from '../../../../../shared/services/AutoUnsubscribe';
 
 const log = new Logger('ListEntityComponent');
 
@@ -65,6 +65,10 @@ export class ListEntityComponent implements OnInit, OnDestroy {
 
   }
 
+/**
+ * The ngOnInit function initializes the tableDetails object with specific properties and shows a
+ * spinner.
+ */
   ngOnInit(): void {
     this.tableDetails = {
       cols: this.cols,
@@ -80,6 +84,12 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     this.spinner.show();
   }
 
+/**
+ * The `lazyLoadEntity` function is used to fetch entities with pagination, sorting, and search
+ * functionality.
+ * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `event` parameter is of type `LazyLoadEvent`
+ * or `TableLazyLoadEvent`.
+ */
   lazyLoadEntity(event: LazyLoadEvent | TableLazyLoadEvent) {
     let sortField: string = '';
     if ('sortField' in event) {
@@ -91,8 +101,6 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     }
 
     const pageIndex = event.first / event.rows;
-    // const sortField = event.sortField;
-    // const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const searchTerm = localStorage.getItem('searchTerm');
 
@@ -125,6 +133,19 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     );
   }
 
+/**
+ * The `getEntities` function retrieves entities from the entity service, with optional parameters for
+ * pagination, sorting field, and sorting order.
+ * @param {number} pageIndex - The pageIndex parameter is a number that represents the index of the
+ * page to retrieve. It is used to determine which page of entities to fetch from the entity service.
+ * @param {string} [sortField=effectiveDateFrom] - The `sortField` parameter is used to specify the
+ * field by which the entities should be sorted. It is a string that represents the name of the field.
+ * By default, it is set to 'effectiveDateFrom'.
+ * @param {string} [sortOrder=desc] - The sortOrder parameter determines the order in which the
+ * entities should be sorted. It can have two possible values: "asc" for ascending order and "desc" for
+ * descending order. By default, the sortOrder is set to "desc".
+ * @returns The `getEntities` function is returning an Observable.
+ */
   getEntities(pageIndex: number,
               sortField: string = 'effectiveDateFrom',
               sortOrder: string = 'desc') {
@@ -133,6 +154,9 @@ export class ListEntityComponent implements OnInit, OnDestroy {
               .pipe(untilDestroyed(this));
   }
 
+/**
+ * The createEntity function navigates to the '/home/entity/new' route.
+ */
   createEntity() {
     this.router.navigate(['/home/entity/new'])
   }

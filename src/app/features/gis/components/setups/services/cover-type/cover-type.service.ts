@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { CoverType, CoverTypes, Sections } from '../../data/gisDTO';
-import {AppConfigService} from "../../../../../../core/config/app-config-service";
 
 @Injectable({
   providedIn: 'root'

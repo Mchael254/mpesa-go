@@ -1,16 +1,16 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DynamicFormButtons } from 'src/app/shared/utils/dynamic.form.button';
-import { DynamicFormFields } from 'src/app/shared/utils/dynamic.form.fields';
+import { DynamicFormButtons } from '../../../../../shared/utils/dynamic.form.button';
+import { DynamicFormFields } from '../../../../../shared/utils/dynamic.form.fields';
 import { EntityService } from '../../../services/entity/entity.service';
 import { EntityDetails } from '../../../data/entity-details-data';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { BreadCrumbItem } from '../../../../../shared/data/common/BreadCrumbItem';
+import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../core/config/app-config-service';
 import { UtilService } from '../../../../../shared/services/util/util.service';
-import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { EntityDto, EntityResDTO, IdentityModeDTO } from '../../../data/entityDto';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
@@ -121,12 +121,13 @@ export class NewEntityComponent implements OnInit {
       this.driversLicenseNumberRegex = this.appConfig.config.organization.drivers_license_number_regex;
       this.certOfIncorporationNumberRegex = this.appConfig.config.organization.cert_of_incorporation_number_regex;
   }
+ /**
+  * The ngOnInit function initializes the component by creating forms, setting the role name based on a
+  * query parameter, and retrieving parties and identity types.
+  */
   ngOnInit(): void {
     this.createEntityRegForm();
     this.createSelectRoleForm();
-    // this.fieldsets = this.entityDetails.newEntityDetails();
-    // this.buttonConfig = this.entityDetails.entityActionButtonConfig();
-
     this.roleName = this.route.snapshot.queryParamMap.get('entityType');
     this.getPartiesType();
     this.getIdentityType();
@@ -134,6 +135,10 @@ export class NewEntityComponent implements OnInit {
 
   ngOnDestroy(): void {}
 
+/**
+ * The function creates a form for entity registration with various fields and applies validators and
+ * visibility settings based on the response from an API call.
+ */
   createEntityRegForm() {
     this.entityRegistrationForm =  this.fb.group({
       category: [''],
@@ -173,13 +178,26 @@ export class NewEntityComponent implements OnInit {
       });
   }
 
+ /**
+  * The function creates a form for selecting a role with a required partyType field.
+  */
   createSelectRoleForm() {
     this.selectRoleModalForm = this.fb.group({
       partyType: ['', Validators.required],
     });
   }
 
+  /**
+   * The function returns the controls of the entity registration form.
+   * @returns The function `f()` is returning the `controls` property of the `entityRegistrationForm`
+   * object.
+   */
   get f() { return this.entityRegistrationForm.controls; }
+
+  /**
+   * The function `getPartiesType()` retrieves party types from an entity service and assigns them to
+   * various variables for further use.
+   */
   getPartiesType()
   {
     this.entityService.getPartiesType()
@@ -194,6 +212,10 @@ export class NewEntityComponent implements OnInit {
       })
   }
 
+ /**
+  * The function `getIdentityType()` retrieves identity types from an entity service and assigns them
+  * to the `modeIdentityType` variable.
+  */
   getIdentityType() {
     this.entityService.getIdentityType()
       .pipe(
@@ -204,6 +226,10 @@ export class NewEntityComponent implements OnInit {
       })
   }
 
+/**
+ * The function "onAssignRole" assigns a role to a user and updates the form control value.
+ * @param role - The `role` parameter is the role that is being assigned to the user.
+ */
   onAssignRole(role) {
     this.selectedRole = role;
     if(!this.roleName) {
@@ -213,6 +239,12 @@ export class NewEntityComponent implements OnInit {
     this.closebutton.nativeElement.click();
   }
 
+/**
+ * The function sets the role type based on the selected role name and updates the form control and
+ * disable flag accordingly.
+ * @param {PartyTypeDto[]} roleType - An array of objects of type PartyTypeDto, which contains
+ * information about different party types.
+ */
   setRolesType(roleType: PartyTypeDto[]){
     const selectedItem = roleType?.filter( x  => x.partyTypeName?.toLowerCase() === this.roleName?.toLowerCase());
     this.selectedItem = selectedItem[0];
@@ -220,6 +252,12 @@ export class NewEntityComponent implements OnInit {
     if (this.entityRegistrationForm.get('assign_role').value) this.disableRole = true;
   }
 
+/**
+ * The function "onFileChange" is triggered when a file is selected, and it reads the file using
+ * FileReader, sets the selectedFile and url variables, and logs the url.
+ * @param event - The event parameter is the event object that is triggered when a file is selected or
+ * changed in the file input field.
+ */
   onFileChange(event) {
     if (event.target.files) {
       var reader = new FileReader()
@@ -233,6 +271,11 @@ export class NewEntityComponent implements OnInit {
     }
   }
 
+ /**
+  * The `onSubmit()` function is used to handle form submission, perform validation, and save entity
+  * details.
+  * @returns The method returns nothing (void).
+  */
   onSubmit()
    {
      this.submitted = true;
@@ -303,6 +346,12 @@ export class NewEntityComponent implements OnInit {
        });
   }
 
+  /**
+   * The function `uploadImage` uploads an image file to the server and updates the profile picture and
+   * image of an entity, then displays a success message and navigates to the next page.
+   * @param {number} entityId - The entityId parameter is a number that represents the unique
+   * identifier of an entity.
+   */
   uploadImage(entityId: number){
     this.entityService.uploadProfileImage(entityId, this.selectedFile)
       .subscribe( res => {
@@ -316,6 +365,10 @@ export class NewEntityComponent implements OnInit {
       });
   }
 
+ /**
+  * The function `goToNextPage()` navigates to a specific URL based on the role name and saves the
+  * entity details in session storage.
+  */
   goToNextPage(){
     let url: string;
     let id: number = this.savedEntity.id;
@@ -340,14 +393,4 @@ export class NewEntityComponent implements OnInit {
     this.router.navigate([url],
       {queryParams: {id: id}});
   }
-
-  // submitForm(data:any){
-  // }
-
-  // goBack(data?:any){
-  //   if(data!=null){
-  //   }
-  // }
-
-
 }

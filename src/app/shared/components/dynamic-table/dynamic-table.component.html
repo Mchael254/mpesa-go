@@ -54,6 +54,12 @@
             <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
           </button>
         </td>
+        <td *ngIf="tableDetails?.showCustomModalOnView">
+          <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsById(rowData[tableDetails.urlIdentifier])">
+            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+          </button>
+        </td>
+
 
       </tr>
     </ng-template>
@@ -125,6 +131,11 @@
           <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
             <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
             <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+          </button>
+        </td>
+        <td *ngIf="tableDetails?.viewDetailsOnView">
+          <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsWithId(rowData[tableDetails.urlIdentifier])">
+            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
           </button>
         </td>
       </tr>
