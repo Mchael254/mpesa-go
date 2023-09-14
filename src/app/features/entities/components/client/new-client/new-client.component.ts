@@ -4,26 +4,25 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO } from 'src/app/shared/data/common/bank-dto';
-import { CountryDto, StateDto, TownDto, } from 'src/app/shared/data/common/countryDto';
-import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
-import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
-import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import { Logger } from 'src/app/shared/services';
-import { BankService } from '../../../../../shared/services/setups/bank/bank.service';
-import { CountryService } from '../../../../../shared/services/setups/country/country.service';
-import { OccupationService } from '../../../../../shared/services/setups/occupation/occupation.service';
-import { SectorService } from '../../../../../shared/services/setups/sector/sector.service';
 import { EntityService } from '../../../services/entity/entity.service';
 import { ClientService } from '../../../services/client/client.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-import { MandatoryFieldsService } from '../../../../../shared/services/mandatory-fields/mandatory-fields.service';
-import { UtilService } from 'src/app/shared/services';
-import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../../data/ClientDTO';
-import { ClientTitleDTO } from 'src/app/shared/data/common/client-title-dto';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
 import { AccountService } from '../../../services/account/account.service';
+import {Logger, UtilService} from "../../../../../shared/services";
+import {CountryDto, StateDto, TownDto} from "../../../../../shared/data/common/countryDto";
+import {SectorDTO} from "../../../../../shared/data/common/sector-dto";
+import {BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO} from "../../../../../shared/data/common/bank-dto";
+import {OccupationDTO} from "../../../../../shared/data/common/occupation-dto";
+import {ClientTitleDTO} from "../../../../../shared/data/common/client-title-dto";
+import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../../data/ClientDTO';
+import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {CountryService} from "../../../../../shared/services/setups/country/country.service"
+import {BankService} from "../../../../../shared/services/setups/bank/bank.service";
+import {OccupationService} from "../../../../../shared/services/setups/occupation/occupation.service";
+import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
+import {SectorService} from "../../../../../shared/services/setups/sector/sector.service";
+import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import { DatePipe } from '@angular/common';
 const log =  new Logger("CreateClientComponent")
 
@@ -32,6 +31,15 @@ const log =  new Logger("CreateClientComponent")
   templateUrl: './new-client.component.html',
   styleUrls: ['./new-client.component.css']
 })
+/**
+ * This Angular component handles the creation of a new client registration form.
+ *  It includes form controls for various client details.The component also manages dynamic form field visibility 
+ * and validation based on user input and retrieves data from various services like country, bank, 
+ * sector, and occupation services. It allows users to upload documents and save the client's basic 
+ * information upon form submission. Additionally, it provides functionality for selecting countries, 
+ * cities, and bank branches based on user choices. Overall, it serves as the interface for creating and
+ *  managing new client records within the application.
+ */
 export class NewClientComponent implements OnInit{
 
   public clientRegistrationForm: FormGroup;
@@ -150,7 +158,14 @@ export class NewClientComponent implements OnInit{
     private cdr: ChangeDetectorRef,
     private utilService: UtilService
   ) { }
-
+/**
+ * Initializes the New Client Component.
+ * - Retrieves entity details from session storage.
+ * - Initializes the client registration form.
+ * - Retrieves the client ID from route parameters.
+ * - Fetches necessary data for populating form fields, including countries, sectors, currencies,
+ *   client titles, identity types, occupations, client types, and client branches.
+ */
   ngOnInit(): void {
     // Fetch entity details and set user form values
     const entityDetails = JSON.parse(sessionStorage.getItem("entityDetails"));
@@ -172,7 +187,10 @@ export class NewClientComponent implements OnInit{
     this.getClientType(2);
     this.getClientBranch();
   }
-
+/**
+ * After the view has been initialized, this method retrieves mandatory field data
+ * and updates the visibility and validation of form fields based on the received data.
+ */
   ngAfterViewInit() {
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
@@ -290,7 +308,11 @@ export class NewClientComponent implements OnInit{
         this.cdr.detectChanges();
       });
   }
-
+/**
+ * Initializes and configures the client registration form with default values and validators.
+ * This method sets up a complex nested form structure for capturing client information.
+ * You can also use it to patch values from entityDetails, if needed.
+ */
   clientRegForm() {
     this.clientRegistrationForm = this.fb.group({
       partyTypeShtDesc: "CLIENT",
@@ -405,15 +427,29 @@ export class NewClientComponent implements OnInit{
   ];
   option= 'Individual';*/
 
+/**
+ * Handles the selection of a user type and updates the clientType property accordingly.
+ * @param e - The event object containing information about the selected user type.
+ */
   selectUserType(e) {
     this.clientType = e.target.value;
     console.log(`userType >>>`, this.clientType, e.target.value)
   }
+
+  /**
+ * Handles the selection of a utility bill type and updates the utilityBill property accordingly.
+ * @param e - The event object containing information about the selected utility bill.
+ */
   selectUtilityBill(e) {
     this.utilityBill = e.target.value;
     // log.info(`utilityBill >>>`, this.utilityBill, e.target.value)
   }
   get f() { return this.clientRegistrationForm.controls; }
+
+  /**
+ * Saves client basic information, including address, contact details, payment details, 
+ * and wealth details, by making an API call with the form values.
+ */
   saveClientBasic() {
     this.submitted = true;
     this.clientRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
@@ -605,16 +641,24 @@ export class NewClientComponent implements OnInit{
     });
   }
 
+/**
+ * Handles file uploads and sets the URL of the uploaded file for display.
+ * @param event - The file input change event containing uploaded files.
+ */
   onUpload(event)
   {
     if (event.target.files) {
       var reader = new FileReader()
       reader.readAsDataURL(event.target.files[0])
       reader.onload = (event: any) => {
-        this.url = event.target.result
+        this.url = event.target.result;
+        console.log('URL after upload:', this.url); // Add this line for debugging
+
       }
     }
   }
+ 
+  
 
   uploadNextOfKins() {
 
@@ -635,6 +679,11 @@ export class NewClientComponent implements OnInit{
   //       },
   //     );
   // }
+
+  /**
+ * Fetches sectors data for the specified organization and updates the component's sectorData property.
+ * @param organizationId - The ID of the organization for which sectors are being fetched.
+ */
   getSectors(organizationId: number) {
     this.sectorService.getSectors(organizationId)
       .pipe(
@@ -647,6 +696,9 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+  /**
+ * Fetches currency data and updates the component's currenciesData property.
+ */
   getCurrencies() {
     this.bankService.getCurrencies()
       .pipe(
@@ -658,6 +710,11 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+  /**
+ * Fetches client titles based on the specified organization ID and updates the component's 
+ * clientTitlesData property.
+ * @param organizationId The organization ID for which client titles are fetched.
+ */
   getClientTitles(organizationId: number) {
     this.accountService.getClientTitles(organizationId)
       .pipe(
@@ -669,6 +726,9 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+  /**
+ * Fetches identity types and updates the component's identityTypeData property.
+ */
   getIdentityType() {
     this.clientsService.getIdentityType()
       .pipe(
@@ -680,6 +740,12 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+
+  /**
+ * Fetches occupation data based on the provided organization ID and
+ *  updates the component's occupationData property.
+ * @param organizationId The organization ID used to retrieve occupation data.
+ */
   getOccupation(organizationId: number) {
     this.occupationService.getOccupations(organizationId)
       .pipe(
@@ -691,6 +757,11 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+  /**
+ * Fetches client types based on the provided organization ID and 
+ * updates the component's clientTypeData property.
+ * @param organizationId The organization ID used to retrieve client types.
+ */
   getClientType(organizationId: number) {
     this.clientService.getClientType(organizationId)
       .pipe(
@@ -702,6 +773,10 @@ export class NewClientComponent implements OnInit{
         },
       );
   }
+  /**
+ * Fetches client branches and updates the component's clientBranchData property.
+ * This function is typically used to populate a dropdown or list of client branches.
+ */
   getClientBranch() {
     this.clientsService.getCLientBranches()
       .pipe(
@@ -715,7 +790,10 @@ export class NewClientComponent implements OnInit{
   }
   ngOnDestroy() {
   }
-
+/**
+ * Fetches a list of countries and updates the component's countryData property.
+ * This function is typically used to populate a dropdown or list of countries.
+ */
   fetchCountries(){
     log.info('Fetching countries list');
     this.countryService.getCountries()
@@ -728,7 +806,13 @@ export class NewClientComponent implements OnInit{
         // }
       });
   }
-
+/**
+ * Fetches a list of main city states for a specific country based on the given countryId
+ * and updates the component's citiesData property.
+ * This function is typically used to populate a dropdown or list of city states for a specific country.
+ *
+ * @param countryId - The unique identifier of the country for which city states are being fetched.
+ */
   fetchMainCityStates(countryId: number){
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
@@ -736,7 +820,13 @@ export class NewClientComponent implements OnInit{
         this.citiesData  = data;
       })
   }
-
+/**
+ * Fetches a list of towns for a specific city-state based on the given stateId
+ * and updates the component's townData property.
+ * This function is typically used to populate a dropdown or list of towns for a specific city-state.
+ *
+ * @param stateId - The unique identifier of the city-state for which towns are being fetched.
+ */
   fetchTowns(stateId:number){
     log.info(`Fetching towns list for city-state, ${stateId}`);
     this.countryService.getTownsByMainCityState(stateId)
@@ -744,7 +834,13 @@ export class NewClientComponent implements OnInit{
         this.townData = data;
       })
   }
-
+/**
+ * Handles the change event when a user selects a different country in a form.
+ * This function resets the county and town fields in the form,
+ * fetches the list of banks based on the selected country,
+ * and fetches the main city-states for the selected country.
+ * It also triggers change detection to update the view.
+ */
   onCountryChange() {
     this.clientRegistrationForm.patchValue({
       county: null,
@@ -759,7 +855,11 @@ export class NewClientComponent implements OnInit{
       });
     this.cdr.detectChanges();
   }
-
+/**
+ * Handles the change event when a user selects a different city-state in a form.
+ * This function fetches the list of towns associated with the selected city-state
+ * and updates the townData property accordingly.
+ */
   onCityChange() {
     this.countryService.getTownsByMainCityState(this.selectedCityState)
       .pipe(untilDestroyed(this))
@@ -767,7 +867,13 @@ export class NewClientComponent implements OnInit{
         this.townData = data;
       })
   }
-
+/**
+ * Fetches the list of banks based on the selected country ID and updates the banksData property.
+ * It also logs the retrieved bank data for debugging purposes.
+ * After receiving the bank data, you can call other functions to fetch bank branches or perform further actions.
+ *
+ * @param countryId - The ID of the selected country for which banks are being fetched.
+ */
   getBanks(countryId: number) {
     this.bankService.getBanks(countryId)
       .pipe(untilDestroyed(this))
@@ -778,7 +884,10 @@ export class NewClientComponent implements OnInit{
 
       // Call getBankBranches after receiving banksData
   }
-
+/**
+ * Handles the selection of a bank by updating the selectedBank property and resetting the branch selection.
+ * It triggers the retrieval of bank branches based on the selected bank ID.
+ */
   onBankSelection() {
    /* const bankId = event.target.value; // Get the selected bank ID from the event
     this.getBankBranches(bankId);*/
@@ -789,7 +898,10 @@ export class NewClientComponent implements OnInit{
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
   }
-
+/**
+ * Retrieves bank branches based on the provided bank ID and updates the bankBranchData property.
+ * @param bankId The ID of the selected bank to fetch branches for.
+ */
   getBankBranches(bankId: number) {
     if (bankId) {
       this.bankService.getBankBranchesByBankId(bankId).subscribe((branches) => {

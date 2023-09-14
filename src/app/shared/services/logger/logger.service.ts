@@ -93,7 +93,7 @@ export class Logger {
   info(...objects: any[]) {
     this.log(console.info, LogLevel.Info, objects);
   }
-
+ 
   /**
    * Logs messages or objects  with the warning level.
    * Works the same as console.log().
@@ -121,4 +121,5 @@ export class Logger {
       );
     }
   }
+  
 }

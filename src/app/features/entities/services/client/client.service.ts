@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDTO';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+import {Pagination} from '../../../../shared/data/common/pagination'
 import {AppConfigService} from "../../../../core/config/app-config-service";
 
 @Injectable({
