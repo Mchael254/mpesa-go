@@ -3,7 +3,6 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs/internal/BehaviorSubject";
 import {Observable} from "rxjs/internal/Observable";
 import {SystemsDto} from "../../../shared/data/common/systemsDto";
-import {Logger, UtilService} from "../../../shared/services";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {DepartmentDto} from "../../../shared/data/common/departmentDto";
 import {
@@ -18,6 +17,8 @@ import {
 import {AuthService} from "../../../shared/services/auth.service";
 import {AppConfigService} from "../../../core/config/app-config-service";
 import {GeneralTicketApiResponse} from "../data/generalTicketApiResponse";
+import {Logger} from "../../../shared/services/logger/logger.service";
+import {UtilService} from "../../../shared/services/util/util.service";
 
 const log = new Logger('TicketsService');
 
