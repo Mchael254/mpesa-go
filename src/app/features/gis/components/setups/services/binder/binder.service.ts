@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, retry, catchError, Observable } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Binders } from '../../data/gisDTO';
 
 @Injectable({
