@@ -5,13 +5,16 @@ import {Observable} from "rxjs";
 import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
-import {tap} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
 import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {TableDetail} from "../../../../../shared/data/table-detail";
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AccountService } from '../../../services/account/account.service';
+import { PartyAccountsDetails } from '../../../data/accountDTO';
+import { SortFilterService } from 'src/app/shared/services/sort-filter.service';
 
 const log = new Logger('ListIntermediaryComponent');
 
@@ -57,6 +60,8 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     private intermediaryService: IntermediaryService,
     // private sortFilterService: SortFilterService,
     // private accountService: AccountService,
+    private sortFilterService: SortFilterService,
+    private accountService: AccountService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService
   ) {
@@ -82,11 +87,32 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      url: '/home/entity/edit',
+      // url: '/home/entity/view',
       urlIdentifier: 'id',
-      isLazyLoaded: true
+      isLazyLoaded: true,
+      viewDetailsOnView: true,
+      viewMethod: this.viewDetailsWithId.bind(this),
     },
     this.spinner.show();
+  }
+
+  viewDetailsWithId(rowId: number) {
+    let partyId: number;
+
+    // fetch account details to fetch party id before routing to 360 view
+    this.accountService
+      .getAccountDetailsByAccountCode(rowId)
+      .pipe(
+        map((data: PartyAccountsDetails) => {
+            this.accountService.setCurrentAccounts(data); // set this current as current account.
+            return data?.partyId;
+          },
+          untilDestroyed(this)
+        ))
+          .subscribe( (_x) => {
+            partyId = _x;
+            this.router.navigate([ `/home/entity/view/${partyId}`]);
+          });
   }
 
   /**
@@ -102,6 +128,7 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
    * default, the sort order is set to "desc".
    * @returns an Observable of type Pagination<AgentDTO>.
    */
+
   getAgents(pageIndex: number,
             sortField: any = 'createdDate',
             sortOrder: string = 'desc'): Observable<Pagination<AgentDTO>> {
@@ -157,7 +184,12 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       .subscribe( (data) => {
         this.intermediaries =  data;
       });
-  }*/
+  }
+  viewDetailsById(rowId: any) {
+    // Implement your logic here using the rowId
+    log.info(`Viewing details for row with ID: ${rowId}`);
+  }
+
 
   /**
    * The function navigates to a new entity page with the entity type set to 'Agent'.

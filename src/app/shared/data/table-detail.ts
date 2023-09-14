@@ -13,5 +13,7 @@ export interface TableDetail {
   isLazyLoaded?: boolean,
   totalElements?: number,
   showCustomModalOnView?: boolean,
-  noDataFoundMessage?: string
+  noDataFoundMessage?: string,
+  viewDetailsOnView?: boolean;
+  viewMethod?: (rowId: any) => void;
 }

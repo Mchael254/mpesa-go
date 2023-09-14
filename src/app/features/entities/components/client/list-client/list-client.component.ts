@@ -9,8 +9,11 @@ import {ClientDTO} from "../../../data/ClientDTO";
 import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
-import {tap} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AccountService } from '../../../services/account/account.service';
+import { PartyAccountsDetails } from '../../../data/accountDTO';
+import { SortFilterService } from 'src/app/shared/services/sort-filter.service';
 
 const log = new Logger('ListClientComponent');
 
@@ -55,6 +58,8 @@ export class ListClientComponent implements OnInit {
     private fb: FormBuilder,
     private clientService: ClientService,
     // private sortFilterService: SortFilterService,
+    private sortFilterService: SortFilterService,
+    private accountService: AccountService,
     private cdr: ChangeDetectorRef,
     private spinner:NgxSpinnerService
   ) {
@@ -81,12 +86,33 @@ export class ListClientComponent implements OnInit {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      url: '/home/entity/edit',
+      // url: '/home/entity/view',
       urlIdentifier: 'id',
+      viewDetailsOnView: true,
+      viewMethod: this.viewDetailsWithId.bind(this),
       isLazyLoaded: true
     }
     this.spinner.show();
 
+  }
+
+  viewDetailsWithId(rowId: number) {
+    let partyId: number;
+
+    // fetch account details to fetch party id before routing to 360 view
+    this.accountService
+      .getAccountDetailsByAccountCode(rowId)
+      .pipe(
+        map((data: PartyAccountsDetails) => {
+            this.accountService.setCurrentAccounts(data); // set this current as current account.
+            return data?.partyId;
+          },
+          untilDestroyed(this)
+        ))
+          .subscribe( (_x) => {
+            partyId = _x;
+            this.router.navigate([ `/home/entity/view/${partyId}`]);
+          });
   }
 
   /**
@@ -101,6 +127,7 @@ export class ListClientComponent implements OnInit {
    * sortOrder is set to 'desc'.
    * @returns The `getClients` function is returning an Observable.
    */
+
   getClients(pageIndex: number,
              sortField: any = 'createdDate',
              sortOrder: string = 'desc') {

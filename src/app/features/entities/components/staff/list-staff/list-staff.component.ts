@@ -12,6 +12,9 @@ import {FormBuilder} from "@angular/forms";
 import {Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AccountService } from '../../../services/account/account.service';
+import { map } from 'rxjs';
+import { PartyAccountsDetails } from '../../../data/accountDTO';
 
 const log = new Logger('ListStaffComponent');
 
@@ -89,6 +92,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
               private fb: FormBuilder,
               private router: Router,
               private cdr: ChangeDetectorRef,
+               private accountService: AccountService,
               private spinner:NgxSpinnerService
               ) {
     this.groupStaff = [];
@@ -111,8 +115,10 @@ export class ListStaffComponent implements OnInit, OnDestroy {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      url: '/home/entity/edit',
+      // url: '/home/entity/view',
       urlIdentifier: 'id',
+      viewDetailsOnView: true,
+      viewMethod: this.viewDetailsWithId.bind(this),
       isLazyLoaded: true
     }
 
@@ -129,10 +135,30 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     );
   }
 
+  viewDetailsWithId(rowId: number) {
+    let partyId: number;
+
+    // fetch account details to fetch party id before routing to 360 view
+    this.accountService
+      .getAccountDetailsByAccountCode(rowId)
+      .pipe(
+        map((data: PartyAccountsDetails) => {
+            this.accountService.setCurrentAccounts(data); // set this current as current account.
+            return data?.partyId;
+          },
+          untilDestroyed(this)
+        ))
+          .subscribe( (_x) => {
+            partyId = _x;
+            this.router.navigate([ `/home/entity/view/${partyId}`]);
+          });
+  }
+
   /**
    * Lazy load staff data when triggered by primeng table event
    * @param event - the event object of type TableLazyLoadEvent
    */
+
   loadStaff(event: LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
