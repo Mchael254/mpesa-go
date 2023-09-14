@@ -607,7 +607,7 @@ export interface Classes{
     shortDescription: string,
     maxPolicyAccumulationLimit: string,
     maxInsuredAccumulationLimit:string,
-    organizationCode:string,
+    organizationCode:number,
     subClasses:[]
 
 

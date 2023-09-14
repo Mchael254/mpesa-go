@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CoverTypeService } from '../../../services/cover-type/cover-type.service';
-import { Logger } from 'src/app/shared/shared.module';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../../shared/services/messaging/global-messaging.service';
 import { Sections } from '../../../data/gisDTO';
+import { Logger } from '../../../../../../../shared/services/logger/logger.service';
 
 const log = new Logger('ScreenCodesComponent');
 
@@ -64,6 +64,10 @@ export class SectionComponent implements OnInit {
     private spinner: NgxSpinnerService,
   ) { }
   
+ /**
+  * The ngOnInit function initializes the component by creating a form, showing a spinner, and loading
+  * all sections.
+  */
   ngOnInit(): void {
     this.createSectionForm();
     this.spinner.show();
