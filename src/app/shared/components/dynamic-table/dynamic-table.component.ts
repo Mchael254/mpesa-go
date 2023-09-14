@@ -31,6 +31,7 @@ export class DynamicTableComponent {
   @Input() public tableDetails: TableDetail;
   @Output() onLazyLoad = new EventEmitter<LazyLoadEvent|TableLazyLoadEvent> ();
   @Output() showCustomModalEmitter: EventEmitter<DynamicTableModalData<any>> = new EventEmitter<DynamicTableModalData<any>>();
+  @Input() public viewDetailsById: (rowId: any) => void;
 
   clear(table: Table) {
     table.clear();
@@ -61,4 +62,13 @@ export class DynamicTableComponent {
   showCustomModal(data: any) {
     this.showCustomModalEmitter.emit({showModal: true, value: data});
   }
+
+  viewDetailsWithId(rowId: any) {
+    // Check if the viewMethod exists before calling it
+    if (this.tableDetails?.viewMethod) {
+      // Call the viewMethod and pass the rowId as an argument
+      this.tableDetails.viewMethod(rowId);
+    }
+  }
+
 }

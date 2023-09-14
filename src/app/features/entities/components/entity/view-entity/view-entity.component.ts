@@ -3,7 +3,7 @@ import { StaffDto } from '../../../data/StaffDto';
 import { AgentDTO } from '../../../data/AgentDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReplaySubject, finalize, takeUntil, tap } from 'rxjs';
 import { ChartOptions, ChartType } from 'chart.js';
@@ -18,9 +18,12 @@ import { DatePipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ClientService } from '../../../services/client/client.service';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
+// import { Logger } from '../../../../../shared/services/logger.service';
 import { ClientDTO } from '../../../data/ClientDTO';
 import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { QuotationsDTO } from '../../../../../features/gis/data/quotations-dto';
+import { ClaimsDTO } from '../../../../../features/gis/data/claims-dto';
 
 const log = new Logger("ViewEntityComponent")
 
@@ -38,9 +41,9 @@ export class ViewEntityComponent implements OnInit {
   unAssignedPartyTypes: PartyTypeDto[] = [];
   selectedRole: PartyTypeDto;
   accounts: Roles[]=[];
-  // policies: Pagination<PoliciesDTO> = <Pagination<PoliciesDTO>>{};
-  // quotations: Pagination<QuotationsDTO> = <Pagination<QuotationsDTO>>{};
-  // claims: Pagination<ClaimsDTO> = <Pagination<ClaimsDTO>>{};
+  policies: Pagination<PoliciesDTO> = <Pagination<PoliciesDTO>>{};
+  quotations: Pagination<QuotationsDTO> = <Pagination<QuotationsDTO>>{};
+  claims: Pagination<ClaimsDTO> = <Pagination<ClaimsDTO>>{};
 
   page = 0;
   pageSize = 5;
@@ -90,7 +93,7 @@ export class ViewEntityComponent implements OnInit {
     private serviceProviderService: ServiceProviderService,
     private intermediaryService: IntermediaryService,
     // private datePipe: DatePipe,
-    private messageService: MessageService,
+    // private messageService: MessageService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService
   ) {
@@ -106,23 +109,6 @@ export class ViewEntityComponent implements OnInit {
     log.info(`Entity id is ${this.entityId}`);
     this.getEntityByPartyId();
     this.getEntityAccountById();
-    this.accounts = [
-      {
-        role: "Client",
-        wef: "14 APR 2020",
-        wet: "20 APR 2021"
-      },
-      {
-        role: "Intermediary",
-        wef: "1 JAN 2020",
-        wet: "2 JAN 2021"
-      },
-      {
-        role: "Service Provider",
-        wef: "3 NOV 2020",
-        wet: "5 NOV 2021"
-      },
-    ];
   }
 
   /*
@@ -148,7 +134,7 @@ export class ViewEntityComponent implements OnInit {
         this.accountCode = this.selectedAccount?.accountCode;
       });
 
-    this.getEntityAccountDetailsByAccountNo(this.accountCode);
+    // this.getEntityAccountDetailsByAccountNo(this.accountCode);
     this.getPartyAccountDetailByAccountId(this.accountCode);
     // this.getPoliciesByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
     // this.getQuotationsByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
@@ -239,108 +225,108 @@ export class ViewEntityComponent implements OnInit {
 
   }
 
-  /***
-   * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
-   * @param id representing account code
-   */
-  getEntityAccountDetailsByAccountNo(id: number) {
-      let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
-      this.entityService.setCurrentAccount(accountType);
-      if(accountType){
-        switch (accountType?.partyType?.partyTypeName.toLowerCase()) {
-          case 'staff':
-            this.fetchStaffDetails(accountType?.accountCode);
-            break;
-          case 'client':
-            this.fetchClientDetails(accountType?.accountCode);
-            break;
-          case 'service provider':
-            this.fetchServiceProviderDetails(accountType?.accountCode);
-            break;
-          case 'agent':
-            this.fetchIntermediaryDetails(accountType?.accountCode);
-            break;
-          default:
-            break;
-        }
-    }
+  // /***
+  //  * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
+  //  * @param id representing account code
+  //  */
+  // getEntityAccountDetailsByAccountNo(id: number) {
+  //     let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
+  //     this.entityService.setCurrentAccount(accountType);
+  //     if(accountType){
+  //       switch (accountType?.partyType?.partyTypeName.toLowerCase()) {
+  //         case 'staff':
+  //           this.fetchStaffDetails(accountType?.accountCode);
+  //           break;
+  //         case 'client':
+  //           this.fetchClientDetails(accountType?.accountCode);
+  //           break;
+  //         case 'service provider':
+  //           this.fetchServiceProviderDetails(accountType?.accountCode);
+  //           break;
+  //         case 'agent':
+  //           this.fetchIntermediaryDetails(accountType?.accountCode);
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //   }
 
-  }
+  // }
 
-  /***
-   * Fetch Entity Accounts - Staff Account
-   * @param accountCode
-   */
-  fetchStaffDetails(accountCode: number){
-    this.staffService.getStaffById(accountCode)
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        (data) => {
-          this.entityDetails = data;
+  // /***
+  //  * Fetch Entity Accounts - Staff Account
+  //  * @param accountCode
+  //  */
+  // fetchStaffDetails(accountCode: number){
+  //   this.staffService.getStaffById(accountCode)
+  //     .pipe(
+  //       takeUntil(this.destroyed$),
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.entityDetails = data;
 
-          console.log('>>>>>>>>>>> Fetching partyType staff details using accountCode', this.entityDetails)
-        }
-      );
-  }
+  //         console.log('>>>>>>>>>>> Fetching partyType staff details using accountCode', this.entityDetails)
+  //       }
+  //     );
+  // }
 
-  /***
-   * Fetch Entity Accounts - Client Account
-   * @param accountCode
-   */
-  fetchClientDetails(accountCode: number){
-    this.clientService.getClientById(accountCode)
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        (data) => {
-          this.entityDetails = data;
+  // /***
+  //  * Fetch Entity Accounts - Client Account
+  //  * @param accountCode
+  //  */
+  // fetchClientDetails(accountCode: number){
+  //   this.clientService.getClientById(accountCode)
+  //     .pipe(
+  //       takeUntil(this.destroyed$),
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.entityDetails = data;
 
-          console.log('>>>>>>>>>>> Fetching partyType client details using accountCode', this.entityDetails)
+  //         console.log('>>>>>>>>>>> Fetching partyType client details using accountCode', this.entityDetails)
 
-        }
-      )
-  }
+  //       }
+  //     )
+  // }
 
 
-  /***
-   * Fetch Entity Accounts - Intermediary Account
-   * @param accountCode
-   */
-  fetchIntermediaryDetails(accountCode: number){
-    this.intermediaryService.getAgentById(accountCode)
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        (data) => {
-          this.entityDetails = data;
+  // /***
+  //  * Fetch Entity Accounts - Intermediary Account
+  //  * @param accountCode
+  //  */
+  // fetchIntermediaryDetails(accountCode: number){
+  //   this.intermediaryService.getAgentById(accountCode)
+  //     .pipe(
+  //       takeUntil(this.destroyed$),
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.entityDetails = data;
 
-          console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
-        }
-      );
-  }
+  //         console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
+  //       }
+  //     );
+  // }
 
-  /***
-   * Fetch Entity Accounts - Service Provider Account
-   * @param accountCode
-   */
-  fetchServiceProviderDetails(accountCode: number){
-    this.serviceProviderService.getServiceProviderById(accountCode)
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        (data) => {
-          this.entityDetails = data;
+  // /***
+  //  * Fetch Entity Accounts - Service Provider Account
+  //  * @param accountCode
+  //  */
+  // fetchServiceProviderDetails(accountCode: number){
+  //   this.serviceProviderService.getServiceProviderById(accountCode)
+  //     .pipe(
+  //       takeUntil(this.destroyed$),
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.entityDetails = data;
 
-          console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
+  //         console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
 
-        }
-      )
-  }
+  //       }
+  //     )
+  // }
 
   /*** Create Summary Form **/
   createEntitySummaryForm() {

@@ -4,6 +4,7 @@ import { IdentityModeDTO } from "./entityDto";
 import { PartyTypeDto } from "./partyTypeDto";
 import {ClientDetailsDto} from "./ClientDTO";
 import { ServiceProviderDTO } from "./ServiceProviderDTO";
+import { OccupationDTO } from "src/app/shared/data/common/occupation-dto";
 
 /**
  * DTO for creating an address object when creating a new entity account (Staff, Client, Service Provider, Intermediaries)
@@ -161,6 +162,7 @@ export interface BankDetailsUpdateDTO {
 
   export interface PersonalDetailsUpdateDTO {
     accountId?: number;
+    accountType?: number,
     dob?: string;
     emailAddress?: string;
     identityNumber?: string;
@@ -168,7 +170,7 @@ export interface BankDetailsUpdateDTO {
     name?: string;
     occupationId?: number;
     organizationId?: number;
-    passportNo?: string;
+    primaryType?: IdentityModeDTO;
     phoneNumber?: string;
     physicalAddress?: string;
     pinNumber?: string;
@@ -177,6 +179,8 @@ export interface BankDetailsUpdateDTO {
     category?: string;
     departmentId?: number;
     supervisorId?: number;
+    modeOfIdentity?: IdentityModeDTO,
+    occupation?: OccupationDTO,
   }
 
   export interface WealthDetailsUpdateDTO {

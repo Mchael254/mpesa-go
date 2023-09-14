@@ -5,11 +5,13 @@ import { Pagination } from 'src/app/shared/data/common/pagination';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 import { ServiceProviderService } from '../../../services/service-provider/service-provider.service';
 import {Logger, untilDestroyed} from "../../../../../shared/shared.module";
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { LazyLoadEvent } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AccountService } from '../../../services/account/account.service';
+import { PartyAccountsDetails } from '../../../data/accountDTO';
 
 @Component({
   selector: 'app-list-service-provider',
@@ -49,7 +51,8 @@ export class ListServiceProviderComponent {
     private service: ServiceProviderService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+     private accountService: AccountService
   ) {
     this.tableDetails = {
       cols: this.cols,
@@ -70,11 +73,32 @@ export class ListServiceProviderComponent {
       showFilter: false,
       showSorting: true,
       paginator: true,
-      url: '/home/entity/edit',
+      // url: '/home/entity/edit',
       urlIdentifier: 'id',
-      isLazyLoaded: true
+      isLazyLoaded: true,
+      viewDetailsOnView: true,
+      viewMethod: this.viewDetailsWithId.bind(this),
     }
     this.spinner.show();
+  }
+
+  viewDetailsWithId(rowId: number) {
+    let partyId: number;
+
+    // fetch account details to fetch party id before routing to 360 view
+    this.accountService
+      .getAccountDetailsByAccountCode(rowId)
+      .pipe(
+        map((data: PartyAccountsDetails) => {
+            this.accountService.setCurrentAccounts(data); // set this current as current account.
+            return data?.partyId;
+          },
+          untilDestroyed(this)
+        ))
+          .subscribe( (_x) => {
+            partyId = _x;
+            this.router.navigate([ `/home/entity/view/${partyId}`]);
+          });
   }
 
   /**
@@ -89,6 +113,7 @@ export class ListServiceProviderComponent {
  * The retrieved data is encapsulated in a Pagination object and emitted as an observable.
  * 
  */
+
 
   getServiceProviders(pageIndex: number,
     sortField: any = 'createdDate',
