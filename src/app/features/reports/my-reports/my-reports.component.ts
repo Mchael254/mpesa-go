@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Logger} from "../../../shared/services";
 import {ReportService} from "../services/report.service";
 import {map, tap} from "rxjs/operators";
 import {Folder, FolderId} from "../../../shared/data/reports/folder";
@@ -9,6 +8,7 @@ import {Observable} from "rxjs";
 import {AuthService} from "../../../shared/services/auth.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import { NgxSpinnerService } from 'ngx-spinner';
+import {Logger} from "../../../shared/services/logger/logger.service";
 
 const log = new Logger('MyReportsComponent');
 @Component({
@@ -22,10 +22,11 @@ export class MyReportsComponent implements OnInit{
   public reports: Report[] = [];
   public reports$: Observable<Report[]> = new Observable<Report[]>();
 
-  private user: any = null;
+  public user: any = null;
   private userId: number = 0;
   private folderId: number = FolderId.MY_REPORTS;
-  private selectedReport: Report;
+  public selectedReport: Report;
+  public currentUrl: string;
 
   public searchForm: FormGroup;
 
@@ -40,11 +41,11 @@ export class MyReportsComponent implements OnInit{
   ngOnInit(): void {
     this.getFolders();
 
-    const currentUrl = this.router.url;
-    const folderId = currentUrl.indexOf('my-reports') !== -1 ? FolderId.MY_REPORTS
-      : currentUrl.indexOf('shared-reports') !== -1 ? FolderId.SHARED_REPORTS
+    this.currentUrl = this.router.url;
+    const folderId = this.currentUrl.indexOf('my-reports') !== -1 ? FolderId.MY_REPORTS
+      : this.currentUrl.indexOf('shared-reports') !== -1 ? FolderId.SHARED_REPORTS
         : null;
-    log.info(`folder id >>> `, folderId);
+
     this.getReports(folderId);
     this.selectFolder(this.folders[folderId])
 
@@ -65,7 +66,6 @@ export class MyReportsComponent implements OnInit{
         map((reports) => reports.filter(report => report.folderId == folderId)),
         tap((reports) => {
           this.reports = reports;
-          log.info(`reports >>> `, reports);
           this.spinner.hide();
         })
       )
@@ -79,12 +79,10 @@ export class MyReportsComponent implements OnInit{
   }
 
   selectFolder(folder: Folder): void {
-    // this.isPreviewResultAvailable = false;
-    log.info(`selected folder >>>`, folder);
     this.reports = [];
 
     this.folders.forEach((item) => {
-      item.active = item.id === folder.id ? true: false
+      item.active = item.id === folder.id
     });
 
     this.userId = folder.id === 0 ? this.user.id : 0;
@@ -98,13 +96,10 @@ export class MyReportsComponent implements OnInit{
   }
 
   selectReport(report: Report) {
-    log.info(`report selected`)
     this.reports.forEach((item) => {
       item.active = item.id === report.id;
-      log.info(`selected report >>>`, item);
     });
     this.selectedReport = report;
-    // log.info(`selected report >>>`, report, this.selectedReport);
   }
 
 }

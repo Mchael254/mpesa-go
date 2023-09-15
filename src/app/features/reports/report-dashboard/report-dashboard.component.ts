@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {Logger} from "../../../shared/services";
 import {Observable} from "rxjs";
 import {ReportService} from "../services/report.service";
 import {map, take, tap} from "rxjs/operators";
@@ -7,8 +6,9 @@ import cubejs from "@cubejs-client/core";
 import {AppConfigService} from "../../../core/config/app-config-service";
 import {Report} from "../../../shared/data/reports/report";
 import {Criteria} from "../../../shared/data/reports/criteria";
+import {Logger} from "../../../shared/services";
 
-const log = new Logger('ReportDashboardComponent');
+// const log = new Logger('ReportDashboardComponent');
 @Component({
   selector: 'app-report-dashboard',
   templateUrl: './report-dashboard.component.html',
@@ -20,7 +20,7 @@ export class ReportDashboardComponent implements OnInit{
   private dashboardId: number = 0;
   public reports$: Observable<Report[]> = new Observable<Report[]>();
   public reports: Report[] = [];
-  private visualizationQueries = [];
+  public visualizationQueries = [];
   public reportVisualizations = [];
   public isPreviewResultAvailable: boolean = false;
   private criteria: Criteria;
@@ -40,19 +40,16 @@ export class ReportDashboardComponent implements OnInit{
   }
 
   getReports(): void {
-    log.info(`user id >>>`, this.userId, typeof this.userId);
     this.reports$ = this.reportService.getReports()
       .pipe(
         take(1),
         map(reports => reports.filter(report =>
-          parseInt(String(report.dashboardId)) === this.dashboardId
-          && report.criteria !== null)
+          parseInt(String(report.dashboardId)) === this.dashboardId && report.criteria !== null)
         ),
         tap((reports) => {
-          log.info(`reports >>>`, reports);
           this.reports = reports;
         })
-      );
+      )
     this.getVisualizationQueries();
   }
 
@@ -72,7 +69,6 @@ export class ReportDashboardComponent implements OnInit{
         this.visualizationQueries.push(details);
         this.criteria = criteria;
       });
-      log.info(`visualizationQueries >>>`, this.visualizationQueries);
       this.addReportToVisualizations(this.criteria);
       this.isPreviewResultAvailable = true;
       this.cdr.detectChanges()
@@ -80,9 +76,9 @@ export class ReportDashboardComponent implements OnInit{
   }
 
   getDimensionsAndMeasures(criteria) {
-    log.info(`criteria >>>`, criteria, typeof criteria);
     const measures = [];
     const dimensions = [];
+
     criteria.forEach(criterion => {
       if (criterion.category === 'metrics') {
         measures.push(`${criterion.transaction}.${criterion.query}`);
@@ -134,28 +130,5 @@ export class ReportDashboardComponent implements OnInit{
 
     });
   }
-
-  /*generateDatasets(reportLabels, reportData, visualization) {
-    let datasets = [];
-    const label = this.getReportLabels(visualization.measures);
-    for (let i=0; i < reportData.length; i++) {
-      const dataset = {
-        data: reportData[i],
-        label: label[i]
-      };
-      datasets.push(dataset);
-    }
-    return datasets;
-  }*/
-
-  /*getReportLabels(measures) {
-    let returnData = [];
-    measures.forEach(x => {
-      log.info(`getReportLabels >>> `, x.split('.')[1]);
-      returnData.push(x.split('.')[1]);
-    })
-    return returnData;
-  }*/
-
 
 }
