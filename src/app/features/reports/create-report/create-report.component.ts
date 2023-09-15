@@ -16,7 +16,7 @@ import {Report} from "../../../shared/data/reports/report";
 import {AuthService} from "../../../shared/services/auth.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {Logger} from "../../../shared/services";
+import {Logger} from "../../../shared/services/logger/logger.service";
 
 const log = new Logger('CreateReportComponent');
 
@@ -88,7 +88,7 @@ export class CreateReportComponent implements OnInit{
         take(1)
       ).subscribe((params) => {
       this.reportId = params['reportId'];
-      log.info(`params >>> `, params, this.reportId);
+      // log.info(`params >>> `, params, this.reportId);
       if (this.reportId !== undefined) {
         this.getReport();
       }
@@ -106,9 +106,9 @@ export class CreateReportComponent implements OnInit{
     this.getReports();
     this.getFolders();
 
-    const extras = this.localStorage.getItem('extras');
-    const loginDetails = this.localStorage.getItem('details');
-    log.info(`extras | loginDetails >>>`, extras, loginDetails)
+    // const extras = this.localStorage.getItem('extras');
+    // const loginDetails = this.localStorage.getItem('details');
+    // log.info(`extras | loginDetails >>>`, extras, loginDetails)
   }
 
   createSearchForm(): void {
@@ -135,6 +135,7 @@ export class CreateReportComponent implements OnInit{
   }
 
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
+    console.log(`subject area from click`, s)
     this.selectedSubjectArea = s.subjectAreaName;
     this.subjectAreaCategories = null;
     this.showSubjectAreas = false;
@@ -143,7 +144,7 @@ export class CreateReportComponent implements OnInit{
       .pipe(take(1))
       .subscribe(res => {
         this.subjectAreaCategories = res;
-        log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
+        // log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
         this.cdr.detectChanges();
       });
   }
@@ -306,11 +307,13 @@ export class CreateReportComponent implements OnInit{
   }
 
   getReports(): void {
-    log.info(`user id >>>`, this.userId, typeof this.userId);
+    // log.info(`user id >>>`, this.userId, typeof this.userId);
     this.reports$ = this.reportService.getReports()
       .pipe(
         map(reports => reports.filter(report => parseInt(String(report.folderId)) === this.folderId)),
-        tap(reports => log.info(`reports >>>`, reports))
+        tap(reports => {
+          // log.info(`reports >>>`, reports)
+        })
       );
   }
 

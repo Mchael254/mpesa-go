@@ -27,6 +27,7 @@
             <ul *ngFor="let folder of folders">
               <li (click)="selectFolder(folder)"
                   [ngStyle]="{'backgroundColor': folder.active ? '#D0DAE3' : '#ffffff' }"
+                  id="folder-select"
               >
                 <span>
                   <i class="pi pi-folder"></i>{{ folder.name }}
@@ -41,12 +42,13 @@
                 <div
                   class="col-sm-3 report-item"
                   (click)="selectReport(report)"
+                  id="selectReport"
                 >
                   <div class="p-2"
                     [ngStyle]="{'backgroundColor': report?.active ? '#D0DAE3' : '#ffffff' }"
                   >
                     <i class="pi pi-folder"></i>
-                    <span class="report-name">{{ report.reportName }}</span>
+                    <span class="report-name">{{ report?.reportName }}</span>
                   </div>
                 </div>
               </ng-container>
@@ -58,7 +60,7 @@
 
         <div class="row button-row">
           <div class="col-sm-3 offset-9 mb-2" style="text-align: right">
-            <button class="btn btn-primary" (click)="viewReport()">Proceed</button>
+            <button class="btn btn-primary" id="viewReport" (click)="viewReport()">Proceed</button>
           </div>
         </div>
 
