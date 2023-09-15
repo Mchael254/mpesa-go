@@ -10,6 +10,6 @@ export interface Report {
   reportName: string;
   reportType: string;
   userId: number;
-  criteria?: string | Criteria;
+  criteria?: string | Criteria[];
   active?: boolean;
 }

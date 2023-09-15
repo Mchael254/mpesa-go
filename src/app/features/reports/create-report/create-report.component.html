@@ -15,11 +15,14 @@
                 filterBy="subjectAreaName"
                 [showClear]="true"
                 placeholder="Select Subject Area"
+                id="subjectAreaDropdown"
               >
                 <ng-template let-subjectArea pTemplate="item">
                   <div class="flex align-items-center gap-2" style="font-size: 13px;">
                     <div
-                      (click)="getCategoriesBySubjectAreaId(subjectArea)">
+                      (click)="getCategoriesBySubjectAreaId(subjectArea)"
+                      [attr.id]="'subjectArea'+subjectArea.id"
+                    >
                       {{ subjectArea.subjectAreaName }}
                     </div>
                   </div>
@@ -85,7 +88,9 @@
           <div class="row preview-top">
             <div class="col-sm-4">
               <button
-                type="button" class="btn" id="criteria-btn"
+                type="button"
+                class="btn"
+                id="criteria-btn"
                 [ngClass]="{'active-btn': isCriteriaButtonActive, 'inactive-btn': !isCriteriaButtonActive}"
                 (click)="toggleCriteriaPreview('criteria')"
               >
