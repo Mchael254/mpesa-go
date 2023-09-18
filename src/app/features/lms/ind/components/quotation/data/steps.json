@@ -1,0 +1,28 @@
+[
+  {
+    "number": 1,
+    "title": "Client Details",
+    "link": "/home/lms/ind/quotation/client-details"
+  },
+  {
+    "number": 2,
+    "title": "Insurance history",
+    "link": "/home/lms/ind/quotation/insurance-history"
+  },
+
+  {
+    "number": 3,
+    "title": "Lifestyle details",
+    "link": "/home/lms/ind/quotation/lifestyle-details"
+  },
+  {
+    "number": 4,
+    "title": "Medical history",
+    "link": "/home/lms/ind/quotation/medical-history"
+  },
+  {
+    "number": 5,
+    "title": "Summary",
+    "link": "/home/lms/ind/quotation/summary"
+  }
+]

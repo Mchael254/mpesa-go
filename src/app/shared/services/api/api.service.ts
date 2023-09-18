@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from 'src/environments/environment';
+import { map } from 'rxjs/internal/operators/map';
+import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +15,8 @@ export class ApiService {
 
   private getHeaders(): HttpHeaders {
     let headers = new HttpHeaders();
-    headers = headers.append('Accept', 'application/json');
-    headers = headers.append('Content-Type', 'application/json');
+        headers = headers.append('Accept', 'application/json');
+        headers = headers.append('Content-Type', 'application/json');
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -31,8 +33,8 @@ export class ApiService {
     // // For Blob Downloads (Binary Data)
     // headers = headers.append('Content-Type', 'application/octet-stream');
     // headers = headers.append('Content-Disposition', 'attachment; filename=your_blob_file.bin');
-    let token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcGl1c2VyIiwic2NvcGVzIjpbXSwiaXNzIjoidHVybnF1ZXN0LWxtcy1hcGlzIiwiaWF0IjoxNjkzMzg0MzI2LCJleHAiOjE2OTM1NjQzMjZ9.v8eSQVRtYHWTknHyKJ9Cson2ZKCye2kwKCrqPI635kQ'
-    headers = headers.append('Authorization', token);
+    // let token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcGl1c2VyIiwic2NvcGVzIjpbXSwiaXNzIjoidHVybnF1ZXN0LWxtcy1hcGlzIiwiaWF0IjoxNjkzMzg0MzI2LCJleHAiOjE2OTM1NjQzMjZ9.v8eSQVRtYHWTknHyKJ9Cson2ZKCye2kwKCrqPI635kQ'
+    // headers = headers.append('Authorization', token);
 
     // if (!headers.has('Authorization')) {
     //   headers = headers.append('Authorization', token);
@@ -41,19 +43,21 @@ export class ApiService {
     return headers;
   }
 
-  GET(endpoint: string, params?: HttpParams): Observable<any> {
+  GET<T>(endpoint: string, params?: HttpParams): Observable<T> {
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
     const options = { headers, params };
 
-    return this.http.get(url, options);
+    return this.http.get<T>(url, options).pipe(
+      // tap(data => console.log(data))
+      );
   }
 
-  POST(endpoint: string, data: any): Observable<any> {
+  POST<T>(endpoint: string, data: any): Observable<T> {
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
 
-    return this.http.post(url, data, { headers });
+    return this.http.post<T>(url, data, { headers });
   }
 
 }

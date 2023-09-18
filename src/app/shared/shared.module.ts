@@ -53,6 +53,10 @@ export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateModule} from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+
+
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
@@ -146,7 +150,10 @@ const SERVICES = [
         RouterLink,
         NgxSpinnerModule,
         TranslateModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        CalendarModule,
+        DropdownModule
+
 
     ],
     exports: [
@@ -172,7 +179,10 @@ const SERVICES = [
         DynamicSetupWizardWelcomeScreenComponent,
         ReactiveFormsModule,
         CustomFilterPipe,
-        SafeResourceUrlPipe
+        SafeResourceUrlPipe,
+        CalendarModule,
+        TableModule,
+        DropdownModule
 
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

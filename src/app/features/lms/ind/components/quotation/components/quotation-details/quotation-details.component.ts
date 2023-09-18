@@ -55,7 +55,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy{
     },
     {
       label: 'Quotation Details',
-      url: '/home/lms/ind/quotation/quick-quote/quotation-details'
+      url: '/home/lms/ind/quotation/quotation-details'
     },
   ];
 
@@ -93,11 +93,11 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy{
   }
 
   onSubmitQuotationDetailForm(){
-    this.router.navigate(['/home/lms/ind/quotation/quick-quote/quotation-summary']);
+    this.router.navigate(['/home/lms/ind/quotation/summary']);
   }
 
   toPersonalDetailsForm(){
-    this.router.navigate(['/home/lms/ind/quotation/quick-quote/personal-details']);
+    this.router.navigate(['/home/lms/ind/quotation/client-details']);
   }
 
   getAllProducts(){

@@ -3,6 +3,7 @@
 
 * {
   --primary-color:  #00529B;
+  --grey-color: #868E96;
 
 }
 
@@ -72,7 +73,8 @@ html,body {
 }
 
 .form-select {
-  border-radius: 0;
+    border-radius: 2px;
+    border: 1px solid #07070761;
 }
 
 .setups .card {
@@ -348,7 +350,8 @@ h5.htxt {
 }
 
 .form-control {
-  border-radius: 0;
+    border-radius: 3px;
+    border: 1px solid #07070751;
 }
 /*Login ends*/
 
@@ -495,7 +498,7 @@ color: #00529B;
 
 .full-border {
   border: 1px solid #ccc; /* Adjust border style and color as per your preference */
-  padding: 2rem; /* Add padding to create space between form elements and the border */
+  padding: 0.6rem; /* Add padding to create space between form elements and the border */
   border-radius: 5px; /* Optional: Add border radius for rounded corners */
   margin: 10px;
   background-color: white;
@@ -586,4 +589,61 @@ color: #00529B;
   color: white;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
+}
+
+.form-check > input {
+  border: 2px solid black;
+}
+.form-check-input:checked {
+  background-color: #000000;
+}
+
+.form-check-input:checked,
+.form-check-input:active
+ {
+  background-color: #000000;
+  border: 2px solid black;
+
+}
+
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.1rem 0.1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  padding: 0.6rem 0.6rem;
+}
+tr > td > p-celleditor > input {
+  width: 150px;
+}
+
+p-celleditor > p-dropdown .p-dropdown {
+  height: 30px;
+  border-radius: 0;
+  border: solid 1px black;
+  transform: translateY(3px);
+}
+
+.p-button.p-button-icon-only {
+  border-radius: 0;
+  background-color: white !important;
+  color: var(--primary-color);
+  font-weight: 500;
+
+}
+
+.p-button.p-button-icon-only:hover {
+  border-radius: 0;
+  background-color: white !important;
+  color: rgb(14, 30, 66);
+}
+
+p-table tr > th {
+  font-size: 12px;
+  width: 10%;
+}
+
+.b-r {
+  padding: 0.6em; width: 5rem; margin:4px; border-radius: 7px;
 }

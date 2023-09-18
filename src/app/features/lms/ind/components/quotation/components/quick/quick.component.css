@@ -10,9 +10,8 @@
   font-size: 1rem;
 }
 
-.form-check > input {
-  border: 2px solid black;
-}
+
+
 
 /* Add this CSS in your component's CSS file or your global CSS file */
 .icon-container {
@@ -22,12 +21,15 @@
 }
 
 .bd-line {
-  border-right: 1px solid rgba(136, 136, 136, 0.317);
-}
-.form-check-input:checked {
-  background-color: #000000;
+  border-right: 1px solid #868E96;
 }
 
 .card-modal {
   padding: 3rem;
 }
+
+
+label {
+  padding-bottom: 6px;
+}
+

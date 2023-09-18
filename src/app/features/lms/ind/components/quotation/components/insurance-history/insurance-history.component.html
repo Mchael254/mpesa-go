@@ -1,0 +1,405 @@
+<div class="container-fluid">
+  <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div class="full-border p-5">
+    <div>
+      <div class="text-black">
+        <div class="col fadeIn">
+          <div [formGroup]="insuranceHistoryForm" class="w-100">
+            <div>
+              <div class="my-5">
+              <label class="required"
+                >Do you have any active, lapsed, paid up or surrendered life
+                assurance policy from any life assurance company ?</label
+              >
+              <div></div>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="male"
+                  formControlName="question1"
+                  value="Y"
+                />
+                <label class="form-check-label" for="male">Yes</label>
+              </span>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="female"
+                  formControlName="question1"
+                  value="N"
+                />
+                <label class="form-check-label" for="female">No</label>
+              </span>
+
+
+              <div>
+                <div class="text-black" *ngIf="getValue('question1') === 'Y'">
+                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                    Beneficiaries and trustees
+                  </div>
+                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                    <div>Beneficiary(ies)</div>
+                    <div>
+                      <button
+                        style="padding: 0.6em; width: 5rem;"
+                        type="button"
+                        class="btn btn-primary btn-sm b-r "
+                      >
+                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
+                      </button>
+                    </div>
+                  </div>
+
+                  <p-table
+                    [value]="products"
+                    dataKey="id"
+                    editMode="row"
+                    responsiveLayout="stack"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                  >
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th style="width: 20%">Surname</th>
+                        <th style="width: 20%">Other Names</th>
+                        <th style="width: 10%">Gender</th>
+                        <th style="width: 20%">Relationship</th>
+                        <th style="width: 20%">Date of Birth</th>
+                        <th style="width: 20%">Contact</th>
+                        <th style="width: 20%">Benefit Proportion</th>
+                        <th style="width: 20%"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template
+                      pTemplate="body"
+                      let-product
+                      let-editing="editing"
+                      let-ri="rowIndex"
+                    >
+                      <tr [pEditableRow]="product">
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.code }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" required />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.name }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.inventoryStatus }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <div
+                            class="flex align-items-center justify-content-center gap-2"
+                          >
+                            <button
+                              *ngIf="!editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pInitEditableRow
+                              icon="pi pi-pencil"
+                              (click)="onRowEditInit(product)"
+                              class="p-button-rounded p-button-text"
+                            ></button>
+                            <button
+                              *ngIf="editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pSaveEditableRow
+                              icon="pi pi-check"
+                              (click)="onRowEditSave(product)"
+                              class="p-button-rounded p-button-text p-button-success mr-2"
+                            ></button>
+                            <button
+                              *ngIf="editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pCancelEditableRow
+                              icon="pi pi-times"
+                              (click)="onRowEditCancel(product, ri)"
+                              class="p-button-rounded p-button-text p-button-danger"
+                            ></button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+
+
+            </div>
+
+
+            <div class="my-5">
+              <label class="required"
+                >Has any proposal on your life ever been declined, deferred,
+                withdrawn or accepted on special terms ?</label
+              >
+              <div></div>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="male"
+                  formControlName="question2"
+                  value="Y"
+                />
+                <label class="form-check-label" for="male">Yes</label>
+              </span>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="female"
+                  formControlName="question2"
+                  value="N"
+                />
+                <label class="form-check-label" for="female">No</label>
+              </span>
+
+              <div>
+                <div class="text-black" *ngIf="getValue('question2') ==='Y'">
+                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                    Beneficiaries and trustees
+                  </div>
+                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                    <div>Beneficiary(ies)</div>
+                    <div>
+                      <button
+                        style="padding: 0.6em; width: 5rem;"
+                        type="button"
+                        class="btn btn-primary btn-sm b-r"
+                      >
+                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
+                      </button>
+                    </div>
+                  </div>
+
+                  <p-table
+                    [value]="products"
+                    dataKey="id"
+                    editMode="row"
+                    responsiveLayout="stack"
+                    [tableStyle]="{ 'min-width': '50rem' }"
+                  >
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th style="width: 20%">Surname</th>
+                        <th style="width: 20%">Other Names</th>
+                        <th style="width: 10%">Gender</th>
+                        <th style="width: 20%">Relationship</th>
+                        <th style="width: 20%">Date of Birth</th>
+                        <th style="width: 20%">Contact</th>
+                        <th style="width: 20%">Benefit Proportion</th>
+                        <th style="width: 20%"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template
+                      pTemplate="body"
+                      let-product
+                      let-editing="editing"
+                      let-ri="rowIndex"
+                    >
+                      <tr [pEditableRow]="product">
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.code }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" required />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.name }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.inventoryStatus }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <p-cellEditor>
+                            <ng-template pTemplate="input">
+                              <input pInputText type="text" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                              {{ product.price | currency : "USD" }}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td>
+                          <div
+                            class="flex align-items-center justify-content-center gap-2"
+                          >
+                            <button
+                              *ngIf="!editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pInitEditableRow
+                              icon="pi pi-pencil"
+                              (click)="onRowEditInit(product)"
+                              class="p-button-rounded p-button-text"
+                            ></button>
+                            <button
+                              *ngIf="editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pSaveEditableRow
+                              icon="pi pi-check"
+                              (click)="onRowEditSave(product)"
+                              class="p-button-rounded p-button-text p-button-success mr-2"
+                            ></button>
+                            <button
+                              *ngIf="editing"
+                              pButton
+                              pRipple
+                              type="button"
+                              pCancelEditableRow
+                              icon="pi pi-times"
+                              (click)="onRowEditCancel(product, ri)"
+                              class="p-button-rounded p-button-text p-button-danger"
+                            ></button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between">
+    <button routerLink="/home/lms/ind/quotation/client-details" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
+    </button>
+    <button routerLink="/home/lms/ind/quotation/lifestyle-details" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      Continue
+      &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+
+    </button>
+  </div>
+</div>

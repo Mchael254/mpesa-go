@@ -1,0 +1,881 @@
+<div class="container-fluid">
+  <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div class="full-border">
+    <div class="d-flex justify-content-end">
+      <button
+        style="padding: 0.6em"
+        type="button"
+        class="btn btn-primary btn-sm"
+      >
+        Select Client
+      </button>
+    </div>
+
+    <div class="text-black p-3">
+      <form [formGroup]="searchForm">
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="clientType">Client Type</label>
+            <select
+              class="form-select"
+              formControlName="clientType"
+              [id]="'clientType'"
+            >
+              <ng-container
+                *ngFor="let product of [{ code: 1, description: 'E' }]"
+              >
+                <option [value]="product?.code">
+                  {{ product?.description }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="IdetifierType">Identifier Type</label>
+            <select
+              class="form-select"
+              formControlName="IdetifierType"
+              [id]="'IdetifierType'"
+            >
+              <ng-container
+                *ngFor="let product of [{ code: 1, description: 'E' }]"
+              >
+                <option [value]="product?.code">
+                  {{ product?.description }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="citizenship">Citizenship</label>
+            <select
+              class="form-select"
+              formControlName="citizenship"
+              [id]="'citizenship'"
+            >
+              <ng-container
+                *ngFor="let product of [{ code: 1, description: 'E' }]"
+              >
+                <option [value]="product?.code">
+                  {{ product?.description }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="surname">Surname</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="surname"
+              [id]="'surname'"
+            />
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="other_name">Other Name</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="other_name"
+              [id]="'other_name'"
+            />
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label class="required">Date of Birth</label>
+            <div>
+              <p-calendar
+                formControlName="date_of_birth"
+                dateFormat="dd/mm/yy"
+                [showIcon]="true"
+                [showButtonBar]="true"
+                (ngModelChange)="selectDate($event)"
+              ></p-calendar>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="idNumber">ID number</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="idNumber"
+              [id]="'idNumber'"
+            />
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="gender">Gender</label>
+            <select
+              class="form-select"
+              formControlName="gender"
+              [id]="'gender'"
+            >
+              <ng-container
+                *ngFor="let product of [{ code: 1, description: 'E' }]"
+              >
+                <option [value]="product?.code">
+                  {{ product?.description }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="pinNo">Pin Number</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="pinNo"
+              [id]="'pinNo'"
+            />
+          </div>
+        </div>
+      </form>
+
+    </div>
+
+    <div class="accordion accordion-flush py-5" id="accordionFlushExample">
+      <div style="color: var(--grey-color); padding: 0 0 0 1.2rem">
+        Additional details
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingOne">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseOne"
+            aria-expanded="false"
+            aria-controls="flush-collapseOne"
+          >
+            Contact Details
+          </button>
+        </h2>
+        <div
+          id="flush-collapseOne"
+          class="accordion-collapse collapse"
+          aria-labelledby="flush-headingOne"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body" [formGroup]="contactDetailsForm">
+            <div class="row">
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="clientType">Branch</label>
+                <select
+                  class="form-select"
+                  formControlName="branch"
+                  [id]="'clientType'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="title">Title</label>
+                <select
+                  class="form-select"
+                  formControlName="title"
+                  [id]="'title'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="number">Number</label>
+                <select
+                  class="form-select"
+                  formControlName="number"
+                  [id]="'number'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="telephone">Telephone</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="telephone"
+                  [id]="'telephone'"
+                />
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="email">Email Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="email"
+                  [id]="'email'"
+                />
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="p_contact_channel">Prefered Contact Channel</label>
+                <select
+                  class="form-select"
+                  formControlName="p_contact_channel"
+                  [id]="'p_contact_channel'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <!-- <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="edocs">E Docs</label>
+                <select
+                  class="form-select"
+                  formControlName="edocs"
+                  [id]="'edocs'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div> -->
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingTwo">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseTwo"
+            aria-expanded="false"
+            aria-controls="flush-collapseTwo"
+          >
+            Postal Address
+          </button>
+        </h2>
+        <div
+          id="flush-collapseTwo"
+          class="accordion-collapse collapse"
+          aria-labelledby="flush-headingTwo"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body" [formGroup]=" postalAddressForm">
+            <div class="row">
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="po_box">P.O. Box Address</label>
+                <select
+                  class="form-select"
+                  formControlName="po_box"
+                  [id]="'po_box'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="country">Country</label>
+                <select
+                  class="form-select"
+                  formControlName="country"
+                  [id]="'country'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="county">County</label>
+                <select
+                  class="form-select"
+                  formControlName="county"
+                  [id]="'county'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="town">Town</label>
+                <select
+                  class="form-select"
+                  formControlName="town"
+                  [id]="'town'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="p_address">Physical Address</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="p_address"
+                  [id]="'p_address'"
+                />
+              </div>
+
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingThree">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseThree"
+            aria-expanded="false"
+            aria-controls="flush-collapseThree"
+          >
+            Residential Address
+          </button>
+        </h2>
+        <div
+          id="flush-collapseThree"
+          class="accordion-collapse collapse"
+          aria-labelledby="flush-headingThree"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body" [formGroup] = residentialAddressForm>
+            <div class="row">
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="town">Town</label>
+                <select
+                  class="form-select"
+                  formControlName="town"
+                  [id]="'town'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="road">Road</label>
+                <select
+                  class="form-select"
+                  formControlName="road"
+                  [id]="'road'"
+                >
+                  <ng-container
+                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                  >
+                    <option [value]="product?.code">
+                      {{ product?.description }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="house_no">House No</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="house_no"
+                  [id]="'house_no'"
+                />
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="u_bill">Utility Bill</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="u_bill"
+                  [id]="'u_bill'"
+                />
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="u_u_bill">Upload Utility Bill</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="u_u_bill"
+                  [id]="'u_u_bill'"
+                />
+              </div>
+
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingFour">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseFour"
+            aria-expanded="false"
+            aria-controls="flush-collapseFour"
+          >
+            Banking Address
+          </button>
+        </h2>
+        <div
+          id="flush-collapseFour"
+          class="accordion-collapse collapse"
+          aria-labelledby="flush-headingFour"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body">
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="flush-headingFive">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#flush-collapseFive"
+            aria-expanded="false"
+            aria-controls="flush-collapseFive"
+          >
+            Wealth AML Details
+          </button>
+        </h2>
+        <div
+          id="flush-collapseFive"
+          class="accordion-collapse collapse"
+          aria-labelledby="flush-headingFive"
+          data-bs-parent="#accordionFlushExample"
+        >
+          <div class="accordion-body">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-black">
+        <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+          Beneficiaries and trustees
+        </div>
+        <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+          <div>Beneficiary(ies)</div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm b-r"
+            >
+            <i class="fa-solid fa-user-plus"></i>&nbsp; Add
+            </button>
+          </div>
+        </div>
+
+        <p-table
+          [value]="products"
+          dataKey="id"
+          editMode="row"
+          responsiveLayout="stack"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr style="font-size: 12px;">
+              <th >Surname</th>
+              <th >Other Names</th>
+              <th >Gender</th>
+              <th >Relationship</th>
+              <th >Date of Birth</th>
+              <th >Contact</th>
+              <th >Benefit Proportion</th>
+              <th ></th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-product
+            let-editing="editing"
+            let-ri="rowIndex"
+          >
+            <tr [pEditableRow]="product">
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.code }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" required />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.name }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.inventoryStatus }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <div
+                  class="flex align-items-center justify-content-center gap-2"
+                >
+                  <button
+                    *ngIf="!editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pInitEditableRow
+                    icon="pi pi-pencil"
+                    (click)="onRowEditInit(product)"
+                    class="p-button-rounded p-button-text"
+                  ></button>
+                  <button
+                    *ngIf="editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pSaveEditableRow
+                    icon="pi pi-check"
+                    (click)="onRowEditSave(product)"
+                    class="p-button-rounded p-button-text p-button-success mr-2"
+                  ></button>
+                  <button
+                    *ngIf="editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pCancelEditableRow
+                    icon="pi pi-times"
+                    (click)="onRowEditCancel(product, ri)"
+                    class="p-button-rounded p-button-text p-button-danger"
+                  ></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-black">
+        <div class="d-flex justify-content-between" style="padding: 3rem 0 0.4rem 0rem">
+          <div>Trustee(s)</div>
+          <div>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm b-r"
+            >
+            <i class="fa-solid fa-user-plus"></i>&nbsp; Add
+            </button>
+          </div>
+        </div>
+
+
+        <p-table
+          [value]="products"
+          dataKey="id"
+          editMode="row"
+          responsiveLayout="stack"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr >
+              <th >Surname</th>
+              <th >Other Names</th>
+              <th >Gender</th>
+              <th >Relationship</th>
+              <th >Date of Birth</th>
+              <th >Contact</th>
+              <th ></th>
+            </tr>
+          </ng-template>
+          <ng-template
+            pTemplate="body"
+            let-product
+            let-editing="editing"
+            let-ri="rowIndex"
+          >
+            <tr [pEditableRow]="product">
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.code }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" required />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.name }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.inventoryStatus }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText type="text" />
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{ product.price | currency : "USD" }}
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td>
+                <div
+                  class="flex align-items-center justify-content-center gap-2"
+                >
+                  <button
+                    *ngIf="!editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pInitEditableRow
+                    icon="pi pi-pencil"
+                    (click)="onRowEditInit(product)"
+                    class="p-button-rounded p-button-text"
+                  ></button>
+                  <button
+                    *ngIf="editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pSaveEditableRow
+                    icon="pi pi-check"
+                    (click)="onRowEditSave(product)"
+                    class="p-button-rounded p-button-text p-button-success mr-2"
+                  ></button>
+                  <button
+                    *ngIf="editing"
+                    pButton
+                    pRipple
+                    type="button"
+                    pCancelEditableRow
+                    icon="pi pi-times"
+                    (click)="onRowEditCancel(product, ri)"
+                    class="p-button-rounded p-button-text p-button-danger"
+                  ></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-black">
+        <div style="color: var(--grey-color); padding: 3rem 0 1rem 0rem">
+          Upload Document(s)
+        </div>
+
+        <div class="row mb-2">
+          <div class="col-4">
+            <p-dropdown
+            [options]="uploadList"
+            formControlName="selectedUploadItem"
+            placeholder="Select Item"
+            [style]="{'width':'100%', 'height':'2.5rem', 'border-radius': '0', 'border': '1px solid #7272716b', 'font-size': '14px'}"
+            [group]="true">
+            <ng-template let-group pTemplate="group" style="font-size: 14px; font-weight: 600; color: black;">
+                <div class="p-d-flex p-ai-center">
+                    <span style="text-transform: uppercase; font-size: 13px;">{{ group.label }}</span>
+                </div>
+            </ng-template>
+        </p-dropdown>
+          </div>
+          <div class="col-12 mt-2">
+            List of Uploads
+          </div>
+        </div>
+        <div></div>
+
+      </div>
+    </div>
+
+    <div>
+      <div class="text-black">
+        <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+          Escalation(s)
+        </div>
+
+        <div class="col fadeIn">
+          <div [formGroup]="escalationForm" class="w-75">
+            <label class="required"
+              >Do you wish to have the benefit of escalation option?</label
+            >
+            <div></div>
+            <span class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="male"
+                formControlName="question"
+                value="Y"
+              />
+              <label class="form-check-label" for="male">Yes</label>
+            </span>
+            <span class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="female"
+                formControlName="question"
+                value="N"
+              />
+              <label class="form-check-label" for="female">No</label>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <div></div>
+    <!-- <button style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      Back
+    </button> -->
+    <button routerLink="/home/lms/ind/quotation/insurance-history" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      Continue
+      &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+
+    </button>
+  </div>
+
+  <div class="mb-4"></div>
+</div>

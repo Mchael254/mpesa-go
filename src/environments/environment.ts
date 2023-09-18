@@ -11,6 +11,6 @@
 export const environment = {
   production: false,
   dmsDefaultUrl: 'http://10.176.18.101:9080/alfrescoServices',
-  BASE_URL: 'https://mutual.turnkeyafrica.com/mbenefitPortalApiV2'
+  BASE_URL: 'http://localhost:5000'
 
 };
