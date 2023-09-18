@@ -1,0 +1,44 @@
+.form-check-label{
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.form-check-input{
+    color: #000;
+}
+#quote-label{
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 7px;
+}
+#quote-input{
+    border-radius: 4px;
+     border: 1px solid rgba(0, 0, 0, 0.20);
+    /* background: #FFF; */
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal; 
+}
+#compute{
+    color: #FFF;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border-radius: 4px;
+    background: #00529B;
+}
+select#quote-input option {
+    padding: 15px; /* Adjust the padding as needed */
+}
