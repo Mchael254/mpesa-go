@@ -1,0 +1,12 @@
+div > label {
+  margin-top: 1rem;
+}
+
+label {
+  margin-bottom: 0.5rem;
+}
+.p-dropdown .p-dropdown-label.p-placeholder {
+  color: #858e96;
+  transform: translateY(-4px);
+  font-size: 14px;
+}

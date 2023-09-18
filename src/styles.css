@@ -8,7 +8,7 @@
 .fadeIn {
   -webkit-animation-name: fadeIn;
   animation-name: fadeIn;
-  animation-duration: 1s;
+  animation-duration: 1.5s;
 }
 
 @-webkit-keyframes fadeIn {
@@ -65,4 +65,18 @@ tr.ng-star-inserted {
  {
   border: 0;
   border-radius: 0;
+}
+
+.p-calendar {
+  display: flex !important;
+  border-radius: 0 !important;
+  height: 2.4rem !important;
+}
+.p-inputtext {
+  border-radius: 0;
+}
+
+.p-button.p-button-icon-only {
+  border-radius: 0;
+  background-color: var(--primary-color);
 }

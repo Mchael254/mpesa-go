@@ -52,8 +52,7 @@
 }
 
 .sub-card {
-  padding: 2rem;
-  margin-right: 1em;
+  padding: 1rem;
   font-weight: 700;
 }
 
@@ -61,4 +60,28 @@
   border: 2px solid var(--primary-color);
   background-color: var(--primary-color);
   color: #fff;
+}
+
+
+.with-background-image {
+  /* background-image: url('src/assets/svg/lms.svg'); Replace with the actual path to your SVG file */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 100px 90px;
+  /* height: 10rem;
+  width: 10rem; */
+}
+
+.sub-card-content{
+  width: 6rem;
+  height: 5rem;
+}
+
+.lms-image{
+  background-image: url('src/assets/svg/lms.svg'); /* Replace with the actual path to your SVG file */
+
+}
+.gis-image {
+  background-image: url('src/assets/svg/gis.svg'); /* Replace with the actual path to your SVG file */
+
 }

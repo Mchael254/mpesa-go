@@ -29,28 +29,36 @@
                 <div
                   style="
                     padding: 2rem 0 0.4rem 0.7rem;
-                    color: rgb(136, 136, 136);
-                    font-weight: 500;
+                    color: #868E96;
                   "
                 >
                   Lets get to know you
                 </div>
                 <div class="col">
                   <div class="w-75">
-                    <label>Date of Birth</label>
-                    <input
+                    <label class="required">Date of Birth</label>
+                    <div>
+                      <p-calendar formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate($event)">
+                        <ng-template pTemplate="header" >
+                          <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div>
+                        </ng-template>
+
+                      </p-calendar>
+                    </div>
+                    <!-- <input
                       type="date"
-                      class="form-control"
+                      class="form-control fadeIn"
                       formControlName="date_of_birth"
                       placeholder="Select Date of Birth"
                       style="padding-right: 2rem"
-                    />
+                      (change)="selectDate($event)"
+                    /> -->
                   </div>
                 </div>
 
-                <div class="col">
+                <div class="col fadeIn">
                   <div class="w-75">
-                    <label>Gender</label>
+                    <label class="required">Gender</label>
                     <div></div>
                     <div class="form-check form-check-inline">
                       <input
@@ -78,44 +86,44 @@
                 </div>
               </div>
 
-              <div class="row">
+              <div class="row fadeIn" *ngIf="isProductReady">
                 <div
                   style="
                     padding: 2rem 0 0.4rem 0.7rem;
-                    color: rgb(136, 136, 136);
+                    color: #868E96;
                     font-weight: 500;
                   "
                 >
                   Select product details
                 </div>
                 <div class="col">
-                  <div class="w-75">
-                    <label>Product</label>
+                  <div class="w-75" >
+                    <label class="required">Product</label>
                     <select
                       formControlName="product"
                       class="form-select"
                       (change)="selectProduct($event)"
                     >
                       <ng-container *ngFor="let product of productList">
-                        <option [value]="product?.product_code">
-                          {{ product?.product_description }}
+                        <option [value]="product?.code">
+                          {{ product?.description | lowercase }}
                         </option>
                       </ng-container>
                     </select>
                   </div>
                 </div>
 
-                <div class="col">
-                  <div class="w-75">
-                    <label>Option</label>
+                <div class="col" >
+                  <div class="w-75 fadeIn" *ngIf="isOptionReady && productOptionList.length >2">
+                    <label class="required">Option</label>
                     <select
                       formControlName="option"
                       class="form-select"
-                      (change)="selectOption($event)"
+                      (change)="selectProductOption($event)"
                     >
                       <ng-container *ngFor="let option of productOptionList">
                         <option [value]="option['code']">
-                          {{ option.description }}
+                          {{ option.desc  | lowercase}}
                         </option>
                       </ng-container>
                     </select>
@@ -126,23 +134,23 @@
               <div class="row">
                 <div style="padding: 2rem 0 0.4rem 0"></div>
                 <div class="col">
-                  <div class="w-75">
-                    <label class="mb-2">Terms</label>
+                  <div class="w-75 fadeIn" *ngIf="isTermReady">
+                    <label class="mb-2 required">Terms</label>
                     <select
                       formControlName="term"
                       class="form-select"
-                      (change)="selectOption($event)"
+                      (change)="selectProductOption($event)"
                     >
-                      <ng-container *ngFor="let term of productTermList">
+                      <ng-container *ngFor="let term of productTermList()">
                         <option [value]="term['code']">
-                          {{ term.description }}
+                          {{ term.description | lowercase}}
                         </option>
                       </ng-container>
                     </select>
                   </div>
                 </div>
                 <div class="col">
-                  <div class="w-75">
+                  <div class="w-75 fadeIn" *ngIf="isPremAssuredReady">
                     <div class="form-check form-check-inline">
                       <input
                         class="form-check-input"
@@ -170,7 +178,7 @@
                       type="text"
                       class="form-control"
                       formControlName="sa_prem_amount"
-                      placeholder="Select Sum Assured/Premium"
+                      [placeholder]="getValue('sa_prem_amount')==='P'?'Enter Premium' : 'Enter Sum Assured'"
                       style="padding-right: 2rem"
                     />
                   </div>
@@ -180,12 +188,11 @@
           </form>
         </div>
 
-        <div class="col-md-4" *ngIf="coverTypeList().length > 0">
+        <div class="col-md-4 fadeIn" *ngIf="coverTypeList().length > 0">
           <div
             style="
               padding: 2rem 0 1rem 0rem;
               color: rgb(136, 136, 136);
-              font-weight: 500;
             "
           >
             Additional Cover Types
@@ -197,11 +204,11 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    [value]="cover.description"
+                    [value]="cover['cover_type_description']"
                     [id]="i"
                   />
                   <label class="form-check-label" [for]="i">
-                    {{ cover.description }}
+                    {{ cover['cover_type_description'] | lowercase}}
                   </label>
                 </div>
               </div>
@@ -212,6 +219,7 @@
     </div>
 
     <div
+    *ngIf="quickQuoteSummary()['isSummaryReady']"
       style="
         display: flex;
         justify-content: center;
@@ -219,7 +227,8 @@
         padding: 2rem 0;
       "
     >
-      <div
+      <div class="fadeIn"
+
         style="
           padding: 2rem 5rem;
           width: 60%;
@@ -240,13 +249,13 @@
             justify-content: center;
           "
         >
-          Here is your {{ null || "Turnkey Endowment Quote" }}
+          Here is your {{ quickQuoteSummary()['product']['description'] || "Turnkey Endowment Quote"  }}
         </div>
 
         <div style="display: flex; justify-content: space-evenly">
           <div style="flex: 1; text-align: start">
             <span class="font-grey__font-eight__700">Option : </span>
-            {{ "Bronze" }}
+            {{ quickQuoteSummary()['option']['desc'] || '-' }}
           </div>
           <div class="m-4"></div>
           <div style="flex: 1; text-align: start">
@@ -310,8 +319,8 @@
               style="font-size: 3rem"
               >100
             </span>
-            <span class="font-small__color_primary d-flex align-self-end"
-              >per year</span
+            <span class="font-small__color_primary d-flex align-self-end" style="transform: translateY(-1rem);"
+              >/ yr</span
             >
           </div>
         </div>
@@ -331,8 +340,8 @@
           data-bs-target="#QuoteShareModal" (click)="selectShareType('email')">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="30.7"
+              width="20"
+              height="20"
               viewBox="0 0 256 193"
             >
               <path
@@ -367,8 +376,8 @@
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="50"
-              height="37.7"
+              width="16"
+              height="16"
               viewBox="0 0 256 258"
             >
               <defs>
@@ -412,8 +421,8 @@
           data-bs-target="#QuoteShareModal" (click)="selectShareType('phone')">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="50"
-              height="37.7"
+              width="16"
+              height="16"
               viewBox="0 0 48 48"
             >
               <path
@@ -436,12 +445,10 @@
             padding-top: 1em;
             font-weight: 600;
             color: var(--primary-color);
-            transform: translateX(-0.7rem);
           "
         >
 
           <div style="font-size: 1.3em; cursor: pointer">
-            <i class="fa-solid fa-download fa-xl"></i>
             <button
               type="button"
               class="text-end-view mx-1"
@@ -457,6 +464,7 @@
 
   <div class="d-flex justify-content-end mt-2">
     <button
+    [routerLink]="'/home/lms/ind/quotation/client-details'"
       type="button"
       class="btn btn-primary btn-sm"
       style="padding: 0.6em; width: 6rem"
