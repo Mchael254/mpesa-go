@@ -5,7 +5,7 @@
   <ul class="days">
     <li
       id="selectDayBtn"
-      *ngFor="let  day of daysToDisplay"
+      *ngFor="let day of daysToDisplay"
       (click)="emitSelectedDate(day)"
     >
       <span id="date" [ngClass]="{'active': day.active,'inactive': day.overflow, 'selected': day.isSelected }">

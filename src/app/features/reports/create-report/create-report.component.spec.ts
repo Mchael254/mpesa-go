@@ -13,7 +13,7 @@ import {RouterTestingModule} from "@angular/router/testing";
 import {AppConfigService} from "../../../core/config/app-config-service";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {ReactiveFormsModule} from "@angular/forms";
-import {ActivatedRoute, convertToParamMap, Params} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {createSpyObj} from "jest-createspyobj";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {ReportService} from "../services/report.service";
