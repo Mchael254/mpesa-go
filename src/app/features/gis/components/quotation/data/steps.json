@@ -1,0 +1,19 @@
+[
+    {
+      "number": 1,
+      "title": "Quick quotation details",
+      "link": "/home/gis/quotation/quick-quote-details"
+    },
+    {
+      "number": 2,
+      "title": "Cover types",
+      "link": "/home/lms/ind/quotation/insurance-history"
+    },
+  
+    {
+      "number": 3,
+      "title": "Quote summary",
+      "link": "/home/lms/ind/quotation/lifestyle-details"
+    }
+   
+]

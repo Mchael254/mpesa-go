@@ -413,7 +413,7 @@ export class EditComponent implements OnInit{
       name: personalInfoValue.name,
       occupationId: personalInfoValue.occupation,
       organizationId: this.partyAccountDetails.organizationId,
-      passportNo: personalInfoValue.passportNumber,
+      // passportNo: personalInfoValue.passportNumber,
       phoneNumber: personalInfoValue.mobileNumber,
       physicalAddress: personalInfoValue.physicalAddress,
       pinNumber: personalInfoValue.pinNumber,
