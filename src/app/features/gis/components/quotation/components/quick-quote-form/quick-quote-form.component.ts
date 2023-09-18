@@ -45,15 +45,27 @@ export class QuickQuoteFormComponent {
 
    })
 }
+onProductSelected(event: any) {
+  const selectedProductCode = event.target.value;
+  console.log("Selected Product Code:", selectedProductCode); 
 
-loadAllBinders(code:any){
-  this.binderService.getAllBinders().subscribe(data=>{
-    this.binderList=data;
-    this.binderListDetails = this.binderList._embedded.binder_dto_list;
-    this.selectedBinderList=this.binderListDetails.filter(binder=>binder.product_short_description === code);
-   
-    this.cdr.detectChanges();
-
-  })
+  this.loadAllBinders(selectedProductCode);
 }
+
+loadAllBinders(productCode: string) {
+  this.binderService.getAllBinders().subscribe(data => {
+      this.binderList = data;
+      this.binderListDetails = this.binderList._embedded.binder_dto_list;
+      console.log("All Binders Details:", this.binderListDetails); // Debugging
+
+      this.selectedBinderList = this.binderListDetails.filter(binder => {
+        // Check if the product_short_description matches the selected code or if it's null
+        return binder.product_short_description === productCode || !binder.product_short_description;
+    });      
+    console.log("Selected Binders:", this.selectedBinderList); // Debugging
+
+      this.cdr.detectChanges();
+  });
+}
+
 }
