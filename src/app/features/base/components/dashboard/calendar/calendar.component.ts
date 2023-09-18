@@ -269,7 +269,7 @@ export class CalendarComponent implements OnInit {
 
   filterEvents(dateString: string): CalendarEventReqDTO[] {
     return this.eventsData.filter((event) => {
-      return moment(event.startDate).format("DD/MM/YYYY") === dateString;
+      return moment(new Date(event.startDate)).format("DD/MM/YYYY") === dateString;
     });
   }
 
@@ -293,7 +293,7 @@ export class CalendarComponent implements OnInit {
 
   getEvents(dateString: string): void {
     const userName= this.loggedInUser;
-    log.info(`logged In User >>>`, this.loggedInUser);
+    // log.info(`logged In User >>>`, this.loggedInUser);
     this.calendarService.getCalendarEvent(userName)
       .pipe(
         take(1)
@@ -301,7 +301,6 @@ export class CalendarComponent implements OnInit {
       .subscribe(
         (data) => {
           this.eventsData = data;
-          // log.info('get events data', data);
           this.renderCalendar();
 
           this.events = this.filterEvents(dateString);
@@ -335,7 +334,7 @@ export class CalendarComponent implements OnInit {
       title: eventFormValues.eventTitle,
       user: this.loggedInUser
     }
-    log.info(`calendarEvent to save >>>`, saveCalendarEvent)
+    // log.info(`calendarEvent to save >>>`, saveCalendarEvent)
 
     this.calendarService.saveCalendarEvent(saveCalendarEvent)
       .pipe(
@@ -345,7 +344,6 @@ export class CalendarComponent implements OnInit {
         this.globalMessagingService
           .displaySuccessMessage("Success", "Successfully created event");
 
-        log.info(`selected day >>>`, this.selectedDate, this.currMonth, this.dayOfWeek)
         const day: CalendarDay = {
           active: true,
           date: this.selectedDate,
@@ -363,7 +361,7 @@ export class CalendarComponent implements OnInit {
 
         this.newEventForm.reset();
         this.cdr.detectChanges();
-        log.info('saved event data', createdEvent)
+        // log.info('saved event data', createdEvent)
       })
   }
 

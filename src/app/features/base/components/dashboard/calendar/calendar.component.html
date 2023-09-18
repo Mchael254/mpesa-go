@@ -20,6 +20,7 @@
             aria-label="Default select example"
             formControlName="month"
             (change)="gotoPrevNext()"
+            id="gotoPrevNext"
           >
             <option *ngFor="let month of months" [value]="month">
               <span>{{ month | titlecase }}</span>
@@ -228,15 +229,18 @@
             <button
               class="btn text-end-view"
               (click)="activateCreateEvent('DAY')"
+              id="activateCreateEvent"
             >
             <i class="fa-solid fa-circle-arrow-left"></i>
             Back
             </button>
           </div>
           <div class="col-sm-2 offset-sm-8 text-end">
-            <i class="fa fa-floppy-o" aria-hidden="true"></i><button
+            <i class="fa fa-floppy-o" aria-hidden="true"></i>
+            <button
               class="btn text-end-view"
               (click)="createEvent()"
+              id="createEvent"
             >
             <i class="fa-solid fa-floppy-disk"></i>
             Save</button>
