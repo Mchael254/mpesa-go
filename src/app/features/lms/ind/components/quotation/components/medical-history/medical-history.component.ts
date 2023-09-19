@@ -23,7 +23,7 @@ export class MedicalHistoryComponent {
     },
     {
       label: 'Quotation',
-      url: '/home/lms/ind/quotation/list'
+      url: '/home/lms/quotation/list'
     },
     {
       label: 'Medical History(Data Entry)',

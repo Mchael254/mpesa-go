@@ -19,7 +19,7 @@ export class InsuranceHistoryComponent {
     },
     {
       label: 'Quotation',
-      url: '/home/lms/ind/quotation/list'
+      url: '/home/lms/quotation/list'
     },
     {
       label: 'Insurance History(Data Entry)',

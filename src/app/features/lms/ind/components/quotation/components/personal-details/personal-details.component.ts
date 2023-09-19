@@ -5,6 +5,8 @@ import { QuotationFormSetUp } from '../../config/quotations.forms';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import { CountryDto } from 'src/app/shared/data/common/countryDto';
 
 
 @Component({
@@ -31,7 +33,7 @@ export class PersonalDetailsComponent {
     },
     {
       label: 'Quotation',
-      url: '/home/lms/ind/quotation/list'
+      url: '/home/lms/quotation/list'
     },
     {
       label: 'Client Details(Data Entry)',
@@ -40,6 +42,12 @@ export class PersonalDetailsComponent {
   ];
 
   isTableOpen: boolean = false;
+  countryList: CountryDto[] = [];
+  products!: any[];
+
+  statuses!: any[];
+
+  clonedProducts: { [s: string]: any } = {};
   openTable() {
     this.isTableOpen = true;
   }
@@ -49,7 +57,7 @@ export class PersonalDetailsComponent {
   }
 
 
-  constructor(private location:Location, private quoteFormSetup: QuotationFormSetUp, private router: Router, private fb:FormBuilder){
+  constructor(private location:Location, private quoteFormSetup: QuotationFormSetUp, private router: Router, private fb:FormBuilder, private country_service: CountryService){
     this.personalDetailFormfields = quoteFormSetup.personalDetailForms();
     this.buttonConfig = quoteFormSetup.actionButtonConfig();
     this.searchForm = this.fb.group({
@@ -118,6 +126,28 @@ export class PersonalDetailsComponent {
       ]
   },]
   }
+  ngOnInit() {
+    this.products = [{
+      id: '1000',
+      code: 'f230fh0g3',
+      name: 'Bamboo Watch',
+      description: 'Product Description',
+      image: 'bamboo-watch.jpg',
+      price: 65,
+      category: 'Accessories',
+      quantity: 24,
+      inventoryStatus: 'INSTOCK',
+      rating: 5
+  },];
+
+this.statuses = [
+    { label: 'In Stock', value: 'INSTOCK' },
+    { label: 'Low Stock', value: 'LOWSTOCK' },
+    { label: 'Out of Stock', value: 'OUTOFSTOCK' }
+];
+
+this.getCountryList()
+}
 
   get clientControl(){
     return this.searchForm.get('client') as FormControl;
@@ -139,50 +169,6 @@ export class PersonalDetailsComponent {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  products!: any[];
-
-  statuses!: any[];
-
-  clonedProducts: { [s: string]: any } = {};
-
-  ngOnInit() {
-          this.products = [{
-            id: '1000',
-            code: 'f230fh0g3',
-            name: 'Bamboo Watch',
-            description: 'Product Description',
-            image: 'bamboo-watch.jpg',
-            price: 65,
-            category: 'Accessories',
-            quantity: 24,
-            inventoryStatus: 'INSTOCK',
-            rating: 5
-        },];
-
-      this.statuses = [
-          { label: 'In Stock', value: 'INSTOCK' },
-          { label: 'Low Stock', value: 'LOWSTOCK' },
-          { label: 'Out of Stock', value: 'OUTOFSTOCK' }
-      ];
-  }
-
   onRowEditInit(product: any) {
       this.clonedProducts[product.id as string] = { ...product };
   }
@@ -199,6 +185,15 @@ export class PersonalDetailsComponent {
   onRowEditCancel(product: any, index: number) {
       this.products[index] = this.clonedProducts[product.id as string];
       delete this.clonedProducts[product.id as string];
+  }
+
+  getCountryList(){
+    this.country_service.getCountries()
+      .subscribe( (data) => {
+        console.log(data);
+
+        // this.countryList = data;
+      });
   }
 
 }

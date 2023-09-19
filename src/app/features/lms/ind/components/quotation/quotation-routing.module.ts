@@ -10,7 +10,6 @@ import { LifestyleDetailsComponent } from './components/lifestyle-details/lifest
 import { MedicalHistoryComponent } from './components/medical-history/medical-history.component';
 
 const routes: Routes = [
-  {path: 'list', component: QuotationListComponent},
   {path: 'quick', component:QuickComponent },
   {path: 'client-details', component:PersonalDetailsComponent },
   {path: 'insurance-history', component:InsuranceHistoryComponent },

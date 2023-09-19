@@ -296,10 +296,10 @@
                   [id]="'po_box'"
                 >
                   <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                    *ngFor="let country of countryList"
                   >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                    <option [value]="country?.id">
+                      {{ country?.name }}
                     </option>
                   </ng-container>
                 </select>

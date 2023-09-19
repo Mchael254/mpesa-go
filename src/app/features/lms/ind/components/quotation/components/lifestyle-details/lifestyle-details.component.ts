@@ -18,7 +18,7 @@ export class LifestyleDetailsComponent {
     },
     {
       label: 'Quotation',
-      url: '/home/lms/ind/quotation/list'
+      url: '/home/lms/quotation/list'
     },
     {
       label: 'Lifestyle details(Data Entry)',
