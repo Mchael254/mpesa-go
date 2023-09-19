@@ -1,7 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { QuotationListComponent } from './ind/components/quotation/components/quotation-list/quotation-list.component';
 
 const routes: Routes = [
+  {
+    path:'quotation',
+    children: [
+      {path: 'list', component: QuotationListComponent},
+    ]
+  },
+
+
   {
     path: 'ind',
     children:
@@ -14,7 +23,10 @@ const routes: Routes = [
 
   {
     path: 'grp',
-    children: []
+    children: [
+      {path:'quotation', loadChildren: () => import('./grp/components/quotation/quotation.module').then(m => m.QuotationModule) },
+
+    ]
   }
 ];
 
