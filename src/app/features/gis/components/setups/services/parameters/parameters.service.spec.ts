@@ -46,7 +46,7 @@ describe('ParametersService', () => {
       expect(params).toBeTruthy();
     });
 
-    const req = httpTestingController.expectOne(`/${baseUrl}/setups/api/v1/system-parameters?pageSize=100`);
+    const req = httpTestingController.expectOne(`/${baseUrl}/setups/api/v1/system-parameters?pageSize=10000`);
     expect(req.request.method).toEqual('GET');
     req.flush([]);
   });

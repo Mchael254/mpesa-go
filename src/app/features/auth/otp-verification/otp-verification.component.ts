@@ -27,8 +27,9 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
    *  - getting the otp process from the query params
    */
   ngOnInit(): void {
-    this.otpProcess = this.route.snapshot.queryParamMap.get('referrer');
-    log.info(`OTP Process: ${this.otpProcess}`);
+    // this.otpProcess = this.route.snapshot.queryParamMap.get('referrer');
+    // log.info(`OTP Process: ${this.otpProcess}`);
+    this.otpProcess = this.route.snapshot.queryParams['referrer'];
   }
 
   /**
@@ -44,9 +45,8 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
    */
   verifyOtp(event: any) {
     if(event === true){
-
       if(this.otpProcess == 'password-reset'){
-        this.router.navigate(['/auth/change-password']).then(r => {});
+        this.router.navigate(['/auth/change-password'])
       }
       else {
         const details = JSON.parse(this.localStorageService.getItem('details'));
