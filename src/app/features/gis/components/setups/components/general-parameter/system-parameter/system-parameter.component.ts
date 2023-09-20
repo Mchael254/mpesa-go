@@ -22,7 +22,7 @@ export class SystemParameterComponent implements OnInit {
   public filteredParams: Params[];
   public selectedParam: Params;
   public parameterForm: FormGroup;
-  private isUpdateParam: boolean = false;
+  public isUpdateParam: boolean = false;
 
   public breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -71,7 +71,7 @@ export class SystemParameterComponent implements OnInit {
         next: (params) => {
           this.allParams = params;
           this.filteredParams = params;
-          log.info(`filteredParams >>> `, this.filteredParams);
+          // log.info(`filteredParams >>> `, this.filteredParams);
           this.spinner.hide();
         },
         error: (e) => { log.info(e)}
@@ -126,7 +126,6 @@ export class SystemParameterComponent implements OnInit {
   updateParameter(param: Params): void {
     param.code = null;
     param.version = this.selectedParam.version;
-    log.info(`code type >>> `, typeof param.code, param);
 
     this.paramsService.updateParam(param, this.selectedParam.code)
       .pipe(take(1))
