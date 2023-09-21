@@ -19,10 +19,10 @@ const log = new Logger('ScreenCodesComponent');
 export class ScreenCodesComponent implements OnInit{
   private allScreenCodes: ScreenCode[];
   public filteredScreenCodes: ScreenCode[];
-  private selectedScreenCode: ScreenCode;
+  selectedScreenCode: ScreenCode;
   public isDetailsViewActive: boolean = true;
   public screenForm: FormGroup;
-  private isUpdateScreenCode: boolean = false;
+  isUpdateScreenCode: boolean = false;
 
   public breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -60,7 +60,6 @@ export class ScreenCodesComponent implements OnInit{
       .subscribe((screenCodes) => {
         this.allScreenCodes = screenCodes._embedded.screen_dto_list;
         this.filteredScreenCodes = screenCodes._embedded.screen_dto_list;
-        log.info(`allScreenCodes >>>`, screenCodes?._embedded.screen_dto_list);
         this.spinner.hide();
       });
   }
@@ -103,7 +102,6 @@ export class ScreenCodesComponent implements OnInit{
   }
 
   selectScreenCode(screenCode: ScreenCode): void {
-    log.info(`selected Screen code >>>`, screenCode)
     this.selectedScreenCode = screenCode;
     this.isUpdateScreenCode = true;
     this.screenForm.patchValue(screenCode);
@@ -150,7 +148,6 @@ export class ScreenCodesComponent implements OnInit{
       screenName: formValues.screen_name,
       screenType: formValues.screenType,
     }
-    log.info(`screenCode >>> `, screenCode);
 
     if (this.isUpdateScreenCode) {
       screenCode.code = this.selectedScreenCode.code;
@@ -174,7 +171,6 @@ export class ScreenCodesComponent implements OnInit{
   }
 
   updateScreenCode(screenCode: ScreenCode): void {
-    log.info(`screencode to update >>>`, screenCode)
     this.scheduleService.updateScreenCode(screenCode)
       .pipe(take(1))
       .subscribe({
