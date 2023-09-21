@@ -1,0 +1,51 @@
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+  border-radius: 0px;
+  height: 40px;
+  font-size: 1rem;
+}
+/*primeng style*/
+.p-dropdown .p-dropdown-label.p-placeholder,
+.p-dropdown.p-dropdown-clearable .p-dropdown-label {
+  font-size: 0.5em;
+}
+
+:host ::ng-deep .p-dropdown span{
+  font-size: 0.9rem;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody > tr > td,
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  padding: 0.5em;
+  font-size: 0.9em;
+  color: var(--primary-color)!important;
+}
+
+.sub-category:hover,
+.sub-category:active
+{
+  background-color: #00539b03;
+}
+.metricSublist {
+  cursor: pointer;
+  transform: translateX(15px);
+  font-size: 13px;
+}
+
+.metricSublist:hover {
+  font-weight: 900;
+  background-color: #00539b06;
+}
+
+:host ::ng-deep .pill-box {
+  border: solid 1px #eee;
+  margin-top: 20px;
+  min-width: 200px;
+  font-size: 0.9rem;
+}
+
+
+.query::selection {
+  background-color: white;
+  color: black;
+}
