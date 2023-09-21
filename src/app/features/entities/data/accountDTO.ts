@@ -170,8 +170,6 @@ export interface BankDetailsUpdateDTO {
     name?: string;
     occupationId?: number;
     organizationId?: number;
-    passportNo?: string;
-    primaryType?: IdentityModeDTO;
     phoneNumber?: string;
     physicalAddress?: string;
     pinNumber?: string;
