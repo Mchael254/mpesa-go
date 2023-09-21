@@ -45,7 +45,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    let otpChannelSelected = JSON.parse(localStorage.getItem('otp-channel'));
+    let otpChannelSelected = this.localStorageService.getItem('otp-channel');
     this.messageChannel = otpChannelSelected?.channel;
   }
 
@@ -106,7 +106,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   resendOtp() {
     this.isLoading = true;
     this.otpForm.reset();
-    const otpChannel = JSON.parse(localStorage.getItem("otp-channel"));
+    const otpChannel = this.localStorageService.getItem("otp-channel");
     log.info(`OTP channel >>>`, otpChannel);
     this.authService.sentVerificationOtp(otpChannel.value, otpChannel.channel)
       .pipe(untilDestroyed(this)).subscribe( response =>{
