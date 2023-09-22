@@ -75,3 +75,6 @@
 .subject-area ul li:hover {
   background: #eee;
 }
+.continueBtn {
+  border-radius: 4px;
+}

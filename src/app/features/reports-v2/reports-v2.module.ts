@@ -8,11 +8,13 @@ import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {MegaMenuModule} from "primeng/megamenu";
+import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
 
 
 @NgModule({
   declarations: [
-    CreateReportComponent
+    CreateReportComponent,
+    CriteriaPillComponent
   ],
     imports: [
         CommonModule,
