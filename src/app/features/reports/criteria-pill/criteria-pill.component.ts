@@ -18,6 +18,10 @@ export class CriteriaPillComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  /**
+   * Emits the selected criteria to the parent component
+   * @returns void
+   */
   selectCriteria(criteria: Criteria) {
     this.deleteCriteriaDetails.emit(criteria);
   }
