@@ -53,13 +53,14 @@
                   {{ subCategory.name }}
                 </button>
                 <ul class="dropdown-menu">
-                  <li *ngFor="let categoryAreas of subCategory.categoryAreas">{{ categoryAreas.name }}</li>
+                  <li *ngFor="let categoryAreas of subCategory.categoryAreas"
+                      (click)="selectCriteria(metrics, subCategory, categoryAreas)">{{ categoryAreas.name }}</li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <div *ngIf="filters.length > 0" class="subject-area mt-5">
+          <div *ngIf="filters.length > 0" class="subject-area mt-4">
             <span class="fw-medium ms-1 my-1">Filters</span>
             <div class="content">
               <div *ngFor="let filterName of filters" class="btn-group dropend">
@@ -67,7 +68,8 @@
                   {{ filterName.name }}
                 </button> &nbsp; &nbsp; &nbsp; &nbsp;
                 <ul class="dropdown-menu">
-                  <li *ngFor="let filterSubCategory of filterName.subCategory">
+                  <li *ngFor="let filterSubCategory of filterName.subCategory"
+                      (click)="selectCriteria(filters, filterName, filterSubCategory)">
                     {{ filterSubCategory.name }}
                   </li>
                 </ul>
@@ -75,13 +77,30 @@
             </div>
           </div>
 
-          <button class="btn btn-primary mt-3">Continue</button>
+          <div class="text-center">
+            <button class="btn btn-primary mt-3 continueBtn">Continue</button>
+          </div>
+
 
         </div>
 
         <div class="col-sm-8 text-center">
           <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report"
                  [(ngModel)]="reportNameRec" disabled>
+
+
+          <ng-container *ngIf="isCriteriaButtonActive">
+            <div class="row" style="padding: 0 2rem 2rem 1rem">
+              <ng-container *ngFor="let criteriaItem of criteria">
+                <div class="col-sm-4 fadeInDown" >
+                  <app-criteria-pill
+                    [queryObject]="criteriaItem"
+                    (deleteCriteriaDetails)="deleteCriteria($event)"
+                  ></app-criteria-pill>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
         </div>
 
       </div>

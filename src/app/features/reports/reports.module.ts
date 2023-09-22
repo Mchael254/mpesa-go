@@ -14,21 +14,24 @@ import { MyReportsComponent } from './my-reports/my-reports.component';
 
 
 @NgModule({
-  declarations: [
-    ReportsComponent,
-    CreateReportComponent,
-    CriteriaPillComponent,
-    ReportDashboardComponent,
-    MyReportsComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReportsRoutingModule,
-    SharedModule,
-    DropdownModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ProgressSpinnerModule,
-  ]
+    declarations: [
+        ReportsComponent,
+        CreateReportComponent,
+        CriteriaPillComponent,
+        ReportDashboardComponent,
+        MyReportsComponent,
+    ],
+    exports: [
+        CriteriaPillComponent
+    ],
+    imports: [
+        CommonModule,
+        ReportsRoutingModule,
+        SharedModule,
+        DropdownModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ProgressSpinnerModule,
+    ]
 })
 export class ReportsModule { }

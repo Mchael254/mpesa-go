@@ -36,6 +36,7 @@ export class CreateReportComponent implements OnInit {
   public criteria: Criteria[] = [];
   public measures: string[] = [];
   public dimensions: string[] = [];
+  public isCriteriaButtonActive: boolean = true;
   reportName: string = '';
   reportNameRec: string = '';
   metrics: any = {};
@@ -173,5 +174,23 @@ export class CreateReportComponent implements OnInit {
     } else {
       return true;
     }
+  }
+
+
+  deleteCriteria(criteria: Criteria): void {
+    const index = this.criteria.indexOf(criteria);
+    if (index > -1) {
+      this.criteria.splice(index, 1);
+    }
+
+    const criteriaToRemove = `${criteria.transaction}.${criteria.query}`
+    if (criteria.category === 'metrics') {
+      const index = this.measures.indexOf(criteriaToRemove);
+      this.measures.splice(index, 1);
+    } else {
+      const index = this.dimensions.indexOf(criteriaToRemove);
+      this.dimensions.splice(index, 1);
+    }
+
   }
 }
