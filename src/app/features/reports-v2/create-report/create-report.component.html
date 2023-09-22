@@ -11,13 +11,14 @@
             </app-dynamic-breadcrumb>
           </div>
           <h6 class="text-black" style="font-size: 16px; font-weight: 400;">Report name
-            <span style="color: #FB1B1B"> *</span>
+            <span class="text-danger">*</span>
           </h6>
           <input type="text" class="form-control form-control-sm" placeholder="Pilot report"
                  [(ngModel)]="reportName" (input)="onReportNameChange($event)">
           <h6 class="text-black mt-3" style="font-size: 16px; font-weight: 400;">Subject area
-            <span style="color: #FB1B1B"> *</span>
+            <span class="text-danger">*</span>
           </h6>
+
           <form [formGroup]="searchForm" class="my-3">
             <div class="form-group">
               <p-dropdown
@@ -44,112 +45,38 @@
             </div>
           </form>
 
-          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories" style="padding: 4rem 0;">
-            <p-progressSpinner styleClass="w-0.5em h-0.5em " strokeWidth="3" fill="var(&#45;&#45;surface-ground)" animationDuration=".6s" ></p-progressSpinner>
-
-          </div>
-
-          <ng-template #showSubjectAreaCategories>
-
-            <p
-                class="dropdown-toggle"
-                 data-bs-toggle="collapse"
-                 href="#metricsCollapse" role="button"
-                 aria-expanded="true"
-                 aria-controls="metricsCollapse">
-              {{ metrics.name }}
-
-            </p>
-            <div class="border border-1 p-2">
-              <div *ngFor="let subCategory of metrics.subCategory">
-
-                <div class="collapse show" id="metricsCollapse">
-                  <ul
-                    class="sub-category"
-                    data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#'+subCategory.description"
-                    role="button"
-                    aria-expanded="false"
-                    aria-controls="collapseExample2"
-                    style="list-style-type: none; padding-left: 0px;"
-                  >
-                    <li class="dropdown-toggle" id="sub-category-name" style="font-size: 14px; font-weight: 400;">
-                      {{ subCategory.name }}
-                      <i class="fa fa-chevron-right float-end"></i>
-                    </li>
-                  </ul>
-
-                  <div class="collapse" [attr.id]="subCategory.description">
-                    <ul *ngFor="let categoryAreas of subCategory.categoryAreas">
-                      <li class="dropdown-toggle" id="category-areas" style="font-size: 14px; font-weight: 400;">
-                        {{ categoryAreas.name }} xxxxx
-                      </li>
-                    </ul>
-                  </div>
-
-                </div>
-
+          <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
+            <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
+            <div class="content">
+              <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
+                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ subCategory.name }}
+                </button>
+                <ul class="dropdown-menu">
+                  <li *ngFor="let categoryAreas of subCategory.categoryAreas">{{ categoryAreas.name }}</li>
+                </ul>
               </div>
             </div>
-
-
-          </ng-template>
-
-          <div class="text-center" *ngIf="metrics === null; else showFilters" style="padding: 4rem 0;">
-            <p-progressSpinner styleClass="w-0.5em h-0.5em " strokeWidth="3" fill="var(&#45;&#45;surface-ground)" animationDuration=".6s" ></p-progressSpinner>
-
           </div>
 
-          <ng-template #showFilters>
-          <h6 class="text-black mt-3" style="font-size: 16px; font-weight: 400;">Filters</h6>
-          <div class="mt-2" *ngFor="let filterName of filters">
-
-            <p
-              class="dropdown-toggle"
-              data-bs-toggle="collapse"
-              href="#filterCollapse" role="button"
-              aria-expanded="false"
-              [attr.data-bs-target]="'#filterCollapse'"
-              aria-controls="filterCollapse">
-              {{ filterName.name }}
-              <i class="fa fa-chevron-right float-end"></i>
-
-            </p>
-            <div *ngFor="let filtersubCategory of filterName.subCategory">
-
-              <div class="collapse" id="filterCollapse">
-                <ul
-                  class="sub-category"
-                  data-bs-toggle="collapse"
-                  [attr.data-bs-target]="'#'+filtersubCategory.description"
-                  role="button"
-                  aria-expanded="false"
-                  aria-controls="category-areas"
-                  style="list-style-type: none; padding-left: 0px;"
-                >
-                  <li class="dropdown-toggle" id="sub-category-name" style="font-size: 14px; font-weight: 400;">
-                    {{ filtersubCategory.name }}
-                    <i class="fa fa-chevron-right float-end"></i>
+          <div *ngIf="filters.length > 0" class="subject-area mt-5">
+            <span class="fw-medium ms-1 my-1">Filters</span>
+            <div class="content">
+              <div *ngFor="let filterName of filters" class="btn-group dropend">
+                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ filterName.name }}
+                </button> &nbsp; &nbsp; &nbsp; &nbsp;
+                <ul class="dropdown-menu">
+                  <li *ngFor="let filterSubCategory of filterName.subCategory">
+                    {{ filterSubCategory.name }}
                   </li>
                 </ul>
-
-                <div class="collapse" [attr.id]="filtersubCategory.description">
-                  <ul *ngFor="let categoryAreas of filtersubCategory.categoryAreas">
-                    <li class="dropdown-toggle" id="category-areas" style="font-size: 14px; font-weight: 400;">
-                      {{ categoryAreas.name }}
-                    </li>
-                  </ul>
-                </div>
-
               </div>
-
             </div>
           </div>
 
-
-          </ng-template>
-
           <button class="btn btn-primary mt-3">Continue</button>
+
         </div>
 
         <div class="col-sm-8 text-center">

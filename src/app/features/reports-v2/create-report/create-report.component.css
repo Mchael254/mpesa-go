@@ -49,3 +49,29 @@
   background-color: white;
   color: black;
 }
+
+.subject-area .content {
+  border: solid 1px #eee;
+  border-radius: 5px;
+}
+
+.subject-area ul {
+  line-height: 25px;
+  padding: 5px;
+  border: solid 1px #eee;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  width: max-content;
+}
+
+.subject-area ul li {
+  border: solid 1px #eee;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.subject-area ul li:hover {
+  background: #eee;
+}
