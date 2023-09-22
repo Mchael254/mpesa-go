@@ -35,10 +35,18 @@ export class ReportDashboardComponent implements OnInit{
     private appConfig: AppConfigService,
   ) {}
 
+  /**
+   * Initializes the component by getting a list of reports
+   * @returns void
+   */
   ngOnInit(): void {
     this.getReports();
   }
 
+  /**
+   * Gets a list of reports and calls the getVisualizationsQueries() method
+   * @returns void
+   */
   getReports(): void {
     this.reports$ = this.reportService.getReports()
       .pipe(
@@ -53,6 +61,12 @@ export class ReportDashboardComponent implements OnInit{
     this.getVisualizationQueries();
   }
 
+  /**
+   * Get the visualizations queries from backend to querying the cubeJS API
+   * splits the visualization queries into measures and dimensions
+   * should add reports to visualizations
+   * @returns void
+   */
   getVisualizationQueries(): void {
     this.reports$.pipe(
       take(1)
@@ -75,6 +89,11 @@ export class ReportDashboardComponent implements OnInit{
     });
   }
 
+  /**
+   * Splits the criteria into a list of dimensions and measures
+   * @param criteria
+   * @returns a list of dimensions & measures
+   */
   getDimensionsAndMeasures(criteria) {
     const measures = [];
     const dimensions = [];
@@ -90,6 +109,10 @@ export class ReportDashboardComponent implements OnInit{
     return { measures, dimensions };
   }
 
+  /**
+   * Add reports to visualizations by loading the dimesions & measures into the cubeJs API endpoint
+   * @returns void
+   */
   addReportToVisualizations(criteria) {
 
     this.visualizationQueries.forEach(visualization => {
