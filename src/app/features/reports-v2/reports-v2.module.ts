@@ -7,19 +7,21 @@ import {SharedModule} from "../../shared/shared.module";
 import {DropdownModule} from "primeng/dropdown";
 import {FormsModule} from "@angular/forms";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
+import {MegaMenuModule} from "primeng/megamenu";
 
 
 @NgModule({
   declarations: [
     CreateReportComponent
   ],
-  imports: [
-    CommonModule,
-    ReportsV2RoutingModule,
-    SharedModule,
-    DropdownModule,
-    FormsModule,
-    ProgressSpinnerModule
-  ]
+    imports: [
+        CommonModule,
+        ReportsV2RoutingModule,
+        SharedModule,
+        DropdownModule,
+        FormsModule,
+        ProgressSpinnerModule,
+        MegaMenuModule
+    ]
 })
 export class ReportsV2Module { }

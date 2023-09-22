@@ -81,13 +81,13 @@ export class CreateReportComponent implements OnInit {
         this.subjectAreaCategories = res;
         log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
 
-        const metrics2 = res.filter((item) => item.name === 'Metrics');
-        log.info('>>>>',metrics2[0]);
-        this.metrics = metrics2[0];
+        const metrics = res.filter((item) => item.name === 'Metrics');
+        log.info('>>>>',metrics[0]);
+        this.metrics = metrics[0];
 
-        const filters2 = res.filter((item) => item.name !== 'Metrics');
-        log.info('filters',filters2);
-        this.filters = filters2;
+        const filters = res.filter((item) => item.name !== 'Metrics');
+        log.info('filters',filters);
+        this.filters = filters;
 
         this.cdr.detectChanges();
       });
