@@ -1,1 +1,112 @@
-<p>create-report works!</p>
+<div class="base-content-section dashboard">
+  <div class="card">
+    <div class="card-header bg-transparent">
+       <span class="float-start">Reports</span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-3 border-0 border-end p-4">
+          <div class="me-4">
+            <app-dynamic-breadcrumb [breadCrumbItems]="createReportBreadCrumbItems">
+            </app-dynamic-breadcrumb>
+          </div>
+          <h6 class="text-black" style="font-size: 16px; font-weight: 400;">Report name
+            <span class="text-danger">*</span>
+          </h6>
+          <input type="text" class="form-control form-control-sm" placeholder="Pilot report"
+                 [(ngModel)]="reportName" (input)="onReportNameChange($event)">
+          <h6 class="text-black mt-3" style="font-size: 16px; font-weight: 400;">Subject area
+            <span class="text-danger">*</span>
+          </h6>
+
+          <form [formGroup]="searchForm" class="my-3">
+            <div class="form-group">
+              <p-dropdown
+                styleClass="dropdownStyle"
+                [options]="subjectAreas"
+                optionLabel="subjectAreaName"
+                [filter]="true"
+                filterBy="subjectAreaName"
+                [showClear]="true"
+                placeholder="Select Subject Area"
+                id="subjectAreaDropdown"
+              >
+                <ng-template let-subjectArea pTemplate="item">
+                  <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                    <div
+                      (click)="getCategoriesBySubjectAreaId(subjectArea)"
+                      [attr.id]="'subjectArea'+subjectArea.id"
+                    >
+                      {{ subjectArea.subjectAreaName }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </form>
+
+          <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
+            <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
+            <div class="content">
+              <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
+                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ subCategory.name }}
+                </button>
+                <ul class="dropdown-menu">
+                  <li *ngFor="let categoryAreas of subCategory.categoryAreas"
+                      (click)="selectCriteria(metrics, subCategory, categoryAreas)">{{ categoryAreas.name }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="filters.length > 0" class="subject-area mt-4">
+            <span class="fw-medium ms-1 my-1">Filters</span>
+            <div class="content">
+              <div *ngFor="let filterName of filters" class="btn-group dropend">
+                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{ filterName.name }}
+                </button> &nbsp; &nbsp; &nbsp; &nbsp;
+                <ul class="dropdown-menu">
+                  <li *ngFor="let filterSubCategory of filterName.subCategory"
+                      (click)="selectCriteria(filters, filterName, filterSubCategory)">
+                    {{ filterSubCategory.name }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-primary mt-3 continueBtn">Continue</button>
+          </div>
+
+
+        </div>
+
+        <div class="col-sm-8 text-center">
+          <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report"
+                 [(ngModel)]="reportNameRec" disabled>
+
+
+          <ng-container *ngIf="isCriteriaButtonActive">
+            <div class="row" style="padding: 0 2rem 2rem 1rem">
+              <ng-container *ngFor="let criteriaItem of criteria">
+                <div class="col-sm-4 fadeInDown" >
+                  <app-criteria-pill
+                    [queryObject]="criteriaItem"
+                    (deleteCriteriaDetails)="deleteCriteria($event)"
+                  ></app-criteria-pill>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+
+      </div>
+
+  </div>
+
+</div>
