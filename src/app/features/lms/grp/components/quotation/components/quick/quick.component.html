@@ -1,1 +1,173 @@
-<p>quick works!</p>
+<div class="container">  
+  <div id="container">
+    <div class="client-details">Select Client</div>
+    <form class="form" [formGroup]="quickForm">
+    <div class="col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12" id="#">
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Client</label></div>
+            <div>
+                <p-dropdown id='clients'
+                            [options]='clients'
+                            [optionLabel]="'label'"
+                            [filter]="true"
+                            [filterBy]="'label'"
+                            [dataKey]="'value'"
+                            [style]="{ width: '75%' }"
+                            placeholder="Select a Client"
+                            formControlName='clients' 
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+    </div>
+    <div class="product-details" style="padding-top: 50px;">Product details</div>
+    <div class="row col-12" > 
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Product</label></div>
+            <div>
+                <p-dropdown id='products'
+                            [options]='products'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='products' 
+                            placeholder="Select a Product"
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Duration Type</label></div>
+            <div>
+                <p-dropdown id='durationType'
+                            [options]='durationType'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='durationType'
+                            placeholder="Select Duration type" 
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Facultative type</label></div>
+            <div>
+                <p-dropdown id='facultativeType'
+                            [options]='facultativeType'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='facultativeType'
+                            placeholder="Select Facultative Type"
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Quotation Covers</label></div>
+            <div>
+                <p-dropdown id='quotationCovers'
+                            [options]='quotationCovers'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='quotationCovers'
+                            placeholder="Select Quotation Cover" 
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
+            <div class="label"><label>Frequency of Payment</label></div>
+            <div>
+                <p-dropdown id='frequencyOfPayment'
+                            [options]='frequencyOfPayment'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='frequencyOfPayment'
+                            placeholder="Select Fre. of Payment"
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
+            <div class="label"><label>Unit rate Option</label></div>
+            <div>
+                <p-dropdown id='unitRateOption'
+                            [options]='unitRateOption'
+                            [optionLabel]="'label'"
+                            [style]="{ width: '80%' }"
+                            formControlName='unitRateOption'
+                            placeholder="Select Unit rate"
+                            class="select">
+                </p-dropdown>
+            </div>
+        </div>
+    </div>
+        <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
+            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+                <div class="label"><label>Currency</label></div>
+                <div>
+                    <p-dropdown id='currency'
+                                [options]='currency'
+                                [optionLabel]="'label'"
+                                [style]="{ width: '80%' }"
+                                formControlName='currency' 
+                                placeholder="Select Currency"
+                                class="select">
+                    </p-dropdown>
+                </div>
+            </div>
+              <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" style="margin: 10px;">
+                <label class="label">Effective date</label>
+                <div>
+                  <p-calendar formControlName="effectiveDate" 
+                              dateFormat="dd/mm/yy" 
+                              [showIcon]="true" 
+                              [showButtonBar]="true"
+                              [style]="{ width: '80%' }"
+                              placeholder="dd/mm/yy"
+                              >
+                  </p-calendar>
+                </div>
+              </div>
+        </div>
+        <div style="padding-top: 30px;">
+            <div class="label"><label>Quotation Calculation type</label></div>
+            <div class="form-check radio-group" id="inline">
+                <input
+                  class="form-check-input box"
+                  type="radio"
+                  value="detailed"
+                  id="detailed"
+                  name="quotationCalcType"
+                  formControlName="quotationCalcType"
+                >
+                <label class="form-check-label pl-2" for="detailed">
+                    Detailed
+                </label>
+              </div>
+              <div class="form-check radio-group" id="inline">
+                <input
+                  class="form-check-input box"
+                  type="radio"
+                  value="aggregate"
+                  id="aggregate"
+                  name="quotationCalcType"
+                  formControlName="quotationCalcType"
+                >
+                <label class="form-check-label pl-2" for="aggregate">
+                    Aggregate
+                </label>
+              </div>
+        </div>
+    </form>
+  </div>
+    <div>
+      <button
+        type="button"
+        class="btn btn-primary button"
+        (click)="onProceed()"
+      >Proceed
+      </button>
+    </div>
+</div>

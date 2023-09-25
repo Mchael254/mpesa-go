@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 
 import { QuotationRoutingModule } from './quotation-routing.module';
 import { QuickComponent } from './components/quick/quick.component';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [
@@ -11,7 +13,11 @@ import { QuickComponent } from './components/quick/quick.component';
   ],
   imports: [
     CommonModule,
-    QuotationRoutingModule
+    QuotationRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DropdownModule,
+    CalendarModule
   ]
 })
 export class QuotationModule { }
