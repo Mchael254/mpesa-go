@@ -25,13 +25,8 @@
                 <div class="col-4">
                     <label for="minmax-buttons" id="quote-label">Source</label>
                     <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="">
-                        <option value="">Walk -in</option>
-                        <option value="">Broker</option>
-                        <option value="">Agent</option>
-                        <option value="">Others</option>
-                        <option value="">Tender</option>
-                        <option value="">Direct sale executive</option>
-                        <option value="">Referral</option>
+                        <option value=""></option>
+                        <option *ngFor="let source of sourceDetail" [value]="source.code">{{ source.description }}</option>
 
                     </select>              
                 </div>
@@ -39,7 +34,7 @@
                     <label for="minmax-buttons" id="quote-label">Product</label>
                     <select class="form-select form-control-sm mb-1 ms-n4" id="product-dropdown" formControlName="" (change)="onProductSelected($event)">
                         <option value=""></option>
-                        <option *ngFor="let product of productList" [value]="product.shortDescription">{{ product.description }}</option>
+                        <option *ngFor="let product of productList" [value]="product.code">{{ product.description }}</option>
                     </select>   
                 </div>
                 <div class="col-4">
@@ -67,10 +62,30 @@
                     <label for="minmax-buttons" class="required" id="quote-label">Currency</label>
                     <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="">
                         <option value=""></option>
-                        <option></option>
+                        <option *ngFor="let currency of currencyList" [value]="currency.id">{{ currency.symbol }}</option>
                     </select>                 
                 </div>
             </div>
+            
+             <!-- ROW 4 -->
+            <div *ngIf="formData && selectedProductCode" class="row">
+                <div class="col-12">
+                    <h4>Product-Specific Form Fields</h4>
+                    <div class="row">
+                        <div class="col-4">
+                            <form [formGroup]="dynamicForm">
+                                <div *ngFor="let field of formData">
+                                    <label id="quote-label" [for]="field.name">{{ field.label }}</label>
+                                    <input [type]="field.type" [formControlName]="field.name" id="quote-input" class="form-control form-control-sm mb-1">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+
         </form>
 
     </div>
@@ -79,5 +94,6 @@
     <div class="col-6"></div>
     <div class="col-6 d-flex justify-content-end"><button type="button" class="btn btn-outline-primary"  id="compute" >Compute</button>
     </div>
-
 </div>
+<br>
+<br><br><br><br>
