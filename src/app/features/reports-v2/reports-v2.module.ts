@@ -10,22 +10,27 @@ import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {MegaMenuModule} from "primeng/megamenu";
 import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
 import { ReportsComponent } from './reports/reports.component';
+import { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
+import {MenuModule} from "primeng/menu";
 
 
 @NgModule({
   declarations: [
     CreateReportComponent,
     CriteriaPillComponent,
-    ReportsComponent
+    ReportsComponent,
+    CriteriaPillComponent,
+    CreateDashboardComponent
   ],
-    imports: [
-        CommonModule,
-        ReportsV2RoutingModule,
-        SharedModule,
-        DropdownModule,
-        FormsModule,
-        ProgressSpinnerModule,
-        MegaMenuModule
-    ]
+  imports: [
+    CommonModule,
+    ReportsV2RoutingModule,
+    SharedModule,
+    DropdownModule,
+    FormsModule,
+    ProgressSpinnerModule,
+    MegaMenuModule,
+    MenuModule
+  ]
 })
 export class ReportsV2Module { }

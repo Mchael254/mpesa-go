@@ -1,0 +1,124 @@
+<div class="base-content-section dashboard">
+  <div class="card">
+    <div class="card-body">
+      <div class="row col-sm-12">
+        <div class="text-center col-sm-4"></div>
+        <div class="text-center col-sm-4">
+          <input type="search" class="form-control" placeholder="Search">
+        </div>
+        <div class="col-sm-4">
+          <button class="btn btn-outline-primary float-end createDashBtn"
+                  data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
+        </div>
+        <div class="col-sm-4 mt-3">
+          <div class="card">
+            <div class="card-header border-0 text-sm-start bg-transparent"
+            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+              Financial reports
+              <span (click)="menu.toggle($event)">
+                <i class="fa fa-ellipsis-v float-end"></i>
+              </span>
+              <p-menu #menu [model]="items" [popup]="true"></p-menu>
+
+            </div>
+            <div class="card-body">
+              <app-dynamic-chart
+                [basicData]="basicData"
+                [chartType]="'bar'"
+              ></app-dynamic-chart>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-4 mt-3">
+          <div class="card">
+            <div class="card-header border-0 text-sm-start bg-transparent"
+            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+              Health
+              <span (click)="menu2.toggle($event)">
+                <i class="fa fa-ellipsis-v float-end"></i>
+              </span>
+              <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
+            </div>
+            <div class="card-body">
+              <app-dynamic-chart
+                [basicData]="basicData"
+                [chartType]="'line'"
+              ></app-dynamic-chart>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4 mt-3">
+          <div class="card">
+            <div class="card-header border-0 text-sm-start bg-transparent"
+            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+              July Board
+              <span (click)="menu3.toggle($event)">
+                <i class="fa fa-ellipsis-v float-end"></i>
+              </span>
+              <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
+            </div>
+            <div class="card-body">
+              <app-dynamic-chart
+                [basicData]="basicData"
+                [chartType]="'pie'"
+              ></app-dynamic-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h1 class="modal-title" id="createDashboardLabel">Create dashboard</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form>
+            <div class="mb-3">
+              <label for="dashboardName" class="form-label">Dashboard name
+                <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="dashboardName">
+            </div>
+            <div class="col-sm-12 mb-3">
+              <label class="form-label">Add report(s)</label><br>
+              <p-dropdown
+                [options]="reports"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%' }"
+                placeholder="Select report"
+                id="subjectAreaDropdown"
+              >
+                <ng-template let-report pTemplate="item">
+                  <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                    <div
+                    >
+                      {{ report.name }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
