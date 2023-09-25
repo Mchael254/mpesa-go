@@ -107,7 +107,7 @@ export class OtpComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.otpForm.reset();
     const otpChannel = this.localStorageService.getItem("otp-channel");
-    log.info(`OTP channel >>>`, otpChannel);
+    log.info(`OTP channel >>>`, typeof otpChannel);
     this.authService.sentVerificationOtp(otpChannel.value, otpChannel.channel)
       .pipe(untilDestroyed(this)).subscribe( response =>{
         if(response){
