@@ -9,12 +9,14 @@ import {FormsModule} from "@angular/forms";
 import {ProgressSpinnerModule} from "primeng/progressspinner";
 import {MegaMenuModule} from "primeng/megamenu";
 import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
+import { ReportsComponent } from './reports/reports.component';
 
 
 @NgModule({
   declarations: [
     CreateReportComponent,
-    CriteriaPillComponent
+    CriteriaPillComponent,
+    ReportsComponent
   ],
     imports: [
         CommonModule,
