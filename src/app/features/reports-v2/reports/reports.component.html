@@ -70,13 +70,13 @@
                     <div class="tab-content mt-3 mb-3">
                         <div *ngIf="activeTab === 'myReports'">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <h5>ID</h5>
                                     <ul>
                                         <li *ngFor="let item of myReportsList">{{ item.id }}</li>
                                     </ul>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-9">
                                     <h5>Name</h5>
                                     <ul>
                                         <li *ngFor="let item of myReportsList">{{ item.name }}</li>
@@ -86,13 +86,13 @@
                         </div>
                         <div *ngIf="activeTab === 'sharedReports'">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <h5>ID</h5>
                                     <ul>
                                         <li *ngFor="let item of anotherTabList">{{ item.id }}</li>
                                     </ul>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-9">
                                     <h5>Name</h5>
                                     <ul>
                                         <li *ngFor="let item of anotherTabList">{{ item.name }}</li>
