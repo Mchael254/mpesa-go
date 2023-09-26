@@ -1,0 +1,22 @@
+.createDashBtn {
+  border-radius: 4px;
+  border: 1px solid #00529B;
+}
+.modal-title {
+  font-size: 16px;
+  color: #000;
+  font-weight: 400;
+}
+.btn-close {
+  color: #EE3945;
+  font-size: 16px;
+}
+:host ::ng-deep .p-menu {
+  top: 6%!important;
+  left: 75%!important;
+  width: 8em;
+  font-family: Roboto;
+}
+:host ::ng-deep .p-element .p-submenu-header {
+  display:none;
+}
