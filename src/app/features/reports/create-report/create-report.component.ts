@@ -156,7 +156,7 @@ export class CreateReportComponent implements OnInit{
   /**
    * Fetches a list of categories under the selected subject area
    * @returns void
-   * @param s
+   * @param s - the selected subject area
    */
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
     console.log(`subject area from click`, s)
@@ -343,7 +343,7 @@ export class CreateReportComponent implements OnInit{
   }
 
   /**
-   * Toggles dropdown to show list of availabe chart visualizations
+   * Toggles dropdown to show list of available chart visualizations
    * @returns void
    */
   showVisualizationList(): void {
@@ -427,7 +427,7 @@ export class CreateReportComponent implements OnInit{
   }
 
   /**
-   * Iniatializes the list of available folders
+   * Initializes the list of available folders
    * @returns void
    */
   getFolders(): void {
