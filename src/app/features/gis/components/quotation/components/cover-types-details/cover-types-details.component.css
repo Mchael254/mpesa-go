@@ -1,0 +1,100 @@
+.titleMain{
+    color: #000;
+    font-family: Lato;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.title{
+    color: #000;
+    font-family: Roboto;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+.title2{
+    color: #000;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+.details-label{
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.payable-premium{
+    color: #000;
+    /* text-align: right; */
+    font-family: Roboto;
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+.btn-link{
+    text-decoration: underline;
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.modal-title{
+    color: #000;
+    font-family: Roboto;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+/* #shareRadio{
+    color: red;
+    font-family: Roboto;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+} */
+#shareLabel{
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#shareInput{
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.20);
+    color:  #000;
+    font-family: Roboto;
+    font-size: 16px;
+}
+#clientName{
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.20);
+    color:  #000;
+    font-family: Roboto;
+    font-size: 16px;
+}
+#sendQoute{
+    border-radius: 4px;
+    background: #00529B;
+    width:69px
+}
+.bold-label {
+    font-weight: 500;
+  }
+  
+/* .bold-radio {
+    font-weight: 700;
+  } */

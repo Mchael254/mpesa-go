@@ -8,13 +8,15 @@ import { TableModule } from 'primeng/table';
 import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
+import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 
 
 @NgModule({
   declarations: [
     ListQuotationsComponent,
     QuickQuoteDetailsComponent,
-    QuickQuoteFormComponent
+    QuickQuoteFormComponent,
+    CoverTypesDetailsComponent
   ],
   imports: [
     CommonModule,
