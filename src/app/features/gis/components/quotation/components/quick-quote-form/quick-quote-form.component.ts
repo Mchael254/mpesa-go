@@ -31,6 +31,7 @@ export class QuickQuoteFormComponent {
   currencyList:any;
   clientList:any;
   clientDetails:any;
+  clientData:any
   constructor(
     public fb:FormBuilder,
     public productService:ProductsService,
@@ -74,6 +75,7 @@ toggleButton(){
 loadAllClients(){
   this.clientService.getClients().subscribe(data =>{
     this.clientList = data;
+    this.clientData = this.clientList.content
     
   })
 }
@@ -81,7 +83,8 @@ loadAllClients(){
 loadClientDetails(id){
   this.clientService.getClientById(id).subscribe(data =>{
     this.clientDetails = data;
-    
+
+     
   })
 }
 
