@@ -42,3 +42,9 @@
 select#quote-input option {
     padding: 15px; /* Adjust the padding as needed */
 }
+#clientDetails{
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+}

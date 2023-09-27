@@ -6,6 +6,7 @@ import { Logger } from '../../../../../../shared/services';
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 const log = new Logger("QuickQuoteFormComponent");
 
 @Component({
@@ -18,19 +19,18 @@ export class QuickQuoteFormComponent {
   productList:any
   selectedProduct:any
   selectedProductCode: any;
-
   binderList:any;
   binderListDetails:any;
   selectedBinderList:any;
-
+  new:boolean;
   sourceList:any;
   sourceDetail:any;
-
   formContent:any;
   formData:any;
   dynamicForm:FormGroup;
-
   currencyList:any;
+  clientList:any;
+  clientDetails:any;
   constructor(
     public fb:FormBuilder,
     public productService:ProductsService,
@@ -39,11 +39,12 @@ export class QuickQuoteFormComponent {
     public currencyService:CurrencyService,
     public cdr:ChangeDetectorRef,
     private messageService:MessageService,
-
+    private clientService:ClientService
   ) { }
 
   ngOnInit(): void {
   this.loadAllproducts();
+  this.loadAllClients()
   this.loadAllQoutationSources();
   this.loadAllCurrencies();
   this.LoadAllFormFields(this.selectedProductCode);
@@ -61,7 +62,30 @@ export class QuickQuoteFormComponent {
      this.cdr.detectChanges()
 
    })
+ 
+
 }
+/* Toggles between a new and existing client */
+toggleButton(){
+  this.new = true
+}
+
+/* Get all the clients. This is used to get the options when selecting an existing client */
+loadAllClients(){
+  this.clientService.getClients().subscribe(data =>{
+    this.clientList = data;
+    
+  })
+}
+/* Get A specific client's details on select. When the form controls have been defined use patch value to populate the relevant fields with the client details  */
+loadClientDetails(id){
+  this.clientService.getClientById(id).subscribe(data =>{
+    this.clientDetails = data;
+    
+  })
+}
+
+
 onProductSelected(event: any) {
   this.selectedProductCode = event.target.value;
   // const selectedProductCode = event.target.value;
