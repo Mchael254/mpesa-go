@@ -1,15 +1,22 @@
 <div class="card mb-3">
     <div class="card-body">
-        <form class="mb-3" >
-            <input class="form-check-input me-2 mt-2" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-            <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1">
-              Existing Client
-            </label>
+        <form class="mb-3">
+            <div *ngIf="!new">
+                <input class="form-check-input me-2 mt-2" (click)="toggleButton()" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1">
+                  Existing Client
+                </label>
+            </div>
+
             <!-- ROW 1 -->
             <div class="row mb-4">
-                <div class="col-4">
+                <div class="col-4" *ngIf="!new">
                     <label for="minmax-buttons" class="required" id="quote-label">Name</label>
                     <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">                            
+                </div>
+                <div class="col-4" *ngIf="new">
+                    <label for="minmax-buttons" class="required" id="quote-label">Client</label>
+                    <input type="text" id="quote-input"  class="form-control form-control-sm mb-1" data-bs-toggle="modal" data-bs-target="#clientModal" formControlName="">                            
                 </div>
                 <div class="col-4 ">
                     <label for="minmax-buttons" id="quote-label">Email Address</label>
@@ -85,6 +92,38 @@
                 </div>
             </div>
             
+            <!-- Client Modal -->
+                <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        
+                        <div class="modal-body">
+                            <button type="button" class="float-end btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <p class="text-start mb-3 text-primary">Select Client</p>
+                           
+                                <div class="row mb-3" id="quote-label">
+                                    <div class="col-xl-4">Select</div>
+                                    <div class="col-xl-4">ID</div>
+                                    <div class="col-xl-4">Name</div>
+                                </div>
+                                <div *ngFor="let data of clientList.content" class="mb-3">
+                                    <div class="row">
+                                    <div class="col-xl-4">
+                                        <input class="form-check-input me-2 mt-2" (click)="loadClientDetails(data.id)" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                    </div>  
+                                   <div class="col-xl-4 "><p id="clientDetails">{{data.id}}</p></div>
+                                   <div class="col-xl-4"><p id="clientDetails">{{data.firstName+" "+data.lastName}}</p></div>
+                                    
+                                    </div>
+                                    
+                                </div>
+                                <div></div>
+                                <button class="btn btn-primary float-end" data-bs-dismiss="modal">Save Details</button>
+                        </div>
+                       
+                    </div>
+                    </div>
+                </div>
 
         </form>
 
