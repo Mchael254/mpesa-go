@@ -1,3 +1,7 @@
 .set-title {
   font-size: 11px;
 }
+.res {
+  resize:both;
+  overflow:auto;
+}
