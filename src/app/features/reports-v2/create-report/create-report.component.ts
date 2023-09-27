@@ -41,6 +41,7 @@ export class CreateReportComponent implements OnInit {
   reportNameRec: string = '';
   metrics: any = {};
   filters: any = [];
+  subCategoryCategoryAreas: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -192,5 +193,9 @@ export class CreateReportComponent implements OnInit {
       this.dimensions.splice(index, 1);
     }
 
+  }
+
+  updateSubCategoryCategoryAreas(subCategoryElement: any[]) {
+    this.subCategoryCategoryAreas = subCategoryElement;
   }
 }
