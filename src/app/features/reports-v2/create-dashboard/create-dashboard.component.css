@@ -20,3 +20,7 @@
 :host ::ng-deep .p-element .p-submenu-header {
   display:none;
 }
+.res {
+  resize:both;
+  overflow:auto;
+}

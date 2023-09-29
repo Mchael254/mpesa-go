@@ -5,23 +5,60 @@
         <h5 class="card-title">{{'lang.tickets' | translate}}</h5>
       </div>
       <div class="col-sm-2">
-        <span class="text-danger fw-bold">{{ticketCountTotal}}</span>
+        <span class="text-danger fw-bold">{{ticketCountTotal ? ticketCountTotal : 0}}</span>
       </div>
     </div>
-    <table class="table table-borderless">
-      <thead>
-      <tr>
-        <th>{{'lang.tickets' | translate}}</th>
-        <th class="align-center">{{'lang.no_of_tickets' | translate}}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let ticketCountPerModule of ticketCount">
-        <td>{{ticketCountPerModule.activityName}}</td>
-        <td style="text-align: center;">{{ticketCountPerModule.totalTickets}}</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="tableScroll">
+      <div *ngIf="!ticketCount?.length; else showTicketTable">
+        <table class="table table-borderless">
+          <thead>
+          <tr>
+            <th>{{'lang.tickets' | translate}}</th>
+            <th class="align-center">{{'lang.no_of_tickets' | translate}}</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Authorise Quotation</td>
+              <td style="text-align: center;">0</td>
+            </tr>
+            <tr>
+              <td>Authorise Transaction</td>
+              <td style="text-align: center;">0</td>
+            </tr>
+            <tr>
+              <td>Underwrite Policy</td>
+              <td style="text-align: center;">0</td>
+            </tr>
+            <tr>
+              <td>Underwrite Quotation</td>
+              <td style="text-align: center;">0</td>
+            </tr>
+            <tr>
+              <td>Create Claim</td>
+              <td style="text-align: center;">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #showTicketTable>
+        <table class="table table-borderless">
+          <thead>
+          <tr>
+            <th>{{'lang.tickets' | translate}}</th>
+            <th class="align-center">{{'lang.no_of_tickets' | translate}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let ticketCountPerModule of ticketCount">
+            <td>{{ticketCountPerModule.activityName}}</td>
+            <td style="text-align: center;">{{ticketCountPerModule.totalTickets}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </ng-template>
+    </div>
+
   </div>
   <div class="card-footer border-top-0" style="background-color: #ffffff">
     <div class="text-end" style="padding-bottom: 1rem;">
