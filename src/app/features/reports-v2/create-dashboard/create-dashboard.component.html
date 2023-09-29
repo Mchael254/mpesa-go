@@ -1,7 +1,7 @@
-<div class="base-content-section dashboard">
+<div class="base-content-section">
   <div class="card">
     <div class="card-body">
-      <div class="row col-sm-12">
+      <div class="row col-sm-12 mx-0">
         <div class="text-center col-sm-4 mt-5"></div>
         <div class="text-center col-sm-4 mt-5">
           <input type="search" class="form-control" placeholder="Search">
@@ -10,62 +10,65 @@
           <button class="btn btn-outline-primary float-end createDashBtn"
                   data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
         </div>
-        <div class="col-sm-4 mt-3">
-          <div class="card" draggable="true">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              Financial reports
-              <span (click)="menu.toggle($event)">
-                <i class="fa fa-ellipsis-v float-end"></i>
-              </span>
-              <p-menu #menu [model]="items" [popup]="true"></p-menu>
+        <div class="row mx-0 mt-3 p-0 dragDropBoundary">
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+            <div class="card">
+              <div class="card-header border-0 text-sm-start bg-transparent"
+                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+                Financial reports
+                <span class="icon-container float-end" (click)="menu.toggle($event)">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                <p-menu #menu [model]="items" [popup]="true"></p-menu>
 
+              </div>
+              <div class="card-body">
+                <app-dynamic-chart
+                  [basicData]="basicData"
+                  [chartType]="'bar'"
+                ></app-dynamic-chart>
+              </div>
             </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'bar'"
-              ></app-dynamic-chart>
+          </div>
+
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+            <div class="card">
+              <div class="card-header border-0 text-sm-start bg-transparent"
+                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+                Health
+                <span class="icon-container float-end" (click)="menu2.toggle($event)">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
+              </div>
+              <div class="card-body">
+                <app-dynamic-chart
+                  [basicData]="basicData"
+                  [chartType]="'line'"
+                ></app-dynamic-chart>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+            <div class="card">
+              <div class="card-header border-0 text-sm-start bg-transparent"
+                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
+                July Board
+                <span class="icon-container float-end" (click)="menu3.toggle($event)">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
+              </div>
+              <div class="card-body">
+                <app-dynamic-chart
+                  [basicData]="basicData"
+                  [chartType]="'pie'"
+                ></app-dynamic-chart>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="col-sm-4 mt-3">
-          <div class="card">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              Health
-              <span (click)="menu2.toggle($event)">
-                <i class="fa fa-ellipsis-v float-end"></i>
-              </span>
-              <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
-            </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'line'"
-              ></app-dynamic-chart>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 mt-3">
-          <div class="card">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-            style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              July Board
-              <span (click)="menu3.toggle($event)">
-                <i class="fa fa-ellipsis-v float-end"></i>
-              </span>
-              <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
-            </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'pie'"
-              ></app-dynamic-chart>
-            </div>
-          </div>
-        </div>
       </div>
 
     </div>

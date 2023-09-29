@@ -12,6 +12,7 @@ import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
 import { ReportsComponent } from './reports/reports.component';
 import { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
 import {MenuModule} from "primeng/menu";
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -22,15 +23,16 @@ import {MenuModule} from "primeng/menu";
     CriteriaPillComponent,
     CreateDashboardComponent
   ],
-  imports: [
-    CommonModule,
-    ReportsV2RoutingModule,
-    SharedModule,
-    DropdownModule,
-    FormsModule,
-    ProgressSpinnerModule,
-    MegaMenuModule,
-    MenuModule
-  ]
+    imports: [
+        CommonModule,
+        ReportsV2RoutingModule,
+        SharedModule,
+        DropdownModule,
+        FormsModule,
+        ProgressSpinnerModule,
+        MegaMenuModule,
+        MenuModule,
+        DragDropModule
+    ]
 })
 export class ReportsV2Module { }
