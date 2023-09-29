@@ -11,6 +11,7 @@ import {ProgressSpinnerModule} from "primeng/progressspinner";
 import { CriteriaPillComponent } from './criteria-pill/criteria-pill.component';
 import { ReportDashboardComponent } from './report-dashboard/report-dashboard.component';
 import { MyReportsComponent } from './my-reports/my-reports.component';
+import { CriteriaComponent } from './criteria/criteria.component';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { MyReportsComponent } from './my-reports/my-reports.component';
         CriteriaPillComponent,
         ReportDashboardComponent,
         MyReportsComponent,
+        CriteriaComponent,
     ],
     exports: [
         CriteriaPillComponent
