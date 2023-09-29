@@ -1,14 +1,14 @@
-<div class="pill-box">
-  <div class="pill-title">
-    <div class="row">
-      <div class="col-sm-8">
-        {{ queryObject.subCategoryName }}
-      </div>
-      <div class="col-sm-4 text-end">
+<div class="row p-3">
+  <div *ngFor="let criterion of criteria" class="col-md-4">
+    <div class="row pill-box">
 
-        <div class="btn-group ">
-          <span data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="pi pi-sort-amount-down"></i>
+      <div class="col-md-8">
+        {{ criterion.queryName }}
+      </div>
+      <div class="col-md-4 text-end">
+        <div class="btn-group">
+          <span (click)="selectCriteria(criterion)" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="pi pi-sort-amount-down text-secondary"></i>
           </span>
           <ul class="dropdown-menu">
             <li>
@@ -23,19 +23,18 @@
             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#filter">Filter</a></li>
           </ul>
         </div>
-
-        <i class="pi pi-times" (click)="selectCriteria(queryObject)"></i>
+        <i class="pi pi-times text-danger" (click)="deleteCriteria(criterion)"></i>
       </div>
     </div>
+
+    <ng-container *ngIf="criterion.filter">
+      <span class="text-secondary filter-option" style="font-size: 0.8em">
+        <i class="pi pi-sort-amount-down"></i>
+        {{ criterion.filter }}
+      </span>
+    </ng-container>
   </div>
-  <div class="pill-criteria">{{ queryObject.queryName }}</div>
 </div>
-<ng-container *ngIf="queryObject.filter">
-  <span class="text-secondary" style="font-size: 0.8em">
-  <i class="pi pi-sort-amount-down"></i>
-    {{ queryObject.filter }}
-</span>
-</ng-container>
 
 
 <!-- Filter Modal -->
@@ -45,11 +44,16 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-sm-9">
+            <p class="fw-medium text-center text-primary" *ngIf="selectedCriterion">
+              {{ selectedCriterion?.queryName }}
+            </p>
             <form [formGroup]="filterForm">
               <div class="mb-3">
                 <label for="condition" class="form-label">Condition</label>
                 <select formControlName="operator" id="condition" class="form-select" aria-label="Default select example">
-                  <option [value]="condition.value" *ngFor="let condition of conditions">{{ condition.label }}</option>
+                  <option *ngFor="let condition of conditions" [value]="condition.value">
+                    {{ condition.label }}
+                  </option>
                 </select>
               </div>
               <div class="mb-5">
@@ -57,8 +61,12 @@
                 <input formControlName="value" id="value" type="text" class="form-control">
               </div>
               <div class="text-center">
-                <button (click)="addFilter(queryObject)" class="btn btn-primary ps-5 pe-5">Apply</button>
+                <button (click)="addFilter()" class="btn btn-primary ps-5 pe-5">Apply</button>
               </div>
+            </form>
+
+            <form>
+
             </form>
           </div>
           <div class="col-sm-3 text-end">
@@ -69,3 +77,4 @@
     </div>
   </div>
 </div>
+
