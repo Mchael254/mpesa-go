@@ -48,6 +48,8 @@
           <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
             <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
             <div class="content">
+              <input type="search" class="form-control m-2" placeholder="Search"
+                     style="width: 94%; border-radius: 8px;">
               <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
                 <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
                   {{ subCategory.name }}
@@ -60,7 +62,7 @@
             </div>
           </div>
 
-          <div *ngIf="filters.length > 0" class="subject-area mt-4">
+          <!--<div *ngIf="filters.length > 0" class="subject-area mt-4">
             <span class="fw-medium ms-1 my-1">Filters</span>
             <div class="content">
               <div *ngFor="let filterName of filters" class="btn-group dropend">
@@ -75,6 +77,59 @@
                 </ul>
               </div>
             </div>
+          </div>-->
+
+          <div *ngIf="filters.length > 0">
+            <span class="fw-medium ms-1 my-1">Filters</span>
+            <div style="border: solid 1px #eee; border-radius: 5px;">
+              <input type="search" class="form-control m-2" placeholder="Search"
+                     style="width: 94%; border-radius: 8px;">
+              <ng-container *ngFor="let filterName of filters">
+                <p
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#'+filterName.description"
+                  role="button"
+                  aria-expanded="false" [attr.aria-controls]="filterName.description"
+                  class="dropdown-toggle"
+                  id="category-name"
+                  style="font-size: 16px; color: #000; padding-left: 0.9em; width: 100%"
+                >
+                  {{ filterName?.name }}
+                  <i class="fa fa-caret-right" style="font-size: 13px;"></i>
+                </p>
+                <div class="collapse dropend" [attr.id]="filterName.description">
+                  <ng-container *ngFor="let subCategory of filterName.subCategory">
+                    <ul
+                      class="sub-category"
+                      data-bs-toggle="dropdown"
+                      [attr.data-bs-target]="'#'+filterName.description"
+                      role="button"
+                      aria-expanded="false"
+                      aria-controls="collapseExample2"
+                    >
+                      <li id="sub-category-name" style="font-size: 14px; list-style-type:none;"
+                          (click)="updateSubCategoryCategoryAreas(subCategory['categoryAreas'])">
+                        {{ subCategory.name }}
+                        <i class="fa fa-angle-double-right" style="font-size: 13px;"></i>
+                      </li>
+                    </ul>
+                    <div class="collapse dropend subject-area" [attr.id]="filterName.description">
+                      <ul class="dropdown-menu">
+                        <ng-container *ngFor="let query of subCategoryCategoryAreas">
+                          <li
+                            (click)="selectCriteria(filterName, subCategory, query)"
+                            class="query"
+                          >
+                            {{ query.name }}
+                          </li>
+                        </ng-container>
+                      </ul>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+
           </div>
 
           <div class="text-center">
