@@ -26,7 +26,7 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 0;
+  border-radius: 5px;
   color: #fff;
   margin-right: 5px;
 }
@@ -72,7 +72,7 @@ html,body {
 }
 
 .form-select {
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 .setups .card {
@@ -243,14 +243,9 @@ html,body {
   color: var(--primary-color)!important;
 }
 
-.base-content .base-content-section .form-control {
-  border-radius: 0;
-}
-
 .base-content .base-content-section .calendar .card-header {
   background: var(--primary-color);
   color: #fff;
-  border-radius: 0;
 }
 
 .base-content .base-content-section .calendar .form-select {
@@ -347,9 +342,7 @@ h5.htxt {
   color: #000000;
 }
 
-.form-control {
-  border-radius: 0;
-}
+
 /*Login ends*/
 
 /*Common*/
