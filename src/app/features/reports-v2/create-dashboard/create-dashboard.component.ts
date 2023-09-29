@@ -18,6 +18,9 @@ export class CreateDashboardComponent implements OnInit {
   ) {}
 
 
+  /**
+   * The `ngOnInit` function initializes data and adds event listeners to clickable icons.
+   */
   ngOnInit(): void {
     this.reports = [
       {name: 'July reports'},
@@ -58,16 +61,50 @@ export class CreateDashboardComponent implements OnInit {
         ]
       },
     ];
+
+    const clickableIcons = document.querySelectorAll('.clickable');
+
+    // Add click event listener to the document
+    document.addEventListener('click', (event) => {
+      const clickedElement = event.target as HTMLElement;
+
+      // Check if the clicked element is not within a clickable icon or its container
+      if (
+        clickedElement &&
+        !clickedElement.classList.contains('clickable') &&
+        !clickedElement.closest('.icon-container')
+      ) {
+        // Remove the "active" class from all clickable icons
+        clickableIcons.forEach(icon => {
+          icon.closest('.icon-container')?.classList.remove('active');
+        });
+      }
+    });
+
+    clickableIcons.forEach(icon => {
+      icon.addEventListener('click', () => {
+        icon.closest('.icon-container').classList.toggle('active');
+      });
+    });
   }
 
+  /**
+   * The function onCreateDashboard displays a success message when a dashboard is successfully created.
+   */
   onCreateDashboard() {
     this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Dashboard');
   }
 
+  /**
+   * The addReport function displays a success message indicating that a report has been added.
+   */
   addReport() {
     this.globalMessagingService.displaySuccessMessage('Success',  'Report Added' );
   }
 
+  /**
+   * The delete function displays a success message indicating that a report has been deleted.
+   */
   delete() {
     this.globalMessagingService.displaySuccessMessage('Success', 'Report Deleted' );
   }
