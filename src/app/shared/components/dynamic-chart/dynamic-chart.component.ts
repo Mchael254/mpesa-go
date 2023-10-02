@@ -30,6 +30,8 @@ export class DynamicChartComponent implements OnInit {
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     this.barChartOptions = {
+      responsive: false,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {
@@ -61,6 +63,8 @@ export class DynamicChartComponent implements OnInit {
     };
 
     this.pieChartOptions = {
+      responsive: false,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {
@@ -72,6 +76,8 @@ export class DynamicChartComponent implements OnInit {
     };
 
     this.doughnutChartOptions = {
+      responsive: false,
+      maintainAspectRatio: false,
       cutout: '60%',
       plugins: {
         legend: {
@@ -83,6 +89,7 @@ export class DynamicChartComponent implements OnInit {
     };
 
     this.lineChartOptions = {
+      responsive: false,
       maintainAspectRatio: false,
       aspectRatio: 0.6,
       plugins: {
@@ -115,6 +122,8 @@ export class DynamicChartComponent implements OnInit {
     };
 
     this.polarAreaChartOptions = {
+      responsive: false,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {
@@ -132,6 +141,8 @@ export class DynamicChartComponent implements OnInit {
     };
 
     this.radarChartOptions = {
+      responsive: false,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           labels: {
