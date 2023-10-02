@@ -1,3 +1,11 @@
+.titleMain{
+    color: #000;
+    font-family: Lato;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
 .form-check-label{
     color: #000;
     font-family: Roboto;
