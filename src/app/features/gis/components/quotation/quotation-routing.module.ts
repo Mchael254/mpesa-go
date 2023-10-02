@@ -4,19 +4,23 @@ import { ListQuotationsComponent } from './components/list-quotations/list-quota
 import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
+import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 
 const routes: Routes = [
   {
     path: 'list', component:ListQuotationsComponent
   },
+  // {
+  //   path: 'quick-quote', component:QuickQuoteDetailsComponent
+  // },
   {
-    path: 'quick-quote', component:QuickQuoteDetailsComponent
-  },
-  {
-    path: 'quick-quote-details', component:QuickQuoteDetailsComponent
+    path: 'quick-quote-details', component:QuickQuoteFormComponent
   },
   {
     path: 'cover-type-details', component:CoverTypesDetailsComponent
+  },
+  {
+    path: 'quote-summary', component:QuoteSummaryComponent
   },
 ];
 

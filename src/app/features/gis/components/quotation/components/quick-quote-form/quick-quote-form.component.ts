@@ -7,6 +7,8 @@ import { BinderService } from '../../../setups/services/binder/binder.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import stepData from '../../data/steps.json'
+
 const log = new Logger("QuickQuoteFormComponent");
 
 @Component({
@@ -19,19 +21,27 @@ export class QuickQuoteFormComponent {
   productList:any
   selectedProduct:any
   selectedProductCode: any;
+  
   binderList:any;
   binderListDetails:any;
   selectedBinderList:any;
   new:boolean;
+
   sourceList:any;
   sourceDetail:any;
+
   formContent:any;
   formData:any;
   dynamicForm:FormGroup;
+
   currencyList:any;
+
   clientList:any;
   clientDetails:any;
   clientData:any
+
+  steps = stepData;
+
   constructor(
     public fb:FormBuilder,
     public productService:ProductsService,

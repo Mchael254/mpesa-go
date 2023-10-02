@@ -9,6 +9,7 @@ import { QuickQuoteDetailsComponent } from './components/quick-quote-details/qui
 import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
+import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { CoverTypesDetailsComponent } from './components/cover-types-details/cov
     ListQuotationsComponent,
     QuickQuoteDetailsComponent,
     QuickQuoteFormComponent,
-    CoverTypesDetailsComponent
+    CoverTypesDetailsComponent,
+    QuoteSummaryComponent
   ],
   imports: [
     CommonModule,
