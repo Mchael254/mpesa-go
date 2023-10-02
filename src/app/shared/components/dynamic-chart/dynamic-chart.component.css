@@ -5,3 +5,6 @@
   resize: both;
   overflow: auto;
 }
+::ng-deep p-chart canvas {
+  height: 40vh;
+}
