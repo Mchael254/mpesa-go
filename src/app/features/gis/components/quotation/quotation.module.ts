@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
+import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     QuickQuoteDetailsComponent,
     QuickQuoteFormComponent,
     CoverTypesDetailsComponent,
-    QuoteSummaryComponent
+    QuoteSummaryComponent,
+    QuotationsClientDetailsComponent
   ],
   imports: [
     CommonModule,
