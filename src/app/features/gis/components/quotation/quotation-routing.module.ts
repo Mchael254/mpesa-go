@@ -5,6 +5,7 @@ import { QuickQuoteDetailsComponent } from './components/quick-quote-details/qui
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
+import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,10 @@ const routes: Routes = [
   },
   {
     path: 'quote-summary', component:QuoteSummaryComponent
-  },
+  },{
+    path:'quotations-client-details',
+    component:QuotationsClientDetailsComponent
+  }
 ];
 
 @NgModule({
