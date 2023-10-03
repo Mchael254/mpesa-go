@@ -116,18 +116,35 @@ export class MenuService{
 
   },],
     "CRM_SETUP":[{
-    name: 'CRM',
-    nameSlug: 'crm',
+    name: 'Organization',
+    nameSlug: 'org',
     icon: 'fa-solid fa-keyboard',
-      menuItems: [
-        { name: 'My Tasks', link: "" },
-        { name: 'My Dashboard', link: "" },
-        { name: 'My Transactions', link: "" },
-        { name: 'My Policies', link: "" },
-        { name: 'My Quotations', link: "" },
-        { name: 'My Renewals', link: "" }
-      ],
-
+    menuItems: [
+      {
+        name: 'Organization',
+        link: ""
+      },
+      {
+        name: 'Countries',
+        link: "/home/crm/country"
+      },
+      {
+        name: 'Countries Holidays',
+        link: ""
+      },
+      {
+        name: 'Hierarchy',
+        link: ""
+      },
+      {
+        name: 'Post Levels',
+        link: ""
+      },
+      {
+        name: 'Division',
+        link: ""
+      }
+    ],
     collapsed:true,
   }],
     "GIS_SETUP":[
