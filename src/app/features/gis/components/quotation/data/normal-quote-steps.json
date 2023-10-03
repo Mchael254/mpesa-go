@@ -1,0 +1,24 @@
+[
+    {
+      "number": 1,
+      "title": "Client details",
+      "link": "/home/gis/quotation/quotations-client-details"
+    },
+    {
+      "number": 2,
+      "title": "Quotation Details",
+      "link": "/home/gis/quotation/cover-type-details"
+    },
+  
+    {
+      "number": 3,
+      "title": "Risk-section details",
+      "link": "/home/lms/ind/quotation/lifestyle-details"
+    },
+    {
+        "number": 4,
+        "title": "Quotation summary",
+        "link": "/home/lms/ind/quotation/lifestyle-details"
+      }
+   
+]
