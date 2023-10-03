@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { CountryDto } from 'src/app/shared/data/common/countryDto';
-import { StateDto } from 'src/app/shared/data/common/countryDto';
-import { TownDto } from 'src/app/shared/data/common/countryDto';
-import { BankDTO } from 'src/app/shared/data/common/bank-dto';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClientService } from '../../../../../entities/services/client/client.service';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
+import { StateDto } from '../../../../../../shared/data/common/countryDto';
+import { TownDto } from '../../../../../../shared/data/common/countryDto';
+import { BankDTO } from '../../../../../../shared/data/common/bank-dto';
+import { BankService } from '../../../../../../shared/services/setups/bank/bank.service';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { CurrencyDTO } from '../../../../../../shared/data/common/bank-dto';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 @Component({
   selector: 'app-quotations-client-details',
   templateUrl: './quotations-client-details.component.html',
@@ -104,7 +104,7 @@ export class QuotationsClientDetailsComponent {
   getClientDetails(id){
     this.clientService.getClientById(id).subscribe(data=>{
       this.clientDetails = data;
-      console.log(this.clientDetails)
+      
     })
   }
 
