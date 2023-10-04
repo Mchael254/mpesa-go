@@ -13,6 +13,9 @@ import { ReportsComponent } from './reports/reports.component';
 import { CreateDashboardComponent } from './create-dashboard/create-dashboard.component';
 import {MenuModule} from "primeng/menu";
 import {DragDropModule} from "@angular/cdk/drag-drop";
+import { ReportPreviewComponent } from './report-preview/report-preview.component';
+import {InputTextModule} from "primeng/inputtext";
+import {CriteriaComponent} from "./criteria/criteria.component";
 
 
 @NgModule({
@@ -20,19 +23,21 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
     CreateReportComponent,
     CriteriaPillComponent,
     ReportsComponent,
-    CriteriaPillComponent,
-    CreateDashboardComponent
+    CreateDashboardComponent,
+    ReportPreviewComponent,
+    CriteriaComponent
   ],
-    imports: [
-        CommonModule,
-        ReportsV2RoutingModule,
-        SharedModule,
-        DropdownModule,
-        FormsModule,
-        ProgressSpinnerModule,
-        MegaMenuModule,
-        MenuModule,
-        DragDropModule
-    ]
+  imports: [
+    CommonModule,
+    ReportsV2RoutingModule,
+    SharedModule,
+    DropdownModule,
+    FormsModule,
+    ProgressSpinnerModule,
+    MegaMenuModule,
+    MenuModule,
+    DragDropModule,
+    InputTextModule
+  ]
 })
 export class ReportsV2Module { }

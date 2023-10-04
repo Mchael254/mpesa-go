@@ -1,0 +1,186 @@
+<div class="base-content-section dashboard">
+  <div class="card">
+    <div class="card-header bg-transparent">
+      <span class="float-start">Reports</span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-3 border-0 border-end p-4">
+          <div class="me-4">
+            <app-dynamic-breadcrumb [breadCrumbItems]="createReportBreadCrumbItems">
+            </app-dynamic-breadcrumb>
+          </div>
+
+          <div class="visualizations">
+            <div class="">
+              <label for="visualization">Visualization</label>
+              <p class="selected-visualization" (click)="showVisualizationList()" id="visualization">
+                <i [class]="selectedChartType.iconClass"></i>
+                <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
+                <i class="pi pi-chevron-down float-end mt-1"></i>
+              </p>
+              <ul *ngIf="shouldShowVisualization" class="fadeIn">
+                <ng-container *ngFor="let chartType of chartTypes" >
+                  <li class="chart-type" (click)="selectChartType(chartType)">
+                    <i [class]="chartType.iconClass"></i>
+                    <span class="ml-2">{{ chartType.name | titlecase }}</span>
+                  </li>
+                </ng-container>
+              </ul>
+            </div>
+          </div>
+
+          <div class="visualizations mt-3">
+            <div class="">
+              <label for="style">Style</label>
+              <p class="selected-visualization" (click)="showStyles()" id="style">
+                <i [class]="selectedChartType.iconClass"></i>
+                <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
+                <i class="pi pi-chevron-down float-end mt-1"></i>
+              </p>
+              <ul *ngIf="shouldShowStyles" class="fadeIn">
+                <ng-container *ngFor="let chartType of chartTypes" >
+                  <li class="chart-type" (click)="selectStyle(chartType)">
+                    <i [class]="chartType.iconClass"></i>
+                    <span class="ml-2">{{ chartType.name | titlecase }}</span>
+                  </li>
+                </ng-container>
+              </ul>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-primary mt-3 continueBtn">Save</button>
+          </div>
+
+        </div>
+
+        <div class="col-sm-9 text-center">
+          <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report" disabled>
+
+          <form>
+            <div class="row">
+              <div class="col-md-5 mt-3">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input type="text" pInputText class="p-inputtext-sm" placeholder="Search"/>
+                </span>
+              </div>
+              <div class="col-md-4 offset-md-2 mt-3 text-end">
+                <span class="float-end" data-bs-toggle="modal" data-bs-target="#advancedFilterModal">
+                  <i class="pi pi-filter"></i> advanced filter
+                </span>
+              </div>
+            </div>
+          </form>
+
+          <div class="row p-3">
+            <div class="text-center" *ngIf="!isPreviewResultAvailable" style="padding: 4rem 0;">
+              <p-progressSpinner
+                styleClass="w-0.5em h-0.5em "
+                strokeWidth="3"
+                fill="var(--surface-ground)"
+                animationDuration=".6s"
+              ></p-progressSpinner>
+            </div>
+
+          <!-- <h6 class="mainHead text-center" *ngIf="reportTitle != ''">{{ reportTitle | titlecase }}</h6>-->
+
+            <div
+              *ngIf="shouldShowTable && isPreviewResultAvailable;
+               else showChart"
+            >
+              <app-dynamic-table
+                [tableDetails]="tableDetails"
+              ></app-dynamic-table>
+            </div>
+
+            <ng-template #showChart>
+              <div
+                *ngIf="isPreviewResultAvailable"
+                style="max-height: 600px"
+                class="py-2"
+              >
+                <app-dynamic-chart
+                  [chartType]="chartType"
+                  [basicData]="chartData"
+                ></app-dynamic-chart>
+              </div>
+            </ng-template>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Advanced filter Modal -->
+<div class="modal fade" id="advancedFilterModal" tabindex="-1" aria-labelledby="advancedFilterModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Advanced filter</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="filterForm">
+          <div class="row g-3">
+            <div class="col">
+              <label for="column" class="form-label">Column</label>
+              <select formControlName="column" id="column" class="form-select" aria-label="Default select example">
+                <option value="YTD Premium">YTD Premium</option>
+                <option value="Gross Premium">Gross Premium</option>
+                <option value="Year Ago Premium">Year Ago Premium</option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="operator" class="form-label">Operator</label>
+              <select formControlName="operator" id="operator" class="form-select" aria-label="Default select example">
+                <option
+                  *ngFor="let condition of conditions"
+                  [value]="condition.value"
+                >
+                  {{ condition.label }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="value" class="form-label">Value</label>
+              <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
+            </div>
+            <div class="col p-1">
+              <button
+                class="btn btn-outline-primary mt-4 btn-full-width"
+                (click)="addFilter()"
+              >Add
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <ng-container *ngFor="let filter of selectedFilters">
+          <div class="row g-3 text-dark my-1">
+            <div class="col">{{ filter.column }}</div>
+            <div class="col">{{ filter.operator.label }}</div>
+            <div class="col">{{ filter.value }}</div>
+            <div class="col text-center text-danger" style="cursor: pointer">
+              <i class="pi pi-times mt-1 remove-filter" (click)="removeFilter(filter)"></i>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="text-center mt-5">
+          <button type="button" class="btn btn-primary">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

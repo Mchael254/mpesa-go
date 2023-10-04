@@ -77,7 +77,14 @@ export class CriteriaComponent implements OnInit{
       values: [formValues.value]
     }
     this.selectedCriterion.filter =  `${this.selectedCriterion.queryName} ${filter.operator} ${filter.values[0]}`;
-    this.filter.emit({ filter, queryObject: this.selectedCriterion });
+
+    const reportOptions = {
+      filter,
+      queryObject: this.selectedCriterion
+    }
+    // log.info(`report options >>> `, reportOptions)
+
+    this.filter.emit(reportOptions);
   }
 
 }

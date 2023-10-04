@@ -8,6 +8,8 @@ import {Metrics, SubjectAreaCategory} from "../../../shared/data/reports/subject
 import {take} from "rxjs/operators";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
+import {Router} from "@angular/router";
+import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -48,6 +50,8 @@ export class CreateReportComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private reportService: ReportService,
     private globalMessagingService: GlobalMessagingService,
+    private router: Router,
+    private sessionStorageService: SessionStorageService
   ) {}
 
   ngOnInit(): void {
@@ -72,9 +76,8 @@ export class CreateReportComponent implements OnInit {
    * "SubjectArea".
    */
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
-    console.log(`subject area from click`, s)
     this.selectedSubjectArea = s.subjectAreaName;
-    // this.subjectAreaCategories = null;
+    this.subjectAreaCategories = null;
     this.showSubjectAreas = false;
     this.searchForm.reset();
     this.reportService.getCategoriesBySubjectAreaId(s.id)
@@ -195,7 +198,24 @@ export class CreateReportComponent implements OnInit {
 
   }
 
-  updateSubCategoryCategoryAreas(subCategoryElement: any[]) {
+  updateSubCategoryCategoryAreas(subCategoryElement: any[]): void {
     this.subCategoryCategoryAreas = subCategoryElement;
   }
+
+  viewPreview(): void {
+    this.sessionStorageService.setItem(`criteria`, this.criteria);
+    this.router.navigate(['/home/reportsv2/preview'])
+  }
+
+  updateFilter(filterSort): void {
+    log.info(`filterSort >>> `, filterSort)
+    this.criteria.forEach((criterion) => {
+      if (criterion == filterSort.queryObject) {
+        criterion.filter = filterSort.queryObject.filter
+        this.filters.push(filterSort?.filter)
+      }
+    });
+    // this.loadChart();
+  }
+
 }
