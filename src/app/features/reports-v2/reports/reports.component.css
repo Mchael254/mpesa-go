@@ -1,12 +1,31 @@
+.fixed-height-card {
+    height: 320px;
+    overflow: hidden;
+}
+
 .card-header {
     font-family: Roboto;
     font-size: 20px;
     font-weight: 400;
     line-height: 23px;
-    letter-spacing: 0em;
-    text-align: left;
     color: #000000;
     border-bottom: none;
+}
+
+.head-top {
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 23px;
+    color: #000000;
+}
+
+.head-bottom {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    color: #00000080;
 }
 .testimony-txt {
     font-family: Roboto;
@@ -37,4 +56,22 @@ li {
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+.head-sm {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    background: #000000;
+    color: #000000;
+}
+
+.btn-end {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    color: #00529B;
+    text-decoration: underline;
 }
