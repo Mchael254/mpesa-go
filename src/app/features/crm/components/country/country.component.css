@@ -12,6 +12,11 @@ label {
     font-weight: 500;
 }
 
+.custom-input {
+    width: 80%;
+    border-radius: 8px;
+}
+
 .icon-circle {
     display: inline-block;
     background-color: #E4E7EB;
