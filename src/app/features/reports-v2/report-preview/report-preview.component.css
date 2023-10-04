@@ -1,0 +1,47 @@
+.visualizations > .visualizations-toggle {
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: gray;
+}
+
+.visualizations ul {
+  border: solid 1px #eee;
+  border-radius: 5px;
+  padding: .5rem 1rem;
+}
+
+.visualizations ul li {
+  list-style-type: none;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  color: gray;
+  cursor: pointer;
+}
+
+.visualizations ul li:hover {
+  background: #eee;
+  font-size: 1.1em;
+  transition: font-size 0.3s;
+}
+
+.visualizations ul li i,
+.selected-visualization i {
+  margin-right: 10px;
+}
+
+.selected-visualization {
+  margin-left: 5px;
+  margin-bottom: 5px;
+  color: gray;
+  border: solid 1px #eee;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.remove-filter:hover {
+  background: #eee;
+  font-size: 1.1em;
+  transition: font-size 500ms;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
