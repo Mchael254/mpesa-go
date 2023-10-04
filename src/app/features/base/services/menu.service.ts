@@ -56,8 +56,8 @@ export class MenuService{
 
   ],
     "STAFF_PERF":[{
-    name: 'My Emloyees',
-    nameSlug: 'emloyees',
+    name: 'My Employees',
+    nameSlug: 'employees',
     link:'./home/entity/staff/list',
     icon: 'fa-solid fa-user-tie',
     svgContent: `
