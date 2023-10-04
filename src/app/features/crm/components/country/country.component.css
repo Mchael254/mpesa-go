@@ -1,0 +1,54 @@
+.card-header {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0em;
+    color: #000000;
+    border-bottom: none;
+}
+
+label {
+    font-weight: 500;
+}
+
+.icon-circle {
+    display: inline-block;
+    background-color: #E4E7EB;
+    color: #00529B;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 10px;
+}
+
+.btn-tab {
+    /* border-radius: 5px; */
+    margin-right: 10px;
+    /* border: 2px solid #00000033; */
+    background-color: #fff;
+    color: black;
+    border: none;
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+.btn-tab.active {
+    /* background-color: #00529b; */
+    color: #00529b;
+    /* border-color: #00529b; */
+    text-decoration: underline;
+}
+
+ul,
+li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
