@@ -31,19 +31,6 @@ export class ReportsComponent implements OnInit  {
   ) { }
   
   ngOnInit(): void {
-    this.basicData = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label: 'My First dataset',
-          data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-          label: 'My Second dataset',
-          data: [28, 48, 40, 19, 86, 27, 90]
-        }
-      ]
-    };
   }
 
 
@@ -54,10 +41,24 @@ export class ReportsComponent implements OnInit  {
     this.router.navigate(['/home/reportsv2/create-report'])
   }
 
+  /**
+   * The function "createDashboards" navigates to the create-dashboard page in the home/reportsv2
+   * route.
+   */
+  createDashboards() {
+    this.router.navigate(['/home/reportsv2/create-dashboard'])
+  }
+
+  /**
+   * The function sets the active tab to "myReports".
+   */
   myReports() {
     this.activeTab = 'myReports';
   }
 
+  /**
+   * The function sets the active tab to 'sharedReports'.
+   */
   sharedReports() {
     this.activeTab = 'sharedReports';
   }
