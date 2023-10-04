@@ -202,7 +202,7 @@ export class TicketsService {
 
   // get all transactions for a supervisor
   getAllTransactions(
-    pageNo: number = 0,
+    pageNo: number,
     pageSize: number,
     fromDate: string,
     toDate: string,
