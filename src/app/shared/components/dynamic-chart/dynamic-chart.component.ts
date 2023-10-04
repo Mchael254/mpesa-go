@@ -16,7 +16,6 @@ export class DynamicChartComponent implements OnInit {
   public lineChartOptions: any;
   public polarAreaChartOptions: any;
   public radarChartOptions: any;
-
   public basicOptions: any;
 
   constructor() {
@@ -161,7 +160,6 @@ export class DynamicChartComponent implements OnInit {
         }
       }
     };
-
 
     this.setChartOptions(this.chartType);
 

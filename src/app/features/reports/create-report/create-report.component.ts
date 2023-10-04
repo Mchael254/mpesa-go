@@ -135,7 +135,6 @@ export class CreateReportComponent implements OnInit{
   }
 
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
-    console.log(`subject area from click`, s)
     this.selectedSubjectArea = s.subjectAreaName;
     this.subjectAreaCategories = null;
     this.showSubjectAreas = false;
@@ -144,7 +143,6 @@ export class CreateReportComponent implements OnInit{
       .pipe(take(1))
       .subscribe(res => {
         this.subjectAreaCategories = res;
-        // log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
         this.cdr.detectChanges();
       });
   }
