@@ -45,22 +45,33 @@
             </div>
           </form>
 
-          <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
-            <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
-            <div class="content">
-              <input type="search" class="form-control m-2" placeholder="Search"
-                     style="width: 94%; border-radius: 8px;">
-              <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
-                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ subCategory.name }}
-                </button>
-                <ul class="dropdown-menu">
-                  <li *ngFor="let categoryAreas of subCategory.categoryAreas"
-                      (click)="selectCriteria(metrics, subCategory, categoryAreas)">{{ categoryAreas.name }}</li>
-                </ul>
+          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories" style="padding: 4rem 0;">
+            <p-progressSpinner
+              styleClass="w-0.5em h-0.5em "
+              strokeWidth="3"
+              fill="var(--surface-ground)"
+              animationDuration=".6s"
+            ></p-progressSpinner>
+          </div>
+
+          <ng-template #showSubjectAreaCategories>
+            <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
+              <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
+              <div class="content">
+                <input type="search" class="form-control m-2" placeholder="Search"
+                       style="width: 94%; border-radius: 8px;">
+                <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
+                  <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ subCategory.name }}
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li *ngFor="let categoryAreas of subCategory.categoryAreas"
+                        (click)="selectCriteria(metrics, subCategory, categoryAreas)">{{ categoryAreas.name }}</li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
+          </ng-template>
 
           <!--<div *ngIf="filters.length > 0" class="subject-area mt-4">
             <span class="fw-medium ms-1 my-1">Filters</span>
@@ -133,7 +144,12 @@
           </div>
 
           <div class="text-center">
-            <button class="btn btn-primary mt-3 continueBtn">Continue</button>
+            <button
+              (click)="viewPreview()"
+              class="btn btn-primary mt-3 continueBtn"
+            >
+              Continue
+            </button>
           </div>
 
 
@@ -143,11 +159,10 @@
           <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report"
                  [(ngModel)]="reportNameRec" disabled>
 
-
-          <ng-container *ngIf="isCriteriaButtonActive">
+          <!--<ng-container *ngIf="isCriteriaButtonActive">
             <div class="row" style="padding: 0 2rem 2rem 1rem">
               <ng-container *ngFor="let criteriaItem of criteria">
-                <div class="col-sm-4 fadeInDown" >
+                <div class="col-sm-4 fadeInDown">
                   <app-criteria-pill
                     [queryObject]="criteriaItem"
                     (deleteCriteriaDetails)="deleteCriteria($event)"
@@ -156,7 +171,15 @@
               </ng-container>
             </div>
           </ng-container>
-        </div>
+        </div>-->
+
+          <ng-container *ngIf="isCriteriaButtonActive">
+            <app-criteria
+              (deleteCriteriaDetails)="deleteCriteria($event)"
+              (filter)="updateFilter($event)"
+              [criteria]="criteria"
+            ></app-criteria>
+          </ng-container>
 
       </div>
 
@@ -164,4 +187,5 @@
 
   </div>
 
+</div>
 </div>

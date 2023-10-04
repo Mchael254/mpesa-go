@@ -26,34 +26,23 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 5px;
+  /*border-radius: 0;*/
   color: #fff;
   margin-right: 5px;
 }
 
 .btn-success {
-  border-radius: 0;
   color: #fff;
   margin-right: 5px;
 }
 
-.btn-danger {
-  border-radius: 0;
-}
-
-.btn-outline-secondary {
-  border-radius: 0;
-}
-
 .btn-outline-primary {
-  border-radius: 0;
   background: #fff;
   border: solid 1px #00529b;
   color: #00529b;
 }
 
 .btn-outline-primary:hover {
-  border-radius: 0;
   background: #00529b;
   border: solid 1px #00529b;
   color: #fff;
@@ -71,13 +60,8 @@ html,body {
   width: 120px
 }
 
-.form-select {
-  border-radius: 5px;
-}
-
 .setups .card {
   padding: 20px;
-  border-radius: 0;
 }
 
 .setups .listing {
