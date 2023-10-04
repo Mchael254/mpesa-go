@@ -29,7 +29,8 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.user = this.localStorageService.getItem("loginUserProfile")
+    // this.user = this.localStorageService.getItem("loginUserProfile");
+    this.user = this.authService.getCurrentUser();
     this.getUserImage();
   }
 
