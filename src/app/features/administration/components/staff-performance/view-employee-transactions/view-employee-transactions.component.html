@@ -12,30 +12,31 @@
   </div>
 
   <form [formGroup]="sortingForm" style="background: none; display: contents">
-    <div class="row col-lg-6 pb-2">
+    <div class="col-lg-12 pb-2">
+      <div class="row col-lg-12 col-sm-6">
+        <label class="transactionLabel w-auto">Employee Name: </label>
+        <p class="col-lg-6 px-lg-0" style="color: #000">{{name}}</p>
+      </div>
 
-      <div class="col-lg-3 col-sm-4">
+    </div>
+    <div class="row col-lg-12 pb-2">
+      <div class="col-lg-2 col-sm-4">
         <label class="transactionLabel">From:</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="sortEmployeeTransactions()">
       </div>
-      <div class="col-lg-3 col-sm-4">
+      <div class="col-lg-2 col-sm-4">
         <label class="transactionLabel">To:</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="sortEmployeeTransactions()">
       </div>
 
-      <div class="col-lg-3 col-sm-4">
+      <div class="col-lg-2 col-sm-4">
         <label class="transactionLabel">Module:</label><br>
-        <select class="form-control" formControlName="module" id="module" [(ngModel)]="selectedModule" (change)="sortEmployeeTransactions()">
+        <select class="form-control form-select" formControlName="module" id="module" [(ngModel)]="selectedModule" (change)="sortEmployeeTransactions()">
           <option value="" selected>All</option>
           <option *ngFor="let ticketModule of ticketModules" [ngValue]="ticketModule.shortDescription">{{ ticketModule.description }}</option>
         </select>
       </div>
-    </div>
-    <div class="row col-lg-10 pb-2">
-      <div class="col-lg-3 col-sm-6">
-        <label class="transactionLabel">Employee Name: </label>
-        <p style="color: #000">{{name}}</p>
-      </div>
+
 
       <div class="col-lg-2 col-sm-6">
           <label class="transactionLabel">System: </label>
@@ -45,7 +46,7 @@
             <option value="gis">GIS</option>
           </select>
       </div>
-      <div class="col-lg-3 col-sm-6">
+      <div class="col-lg-2 col-sm-6">
           <label class="transactionLabel">Transaction Type: </label>
           <select formControlName="transactionType" id="transactionType" class="employeeSelect form-select" (change)="sortEmployeeTransactions()">
             <option value="">All</option>
@@ -79,6 +80,7 @@
           [totalRecords]="transactions?.length"
           [value]="transactions"
           [resizableColumns]="true"
+          [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
           styleClass="p-datatable-sm"
           responsiveLayout="scroll" class='ui-datatable'
           currentPageReportTemplate="{first} - {last} of {totalRecords}">
