@@ -11,6 +11,7 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { QuotationsClientDetailsComponent } from './components/quotations-client
     QuickQuoteFormComponent,
     CoverTypesDetailsComponent,
     QuoteSummaryComponent,
-    QuotationsClientDetailsComponent
+    QuotationsClientDetailsComponent,
+    RiskSectionDetailsComponent
   ],
   imports: [
     CommonModule,
