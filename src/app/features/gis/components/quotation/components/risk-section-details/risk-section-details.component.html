@@ -1,0 +1,85 @@
+<div class="mx-4 mt-3">
+    <p class="screenTitle">Quotations:Risk Section Details </p>
+    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <div class="accordion" id="riskSectionDetails">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#riskDetails" aria-expanded="true" aria-controls="collapseOne">
+                <strong>Risk details</strong> 
+            </button>
+          </h2>
+          <div id="riskDetails" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <!-- <strong>Risk details</strong>  -->
+              <p class="title2 ps-2">Quotation no: <strong>3454684</strong></p>
+              <form>
+                <div class="row mt-4 mx-4">
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Risk ID</label>
+                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">   
+                    </div>
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Risk description*</label>
+                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName=""> 
+                    </div>
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Subclass*</label>
+                        <select class="form-select form-control-sm " id="quote-dropdown" formControlName="">
+                            <option value=""></option>
+                            <option></option>
+                        </select>  
+                    </div>
+
+                </div>
+                <div class="row mt-4 mx-4 mb-4">
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Cover type*</label>
+                        <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="">
+                            <option value=""></option>
+                            <option></option>
+                        </select>    
+                    </div>
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Premium band*</label>
+                        <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="">
+                            <option value=""></option>
+                            <option></option>
+                        </select>    
+                    </div>
+                    <div class="col-4">
+                        <label for="minmax-buttons" id="quote-label">Cover time</label>
+                        <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">   
+                    </div>
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item mt-3">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Accordion Item #2
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Accordion Item #3
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+      </div>
+
+</div>
