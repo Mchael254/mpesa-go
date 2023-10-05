@@ -6,6 +6,7 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 
 const routes: Routes = [
   {
@@ -22,9 +23,12 @@ const routes: Routes = [
   },
   {
     path: 'quote-summary', component:QuoteSummaryComponent
-  },{
-    path:'quotations-client-details',
-    component:QuotationsClientDetailsComponent
+  },
+  {
+    path:'quotations-client-details',component:QuotationsClientDetailsComponent
+  },
+  {
+    path:'risk-section-details',component:RiskSectionDetailsComponent
   }
 ];
 
