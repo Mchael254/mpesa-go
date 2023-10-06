@@ -10,6 +10,12 @@ import {AppConfigService} from "../../../core/config/app-config-service";
 import {ChartConfiguration} from "chart.js/dist/types";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {ReportService} from "../../reports/services/report.service";
+import {Chart, ReportV2} from "../../../shared/data/reports/report";
+import {ReportServiceV2} from "../services/report.service";
+import {take} from "rxjs/operators";
+import {AuthService} from "../../../shared/services/auth.service";
+import {Router} from "@angular/router";
+import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('ReportPreviewComponent')
 
@@ -42,11 +48,11 @@ export class ReportPreviewComponent implements OnInit{
   ];
 
   public conditions = [
-    {label: 'Greater than', value: 'greaterThan'},
-    {label: 'Greater than or equal', value: 'greaterThanOrEqual'},
-    {label: 'Lower than', value: 'lowerThan'},
-    {label: 'Lower than or equal', value: 'lowerThanOrEqual'},
-    {label: 'Equal', value: 'equal'},
+    {label: 'Greater than', value: 'gt'},
+    {label: 'Greater than or equal', value: 'gte'},
+    {label: 'Lower than', value: 'lt'},
+    {label: 'Lower than or equal', value: 'lte'},
+    {label: 'Equals', value: 'equals'},
     {label: 'Between', value: 'between'},
   ];
 
@@ -66,26 +72,72 @@ export class ReportPreviewComponent implements OnInit{
     datasets: [],
   };
   private filters =  [];
+  private sort =  [];
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
   public tableDetails: TableDetail = {};
   public isPreviewResultAvailable: boolean = null;
+  public reportNameRec: string;
+  public saveReportForm: FormGroup;
+  private currentUser;
 
   constructor(
     private fb: FormBuilder,
     private sessionStorageService: SessionStorageService,
     private appConfig: AppConfigService,
     private reportService: ReportService,
+    private reportServiceV2: ReportServiceV2,
+    private authService: AuthService,
+    private router: Router,
+    private globalMessagingService: GlobalMessagingService
   ) {
   }
 
+  /**
+   * Initializes the component by:
+   * 1. fetching the report parameters from session storage
+   * 2. initializing criteria, filter, sort & report name from fetched report parameters
+   * 3. creating a filterForm
+   * 4. creating a saveReportForm
+   * 5. loading chart details
+   * 6. Fetching details of the current user
+   */
   ngOnInit(): void {
-    this.criteria = this.sessionStorageService.getItem(`criteria`);
+    const reportParams = this.sessionStorageService.getItem(`reportParams`)
+    this.criteria = reportParams.criteria;
+    this.filters = reportParams.filters;
+    this.sort = reportParams.sort;
+    this.reportNameRec = reportParams.reportNameRec;
+
     this.createFilterForm();
+    this.createSaveReportForm();
     this.loadChart();
+
+    this.currentUser = this.authService.getCurrentUser();
+    // log.info(`current user >>> `, this.currentUser);
+    // log.info(`report params >>> `, reportParams);
   }
 
+  /**
+   * 1. creates saveReportForm
+   * 2. patches reportName and destination folder to saveReportForm
+   */
+  createSaveReportForm(): void {
+    this.saveReportForm = this.fb.group({
+      reportName: [''],
+      dashboard: [''],
+      destination: [''],
+    });
+    this.saveReportForm.patchValue({
+      reportName: this.reportNameRec,
+      destination: 'M'
+    })
+  }
+
+  /**
+   * creates filter form
+   */
   createFilterForm(): void {
     this.filterForm = this.fb.group({
       column: [''],
@@ -94,6 +146,11 @@ export class ReportPreviewComponent implements OnInit{
     });
   }
 
+  /**
+   * 1. selects chart to be displayed
+   * 2. fetch chart details by calling the loadChart() method
+   * @param chartType
+   */
   selectChartType(chartType: { iconClass: string; name: ChartType | string }): void {
     this.chartType = chartType.name;
     this.selectedChartType = chartType
@@ -107,10 +164,16 @@ export class ReportPreviewComponent implements OnInit{
     this.loadChart();
   }
 
+  /**
+   * toggles visualization visibility to either true or false
+   */
   showVisualizationList(): void {
     this.shouldShowVisualization = !this.shouldShowVisualization;
   }
 
+  /**
+   * toggles show visualization styles to either true of false
+   */
   showStyles(): void {
     this.shouldShowStyles = !this.shouldShowStyles;
   }
@@ -119,6 +182,10 @@ export class ReportPreviewComponent implements OnInit{
     this.shouldShowStyles = false;
   }
 
+  /**
+   * 1. constructs a filter object from form values
+   * 2. adds the filter to the list of selected filters
+   */
   addFilter(): void {
     const formValues = this.filterForm.getRawValue();
     const operator = (this.conditions.filter(item => item.value === formValues.operator))[0];
@@ -130,17 +197,27 @@ export class ReportPreviewComponent implements OnInit{
     this.selectedFilters.push(filter)
   }
 
+  /**
+   * removes a filter from the list of selected filters
+   * @param filter
+   */
   removeFilter(filter): void{
     const filterIndex = this.selectedFilters.indexOf(filter)
     this.selectedFilters.splice(filterIndex, 1);
-    log.info(`selectedFilters >>> `, this.selectedFilters, filterIndex);
   }
 
+  /**
+   * 1. constructs a query object for cubejs api call
+   * 2. fetches report data by calling the cubejs api
+   * 3. constructs table details from report data
+   */
   loadChart(): void {
 
+    // todo: refactor - remove splitDimensionsAndMeasures
     // if (this.reportId) {
       this.measures = [];
       this.dimensions = [];
+      // log.info(`criteria >>> `, this.criteria);
       this.criteria.forEach((queryObject) => {
         this.splitDimensionsAndMeasures(queryObject);
       });
@@ -151,9 +228,10 @@ export class ReportPreviewComponent implements OnInit{
       measures: this.measures,
       dimensions: this.dimensions,
       filters: this.filters,
+      order: this.sort,
       limit: 20
     }
-    log.info(`query for cube >>> `, query);
+    // log.info(`query for cube >>> `, query);
 
     this.cubejsApi.load(query).then(resultSet => {
       this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
@@ -164,7 +242,6 @@ export class ReportPreviewComponent implements OnInit{
         labels: this.chartLabels,
         datasets: this.reportService.generateReportDatasets(reportLabels, reportData, this.measures)
       };
-      console.log(`chart data >>> `, this.chartData)
 
       this.isPreviewResultAvailable = true;
 
@@ -174,6 +251,10 @@ export class ReportPreviewComponent implements OnInit{
     });
   }
 
+  /**
+   * splits criteria in to a list of measures and dimensions
+   * @param queryObject
+   */
   splitDimensionsAndMeasures(queryObject: Criteria): void {
     const criterion = `${queryObject.transaction}.${queryObject.query}`;
     if (queryObject.category === 'metrics') {
@@ -183,4 +264,68 @@ export class ReportPreviewComponent implements OnInit{
     }
   }
 
+  /**
+   * 1. Gets a list of measures & dimensions to save
+   * 2. creates a report object for saving
+   * 3. saves the report and returns saved report or throw error is saving fails
+   */
+  saveReport() {
+    const formValues = this.saveReportForm.getRawValue();
+    const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
+    const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
+    // log.info(`criteria >>> `, this.criteria, measuresToSave, dimensionsToSave);
+
+    const chart: Chart = {
+      backgroundColor: "",
+      borderColor: "",
+      chartReportId: 0,
+      colorScheme: 0,
+      evenColor: "",
+      evenOddAppliesTo: "",
+      id: 0,
+      length: 0,
+      name: "",
+      oddColor: "",
+      order: 0,
+      type: "table",
+      width: 0
+    }
+
+    const report: ReportV2 = {
+      charts: [chart],
+      createdBy: this.currentUser.id,
+      createdDate: "",
+      dashboardId: formValues.dashboard,
+      dimensions: JSON.stringify(dimensionsToSave),
+      filter: JSON.stringify(this.filters),
+      folder: formValues.destination,
+      // id: 0,
+      length: 0,
+      measures: JSON.stringify(measuresToSave),
+      name: formValues.reportName,
+      order: 0,
+      width: 0
+    }
+    // log.info(`report to save >>>`, report);
+
+    this.reportServiceV2.createReport(report)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          // log.info(`saved report >>>`, res);
+          this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+        },
+        error: (e) => {
+          this.globalMessagingService.displaySuccessMessage('error', 'Report not saved')
+        }
+      })
+  }
+
+
+  /**
+   * Go back to report configuration page
+   */
+  backToCreateReport() {
+    this.router.navigate(['/home/reportsv2/create-report'], {queryParams:{fromPreview: true}})
+  }
 }

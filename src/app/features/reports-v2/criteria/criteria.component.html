@@ -1,13 +1,13 @@
 <div class="row p-3">
   <div *ngFor="let criterion of criteria" class="col-md-4">
-    <div class="row pill-box">
+    <div class="row pill-box fadeIn">
 
-      <div class="col-md-9 fadeIn">
+      <div class="col-md-9">
         {{ criterion.queryName }}
       </div>
       <div class="col-md-3 text-end">
         <div class="btn-group">
-          <span (click)="selectCriteria(criterion)" data-bs-toggle="dropdown" aria-expanded="false">
+          <span id="selectCriteriaBtn" (click)="selectCriteria(criterion)" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="pi pi-sort-amount-down text-secondary"></i>
           </span>
           <ul class="dropdown-menu">
@@ -16,8 +16,8 @@
                 Sort
               </a>
               <ul class="fadeIn" [ngStyle]="{'display': shouldShowSortOption ? 'block' : 'none' }">
-                <li><a class="dropdown-item">Ascending</a></li>
-                <li><a class="dropdown-item">Descending</a></li>
+                <li><a class="dropdown-item sorting" (click)="addSorting('asc')">Ascending</a></li>
+                <li><a class="dropdown-item sorting" (click)="addSorting('desc')">Descending</a></li>
               </ul>
             </li>
             <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#filter">Filter</a></li>
@@ -31,6 +31,13 @@
       <span class="text-secondary filter-option" style="font-size: 0.8em">
         <i class="pi pi-sort-amount-down"></i>
         {{ criterion.filter }}
+      </span>  <br>
+    </ng-container>
+
+    <ng-container *ngIf="criterion.sort">
+      <span class="text-secondary filter-option" style="font-size: 0.8em">
+        <i class="pi pi-sort-amount-down"></i>
+        {{ criterion.sort }}
       </span>
     </ng-container>
   </div>
@@ -61,7 +68,7 @@
                 <input formControlName="value" id="value" type="text" class="form-control">
               </div>
               <div class="text-center">
-                <button (click)="addFilter()" class="btn btn-primary ps-5 pe-5">Apply</button>
+                <a id="addFilterBtn" (click)="addFilter()" class="btn btn-primary ps-5 pe-5">Apply</a>
               </div>
             </form>
 
