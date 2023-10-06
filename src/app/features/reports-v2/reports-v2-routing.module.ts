@@ -19,6 +19,10 @@ const routes: Routes = [
     component: CreateReportComponent
   },
   {
+    path: 'edit-report/:id',
+    component: CreateReportComponent
+  },
+  {
     path: 'create-dashboard',
     component: CreateDashboardComponent
   },

@@ -90,12 +90,12 @@
             </div>
           </div>-->
 
-          <div *ngIf="filters.length > 0">
+          <div *ngIf="dimensions.length > 0">
             <span class="fw-medium ms-1 my-1">Filters</span>
             <div style="border: solid 1px #eee; border-radius: 5px;">
               <input type="search" class="form-control m-2" placeholder="Search"
                      style="width: 94%; border-radius: 8px;">
-              <ng-container *ngFor="let filterName of filters">
+              <ng-container *ngFor="let filterName of dimensions">
                 <p
                   data-bs-toggle="collapse"
                   [attr.data-bs-target]="'#'+filterName.description"
@@ -156,7 +156,9 @@
         </div>
 
         <div class="col-sm-8 text-center">
-          <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report"
+          <input type="text"
+                 class="border-0 border-bottom text-center bg-transparent"
+                 placeholder="Pilot report"
                  [(ngModel)]="reportNameRec" disabled>
 
           <!--<ng-container *ngIf="isCriteriaButtonActive">
@@ -177,6 +179,7 @@
             <app-criteria
               (deleteCriteriaDetails)="deleteCriteria($event)"
               (filter)="updateFilter($event)"
+              (sort)="updateSort($event)"
               [criteria]="criteria"
             ></app-criteria>
           </ng-container>
