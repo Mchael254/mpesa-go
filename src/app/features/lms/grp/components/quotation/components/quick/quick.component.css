@@ -77,6 +77,27 @@
     margin-top: 10px;
 }
 
+.circle {
+    width: 30px;
+    height: 30px;
+    background-color: #00529B;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    margin: 0 auto;
+    line-height: 30px;
+  }
+  .text {
+    color: #00529B;
+    font-size: 14px;
+    font-family: Roboto;
+    font-weight: 400;
+    margin: 10px 0;
+  }
+
 @media screen and (max-width:1400px) and (min-width:280px), (max-width:280px)  {
      .container {
         background: #f5f6f8;

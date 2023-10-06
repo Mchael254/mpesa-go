@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
@@ -8,7 +9,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 export class QuickComponent implements OnInit, OnDestroy {
   public quickForm: FormGroup;
   constructor (
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router,
     ) {}
 
     public clients = [
@@ -82,7 +84,6 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.quickQuoteForm();
-    this.onProceed();
   }
 
   ngOnDestroy(): void {
@@ -105,6 +106,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     });
   }
 
-  onProceed () {
+  onContinue () {
+    this.router.navigate(['/home/lms/grp/quotation/coverage']);
   }
 }

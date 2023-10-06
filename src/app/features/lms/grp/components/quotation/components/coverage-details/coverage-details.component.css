@@ -1,0 +1,140 @@
+.container {
+    background: #F5F6F8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  #container {
+    background: #FFF;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+    flex: 1;
+    padding: 20px;
+  }
+
+  .add-client-button-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .rounded-circle {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #E4E7EB;
+    --bs-btn-border-color: #D9D9D9;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #c0c2c3;
+    --bs-btn-hover-border-color: #b8bbb9;
+    --bs-btn-focus-shadow-rgb: 60,153,110;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #00529B;
+    --bs-btn-active-border-color: #00529B;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    color: #00529B;
+}
+.row.linkTexts > div {
+  text-align: center;
+}
+
+.circle {
+  width: 30px;
+  height: 30px;
+  background-color: #00529B;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 16px;
+  font-family: Roboto;
+  font-weight: 400;
+  margin: 0 auto;
+  line-height: 30px;
+}
+
+.text {
+  color: #00529B;
+  font-size: 14px;
+  font-family: Roboto;
+  font-weight: 400;
+  margin: 10px 0;
+}
+a.routerLink.active .circle {
+    background-color: white;
+    color: #00529B; /* Blue color */
+  }
+
+
+  #inline {
+    display: inline-block;
+    margin-right: 20px;
+}
+.button {
+    display: inline-flex;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #00529B;
+    color: white;
+    float: right;
+    margin-top: 10px;
+}
+.searchForm {
+    display: inline-block;
+   }
+   /* .custom-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+  } */
+  .custom-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+@media screen and (max-width:1400px) and (min-width:280px), (max-width:280px)  {
+    .container {
+       background: #f5f6f8;
+       display: flex;
+       flex-direction: column;
+       align-items: stretch;
+       justify-content: space-between;
+       padding: 20px;
+     }
+     #container {
+       background: #FFF;
+       border: 1px solid rgba(220, 220, 220, 0.85);
+       border-radius: 5px;
+       flex: 1;
+       padding: 20px;
+     }
+   .button {
+       display: inline-flex;
+       padding: 10px;
+       justify-content: center;
+       align-items: center;
+       flex-shrink: 0;
+       border-radius: 4px;
+       background: #00529B;
+       color: white;
+       float: center;
+   }
+
+   .searchForm {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+   }
+   /* .custom-row {
+    flex-direction: column;
+    margin-right: 0;
+    margin-left: 0;
+  } */
+  .custom-row {
+    flex-direction: column;
+    /* Adjust other styles as needed for smaller screens */
+  }
+}

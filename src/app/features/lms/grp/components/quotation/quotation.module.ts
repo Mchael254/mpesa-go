@@ -6,10 +6,13 @@ import { QuickComponent } from './components/quick/quick.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
+import { CoverageDetailsComponent } from './components/coverage-details/coverage-details.component';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
   declarations: [
-    QuickComponent
+    QuickComponent,
+    CoverageDetailsComponent
   ],
   imports: [
     CommonModule,
@@ -17,7 +20,8 @@ import { CalendarModule } from 'primeng/calendar';
     FormsModule,
     ReactiveFormsModule,
     DropdownModule,
-    CalendarModule
+    CalendarModule,
+    TableModule
   ]
 })
 export class QuotationModule { }
