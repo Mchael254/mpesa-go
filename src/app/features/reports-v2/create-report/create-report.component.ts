@@ -8,8 +8,9 @@ import {Metrics, SubjectAreaCategory} from "../../../shared/data/reports/subject
 import {take} from "rxjs/operators";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
+import {ReportServiceV2} from "../services/report.service";
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -37,24 +38,46 @@ export class CreateReportComponent implements OnInit {
   public queryObject: Criteria = {};
   public criteria: Criteria[] = [];
   public measures: string[] = [];
-  public dimensions: string[] = [];
+  public dimensions = [];
   public isCriteriaButtonActive: boolean = true;
   reportName: string = '';
   reportNameRec: string = '';
   metrics: any = {};
   filters: any = [];
+  sort: any = [];
   subCategoryCategoryAreas: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private reportService: ReportService,
+    private reportServiceV2: ReportServiceV2,
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private sessionStorageService: SessionStorageService
   ) {}
 
+  /**
+   * Initializes the component by:
+   * 1. Creating search form
+   * 2. Getting a list of subject areas
+   * 3. Check if reportId exist or if navigation was from preview screen and fetch report
+   * @return void
+   */
   ngOnInit(): void {
+    const isFromPreview = this.activatedRoute.snapshot.queryParams['fromPreview'];
+    const reportId = this.activatedRoute.snapshot.params['id'];
+    const reportParams = this.sessionStorageService.getItem(`reportParams`);
+
+    if (isFromPreview && reportParams) {
+      this.criteria = reportParams.criteria;
+      this.filters = reportParams.filters;
+      this.sort = reportParams.sort;
+      this.reportNameRec = reportParams.reportNameRec;
+    } else if (reportId) {
+      this.getReport(reportId)
+    }
     this.getSubjectAreas();
     this.createSearchForm();
   }
@@ -67,6 +90,29 @@ export class CreateReportComponent implements OnInit {
       searchTerm: [''],
       subjectArea: ['']
     });
+  }
+
+  /**
+   * 1. gets a specific report by it's id
+   * 2. extracts measures, dimensions, filters from report
+   * 3. creates criteria array from #2 above
+   * @param id of type number
+   * @return void
+   */
+  getReport(id: number): void {
+    this.reportServiceV2.getReportById(id)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.measures = JSON.parse(res.measures);
+          this.dimensions = JSON.parse(res.dimensions);
+          this.filters = JSON.parse(res.filter);
+          // this.sort = JSON.parse(res.sort)
+          this.criteria = [...this.measures, ...this.dimensions]
+          log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
+        },
+        error: (e) => { log.info(`error >>>`, e)}
+      })
   }
 
   /**
@@ -90,9 +136,9 @@ export class CreateReportComponent implements OnInit {
         log.info('>>>>',metrics[0]);
         this.metrics = metrics[0];
 
-        const filters = res.filter((item) => item.name !== 'Metrics');
-        log.info('filters',filters);
-        this.filters = filters;
+        const dimensions = res.filter((item) => item.name !== 'Metrics');
+        log.info('dimensions >>>', dimensions);
+        this.dimensions = dimensions;
 
         this.cdr.detectChanges();
       });
@@ -181,6 +227,10 @@ export class CreateReportComponent implements OnInit {
   }
 
 
+  /**
+   * Deletes a criterion from the list of criteria
+   * @param criteria of type criteria
+   */
   deleteCriteria(criteria: Criteria): void {
     const index = this.criteria.indexOf(criteria);
     if (index > -1) {
@@ -196,25 +246,65 @@ export class CreateReportComponent implements OnInit {
       this.dimensions.splice(index, 1);
     }
 
+    let filterToRemove, filterToRemoveIndex;
+    this.filters.forEach((filter, index) => {
+      log.info(`filter >>>`, filter)
+      if (filter.member === criteriaToRemove) {
+        filterToRemove = filter;
+        filterToRemoveIndex = index;
+        log.info(`found one >>> `, filterToRemove, filterToRemoveIndex)
+      }
+    });
+    this.filters.splice(filterToRemoveIndex, 1);
+
   }
 
   updateSubCategoryCategoryAreas(subCategoryElement: any[]): void {
     this.subCategoryCategoryAreas = subCategoryElement;
   }
 
+  /**
+   * 1. creates a report parameters and save to session storage for use on next screen
+   * 2. navigate to report-preview screen
+   */
   viewPreview(): void {
-    this.sessionStorageService.setItem(`criteria`, this.criteria);
+    const reportParams = {
+      criteria: this.criteria,
+      reportNameRec: this.reportNameRec,
+      filters: this.filters,
+      sort: this.sort,
+    }
+    this.sessionStorageService.setItem(`reportParams`, reportParams);
     this.router.navigate(['/home/reportsv2/preview'])
   }
 
-  updateFilter(filterSort): void {
-    log.info(`filterSort >>> `, filterSort)
+  /**
+   *1. update the filter array based on selected filter
+   * @param filter
+   */
+  updateFilter(filter): void {
+    log.info(`filter >>> `, filter);
     this.criteria.forEach((criterion) => {
-      if (criterion == filterSort.queryObject) {
-        criterion.filter = filterSort.queryObject.filter
-        this.filters.push(filterSort?.filter)
+      if (criterion == filter.queryObject) {
+        criterion.filter = filter.queryObject.filter
+        this.filters.push(filter?.filter)
       }
     });
+    // this.loadChart();
+  }
+
+  /**
+   *1. update the sort array based on selected sort
+   * @param sort
+   */
+  updateSort(sort): void {
+    this.criteria.forEach((criterion) => {
+      if (criterion == sort.queryObject) {
+        criterion.sort = sort.queryObject.sort
+        this.sort.push(sort.sortValue)
+      }
+    });
+    log.info(`sort >>> `, sort)
     // this.loadChart();
   }
 

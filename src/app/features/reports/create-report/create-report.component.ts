@@ -83,6 +83,7 @@ export class CreateReportComponent implements OnInit{
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
+
   ngOnInit(): void {
     this.activatedRoute.queryParams
       .pipe(
