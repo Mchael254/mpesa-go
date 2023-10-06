@@ -1,0 +1,227 @@
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+                <a routerLink="/home/lms/grp/quotation/quick">
+                  <div class="circle">1</div>
+                  <div class="text">Product details</div>
+                </a>
+              </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+            <div class="circle">2</div>
+            <div class="text">Coverage details</div>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+            <a routerLink="/home/lms/grp/quotation/summary">
+              <div class="circle">3</div>
+              <div class="text">Summary</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    <div id="container">
+        <h5 class="mt-1">Cover details</h5>
+        <div class="add-client-button-container">
+            <button class="btn btn-success m-2 rounded-circle" (click)="showAggregateCoverDetailsModal()">&plus;</button>
+          </div>
+              <!-- modal to capture detailed cover types details -->
+            
+              <!-- end of modal to capture detailed cover types details -->
+
+              <!-- modal to capture aggregate cover types details -->
+             
+              <!-- end of modal to capture aggregate cover types details -->
+
+
+            <p-table [value]="" [paginator]="true" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'min-width': '50rem'}"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Cover types</th>
+                        <th>Select rate</th>
+                        <th>Override premiums</th>
+                        <th>Premium mask</th>
+                        <th>Rate</th>
+                        <th>Rate division factor</th>
+                        <th>% of main/yr SA</th>
+                    </tr>
+                </ng-template>
+                <!-- <ng-template pTemplate="body" let-customer> -->
+                    <ng-template>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        <h5 class="mt-5 mb-1">Category details</h5>
+        <div style="max-width: 50rem;">
+          <div class="add-client-button-container">
+            <button class="btn btn-success m-2 rounded-circle" (click)="showCategoryDetstModal()">&plus;</button>
+          </div>
+          <!-- modal to capture category details -->
+         
+          <!-- end of modal to capture category details -->
+
+            <p-table [value]="" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width:12.5%">Description</th>
+                        <th style="width:12.5%">Short description</th>
+                        <th style="width:12.5%">Multiple of Earnings</th>
+                        <th style="width:12.5%">Premium mask</th>
+                    </tr>
+                </ng-template>
+                <!-- <ng-template pTemplate="body" let-customer> -->
+                    <ng-template>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+            <div>
+                <h5 class="mt-5">Member details</h5>
+                <h6 style="color: black;">Add members</h6>
+                <h6 style="color: gray;">Download member upload template <a href="path-to-file.pdf" download style="text-decoration: underline;">here</a></h6>
+                
+                <div class="p-col-3">
+                    <input type="file" #fileInput style="display: none;" accept=".csv">
+                    <button pButton class="choose-file" (click)="openFileInput()">Choose file</button>
+                </div>
+                </div>
+            <div class="mt-5">
+                <div class="col-md-12 mb-1">
+                    
+                    <!-- search in member details table -->
+
+                  <form [formGroup]="searchFormMemberDets">
+                    <div class="custom-row">
+                        <div class="col-md-11 col-lg-11 col-sm-12 col-xs-12">
+                          <div class="d-flex justify-content-end">
+                            <div class="label col-xs-12 searchForm" style="display: inline-block;">Filter by</div>
+                            <div class="form-group searchForm" style="display: inline-block; padding-left: 5px;">
+                                <p-dropdown id='filterby'
+                                [options]='currency'
+                                [optionLabel]="'label'"
+                                [style]="{ width: '100%', height: '38px'}"
+                                formControlName='filterby' 
+                                placeholder="Select option"
+                                >
+                                </p-dropdown>
+                            </div>
+                            <div class="searchForm" style="display: inline-block; margin-left: 5px;">
+                              <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                formControlName="greaterOrEqual"
+                                id="greaterOrEqual"
+                                placeholder="greater than, equals..."
+                              >
+                            </div>
+                            <div class="searchForm" style="display: inline-block; margin-left: 5px;">
+                              <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                formControlName="valueEntered"
+                                id="valueEntered"
+                                placeholder="Enter value"
+                              >
+                            </div>
+                            <div class="searchForm" style="margin-left: auto; padding-right: 0;">
+                                <div class="input-group">
+                                  <input
+                                    type="text"
+                                    pInputText
+                                    class="form-control form-control-sm"
+                                    formControlName="searchMember"
+                                    id="searchMember"
+                                    placeholder="Search..."
+                                    [style]="{ height: '38px' }"
+                                  />
+                                  <div class="input-group-append">
+                                    <button
+                                      type="button"
+                                      class="btn btn-primary btn-sm"
+                                      [style]="{ height: '38px' }"
+                                    >
+                                      <i class="fa fa-search"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-1 col-lg-1 col-sm-12 col-xs-12 ">
+                          <div class="form-group">
+                            <div class="add-client-button-container">
+                              <button class="btn btn-success m-1 rounded-circle" (click)="addMemberDetailsModal()">&plus;</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                  </form>
+                  <!-- end of search in member details table  -->
+
+                   <!-- modal to capture member details -->
+             
+              <!-- end of modal to capture member details -->
+
+                <p-table [value]="" [tableStyle]="{'min-width': '60rem'}">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th pSortableColumn="code" style="width:10%">Surname <p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="name" style="width:10%">Other name <p-sortIcon field="name"></p-sortIcon></th>
+                            <th pSortableColumn="category" style="width:10%">Date of birth <p-sortIcon field="category"></p-sortIcon></th>
+                            <th pSortableColumn="quantity" style="width:10%">Gender <p-sortIcon field="quantity"></p-sortIcon></th>
+                            <th pSortableColumn="price" style="width:10%">Payroll/Member no <p-sortIcon field="price"></p-sortIcon></th>
+                            <th pSortableColumn="code" style="width:10%">Category <p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="code" style="width:10%">Dependant type <p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="code" style="width:10%">Monthly earnings <p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="code" style="width:10%">Joining date<p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="code" style="width:10%">Main member no<p-sortIcon field="code"></p-sortIcon></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+    </div>
+    <div>
+        <button
+          type="button"
+          class="btn btn-primary button"
+          (click)="onProceed()"
+        >Proceed
+        </button>
+      </div>
+</div>

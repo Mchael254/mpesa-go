@@ -1,4 +1,24 @@
 <div class="container">  
+    <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+            <div class="circle">1</div>
+            <div class="text">Product details</div>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+            <a routerLink="/home/lms/grp/quotation/coverage">
+              <div class="circle">2</div>
+              <div class="text">Coverage details</div>
+            </a>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+            <a routerLink="/home/lms/grp/quotation/summary">
+              <div class="circle">3</div>
+              <div class="text">Summary</div>
+            </a>
+          </div>
+        </div>
+      </div>
   <div id="container">
     <div class="client-details">Select Client</div>
     <form class="form" [formGroup]="quickForm">
@@ -84,7 +104,7 @@
                             [optionLabel]="'label'"
                             [style]="{ width: '80%' }"
                             formControlName='frequencyOfPayment'
-                            placeholder="Select Fre. of Payment"
+                            placeholder="Select Freq. of Payment"
                             class="select">
                 </p-dropdown>
             </div>
@@ -117,57 +137,87 @@
                     </p-dropdown>
                 </div>
             </div>
-              <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" style="margin: 10px;">
-                <label class="label">Effective date</label>
-                <div>
-                  <p-calendar formControlName="effectiveDate" 
-                              dateFormat="dd/mm/yy" 
-                              [showIcon]="true" 
-                              [showButtonBar]="true"
-                              [style]="{ width: '80%' }"
-                              placeholder="dd/mm/yy"
-                              >
-                  </p-calendar>
-                </div>
+            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" 
+            style="padding-left: 20px;">
+              <label class="label">Effective date</label>
+              <div class="mx-1">
+                <p-calendar formControlName="effectiveDate" 
+                            dateFormat="dd/mm/yy" 
+                            [showIcon]="true" 
+                            [showButtonBar]="true"
+                            [style]="{ width: '80%' }"
+                            placeholder="dd/mm/yy"
+                            >
+                </p-calendar>
               </div>
-        </div>
-        <div style="padding-top: 30px;">
-            <div class="label"><label>Quotation Calculation type</label></div>
-            <div class="form-check radio-group" id="inline">
-                <input
-                  class="form-check-input box"
-                  type="radio"
-                  value="detailed"
-                  id="detailed"
-                  name="quotationCalcType"
-                  formControlName="quotationCalcType"
-                >
-                <label class="form-check-label pl-2" for="detailed">
-                    Detailed
-                </label>
-              </div>
+            </div>
+            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+              <div class="label"><label>Quotation Calculation type</label></div>
               <div class="form-check radio-group" id="inline">
-                <input
-                  class="form-check-input box"
-                  type="radio"
-                  value="aggregate"
-                  id="aggregate"
-                  name="quotationCalcType"
-                  formControlName="quotationCalcType"
-                >
-                <label class="form-check-label pl-2" for="aggregate">
-                    Aggregate
-                </label>
-              </div>
-        </div>
+                  <input
+                    class="form-check-input box"
+                    type="radio"
+                    value="detailed"
+                    id="quotationCalcType"
+                    name="quotationCalcType"
+                    formControlName="quotationCalcType"
+                  >
+                  <label class="form-check-label pl-2" for="detailed">
+                      Detailed
+                  </label>
+                </div>
+                <div class="form-check radio-group" id="inline">
+                  <input
+                    class="form-check-input box"
+                    type="radio"
+                    value="aggregate"
+                    id="quotationCalcType"
+                    name="quotationCalcType"
+                    formControlName="quotationCalcType"
+                  >
+                  <label class="form-check-label pl-2" for="aggregate">
+                      Aggregate
+                  </label>
+                </div>
+            </div>
+      </div>
+      <div class="product-details" style="padding-top: 50px;">Intermediary details</div>
+  <div class="row col-12" > 
+      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+          <div class="label"><label>Intermediary</label></div>
+          <div class="ui-fluid">
+              <p-dropdown id='intermediary'
+                          [options]='products'
+                          [optionLabel]="'label'"
+                          [style]="{ width: '80%' }"
+                          formControlName='intermediary' 
+                          placeholder="Select a Product"
+                          class="select"
+                          >
+              </p-dropdown>
+          </div>
+      </div>
+      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+          <div class="label"><label>Commission rate</label></div>
+          <div class="mx-2">
+              <input type="text"
+                         pInputText
+                         class="form-control"
+                          id='commissionRate'
+                          [style]="{ width: '80%', height: '45px' }"
+                          formControlName='commissionRate'
+                         >
+          </div>
+      </div>
+  </div>
     </form>
   </div>
     <div>
       <button
         type="button"
         class="btn btn-primary button"
-        (click)="onProceed()"
-      >Proceed
+        (click)="onContinue()"
+      >Continue
       </button>
     </div>
 </div>
