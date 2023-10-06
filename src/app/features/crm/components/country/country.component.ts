@@ -98,19 +98,19 @@ export class CountryComponent implements OnInit {
     '12': 31,
   };
 
-  activeTab: string = 'myReports';
+  // activeTab: string = 'myReports';
 
-  myReportsList: { id: string, name: string }[] = [
-    { id: '1', name: 'Item 1' },
-    { id: '2', name: 'Item 2' },
-    { id: '3', name: 'Item 3' }
-  ];
+  // myReportsList: { id: string, name: string }[] = [
+  //   { id: '1', name: 'Item 1' },
+  //   { id: '2', name: 'Item 2' },
+  //   { id: '3', name: 'Item 3' }
+  // ];
 
-  anotherTabList: { id: string, name: string }[] = [
-    { id: 'A', name: 'Item A' },
-    { id: 'B', name: 'Item B' },
-    { id: 'C', name: 'Item C' }
-  ];
+  // anotherTabList: { id: string, name: string }[] = [
+  //   { id: 'A', name: 'Item A' },
+  //   { id: 'B', name: 'Item B' },
+  //   { id: 'C', name: 'Item C' }
+  // ];
 
   constructor(
     private fb: FormBuilder,
@@ -128,13 +128,13 @@ export class CountryComponent implements OnInit {
     this.selectedMonth = '';
   }
 
-  myReports() {
-    this.activeTab = 'myReports';
-  }
+  // myReports() {
+  //   this.activeTab = 'myReports';
+  // }
 
-  sharedReports() {
-    this.activeTab = 'sharedReports';
-  }
+  // sharedReports() {
+  //   this.activeTab = 'sharedReports';
+  // }
 
 
 /**
@@ -143,10 +143,8 @@ export class CountryComponent implements OnInit {
  * @param {string} selectedMonth - A string representing the selected month.
  */
   updateDays(selectedMonth: string) {
-    console.log('Selected month is', selectedMonth);
     const selectedMonthDays = this.daysInMonth[selectedMonth];
     this.days = Array.from({ length: selectedMonthDays }, (_, i) => i + 1);
-    console.log('This month has', this.days);
   }
 
 
@@ -210,7 +208,6 @@ export class CountryComponent implements OnInit {
         this.createCountryForm.patchValue({
             name: selectedCountry.name,
             shortDescription: selectedCountry.short_description,
-            // Add more fields as needed
         });
     }
   }

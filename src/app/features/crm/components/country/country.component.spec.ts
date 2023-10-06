@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
+import { TableModule } from 'primeng/table';
 
 import { CountryComponent } from './country.component';
 import { CountryService } from '../../../../shared/services/setups/country/country.service';
@@ -11,6 +12,7 @@ import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fi
 import { CountryDto } from '../../../../shared/data/common/countryDto';
 import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { MandatoryFieldsDTO } from '../../../../shared/data/common/mandatory-fields-dto';
+import { SharedModule } from '../../../../shared/shared.module';
 
 const mockCountryData: CountryDto[] = [{
   id: 0,
@@ -67,7 +69,9 @@ describe('CountryComponent', () => {
       declarations: [CountryComponent],
       imports: [
         RouterTestingModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        TableModule,
+        SharedModule
       ],
       providers: [
         { provide: CountryService, useClass: MockCountryService },
@@ -104,12 +108,12 @@ describe('CountryComponent', () => {
   });
 
   test('should update days when selectedMonth changes', () => {
-    component.selectedMonth = '01';
-    component.updateDays();
+    const selectedMonth = '01';
+    component.updateDays(selectedMonth);
     expect(component.days.length).toBe(31);
   });
 
-  it('should update form controls based on mandatory fields', fakeAsync(() => {
+  test('should update form controls based on mandatory fields', fakeAsync(() => {
     const mandatoryFieldsResponse = [
       { frontedId: 'country', visibleStatus: 'Y', mandatoryStatus: 'Y' },
       { frontedId: 'name', visibleStatus: 'Y', mandatoryStatus: 'N' },

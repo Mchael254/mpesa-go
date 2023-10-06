@@ -36,24 +36,29 @@
             <div class="card mb-3">
                 <div class="card-header bg-transparent float-start">
                     <span class="float-start mt-3">Country Information</span>
+                    <div class="float-end mt-3">
+                        <span class="icon-circle"><i class="fa-solid fa-plus"></i></span>
+                        <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                        <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 mb-4">
                             <div class="mb-4">
                                 <label for="shortDescription" class="form-label">Short Description</label>
                                 <input type="text" class="form-control" id="shortDescription" aria-describedby="shortDescription"
                                     placeholder="Short Description" formControlName="shortDescription">
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 mb-4">
                             <div class="mb-4">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="name" aria-describedby="name" placeholder="Name"
                                     formControlName="name">
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 mb-4">
                             <div class="mb-4">
                                 <label for="baseCurrency" class="form-label">Base Currency</label>
                                 <select id="baseCurrency" class="form-select mb-1" formControlName="baseCurrency" required>
@@ -63,7 +68,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 mb-4">
                             <div class="mb-4">
                                 <label for="nationality" class="form-label">Nationality</label>
                                 <input type="text" class="form-control" id="nationality" aria-describedby="nationality"
@@ -77,7 +82,7 @@
                                     placeholder="Base Code" formControlName="baseCode">
                             </div>
                         </div> -->
-                        <div class="col-sm-4">
+                        <div class="col-sm-4 mb-4">
                             <div class="mb-4">
                                 <label for="zipCode" class="form-label">Zip Code</label>
                                 <input type="text" class="form-control" id="zipCode" aria-describedby="zipCode"
@@ -85,7 +90,7 @@
                             </div>
                         </div>
                         <ng-container *ngIf="visibleStatus.administrativeUnit === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-4">
                                     <label for="administrativeUnit" class="form-label">Administrative Unit</label>
                                     <select id="administrativeUnit" class="form-select mb-1" formControlName="administrativeUnit">
@@ -95,7 +100,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.subadminstrativeUnit === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-4">
                                     <label for="subadminstrativeUnit" class="form-label">Sub-administrative Units</label>
                                     <select id="subadminstrativeUnit" class="form-select mb-1"
@@ -106,7 +111,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.unSactionWEF === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="unSactionWEF">UN Sanctioned WEF</label>
                                     <input type="text" class="form-control" name="unSactionWEF" placeholder="Un Sanction WEF"
@@ -116,7 +121,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.unSactionWEF === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="unSactionWEF">UN Sanctioned WEF</label>
                                     <input type="text" class="form-control" name="unSactionWEF" placeholder="Un Sanction WEF"
@@ -126,7 +131,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.unSactionWET === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="unSactionWET">UN Sanctioned WET</label>
                                     <input type="text" class="form-control" name="unSactionWET" placeholder="Un Sanction WET"
@@ -136,7 +141,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.riskLevelStatusWEF === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="riskLevelStatusWEF">Risk Level Status WEF</label>
                                     <input type="text" class="form-control" name="riskLevelStatusWEF"
@@ -146,7 +151,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.riskLevelStatusWET === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="riskLevelStatusWET">Risk Level Status WET</label>
                                     <input type="text" class="form-control" name="riskLevelStatusWET"
@@ -156,7 +161,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.drugTrafficWEF === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="drugTrafficWEF">Drug Traffic Nation WEF</label>
                                     <input type="text" class="form-control" name="drugTrafficWEF"
@@ -166,7 +171,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.drugTrafficWET === 'Y'">
-                            <div class="col-sm-4">
+                            <div class="col-sm-4 mb-4">
                                 <div class="mb-3">
                                     <label for="drugTrafficWET">Drug Traffic Nation WET</label>
                                     <input type="text" class="form-control" name="drugTrafficWET"
@@ -335,7 +340,7 @@
                             </p-table>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <!-- <div class="col-6">
                         <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'myReports'}" (click)="myReports()">
                             Localities
                         </button>
@@ -389,7 +394,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="card mb-3">
