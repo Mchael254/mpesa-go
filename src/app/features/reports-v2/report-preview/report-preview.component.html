@@ -50,13 +50,28 @@
           </div>
 
           <div class="text-center">
-            <button class="btn btn-primary mt-3 continueBtn">Save</button>
+            <button
+              class="btn btn-outline-primary mt-3 continueBtn float-start"
+              (click)="backToCreateReport()"
+              id="backBtn"
+            >Go Back
+            </button>
+            <button
+              class="btn btn-primary mt-3 continueBtn float-end"
+              data-bs-toggle="modal"
+              data-bs-target="#saveReportModal"
+            >Save
+            </button>
           </div>
 
         </div>
 
         <div class="col-sm-9 text-center">
-          <input type="text" class="border-0 border-bottom text-center bg-transparent" placeholder="Pilot report" disabled>
+          <input
+            type="text"
+            class="border-0 border-bottom text-center bg-transparent"
+            [value]="reportNameRec"
+            disabled>
 
           <form>
             <div class="row">
@@ -98,7 +113,7 @@
             <ng-template #showChart>
               <div
                 *ngIf="isPreviewResultAvailable"
-                style="max-height: 600px"
+                style="max-height: 800px"
                 class="py-2"
               >
                 <app-dynamic-chart
@@ -157,11 +172,12 @@
               <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
             </div>
             <div class="col p-1">
-              <button
+              <a
                 class="btn btn-outline-primary mt-4 btn-full-width"
                 (click)="addFilter()"
+                id="addFilterBtn"
               >Add
-              </button>
+              </a>
             </div>
           </div>
         </form>
@@ -179,6 +195,66 @@
 
         <div class="text-center mt-5">
           <button type="button" class="btn btn-primary">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Save Report Modal -->
+<div class="modal fade" id="saveReportModal" tabindex="-1" aria-labelledby="saveReportModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+
+        <form [formGroup]="saveReportForm">
+          <div class="row g-3">
+            <div class="col">
+              <label for="report" class="form-label">Report</label>
+              <input formControlName="reportName" type="text" id="report" class="form-control" aria-label="Value">
+            </div>
+            <div class="col">
+              <label for="dashboard" class="form-label">Dashboard</label>
+              <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
+                <option>
+                  sample dashboard
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <p class="form-label">Pick a destination for your report</p>
+            <div class="col-md-4">
+              <input
+                formControlName="destination"
+                class="form-check-input me-2"
+                type="radio"
+                value="M"
+                id="my-reports"
+              >
+              <label class="text-dark" for="my-reports">
+                My reports
+              </label>
+            </div>
+            <div class="col-md-4">
+              <input
+                formControlName="destination"
+                class="form-check-input me-2"
+                type="radio"
+                value="S"
+                id="shared-reports"
+              >
+              <label class="text-dark" for="shared-reports">
+                Shared reports
+              </label>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center mt-5">
+          <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">Complete</button>
         </div>
       </div>
     </div>

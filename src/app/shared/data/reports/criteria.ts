@@ -7,4 +7,5 @@ export interface Criteria {
   query?: string,
   queryName?: string,
   filter?: string,
+  sort?: string,
 }

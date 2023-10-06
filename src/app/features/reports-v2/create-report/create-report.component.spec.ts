@@ -18,6 +18,7 @@ import {createSpyObj} from "jest-createspyobj";
 import {DynamicBreadcrumbComponent} from "../../../shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component";
 import {DropdownModule} from "primeng/dropdown";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 
 export class MockAppConfigService {
   get config() {
@@ -92,6 +93,7 @@ describe('CreateReportComponent', () => {
         { provide: ActivatedRoute, useClass: MockActivatedRoute},
         { provide: ReportService, useValue: reportServiceStub },
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(CreateReportComponent);
     component = fixture.componentInstance;
