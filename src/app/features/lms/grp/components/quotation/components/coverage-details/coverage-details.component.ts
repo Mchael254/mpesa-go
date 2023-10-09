@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Logger } from 'src/app/shared/services';
 
+
+const log = new Logger('CoverageDetailsComponent');
 @Component({
   selector: 'app-coverage-details',
   templateUrl: './coverage-details.component.html',
@@ -9,7 +12,8 @@ import { Router } from '@angular/router';
 })
 export class CoverageDetailsComponent implements OnInit, OnDestroy {
 
-  public searchFormMemberDets: FormGroup;
+searchFormMemberDets: FormGroup;
+detailedCovDetsForm: FormGroup;
   constructor (
     private fb: FormBuilder,
     private router: Router
@@ -83,9 +87,11 @@ export class CoverageDetailsComponent implements OnInit, OnDestroy {
       {label: ' Detailed', value: 'detailed'},
       {label: ' Aggregate', value: 'aggregate'},
     ];
+   public yourData: any[] = [];
 
 ngOnInit(): void {
   this.searchFormMember();
+  this.detailedCoverDetails();
   
 }
 
@@ -103,7 +109,8 @@ searchFormMember() {
   })
 
 }
-  detailedCovDetsForm = this.fb.group({
+detailedCoverDetails(){
+  this.detailedCovDetsForm = this.fb.group({
     detailedCoverType: [""],
     overridePremiums: [""],
     detailedPercentageMainYr: [""],
@@ -112,6 +119,8 @@ searchFormMember() {
     premiumMask: [""],
     rateDivFactor: [""],
   });
+}
+  
 
   aggregateForm = this.fb.group({
     aggregateCoverType: [""],
@@ -222,7 +231,7 @@ searchFormMember() {
   }
 
   onProceed () {
-    this.router.navigate(['/quick']);
+    this.router.navigate(['/home/lms/grp/quotation/summary']);
   }
 
 }
