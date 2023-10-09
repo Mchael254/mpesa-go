@@ -8,11 +8,13 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { CoverageDetailsComponent } from './components/coverage-details/coverage-details.component';
 import { TableModule } from 'primeng/table';
+import { SummaryComponent } from './components/summary/summary.component';
 
 @NgModule({
   declarations: [
     QuickComponent,
-    CoverageDetailsComponent
+    CoverageDetailsComponent,
+    SummaryComponent
   ],
   imports: [
     CommonModule,

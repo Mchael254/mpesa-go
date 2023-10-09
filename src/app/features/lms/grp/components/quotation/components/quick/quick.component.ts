@@ -1,16 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Logger } from 'src/app/shared/services';
+import { QuickService } from '../../../../service/quick.service';
+
+
+const log = new Logger ('QuickComponent');
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
   styleUrls: ['./quick.component.css']
 })
 export class QuickComponent implements OnInit, OnDestroy {
-  public quickForm: FormGroup;
+  quickForm: FormGroup;
   constructor (
     private fb: FormBuilder,
     private router: Router,
+    private quickService: QuickService
     ) {}
 
     public clients = [
@@ -84,6 +90,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.quickQuoteForm();
+    log.info("logged logger");
   }
 
   ngOnDestroy(): void {
@@ -102,11 +109,17 @@ export class QuickComponent implements OnInit, OnDestroy {
       currency: [""],
       effectiveDate: [""],
       quotationCalcType: [""],
+      intermediary: [""],
+      commissionRate: [""],
 
     });
   }
 
   onContinue () {
     this.router.navigate(['/home/lms/grp/quotation/coverage']);
+  }
+
+  getProducts() {
+    this
   }
 }
