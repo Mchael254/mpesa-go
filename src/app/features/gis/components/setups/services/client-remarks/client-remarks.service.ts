@@ -11,7 +11,7 @@ export class ClientRemarksService {
   baseurl = this.appConfig.config.contextPath.gis_services;
   crmurl = this.appConfig.config.contextPath.setup_services;
   setupsbaseurl = "setups/api/v1"
-  
+
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService
@@ -21,7 +21,7 @@ export class ClientRemarksService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
     }
 
@@ -45,7 +45,7 @@ return throwError(errorMessage);
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     const params = new HttpParams()
     .set('page', `${page}`)
@@ -55,11 +55,11 @@ return throwError(errorMessage);
     }).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
 
   getClientRemarks(code: any): Observable<ClientRemarks[]>{
-  
+
     return this.http.get<ClientRemarks[]>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -73,24 +73,24 @@ return throwError(errorMessage);
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/accounts/clients`,{
+    return this.http.get<any>(`/${this.crmurl}/clients`,{
       headers:headers,
       params:params
     }).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
 
   getClient(code: any): Observable<Clients[]>{
-  
-    return this.http.get<Clients[]>(`/${this.crmurl}/accounts/clients/${code}`).pipe(
+
+    return this.http.get<Clients[]>(`/${this.crmurl}/clients/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -104,23 +104,23 @@ return throwError(errorMessage);
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/accounts/agents`,{
+    return this.http.get<any>(`/${this.crmurl}/agents`,{
       headers:headers,
       params:params
     }).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
   getAgent(code: any): Observable<Agents[]>{
-  
-    return this.http.get<Agents[]>(`/${this.crmurl}/accounts/clients/${code}`).pipe(
+
+    return this.http.get<Agents[]>(`/${this.crmurl}/clients/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -133,7 +133,7 @@ return throwError(errorMessage);
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
 
     updateRemark(data:ClientRemarks,id:any): Observable<ClientRemarks> {
       console.log(JSON.stringify(data))
@@ -158,18 +158,18 @@ return throwError(errorMessage);
      const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.http.get<any>(`/${this.crmurl}/accounts/agents`,{
+      return this.http.get<any>(`/${this.crmurl}/agents`,{
         headers:headers,
         params:params
       }).pipe(
         retry(1),
         catchError(this.errorHandl)
-      ) 
+      )
     }
 
 }

@@ -85,3 +85,7 @@
   background-image: url('src/assets/svg/gis.svg'); /* Replace with the actual path to your SVG file */
 
 }
+
+.sub-card {
+  margin-right: 1.5rem;
+}

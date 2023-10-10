@@ -25,6 +25,9 @@ export class AppConfigService{
         .pipe(catchError((error: any) => throwError(error)))
         .subscribe(
           (data) => {
+            // console.log('APP CONFIG>>>>>>>>');
+            // console.log(data);
+
             this.appConfig = data;
             resolve();
           },

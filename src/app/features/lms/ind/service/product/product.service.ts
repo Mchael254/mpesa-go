@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/internal/operators/map';
 import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
+
 
   constructor(private api:ApiService) {   }
 
@@ -37,15 +40,21 @@ export class ProductService {
     );
   }
 
-  getListOfProductTermByProductCode(prodCode: number, prodPopCoe: number, dob: Date){
-    // console.log(prodOptionCode);
-
-    return this.api.GET(`ord-prem-terms/product-option/${prodCode}/${prodPopCoe}/${dob}`)
+  getListOfProductTermByProductCode(prodCode: number, prodPopCode: number, age: number){
+    return this.api.GET(`ord-prem-terms/product-option?product_code=${prodCode}&product_option_code=${prodPopCode}&client_age=${age}`)
     .pipe(
       map((_prod_term: any) => {
         return _prod_term;
     }),
-    // catchError((_err) =>  {})
+    );
+  }
+
+  premium_computation(prem_obj: { lead: {}; quote: {}; }): Observable<any> {
+    return this.api.POST('quotations/quick-quote', prem_obj, API_CONFIG.MARKETING_SERVICE_BASE_URL)
+    .pipe(
+      map((_compute: any) => {
+        return _compute;
+    }),
     );
   }
 
