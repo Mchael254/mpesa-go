@@ -36,7 +36,7 @@ export class SortFilterService {
   //     .set('order', `${order}`)
   //     .set('organizationId', 2);
   //
-  //   return this.http.get<Pagination<AgentDTO>>(`/${this.baseUrl}/accounts/agents`,
+  //   return this.http.get<Pagination<AgentDTO>>(`/${this.baseUrl}/agents`,
   //     {
   //       headers: headers,
   //       params: params,
@@ -59,7 +59,7 @@ export class SortFilterService {
   //     .set('order', `${order}`)
   //     .set('organizationId', 2);
   //
-  //   return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`,
+  //   return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`,
   //     {
   //       headers: headers,
   //       params: params,
@@ -106,7 +106,7 @@ export class SortFilterService {
   //     .set('dateCreated', `${sortListFields}`)
   //     .set('order', `${order}`);
   //
-  //   return this.http.get<Pagination<EntityDto>>(`/${this.baseUrl}/accounts/parties/all-parties`,
+  //   return this.http.get<Pagination<EntityDto>>(`/${this.baseUrl}/parties/all-parties`,
   //     {
   //       headers: headers,
   //       params: params,

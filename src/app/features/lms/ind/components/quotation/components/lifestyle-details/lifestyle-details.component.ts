@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import { map } from 'rxjs/internal/operators/map';
+import { CountryDto } from 'src/app/shared/data/common/countryDto';
 
 
 @Component({
@@ -9,7 +13,8 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
   templateUrl: './lifestyle-details.component.html',
   styleUrls: ['./lifestyle-details.component.css']
 })
-export class LifestyleDetailsComponent {
+@AutoUnsubscribe
+export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   steps = stepData
   breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -27,7 +32,8 @@ export class LifestyleDetailsComponent {
   ];
 
   insuranceHistoryForm: FormGroup;
-  constructor(private fb: FormBuilder){
+  countryList: CountryDto[] = [];
+  constructor(private fb: FormBuilder, private country_service:CountryService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       question2: ['N'],
@@ -35,9 +41,25 @@ export class LifestyleDetailsComponent {
       question4: ['N'],
     });
   }
+  ngOnInit(): void {
+    this.getCountryList();
+  }
 
   getValue(name: string = 'sa_prem_select') {
     return this.insuranceHistoryForm.get(name).value;
+  }
+
+  getCountryList() {
+    this.country_service
+      .getCountries()
+      .subscribe((data) => {
+        this.countryList = data;
+      });
+  }
+
+  ngOnDestroy(): void {
+    console.log('LifestyleDetailsComponent UNSUBSCRIBE');
+
   }
 
 }

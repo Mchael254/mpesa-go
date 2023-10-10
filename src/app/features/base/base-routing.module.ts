@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BaseComponent } from './base.component';
+import { AuthGuard } from 'src/app/shared/services/guard/auth-guard.service';
 
 const routes: Routes = [{
   path: '',

@@ -11,6 +11,9 @@
 
   <div class="full-border p-5">
     <div>
+      <div class="d-flex justify-content-between">
+        <div class="fw-bold text-black">Insurance history</div>
+      </div>
       <div class="text-black">
         <div class="col fadeIn">
           <div [formGroup]="insuranceHistoryForm" class="w-100">
@@ -45,157 +48,101 @@
 
               <div>
                 <div class="text-black" *ngIf="getValue('question1') === 'Y'">
-                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                    Beneficiaries and trustees
-                  </div>
-                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
-                    <div>Beneficiary(ies)</div>
-                    <div>
-                      <button
-                        style="padding: 0.6em; width: 5rem;"
-                        type="button"
-                        class="btn btn-primary btn-sm b-r "
-                      >
-                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-                      </button>
+                  <div>
+                    <div class="text-black">
+                      <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                        Beneficiaries and Trustees
+                      </div> -->
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                        <div>
+
+                        </div>
+                        <div>
+                          <div
+                            class="b-r d-flex justify-content-center align-content-center"
+                          >
+                            <i class="fa-solid fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container>
+                        <div class="table-responsive">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr style="font-weight: 400; font-size: 12px">
+                                <th>Policy No.</th>
+                                <th>Insurance Company</th>
+                                <th>Annual Premium</th>
+                                <th>Sum Assured</th>
+                                <th>Status</th>
+                                <th style="width: 2rem"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container
+                                *ngFor="let row of benefricairyList$ | async; let i = index"
+                              >
+                                <tr *ngIf="row['isEdit'] == true">
+                                  <td><input type="text" class="form-control" required /></td>
+                                  <td><input type="text" class="form-control" required /></td>
+                                  <td><input type="text" class="form-control" /></td>
+                                  <td><input type="text" class="form-control" /></td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
+                                    </div>
+                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                      <i class="fa-solid fa-x text-danger"></i>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="row['isEdit'] == false">
+                                  <td>{{ row["first_name"] }}</td>
+                                  <td>{{ row["other_name"] }}</td>
+                                  <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                                  <td>{{ row["percentage_benefit"] }}</td>
+                                  <td>{{ row["age"] }}</td>
+                                  <td>{{ row["type"] }}</td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div class="mx-2">
+                                      <i class="fas fa-edit text-success"></i>
+                                      <!-- Edit Icon -->
+                                    </div>
+                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
+                                      <!-- Remove Icon -->
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
+                          <div *ngIf="editEntity">
+                            <div
+                              style="
+                                left: 50%;
+                                right: 50%;
+                                width: 3rem;
+                                height: 3rem;
+                                position: relative;
+                              "
+                              class="spinner-border text-primary spinner-border"
+                              role="status"
+                            >
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          *ngIf="(benefricairyList$ | async)?.length === 0"
+                          class="d-flex justify-content-center text-danger"
+                        >
+                          No Available Beneficiary!
+                        </div>
+                      </ng-container>
                     </div>
                   </div>
-
-                  <p-table
-                    [value]="products"
-                    dataKey="id"
-                    editMode="row"
-                    responsiveLayout="stack"
-                    [tableStyle]="{ 'min-width': '50rem' }"
-                  >
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th style="width: 20%">Surname</th>
-                        <th style="width: 20%">Other Names</th>
-                        <th style="width: 10%">Gender</th>
-                        <th style="width: 20%">Relationship</th>
-                        <th style="width: 20%">Date of Birth</th>
-                        <th style="width: 20%">Contact</th>
-                        <th style="width: 20%">Benefit Proportion</th>
-                        <th style="width: 20%"></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template
-                      pTemplate="body"
-                      let-product
-                      let-editing="editing"
-                      let-ri="rowIndex"
-                    >
-                      <tr [pEditableRow]="product">
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.code }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" required />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.name }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.inventoryStatus }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <div
-                            class="flex align-items-center justify-content-center gap-2"
-                          >
-                            <button
-                              *ngIf="!editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pInitEditableRow
-                              icon="pi pi-pencil"
-                              (click)="onRowEditInit(product)"
-                              class="p-button-rounded p-button-text"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pSaveEditableRow
-                              icon="pi pi-check"
-                              (click)="onRowEditSave(product)"
-                              class="p-button-rounded p-button-text p-button-success mr-2"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pCancelEditableRow
-                              icon="pi pi-times"
-                              (click)="onRowEditCancel(product, ri)"
-                              class="p-button-rounded p-button-text p-button-danger"
-                            ></button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
                 </div>
               </div>
             </div>
@@ -233,157 +180,102 @@
 
               <div>
                 <div class="text-black" *ngIf="getValue('question2') ==='Y'">
-                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                    Beneficiaries and trustees
-                  </div>
-                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
-                    <div>Beneficiary(ies)</div>
-                    <div>
-                      <button
-                        style="padding: 0.6em; width: 5rem;"
-                        type="button"
-                        class="btn btn-primary btn-sm b-r"
-                      >
-                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-                      </button>
+                  <div>
+                    <div class="text-black">
+                      <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                        Beneficiaries and Trustees
+                      </div> -->
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                        <div>
+
+                        </div>
+                        <div>
+                          <div
+                            class="b-r d-flex justify-content-center align-content-center"
+                          >
+                            <i class="fa-solid fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container>
+                        <div class="table-responsive">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr style="font-weight: 400; font-size: 12px">
+                                <th>Policy No.</th>
+                                <th>Insurance Company</th>
+                                <th>Annual Premium</th>
+                                <th>Sum Assured</th>
+                                <th>Status</th>
+                                <th style="width: 2rem"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container
+                                *ngFor="let row of benefricairyList$ | async; let i = index"
+                              >
+                                <tr *ngIf="row['isEdit'] == true">
+                                  <td><input type="text" class="form-control" required /></td>
+                                  <td><input type="text" class="form-control" required /></td>
+                                  <td><input type="text" class="form-control" /></td>
+                                  <td><input type="text" class="form-control" /></td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
+                                    </div>
+                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                      <i class="fa-solid fa-x text-danger"></i>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="row['isEdit'] == false">
+                                  <td>{{ row["first_name"] }}</td>
+                                  <td>{{ row["other_name"] }}</td>
+                                  <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                                  <td>{{ row["percentage_benefit"] }}</td>
+                                  <td>{{ row["age"] }}</td>
+                                  <td>{{ row["type"] }}</td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div class="mx-2">
+                                      <i class="fas fa-edit text-success"></i>
+                                      <!-- Edit Icon -->
+                                    </div>
+                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
+                                      <!-- Remove Icon -->
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
+                          <div *ngIf="editEntity">
+                            <div
+                              style="
+                                left: 50%;
+                                right: 50%;
+                                width: 3rem;
+                                height: 3rem;
+                                position: relative;
+                              "
+                              class="spinner-border text-primary spinner-border"
+                              role="status"
+                            >
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          *ngIf="(benefricairyList$ | async)?.length === 0"
+                          class="d-flex justify-content-center text-danger"
+                        >
+                          No Available Beneficiary!
+                        </div>
+                      </ng-container>
                     </div>
                   </div>
 
-                  <p-table
-                    [value]="products"
-                    dataKey="id"
-                    editMode="row"
-                    responsiveLayout="stack"
-                    [tableStyle]="{ 'min-width': '50rem' }"
-                  >
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th style="width: 20%">Surname</th>
-                        <th style="width: 20%">Other Names</th>
-                        <th style="width: 10%">Gender</th>
-                        <th style="width: 20%">Relationship</th>
-                        <th style="width: 20%">Date of Birth</th>
-                        <th style="width: 20%">Contact</th>
-                        <th style="width: 20%">Benefit Proportion</th>
-                        <th style="width: 20%"></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template
-                      pTemplate="body"
-                      let-product
-                      let-editing="editing"
-                      let-ri="rowIndex"
-                    >
-                      <tr [pEditableRow]="product">
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.code }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" required />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.name }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.inventoryStatus }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <div
-                            class="flex align-items-center justify-content-center gap-2"
-                          >
-                            <button
-                              *ngIf="!editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pInitEditableRow
-                              icon="pi pi-pencil"
-                              (click)="onRowEditInit(product)"
-                              class="p-button-rounded p-button-text"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pSaveEditableRow
-                              icon="pi pi-check"
-                              (click)="onRowEditSave(product)"
-                              class="p-button-rounded p-button-text p-button-success mr-2"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pCancelEditableRow
-                              icon="pi pi-times"
-                              (click)="onRowEditCancel(product, ri)"
-                              class="p-button-rounded p-button-text p-button-danger"
-                            ></button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
                 </div>
               </div>
             </div>

@@ -1,0 +1,9 @@
+.progress, .progress-stacked {
+  height: 3px !important;
+}
+
+@media screen and (max-width: 767px) {
+  .w-50 {
+    width: 100% !important;
+  }
+}

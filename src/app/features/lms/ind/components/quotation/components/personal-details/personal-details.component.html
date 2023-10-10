@@ -9,10 +9,14 @@
     </div>
   </div>
 
-  <div class="full-border">
-    <div class="d-flex justify-content-end">
+  <div class="full-border" [formGroup]="clientDetailsForm">
+    <div class="d-flex justify-content-between">
+      <div class="fw-bold m-3 text-black">Client Details</div>
       <button
-        style="padding: 0.6em"
+        (click)="_openModal = true"
+        style="margin: 0.1em"
+        data-bs-toggle="modal"
+        data-bs-target="#newClientModal"
         type="button"
         class="btn btn-primary btn-sm"
       >
@@ -21,7 +25,7 @@
     </div>
 
     <div class="text-black p-3">
-      <form [formGroup]="searchForm">
+      <form>
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-12">
             <label for="clientType">Client Type</label>
@@ -30,30 +34,34 @@
               formControlName="clientType"
               [id]="'clientType'"
             >
-              <ng-container
-                *ngFor="let product of [{ code: 1, description: 'E' }]"
-              >
-                <option [value]="product?.code">
-                  {{ product?.description }}
+            <option value="" disabled selected>Select Client Type</option>
+
+              <ng-container *ngFor="let clienType of clientTypeList">
+                <option [value]="clienType?.code">
+                  {{ clienType["clientTypeName"] | titlecase }}
                 </option>
               </ng-container>
             </select>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="IdetifierType">Identifier Type</label>
-            <select
-              class="form-select"
-              formControlName="IdetifierType"
-              [id]="'IdetifierType'"
-            >
-              <ng-container
-                *ngFor="let product of [{ code: 1, description: 'E' }]"
-              >
-                <option [value]="product?.code">
-                  {{ product?.description }}
-                </option>
-              </ng-container>
-            </select>
+            <label for="surname">Last Name</label>
+            <input
+              type="text"
+              placeholder="Elli"
+              class="form-control"
+              formControlName="lastName"
+              [id]="'surname'"
+            />
+          </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <label for="first_name">First Name</label>
+            <input
+              type="text"
+              placeholder="Cruz"
+              class="form-control"
+              formControlName="firstName"
+              [id]="'first_name'"
+            />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
             <label for="citizenship">Citizenship</label>
@@ -62,45 +70,26 @@
               formControlName="citizenship"
               [id]="'citizenship'"
             >
-              <ng-container
-                *ngFor="let product of [{ code: 1, description: 'E' }]"
-              >
-                <option [value]="product?.code">
-                  {{ product?.description }}
+            <option value="" disabled selected>Select Citizenship</option>
+
+              <ng-container *ngFor="let country of countryList">
+                <option [value]="country?.id">
+                  {{ country['nationality'] | titlecase }}
                 </option>
               </ng-container>
             </select>
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="surname">Surname</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="surname"
-              [id]="'surname'"
-            />
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="other_name">Other Name</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="other_name"
-              [id]="'other_name'"
-            />
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
+          <!-- <div class="col-lg-4 col-md-6 col-sm-12">
             <label class="required">Date of Birth</label>
             <div>
               <p-calendar
-                formControlName="date_of_birth"
-                dateFormat="dd/mm/yy"
+                formControlName="dateOfBirth"
                 [showIcon]="true"
                 [showButtonBar]="true"
                 (ngModelChange)="selectDate($event)"
               ></p-calendar>
             </div>
-          </div>
+          </div> -->
           <div class="col-lg-4 col-md-6 col-sm-12">
             <label for="idNumber">ID number</label>
             <input
@@ -111,33 +100,42 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="gender">Gender</label>
-            <select
-              class="form-select"
-              formControlName="gender"
-              [id]="'gender'"
-            >
-              <ng-container
-                *ngFor="let product of [{ code: 1, description: 'E' }]"
-              >
-                <option [value]="product?.code">
-                  {{ product?.description }}
-                </option>
-              </ng-container>
-            </select>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
             <label for="pinNo">Pin Number</label>
             <input
               type="text"
               class="form-control"
-              formControlName="pinNo"
+              formControlName="pinNumber"
               [id]="'pinNo'"
             />
           </div>
+          <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="w-75">
+              <label class="required">Gender</label>
+              <div></div>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="male"
+                  formControlName="gender"
+                  value="M"
+                />
+                <label class="form-check-label" for="male">Male</label>
+              </span>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="female"
+                  formControlName="gender"
+                  value="F"
+                />
+                <label class="form-check-label" for="female">Female</label>
+              </span>
+            </div>
+          </div>
         </div>
       </form>
-
     </div>
 
     <div class="accordion accordion-flush py-5" id="accordionFlushExample">
@@ -163,7 +161,7 @@
           aria-labelledby="flush-headingOne"
           data-bs-parent="#accordionFlushExample"
         >
-          <div class="accordion-body" [formGroup]="contactDetailsForm">
+          <div class="accordion-body">
             <div class="row">
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="clientType">Branch</label>
@@ -172,11 +170,11 @@
                   formControlName="branch"
                   [id]="'clientType'"
                 >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                <option value="" disabled selected>Select Branch</option>
+
+                  <ng-container *ngFor="let branch of branchList">
+                    <option [value]="branch?.id">
+                      {{ branch['name'] | titlecase}}
                     </option>
                   </ng-container>
                 </select>
@@ -188,38 +186,42 @@
                   formControlName="title"
                   [id]="'title'"
                 >
+                <option value="" disabled selected>Select Title</option>
+
                   <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                    *ngFor="let title of clientTitleList$ | async"
                   >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                    <option [value]="title['id']">
+                      {{ title["shortDescription"] | titlecase }}
                     </option>
                   </ng-container>
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="number">Number</label>
+                <label for="number">Country Code</label>
                 <select
                   class="form-select"
                   formControlName="number"
                   [id]="'number'"
                 >
+                <option value="" disabled selected>Select Country Code</option>
+
                   <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                    *ngFor="let country of countryList"
                   >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                    <option [value]="country['id']" *ngIf="country['zipCode'] !==null">
+                      {{country['name'] | titlecase}} (+{{ country['zipCode'] }})
                     </option>
                   </ng-container>
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="telephone">Telephone</label>
+                <label for="phoneNumber">Telephone</label>
                 <input
                   type="text"
                   class="form-control"
-                  formControlName="telephone"
-                  [id]="'telephone'"
+                  formControlName="phoneNumber"
+                  [id]="'phoneNumber'"
                 />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
@@ -227,7 +229,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  formControlName="email"
+                  formControlName="emailAddress"
                   [id]="'email'"
                 />
               </div>
@@ -238,8 +240,9 @@
                   formControlName="p_contact_channel"
                   [id]="'p_contact_channel'"
                 >
+                <option value="" disabled selected>Select Prefered Contact Channel</option>
                   <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
+                    *ngFor="let product of [{ code: 1, description: 'Email' }, { code: 2, description: 'Phone No.' }]"
                   >
                     <option [value]="product?.code">
                       {{ product?.description }}
@@ -263,7 +266,7 @@
                   </ng-container>
                 </select>
               </div> -->
-              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -286,68 +289,78 @@
           aria-labelledby="flush-headingTwo"
           data-bs-parent="#accordionFlushExample"
         >
-          <div class="accordion-body" [formGroup]=" postalAddressForm">
+          <div class="accordion-body">
             <div class="row">
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="po_box">P.O. Box Address</label>
-                <select
-                  class="form-select"
+                <input
+                  type="text"
+                  class="form-control"
                   formControlName="po_box"
                   [id]="'po_box'"
-                >
-                  <ng-container
-                    *ngFor="let country of countryList"
-                  >
-                    <option [value]="country?.id">
-                      {{ country?.name }}
-                    </option>
-                  </ng-container>
-                </select>
+                />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="country">Country</label>
+
                 <select
                   class="form-select"
                   formControlName="country"
                   [id]="'country'"
+                  (change)="selectCountry($event)"
                 >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                <option value="" disabled selected>Select Country</option>
+
+                  <ng-container *ngFor="let country of countryList">
+                    <option [value]="country?.id">
+                      {{ country['name'] | titlecase}}
                     </option>
                   </ng-container>
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="county">County</label>
+                <div
+                  *ngIf="showStateSpinner && stateList.length === 0"
+                  class="spinner-border text-primary spinner-border-resize"
+                  role="status"
+                >
+                  <span class="visually-hidden">Loading...</span>
+                </div>
                 <select
                   class="form-select"
                   formControlName="county"
                   [id]="'county'"
+                  (change)="selectState($event)"
                 >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                <option value="" disabled selected>Select County</option>
+
+                  <ng-container *ngFor="let state of stateList">
+                    <option [value]="state['id']">
+                      {{ state["name"] | titlecase }}
                     </option>
                   </ng-container>
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="town">Town</label>
+                <div
+                  *ngIf="showTownSpinner && townList.length === 0"
+                  class="spinner-border text-primary spinner-border-resize"
+                  role="status"
+                >
+                  <span class="visually-hidden">Loading...</span>
+                </div>
                 <select
                   class="form-select"
                   formControlName="town"
                   [id]="'town'"
                 >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
+                <option value="" disabled selected>Select Town</option>
+
+                  <ng-container *ngFor="let town of townList">
+                    <option [value]="town['id']">
+                      {{ town["name"] | titlecase }}
                     </option>
                   </ng-container>
                 </select>
@@ -361,8 +374,7 @@
                   [id]="'p_address'"
                 />
               </div>
-
-              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -385,8 +397,33 @@
           aria-labelledby="flush-headingThree"
           data-bs-parent="#accordionFlushExample"
         >
-          <div class="accordion-body" [formGroup] = residentialAddressForm>
+          <div class="accordion-body">
             <div class="row">
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <label for="county">County</label>
+                <div
+                  *ngIf="showStateSpinner && stateList.length === 0"
+                  class="spinner-border text-primary spinner-border-resize"
+                  role="status"
+                >
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <select
+                  class="form-select"
+                  formControlName="county"
+                  [id]="'county'"
+                  (change)="selectState($event)"
+                >
+                <option value="" disabled selected>Select County</option>
+
+                  <ng-container *ngFor="let state of stateList">
+                    <option [value]="state['id']">
+                      {{ state["name"] | titlecase }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+              
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="town">Town</label>
                 <select
@@ -394,18 +431,24 @@
                   formControlName="town"
                   [id]="'town'"
                 >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
-                    </option>
-                  </ng-container>
+                <option value="" disabled selected>Select Town</option>
+
+                <ng-container *ngFor="let town of townList">
+                  <option [value]="town['id']">
+                    {{ town["name"] | titlecase }}
+                  </option>
+                </ng-container>
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="road">Road</label>
-                <select
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="road"
+                  [id]="'road'"
+                />
+                <!-- <select
                   class="form-select"
                   formControlName="road"
                   [id]="'road'"
@@ -417,7 +460,7 @@
                       {{ product?.description }}
                     </option>
                   </ng-container>
-                </select>
+                </select> -->
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="house_no">House No</label>
@@ -428,7 +471,7 @@
                   [id]="'house_no'"
                 />
               </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
+              <!-- <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="u_bill">Utility Bill</label>
                 <input
                   type="text"
@@ -445,9 +488,8 @@
                   formControlName="u_u_bill"
                   [id]="'u_u_bill'"
                 />
-              </div>
-
-              </div>
+              </div> -->
+            </div>
           </div>
         </div>
       </div>
@@ -470,8 +512,138 @@
           aria-labelledby="flush-headingFour"
           data-bs-parent="#accordionFlushExample"
         >
-          <div class="accordion-body">
+        <div class="accordion-body">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Bank</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+              <option value="" disabled selected>Select Bank</option>
+                <ng-container *ngFor="let bank of bankList">
+                  <option [value]="bank['id']">
+                    {{ bank['name']  | titlecase}}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Branch</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+              <option value="" disabled selected>Select Branch</option>
+                <ng-container *ngFor="let bankBranch of bankBranchList">
+                  <option [value]="bankBranch['id']">
+                    {{ bankBranch['name'] | titlecase}}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="phoneNumber">Account No</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phoneNumber"
+                [id]="'phoneNumber'"
+              />
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="title">Currency</label>
+              <select
+                class="form-select"
+                formControlName="title"
+                [id]="'title'"
+              >
+              <option value="" disabled selected>Select Currency</option>
+
+                <ng-container
+                  *ngFor="let currency of currencyList "
+                >
+                  <option [value]="currency['id']">
+                    {{ currency["name"] | titlecase }} ({{currency['symbol']}})
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="w-100">
+                <label class="required">With Effect From</label>
+                <div>
+                  <p-calendar formControlName="with_effect_from" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+                    <ng-template pTemplate="header" >
+                      <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
+                    </ng-template>
+
+                  </p-calendar>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="w-100">
+                <label class="required">With Effect To</label>
+                <div>
+                  <p-calendar formControlName="with_effect_to" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+                    <ng-template pTemplate="header" >
+                      <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
+                    </ng-template>
+
+                  </p-calendar>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="phoneNumber">Mpay No.</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phoneNumber"
+                [id]="'phoneNumber'"
+              />
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="phoneNumber">IBAN</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phoneNumber"
+                [id]="'phoneNumber'"
+              />
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="number">Preferred Channel</label>
+              <select
+                class="form-select"
+                formControlName="number"
+                [id]="'number'"
+              >
+                <!-- <ng-container
+                  *ngFor="let product of [{ code: 1, description: 'E' }]"
+                >
+                  <option [value]="product?.code">
+                    {{ product?.description }}
+                  </option>
+                </ng-container> -->
+
+                <option value="" disabled selected>Select Channel</option>
+                    <option value="N">Mobile Money</option>
+                    <option value="N">Bank</option>
+              </select>
+            </div>
+
+
           </div>
+        </div>
         </div>
       </div>
       <div class="accordion-item">
@@ -493,8 +665,103 @@
           aria-labelledby="flush-headingFive"
           data-bs-parent="#accordionFlushExample"
         >
-          <div class="accordion-body">
+        <div class="accordion-body">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Type of Employment</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+                <!-- <ng-container *ngFor="let bank of bankList">
+                  <option [value]="bank['id']">
+                    {{ bank['name'] }}
+                  </option>
+                </ng-container> -->
+
+                <option value="" disabled selected>Select Employment Type</option>
+                      <option value="N">Employed</option>
+                      <option value="N">Self-Employed</option>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Occupation</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+              <option value="" disabled selected>Select Occupation</option>
+
+                <ng-container *ngFor="let occupation of occupationList">
+                  <option [value]="occupation['id']">
+                    {{ occupation['name']  | titlecase}}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Economic Sector</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+              <option value="" disabled selected>Select Economic Sector</option>
+
+                <ng-container *ngFor="let sector of sectorList">
+                  <option [value]="sector['id']">
+                    {{ sector['name'] | titlecase}}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="clientType">Marital Status</label>
+              <select
+                class="form-select"
+                formControlName="branch"
+                [id]="'clientType'"
+              >
+                <!-- <ng-container *ngFor="let bankBranch of bankBranchList">
+                  <option [value]="bankBranch['id']">
+                    {{ bankBranch['name'] }}
+                  </option>
+                </ng-container> -->
+                <option value="" selected disabled>Select Marital Status</option>
+                  <option value="SINGLE">Single</option>
+                  <option value="MARRIED">Married</option>
+                  <option value="SEPERATED">Separated</option>
+                  <option value="WIDOWED">Widowed</option>
+              </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="phoneNumber">Purpose in Insurance</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phoneNumber"
+                [id]="'phoneNumber'"
+              />
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <label for="phoneNumber">Distribution Channel</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="phoneNumber"
+                [id]="'phoneNumber'"
+              />
+            </div>
+
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -502,300 +769,172 @@
     <div>
       <div class="text-black">
         <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-          Beneficiaries and trustees
+          Beneficiaries and Trustees
         </div>
         <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
-          <div>Beneficiary(ies)</div>
+          <div>Beneficiary(ies) / Trustee(s)</div>
           <div>
-            <button
-              type="button"
-              class="btn btn-primary btn-sm b-r"
+            <div
+              (click)="addBeneficary()"
+              class="b-r d-flex justify-content-center align-content-center"
             >
-            <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-            </button>
+              <i class="fa-solid fa-plus"></i>
+            </div>
           </div>
         </div>
-
-        <p-table
-          [value]="products"
-          dataKey="id"
-          editMode="row"
-          responsiveLayout="stack"
-          [tableStyle]="{ 'min-width': '50rem' }"
-        >
-          <ng-template pTemplate="header">
-            <tr style="font-size: 12px;">
-              <th >Surname</th>
-              <th >Other Names</th>
-              <th >Gender</th>
-              <th >Relationship</th>
-              <th >Date of Birth</th>
-              <th >Contact</th>
-              <th >Benefit Proportion</th>
-              <th ></th>
-            </tr>
-          </ng-template>
-          <ng-template
-            pTemplate="body"
-            let-product
-            let-editing="editing"
-            let-ri="rowIndex"
-          >
-            <tr [pEditableRow]="product">
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.code }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" required />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.name }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.inventoryStatus }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <div
-                  class="flex align-items-center justify-content-center gap-2"
+        <ng-container>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr style="font-weight: 400; font-size: 12px">
+                  <th>First Name</th>
+                  <th>Other Name</th>
+                  <th>Date Of Birth</th>
+                  <th>Percentage Benefit</th>
+                  <th>Age</th>
+                  <th>Type</th>
+                  <th style="width: 2rem"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let row of benefricairyList$ | async; let i = index"
                 >
-                  <button
-                    *ngIf="!editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pInitEditableRow
-                    icon="pi pi-pencil"
-                    (click)="onRowEditInit(product)"
-                    class="p-button-rounded p-button-text"
-                  ></button>
-                  <button
-                    *ngIf="editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pSaveEditableRow
-                    icon="pi pi-check"
-                    (click)="onRowEditSave(product)"
-                    class="p-button-rounded p-button-text p-button-success mr-2"
-                  ></button>
-                  <button
-                    *ngIf="editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pCancelEditableRow
-                    icon="pi pi-times"
-                    (click)="onRowEditCancel(product, ri)"
-                    class="p-button-rounded p-button-text p-button-danger"
-                  ></button>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+                  <tr *ngIf="row['isEdit'] == true">
+                    <td><input type="text" class="form-control" required /></td>
+                    <td><input type="text" class="form-control" required /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td class="d-flex justify-content-between py-2">
+                      <div class="mx-2">
+                        <i class="fa-solid fa-check text-success"></i>
+                      </div>
+                      <div (click)="deleteBeneficiary(i)" class="mx-2">
+                        <i class="fa-solid fa-x text-danger"></i>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="row['isEdit'] == false">
+                    <td>{{ row["first_name"] }}</td>
+                    <td>{{ row["other_name"] }}</td>
+                    <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                    <td>{{ row["percentage_benefit"] }}</td>
+                    <td>{{ row["age"] }}</td>
+                    <td>{{ row["type"]==='B'?'Beneficairy':'Trustee' }}</td>
+                    <td class="d-flex justify-content-between py-2">
+                      <div class="mx-2">
+                        <i class="fas fa-edit text-success"></i>
+                        <!-- Edit Icon -->
+                      </div>
+                      <div (click)="deleteBeneficiary(i)" class="mx-2">
+                        <i class="fas fa-trash-alt text-danger"></i>
+                        <!-- Remove Icon -->
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+
+            <div *ngIf="editEntity">
+              <div
+                style="
+                  left: 50%;
+                  right: 50%;
+                  width: 3rem;
+                  height: 3rem;
+                  position: relative;
+                "
+                class="spinner-border text-primary spinner-border"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="(benefricairyList$ | async)?.length === 0"
+            class="d-flex justify-content-center text-danger"
+          >
+            No Available Beneficiary!
+          </div>
+        </ng-container>
       </div>
     </div>
 
-    <div>
+    <!-- <div>
       <div class="text-black">
-        <div class="d-flex justify-content-between" style="padding: 3rem 0 0.4rem 0rem">
+        <div
+          class="d-flex justify-content-between"
+          style="padding: 3rem 0 0.4rem 0rem"
+        >
           <div>Trustee(s)</div>
           <div>
-            <button
-              type="button"
-              class="btn btn-primary btn-sm b-r"
-            >
-            <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-            </button>
+            <div (click)="addTrustee()" class="b-r">
+              <i class="fa-solid fa-plus"></i>
+            </div>
           </div>
         </div>
 
-
-        <p-table
-          [value]="products"
-          dataKey="id"
-          editMode="row"
-          responsiveLayout="stack"
-          [tableStyle]="{ 'min-width': '50rem' }"
-        >
-          <ng-template pTemplate="header">
-            <tr >
-              <th >Surname</th>
-              <th >Other Names</th>
-              <th >Gender</th>
-              <th >Relationship</th>
-              <th >Date of Birth</th>
-              <th >Contact</th>
-              <th ></th>
-            </tr>
-          </ng-template>
-          <ng-template
-            pTemplate="body"
-            let-product
-            let-editing="editing"
-            let-ri="rowIndex"
-          >
-            <tr [pEditableRow]="product">
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.code }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" required />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.name }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.inventoryStatus }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-              <td>
-                <p-cellEditor>
-                  <ng-template pTemplate="input">
-                    <input pInputText type="text" />
-                  </ng-template>
-                  <ng-template pTemplate="output">
-                    {{ product.price | currency : "USD" }}
-                  </ng-template>
-                </p-cellEditor>
-              </td>
-
-              <td>
-                <div
-                  class="flex align-items-center justify-content-center gap-2"
+        <ng-container>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr style="font-weight: 400; font-size: 12px">
+                  <th>Full Name</th>
+                  <th>Address</th>
+                  <th>Date Of Birth</th>
+                  <th>Percentage Benefit</th>
+                  <th>Age</th>
+                  <th style="width: 2rem"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container
+                  *ngFor="let row of trusteeList$ | async; let i = index"
                 >
-                  <button
-                    *ngIf="!editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pInitEditableRow
-                    icon="pi pi-pencil"
-                    (click)="onRowEditInit(product)"
-                    class="p-button-rounded p-button-text"
-                  ></button>
-                  <button
-                    *ngIf="editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pSaveEditableRow
-                    icon="pi pi-check"
-                    (click)="onRowEditSave(product)"
-                    class="p-button-rounded p-button-text p-button-success mr-2"
-                  ></button>
-                  <button
-                    *ngIf="editing"
-                    pButton
-                    pRipple
-                    type="button"
-                    pCancelEditableRow
-                    icon="pi pi-times"
-                    (click)="onRowEditCancel(product, ri)"
-                    class="p-button-rounded p-button-text p-button-danger"
-                  ></button>
-                </div>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+                  <tr *ngIf="false">
+                    <td><input type="text" class="form-control" required /></td>
+                    <td><input type="text" class="form-control" required /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td>
+                      <span type="button" class="btn btn-success">
+                        <i class="fas fa-edit"></i>
+                      </span>
+                      <span type="button" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="true">
+                    <td>{{ row["full_name"] }}</td>
+                    <td>{{ row["address"] }}</td>
+                    <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                    <td>{{ row["percentage_benefit"] }}</td>
+                    <td>{{ row["age"] }}</td>
+                    <td class="d-flex justify-content-end">
+                      <button type="button" class="btn btn-success">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button
+                        (click)="deleteTrustee(i)"
+                        type="button"
+                        class="btn btn-danger"
+                      >
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
       </div>
-    </div>
+    </div> -->
 
     <div>
       <div class="text-black">
@@ -804,26 +943,417 @@
         </div>
 
         <div class="row mb-2">
-          <div class="col-4">
+          <div class="col-lg-4 col-md-5 col-sm-12">
             <p-dropdown
-            [options]="uploadList"
-            formControlName="selectedUploadItem"
-            placeholder="Select Item"
-            [style]="{'width':'100%', 'height':'2.5rem', 'border-radius': '0', 'border': '1px solid #7272716b', 'font-size': '14px'}"
-            [group]="true">
-            <ng-template let-group pTemplate="group" style="font-size: 14px; font-weight: 600; color: black;">
+              [options]="identifierTypeList"
+              formControlName="selectedUploadItem"
+              placeholder="Select Item"
+              [style]="{
+                width: '100%',
+                height: '2.5rem',
+                'border-radius': '0',
+                border: '1px solid #7272716b',
+                'font-size': '14px'
+              }"
+              [group]="true"
+            >
+              <ng-template
+                let-group
+                pTemplate="group"
+                style="font-size: 14px; font-weight: 600; color: black"
+              >
                 <div class="p-d-flex p-ai-center">
-                    <span style="text-transform: uppercase; font-size: 13px;">{{ group.label }}</span>
+                  <span style="text-transform: lowercase; font-size: 13px">{{
+                    group.name.replaceAll("_", " ")
+                  }}</span>
                 </div>
-            </ng-template>
-        </p-dropdown>
+              </ng-template>
+            </p-dropdown>
           </div>
-          <div class="col-12 mt-2">
-            List of Uploads
+          <div class="col-md-6 col-sm-12 justify-md mb-3">
+            <div class="d-grid gap-2 mt-2">
+              <button
+                type="button"
+                class="btn btn-primary"
+                style="
+                  background-color: white;
+                  color: var(--primary-color);
+                  border: 2px solid var(--primary-color);
+                  width: 5rem;
+                "
+              >
+                Choose file
+              </button>
+            </div>
+          </div>
+          <div class="col-12 my-1">List of Uploads</div>
+          <div>
+            <div class="doc-file-notif"><span>{{'Passport Identification'}}</span>
+            <span> {{'80%'}}</span></div>
+            <div class="d-flex">
+
+              <div class="mr-4">
+                <svg
+                  *ngIf="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="37"
+                  height="37"
+                  viewBox="0 0 32 32"
+                >
+                  <path
+                    fill="#909090"
+                    d="m24.1 2.072l5.564 5.8v22.056H8.879V30h20.856V7.945L24.1 2.072"
+                  />
+                  <path
+                    fill="#f4f4f4"
+                    d="M24.031 2H8.808v27.928h20.856V7.873L24.03 2"
+                  />
+                  <path
+                    fill="#7a7b7c"
+                    d="M8.655 3.5h-6.39v6.827h20.1V3.5H8.655"
+                  />
+                  <path
+                    fill="#dd2025"
+                    d="M22.472 10.211H2.395V3.379h20.077v6.832"
+                  />
+                  <path
+                    fill="#464648"
+                    d="M9.052 4.534H7.745v4.8h1.028V7.715L9 7.728a2.042 2.042 0 0 0 .647-.117a1.427 1.427 0 0 0 .493-.291a1.224 1.224 0 0 0 .335-.454a2.13 2.13 0 0 0 .105-.908a2.237 2.237 0 0 0-.114-.644a1.173 1.173 0 0 0-.687-.65a2.149 2.149 0 0 0-.409-.104a2.232 2.232 0 0 0-.319-.026m-.189 2.294h-.089v-1.48h.193a.57.57 0 0 1 .459.181a.92.92 0 0 1 .183.558c0 .246 0 .469-.222.626a.942.942 0 0 1-.524.114m3.671-2.306c-.111 0-.219.008-.295.011L12 4.538h-.78v4.8h.918a2.677 2.677 0 0 0 1.028-.175a1.71 1.71 0 0 0 .68-.491a1.939 1.939 0 0 0 .373-.749a3.728 3.728 0 0 0 .114-.949a4.416 4.416 0 0 0-.087-1.127a1.777 1.777 0 0 0-.4-.733a1.63 1.63 0 0 0-.535-.4a2.413 2.413 0 0 0-.549-.178a1.282 1.282 0 0 0-.228-.017m-.182 3.937h-.1V5.392h.013a1.062 1.062 0 0 1 .6.107a1.2 1.2 0 0 1 .324.4a1.3 1.3 0 0 1 .142.526c.009.22 0 .4 0 .549a2.926 2.926 0 0 1-.033.513a1.756 1.756 0 0 1-.169.5a1.13 1.13 0 0 1-.363.36a.673.673 0 0 1-.416.106m5.08-3.915H15v4.8h1.028V7.434h1.3v-.892h-1.3V5.43h1.4v-.892"
+                  />
+                  <path
+                    fill="#dd2025"
+                    d="M21.781 20.255s3.188-.578 3.188.511s-1.975.646-3.188-.511Zm-2.357.083a7.543 7.543 0 0 0-1.473.489l.4-.9c.4-.9.815-2.127.815-2.127a14.216 14.216 0 0 0 1.658 2.252a13.033 13.033 0 0 0-1.4.288Zm-1.262-6.5c0-.949.307-1.208.546-1.208s.508.115.517.939a10.787 10.787 0 0 1-.517 2.434a4.426 4.426 0 0 1-.547-2.162Zm-4.649 10.516c-.978-.585 2.051-2.386 2.6-2.444c-.003.001-1.576 3.056-2.6 2.444ZM25.9 20.895c-.01-.1-.1-1.207-2.07-1.16a14.228 14.228 0 0 0-2.453.173a12.542 12.542 0 0 1-2.012-2.655a11.76 11.76 0 0 0 .623-3.1c-.029-1.2-.316-1.888-1.236-1.878s-1.054.815-.933 2.013a9.309 9.309 0 0 0 .665 2.338s-.425 1.323-.987 2.639s-.946 2.006-.946 2.006a9.622 9.622 0 0 0-2.725 1.4c-.824.767-1.159 1.356-.725 1.945c.374.508 1.683.623 2.853-.91a22.549 22.549 0 0 0 1.7-2.492s1.784-.489 2.339-.623s1.226-.24 1.226-.24s1.629 1.639 3.2 1.581s1.495-.939 1.485-1.035"
+                  />
+                  <path
+                    fill="#909090"
+                    d="M23.954 2.077V7.95h5.633l-5.633-5.873Z"
+                  />
+                  <path fill="#f4f4f4" d="M24.031 2v5.873h5.633L24.031 2Z" />
+                  <path
+                    fill="#fff"
+                    d="M8.975 4.457H7.668v4.8H8.7V7.639l.228.013a2.042 2.042 0 0 0 .647-.117a1.428 1.428 0 0 0 .493-.291a1.224 1.224 0 0 0 .332-.454a2.13 2.13 0 0 0 .105-.908a2.237 2.237 0 0 0-.114-.644a1.173 1.173 0 0 0-.687-.65a2.149 2.149 0 0 0-.411-.105a2.232 2.232 0 0 0-.319-.026m-.189 2.294h-.089v-1.48h.194a.57.57 0 0 1 .459.181a.92.92 0 0 1 .183.558c0 .246 0 .469-.222.626a.942.942 0 0 1-.524.114m3.67-2.306c-.111 0-.219.008-.295.011l-.235.006h-.78v4.8h.918a2.677 2.677 0 0 0 1.028-.175a1.71 1.71 0 0 0 .68-.491a1.939 1.939 0 0 0 .373-.749a3.728 3.728 0 0 0 .114-.949a4.416 4.416 0 0 0-.087-1.127a1.777 1.777 0 0 0-.4-.733a1.63 1.63 0 0 0-.535-.4a2.413 2.413 0 0 0-.549-.178a1.282 1.282 0 0 0-.228-.017m-.182 3.937h-.1V5.315h.013a1.062 1.062 0 0 1 .6.107a1.2 1.2 0 0 1 .324.4a1.3 1.3 0 0 1 .142.526c.009.22 0 .4 0 .549a2.926 2.926 0 0 1-.033.513a1.756 1.756 0 0 1-.169.5a1.13 1.13 0 0 1-.363.36a.673.673 0 0 1-.416.106m5.077-3.915h-2.43v4.8h1.028V7.357h1.3v-.892h-1.3V5.353h1.4v-.892"
+                  />
+                </svg>
+                <svg
+                  *ngIf="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="37"
+                  height="37"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#b30000"
+                    d="M8.267 14.68c-.184 0-.308.018-.372.036v1.178c.076.018.171.023.302.023c.479 0 .774-.242.774-.651c0-.366-.254-.586-.704-.586zm3.487.012c-.2 0-.33.018-.407.036v2.61c.077.018.201.018.313.018c.817.006 1.349-.444 1.349-1.396c.006-.83-.479-1.268-1.255-1.268z"
+                  />
+                  <path
+                    fill="#b30000"
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM9.498 16.19c-.309.29-.765.42-1.296.42a2.23 2.23 0 0 1-.308-.018v1.426H7v-3.936A7.558 7.558 0 0 1 8.219 14c.557 0 .953.106 1.22.319c.254.202.426.533.426.923c-.001.392-.131.723-.367.948zm3.807 1.355c-.42.349-1.059.515-1.84.515c-.468 0-.799-.03-1.024-.06v-3.917A7.947 7.947 0 0 1 11.66 14c.757 0 1.249.136 1.633.426c.415.308.675.799.675 1.504c0 .763-.279 1.29-.663 1.615zM17 14.77h-1.532v.911H16.9v.734h-1.432v1.604h-.906V14.03H17v.74zM14 9h-1V4l5 5h-4z"
+                  />
+                </svg>
+                <svg
+                  *ngIf="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="37"
+                  height="37"
+                  viewBox="0 0 32 32"
+                >
+                  <defs>
+                    <linearGradient
+                      id="vscodeIconsFileTypeExcel0"
+                      x1="4.494"
+                      x2="13.832"
+                      y1="-2092.086"
+                      y2="-2075.914"
+                      gradientTransform="translate(0 2100)"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop offset="0" stop-color="#18884f" />
+                      <stop offset=".5" stop-color="#117e43" />
+                      <stop offset="1" stop-color="#0b6631" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    fill="#185c37"
+                    d="M19.581 15.35L8.512 13.4v14.409A1.192 1.192 0 0 0 9.705 29h19.1A1.192 1.192 0 0 0 30 27.809V22.5Z"
+                  />
+                  <path
+                    fill="#21a366"
+                    d="M19.581 3H9.705a1.192 1.192 0 0 0-1.193 1.191V9.5L19.581 16l5.861 1.95L30 16V9.5Z"
+                  />
+                  <path fill="#107c41" d="M8.512 9.5h11.069V16H8.512Z" />
+                  <path
+                    d="M16.434 8.2H8.512v16.25h7.922a1.2 1.2 0 0 0 1.194-1.191V9.391A1.2 1.2 0 0 0 16.434 8.2Z"
+                    opacity=".1"
+                  />
+                  <path
+                    d="M15.783 8.85H8.512V25.1h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                    opacity=".2"
+                  />
+                  <path
+                    d="M15.783 8.85H8.512V23.8h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                    opacity=".2"
+                  />
+                  <path
+                    d="M15.132 8.85h-6.62V23.8h6.62a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                    opacity=".2"
+                  />
+                  <path
+                    fill="url(#vscodeIconsFileTypeExcel0)"
+                    d="M3.194 8.85h11.938a1.193 1.193 0 0 1 1.194 1.191v11.918a1.193 1.193 0 0 1-1.194 1.191H3.194A1.192 1.192 0 0 1 2 21.959V10.041A1.192 1.192 0 0 1 3.194 8.85Z"
+                  />
+                  <path
+                    fill="#fff"
+                    d="m5.7 19.873l2.511-3.884l-2.3-3.862h1.847L9.013 14.6c.116.234.2.408.238.524h.017c.082-.188.169-.369.26-.546l1.342-2.447h1.7l-2.359 3.84l2.419 3.905h-1.809l-1.45-2.711A2.355 2.355 0 0 1 9.2 16.8h-.024a1.688 1.688 0 0 1-.168.351l-1.493 2.722Z"
+                  />
+                  <path
+                    fill="#33c481"
+                    d="M28.806 3h-9.225v6.5H30V4.191A1.192 1.192 0 0 0 28.806 3Z"
+                  />
+                  <path fill="#107c41" d="M19.581 16H30v6.5H19.581Z" />
+                </svg>
+                <svg
+                  *ngIf="false"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="37"
+                  height="37"
+                  viewBox="0 0 512 512"
+                >
+                  <path
+                    fill="#DCE2E2"
+                    d="M433.694 507.594H78.306c-11.929 0-21.6-9.671-21.6-21.6V25.317c0-11.929 9.671-21.6 21.6-21.6h263.026l113.961 112.739v369.538c.001 11.929-9.67 21.6-21.599 21.6z"
+                  />
+                  <path
+                    fill="#76DFFF"
+                    d="M392.707 88.142c-9.747-7.003-16.817-16.869-19.984-28.055H113.929c-8.482 0-15.359 6.876-15.359 15.359v373.021c0 8.482 6.876 15.359 15.359 15.359h281.916c8.482 0 15.359-6.876 15.359-15.359V97c-6.627-1.858-12.942-4.867-18.497-8.858z"
+                  />
+                  <path
+                    fill="#BCBBBB"
+                    d="m363.12 341.196l-79.556-106.209c-2.914-3.888-8.745-3.925-11.66-.037L219.9 304.31l-18.32-20.191c-2.891-3.185-7.898-3.19-10.789-.005l-51.207 56.557c-4.25 4.681-.928 12.329 5.395 12.329H357.29c6.003 0 9.431-7.001 5.83-11.804z"
+                  />
+                  <path
+                    fill="#009E83"
+                    d="M402.791 463.825H106.983a8.412 8.412 0 0 1-8.412-8.412V342.7h312.633v112.712a8.413 8.413 0 0 1-8.413 8.413z"
+                  />
+                  <circle cx="333.688" cy="177.181" r="21.411" fill="#FFB636" />
+                  <path
+                    fill="#FFF"
+                    d="M363.907 296.044c2.482-1.749 5.764-2.438 9.189-1.411c4.32 1.296 7.185 5.404 7.185 9.914a.076.076 0 0 1-.076.076H279.981c-2.236 0-3.89-2.125-3.299-4.282c1.877-6.851 8.147-11.885 15.594-11.885c0-7.937 6.434-14.37 14.37-14.37s14.37 6.434 14.37 14.37c0-12.705 10.694-22.911 23.571-22.11c10.63.661 19.446 9.031 20.601 19.619c.398 3.653-.092 7.151-1.282 10.307v-.228zM170.109 168.602c-2.482-1.749-5.764-2.438-9.189-1.411c-4.32 1.296-7.185 5.404-7.185 9.914c0 .042.034.076.076.076h100.223c2.236 0 3.89-2.125 3.299-4.282c-1.877-6.851-8.147-11.885-15.594-11.885c0-7.937-6.434-14.37-14.37-14.37c-7.937 0-14.37 6.434-14.37 14.37c0-12.705-10.694-22.911-23.571-22.11c-10.63.661-19.446 9.031-20.601 19.619c-.398 3.653.092 7.151 1.282 10.307v-.228z"
+                  />
+                  <path
+                    fill="#B9C5C6"
+                    d="m341.333 3.717l112.739 112.739h-88.776c-13.235 0-23.963-10.729-23.963-23.963V3.717z"
+                  />
+                </svg>
+
+              </div>
+
+              <div class="col-lg-4 col-md-6 col-sm-10 mt-3 mx-2">
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Example 1px high"
+                  aria-valuenow="25"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="height: 3px; color: green"
+                >
+                  <div
+                    class="progress-bar"
+                    style="width: 90%; background-color: green"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="col-2 mt-1 mx-2">
+
+                <i class="fas fa-trash-alt text-danger"></i>
+              </div>
+            </div>
+
+          </div>
+
+
+          <div>
+            <div class="doc-file-notif"><span>{{'Medical History Bill'}}</span>
+            <span> {{'40%'}}</span></div>
+          <div class="d-flex">
+            <div class="mr-4">
+              <svg
+                *ngIf="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="37"
+                height="37"
+                viewBox="0 0 32 32"
+              >
+                <defs>
+                  <linearGradient
+                    id="vscodeIconsFileTypeExcel0"
+                    x1="4.494"
+                    x2="13.832"
+                    y1="-2092.086"
+                    y2="-2075.914"
+                    gradientTransform="translate(0 2100)"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0" stop-color="#18884f" />
+                    <stop offset=".5" stop-color="#117e43" />
+                    <stop offset="1" stop-color="#0b6631" />
+                  </linearGradient>
+                </defs>
+                <path
+                  fill="#185c37"
+                  d="M19.581 15.35L8.512 13.4v14.409A1.192 1.192 0 0 0 9.705 29h19.1A1.192 1.192 0 0 0 30 27.809V22.5Z"
+                />
+                <path
+                  fill="#21a366"
+                  d="M19.581 3H9.705a1.192 1.192 0 0 0-1.193 1.191V9.5L19.581 16l5.861 1.95L30 16V9.5Z"
+                />
+                <path fill="#107c41" d="M8.512 9.5h11.069V16H8.512Z" />
+                <path
+                  d="M16.434 8.2H8.512v16.25h7.922a1.2 1.2 0 0 0 1.194-1.191V9.391A1.2 1.2 0 0 0 16.434 8.2Z"
+                  opacity=".1"
+                />
+                <path
+                  d="M15.783 8.85H8.512V25.1h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  d="M15.783 8.85H8.512V23.8h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  d="M15.132 8.85h-6.62V23.8h6.62a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  fill="url(#vscodeIconsFileTypeExcel0)"
+                  d="M3.194 8.85h11.938a1.193 1.193 0 0 1 1.194 1.191v11.918a1.193 1.193 0 0 1-1.194 1.191H3.194A1.192 1.192 0 0 1 2 21.959V10.041A1.192 1.192 0 0 1 3.194 8.85Z"
+                />
+                <path
+                  fill="#fff"
+                  d="m5.7 19.873l2.511-3.884l-2.3-3.862h1.847L9.013 14.6c.116.234.2.408.238.524h.017c.082-.188.169-.369.26-.546l1.342-2.447h1.7l-2.359 3.84l2.419 3.905h-1.809l-1.45-2.711A2.355 2.355 0 0 1 9.2 16.8h-.024a1.688 1.688 0 0 1-.168.351l-1.493 2.722Z"
+                />
+                <path
+                  fill="#33c481"
+                  d="M28.806 3h-9.225v6.5H30V4.191A1.192 1.192 0 0 0 28.806 3Z"
+                />
+                <path fill="#107c41" d="M19.581 16H30v6.5H19.581Z" />
+              </svg>
+
+              <svg
+                *ngIf="false"
+                xmlns="http://www.w3.org/2000/svg"
+                width="37"
+                height="37"
+                viewBox="0 0 32 32"
+              >
+                <defs>
+                  <linearGradient
+                    id="vscodeIconsFileTypeExcel0"
+                    x1="4.494"
+                    x2="13.832"
+                    y1="-2092.086"
+                    y2="-2075.914"
+                    gradientTransform="translate(0 2100)"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0" stop-color="#18884f" />
+                    <stop offset=".5" stop-color="#117e43" />
+                    <stop offset="1" stop-color="#0b6631" />
+                  </linearGradient>
+                </defs>
+                <path
+                  fill="#185c37"
+                  d="M19.581 15.35L8.512 13.4v14.409A1.192 1.192 0 0 0 9.705 29h19.1A1.192 1.192 0 0 0 30 27.809V22.5Z"
+                />
+                <path
+                  fill="#21a366"
+                  d="M19.581 3H9.705a1.192 1.192 0 0 0-1.193 1.191V9.5L19.581 16l5.861 1.95L30 16V9.5Z"
+                />
+                <path fill="#107c41" d="M8.512 9.5h11.069V16H8.512Z" />
+                <path
+                  d="M16.434 8.2H8.512v16.25h7.922a1.2 1.2 0 0 0 1.194-1.191V9.391A1.2 1.2 0 0 0 16.434 8.2Z"
+                  opacity=".1"
+                />
+                <path
+                  d="M15.783 8.85H8.512V25.1h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  d="M15.783 8.85H8.512V23.8h7.271a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  d="M15.132 8.85h-6.62V23.8h6.62a1.2 1.2 0 0 0 1.194-1.191V10.041a1.2 1.2 0 0 0-1.194-1.191Z"
+                  opacity=".2"
+                />
+                <path
+                  fill="url(#vscodeIconsFileTypeExcel0)"
+                  d="M3.194 8.85h11.938a1.193 1.193 0 0 1 1.194 1.191v11.918a1.193 1.193 0 0 1-1.194 1.191H3.194A1.192 1.192 0 0 1 2 21.959V10.041A1.192 1.192 0 0 1 3.194 8.85Z"
+                />
+                <path
+                  fill="#fff"
+                  d="m5.7 19.873l2.511-3.884l-2.3-3.862h1.847L9.013 14.6c.116.234.2.408.238.524h.017c.082-.188.169-.369.26-.546l1.342-2.447h1.7l-2.359 3.84l2.419 3.905h-1.809l-1.45-2.711A2.355 2.355 0 0 1 9.2 16.8h-.024a1.688 1.688 0 0 1-.168.351l-1.493 2.722Z"
+                />
+                <path
+                  fill="#33c481"
+                  d="M28.806 3h-9.225v6.5H30V4.191A1.192 1.192 0 0 0 28.806 3Z"
+                />
+                <path fill="#107c41" d="M19.581 16H30v6.5H19.581Z" />
+              </svg>
+            </div>
+            <div class=" col-lg-4 col-md-6 col-sm-10 mt-3 mx-2">
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Example 1px high"
+                aria-valuenow="25"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="height: 3px; color: green"
+              >
+                <div
+                  class="progress-bar"
+                  style="width: 30%; background-color: green"
+                ></div>
+              </div>
+            </div>
+            <div class="col-2 mt-1 mx-2">
+              <i class="fas fa-trash-alt text-danger"></i>
+            </div>
+          </div>
+          </div>
+
+          <div>
+            <div class="doc-file-notif"><span>{{'International Id card'}}</span>
+            <span> {{'60%'}}</span></div>
+          <div class="d-flex">
+            <div class="mr-4">
+              <svg  xmlns="http://www.w3.org/2000/svg" width="37" height="37" viewBox="0 0 24 24"><path fill="#0f52ba" d="M19 2H5a3.009 3.009 0 0 0-3 3v8.86l3.88-3.88a3.075 3.075 0 0 1 4.24 0l2.871 2.887l.888-.888a3.008 3.008 0 0 1 4.242 0L22 15.86V5a3.009 3.009 0 0 0-3-3z" opacity=".5"/><path fill="#0f52ba" d="M10.12 9.98a3.075 3.075 0 0 0-4.24 0L2 13.86V19a3.009 3.009 0 0 0 3 3h14a3 3 0 0 0 2.16-.92L10.12 9.98z"/><path fill="#0f52ba" d="m22 15.858l-3.879-3.879a3.008 3.008 0 0 0-4.242 0l-.888.888l8.165 8.209c.542-.555.845-1.3.844-2.076v-3.142z" opacity=".25"/></svg>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-10 mt-3 mx-2">
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Example 1px high"
+                aria-valuenow="25"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="height: 3px; color: green"
+              >
+                <div
+                  class="progress-bar"
+                  style="width: 70%; background-color: green"
+                ></div>
+              </div>
+            </div>
+            <div class="col-2 mt-1 mx-2">
+              <i class="fas fa-trash-alt text-danger"></i>
+            </div>
+          </div>
           </div>
         </div>
         <div></div>
-
       </div>
     </div>
 
@@ -834,7 +1364,7 @@
         </div>
 
         <div class="col fadeIn">
-          <div [formGroup]="escalationForm" class="w-75">
+          <div class="w-75">
             <label class="required"
               >Do you wish to have the benefit of escalation option?</label
             >
@@ -870,12 +1400,100 @@
     <!-- <button style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
       Back
     </button> -->
-    <button routerLink="/home/lms/ind/quotation/insurance-history" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
-      Continue
-      &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
-
+    <button
+      style="padding: 0.6em"
+      type="button"
+      class="btn btn-primary btn-sm"
+      (click)="nextPage()"
+    >
+      Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>
   </div>
 
   <div class="mb-4"></div>
+</div>
+
+<div
+  class="modal fade"
+  id="newClientModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="newClientModalTitle"
+  aria-hidden="true"
+>
+  <!--
+  <div class="modal fade" id="reassignModal" [style.z-index]="zIndex"
+     [ngClass]="{ 'show': reassignModalVisible }" tabindex="-1" role="dialog" aria-labelledby="reassignModalTitle" aria-hidden="true"> -->
+
+  <div
+    *ngIf="_openModal"
+    class="modal-dialog modal-dialog-centered"
+    role="document"
+  >
+    <div #newClientModal class="modal-content">
+      <div class="row" style="padding: 1.2rem">
+        <div class="d-flex justify-content-between mb-2">
+          <div class="text-black fw-bold" style="font-size: 14px">
+            Select Client
+          </div>
+          <div (click)="closeModal()" style="cursor: pointer">X</div>
+        </div>
+        <div class="col-12">
+          <div class="col-12">
+            <span class="p-input-icon-right w-100">
+              <input
+                (change)="searchClient($event)"
+                class="w-100"
+                type="text"
+                placeholder="Press Enter after Typing...."
+                style="
+                  border: 0;
+                  background-color: #9e9c9c21;
+                  border-radius: 5px;
+                  padding: 0.4em !important;
+                "
+              />
+              <i class="pi pi-search"></i>
+            </span>
+          </div>
+          <div class="col-12 mt-2">
+            <div
+              *ngIf="clientList.length == 0"
+              class="d-flex justify-content-center m-2"
+            >
+              <div
+                *ngIf="!isCLientListPresent"
+                class="spinner-border text-primary spinner-border"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div *ngIf="isCLientListPresent" style="color: red">
+                No Client Record Found!
+              </div>
+            </div>
+
+            <table *ngIf="clientList.length > 0" class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">ID. No</th>
+                  <th scope="col">Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let client of clientList">
+                  <tr class="t_hover" (click)="selectClient(client)">
+                    <td>{{ client["id"] }}</td>
+                    <td>
+                      {{ client["firstName"] + " " + client["lastName"] }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

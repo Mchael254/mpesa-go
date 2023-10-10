@@ -4,16 +4,20 @@ import { Observable } from 'rxjs/internal/Observable';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/internal/operators/map';
 import { tap } from 'rxjs/internal/operators/tap';
+import { API_CONFIG } from '../../../../environments/api_service_config';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private baseURL = environment.BASE_URL;
+  private baseURL = environment.API_URLS.get(API_CONFIG.SETUPS_SERVICE_BASE_URL);
+
 
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
+    
     let headers = new HttpHeaders();
         headers = headers.append('Accept', 'application/json');
         headers = headers.append('Content-Type', 'application/json');
@@ -43,17 +47,19 @@ export class ApiService {
     return headers;
   }
 
-  GET<T>(endpoint: string, params?: HttpParams): Observable<T> {
+  GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
-    const headers = this.getHeaders();
-    const options = { headers, params };
+    // const headers = this.getHeaders();
+    // const options = { headers, params };
 
-    return this.http.get<T>(url, options).pipe(
+    return this.http.get<T>(url).pipe(
       // tap(data => console.log(data))
       );
   }
 
-  POST<T>(endpoint: string, data: any): Observable<T> {
+  POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
 

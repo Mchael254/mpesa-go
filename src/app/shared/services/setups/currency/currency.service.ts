@@ -20,6 +20,7 @@ export class CurrencyService {
    * @returns all currencies
    */
   getAllCurrencies(){
+
     return this.http.get<any>(`/${this.baseUrl}/setups/currencies`).pipe(
       retry(1)
     )

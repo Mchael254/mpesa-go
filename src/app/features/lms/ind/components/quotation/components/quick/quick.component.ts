@@ -1,30 +1,42 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import options from '../../data/options.json';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
 import { finalize } from 'rxjs/internal/operators/finalize';
-import { Subscription } from 'rxjs/internal/Subscription';
-import { first, mergeMap, tap } from 'rxjs';
+import { first, mergeMap, tap, debounceTime, switchMap, of } from 'rxjs';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
   styleUrls: ['./quick.component.css'],
 })
+@AutoUnsubscribe
 export class QuickComponent implements OnInit, OnDestroy {
-  quickQuoteSummary = signal({
+  quickQuoteSummaryDefault = {
     isSummaryReady: false,
-    product: '',
-    option: '',
-  });
+    product: -1,
+    option: -1,
+    policy_term: 0,
+    coverTypeList: [],
+    prem_result: -1,
+  };
+  quickQuoteSummary_: {} = { ...this.quickQuoteSummaryDefault };
+  quickQuoteSummary = signal({ ...this.quickQuoteSummaryDefault });
   quickForm: FormGroup;
   shareForm: FormGroup;
   productList: any[] = [];
   productOptionList: any[];
   productTermList = signal([]);
   coverTypeList = signal([]);
-  coverTypeListSelected = signal([]);
   shareInputType: string = '';
 
   isProductReady: boolean = false;
@@ -32,21 +44,24 @@ export class QuickComponent implements OnInit, OnDestroy {
   isTermReady: boolean = false;
   isPremAssuredReady: boolean = false;
   isSummaryReady: boolean = false;
-  subscriptions!: Subscription;
+  option_product_code: number = 0;
 
   constructor(
+    private session_storage: SessionStorageService,
+    private route: Router,
     private fb: FormBuilder,
     private spinner: NgxSpinnerService,
-    private product_service: ProductService
+    private product_service: ProductService,
+    private toast: ToastService
   ) {
     this.quickForm = this.fb.group({
       date_of_birth: [''],
       gender: ['M'],
-      product: [0],
-      option: [0],
-      term: [''],
+      product: [-1],
+      option: [-1],
+      term: [-1],
       sa_prem_select: ['P'],
-      sa_prem_amount: [0],
+      sa_prem_amount: [],
     });
 
     this.shareForm = this.fb.group({
@@ -55,10 +70,10 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.spinner.show();
-    this.subscriptions = this.product_service
+    this.spinner.show('whole');
+    this.product_service
       .getListOfProduct()
-      .pipe(finalize(() => this.spinner.hide()))
+      .pipe(finalize(() => this.spinner.hide('whole')))
       .subscribe(
         (products) =>
           (this.productList = [
@@ -72,51 +87,56 @@ export class QuickComponent implements OnInit, OnDestroy {
     return this.quickForm.get(name).value;
   }
 
-  selectDate(event) {
-    this.spinner.show();
+  selectDate() {
+    this.spinner.show('whole');
     this.isProductReady = true;
-    this.spinner.hide();
+    this.spinner.hide('whole');
+    this.computePremium();
   }
 
   selectProduct(event) {
+    this.quickQuoteSummary_ = { ...this.quickQuoteSummaryDefault };
+    this.quickForm.get('option').setValue(-1);
+    this.quickForm.get('term').setValue(-1);
+    this.quickForm.get('sa_prem_amount').setValue(0);
+
     let productCode = +event.target.value;
     if (productCode > 0) {
-      this.spinner.show();
-      this.coverTypeList.set([]);
-      this.coverTypeListSelected.set([]);
-      this.subscriptions = this.product_service
+      this.spinner.show('whole');
+      this.product_service
         .getListOfProductOptionByProductCode(productCode)
         .pipe(
           finalize(() => {
-            this.spinner.hide();
+            this.spinner.hide('whole');
           })
         )
         .subscribe((productOptions) => {
-          // console.log(productOptions);
-
           this.productOptionList = [
             { code: 0, product_code: 0, desc: 'SELECT PRODUCT OPTION' },
             ...productOptions,
           ];
           this.isOptionReady = true;
-          // console.log(this.productList);
-
           let prod;
-          // if(prod.length > 0)
           prod = this.productList.filter((m) => {
             return m['code'] === productCode;
           });
 
-          this.quickQuoteSummary.update((data) => {
+          this.quickQuoteSummary.mutate((data) => {
             if (prod.length > 0) {
               data['product'] = prod[0];
-              console.log(data);
-
+              data['isSummaryReady'] = false;
+              data['coverTypeList'] = [];
+              data['option'] = -1;
+              data['policy_term'] = 0;
+              data['prem_result'] = 0;
               return data;
             }
 
             return data;
           });
+          this.coverTypeList.set([]);
+          this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+          this.computePremium();
         });
     } else {
       this.isOptionReady = false;
@@ -124,90 +144,176 @@ export class QuickComponent implements OnInit, OnDestroy {
       this.isPremAssuredReady = false;
     }
   }
+
   selectProductOption(pCode: any) {
+    this.quickForm.get('term').setValue(-1);
+    this.quickForm.get('sa_prem_amount').setValue(0);
     let pPopItem = +pCode.target.value;
-    // console.log(pPopItem);
-    // console.log(this.productOptionList);
-
-    // let pCodeItem = 0;
-
-    // if(product.length>0) pCodeItem = product ['code']
-
     if (pPopItem > 0) {
-      this.spinner.show();
-      this.coverTypeList.set([]);
-      this.coverTypeListSelected.set([]);
+      this.spinner.show('whole');
+      let age =
+        new Date().getFullYear() -
+        new Date(this.quickForm.get('date_of_birth').value).getFullYear();
       let option;
       option = this.productOptionList.filter((m) => {
-        // console.log(m);
-        // console.log(pPopItem);
-
         return m['code'] === pPopItem;
       });
-      // console.log(option);
-
-      this.subscriptions = this.product_service
-
-      .getListOfProductTermByProductCode(option.length > 0 ? option[0]['prod_code'] : 0, pPopItem, this.quickForm.get('date_of_birth').value)
+      this.option_product_code = option.length > 0 ? option[0]['prod_code'] : 0;
+      this.product_service
+        .getListOfProductTermByProductCode(
+          this.option_product_code,
+          pPopItem,
+          age > 0 ? age : 0
+        )
         .pipe(
           tap((data) => {
+            let d = data['prod_terms'];
+            data['prod_terms'] = [
+              { term: 0, anb: 0, max_age: 0, desc: 'Select Term' },
+              ...d,
+            ];
             this.productTermList.set(data);
-            console.log(this.productTermList());
-
-            // return this.product_service.getListOfProductCoverTypeByProductCode(pCodeItem);
           }),
           first(),
           mergeMap(() => {
-            return this.product_service
-
-            .getListOfProductCoverTypeByProductCode(
-              option.length > 0 ? option[0]['prod_code'] : 0);
-            // return this.product_service.getListOfProductTermByProductCode(option.length > 0 ? option[0]['prod_code'] : 0, pPopItem, this.quickForm.get('date_of_birth').value);
+            return this.product_service.getListOfProductCoverTypeByProductCode(
+              this.option_product_code
+            );
           }),
 
           finalize(() => {
-            this.spinner.hide();
+            this.spinner.hide('whole');
             this.isTermReady = true;
             this.isPremAssuredReady = true;
           })
         )
         .subscribe((covers) => {
           this.coverTypeList.set(covers);
-          // console.log(covers);
-
-          this.quickQuoteSummary.update((data) => {
-            data['isSummaryReady'] = true;
+          this.quickQuoteSummary.mutate((data) => {
             if (option.length > 0) {
               data['option'] = option[0];
               return data;
             }
-
             return data;
           });
+
+          this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+          this.computePremium();
         });
     }
   }
 
   selectProductTerm(pCode: any) {
-    let pCodeItem = +pCode.target.value;
+    let pTermVal = +pCode.target.value;
+    this.quickQuoteSummary.mutate((data) => {
+      data['policy_term'] = pTermVal;
+      return data;
+    });
+    this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+    this.computePremium();
+  }
 
-    if (pCodeItem > 0) {
-      this.spinner.show();
-      this.coverTypeList.set([]);
-      this.coverTypeListSelected.set([]);
-      this.subscriptions = this.product_service
-        .getListOfProductCoverTypeByProductCode(pCodeItem)
+  private checkifAllFieldsAreNotEmpty() {
+    let date = this.getValue('date_of_birth');
+    let product = +this.getValue('product');
+    let option = +this.getValue('option');
+    let term = +this.getValue('term');
+    let premium_amt = +this.getValue('sa_prem_amount');
+    return (
+      date !== '' &&
+      product !== -1 &&
+      option !== -1 &&
+      term !== -1 &&
+      premium_amt !== 0
+    );
+  }
+
+  computePremium() {
+    if (this.checkifAllFieldsAreNotEmpty()) {
+      this.spinner.show('prem_view');
+      let summaryQuote = { ...this.quickQuoteSummary() };
+      let prem_obj = { lead: {}, quote: {} };
+      prem_obj['lead']['dob'] = this.getValue('date_of_birth');
+      prem_obj['lead']['gender'] = this.getValue('gender');
+
+      prem_obj['quote']['smoker'] = 'Y';
+      prem_obj['quote']['payment_frequency'] = 'M';
+      prem_obj['quote']['product_code'] = summaryQuote['product']['code'];
+      prem_obj['quote']['product_option_code'] = summaryQuote['option']['code'];
+      prem_obj['quote']['policy_term'] = summaryQuote['policy_term'];
+      prem_obj['quote']['premium_term'] = summaryQuote['policy_term'];
+      prem_obj['quote']['quote_no'] = null;
+      prem_obj['quote']['cover_type_codes'] = summaryQuote['coverTypeList'].map(
+        (data) => {
+          return data['id'];
+        }
+      );
+      this.quickQuoteSummary.mutate((da: any) => {
+        da['isSummaryReady'] = true;
+        return da;
+      });
+
+      this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+
+      of(+this.getValue('sa_prem_amount'))
         .pipe(
-          finalize(() => {
-            this.spinner.hide();
-            this.isTermReady = true;
-            this.isPremAssuredReady = true;
+          debounceTime(200),
+          switchMap((sm: any) => {
+            if (this.getValue('sa_prem_select') === 'P') {
+              prem_obj['quote']['sum_insured'] = 0;
+              prem_obj['quote']['premium'] = sm;
+            } else {
+              prem_obj['quote']['sum_insured'] = sm;
+              prem_obj['quote']['premium'] = 0;
+            }
+            return this.product_service.premium_computation(prem_obj);
           })
         )
-        .subscribe((covers) => {
-          this.coverTypeList.set(covers);
-        });
+        .subscribe(
+          (prem) => {
+            // console.log(prem);
+            this.session_storage.set('quote_code',prem['quote_code'])
+            this.session_storage.set('client_code',prem['client_code'])
+
+            this.quickQuoteSummary.mutate((da: any) => {
+              da['prem_result'] = prem['premium'];
+              return da;
+            });
+            this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+            if (prem['error_type'] === 'WARNING') {
+              this.toast.danger(
+                prem['message'].replaceAll('ANB', 'Age(Date of Birth)'),
+                'InCorrect Data Computation!'
+              );
+              this.quickQuoteSummary_['prem_result'] = 0;
+            }
+            this.spinner.hide('prem_view');
+          },
+          (err) => {
+            this.spinner.hide('prem_view');
+          }
+        );
     }
+  }
+
+  coverTypeState(cover: any) {
+    this.coverTypeList.mutate((data) => {
+      return data.map((d) => {
+        if (d['id'] === cover['id']) {
+          d['selected'] = !cover['selected'];
+        }
+        return d;
+      });
+    });
+
+    this.quickQuoteSummary.mutate((da: any) => {
+      da['coverTypeList'] = this.coverTypeList().filter((m) => {
+        return m['selected'] === true;
+      });
+      return da;
+    });
+    this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
+    this.computePremium();
   }
 
   selectShareType(value: string) {
@@ -222,7 +328,12 @@ export class QuickComponent implements OnInit, OnDestroy {
     }
   }
 
+  nextPage(){
+    this.route.navigate(["/home/lms/ind/quotation/client-details"])
+
+  }
+
   ngOnDestroy(): void {
-    this.subscriptions && this.subscriptions.unsubscribe();
+    console.log('QuickComponent UNSUBSCRIBE');
   }
 }
