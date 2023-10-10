@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 
 @Component({
@@ -9,7 +10,8 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
   templateUrl: './medical-history.component.html',
   styleUrls: ['./medical-history.component.css']
 })
-export class MedicalHistoryComponent {
+@AutoUnsubscribe
+export class MedicalHistoryComponent implements OnDestroy {
 
   steps = stepData
   personalDetailFormfields: any[];
@@ -64,6 +66,11 @@ onRowEditSave(product: any) {
 onRowEditCancel(product: any, index: number) {
     this.products[index] = this.clonedProducts[product.id as string];
     delete this.clonedProducts[product.id as string];
+}
+
+ngOnDestroy(): void {
+  console.log('MedicalHistoryComponent UNSUBSCRIBE');
+
 }
 
 }

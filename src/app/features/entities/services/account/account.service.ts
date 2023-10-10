@@ -408,7 +408,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/accounts/accounts/`+ id +`/account-details`, {headers:headers});
+    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/`+ id +`/account-details`, {headers:headers});
   }
 
   getAccountDetailsByAccountCode(accountCode: number): Observable<PartyAccountsDetails> {
@@ -423,7 +423,7 @@ export class AccountService {
     const params = new HttpParams()
     .set('accountCode', `${accountCode}`
     );
-    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/accounts/accounts/details`, {
+    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/details`, {
       headers:headers,
       params:params
     });
@@ -435,7 +435,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<PersonalDetailsUpdateDTO>(`/${baseUrl}/accounts/accounts/`+ id +`/personal-details`,
+    return this.http.post<PersonalDetailsUpdateDTO>(`/${baseUrl}/`+ id +`/personal-details`,
     JSON.stringify(data), { headers:headers,});
 
   }
@@ -446,7 +446,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<BankDetailsUpdateDTO>(`/${baseUrl}/accounts/accounts/`+ id +`/bank-details`,
+    return this.http.post<BankDetailsUpdateDTO>(`/${baseUrl}/`+ id +`/bank-details`,
     JSON.stringify(data), { headers:headers,});
   }
 
@@ -456,7 +456,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<WealthDetailsUpdateDTO>(`/${baseUrl}/accounts/accounts/`+ id +`/wealth-details`,
+    return this.http.post<WealthDetailsUpdateDTO>(`/${baseUrl}/`+ id +`/wealth-details`,
     JSON.stringify(data), { headers:headers,});
   }
 
@@ -466,7 +466,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<AmlWealthDetailsUpdateDTO>(`/${baseUrl}/accounts/accounts/`+ id +`/aml-details`,
+    return this.http.post<AmlWealthDetailsUpdateDTO>(`/${baseUrl}/`+ id +`/aml-details`,
     JSON.stringify(data), { headers:headers,});
   }
 
@@ -476,7 +476,7 @@ export class AccountService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<NextKinDetailsUpdateDTO>(`/${baseUrl}/accounts/accounts/`+ id +`/next-of-kin-details`,
+    return this.http.post<NextKinDetailsUpdateDTO>(`/${baseUrl}/`+ id +`/next-of-kin-details`,
     JSON.stringify(data), { headers:headers,});
   }
 
@@ -489,7 +489,7 @@ export class AccountService {
     const params = new HttpParams()
     .set('organizationId', `${organizationId}`);
 
-    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/accounts/client-titles`, {headers:header, params:params})
+    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/client-titles`, {headers:header, params:params})
   }
 
   getIdentityMode(organizationId: number): Observable<IdentityModeDTO[]> {
@@ -501,7 +501,7 @@ export class AccountService {
     const params = new HttpParams()
     .set('organizationId', `${organizationId}`);
 
-    return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/accounts/identity-modes`, {headers:header, params:params})
+    return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/identity-modes`, {headers:header, params:params})
   }
 
 }

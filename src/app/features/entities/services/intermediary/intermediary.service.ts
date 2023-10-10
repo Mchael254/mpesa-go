@@ -34,7 +34,7 @@ export class IntermediaryService {
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`);
 
-    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/accounts/agents`,{
+    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`,{
       headers:headers,
       params: params,
     })
@@ -47,7 +47,7 @@ export class IntermediaryService {
       'Accept': 'application/json',
     });
 
-    return this.http.get<AgentDTO>(`/${baseUrl}/accounts/agents/${id}`,{
+    return this.http.get<AgentDTO>(`/${baseUrl}/agents/${id}`,{
       headers:headers,
     })
   }
@@ -69,7 +69,7 @@ export class IntermediaryService {
       .set('name', `${name}`)
       .set('organizationId', 2);
 
-    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/accounts/agents`, {
+    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`, {
       headers: header,
       params: params,
     });
@@ -83,7 +83,7 @@ export class IntermediaryService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<IdentityModeDTO[]>(`/${baseUrl}/accounts/identity-modes`,
+    return this.http.get<IdentityModeDTO[]>(`/${baseUrl}/identity-modes`,
       {
         headers:headers,
         params:params
@@ -98,7 +98,7 @@ export class IntermediaryService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<AccountTypeDTO[]>(`/${baseUrl}/accounts/account-types`,
+    return this.http.get<AccountTypeDTO[]>(`/${baseUrl}/account-types`,
       {
         headers:headers,
         params:params
@@ -111,7 +111,7 @@ export class IntermediaryService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<IntermediaryDTO>(`/${baseUrl}/accounts/accounts`, JSON.stringify(data), {headers:headers})
+    return this.http.post<IntermediaryDTO>(`/${baseUrl}/accounts`, JSON.stringify(data), {headers:headers})
 
   }
 }

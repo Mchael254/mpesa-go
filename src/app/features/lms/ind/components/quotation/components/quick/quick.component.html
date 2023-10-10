@@ -1,5 +1,6 @@
 <div style="padding: 2rem; color: black; position: relative">
   <ngx-spinner
+  name="whole"
     type="ball-clip-rotate-multiple"
     [fullScreen]="false"
     color="#00529B"
@@ -38,21 +39,13 @@
                   <div class="w-75">
                     <label class="required">Date of Birth</label>
                     <div>
-                      <p-calendar formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate($event)">
+                      <p-calendar formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
                         <ng-template pTemplate="header" >
-                          <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div>
+                          <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
                         </ng-template>
 
                       </p-calendar>
                     </div>
-                    <!-- <input
-                      type="date"
-                      class="form-control fadeIn"
-                      formControlName="date_of_birth"
-                      placeholder="Select Date of Birth"
-                      style="padding-right: 2rem"
-                      (change)="selectDate($event)"
-                    /> -->
                   </div>
                 </div>
 
@@ -67,6 +60,7 @@
                         id="male"
                         formControlName="gender"
                         value="M"
+                        (click)="computePremium()"
                       />
                       <label class="form-check-label" for="male">Male</label>
                     </div>
@@ -77,6 +71,7 @@
                         id="female"
                         formControlName="gender"
                         value="F"
+                        (click)="computePremium()"
                       />
                       <label class="form-check-label" for="female"
                         >Female</label
@@ -114,12 +109,13 @@
                 </div>
 
                 <div class="col" >
-                  <div class="w-75 fadeIn" *ngIf="isOptionReady && productOptionList.length >2">
+                  <!-- <div class="w-75 fadeIn" *ngIf="isOptionReady && productOptionList.length >2"> -->
+                  <div class="w-75 fadeIn" *ngIf="isOptionReady">
                     <label class="required">Option</label>
                     <select
                       formControlName="option"
                       class="form-select"
-                      (change)="selectProductOption($event)"
+                      (change)="selectProductOption($event);"
                     >
                       <ng-container *ngFor="let option of productOptionList">
                         <option [value]="option['code']">
@@ -139,11 +135,11 @@
                     <select
                       formControlName="term"
                       class="form-select"
-                      (change)="selectProductOption($event)"
+                      (change)="selectProductTerm($event);"
                     >
-                      <ng-container *ngFor="let term of productTermList()">
-                        <option [value]="term['code']">
-                          {{ term.description | lowercase}}
+                      <ng-container *ngFor="let term of productTermList()['prod_terms']">
+                        <option [value]="term['term']" [selected]="term['term']===0">
+                          {{ term['term'] === 0? term['desc']: term['term'] }}
                         </option>
                       </ng-container>
                     </select>
@@ -158,6 +154,7 @@
                         id="male"
                         formControlName="sa_prem_select"
                         value="P"
+                        (click)="computePremium()"
                       />
                       <label class="form-check-label" for="male">Premium</label>
                     </div>
@@ -168,6 +165,7 @@
                         id="female"
                         formControlName="sa_prem_select"
                         value="SA"
+                        (click)="computePremium()"
                       />
                       <label class="form-check-label" for="female"
                         >Sum Assured</label
@@ -180,6 +178,7 @@
                       formControlName="sa_prem_amount"
                       [placeholder]="getValue('sa_prem_amount')==='P'?'Enter Premium' : 'Enter Sum Assured'"
                       style="padding-right: 2rem"
+                      (change)="computePremium()"
                     />
                   </div>
                 </div>
@@ -204,8 +203,9 @@
                   <input
                     class="form-check-input"
                     type="checkbox"
-                    [value]="cover['cover_type_description']"
+                    [value]="cover['selected']"
                     [id]="i"
+                    (change)="coverTypeState(cover);"
                   />
                   <label class="form-check-label" [for]="i">
                     {{ cover['cover_type_description'] | lowercase}}
@@ -217,9 +217,10 @@
         </div>
       </div>
     </div>
+    <!-- {{quickQuoteSummary_ | json}} -->
 
     <div
-    *ngIf="quickQuoteSummary()['isSummaryReady']"
+    *ngIf="quickQuoteSummary_['isSummaryReady']"
       style="
         display: flex;
         justify-content: center;
@@ -249,47 +250,53 @@
             justify-content: center;
           "
         >
-          Here is your {{ quickQuoteSummary()['product']['description'] || "Turnkey Endowment Quote"  }}
+          Here is your {{ quickQuoteSummary_['product']['description'] || "Turnkey Endowment Quote"  }}
         </div>
 
         <div style="display: flex; justify-content: space-evenly">
           <div style="flex: 1; text-align: start">
             <span class="font-grey__font-eight__700">Option : </span>
-            {{ quickQuoteSummary()['option']['desc'] || '-' }}
+            {{ quickQuoteSummary_['option']['desc'] || '-' }}
           </div>
           <div class="m-4"></div>
           <div style="flex: 1; text-align: start">
-            <span class="font-grey__font-eight__700">Term : </span> {{ "1" }}
+            <span class="font-grey__font-eight__700">Term : </span> {{ quickQuoteSummary_['policy_term'] || 0 }}
           </div>
         </div>
 
         <div
           class="font-grey__font-eight__700"
           style="margin-bottom: 0.2rem; text-align: start"
+          *ngIf="quickQuoteSummary_['coverTypeList'].length>0"
         >
           Additional Cover Types
         </div>
 
-        <div style="display: flex; justify-content: space-evenly">
-          <div style="flex: 1; text-align: start; padding-right: 1rem">
+        <div class="row justify-content-between">
+          <ng-container *ngFor="let coverType of quickQuoteSummary_['coverTypeList']">
+            <div class="col-6 mb-4" style=" text-align: start; padding-right: 1rem">
             <div style="font-weight: 600">
-              <span>Endownment Cover Type</span>
+              <span>{{coverType['cover_type_description']}}</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="font-grey__font-eight__700">Sum Assured</span>
-              <span>200</span>
+              <span>0</span>
             </div>
             <div class="d-flex justify-content-between">
+              <span class="font-grey__font-eight__700">Premium</span>
+              <span>0</span>
+            </div>
+            <!-- <div class="d-flex justify-content-between">
               <span class="font-grey__font-eight__700">Percentage</span>
               <span>30</span>
             </div>
             <div class="d-flex justify-content-between">
               <span class="font-grey__font-eight__700">Term </span>
               <span>1</span>
-            </div>
+            </div> -->
           </div>
 
-          <div style="flex: 1; text-align: justify">
+          <!-- <div style="flex: 1; text-align: start; padding-right: 1rem">
             <div style="font-weight: 600">
               <span>Endownment Turnkey A</span>
             </div>
@@ -306,28 +313,46 @@
               <span class="font-grey__font-eight__700">Term</span>
               <span>1</span>
             </div>
-          </div>
-        </div>
+          </div> -->
 
-        <div style="display: flex; justify-content: center; padding-top: 4rem">
-          <div class="d-flex justify-content-center align-content-center">
-            <span class="font-small__color_primary d-flex align-self-center"
-              >$</span
-            >
-            <span
-              class="font-small__color_primary d-flex align-self-end"
-              style="font-size: 3rem"
-              >100
-            </span>
-            <span class="font-small__color_primary d-flex align-self-end" style="transform: translateY(-1rem);"
-              >/ yr</span
-            >
-          </div>
-        </div>
-        <div class="d-flex justify-content-center">
-          <div class="font-grey__font-eight__700">or $8.32 per month</div>
-        </div>
+          </ng-container>
 
+        </div>
+        <div style=" position: relative;" class="mt-1">
+          <ngx-spinner
+      name="prem_view"
+        type="ball-clip-rotate-multiple"
+
+        [fullScreen]="false"
+        color="#00529B"
+        size="medium"
+        bdColor="rgba(255, 255, 255, 0.0)"
+      ></ngx-spinner>
+          <div *ngIf="quickQuoteSummary_['prem_result']>0">
+
+            <div style="display: flex; justify-content: center; padding-top: 1rem; ">
+
+              <div class="d-flex justify-content-center align-content-center">
+                <span class="font-small__color_primary d-flex align-self-center"
+                  >$</span
+                >
+                <span
+                  class="font-small__color_primary d-flex align-self-end"
+                  style="font-size: 3rem;">
+                  {{quickQuoteSummary_['prem_result'] === 0 ? 0 : quickQuoteSummary_['prem_result']*12 | number:'1.2-2'}}
+                </span>
+                <span class="font-small__color_primary d-flex align-self-end" style="transform: translateY(-1rem);"
+                  >/ yr</span
+                >
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <div class="font-grey__font-eight__700">or ${{quickQuoteSummary_['prem_result'] === 0 ? 0 : quickQuoteSummary_['prem_result']  | number:'1.2-2'}}
+                per month</div>
+            </div>
+          </div>
+
+        </div>
         <div
           class="font-grey__font-eight__700"
           style="margin-bottom: 0.3rem; text-align: center; padding-top: 3rem; transform: translateX(-2.6rem);"
@@ -462,9 +487,9 @@
     </div>
   </div>
 
-  <div class="d-flex justify-content-end mt-2">
+  <div *ngIf="quickQuoteSummary_['prem_result']>0" class="d-flex justify-content-end mt-2">
     <button
-    [routerLink]="'/home/lms/ind/quotation/client-details'"
+    (click)="nextPage()"
       type="button"
       class="btn btn-primary btn-sm"
       style="padding: 0.6em; width: 6rem"

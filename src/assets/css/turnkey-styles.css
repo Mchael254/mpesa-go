@@ -1,6 +1,7 @@
 @charset "utf-8";
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap');
 
+
 * {
   --primary-color:  #00529B;
   --grey-color: #868E96;
@@ -497,11 +498,17 @@ color: #00529B;
 }
 
 .full-border {
-  border: 1px solid #ccc; /* Adjust border style and color as per your preference */
-  padding: 0.6rem; /* Add padding to create space between form elements and the border */
-  border-radius: 5px; /* Optional: Add border radius for rounded corners */
-  margin: 10px;
+  padding: 2rem 4rem 2rem 2rem;
+  width: 100%;
   background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.34);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 0.9em;
+  margin: 20px 2px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .action-buttons-container {
@@ -645,5 +652,25 @@ p-table tr > th {
 }
 
 .b-r {
-  padding: 0.6em; width: 5rem; margin:4px; border-radius: 7px;
+  width: 2.5rem; height: 2.5rem; border-radius: 10rem;
+  background-color: var(--primary-color);
+  border: 1px rgb(8, 32, 81) solid;
+  cursor:pointer;
+  color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.b-r:hover {
+  width: 2.4rem; height: 2.4rem; border-radius: 10rem;
+  background-color: #087CE3;
+  border: none;
+  cursor:pointer;
+  color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }
