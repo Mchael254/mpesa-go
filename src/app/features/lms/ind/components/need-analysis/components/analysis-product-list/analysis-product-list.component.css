@@ -1,0 +1,20 @@
+.card-body{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.card-body > div {
+  display: flex;
+  justify-content: center;
+}
+
+/* justify-content-center */
+
+@media screen and (max-width: 992px) {
+  .justify-content-center {
+    display: flex;
+    justify-content: flex-start !important;
+  }
+}

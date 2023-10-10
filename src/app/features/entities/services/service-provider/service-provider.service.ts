@@ -43,7 +43,7 @@ export class ServiceProviderService {
       .set('sortListFields', `${sortFields}`)
       .set('order', `${sortOrder}`)
 
-    return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/accounts/service-providers`,
+    return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/service-providers`,
       {
         headers: headers,
         params: params,
@@ -58,7 +58,7 @@ export class ServiceProviderService {
       Accept: 'application/json',
     });
 
-    return this.http.post<ServiceProviderDTO[]>(`/${this.baseUrl}/accounts/accounts`, JSON.stringify(serviceProviderData), {headers:headers})
+    return this.http.post<ServiceProviderDTO[]>(`/${this.baseUrl}/accounts`, JSON.stringify(serviceProviderData), {headers:headers})
 
   }
 
@@ -70,7 +70,7 @@ export class ServiceProviderService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<ClientTitlesDto[]>(`/${this.baseUrl}/accounts/client-titles`,
+    return this.http.get<ClientTitlesDto[]>(`/${this.baseUrl}/client-titles`,
       {
         headers:headers,
         params:params,
@@ -83,7 +83,7 @@ export class ServiceProviderService {
   //   });
   //   const params = new HttpParams()
   //     .set('organizationId', 2);
-  //   return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/accounts/identity-modes`,
+  //   return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/identity-modes`,
   //     {
   //       headers:headers,
   //       params:params,
@@ -95,7 +95,7 @@ export class ServiceProviderService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
-    return this.http.get<ProviderTypeDto[]>(`/${this.baseUrl}/accounts/service-provider-types`,{headers:headers});
+    return this.http.get<ProviderTypeDto[]>(`/${this.baseUrl}/service-provider-types`,{headers:headers});
   }
 
     /*Get a Service Provider by Id*/
@@ -104,7 +104,7 @@ export class ServiceProviderService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     })
-    return this.http.get(`/${this.baseUrl}/accounts/service-providers/${id}`,
+    return this.http.get(`/${this.baseUrl}/service-providers/${id}`,
       {
         headers: headers,
       });
