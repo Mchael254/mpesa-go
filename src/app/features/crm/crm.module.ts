@@ -2,15 +2,18 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { TableModule } from 'primeng/table';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { CountryComponent } from './components/country/country.component';
 import { SharedModule } from '../../shared/shared.module';
+import { OrganizationComponent } from './components/organization/organization.component';
 
 
 @NgModule({
   declarations: [
-    CountryComponent
+    CountryComponent,
+    OrganizationComponent
   ],
   imports: [
     CommonModule,
@@ -18,6 +21,7 @@ import { SharedModule } from '../../shared/shared.module';
     FormsModule,
     ReactiveFormsModule,
     TableModule,
+    DropdownModule,
     SharedModule,
   ]
 })
