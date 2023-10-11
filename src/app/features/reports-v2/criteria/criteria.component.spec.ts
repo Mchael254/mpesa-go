@@ -3,8 +3,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CriteriaComponent } from './criteria.component';
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {Criteria} from "../../../shared/data/reports/criteria";
+import {createSpyObj} from "jest-createspyobj";
+import {of} from "rxjs";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('CriteriaComponent', () => {
+  const reportServiceStub = createSpyObj('ReportService', ['fetchFilterConditions']);
+
   let component: CriteriaComponent;
   let fixture: ComponentFixture<CriteriaComponent>;
 
@@ -30,9 +35,13 @@ describe('CriteriaComponent', () => {
   ]
 
   beforeEach(() => {
+    jest.spyOn(reportServiceStub, 'fetchFilterConditions' ).mockReturnValue(of({}))
+
     TestBed.configureTestingModule({
       declarations: [CriteriaComponent],
-      imports: [],
+      imports: [
+        HttpClientTestingModule
+      ],
       providers: [],
       schemas: [NO_ERRORS_SCHEMA],
     });

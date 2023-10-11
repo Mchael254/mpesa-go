@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
 import {ChartType} from "chart.js";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -47,14 +47,11 @@ export class ReportPreviewComponent implements OnInit{
     { iconClass: 'pi pi-chart-bar', name: 'radar'},
   ];
 
-  public conditions = [
-    {label: 'Greater than', value: 'gt'},
-    {label: 'Greater than or equal', value: 'gte'},
-    {label: 'Lower than', value: 'lt'},
-    {label: 'Lower than or equal', value: 'lte'},
-    {label: 'Equals', value: 'equals'},
-    {label: 'Between', value: 'between'},
-  ];
+  public conditions = [];
+  public dimensionConditions = [];
+  public metricConditions = [];
+  public dateConditions = [];
+  public conditionsOptionsValue = [];
 
   public chartType: ChartType | string = "table";
   public selectedChartType = { iconClass: 'pi pi-table', name: 'table'}
@@ -71,7 +68,7 @@ export class ReportPreviewComponent implements OnInit{
     labels: [],
     datasets: [],
   };
-  private filters =  [];
+  public filters =  [];
   private sort =  [];
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
@@ -90,7 +87,8 @@ export class ReportPreviewComponent implements OnInit{
     private reportServiceV2: ReportServiceV2,
     private authService: AuthService,
     private router: Router,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
@@ -106,17 +104,48 @@ export class ReportPreviewComponent implements OnInit{
   ngOnInit(): void {
     const reportParams = this.sessionStorageService.getItem(`reportParams`)
     this.criteria = reportParams.criteria;
-    this.filters = reportParams.filters;
     this.sort = reportParams.sort;
     this.reportNameRec = reportParams.reportNameRec;
 
+    this.fetchFilterConditions();
+    this.populateSelectedFilters(reportParams.filters);
     this.createFilterForm();
     this.createSaveReportForm();
     this.loadChart();
 
     this.currentUser = this.authService.getCurrentUser();
-    // log.info(`current user >>> `, this.currentUser);
-    // log.info(`report params >>> `, reportParams);
+  }
+
+  populateSelectedFilters(reportParamFilters) {
+
+    reportParamFilters.forEach(reportParamFilter => {
+      const category = reportParamFilter.queryObject.category;
+      let operator;
+
+      if (category === 'metrics') {
+        operator = this.metricConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
+      } else if (category !== 'metrics' && category !== 'whenFilters') {
+        operator = this.dimensionConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
+      } else if (category !== 'metrics' && category === 'whenFilters') {
+        operator = this.dateConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
+      }
+
+      const selectedFilter = {
+        column: reportParamFilter.queryObject.query,
+        operator: operator,
+        value: reportParamFilter.filter.values[0]
+      };
+
+      this.selectedFilters.push(selectedFilter);
+      this.filters.push(reportParamFilter.filter);
+    })
+  }
+
+  fetchFilterConditions(): void {
+    const conditions = this.reportServiceV2.fetchFilterConditions();
+    this.dateConditions = conditions.dateConditions;
+    this.dimensionConditions = conditions.dimensionConditions;
+    this.metricConditions = conditions.metricConditions;
   }
 
   /**
@@ -188,13 +217,25 @@ export class ReportPreviewComponent implements OnInit{
    */
   addFilter(): void {
     const formValues = this.filterForm.getRawValue();
-    const operator = (this.conditions.filter(item => item.value === formValues.operator))[0];
-    const filter = {
+
+    const operator = (this.conditionsOptionsValue.filter(item => item.value === formValues.operator))[0];
+    const selectedFilter = {
       column: formValues.column,
       operator: operator,
       value: formValues.value
-    }
-    this.selectedFilters.push(filter)
+    };
+    this.selectedFilters.push(selectedFilter);
+
+    const member = this.criteria.filter((item) => item.query === formValues.column)[0];
+    const filter = {
+      member: `${member.transaction}.${formValues.column}`,
+      operator: operator.value,
+      values: [formValues.value]
+    };
+    this.filters.push(filter);
+
+    this.cdr.detectChanges();
+    this.filterForm.reset()
   }
 
   /**
@@ -202,8 +243,17 @@ export class ReportPreviewComponent implements OnInit{
    * @param filter
    */
   removeFilter(filter): void{
-    const filterIndex = this.selectedFilters.indexOf(filter)
-    this.selectedFilters.splice(filterIndex, 1);
+    const filterSelectedIndex = this.selectedFilters.indexOf(filter)
+    this.selectedFilters.splice(filterSelectedIndex, 1);
+
+    const member = this.criteria.filter((item) => item.query === filter.column)[0];
+    log.info(`member >>>`, member, this.criteria);
+    log.info(`this.filter >>>`, member, this.filters);
+    this.filters.forEach((filter, index) => {
+      const testString = `${member.transaction}.${member.query}`;
+      if (filter.member === testString) this.filters.splice(index, 1);
+      return;
+    });
   }
 
   /**
@@ -328,4 +378,22 @@ export class ReportPreviewComponent implements OnInit{
   backToCreateReport() {
     this.router.navigate(['/home/reportsv2/create-report'], {queryParams:{fromPreview: true}})
   }
+
+  showConditions(event) {
+    this.conditionsOptionsValue = [];
+    const query = event.target.value;
+    const criterion = this.criteria.filter((item) => item.query === query)[0];
+
+    if (criterion.category === 'metrics') {
+      this.conditionsOptionsValue = this.metricConditions;
+    } else if (criterion.category !== 'dimensions' && criterion.category !== 'whenFilters') {
+      this.conditionsOptionsValue = this.dimensionConditions;
+    }
+
+    this.filterForm.patchValue({
+      operator: this.conditionsOptionsValue[0].value
+    })
+  }
+
+
 }

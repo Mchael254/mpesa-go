@@ -62,13 +62,25 @@ export class MockSessionStorageService {
     },
   ];
 
-  filter = [
+  filter =
     {
       member: `General_Policy_Transactions.grossPremium`,
-      operator: `notEquals`,
-      values: [null]
-    }
-  ]
+      operator: `gt`,
+      values: ['1000000']
+    };
+
+  queryObject = {
+    category: 'metrics',
+    categoryName: 'Metrics',
+    subcategory: 'premiumAmounts',
+    subCategoryName: 'Premium Amounts',
+    transaction: 'General_Policy_Transactions',
+    query: 'yAgoPremium',
+    queryName: 'Year Ago Premium',
+    filter:'Gross Premium gt 1000000000'
+  }
+
+
 
   setItem() {
     return null
@@ -78,7 +90,7 @@ export class MockSessionStorageService {
     return {
       criteria: this.criteria,
       reportNameRec: 'Sample Report',
-      filter: this.filter,
+      filters: [{filter: this.filter, queryObject: this.queryObject}],
       sort: []
     }
   }
@@ -93,7 +105,7 @@ export class MockCubeJsApi {
 
 describe('ReportPreviewComponent', () => {
   const reportServiceStub = createSpyObj('ReportService', [
-    'createReport'
+    'createReport', 'fetchFilterConditions'
   ]);
 
   let component: ReportPreviewComponent;
@@ -109,10 +121,37 @@ describe('ReportPreviewComponent', () => {
     folder: "",
     measures: "",
     name: ""
+  };
+
+  const filterConditions = {
+    metricConditions: [
+      {label: 'Greater than', value: 'gt'},
+      {label: 'Greater than or equal', value: 'gte'},
+      {label: 'Lower than', value: 'lt'},
+      {label: 'Lower than or equal', value: 'lte'},
+      {label: 'Equals', value: 'equals'},
+      {label: 'Not equals', value: 'notEquals'},
+      {label: 'Between', value: 'between'},
+    ],
+
+    dimensionConditions:[
+      {label: 'Starts with', value: 'startsWith'},
+      {label: 'Contains', value: 'contains'},
+      {label: 'Not contains', value: 'notContains'},
+      {label: 'Ends with', value: 'endsWith'},
+    ],
+
+    dateConditions: [
+      {label: 'In date range', value: 'inDateRange'},
+      {label: 'Not in date range', value: 'inDateRange'},
+      {label: 'Before date', value: 'beforeDate'},
+      {label: 'After date', value: 'afterDate'},
+    ],
   }
 
   beforeEach(() => {
-    jest.spyOn(reportServiceStub, 'createReport' ).mockReturnValue(of(report))
+    jest.spyOn(reportServiceStub, 'createReport' ).mockReturnValue(of(report));
+    jest.spyOn(reportServiceStub, 'fetchFilterConditions' ).mockReturnValue(filterConditions);
 
     TestBed.configureTestingModule({
       declarations: [ReportPreviewComponent],
@@ -160,7 +199,9 @@ describe('ReportPreviewComponent', () => {
   })
 
   test('should add Filter', () => {
-    component.filterForm.controls['column'].setValue('grossPremium');
+    const event = { target: { value: 'yAgoPremium' }}
+    component.showConditions(event)
+    component.filterForm.controls['column'].setValue('yAgoPremium');
     component.filterForm.controls['operator'].setValue('lt');
     component.filterForm.controls['value'].setValue(1000000);
 
@@ -168,13 +209,13 @@ describe('ReportPreviewComponent', () => {
     button.click();
     fixture.detectChanges();
 
-    expect(component.selectedFilters.length).toBe(1);
+    expect(component.selectedFilters.length).toBe(2);
   });
 
   test('should remove Filter', () => {
     component.selectedFilters = [
       {
-        column: `grossPremium `,
+        column: `yAgoPremium `,
         operator: 'lt',
         value: 1000000
       }
