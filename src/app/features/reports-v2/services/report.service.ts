@@ -39,4 +39,32 @@ export class ReportServiceV2 {
       `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 
+  fetchFilterConditions() {
+    const metricConditions = [
+      {label: 'Greater than', value: 'gt'},
+      {label: 'Greater than or equal', value: 'gte'},
+      {label: 'Lower than', value: 'lt'},
+      {label: 'Lower than or equal', value: 'lte'},
+      {label: 'Equals', value: 'equals'},
+      {label: 'Not equals', value: 'notEquals'},
+      {label: 'Between', value: 'between'},
+    ];
+
+    const dimensionConditions = [
+      {label: 'Starts with', value: 'startsWith'},
+      {label: 'Contains', value: 'contains'},
+      {label: 'Not contains', value: 'notContains'},
+      {label: 'Ends with', value: 'endsWith'},
+    ];
+
+  const dateConditions = [
+      {label: 'In date range', value: 'inDateRange'},
+      {label: 'Not in date range', value: 'inDateRange'},
+      {label: 'Before date', value: 'beforeDate'},
+      {label: 'After date', value: 'afterDate'},
+    ];
+
+  return { metricConditions, dimensionConditions, dateConditions };
+  }
+
 }
