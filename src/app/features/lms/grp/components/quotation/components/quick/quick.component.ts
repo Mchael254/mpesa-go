@@ -3,9 +3,17 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/shared/services';
 import { QuickService } from '../../../../service/quick.service';
+import { PayFrequencyService } from '../../../../service/pay-frequency/pay-frequency.service';
+import { PayFrequency } from '../../../../models/payFrequency';
+import { untilDestroyed } from 'src/app/shared/shared.module';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 
 const log = new Logger ('QuickComponent');
+@AutoUnsubscribe
 @Component({
   selector: 'app-quick',
   templateUrl: './quick.component.html',
@@ -13,10 +21,15 @@ const log = new Logger ('QuickComponent');
 })
 export class QuickComponent implements OnInit, OnDestroy {
   quickForm: FormGroup;
+  clientList: ClientDTO[] = [];
+  productList: any[];
   constructor (
     private fb: FormBuilder,
     private router: Router,
-    private quickService: QuickService
+    private quickService: QuickService,
+    private payFrequenciesService: PayFrequencyService,
+    private client_service: ClientService,
+    private product_service: ProductService
     ) {}
 
     public clients = [
@@ -57,13 +70,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       {label: ' Self and member', value: 'selfMember'},
     ];
 
-    public frequencyOfPayment = [
-      {label: ' Annual', value: 'annual'},
-      {label: ' Semi annual', value: 'semiAnnual'},
-      {label: ' Quarterly', value: 'quarterly'},
-      {label: ' Monthly', value: 'monthly'},
-      {label: ' Termly', value: 'termly'},
-    ];
+    frequencyOfPayment: { label: string, value: string }[] = [];
 
     public unitRateOption = [
       {label: ' Weighed age', value: 'weighedAge'},
@@ -90,7 +97,8 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.quickQuoteForm();
-    log.info("logged logger");
+    this.getPayFrequencies();
+    this.getClientList();
   }
 
   ngOnDestroy(): void {
@@ -119,7 +127,35 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home/lms/grp/quotation/coverage']);
   }
 
+
+  getPayFrequencies() {
+    this.payFrequenciesService.getPayFrequencies().subscribe((freqs: PayFrequency[]) => {
+      this.frequencyOfPayment = freqs.map(frequency => ({ 
+        label: frequency.desc,
+        value: frequency.sht_desc 
+      })
+      );
+    });
+  }
+  getClientList() {
+    this.client_service
+      .getClients()
+      .subscribe((data) => {
+        this.clientList = data['content'];
+        console.log(data)
+      });
+  }
+
   getProducts() {
-    this
+    this.product_service
+      .getListOfProduct()
+      .subscribe(
+        (products) =>
+          (this.productList = [
+            { code: 0, description: 'SELECT PRODUCT' },
+            ...products,
+          ])
+          
+      );
   }
 }
