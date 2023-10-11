@@ -6,6 +6,9 @@ import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {Report} from "../../../shared/data/reports/report";
 import {TableDetail} from "../../../shared/data/table-detail";
+import {ChartReports} from "../../../shared/data/reports/chart-reports";
+import {Pagination} from "../../../shared/data/common/pagination";
+import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
 
 @Injectable({
   providedIn: 'root'
@@ -145,4 +148,42 @@ export class ReportService {
     return datasets;
   }
 
+  getChartReports(): Observable<Pagination<ChartReports[]>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
+  }
+
+  /*Create a new dashboard*/
+  saveDashboard(dashboard: Dashboard): Observable<Dashboard> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.post<Dashboard>(
+      `/${baseUrl}/chart/dashboards`, JSON.stringify(dashboard), {headers: this.headers});
+  }
+
+  getDashboards(): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<any>(`/${baseUrl}/chart/dashboards`);
+  }
+
+  getDashboardsById(id:number): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<any>(`/${baseUrl}/chart/dashboards/${id}`);
+  }
+
+  deleteDashboard(dashboardId: number): Observable<string> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.delete<string>(`/${baseUrl}/chart/dashboards/${dashboardId}`, {headers: this.headers});
+  }
+
+  addReportToDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.post<DashboardReports>(
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, JSON.stringify(dashboardReport), {headers: this.headers});
+  }
+
+  deleteReportFromDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.delete<DashboardReports>(
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, {headers: this.headers});
+  }
 }
