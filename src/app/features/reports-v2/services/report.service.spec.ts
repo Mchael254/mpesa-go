@@ -82,4 +82,9 @@ describe('ReportService', () => {
     req.flush(report)
   });
 
+  test('should fetch filter conditions', () => {
+    service.fetchFilterConditions();
+    expect(service.fetchFilterConditions.call).toBeTruthy();
+  });
+
 });
