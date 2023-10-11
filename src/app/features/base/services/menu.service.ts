@@ -14,7 +14,14 @@ export class MenuService{
         name: 'Summary',
         nameSlug: 'summary',
         icon: 'fa-regular fa-newspaper',
-        menuItems: [{name:'My Tasks', link:"/my-tasks"}, {name:'My Dashboard', link:"/my-dashboard"}, {name:'My Transactions', link:"/my-transactions"}, {name:'My Policies', link:"/my-policies"}, {name:'My Quotations', link:"/my-quotations"}, {name:'My Renewals', link:"/my-renewals"}],
+        menuItems: [
+          { name: 'My Tasks', link: "/my-tasks" },
+          { name: 'My Dashboard', link: "/my-dashboard" },
+          { name: 'My Transactions', link: "/my-transactions" },
+          { name: 'My Policies', link: "/my-policies" },
+          { name: 'My Quotations', link: "/my-quotations" },
+          { name: 'My Renewals', link: "/my-renewals" }
+        ],
         collapsed:true,
       }
 
@@ -23,6 +30,7 @@ export class MenuService{
     {
       name: 'Account',
       nameSlug: 'accountSetup',
+      link: "/home/entity/list",
       icon: 'fa-solid fa-gears',
         menuItems: [
           { name: 'Entities', link: "/home/entity/list" },
@@ -116,37 +124,37 @@ export class MenuService{
 
   },],
     "CRM_SETUP":[{
-    name: 'Organization',
-    nameSlug: 'org',
-    icon: 'fa-solid fa-keyboard',
-    menuItems: [
-      {
-        name: 'Organization',
-        link: ""
-      },
-      {
-        name: 'Countries',
-        link: "/home/crm/country"
-      },
-      {
-        name: 'Countries Holidays',
-        link: ""
-      },
-      {
-        name: 'Hierarchy',
-        link: ""
-      },
-      {
-        name: 'Post Levels',
-        link: ""
-      },
-      {
-        name: 'Division',
-        link: ""
-      }
-    ],
-    collapsed:true,
-  }],
+      name: 'Organization',
+      nameSlug: 'org',
+      icon: 'fa-solid fa-keyboard',
+      menuItems: [
+        {
+          name: 'Organization',
+          link: "/home/crm/organization"
+        },
+        {
+          name: 'Countries',
+          link: "/home/crm/country"
+        },
+        {
+          name: 'Countries Holidays',
+          link: ""
+        },
+        {
+          name: 'Hierarchy',
+          link: ""
+        },
+        {
+          name: 'Post Levels',
+          link: ""
+        },
+        {
+          name: 'Division',
+          link: ""
+        }
+      ],
+      collapsed:true,
+    }],
     "GIS_SETUP":[
     {
     name: 'Actions',
