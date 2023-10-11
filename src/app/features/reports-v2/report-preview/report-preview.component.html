@@ -146,21 +146,24 @@
       </div>
       <div class="modal-body">
 
-        <form [formGroup]="filterForm">
+        <form [formGroup]="filterForm" class="mb-3">
           <div class="row g-3">
             <div class="col">
               <label for="column" class="form-label">Column</label>
-              <select formControlName="column" id="column" class="form-select" aria-label="Default select example">
-                <option value="YTD Premium">YTD Premium</option>
-                <option value="Gross Premium">Gross Premium</option>
-                <option value="Year Ago Premium">Year Ago Premium</option>
+              <select (change)="showConditions($event)" formControlName="column" id="column" class="form-select" aria-label="Default select example">
+                <option
+                  *ngFor="let criterion of criteria"
+                  [value]="criterion.query"
+                >
+                  {{ criterion.queryName }}
+                </option>
               </select>
             </div>
             <div class="col">
               <label for="operator" class="form-label">Operator</label>
               <select formControlName="operator" id="operator" class="form-select" aria-label="Default select example">
                 <option
-                  *ngFor="let condition of conditions"
+                  *ngFor="let condition of conditionsOptionsValue"
                   [value]="condition.value"
                 >
                   {{ condition.label }}
@@ -183,18 +186,18 @@
         </form>
 
         <ng-container *ngFor="let filter of selectedFilters">
-          <div class="row g-3 text-dark my-1">
+          <div class="row g-3 text-dark my-1" id="selectedFilters">
             <div class="col">{{ filter.column }}</div>
-            <div class="col">{{ filter.operator.label }}</div>
+            <div class="col">{{ filter?.operator?.label }}</div>
             <div class="col">{{ filter.value }}</div>
             <div class="col text-center text-danger" style="cursor: pointer">
-              <i class="pi pi-times mt-1 remove-filter" (click)="removeFilter(filter)"></i>
+              <i class="pi pi-times remove-filter" (click)="removeFilter(filter)"></i>
             </div>
           </div>
         </ng-container>
 
         <div class="text-center mt-5">
-          <button type="button" class="btn btn-primary">Apply</button>
+          <button type="button" class="btn btn-primary" (click)="loadChart()">Apply</button>
         </div>
       </div>
     </div>

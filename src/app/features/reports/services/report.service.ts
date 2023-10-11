@@ -77,7 +77,7 @@ export class ReportService {
     });
 
     const tableRows = []; // always initialize table to empty array before populating
-    const elementLength = reportLabels[0].length;
+    const elementLength = reportLabels[0]?.length;
     let enhancedChartLabels = [];
 
     for (let i=0; i < elementLength; i++) {
@@ -91,7 +91,7 @@ export class ReportService {
     let tableData = [...enhancedChartLabels];
     reportData.forEach((x) => tableData.push(x));
 
-    const dataLength = tableData[0].length;
+    const dataLength = tableData[0]?.length;
 
     for(let i = 0; i < dataLength; i++) {
       const rowData = [];

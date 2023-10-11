@@ -2,6 +2,7 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from 
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {Logger} from "../../../shared/services";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {ReportServiceV2} from "../services/report.service";
 
 const log = new Logger('CriteriaComponent')
 @Component({
@@ -19,29 +20,9 @@ export class CriteriaComponent implements OnInit{
   @Output() public sort: EventEmitter<any> = new EventEmitter<any>();
 
   public filterForm: FormGroup
-  public metricConditions = [
-    {label: 'Greater than', value: 'gt'},
-    {label: 'Greater than or equal', value: 'gte'},
-    {label: 'Lower than', value: 'lt'},
-    {label: 'Lower than or equal', value: 'lte'},
-    {label: 'Equals', value: 'equals'},
-    {label: 'Not equals', value: 'notEquals'},
-    {label: 'Between', value: 'between'},
-  ];
-
-  public dimensionConditions = [
-    {label: 'Starts with', value: 'startsWith'},
-    {label: 'Contains', value: 'contains'},
-    {label: 'Not contains', value: 'notContains'},
-    {label: 'Ends with', value: 'endsWith'},
-  ];
-
-  public dateConditions = [
-    {label: 'In date range', value: 'inDateRange'},
-    {label: 'Not in date range', value: 'inDateRange'},
-    {label: 'Before date', value: 'beforeDate'},
-    {label: 'After date', value: 'afterDate'},
-  ]
+  public metricConditions = [];
+  public dimensionConditions = [];
+  public dateConditions = [];
 
   public conditions = []
 
@@ -49,14 +30,20 @@ export class CriteriaComponent implements OnInit{
 
   constructor(
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private reportService: ReportServiceV2,
   ) { }
 
   /**
-   * Initializes the component by creating a filter form
+   * 1. Initializes the component by creating a filter form
+   * 2. Fetches filter conditions from report service
    */
   ngOnInit(): void {
     this.createFilterForm();
+    const conditions = this.reportService.fetchFilterConditions();
+    this.metricConditions = conditions.metricConditions;
+    this.dimensionConditions = conditions.dimensionConditions;
+    this.dateConditions = conditions.dateConditions;
   }
 
   /**

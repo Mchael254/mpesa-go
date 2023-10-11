@@ -40,8 +40,20 @@
 
 .remove-filter:hover {
   background: #eee;
-  font-size: 1.1em;
-  transition: font-size 500ms;
-  padding: 0.5rem;
   border-radius: 50%;
+  font-weight: bold;
+  padding: .3rem;
+}
+
+#selectedFilters {
+  border-bottom: solid 1px #eee;
+  border-top: solid 1px #eee;
+}
+
+#selectedFilters:hover {
+  cursor: pointer;
+  /*font-size: 1.1em;*/
+  font-weight: bold;
+  transition: font-weight 200ms;
+
 }

@@ -107,7 +107,6 @@ export class CreateReportComponent implements OnInit {
           this.measures = JSON.parse(res.measures);
           this.dimensions = JSON.parse(res.dimensions);
           this.filters = JSON.parse(res.filter);
-          // this.sort = JSON.parse(res.sort)
           this.criteria = [...this.measures, ...this.dimensions]
           log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
         },
@@ -133,7 +132,7 @@ export class CreateReportComponent implements OnInit {
         log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
 
         const metrics = res.filter((item) => item.name === 'Metrics');
-        log.info('>>>>',metrics[0]);
+        log.info('metrics >>>>',metrics[0]);
         this.metrics = metrics[0];
 
         const dimensions = res.filter((item) => item.name !== 'Metrics');
@@ -281,21 +280,23 @@ export class CreateReportComponent implements OnInit {
   /**
    *1. update the filter array based on selected filter
    * @param filter
+   * @return void
    */
   updateFilter(filter): void {
-    log.info(`filter >>> `, filter);
     this.criteria.forEach((criterion) => {
       if (criterion == filter.queryObject) {
         criterion.filter = filter.queryObject.filter
-        this.filters.push(filter?.filter)
+        this.filters.push(filter)
       }
     });
+    log.info(`filter >>> `, filter, this.filters);
     // this.loadChart();
   }
 
   /**
    *1. update the sort array based on selected sort
    * @param sort
+   * @return void
    */
   updateSort(sort): void {
     this.criteria.forEach((criterion) => {
