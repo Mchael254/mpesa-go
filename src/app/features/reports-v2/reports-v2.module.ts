@@ -16,6 +16,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
 import { ReportPreviewComponent } from './report-preview/report-preview.component';
 import {InputTextModule} from "primeng/inputtext";
 import {CriteriaComponent} from "./criteria/criteria.component";
+import { ListReportComponent } from './list-report/list-report.component';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import {CriteriaComponent} from "./criteria/criteria.component";
     ReportsComponent,
     CreateDashboardComponent,
     ReportPreviewComponent,
-    CriteriaComponent
+    CriteriaComponent,
+    ListReportComponent
   ],
   imports: [
     CommonModule,
