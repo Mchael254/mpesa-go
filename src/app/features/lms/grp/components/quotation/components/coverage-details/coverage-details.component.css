@@ -104,12 +104,16 @@ a.routerLink.active .circle {
 
 .scrollable-container {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  overflow-x: auto;
   width: 100%;
   padding-right: 15px;
   -webkit-overflow-scrolling: touch;
+}
+
+.form-check-input[type="radio"] {
+  -webkit-appearance: radio;
+  appearance: radio;
+  width: 14px;
+  height: 14px;
 }
 
 @media (max-width: 820px) {
@@ -144,7 +148,45 @@ a.routerLink.active .circle {
 }
 
 .search {
+  min: margin left 5px;
   margin-left: auto;
+}
+
+.box {
+  width: auto;
+  align-items: center;
+  background-color: white;
+  display: flex;
+  padding: 10px;
+  border: 2px solid #e1e1e1;
+  border-radius: 4px;
+  height: 40px;
+}
+
+.box > i {
+  font-size: 16px;
+  color: #777;
+}
+
+.box > input {
+  flex: 1;
+  border: none;
+  outline: none;
+  height: 37px;
+}
+
+.custom-form-control {
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; 
 }
 
 @media screen and (max-width:1400px) and (min-width:280px),
