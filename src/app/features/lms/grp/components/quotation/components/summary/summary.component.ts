@@ -10,6 +10,9 @@ const log = new Logger('SummaryComponent');
   styleUrls: ['./summary.component.css']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
+  getPayFrequencies() {
+    throw new Error('Method not implemented.');
+  }
 
   constructor( private fb: FormBuilder) {}
   
