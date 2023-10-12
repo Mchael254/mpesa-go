@@ -99,7 +99,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
   quickQuoteForm() {
@@ -127,9 +127,9 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   getPayFrequencies() {
     this.payFrequenciesService.getPayFrequencies().subscribe((freqs: PayFrequency[]) => {
-      this.frequencyOfPayment = freqs.map(frequency => ({ 
+      this.frequencyOfPayment = freqs.map(frequency => ({
         label: frequency.desc,
-        value: frequency.sht_desc 
+        value: frequency.sht_desc
       })
       );
     });
@@ -143,7 +143,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       }));
     });
   }
-  
+
   getProducts() {
     this.product_service.getListOfProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
@@ -152,6 +152,5 @@ export class QuickComponent implements OnInit, OnDestroy {
       }));
     });
   }
-  
-  
+
 }
