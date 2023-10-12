@@ -1,23 +1,6 @@
 <div class="container">  
     <div class="container">
-        <div class="row">
-          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-            <div class="circle">1</div>
-            <div class="text">Product details</div>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-            <a routerLink="/home/lms/grp/quotation/coverage">
-              <div class="circle">2</div>
-              <div class="text">Coverage details</div>
-            </a>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-            <a routerLink="/home/lms/grp/quotation/summary">
-              <div class="circle">3</div>
-              <div class="text">Summary</div>
-            </a>
-          </div>
-        </div>
+      <app-stepper></app-stepper>
       </div>
   <div id="container">
     <div class="client-details">Select Client</div>
@@ -26,8 +9,8 @@
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Client</label></div>
             <div>
-                <p-dropdown id='clients'
-                            [options]='clients'
+                <p-dropdown id='value'
+                            [options]='clientList'
                             [optionLabel]="'label'"
                             [filter]="true"
                             [filterBy]="'label'"
@@ -46,7 +29,7 @@
             <div class="label"><label>Product</label></div>
             <div>
                 <p-dropdown id='products'
-                            [options]='products'
+                            [options]='productList'
                             [optionLabel]="'label'"
                             [style]="{ width: '80%' }"
                             formControlName='products' 
@@ -191,7 +174,7 @@
                           [optionLabel]="'label'"
                           [style]="{ width: '80%' }"
                           formControlName='intermediary' 
-                          placeholder="Select a Product"
+                          placeholder="Select an Intermediary"
                           class="select"
                           >
               </p-dropdown>
