@@ -8,7 +8,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
 import { finalize } from 'rxjs/internal/operators/finalize';
-import { first, mergeMap, tap, debounceTime, switchMap, of } from 'rxjs';
+import { first, mergeMap, tap, debounceTime, switchMap, of, timer, delay, pipe } from 'rxjs';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -271,9 +271,10 @@ export class QuickComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (prem) => {
-            // console.log(prem);
+            console.log(prem);
             this.session_storage.set('quote_code',prem['quote_code'])
             this.session_storage.set('client_code',prem['client_code'])
+            this.session_storage.set('quick_quote',prem)
 
             this.quickQuoteSummary.mutate((da: any) => {
               da['prem_result'] = prem['premium'];
@@ -329,7 +330,10 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   nextPage(){
-    this.route.navigate(["/home/lms/ind/quotation/client-details"])
+    this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
+    timer(1000).subscribe(() => {
+      this.route.navigate(["/home/lms/ind/quotation/client-details"]);
+    })
 
   }
 

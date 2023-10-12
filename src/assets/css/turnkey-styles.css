@@ -653,10 +653,10 @@ p-table tr > th {
 
 .b-r {
   width: 2.5rem; height: 2.5rem; border-radius: 10rem;
-  background-color: var(--primary-color);
-  border: 1px rgb(8, 32, 81) solid;
+  background-color: rgb(217, 217, 235);
+  /* border: 1px rgb(8, 32, 81) solid; */
   cursor:pointer;
-  color:white;
+  color:var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -665,10 +665,10 @@ p-table tr > th {
 
 .b-r:hover {
   width: 2.4rem; height: 2.4rem; border-radius: 10rem;
-  background-color: #087CE3;
+  background-color: rgb(172, 172, 176);
   border: none;
   cursor:pointer;
-  color:white;
+  color:var(--primary-color);
   display: flex;
   justify-content: center;
   align-items: center;
