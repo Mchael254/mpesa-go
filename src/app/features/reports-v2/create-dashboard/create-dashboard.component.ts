@@ -30,7 +30,7 @@ export class CreateDashboardComponent implements OnInit {
   chartRepName: any = [];
   selectedChartReport: any = [];
 
-  public dashboards: Dashboard[] = [];
+  public dashboards: any[] = [];
   public selectedDashboard: Dashboard;
   selectedItem:any = null;
   public dashboardReport: DashboardReports;
@@ -291,11 +291,12 @@ export class CreateDashboardComponent implements OnInit {
             const measures = JSON.parse(report?.measures);
             const dimensions = JSON.parse(report?.dimensions);
             const filters = JSON.parse(report?.filter);
+            log.info(`chart to use >>>`, res[2].reports[0].charts[0].type);
 
-            log.info(`measures >>>`, measures);
+            /*log.info(`measures >>>`, measures);
             log.info(`dimensions >>>`, dimensions);
             log.info(`filters >>>`, filters);
-            log.info('---------------')
+            log.info('---------------')*/
 
             // this.getReportFromCubeJS(measures, dimensions, filters);
             const chartData = await this.getReportFromCubeJS(measures, dimensions, filters);
@@ -384,12 +385,16 @@ export class CreateDashboardComponent implements OnInit {
         };
         this.chartDataArr.push(chartData);
         this.chartData = chartData;
-        log.info('chart data', chartData);
-        resolve(chartData);
 
-        /*this.tableDetails = this.reportService.prepareTableData(
+
+        /*const tableDetails = this.reportService.prepareTableData(
           reportLabels, reportData, dimensions, this.measures, this.criteria
         );*/
+
+        // chartData.tableDetails = tableDetails;
+
+        log.info('chart data', chartData);
+        resolve(chartData);
 
         // log.info('report data >>>', reportsData);
       })
