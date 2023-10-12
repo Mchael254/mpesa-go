@@ -38,7 +38,7 @@ export interface Chart {
   colorScheme: number,
   evenColor: string,
   evenOddAppliesTo: string,
-  id: number,
+  id?: number,
   length: number,
   name: string,
   oddColor: string,

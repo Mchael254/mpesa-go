@@ -1,7 +1,10 @@
 <div class="base-content-section dashboard">
   <div class="card">
-    <div class="card-header bg-transparent">
-       <span class="float-start">Reports</span>
+    <div class="card-header bg-transparent my-2">
+      <span class="float-start text-primary fw-bold">
+        <i class="pi pi-chevron-left"></i>
+        Reports
+      </span>
     </div>
     <div class="card-body">
       <div class="row">
@@ -155,11 +158,16 @@
 
         </div>
 
-        <div class="col-sm-8 text-center">
-          <input type="text"
-                 class="border-0 border-bottom text-center bg-transparent"
-                 placeholder="Pilot report"
-                 [(ngModel)]="reportNameRec" disabled>
+        <div class="col-sm-9">
+          <div class="text-center" id="reportName">
+            <input
+              type="text"
+              class="text-center bg-transparent btn-full-width"
+              placeholder="Pilot report"
+              [(ngModel)]="reportNameRec"
+              disabled
+            >
+          </div>
 
           <!--<ng-container *ngIf="isCriteriaButtonActive">
             <div class="row" style="padding: 0 2rem 2rem 1rem">
