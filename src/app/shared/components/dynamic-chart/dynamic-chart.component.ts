@@ -1,4 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Logger} from "../../services";
+
+const log = new Logger(`DynamicChartComponent`)
 
 @Component({
   selector: 'app-dynamic-chart',
@@ -35,7 +38,7 @@ export class DynamicChartComponent implements OnInit {
         legend: {
           labels: {
             color: textColor
-          }
+          },
         }
       },
       scales: {
