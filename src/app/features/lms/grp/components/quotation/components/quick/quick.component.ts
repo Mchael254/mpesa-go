@@ -10,6 +10,7 @@ import { ClientService } from 'src/app/features/entities/services/client/client.
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 
 
 const log = new Logger ('QuickComponent');
@@ -21,8 +22,11 @@ const log = new Logger ('QuickComponent');
 })
 export class QuickComponent implements OnInit, OnDestroy {
   quickForm: FormGroup;
-  clientList: ClientDTO[] = [];
-  productList: any[];
+  // clientList: ClientDTO[] = [] as ClientDTO[];
+  clientList: { label: string, value: number }[] = [];
+  productList: any[] = [
+    { code: 0, description: 'SELECT PRODUCT' },
+  ];
   constructor (
     private fb: FormBuilder,
     private router: Router,
@@ -31,14 +35,6 @@ export class QuickComponent implements OnInit, OnDestroy {
     private client_service: ClientService,
     private product_service: ProductService
     ) {}
-
-    public clients = [
-      { label: 'Client 1', value: 'client1' },
-      { label: 'Client 2', value: 'client2' },
-      { label: 'Client 3', value: 'client3' },
-      { label: 'Client 10', value: 'client10' },
-      { label: 'Client 15', value: 'client15' },
-    ];
 
     public products = [
       {label: ' Britam Individual', value: 'britam'},
@@ -99,6 +95,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.quickQuoteForm();
     this.getPayFrequencies();
     this.getClientList();
+    this.getProducts();
   }
 
   ngOnDestroy(): void {
@@ -137,25 +134,24 @@ export class QuickComponent implements OnInit, OnDestroy {
       );
     });
   }
-  getClientList() {
-    this.client_service
-      .getClients()
-      .subscribe((data) => {
-        this.clientList = data['content'];
-        console.log(data)
-      });
-  }
 
-  getProducts() {
-    this.product_service
-      .getListOfProduct()
-      .subscribe(
-        (products) =>
-          (this.productList = [
-            { code: 0, description: 'SELECT PRODUCT' },
-            ...products,
-          ])
-          
-      );
+  getClientList() {
+    this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+      this.clientList = data.content.map(client => ({
+        label: `${client.firstName} ${client.lastName}`,
+        value: client.id
+      }));
+    });
   }
+  
+  getProducts() {
+    this.product_service.getListOfProduct().subscribe((products) => {
+      this.productList = products.map((product) => ({
+        label: product.description,
+        value: product.code
+      }));
+    });
+  }
+  
+  
 }

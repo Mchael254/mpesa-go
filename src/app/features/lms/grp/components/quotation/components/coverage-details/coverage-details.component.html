@@ -1,23 +1,6 @@
 <div class="container">
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-                <a routerLink="/home/lms/grp/quotation/quick">
-                  <div class="circle">1</div>
-                  <div class="text">Product details</div>
-                </a>
-              </div>
-          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-            <div class="circle">2</div>
-            <div class="text">Coverage details</div>
-          </div>
-          <div class="col-xs-12 col-sm-4 col-md-4 text-center">
-            <a routerLink="/home/lms/grp/quotation/summary">
-              <div class="circle">3</div>
-              <div class="text">Summary</div>
-            </a>
-          </div>
-        </div>
+        <app-stepper></app-stepper>
       </div>
     <div id="container">
         <h5 class="mt-1">Cover details</h5>
@@ -175,7 +158,7 @@
               <!-- modal to capture aggregate cover types details -->
               <div class="modal fade" tabindex="-1" #addClientModal id="aggregateModal" aria-labelledby="aggregateModalLabel" aria-hidden="true"
               style="color: #333;">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-xl">
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title" id="aggregateModalLabel">Capture Cover type details</h5>
@@ -195,7 +178,7 @@
                                             <p-dropdown id='aggregateMainCover'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggregateCoverType' 
                                                         placeholder="Select Cover type"
                                                         >
@@ -211,7 +194,7 @@
                                             <p-dropdown id='aggrgateOverridePremiums'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggrgatePremiumMask' 
                                                         placeholder="Select Premium mask"
                                                         >
@@ -227,7 +210,7 @@
                                             <p-dropdown id='aggregateRateDivFactor'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggregatePercentageMainYr' 
                                                         placeholder="Select % of Main/yr SA"
                                                         >
@@ -246,7 +229,7 @@
                                                 pInputText
                                                 class="form-control"
                                                 id="averageAnb" 
-                                                [style]="{ width: '100%' }"
+                                                [style]="{ width: '80%' }"
                                                 formControlName="noOfMembers" 
                                                 placeholder="No of members">
                                         </div>
@@ -263,7 +246,7 @@
                                                 pInputText
                                                 class="form-control"
                                                 id="sumAssured" 
-                                                [style]="{ width: '100%' }"
+                                                [style]="{ width: '80%' }"
                                                 formControlName="category" 
                                                 placeholder="Category">
                                         </div>
@@ -281,7 +264,7 @@
                                             <p-dropdown id='aggregateCoverTypes'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggregateSelectRate' 
                                                         placeholder="Select Rate"
                                                         >
@@ -301,7 +284,7 @@
                                             pInputText
                                             class="form-control"
                                             id="averageEarningPerMember" 
-                                            [style]="{ width: '100%' }" 
+                                            [style]="{ width: '80%' }" 
                                             formControlName="rate" 
                                            >
                                         </div>
@@ -316,7 +299,7 @@
                                             <p-dropdown id='aggregatePercentageMainYr'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='dependantType' 
                                                         placeholder="Select Percentage of..."
                                                         >
@@ -334,7 +317,7 @@
                                         pInputText
                                         class="form-control"
                                         id="noOfMembers" 
-                                        [style]="{ width: '100%' }" 
+                                        [style]="{ width: '80%' }" 
                                         formControlName="averageEarningPerMember" 
                                         placeholder=" Av earning per member">
                                     </div>
@@ -350,7 +333,7 @@
                                             <p-dropdown id='aggregateSelectRate'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%', height: '38px', 'line-height': '10px' }"
+                                                        [style]="{ width: '80%', height: '38px', 'line-height': '10px' }"
                                                         formControlName='overridePremiums' 
                                                         placeholder="Select Override premiums"
                                                         >
@@ -368,7 +351,7 @@
                                             pInputText
                                             class="form-control"
                                             id="averageEarningPerMember" 
-                                            [style]="{ width: '100%' }" 
+                                            [style]="{ width: '80%' }" 
                                             formControlName="rateDivFactor" 
                                            >
                                         </div>
@@ -386,7 +369,7 @@
                                                 pInputText
                                                 class="form-control"
                                                 id="averageEarningPerMember" 
-                                                [style]="{ width: '100%' }" 
+                                                [style]="{ width: '80%' }" 
                                                 formControlName="averageAnb" 
                                                >
                                             </div>
@@ -403,7 +386,7 @@
                                         pInputText
                                         class="form-control"
                                         id="averageEarningPerMember" 
-                                        [style]="{ width: '100%' }" 
+                                        [style]="{ width: '80%' }" 
                                         formControlName="sumAssured" 
                                        >
                                     </div>
