@@ -72,14 +72,10 @@ export class HeaderSubMenuComponent implements OnInit {
     }
   }
   closeModal() {
-    // Close the Bootstrap modal programmatically
-
     const modal = document.getElementById('NewQuoteModal');
-    // this.close_modal = true;
     if (modal) {
       modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
-      this.modalElement.nativeElement = '';
+      modal.style.display = 'none';
       }
   }
 
