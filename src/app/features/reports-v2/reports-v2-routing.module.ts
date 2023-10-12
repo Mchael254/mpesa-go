@@ -4,6 +4,7 @@ import {CreateReportComponent} from "./create-report/create-report.component";
 import { ReportsComponent } from './reports/reports.component';
 import {CreateDashboardComponent} from "./create-dashboard/create-dashboard.component";
 import {ReportPreviewComponent} from "./report-preview/report-preview.component";
+import {ListReportComponent} from "./list-report/list-report.component";
 
 const routes: Routes = [
   {
@@ -29,6 +30,14 @@ const routes: Routes = [
   {
     path: 'preview',
     component: ReportPreviewComponent
+  },
+  {
+    path: 'list-report',
+    component: ListReportComponent
+  },
+  {
+    path: 'list-report/:id',
+    component: ListReportComponent
   },
 ];
 

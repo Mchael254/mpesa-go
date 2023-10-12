@@ -11,27 +11,43 @@
                   data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
         </div>
         <div class="row mx-0 mt-3 p-0 dragDropBoundary">
-          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards">
             <div class="card">
-              <div class="card-header border-0 text-sm-start bg-transparent"
-                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-                Financial reports
-                <span class="icon-container float-end" (click)="menu.toggle($event)">
+              <div class="card-header border-0 text-sm-start bg-transparent">
+
+                <span style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
+                (click)="moveToListReport(dashboard.id)">{{dashboard?.name | titlecase }}</span>
+
+                <span class="icon-container float-end" (click)="selectedItem = dashboard.id;menu.toggle($event)">
                   <i class="fa fa-ellipsis-v clickable"></i>
                 </span>
                 <p-menu #menu [model]="items" [popup]="true"></p-menu>
 
               </div>
-              <div class="card-body">
-                <app-dynamic-chart
-                  [basicData]="basicData"
-                  [chartType]="'bar'"
-                ></app-dynamic-chart>
-              </div>
+              <ng-container *ngIf="dashboard.chartData">
+                <div class="card-body">
+                  <div
+                    *ngIf="shouldShowTable && isPreviewResultAvailable;
+               else showChart"
+                  >
+                    <app-dynamic-table
+                      [tableDetails]="tableDetails"
+                    ></app-dynamic-table>
+                  </div>
+
+                  <ng-template #showChart>
+                    <app-dynamic-chart
+                      [basicData]="dashboard.chartData"
+                      [chartType]="'bar'"
+                    ></app-dynamic-chart>
+                  </ng-template>
+
+                </div>
+              </ng-container>
             </div>
           </div>
 
-          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+          <!--<div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
             <div class="card">
               <div class="card-header border-0 text-sm-start bg-transparent"
                    style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
@@ -48,8 +64,8 @@
                 ></app-dynamic-chart>
               </div>
             </div>
-          </div>
-          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+          </div>-->
+          <!--<div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
             <div class="card">
               <div class="card-header border-0 text-sm-start bg-transparent"
                    style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
@@ -66,7 +82,7 @@
                 ></app-dynamic-chart>
               </div>
             </div>
-          </div>
+          </div>-->
         </div>
 
       </div>
@@ -75,7 +91,7 @@
   </div>
 
 
-  <!-- Modal -->
+  <!-- Create Dashboard Modal -->
   <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -85,29 +101,74 @@
         </div>
         <div class="modal-body">
 
-          <form>
+          <form [formGroup]="createDashboardForm">
             <div class="mb-3">
               <label for="dashboardName" class="form-label">Dashboard name
                 <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="dashboardName">
+              <input type="text" class="form-control" id="dashboardName" formControlName="dashboardName">
             </div>
             <div class="col-sm-12 mb-3">
               <label class="form-label">Add report(s)</label><br>
+                <p-dropdown
+                  [options]="chartReports"
+                  optionLabel="name"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%' }"
+                  placeholder="Select report"
+                  id="chartReportDropdown"
+                  formControlName="reportName"
+                >
+                  <ng-template let-chartReport pTemplate="item">
+                    <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                      <div
+                      >
+                        {{ chartReport.name }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add report Modal -->
+  <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeAddReportModal()"></button>
+        </div>
+        <div class="modal-body">
+
+          <form [formGroup]="addReportToDashboardForm">
+            <div class="col-sm-12 mb-3">
+              <label class="form-label">Select report</label><br>
               <p-dropdown
-                [options]="reports"
+                [options]="chartReports"
                 optionLabel="name"
                 [filter]="true"
                 filterBy="name"
                 [showClear]="true"
                 [style]="{ width: '100%' }"
                 placeholder="Select report"
-                id="subjectAreaDropdown"
+                id="chartReportDropdown"
+                formControlName="reportName"
               >
-                <ng-template let-report pTemplate="item">
+                <ng-template let-chartReport pTemplate="item">
                   <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
                     <div
                     >
-                      {{ report.name }}
+                      {{ chartReport.name }}
                     </div>
                   </div>
                 </ng-template>
@@ -118,7 +179,28 @@
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">Create</button>
+                  style="border-radius: 4px; margin: auto" (click)="addReportToDashboard();closeAddReportModal()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation dialogue Modal -->
+  <div class="modal fade" id="deleteDashboardModal" tabindex="-1" aria-labelledby="deleteDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <p>Are you sure you want to delete?</p>
+            <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="deleteDashboard(this.selectedItem);closeDeleteModal()">Yes</button>
+          </div>
+
         </div>
       </div>
     </div>
