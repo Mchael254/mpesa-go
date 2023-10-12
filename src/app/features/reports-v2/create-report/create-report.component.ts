@@ -26,7 +26,7 @@ export class CreateReportComponent implements OnInit {
       url: '/reportsv2/create-report'
     },
     {
-      label: 'Configure',
+      label: 'Preview',
       url: '',
     },
   ];

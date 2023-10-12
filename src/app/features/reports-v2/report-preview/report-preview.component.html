@@ -1,7 +1,10 @@
 <div class="base-content-section dashboard">
   <div class="card">
     <div class="card-header bg-transparent">
-      <span class="float-start">Reports</span>
+      <span class="float-start text-primary fw-bold">
+        <i class="pi pi-chevron-left"></i>
+        Reports
+      </span>
     </div>
     <div class="card-body">
       <div class="row">
@@ -19,30 +22,48 @@
                 <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
                 <i class="pi pi-chevron-down float-end mt-1"></i>
               </p>
-              <ul *ngIf="shouldShowVisualization" class="fadeIn">
-                <ng-container *ngFor="let chartType of chartTypes" >
+              <!--<ul *ngIf="shouldShowVisualization" class="fadeIn">
+                <ng-container *ngFor="let chartType of chartTypes">
                   <li class="chart-type" (click)="selectChartType(chartType)">
                     <i [class]="chartType.iconClass"></i>
                     <span class="ml-2">{{ chartType.name | titlecase }}</span>
                   </li>
                 </ng-container>
-              </ul>
+              </ul>-->
             </div>
+
+            <ng-container *ngIf="shouldShowVisualization">
+              <form class="fadeIn chart-type-form">
+                <div *ngFor="let chartType of chartTypes" class="form-check">
+                  <input
+                    (click)="selectChart($event)"
+                    class="form-check-input"
+                    type="checkbox"
+                    [value]="chartType.name"
+                    [attr.id]="chartType.name"
+                    [checked]="chartType.name === 'table'"
+                  >
+                  <label class="form-check-label" [attr.for]="chartType.name">
+                    <i [class]="chartType.iconClass"></i> {{ chartType.name }}
+                  </label>
+                </div>
+              </form>
+            </ng-container>
+
           </div>
 
-          <div class="visualizations mt-3">
+          <div class="visualizations mt-3" *ngIf="displayChartTypes.length > 0">
             <div class="">
               <label for="style">Style</label>
               <p class="selected-visualization" (click)="showStyles()" id="style">
-                <i [class]="selectedChartType.iconClass"></i>
-                <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
+                <!--<i [class]="selectedChartType.iconClass"></i>-->
+                <span class="ml-2">{{ this.styleType | titlecase }}</span>
                 <i class="pi pi-chevron-down float-end mt-1"></i>
               </p>
               <ul *ngIf="shouldShowStyles" class="fadeIn">
-                <ng-container *ngFor="let chartType of chartTypes" >
-                  <li class="chart-type" (click)="selectStyle(chartType)">
-                    <i [class]="chartType.iconClass"></i>
-                    <span class="ml-2">{{ chartType.name | titlecase }}</span>
+                <ng-container *ngFor="let styleType of displayChartTypes" >
+                  <li class="chart-type" (click)="selectStyle(styleType)">
+                    <span class="ml-2">{{ styleType | titlecase }}</span>
                   </li>
                 </ng-container>
               </ul>
@@ -67,11 +88,15 @@
         </div>
 
         <div class="col-sm-9 text-center">
-          <input
-            type="text"
-            class="border-0 border-bottom text-center bg-transparent"
-            [value]="reportNameRec"
-            disabled>
+          <div class="text-center" id="reportName">
+            <input
+              type="text"
+              class="text-center bg-transparent btn-full-width"
+              placeholder="Pilot report"
+              [(ngModel)]="reportNameRec"
+              disabled
+            >
+          </div>
 
           <form>
             <div class="row">
@@ -99,29 +124,26 @@
               ></p-progressSpinner>
             </div>
 
-          <!-- <h6 class="mainHead text-center" *ngIf="reportTitle != ''">{{ reportTitle | titlecase }}</h6>-->
-
-            <div
-              *ngIf="shouldShowTable && isPreviewResultAvailable;
-               else showChart"
-            >
-              <app-dynamic-table
-                [tableDetails]="tableDetails"
-              ></app-dynamic-table>
-            </div>
-
-            <ng-template #showChart>
+            <ng-container *ngFor="let chartType of displayChartTypes">
               <div
-                *ngIf="isPreviewResultAvailable"
+                *ngIf="chartType !== 'table' && isPreviewResultAvailable"
                 style="max-height: 800px"
-                class="py-2"
+                class="col-md-6 my-1 p-2"
               >
                 <app-dynamic-chart
                   [chartType]="chartType"
-                  [basicData]="chartData"
+                  [basicData]="setChartColors(chartType, chartData)"
                 ></app-dynamic-chart>
               </div>
-            </ng-template>
+              <div
+                class="col-md-12 my-1"
+                *ngIf="chartType === 'table' && isPreviewResultAvailable;"
+              >
+                <app-dynamic-table
+                  [tableDetails]="tableDetails"
+                ></app-dynamic-table>
+              </div>
+            </ng-container>
 
           </div>
 
@@ -220,11 +242,11 @@
             </div>
             <div class="col">
               <label for="dashboard" class="form-label">Dashboard</label>
-              <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
-                <option>
-                  sample dashboard
-                </option>
-              </select>
+                <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
+                  <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
+                    {{ dashboard.name }}
+                  </option>
+                </select>
             </div>
           </div>
           <div class="row mt-3">
