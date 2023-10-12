@@ -7,7 +7,7 @@
         <div class="col-md-4 gap-below" (click)="clickMpesa()">
           <div class="card shadow">
             <div class="card-body centered-content">
-              <span class="fw-bold">Mpesa</span>
+              <span class="fw-bold">Mobile Money</span>
               <span><i class="fa-solid fa-mobile-screen fa-lg"></i></span>
             </div>
           </div>
@@ -249,13 +249,19 @@
             <div class="row justify-content-start">
               <div class="col-lg-6 col-sm-12">
                 <form>
-                  <div class="form-group text-black">
+                  <div class="form-group text-black pb-2">
                     <label for="selectBank">Select Bank</label>
-                    <select class="form-select mt-1 mb-3" id="selectBank">
-                      <option value="" disabled selected>Select a bank</option>
-                      <option value="bank1">Bank 1</option>
-                      <option value="bank2">Bank 2</option>
-                    </select>
+                    <select
+                class="form-select"
+                [id]="'bank'"
+              >
+              <option value="" disabled selected>Select Bank</option>
+                <ng-container *ngFor="let bank of bankList">
+                  <option [value]="bank['id']">
+                    {{ bank['name']  | titlecase}}
+                  </option>
+                </ng-container>
+              </select>
                   </div>
 
                   <div class="form-group text-black">

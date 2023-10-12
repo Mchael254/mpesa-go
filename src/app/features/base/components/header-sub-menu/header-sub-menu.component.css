@@ -52,8 +52,9 @@
 }
 
 .sub-card {
-  padding: 1rem;
-  font-weight: 700;
+  padding: 0.5rem;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 .sub-card:hover {
@@ -77,8 +78,13 @@
   height: 5rem;
 }
 
-.lms-image{
-  background-image: url('src/assets/svg/lms.svg'); /* Replace with the actual path to your SVG file */
+.lms-grp-image{
+  background-image: url('src/assets/svg/lms-grp.svg'); /* Replace with the actual path to your SVG file */
+
+}
+
+.lms-ind-image{
+  background-image: url('src/assets/svg/lms-ind.svg'); /* Replace with the actual path to your SVG file */
 
 }
 .gis-image {
@@ -88,4 +94,8 @@
 
 .sub-card {
   margin-right: 1.5rem;
+}
+
+.modal-content {
+  width: 50rem !important;
 }

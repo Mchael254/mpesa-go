@@ -13,9 +13,14 @@ export class BeneficiaryService {
   getListOfBeneficariesByQuotationCode(quote_code:number){
     return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}`, API_CONFIG.MARKETING_SERVICE_BASE_URL)
     .pipe(
-      map((_prod: any) => {
-        return _prod['content'];
+      map((data: any) => {
+        return data['content'];
     }),
     );
+  }
+
+  createBeneficary(beneficiary: any){
+    return this.api.POST(`parties/beneficiaries`, beneficiary, API_CONFIG.MARKETING_SERVICE_BASE_URL);
+
   }
 }

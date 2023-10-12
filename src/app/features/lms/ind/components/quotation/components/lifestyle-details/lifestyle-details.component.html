@@ -175,11 +175,11 @@
                         <select class="form-select" [id]="'clientType'">
                           <ng-container
                             *ngFor="
-                              let product of [{ code: 1, description: 'E' }]
+                              let product of frequencyOfPayment
                             "
                           >
-                            <option [value]="product?.code">
-                              {{ product?.description }}
+                            <option [value]="product['value']">
+                              {{ product['label'] | titlecase}}
                             </option>
                           </ng-container>
                         </select>
@@ -248,14 +248,14 @@
                               <label for="clientType">Frequency</label>
                               <select class="form-select" [id]="'clientType'">
                                 <ng-container
-                                  *ngFor="
-                                    let product of [{ code: 1, description: 'E' }]
-                                  "
-                                >
-                                  <option [value]="product?.code">
-                                    {{ product?.description }}
-                                  </option>
-                                </ng-container>
+                            *ngFor="
+                              let product of frequencyOfPayment
+                            "
+                          >
+                            <option [value]="product['value']">
+                              {{ product['label'] | titlecase}}
+                            </option>
+                          </ng-container>
                               </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12">

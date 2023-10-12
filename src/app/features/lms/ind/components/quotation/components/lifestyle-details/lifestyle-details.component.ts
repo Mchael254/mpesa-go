@@ -6,6 +6,8 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 import { map } from 'rxjs/internal/operators/map';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
+import { PayFrequencyService } from 'src/app/features/lms/grp/service/pay-frequency/pay-frequency.service';
+import { PayFrequency } from 'src/app/features/lms/grp/models/payFrequency';
 
 
 @Component({
@@ -33,7 +35,8 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
 
   insuranceHistoryForm: FormGroup;
   countryList: CountryDto[] = [];
-  constructor(private fb: FormBuilder, private country_service:CountryService){
+  frequencyOfPayment: any[] = [];
+  constructor(private fb: FormBuilder, private country_service:CountryService, private payFrequenciesService: PayFrequencyService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       question2: ['N'],
@@ -43,10 +46,21 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.getCountryList();
+    this.getPayFrequencies();
   }
 
   getValue(name: string = 'sa_prem_select') {
     return this.insuranceHistoryForm.get(name).value;
+  }
+
+  getPayFrequencies() {
+    this.payFrequenciesService.getPayFrequencies().subscribe((freqs: PayFrequency[]) => {
+      this.frequencyOfPayment = freqs.map(frequency => ({
+        label: frequency.desc,
+        value: frequency.sht_desc
+      })
+      );
+    });
   }
 
   getCountryList() {
