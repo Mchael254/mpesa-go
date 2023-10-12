@@ -80,3 +80,9 @@
 .continueBtn {
   border-radius: 4px;
 }
+
+#reportName input[type=text] {
+  border: none;
+  border-bottom: #00529b 1px solid;
+  color: #00529b;
+}

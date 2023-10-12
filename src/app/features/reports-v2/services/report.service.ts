@@ -39,6 +39,15 @@ export class ReportServiceV2 {
       `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 
+  /**
+   * gets a list of dashboards
+   */
+  getDashboards(): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<any>(
+      `/${baseUrl}/chart/dashboards`, {headers: this.headers});
+  }
+
   fetchFilterConditions() {
     const metricConditions = [
       {label: 'Greater than', value: 'gt'},

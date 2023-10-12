@@ -16,6 +16,8 @@ import {take} from "rxjs/operators";
 import {AuthService} from "../../../shared/services/auth.service";
 import {Router} from "@angular/router";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
+import _default from "chart.js/dist/core/core.interaction";
+import dataset = _default.modes.dataset;
 
 const log = new Logger('ReportPreviewComponent')
 
@@ -54,11 +56,13 @@ export class ReportPreviewComponent implements OnInit{
   public conditionsOptionsValue = [];
 
   public chartType: ChartType | string = "table";
-  public selectedChartType = { iconClass: 'pi pi-table', name: 'table'}
+  public displayChartTypes: string[] = [];
+  public selectedChartType = { iconClass: 'pi pi-table', name: 'Table'}
   public shouldShowTable: boolean = true;
   public shouldShowVisualization: boolean = false;
   public shouldShowStyles: boolean = false;
   public filterForm: FormGroup;
+  public chartTypeForm: FormGroup;
   public selectedFilters = [];
   public criteria: Criteria[];
   public measures: string[] = [];
@@ -74,10 +78,12 @@ export class ReportPreviewComponent implements OnInit{
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
   public tableDetails: TableDetail = {};
-  public isPreviewResultAvailable: boolean = null;
+  public isPreviewResultAvailable: boolean = true;
   public reportNameRec: string;
   public saveReportForm: FormGroup;
   private currentUser;
+  public styleType: string = 'table';
+  public dashboards: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -89,8 +95,7 @@ export class ReportPreviewComponent implements OnInit{
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
-  ) {
-  }
+  ) {}
 
   /**
    * Initializes the component by:
@@ -111,9 +116,26 @@ export class ReportPreviewComponent implements OnInit{
     this.populateSelectedFilters(reportParams.filters);
     this.createFilterForm();
     this.createSaveReportForm();
+    this.createChartTypeForm();
     this.loadChart();
+    this.fetchDashboards();
 
     this.currentUser = this.authService.getCurrentUser();
+    this.displayChartTypes.push('table');
+  }
+
+  fetchDashboards() {
+    this.reportServiceV2.getDashboards()
+      .pipe()
+      .subscribe({
+        next: ((dashboards) => {
+          log.info(`dashboards >>>`, dashboards);
+          this.dashboards = dashboards;
+        }),
+        error: (e) => {
+
+        }
+      })
   }
 
   populateSelectedFilters(reportParamFilters) {
@@ -176,11 +198,28 @@ export class ReportPreviewComponent implements OnInit{
   }
 
   /**
+   * creates chart type form
+   */
+  createChartTypeForm(): void {
+    this.chartTypeForm = this.fb.group({
+      chartType: [''],
+      /*table: [''],
+      bar: [''],
+      line: [''],
+      pie: [''],
+      doughnut: [''],
+      polarArea: [''],
+      radar: [''],*/
+    });
+  }
+
+  /**
    * 1. selects chart to be displayed
    * 2. fetch chart details by calling the loadChart() method
    * @param chartType
    */
   selectChartType(chartType: { iconClass: string; name: ChartType | string }): void {
+    log.info(`selected chartType `, chartType);
     this.chartType = chartType.name;
     this.selectedChartType = chartType
     // @ts-ignore
@@ -191,6 +230,32 @@ export class ReportPreviewComponent implements OnInit{
     }
     this.shouldShowVisualization = false;
     this.loadChart();
+  }
+
+  selectChart(event) {
+    const formChartType = event.target.value;
+    const selectedChartType = this.chartTypes.filter((item) => item.name === formChartType)[0];
+
+    const isIndexPresent = this.displayChartTypes.indexOf(selectedChartType.name);
+
+    if(isIndexPresent !== -1) {
+      this.displayChartTypes.splice(isIndexPresent, 1);
+    } else {
+      this.displayChartTypes.push(selectedChartType.name);
+    }
+
+    this.chartType = this.displayChartTypes[this.displayChartTypes.length-1];
+    this.styleType = this.chartType;
+
+    // @ts-ignore
+    if (this.chartType === 'table') {
+      this.shouldShowTable = true;
+    } else {
+      this.shouldShowTable = false;
+    }
+    // this.shouldShowVisualization = false;
+    this.loadChart();
+
   }
 
   /**
@@ -207,8 +272,9 @@ export class ReportPreviewComponent implements OnInit{
     this.shouldShowStyles = !this.shouldShowStyles;
   }
 
-  selectStyle(chartType) {
+  selectStyle(styleType) {
     this.shouldShowStyles = false;
+    this.styleType = styleType;
   }
 
   /**
@@ -284,13 +350,16 @@ export class ReportPreviewComponent implements OnInit{
     // log.info(`query for cube >>> `, query);
 
     this.cubejsApi.load(query).then(resultSet => {
-      this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
+      // this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
+      const chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
       const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
       const reportData = resultSet.series().map(s => s.series.map(r => r.value));
 
+
+      const datasets = this.reportService.generateReportDatasets(reportLabels, reportData, this.measures);
       this.chartData = {
-        labels: this.chartLabels,
-        datasets: this.reportService.generateReportDatasets(reportLabels, reportData, this.measures)
+        labels: chartLabels,
+        datasets,
       };
 
       this.isPreviewResultAvailable = true;
@@ -299,6 +368,24 @@ export class ReportPreviewComponent implements OnInit{
         reportLabels, reportData, this.dimensions, this.measures, this.criteria
       );
     });
+  }
+
+
+  setChartColors(chartType, chartData) {
+    const colorScheme = ['red', 'orange', 'green', 'blue', 'indigo', 'violet'];
+    if(chartType === 'bar' || chartType === 'line') {
+      chartData.datasets.forEach((dataset, index) => {
+        dataset.backgroundColor = colorScheme[index];
+        dataset.borderColor = colorScheme[index];
+      });
+    } else {
+      chartData.datasets.forEach((dataset) => {
+        dataset.backgroundColor = colorScheme;
+        dataset.borderColor = '#fff';
+      })
+    }
+    // log.info(`chartData >>> `, chartData);
+    return chartData
   }
 
   /**
@@ -323,26 +410,31 @@ export class ReportPreviewComponent implements OnInit{
     const formValues = this.saveReportForm.getRawValue();
     const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
-    // log.info(`criteria >>> `, this.criteria, measuresToSave, dimensionsToSave);
 
-    const chart: Chart = {
-      backgroundColor: "",
-      borderColor: "",
-      chartReportId: 0,
-      colorScheme: 0,
-      evenColor: "",
-      evenOddAppliesTo: "",
-      id: 0,
-      length: 0,
-      name: "",
-      oddColor: "",
-      order: 0,
-      type: "table",
-      width: 0
-    }
+    let charts: Chart[] = [];
+
+    this.displayChartTypes.forEach((chartType) => {
+      const chart: Chart = {
+        backgroundColor: "",
+        borderColor: "",
+        chartReportId: 0,
+        colorScheme: 0,
+        evenColor: "",
+        evenOddAppliesTo: "",
+        // id: 0,
+        length: 0,
+        name: "",
+        oddColor: "",
+        order: 0,
+        type: chartType,
+        width: 0
+      };
+      charts.push(chart)
+    })
+
 
     const report: ReportV2 = {
-      charts: [chart],
+      charts,
       createdBy: this.currentUser.id,
       createdDate: "",
       dashboardId: formValues.dashboard,
@@ -356,19 +448,20 @@ export class ReportPreviewComponent implements OnInit{
       order: 0,
       width: 0
     }
-    // log.info(`report to save >>>`, report);
+
+    log.info(`report to save`, report)
 
     this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          // log.info(`saved report >>>`, res);
+          log.info(`saved report >>>`, res);
           this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
         },
         error: (e) => {
-          this.globalMessagingService.displaySuccessMessage('error', 'Report not saved')
+          this.globalMessagingService.displayErrorMessage('error', 'Report not saved')
         }
-      })
+      });
   }
 
 
@@ -394,6 +487,5 @@ export class ReportPreviewComponent implements OnInit{
       operator: this.conditionsOptionsValue[0].value
     })
   }
-
 
 }

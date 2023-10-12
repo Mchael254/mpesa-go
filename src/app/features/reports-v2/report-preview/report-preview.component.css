@@ -4,7 +4,7 @@
   color: gray;
 }
 
-.visualizations ul {
+.visualizations ul, .visualizations .chart-type-form {
   border: solid 1px #eee;
   border-radius: 5px;
   padding: .5rem 1rem;
@@ -25,8 +25,10 @@
 }
 
 .visualizations ul li i,
-.selected-visualization i {
+.selected-visualization i,
+.visualizations .chart-type-form i{
   margin-right: 10px;
+  color: #00529b;
 }
 
 .selected-visualization {
@@ -56,4 +58,10 @@
   font-weight: bold;
   transition: font-weight 200ms;
 
+}
+
+#reportName input[type=text] {
+  border: none;
+  border-bottom: #00529b 1px solid;
+  color: #00529b;
 }
