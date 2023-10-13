@@ -2,19 +2,22 @@
     <p class="title">Quotations:Client Details </p>
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
+  <form [formGroup]="clientForm">
     <div class="card mb-4">
+
         <div class="card-body mx-2 mt-2">
+
             <button class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#selectClient">Select Client</button>
             <h4 class="text-start mb-3">Prime identity</h4>
             <div class="row">
                 <div class="col-md-4">
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <input class="form-check-input me-2 mt-2"   type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                            <input class="form-check-input me-2 mt-2"  formControlName="clientTypeId" value="I" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                             <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1" class="quote-label">Individual</label>
                         </div>
                         <div class="col-md-6">
-                            <input class="form-check-input me-2 mt-2"   type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                            <input class="form-check-input me-2 mt-2" formControlName="clientTypeId" value="C" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                             <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1" class="quote-label">Corporate</label>
                         </div>
                     </div>
@@ -25,48 +28,44 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Client</label>
-                    <!-- <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
-                        <option selected="true" disabled="disabled"></option>
-                        <option *ngFor="let data of clientType"  [value]="data.code">{{data.clientTypeName}}</option>
-                    </select> -->
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"  formControlName="" readonly>
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"  formControlName="id" readonly>
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Identifier Type</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="modeOfIdentity"  placement="right" >
                         <option selected="true" disabled="disabled"></option>
-                        <option *ngFor="let data of identifierType"  [value]="data.id">{{data.name}}</option>
+                        <option *ngFor="let data of identifierType"  [value]="data.name">{{data.name}}</option>
                     </select>
                     
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Citizenship</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                     
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Surname</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="lastName">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Other Name</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="firstName">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Date of birth</label>
-                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="dateOfBirth">
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">ID number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="idNumber">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Gender</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  formControlName="gender"  placement="right" >
                         <option selected="true" disabled="disabled"></option>
                         <option value="M">Male</option>
                         <option value="F">Female</option>
@@ -80,7 +79,7 @@
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Pin number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="pinNumber">
                 </div>
             </div>
         </div>
@@ -96,32 +95,32 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Branch</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="branchCode"  placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of branch"  [value]="data.id">{{data.name}}</option>
                     </select>             
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Title</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="clientTitle">
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">SMS number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1">
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Telephone number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="phoneNumber">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Email address</label>
-                    <input type="email" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="email" id="quote-input" class="form-control form-control-sm mb-1" formControlName="emailAddress">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Preferred contact channel</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
                         <option selected="true" disabled="disabled"></option>
                         <option value="email">Email</option>
                         <option value="sms">SMS</option>
@@ -144,18 +143,18 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">P.O Box number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Country</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="" (change)="getCounty($event);getBank($event)"  placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="country" (change)="getCounty($event);getBank($event)"  placement="right" >
                         <option [value]="" selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of country"  [value]="data.id">{{data.name}}</option>
                     </select>    
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">County</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="" (change)="getTown($event)"   placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"   (change)="getTown($event)"   placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of county"  [value]="data.id">{{data.name}}</option>
                     </select>    
@@ -164,14 +163,14 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Town</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""    placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"      placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of town"  [value]="data.id">{{data.name}}</option>
                     </select>   
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Physical Address</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="physicalAddress">
                 </div>
               
             </div>
@@ -189,52 +188,52 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Bank</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""   placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"     placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of bank"  [value]="data.id">{{data.name}}</option>
                     </select>   
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Branch</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""    placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"      placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of branch"  [value]="data.id">{{data.name}}</option>
                     </select>   
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Account number</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="accountId">
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Currency</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""   placement="right" >
+                    <select class="form-select form-select-sm mb-1" id="quote-input"     placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of currency"  [value]="data.id">{{data.name}}</option>
                     </select>   
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> With effect from</label>
-                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectFromDate">
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> With effect to</label>
-                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Mpay No</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">IBAN</label>
-                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="number" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Preferred channel</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
             </div>
         </div>
@@ -250,11 +249,11 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Citizenship</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Marital status</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  formControlName=""  placement="right" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
                         <option selected="true" disabled="disabled"></option>
                         <option value="married">Married</option>
                         <option value="single">Single</option>
@@ -264,35 +263,35 @@
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Source of funds</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Type of employment</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> Economic sector</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> Occupation</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="occupationId" >
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Purpose in insurance</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Premium frequency</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Distribution channel</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
                 </div>
             </div>
         </div>
@@ -306,8 +305,9 @@
         </div>
       </div>
       <div class="float-start"></div>
-      <button class="btn btn-primary float-end" >Save Details</button>   
-      <!-- Modal -->
+    </form>
+    <button class="btn btn-primary float-end" (click)="saveDetails()">Save Details</button>   
+    <!-- Modal -->
 <div class="modal fade" id="selectClient" tabindex="-1" aria-labelledby="selectClientLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -323,22 +323,34 @@
                         <i class="fa fa-search" ></i>
                     </button>
                   </span>
-                <input class="form-control py-2 border-start-0 "  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">
-               
-              
-               
+                <input class="form-control py-2 border-start-0 "  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">            
             </div>
          
-            <div class="row mb-2 headers">
-                <div class="col-md-6">ID No.</div>
-                <div class="col-md-6">Name</div>
-            </div>
-            <div class="row content mb-4" *ngFor="let data of clientList" (click)="getClientDetails(data.id)">
-                <div class="col-md-6">{{data.id}}</div>
-                <div class="col-md-6">{{data.firstName+" "+data.lastName}}</div>
-            </div>
+          
+            <p-table
+             [value]="clientList" 
+             [tableStyle]="{ 'min-width': '50rem' }"
+             [resizableColumns]="true" 
+             styleClass="p-datatable-sm"
+             class='ui-datatable' >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data  >
+                    <tr [pSelectableRow]="clientList" (click)="getClientDetails(data.id)">
+                        <td>{{ data.id }}</td>
+                        <td>{{ data.firstName+" "+data.lastName }}</td>
+                        
+                    </tr>
+                </ng-template>
+            </p-table>
+            
             <div class="float-start"></div>
-            <button class="btn btn-primary float-end" data-bs-dismiss="modal">Save Details</button>
+            <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal" >Save Details</button>
         </div>
        
       </div>
