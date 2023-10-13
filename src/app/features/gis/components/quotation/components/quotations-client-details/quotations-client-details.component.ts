@@ -12,6 +12,9 @@ import { OrganizationBranchDto } from '../../../../../../shared/data/common/orga
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { CurrencyDTO } from '../../../../../../shared/data/common/bank-dto';
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { FormGroup,FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SharedQuotationsService } from '../../services/shared-quotations.service';
 @Component({
   selector: 'app-quotations-client-details',
   templateUrl: './quotations-client-details.component.html',
@@ -31,12 +34,17 @@ export class QuotationsClientDetailsComponent {
   client:any;
   clientList:any;
   clientDetails:ClientDTO;
-  constructor(
+  clientForm:FormGroup;
+  textColor: string = 'black';
+    constructor(
     public clientService:ClientService,
     public countryService:CountryService,
     public bankService:BankService,
     public branchService:BranchService,
-    public currencyService:CurrencyService
+    public currencyService:CurrencyService,
+    public fb: FormBuilder,
+    private router: Router,
+    public sharedService: SharedQuotationsService
   ){}
 
   
@@ -47,8 +55,12 @@ export class QuotationsClientDetailsComponent {
     this.getbranch();   
     this.getCurrency();
     this.getClient();
+    this.createForm();  
   }
-
+  changeColor() {
+    // Change the color to a specific value, e.g., red
+    this.textColor = 'red';
+  }
   getClientType(){
     this.clientService.getClientType(2).subscribe(data =>{
       this.clientType = data
@@ -104,8 +116,48 @@ export class QuotationsClientDetailsComponent {
   getClientDetails(id){
     this.clientService.getClientById(id).subscribe(data=>{
       this.clientDetails = data;
+      console.log(this.clientDetails)
+      this.clientForm.patchValue(this.clientDetails)
       
     })
   }
+
+
+  createForm(){
+    this.clientForm = this.fb.group({
+      
+      accountId: [''],
+      branchCode: [''],
+      category: [''],
+      clientTitle: [''],
+      clientTitleId: [''],
+      clientTypeId: [''],
+      country: [''],
+      createdBy: [''],
+      dateOfBirth: [''],
+      emailAddress: [''],
+      firstName: [''],
+      gender: [''],
+      id: [''],
+      idNumber: [''],
+      lastName: [''],
+      modeOfIdentity: [''],
+      occupationId: [''],
+      passportNumber: [''],
+      phoneNumber: [''],
+      physicalAddress: [''],
+      pinNumber: [''],
+      shortDescription: [''],
+      status: [''],
+      withEffectFromDate: ['']
+    })
+  }
+
+  saveDetails(){
+    console.log(this.clientForm.value)
+    this.sharedService.setFormData(this.clientForm.value);
+    this.router.navigate(['/home/gis/quotation/quotation-details'])
+  }
+
 
 }
