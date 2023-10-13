@@ -154,7 +154,7 @@ export class QuotationsClientDetailsComponent {
   }
 
   saveDetails(){
-    console.log(this.clientForm.value)
+    
     this.sharedService.setFormData(this.clientForm.value);
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
