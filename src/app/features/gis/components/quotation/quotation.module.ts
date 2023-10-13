@@ -12,6 +12,8 @@ import { CoverTypesDetailsComponent } from './components/cover-types-details/cov
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
 import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
 import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
+import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
+import { NormalQuoteComponent } from './components/normal-quote/normal-quote.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { RiskSectionDetailsComponent } from './components/risk-section-details/r
     CoverTypesDetailsComponent,
     QuoteSummaryComponent,
     QuotationsClientDetailsComponent,
-    RiskSectionDetailsComponent
+    RiskSectionDetailsComponent,
+    QuotationDetailsComponent,
+    NormalQuoteComponent
   ],
   imports: [
     CommonModule,

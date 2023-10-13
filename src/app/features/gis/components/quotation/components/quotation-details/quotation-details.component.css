@@ -1,0 +1,27 @@
+.title{
+    color:black
+}
+.required{
+    color:red
+}
+.more{
+color: #00529B;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+text-decoration-line: underline;
+}
+.quote-label{
+color: #000;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.quote-btn{
+    padding-left: 16px;
+    padding-right: 13px;
+    white-space: nowrap;
+}
