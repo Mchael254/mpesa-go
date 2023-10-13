@@ -24,7 +24,7 @@
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Branch<span class="required" ></span></label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="branch" placement="right" >
+                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="branchCode" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of branch"  [value]="data.id">{{data.name}}</option>
                 </select>  
@@ -85,7 +85,9 @@
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Multi-user entry?</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                    
+                    <!-- <input type="radio" id="quote-input" class="form-check-input">
+                    <input type="radio" id="quote-input" class="form-check-input" > -->
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Internal comments </label>
@@ -175,7 +177,7 @@
 </form>
     <div class="float-end mb-4">
         <button class="btn btn-primary">Assign Tasks</button>
-        <button class="btn btn-primary ">Next</button>
+        <button class="btn btn-primary " (click)="saveQuotationDetails()">Next</button>
     </div>
     
      

@@ -99,4 +99,9 @@ export class QuotationDetailsComponent {
     })
   }
 
+  saveQuotationDetails(){
+    this.sharedService.setQuotationFormDetails(this.quotationForm.value);
+  
+  }
+
 }
