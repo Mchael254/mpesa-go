@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {AppConfigService} from "../../../../core/config/app-config-service";
-import {HttpClient} from "@angular/common/http";
-import {CountryDto, StateDto, TownDto} from "../../../data/common/countryDto";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {CountryDTO, PostCountryDTO, PostStateDTO, StateDTO , TownDto} from "../../../data/common/countryDto";
 import {Observable} from "rxjs/internal/Observable";
 import {Logger} from "../../logger/logger.service";
 
@@ -22,50 +22,50 @@ export class CountryService {
 
   /**
    * Fetch all countries
-   * @returns Observable<CountryDto[]> list of countries
+   * @returns Observable<CountryDTO[]> list of countries
    */
-  getCountries(): Observable<CountryDto[]> {
+  getCountries(): Observable<CountryDTO[]> {
     log.info('Fetching countries');
-    return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
+    return this.http.get<CountryDTO[]>(`/${this.baseUrl}/setups/countries`);
   }
 
   /**
    * Fetch a country by id
    * @param countryId Country Id
-   * @returns Observable<CountryDto> Country
+   * @returns Observable<CountryDTO> Country
    */
-  getCountryById(countryId: number): Observable<CountryDto>{
+  getCountryById(countryId: number): Observable<CountryDTO>{
     log.info('Fetching county of id: '+ countryId);
-    return this.http.get<CountryDto>(`/${this.baseUrl}/setups/countries/${countryId}`);
+    return this.http.get<CountryDTO>(`/${this.baseUrl}/setups/countries/${countryId}`);
   }
 
   /**
    * Fetch all states
-   * @returns Observable<StateDto[]> list of states
+   * @returns Observable<StateDTO []> list of states
    */
-  getMainCityStates(): Observable<StateDto[]>{
+  getMainCityStates(): Observable<StateDTO []>{
     log.info('Fetching city states');
-    return this.http.get<StateDto[]>(`/${this.baseUrl}/setups/states`);
+    return this.http.get<StateDTO[]>(`/${this.baseUrl}/setups/states`);
   }
 
   /**
    * Fetch all states by country
    * @param id Country Id
-   * @returns Observable<StateDto[]> list of states
+   * @returns Observable<StateDTO []> list of states
    */
-  getMainCityStatesByCountry(id: number): Observable<StateDto[]>{
+  getMainCityStatesByCountry(id: number): Observable<StateDTO []>{
     log.info('Fetching city states');
-    return this.http.get<StateDto[]>(`/${this.baseUrl}/setups/countries/${id}/states`);
+    return this.http.get<StateDTO[]>(`/${this.baseUrl}/setups/countries/${id}/states`);
   }
 
   /**
    * Fetch a state by id
    * @param stateId State Id
-   * @returns Observable<StateDto> State
+   * @returns Observable<StateDTO > State
    */
-  getMainCityStateById(stateId: number): Observable<StateDto>{
+  getMainCityStateById(stateId: number): Observable<StateDTO >{
     log.info('Fetching city state of id: '+ stateId);
-    return this.http.get<StateDto>(`/${this.baseUrl}/setups/states/${stateId}`);
+    return this.http.get<StateDTO>(`/${this.baseUrl}/setups/states/${stateId}`);
   }
 
   /**
@@ -95,5 +95,30 @@ export class CountryService {
    */
   getTownsByMainCityState(id: number): Observable<TownDto[]>{
     return this.http.get<TownDto[]>(`/${this.baseUrl}/setups/states/${id}/towns`);
+  }
+
+  createCountry(data: PostCountryDTO): Observable<PostCountryDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostCountryDTO>(`/${this.baseUrl}/setups/countries`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateCountry(countryId: number, data: PostCountryDTO): Observable<PostCountryDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostCountryDTO>(`/${this.baseUrl}/setups/countries/${countryId}`,
+      data, { headers: headers })
+  }
+
+  createState(data: PostStateDTO ): Observable<PostStateDTO > {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostStateDTO >(`/${this.baseUrl}/setups/states`, JSON.stringify(data), {headers:headers})
   }
 }
