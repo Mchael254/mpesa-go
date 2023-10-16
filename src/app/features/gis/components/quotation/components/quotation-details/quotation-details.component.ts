@@ -9,6 +9,9 @@ import { ProductService } from 'src/app/features/gis/services/product/product.se
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { FormGroup,FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
+import { QuotationsService } from '../../services/quotations/quotations.service';
 @Component({
   selector: 'app-quotation-details',
   templateUrl: './quotation-details.component.html',
@@ -23,6 +26,8 @@ export class QuotationDetailsComponent {
   user:any;
   formData: any;
   quotationForm:FormGroup;
+  agents:any
+  agentDetails:any
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -30,8 +35,10 @@ export class QuotationDetailsComponent {
     public productService:ProductService,
     public authService:AuthService,
     public sharedService:SharedQuotationsService,
-    public fb:FormBuilder
-
+    public fb:FormBuilder,
+    private router: Router,
+    public  agentService:IntermediaryService,
+    public quotationService:QuotationsService
   ){}
 
   ngOnInit(): void {
@@ -42,6 +49,9 @@ export class QuotationDetailsComponent {
     this.getuser();
     this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
+    this.getAgents()
+    this.quotationForm.controls['clientCode'].setValue(this.formData.id);
+    this.quotationForm.controls['clientType'].setValue(this.formData.clientTypeId);
   }
 
   getbranch(){
@@ -95,13 +105,51 @@ export class QuotationDetailsComponent {
       productCode: [''],
       source: [''],
       withEffectiveFromDate: [''],
-      withEffectiveToDate: ['']
+      withEffectiveToDate: [''],
+      multiUser:[''],
+      comments:[''],
+      internalComments:[''],
+      introducerCode:['']
+
     })
   }
 
   saveQuotationDetails(){
+  
+    
+    
+    // console.log(this.quotationForm.value)
+    // this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+    //   console.log(data)
+    // })
+    // if(this.quotationForm.value.multiUser = 'Y'){
+    //   this.router.navigate(['/home/gis/quotation/quote-assigning'])
+    // }
+    // else{
+    //   console.log('No')
+    // }
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
   
   }
+
+  multiUser(){
+    console.log('Yes')
+  }
+  getAgents(){
+    this.agentService.getAgents().subscribe(data=>{
+      this.agents = data.content
+     
+    })
+  }
+  agentShortDesc(id){
+    this.agentService.getAgentById(id).subscribe(data=>{
+      this.agentDetails = data
+      this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
+     
+    })
+    
+  }
+
+
 
 }
