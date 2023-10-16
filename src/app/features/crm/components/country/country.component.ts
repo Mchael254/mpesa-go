@@ -3,12 +3,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../shared/services/setups/country/country.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
-import { CountryDto, StateDto, TownDto } from '../../../../shared/data/common/countryDto';
+import { CountryDTO, CountryDto, PostCountryDTO, PostStateDTO, PostTownDTO, StateDto, TownDto } from '../../../../shared/data/common/countryDto';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { ReplaySubject, takeUntil } from 'rxjs';
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
+// import { CountryDTO, PostCountryDTO, PostStateDTO, PostTownDTO } from '../../data/organization-dto';
+import { OrganizationService } from '../../services/organization.service';
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import stepData from '../../data/steps.json'
+import { MessageService } from 'primeng/api';
 
 const log = new Logger( 'CountryComponent');
 
@@ -21,20 +26,27 @@ country data, including form validation and fetching data from services. */
 })
 export class CountryComponent implements OnInit {
 
+  public createCountryForm: FormGroup;
+  public createCountyForm: FormGroup;
+  public createTownForm: FormGroup;
+
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  public createCountryForm: FormGroup;
-  public countriesData: CountryDto[] = [];
-  public citiesData: StateDto[] = [];
+  steps = stepData;
+
+  public countriesData: CountryDTO[] = [];
+  public stateData: StateDto[] = [];
   public townData: TownDto[] = [];
   public currenciesData: CurrencyDTO[];
   public groupId: string = 'countryTab';
   public response: any;
-  public selectedDay: number;
-  public selectedMonth: string;
   public days: number[] = [];
-  public selectedMonthDays: number[] = [];
   public holidays: any;
+  public selectedCityState: number;
+  public selectedStateId: number;
+  public countrySelected: CountryDTO;
+  public selectedCountry: number;
+  public filteredState: any;
   countryBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -55,7 +67,6 @@ export class CountryComponent implements OnInit {
     name: 'Y',
     baseCurrency: 'Y',
     nationality: 'Y',
-    // baseCode: 'Y',
     zipCode: 'Y',
     administrativeUnit: 'Y',
     subadminstrativeUnit: 'Y',
@@ -66,6 +77,19 @@ export class CountryComponent implements OnInit {
     drugTrafficWEF: 'N',
     drugTrafficWET: 'N',
   }
+
+  adminstrativeData = [
+    { name: 'Counties', value: 'C' },
+    { name: 'States', value: 'S' },
+    { name: 'Provinces', value: 'P' },
+    { name: 'Regions', value: 'R' }
+  ]
+
+  subadminstrativeData = [
+    { name: 'District', value: 'D' },
+    { name: 'Sub-county', value: 'C' },
+    { name: 'Local Government Area', value: 'L' }
+  ]
 
   months = [
     { name: 'January', value: '01' },
@@ -98,43 +122,27 @@ export class CountryComponent implements OnInit {
     '12': 31,
   };
 
-  // activeTab: string = 'myReports';
-
-  // myReportsList: { id: string, name: string }[] = [
-  //   { id: '1', name: 'Item 1' },
-  //   { id: '2', name: 'Item 2' },
-  //   { id: '3', name: 'Item 3' }
-  // ];
-
-  // anotherTabList: { id: string, name: string }[] = [
-  //   { id: 'A', name: 'Item A' },
-  //   { id: 'B', name: 'Item B' },
-  //   { id: 'C', name: 'Item C' }
-  // ];
-
   constructor(
     private fb: FormBuilder,
     private countryService: CountryService,
     private bankService: BankService,
+    private organizationService: OrganizationService,
     private mandatoryFieldsService: MandatoryFieldsService,
     private globalMessagingService: GlobalMessagingService,
+    private messageService: MessageService,
     private cdr: ChangeDetectorRef,
   ) { }
   
   ngOnInit(): void {
     this.CountryCreateForm();
+    this.CountyCreateForm();
+    this.TownCreateForm();
     this.fetchCountries();
     this.fetchCurrencies();
-    this.selectedMonth = '';
+    // this.selectedMonth = '';
   }
 
-  // myReports() {
-  //   this.activeTab = 'myReports';
-  // }
-
-  // sharedReports() {
-  //   this.activeTab = 'sharedReports';
-  // }
+  ngOnDestroy(): void {}
 
 
 /**
@@ -147,10 +155,6 @@ export class CountryComponent implements OnInit {
     this.days = Array.from({ length: selectedMonthDays }, (_, i) => i + 1);
   }
 
-
-
-
-
   CountryCreateForm() {
     this.createCountryForm = this.fb.group({
       country: [''],
@@ -158,7 +162,6 @@ export class CountryComponent implements OnInit {
       name: [''],
       baseCurrency: [''],
       nationality: [''],
-      // baseCode: [''],
       zipCode: [''],
       administrativeUnit: [''],
       subadminstrativeUnit: [''],
@@ -168,8 +171,6 @@ export class CountryComponent implements OnInit {
       riskLevelStatusWET: [''],
       drugTrafficWEF: [''],
       drugTrafficWET: [''],
-      selectedDay: [''],
-      selectedMonth: [''],
     });
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
@@ -200,22 +201,80 @@ export class CountryComponent implements OnInit {
 
   get f() { return this.createCountryForm.controls; }
 
-  onCountryChange(event: Event) {
-    const selectedCountryId = (event.target as HTMLSelectElement).value;
-    const selectedCountryIdAsNumber = parseInt(selectedCountryId, 10);
-    const selectedCountry = this.countriesData.find(country => country.id === selectedCountryIdAsNumber);
-    if (selectedCountry) {
+  CountyCreateForm() {
+    this.createCountyForm = this.fb.group({
+      shortDescription: [''],
+      name: ['']
+    });
+  }
+
+  TownCreateForm() {
+    this.createTownForm = this.fb.group({
+      shortDescription: [''],
+      name: [''],
+      postalCode: ['']
+    });
+  }
+
+  onCountryChange() {
+    const selectedCountryId= this.selectedCountry;
+    this.countrySelected = this.countriesData.find(country => country.id === selectedCountryId)
+    if (this.countrySelected) {
         this.createCountryForm.patchValue({
-            name: selectedCountry.name,
-            shortDescription: selectedCountry.short_description,
+          name: this.countrySelected.name,
+          shortDescription: this.countrySelected.short_description,
+          baseCurrency: this.countrySelected.currency.id,
+          nationality: this.countrySelected.nationality,
+          zipCode: this.countrySelected.zipCode,
+          administrativeUnit: this.countrySelected,
+          subadminstrativeUnit: this.countrySelected,
+          unSactionWEF: this.countrySelected.unSanctionWefDate,
+          unSactionWET: this.countrySelected.unSanctionWetDate,
+          riskLevelStatusWEF: this.countrySelected.highRiskWefDate,
+          riskLevelStatusWET: this.countrySelected.highRiskWetDate,
+          drugTrafficWEF: this.countrySelected.drugWefDate,
+          drugTrafficWET: this.countrySelected.drugWetDate,
         });
+      
+        // Conditionally set administrativeUnit and subadminstrativeUnit
+        switch (this.countrySelected.adminRegType) {
+            case 'C':
+                this.createCountryForm.patchValue({
+                    administrativeUnit: 'C',
+                    subadminstrativeUnit: 'C',
+                });
+                this.fetchMainCityStates(this.countrySelected.id);
+                break;
+            case 'S':
+                this.createCountryForm.patchValue({
+                    administrativeUnit: 'S',
+                    subadminstrativeUnit: 'D',
+                });
+                this.fetchStates(this.countrySelected.id);
+                break;
+            case 'P':
+                this.createCountryForm.patchValue({
+                    administrativeUnit: 'P',
+                    subadminstrativeUnit: 'D',
+                });
+                this.fetchProvinces(this.countrySelected.id);
+                break;
+            case 'R':
+                this.createCountryForm.patchValue({
+                    administrativeUnit: 'R',
+                    subadminstrativeUnit: 'L',
+                });
+                this.fetchRegions(this.countrySelected.id);
+                break;
+        }
     }
   }
 
-  filterCovers(event: any) {
+  filterCounties(event: any) {
     const searchValue = (event.target.value).toUpperCase();
-    // this.filteredCover = this.coverTypeData.filter((el) => el.description.includes(searchValue));
-    // this.cdr.detectChanges();
+    this.filteredState = this.stateData.filter((el) => el.name.includes(searchValue));
+    console.log(this.filteredState);
+    this.cdr.detectChanges();
   }
 
 
@@ -235,13 +294,29 @@ export class CountryComponent implements OnInit {
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
       .subscribe( (data) => {
-        this.citiesData  = data;
+        this.stateData  = data;
       })
   }
 
   fetchTowns(stateId:number){
     log.info(`Fetching towns list for city-state, ${stateId}`);
     this.countryService.getTownsByMainCityState(stateId)
+      .subscribe( (data) => {
+        this.townData = data;
+      })
+  }
+
+  fetchRegions(countryId: number) { }
+  fetchStates(countryId: number) { }
+  fetchProvinces(countryId: number) { }
+  fetchDistricts(stateId: number) { }
+  fetchLocalGovernmentAreas(stateId: number) {}
+
+  onCityChange(event: Event) {
+    const selectedState = (event.target as HTMLSelectElement).value;
+    this.selectedCityState = parseInt(selectedState, 10);
+    this.countryService.getTownsByMainCityState(this.selectedCityState)
+      .pipe(untilDestroyed(this))
       .subscribe( (data) => {
         this.townData = data;
       })
@@ -258,6 +333,86 @@ export class CountryComponent implements OnInit {
       });
   }
 
-  save() {}
+  onRowClick(state: any) {
+    this.selectedStateId = state.id;
+    this.fetchTowns(this.selectedStateId);
+  }
+
+
+  saveCountry() {
+    const countryFormValues = this.createCountryForm.getRawValue();
+    const countryId = this.countrySelected.id;
+
+    const saveCountry: PostCountryDTO = {
+      adminRegMandatory: null,
+      adminRegType: 'C',
+      currSerial: null,
+      currency: countryFormValues.baseCurrency,
+      drugTraffickingStatus: countryFormValues.drugTraffickingStatus,
+      drugWefDate: countryFormValues.drugTrafficWEF,
+      drugWetDate: countryFormValues.drugTrafficWET,
+      highRiskWefDate: countryFormValues.riskLevelStatusWEF,
+      highRiskWetDate: countryFormValues.riskLevelStatusWET,
+      id: null,
+      isShengen: null,
+      mobilePrefix: countryFormValues.zipCode,
+      name: countryFormValues.name,
+      nationality: countryFormValues.nationality,
+      risklevel: null,
+      short_description: countryFormValues.shortDescription,
+      telephoneMaximumLength: null,
+      telephoneMinimumLength: null,
+      unSanctionWefDate: countryFormValues.unSactionWEF,
+      unSanctionWetDate: countryFormValues.unSactionWET,
+      unSanctioned: null,
+      zipCode: countryFormValues.zipCode
+    }
+
+    if (countryId) {
+      // Update an existing country
+      this.countryService.updateCountry(countryId, saveCountry)
+        .subscribe(data => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country');
+        });
+    }
+    else {
+      // Create a new country
+      this.countryService.createCountry(saveCountry)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country');
+        })
+    }
+
+    this.fetchCountries();
+    this.createCountryForm.reset();
+  }
+
+  saveCounty() {
+    const countyFormValues = this.createCountyForm.getRawValue();
+
+    const saveState: PostStateDTO = {
+      countryId: this.countrySelected.id,
+      id: null,
+      name: countyFormValues.name,
+      shortDescription: countyFormValues.shortDescription
+    }
+
+    this.countryService.createState(saveState)
+      .subscribe(data => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a State');
+      })
+  }
+
+  saveTown() {
+    const townFormValues = this.createTownForm.getRawValue
+
+    const saveTown: PostTownDTO = {
+      countryId: this.countrySelected.id,
+      id: null,
+      name: townFormValues.name,
+      shortDescription: '',
+      stateId: 0
+    }
+  }
 
 }
