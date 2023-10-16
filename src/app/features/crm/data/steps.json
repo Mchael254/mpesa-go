@@ -2,22 +2,22 @@
     {
       "number": 1,
       "title": "Organization",
-      "link": "home/crm/organization"
+      "link": "/home/crm/organization"
     },
     {
       "number": 2,
       "title": "Division",
-      "link": "home/crm/country"
+      "link": "/home/crm/country"
     },
     {
       "number": 3,
       "title": "Region",
-      "link": "home/crm/country"
+      "link": "/home/crm/country"
     },
     {
       "number": 4,
       "title": "Branch",
-      "link": "home/crm/country"
+      "link": "/home/crm/country"
     }
    
 ]

@@ -25,12 +25,28 @@ export class OrganizationService {
     return this.http.get<OrganizationDTO[]>(`/${this.baseUrl}/setups/organizations` ,{headers:headers});
   }
 
-  postOrganization(data: PostOrganizationDTO): Observable<PostOrganizationDTO> {
+  createOrganization(data: PostOrganizationDTO): Observable<PostOrganizationDTO> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<PostOrganizationDTO>(`/${this.baseUrl}/setups/organizations`, JSON.stringify(data), {headers:headers})
+    return this.http.post<PostOrganizationDTO>(`/${this.baseUrl}/setups/organizations`, JSON.stringify(data),
+      { headers: headers })
+  }
+
+  uploadLogo(organizationId: number, file: File) {
+    let form = new FormData;
+    form.append('file', file, file.name);
+    return this.http.post<any>(`/${this.baseUrl}/setups/organizations/${organizationId}/logo`, form );
+  }
+
+  updateOrganization(organizationId: number, data: PostOrganizationDTO): Observable<PostOrganizationDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostOrganizationDTO>(`/${this.baseUrl}/setups/organizations/${organizationId}`,
+      data, { headers: headers })
   }
 
   deleteOrganization(organizationId: number) {
@@ -38,6 +54,7 @@ export class OrganizationService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.delete<OrganizationDTO[]>(`/${this.baseUrl}/setups/organizations/${organizationId}` ,{headers:headers});
+    return this.http.delete<OrganizationDTO[]>(`/${this.baseUrl}/setups/organizations/${organizationId}`,
+      { headers: headers });
   }
 }
