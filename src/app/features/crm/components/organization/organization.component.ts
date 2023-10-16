@@ -33,6 +33,7 @@ export class OrganizationComponent implements OnInit {
   steps = stepData;
 
   public organizationsData: OrganizationDTO[];
+  public savedOrganization: PostOrganizationDTO;
   public countriesData: CountryDto[];
   public stateData: StateDto[] = [];
   public townData: TownDto[] = [];
@@ -248,7 +249,6 @@ export class OrganizationComponent implements OnInit {
 
   onOrganizationChange(event: Event) {
     const selectedOrgId = (event.target as HTMLSelectElement).value;
-    console.log('This is the selected data', selectedOrgId);
     const selectedOrgIdAsNumber = parseInt(selectedOrgId, 10);
     this.selectedOrg = this.organizationsData.find(organization => organization.id === selectedOrgIdAsNumber);
     
@@ -454,16 +454,19 @@ export class OrganizationComponent implements OnInit {
     if (organizationId !== null) { 
       this.organizationService.deleteOrganization(organizationId)
         .subscribe(() => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Organization of Id ${organizationId} successfully Deleted');
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully Deleted an Organization');
         });
     }
     else {
       log.info('No organization is selected.');
     }
+    this.fetchOrganization();
+    this.createOrganizationForm.reset();
   }
 
   onSave() {
     const organizationFormValues = this.createOrganizationForm.getRawValue();
+    const organizationId = this.selectedOrg.id;
 
     const primaryCountryCode = organizationFormValues.countryCode;
     const primaryPhoneNumber = organizationFormValues.primaryTelephone;
@@ -480,7 +483,7 @@ export class OrganizationComponent implements OnInit {
       emailAddress: organizationFormValues.emailAddress,
       faxNumber: '',
       groupId: null,
-      id: null,
+      id: organizationId || null,
       license_number: '',
       manager: organizationFormValues.manager,
       motto: organizationFormValues.motto,
@@ -512,12 +515,46 @@ export class OrganizationComponent implements OnInit {
       customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber
     }
 
-    log.info(`Organization Data to be saved`, saveOrganization);
+    if (organizationId) {
+      // Update an existing organization
+      this.organizationService.updateOrganization(organizationId, saveOrganization)
+        .subscribe(data => {
+          // data.id = saveOrganization.id;
+          // this.savedOrganization = data;
+          // if (this.selectedFile) {
+          //   this.uploadImage(this.savedOrganization.id);
+          // } else {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated the Organization');
+          // }
+        });
+    } else {
+      // Create a new organization
+      this.organizationService.createOrganization(saveOrganization)
+        .subscribe(data => {
+          // data.id = saveOrganization.id;
+          // this.savedOrganization = data;
+          // if (this.selectedFile) {
+          //   this.uploadLogo(this.savedOrganization.id);
+          // } else {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Organization');
+          // }
+        });
+    }
 
-    this.organizationService.postOrganization(saveOrganization)
-      .subscribe(data => {
+    this.fetchOrganization();
+    this.createOrganizationForm.reset();
+  }
+
+  uploadLogo(organizationId: number){
+    this.organizationService.uploadLogo(organizationId, this.selectedFile)
+      .subscribe( res => {
+        log.info(res);
+        // this.savedOrganization.logo = res.file;
+        // this.savedOrganization.groupLogo = res.file;
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Organization');
-      })
+        this.fetchOrganization();
+        this.createOrganizationForm.reset();
+      });
   }
 
 }

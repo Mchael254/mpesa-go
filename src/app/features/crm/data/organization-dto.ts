@@ -1,3 +1,5 @@
+import { CountryDTO } from "../../../shared/data/common/countryDto"
+
 export interface OrganizationDTO {
   address: {
     box_number: string,
@@ -17,41 +19,7 @@ export interface OrganizationDTO {
     utility_address_proof: string,
     zip: string
   },
-  country: {
-    adminRegMandatory: string,
-    adminRegType: string,
-    currSerial: number,
-    currency: {
-      createdBy: string,
-      createdDate: string,
-      decimalWord: string,
-      id: number,
-      modifiedBy: string,
-      modifiedDate: string,
-      name: string,
-      numberWord: string,
-      roundingOff: number,
-      symbol: string
-    },
-    drugTraffickingStatus: string,
-    drugWefDate: string,
-    drugWetDate: string,
-    highRiskWefDate: string,
-    highRiskWetDate: string,
-    id: number,
-    isShengen: string,
-    mobilePrefix: number,
-    name: string,
-    nationality: string,
-    risklevel: string,
-    short_description: string,
-    telephoneMaximumLength: string,
-    telephoneMinimumLength: string,
-    unSanctionWefDate: string,
-    unSanctionWetDate: string,
-    unSanctioned: string,
-    zipCode: number
-  },
+  country: CountryDTO,
   currency_id: number,
   emailAddress: string,
   faxNumber: string,
@@ -74,41 +42,7 @@ export interface OrganizationDTO {
   secondaryTelephoneNo: string,
   short_description: string,
   state: {
-    country: {
-      adminRegMandatory: string,
-      adminRegType: string,
-      currSerial: string,
-      currency: {
-        createdBy: string,
-        createdDate: string,
-        decimalWord: string,
-        id: 0,
-        modifiedBy: string,
-        modifiedDate: string,
-        name: string,
-        numberWord: string,
-        roundingOff: number,
-        symbol: string
-      },
-      drugTraffickingStatus: string,
-      drugWefDate: string,
-      drugWetDate: string,
-      highRiskWefDate: string,
-      highRiskWetDate: string,
-      id: number,
-      isShengen: string,
-      mobilePrefix: number,
-      name: string,
-      nationality: string,
-      risklevel: string,
-      short_description: string,
-      telephoneMaximumLength: string,
-      telephoneMinimumLength: string,
-      unSanctionWefDate: string,
-      unSanctionWetDate: string,
-      unSanctioned: string,
-      zipCode: number
-    },
+    country: CountryDTO,
     id: number,
     name: string,
     shortDescription: string
