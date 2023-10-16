@@ -50,8 +50,18 @@
            
           </div>
           <div class="row mb-4">
-
-            <div class="col-xl-8"></div>
+            <div class="col-xl-4">
+                <label for=""class="quote-label">Agent<span class="required"></span></label>
+                <select class="form-select form-select-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
+                    <option selected="true" disabled="disabled"></option> 
+                    <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
+                </select> 
+            </div>
+            <div class="col-xl-4">
+                <label for=""class="quote-label">Agent Short Description</label>
+                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="agentShortDescription"  readonly>
+            </div>
+            <div class="col-xl-4"></div>
           </div>
          
           <div class="collapse" id="collapseExample">
@@ -64,11 +74,11 @@
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Introducer</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="introducerCode">
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Likelihood</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  placement="right" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
                         <option value="likely">Likely</option>
                         <option value="unlikely">Unlikely</option>
@@ -80,24 +90,30 @@
             <div class="row mb-4">
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Results from campaign </label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1"  >
 
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Multi-user entry?</label>
-                    
-                    <!-- <input type="radio" id="quote-input" class="form-check-input">
-                    <input type="radio" id="quote-input" class="form-check-input" > -->
+                    <br>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser" id="inlineRadio1" value="Y">
+                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="multiUser" formControlName="multiUser"  id="inlineRadio2" value="N">
+                        <label class="form-check-label" for="inlineRadio2">No</label>
+                      </div>
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Internal comments </label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="internalComments">
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-xl-4">
                     <label for=""class="quote-label">External comments </label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1">
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="comments">
 
                 </div>
     
@@ -134,19 +150,18 @@
 
             <div class="col-xl-4">
                 <label for=""class="quote-label">Cover time</label>
-                <input type="date" id="quote-input" class="form-control form-control-sm mb-1" >
+                <input type="number" id="quote-input" class="form-control form-control-sm mb-1" >
             </div>
           </div>
           <div>
             <p class="mb-4">Import risks <input type="checkbox" class="ml-3"></p>
             
-            <p class="more" data-bs-toggle="collapse" data-bs-target="#collapseProductClauses" >Product Clauses</p>
+            <p class="more" data-bs-toggle="collapse" data-bs-target="#collapseProductClauses">Product Clauses</p>
             <div class="collapse" id="collapseProductClauses">
                 <p-table 
                 [value]="clauses"
                 [resizableColumns]="true" 
                 styleClass="p-datatable-sm"
-
                 class='ui-datatable' 
                 [tableStyle]="{ 'min-width': '50rem' }">
                     <ng-template pTemplate="header">

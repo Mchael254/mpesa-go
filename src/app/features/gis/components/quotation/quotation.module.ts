@@ -14,6 +14,8 @@ import { QuotationsClientDetailsComponent } from './components/quotations-client
 import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
 import { NormalQuoteComponent } from './components/normal-quote/normal-quote.component';
+import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { NormalQuoteComponent } from './components/normal-quote/normal-quote.com
     QuotationsClientDetailsComponent,
     RiskSectionDetailsComponent,
     QuotationDetailsComponent,
-    NormalQuoteComponent
+    NormalQuoteComponent,
+    QuoteAssigningComponent,
+    ImportRisksComponent
   ],
   imports: [
     CommonModule,
