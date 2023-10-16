@@ -2,7 +2,16 @@
   <div class="card">
     <div class="card-body">
       <div class="me-4 mt-3">
-        <app-dynamic-breadcrumb [breadCrumbItems]="reportBreadCrumbItems">
+        <app-dynamic-breadcrumb [breadCrumbItems]="[
+            {
+              label: 'Dashboard',
+              url: '/home/reportsv2/create-dashboard'
+            },
+            {
+              label: report[0]?.name,
+              url: '/home/reportsv2/list-report',
+            },
+          ]">
         </app-dynamic-breadcrumb>
       </div>
 
@@ -23,12 +32,13 @@
 
       <div class="row mx-0 mt-3 p-0 dragDropBoundary">
         <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let reportdata of report">
-          <ng-container *ngFor="let reportName of reportdata.reports">
-            <div class="card">
+<!--          <ng-container>-->
+            <div class="card" *ngFor="let reportName of reportdata.reports">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
               <div class="card-header border-0 text-sm-start bg-transparent"
                    style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
                 {{reportName.name}}
-                <span class="icon-container float-end" (click)="menu3.toggle($event)">
+                <span class="icon-container float-end" (click)="selectedDashboard = reportdata.id;selectedReport = reportName.id;menu3.toggle($event)">
                 <i class="fa fa-ellipsis-v clickable"></i>
               </span>
                 <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
@@ -44,63 +54,9 @@
 
               </div>
             </div>
-          </ng-container>
+<!--          </ng-container>-->
 
         </div>
-        <!--<div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-          <div class="card">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-                 style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              Health
-              <span class="icon-container float-end" (click)="menu2.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-              <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
-            </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'line'"
-              ></app-dynamic-chart>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-          <div class="card">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-                 style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              Health
-              <span class="icon-container float-end" (click)="menu2.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-              <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
-            </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'line'"
-              ></app-dynamic-chart>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-          <div class="card">
-            <div class="card-header border-0 text-sm-start bg-transparent"
-                 style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-              Health
-              <span class="icon-container float-end" (click)="menu2.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-              <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
-            </div>
-            <div class="card-body">
-              <app-dynamic-chart
-                [basicData]="basicData"
-                [chartType]="'line'"
-              ></app-dynamic-chart>
-            </div>
-          </div>
-        </div>-->
       </div>
     </div>
   </div>

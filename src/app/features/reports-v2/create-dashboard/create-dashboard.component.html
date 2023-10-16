@@ -12,7 +12,8 @@
         </div>
         <div class="row mx-0 mt-3 p-0 dragDropBoundary">
           <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards">
-            <div class="card">
+            <div class="card res">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
               <div class="card-header border-0 text-sm-start bg-transparent">
 
                 <span style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
@@ -47,42 +48,6 @@
             </div>
           </div>
 
-          <!--<div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-            <div class="card">
-              <div class="card-header border-0 text-sm-start bg-transparent"
-                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-                Health
-                <span class="icon-container float-end" (click)="menu2.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-                <p-menu #menu2 [model]="items" [popup]="true"></p-menu>
-              </div>
-              <div class="card-body">
-                <app-dynamic-chart
-                  [basicData]="basicData"
-                  [chartType]="'line'"
-                ></app-dynamic-chart>
-              </div>
-            </div>
-          </div>-->
-          <!--<div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag>
-            <div class="card">
-              <div class="card-header border-0 text-sm-start bg-transparent"
-                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-                July Board
-                <span class="icon-container float-end" (click)="menu3.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
-              </div>
-              <div class="card-body">
-                <app-dynamic-chart
-                  [basicData]="basicData"
-                  [chartType]="'pie'"
-                ></app-dynamic-chart>
-              </div>
-            </div>
-          </div>-->
         </div>
 
       </div>
@@ -109,26 +74,26 @@
             </div>
             <div class="col-sm-12 mb-3">
               <label class="form-label">Add report(s)</label><br>
-                <p-dropdown
-                  [options]="chartReports"
-                  optionLabel="name"
-                  [filter]="true"
-                  filterBy="name"
-                  [showClear]="true"
-                  [style]="{ width: '100%' }"
-                  placeholder="Select report"
-                  id="chartReportDropdown"
-                  formControlName="reportName"
-                >
-                  <ng-template let-chartReport pTemplate="item">
-                    <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
-                      <div
-                      >
-                        {{ chartReport.name }}
-                      </div>
+              <p-multiSelect
+                [options]="chartReports"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name"
+                display="chip"
+                [style]="{ width: '100%' }"
+                placeholder="Select report"
+                id="chartReportDropdown"
+                formControlName="reportName"
+              >
+                <ng-template let-chartReport pTemplate="item">
+                  <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                    <div
+                    >
+                      {{ chartReport.name }}
                     </div>
-                  </ng-template>
-                </p-dropdown>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
             </div>
 
           </form>
@@ -153,12 +118,12 @@
           <form [formGroup]="addReportToDashboardForm">
             <div class="col-sm-12 mb-3">
               <label class="form-label">Select report</label><br>
-              <p-dropdown
+              <p-multiSelect
                 [options]="chartReports"
                 optionLabel="name"
                 [filter]="true"
                 filterBy="name"
-                [showClear]="true"
+                display="chip"
                 [style]="{ width: '100%' }"
                 placeholder="Select report"
                 id="chartReportDropdown"
@@ -172,13 +137,13 @@
                     </div>
                   </div>
                 </ng-template>
-              </p-dropdown>
+              </p-multiSelect>
             </div>
 
           </form>
         </div>
         <div class="modal-footer border-0">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          <button type="button" id="addReport" class="btn btn-primary" data-bs-dismiss="modal"
                   style="border-radius: 4px; margin: auto" (click)="addReportToDashboard();closeAddReportModal()">Add</button>
         </div>
       </div>
@@ -197,7 +162,7 @@
             <p>Are you sure you want to delete?</p>
             <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
                     style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+            <button type="button" class="btn btn-danger" id="deleteDashboard" data-bs-dismiss="modal"
                     style="border-radius: 4px; margin: auto" (click)="deleteDashboard(this.selectedItem);closeDeleteModal()">Yes</button>
           </div>
 
