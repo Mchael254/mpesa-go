@@ -41,7 +41,7 @@ export class MenuService{
       name: 'Actions',
       nameSlug: 'actions',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},],
+      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Quote Need Analysis', link:"/home/lms/need-analysis"},],
 
       collapsed:true,
     },

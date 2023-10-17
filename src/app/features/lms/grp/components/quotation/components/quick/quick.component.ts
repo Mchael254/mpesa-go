@@ -102,7 +102,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
   quickQuoteForm() {
@@ -134,12 +134,13 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
 
-  getPayFrequencies() {
+ getPayFrequencies() {
     this.payFrequenciesService.getPayFrequencies().subscribe((freqs: PayFrequency[]) => {
       this.frequencyOfPayment = freqs.map(frequency => ({
-        label: this.capitalizeFirstLetterOfEachWord(frequency.desc),
+        label: frequency.desc,
         value: frequency.sht_desc
-      }));
+      })
+      );
     });
   }
   
@@ -152,7 +153,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       }));
     });
   }
-  
+
   getProducts() {
     this.product_service.getListOfProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
@@ -161,6 +162,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       }));
     });
   }
+
   
   capitalizeFirstLetterOfEachWord(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
@@ -187,4 +189,5 @@ export class QuickComponent implements OnInit, OnDestroy {
   getCoverTypes() {
     console.log("Cover types")
   }
+
 }

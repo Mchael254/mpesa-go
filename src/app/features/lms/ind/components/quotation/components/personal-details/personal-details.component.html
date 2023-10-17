@@ -28,7 +28,7 @@
       <form>
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="clientType">Client Type</label>
+            <label for="clientType" class="required">Client Type</label>
             <select
               class="form-select"
               formControlName="clientType"
@@ -37,14 +37,14 @@
             <option value="" disabled selected>Select Client Type</option>
 
               <ng-container *ngFor="let clienType of clientTypeList">
-                <option [value]="clienType?.code">
+                <option [value]="clienType['code']">
                   {{ clienType["clientTypeName"] | titlecase }}
                 </option>
               </ng-container>
             </select>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="surname">Last Name</label>
+            <label for="surname" class="required">Last Name</label>
             <input
               type="text"
               placeholder="Elli"
@@ -54,7 +54,7 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="first_name">First Name</label>
+            <label for="first_name" class="required">First Name</label>
             <input
               type="text"
               placeholder="Cruz"
@@ -91,7 +91,7 @@
             </div>
           </div> -->
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="idNumber">ID number</label>
+            <label for="idNumber" class="required">ID No.</label>
             <input
               type="text"
               class="form-control"
@@ -100,7 +100,7 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="pinNo">Pin Number</label>
+            <label for="pinNo" class="required">Pin No.</label>
             <input
               type="text"
               class="form-control"
@@ -110,7 +110,7 @@
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="w-75">
-              <label class="required">Gender</label>
+              <label class="required" class="required">Gender</label>
               <div></div>
               <span class="form-check form-check-inline">
                 <input
@@ -164,11 +164,11 @@
           <div class="accordion-body">
             <div class="row">
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="clientType">Branch</label>
+                <label for="branch" class="required">Branch</label>
                 <select
                   class="form-select"
                   formControlName="branch"
-                  [id]="'clientType'"
+                  [id]="'branch'"
                 >
                 <option value="" disabled selected>Select Branch</option>
 
@@ -180,7 +180,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="title">Title</label>
+                <label for="title" class="required">Title</label>
                 <select
                   class="form-select"
                   formControlName="title"
@@ -198,11 +198,11 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="number">Country Code</label>
+                <label for="countryCode">Country Code</label>
                 <select
                   class="form-select"
-                  formControlName="number"
-                  [id]="'number'"
+                  formControlName="countryCode"
+                  [id]="'countryCode'"
                 >
                 <option value="" disabled selected>Select Country Code</option>
 
@@ -216,7 +216,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="phoneNumber">Telephone</label>
+                <label for="phoneNumber" class="required">Telephone</label>
                 <input
                   type="text"
                   class="form-control"
@@ -225,7 +225,7 @@
                 />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="email">Email Address</label>
+                <label for="email" class="required">Email Address</label>
                 <input
                   type="text"
                   class="form-control"
@@ -250,22 +250,6 @@
                   </ng-container>
                 </select>
               </div>
-              <!-- <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="edocs">E Docs</label>
-                <select
-                  class="form-select"
-                  formControlName="edocs"
-                  [id]="'edocs'"
-                >
-                  <ng-container
-                    *ngFor="let product of [{ code: 1, description: 'E' }]"
-                  >
-                    <option [value]="product?.code">
-                      {{ product?.description }}
-                    </option>
-                  </ng-container>
-                </select>
-              </div> -->
             </div>
           </div>
         </div>
@@ -301,7 +285,7 @@
                 />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="country">Country</label>
+                <label for="country" class="required">Country</label>
 
                 <select
                   class="form-select"
@@ -366,7 +350,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="p_address">Physical Address</label>
+                <label for="p_address" class="required">Physical Address</label>
                 <input
                   type="text"
                   class="form-control"
@@ -423,7 +407,7 @@
                   </ng-container>
                 </select>
               </div>
-              
+
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <label for="town">Town</label>
                 <select
@@ -515,11 +499,11 @@
         <div class="accordion-body">
           <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Bank</label>
+              <label for="bank">Bank</label>
               <select
                 class="form-select"
-                formControlName="branch"
-                [id]="'clientType'"
+                formControlName="bank"
+                [id]="'bank'"
               >
               <option value="" disabled selected>Select Bank</option>
                 <ng-container *ngFor="let bank of bankList">
@@ -531,11 +515,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Branch</label>
+              <label for="branch">Branch</label>
               <select
                 class="form-select"
                 formControlName="branch"
-                [id]="'clientType'"
+                [id]="'branch'"
               >
               <option value="" disabled selected>Select Branch</option>
                 <ng-container *ngFor="let bankBranch of bankBranchList">
@@ -577,7 +561,7 @@
               <div class="w-100">
                 <label class="required">With Effect From</label>
                 <div>
-                  <p-calendar formControlName="with_effect_from" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+                  <p-calendar formControlName="withEffectFromDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
                     <ng-template pTemplate="header" >
                       <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
                     </ng-template>
@@ -588,7 +572,7 @@
             </div>
             <div class="col-lg-4 col-md-6 col-sm-12">
               <div class="w-100">
-                <label class="required">With Effect To</label>
+                <label >With Effect To</label>
                 <div>
                   <p-calendar formControlName="with_effect_to" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
                     <ng-template pTemplate="header" >
@@ -621,11 +605,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="number">Preferred Channel</label>
+              <label for="prefCahnnel">Preferred Channel</label>
               <select
                 class="form-select"
-                formControlName="number"
-                [id]="'number'"
+                formControlName="prefCahnnel"
+                [id]="'prefCahnnel'"
               >
                 <!-- <ng-container
                   *ngFor="let product of [{ code: 1, description: 'E' }]"
@@ -668,11 +652,11 @@
         <div class="accordion-body">
           <div class="row">
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Type of Employment</label>
+              <label for="employmentType">Type of Employment</label>
               <select
                 class="form-select"
-                formControlName="branch"
-                [id]="'clientType'"
+                formControlName="employmentType"
+                [id]="'employmentType'"
               >
                 <!-- <ng-container *ngFor="let bank of bankList">
                   <option [value]="bank['id']">
@@ -681,17 +665,17 @@
                 </ng-container> -->
 
                 <option value="" disabled selected>Select Employment Type</option>
-                      <option value="N">Employed</option>
-                      <option value="N">Self-Employed</option>
+                      <option value="E">Employed</option>
+                      <option value="S">Self-Employed</option>
               </select>
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Occupation</label>
+              <label for="occupation" class="required">Occupation</label>
               <select
                 class="form-select"
-                formControlName="branch"
-                [id]="'clientType'"
+                formControlName="occupation"
+                [id]="'occupation'"
               >
               <option value="" disabled selected>Select Occupation</option>
 
@@ -704,11 +688,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Economic Sector</label>
+              <label for="economicSector">Economic Sector</label>
               <select
                 class="form-select"
-                formControlName="branch"
-                [id]="'clientType'"
+                formControlName="economicSector"
+                [id]="'economicSector'"
               >
               <option value="" disabled selected>Select Economic Sector</option>
 
@@ -721,11 +705,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="clientType">Marital Status</label>
+              <label for="maritalStatus">Marital Status</label>
               <select
                 class="form-select"
-                formControlName="branch"
-                [id]="'clientType'"
+                formControlName="maritalStatus"
+                [id]="'maritalStatus'"
               >
                 <!-- <ng-container *ngFor="let bankBranch of bankBranchList">
                   <option [value]="bankBranch['id']">
@@ -741,22 +725,22 @@
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="phoneNumber">Purpose in Insurance</label>
+              <label for="purposeInsurance">Purpose in Insurance</label>
               <input
                 type="text"
                 class="form-control"
-                formControlName="phoneNumber"
-                [id]="'phoneNumber'"
+                formControlName="purposeInsurance"
+                [id]="'purposeInsurance'"
               />
             </div>
 
             <div class="col-lg-4 col-md-6 col-sm-12">
-              <label for="phoneNumber">Distribution Channel</label>
+              <label for="disChannel">Distribution Channel</label>
               <input
                 type="text"
                 class="form-control"
-                formControlName="phoneNumber"
-                [id]="'phoneNumber'"
+                formControlName="disChannel"
+                [id]="'disChannel'"
               />
             </div>
 
@@ -775,13 +759,16 @@
           <div>Beneficiary(ies) / Trustee(s)</div>
           <div>
             <div
-              (click)="addBeneficary()"
+              (click)="addEmptyBeneficiary()"
               class="b-r d-flex justify-content-center align-content-center"
             >
               <i class="fa-solid fa-plus"></i>
             </div>
           </div>
         </div>
+
+
+
         <ng-container>
           <div class="table-responsive">
             <table class="table table-bordered">
@@ -791,6 +778,7 @@
                   <th>Other Name</th>
                   <th>Date Of Birth</th>
                   <th>Percentage Benefit</th>
+                  <th>Telephone</th>
                   <th>Age</th>
                   <th>Type</th>
                   <th style="width: 2rem"></th>
@@ -798,16 +786,34 @@
               </thead>
               <tbody>
                 <ng-container
-                  *ngFor="let row of benefricairyList$ | async; let i = index"
+                  *ngFor="let row of benefricairyList$; let i = index"
                 >
                   <tr *ngIf="row['isEdit'] == true">
-                    <td><input type="text" class="form-control" required /></td>
-                    <td><input type="text" class="form-control" required /></td>
-                    <td><input type="text" class="form-control" /></td>
-                    <td><input type="text" class="form-control" /></td>
-                    <td><input type="text" class="form-control" /></td>
+                    <td><input formControlName="party_first_name"  type="text" class="form-control" required /></td>
+                    <td><input formControlName="party_last_name"  type="text" class="form-control" required /></td>
+                    <td><p-calendar appendTo="body" formControlName="party_dob" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+
+
+                    </p-calendar></td>
+                    <td><input formControlName="party_percentage"  type="number" class="form-control" /></td>
+                    <td><input formControlName="party_telephone"  type="text" class="form-control" required /></td>
+
+                    <td>{{ calculateAge('party_dob') }}</td>
+                    <td><select
+                      class="form-select"
+                      formControlName="party_type"
+                      [id]="'clientType'"
+                    >
+                    <option style="font-size: 11px" value="" disabled selected>Type</option>
+                    <ng-container *ngFor="let type of beneficiaryTypeList">
+                      <option [value]="type['name']">
+                        {{ type['value'] | titlecase }}
+                      </option>
+                    </ng-container>
+
+                    </select></td>
                     <td class="d-flex justify-content-between py-2">
-                      <div class="mx-2">
+                      <div (click)="updateBeneficiary(i)" class="mx-2">
                         <i class="fa-solid fa-check text-success"></i>
                       </div>
                       <div (click)="deleteBeneficiary(i)" class="mx-2">
@@ -820,16 +826,15 @@
                     <td>{{ row["other_name"] }}</td>
                     <td>{{ row["date_of_birth"] | date : "short" }}</td>
                     <td>{{ row["percentage_benefit"] }}</td>
+                    <td>{{ row["telephone"] }}</td>
                     <td>{{ row["age"] }}</td>
                     <td>{{ row["type"]==='B'?'Beneficairy':'Trustee' }}</td>
                     <td class="d-flex justify-content-between py-2">
-                      <div class="mx-2">
+                      <div (click)="editBeneficiary(i)" class="mx-2">
                         <i class="fas fa-edit text-success"></i>
-                        <!-- Edit Icon -->
                       </div>
                       <div (click)="deleteBeneficiary(i)" class="mx-2">
                         <i class="fas fa-trash-alt text-danger"></i>
-                        <!-- Remove Icon -->
                       </div>
                     </td>
                   </tr>
@@ -854,87 +859,124 @@
             </div>
           </div>
           <div
-            *ngIf="(benefricairyList$ | async)?.length === 0"
+            *ngIf="benefricairyList$.length === 0"
             class="d-flex justify-content-center text-danger"
           >
             No Available Beneficiary!
           </div>
         </ng-container>
       </div>
-    </div>
 
-    <!-- <div>
+
       <div class="text-black">
-        <div
-          class="d-flex justify-content-between"
-          style="padding: 3rem 0 0.4rem 0rem"
-        >
-          <div>Trustee(s)</div>
+        <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+        </div>
+        <!-- <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+          <div>Guardian</div>
           <div>
-            <div (click)="addTrustee()" class="b-r">
+            <div
+              (click)="addEmptyBeneficiary()"
+              class="b-r d-flex justify-content-center align-content-center"
+            >
               <i class="fa-solid fa-plus"></i>
             </div>
           </div>
-        </div>
+        </div> -->
 
-        <ng-container>
+
+
+        <!-- <ng-container>
           <div class="table-responsive">
             <table class="table table-bordered">
               <thead>
                 <tr style="font-weight: 400; font-size: 12px">
                   <th>Full Name</th>
-                  <th>Address</th>
                   <th>Date Of Birth</th>
-                  <th>Percentage Benefit</th>
-                  <th>Age</th>
+                  <th>Benefiaciary Full Name</th>
                   <th style="width: 2rem"></th>
                 </tr>
               </thead>
               <tbody>
                 <ng-container
-                  *ngFor="let row of trusteeList$ | async; let i = index"
+                  *ngFor="let row of guardianList$; let i = index"
                 >
-                  <tr *ngIf="false">
-                    <td><input type="text" class="form-control" required /></td>
-                    <td><input type="text" class="form-control" required /></td>
-                    <td><input type="text" class="form-control" /></td>
-                    <td><input type="text" class="form-control" /></td>
-                    <td><input type="text" class="form-control" /></td>
-                    <td>
-                      <span type="button" class="btn btn-success">
-                        <i class="fas fa-edit"></i>
-                      </span>
-                      <span type="button" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i>
-                      </span>
+                  <tr *ngIf="row['isEdit'] == true">
+
+
+                    <td><input formControlName="party_first_name"  type="text" class="form-control" required /></td>
+                    <td><input formControlName="party_last_name"  type="text" class="form-control" required /></td>
+                    <td><p-calendar appendTo="body" formControlName="party_dob" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+
+
+                    </p-calendar></td>
+                    <td><input formControlName="party_telephone"  type="text" class="form-control" required /></td>
+
+                    <td>{{ calculateAge('party_dob') }}</td>
+                    <td><select
+                      class="form-select"
+                      formControlName="party_type"
+                      [id]="'clientType'"
+                    >
+                    <option style="font-size: 11px" value="" disabled selected>Beneficiary</option>
+                    <ng-container *ngFor="let type of beneficiaryTypeList">
+                      <option [value]="type['name']">
+                        {{ type['value'] | titlecase }}
+                      </option>
+                    </ng-container>
+
+                    </select></td>
+                    <td class="d-flex justify-content-between py-2">
+                      <div (click)="updateBeneficiary(i)" class="mx-2">
+                        <i class="fa-solid fa-check text-success"></i>
+                      </div>
+                      <div (click)="deleteBeneficiary(i)" class="mx-2">
+                        <i class="fa-solid fa-x text-danger"></i>
+                      </div>
                     </td>
                   </tr>
-                  <tr *ngIf="true">
-                    <td>{{ row["full_name"] }}</td>
-                    <td>{{ row["address"] }}</td>
+                  <tr *ngIf="row['isEdit'] == false">
+                    <td>{{ row["first_name"] }}</td>
                     <td>{{ row["date_of_birth"] | date : "short" }}</td>
-                    <td>{{ row["percentage_benefit"] }}</td>
-                    <td>{{ row["age"] }}</td>
-                    <td class="d-flex justify-content-end">
-                      <button type="button" class="btn btn-success">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button
-                        (click)="deleteTrustee(i)"
-                        type="button"
-                        class="btn btn-danger"
-                      >
-                        <i class="fas fa-trash-alt"></i>
-                      </button>
+                    <td>{{1}}</td>
+                    <td class="d-flex justify-content-between py-2">
+                      <div (click)="editBeneficiary(i)" class="mx-2">
+                        <i class="fas fa-edit text-success"></i>
+                      </div>
+                      <div (click)="deleteBeneficiary(i)" class="mx-2">
+                        <i class="fas fa-trash-alt text-danger"></i>
+                      </div>
                     </td>
                   </tr>
                 </ng-container>
               </tbody>
             </table>
+
+            <div *ngIf="editEntityTwo">
+              <div
+                style="
+                  left: 50%;
+                  right: 50%;
+                  width: 3rem;
+                  height: 3rem;
+                  position: relative;
+                "
+                class="spinner-border text-primary spinner-border"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
           </div>
-        </ng-container>
+          <div
+            *ngIf="guardianList$.length === 0"
+            class="d-flex justify-content-center text-danger"
+          >
+            No Available Guardian!
+          </div>
+        </ng-container> -->
       </div>
-    </div> -->
+    </div>
+
 
     <div>
       <div class="text-black">
@@ -1416,6 +1458,7 @@
 <div
   class="modal fade"
   id="newClientModal"
+  #newClientModal
   tabindex="-1"
   role="dialog"
   aria-labelledby="newClientModalTitle"
@@ -1436,7 +1479,7 @@
           <div class="text-black fw-bold" style="font-size: 14px">
             Select Client
           </div>
-          <div (click)="closeModal()" style="cursor: pointer">X</div>
+          <div  data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()" style="cursor: pointer">X</div>
         </div>
         <div class="col-12">
           <div class="col-12">
