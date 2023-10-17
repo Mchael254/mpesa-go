@@ -27,7 +27,7 @@
               <ng-container *ngIf="dashboard.chartData">
                 <div class="card-body">
                   <div
-                    *ngIf="dashboard.reports[0].charts[0].type==='table';
+                    *ngIf="dashboard.reports[0]?.charts[0]?.type==='table';
                else showChart"
                   >
                     <app-dynamic-table
@@ -37,8 +37,8 @@
 
                   <ng-template #showChart>
                     <app-dynamic-chart
-                      [basicData]="dashboard.chartData"
-                      [chartType]="dashboard.reports[0].charts[0].type"
+                      [basicData]="dashboard?.chartData"
+                      [chartType]="dashboard?.reports[0]?.charts[0]?.type"
                     ></app-dynamic-chart>
                   </ng-template>
 

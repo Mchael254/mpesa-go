@@ -46,6 +46,7 @@ export class CreateReportComponent implements OnInit {
   filters: any = [];
   sort: any = [];
   subCategoryCategoryAreas: any[] = [];
+  public shouldShowContinueButton: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -193,6 +194,7 @@ export class CreateReportComponent implements OnInit {
 
     this.criteria.push(this.queryObject);
     this.splitDimensionsAndMeasures(this.queryObject);
+    this.shouldShowContinueButton = true;
   }
 
   /**

@@ -68,7 +68,7 @@ export class ReportServiceV2 {
 
   const dateConditions = [
       {label: 'In date range', value: 'inDateRange'},
-      {label: 'Not in date range', value: 'inDateRange'},
+      {label: 'Not in date range', value: 'notInDateRange'},
       {label: 'Before date', value: 'beforeDate'},
       {label: 'After date', value: 'afterDate'},
     ];

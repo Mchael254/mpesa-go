@@ -18,6 +18,7 @@ import {Router} from "@angular/router";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import _default from "chart.js/dist/core/core.interaction";
 import dataset = _default.modes.dataset;
+import { ColorScheme } from 'src/app/shared/data/reports/color-scheme';
 
 const log = new Logger('ReportPreviewComponent')
 
@@ -54,6 +55,7 @@ export class ReportPreviewComponent implements OnInit{
   public metricConditions = [];
   public dateConditions = [];
   public conditionsOptionsValue = [];
+  public conditionsType: string = '';
 
   public chartType: ChartType | string = "table";
   public displayChartTypes: string[] = [];
@@ -85,6 +87,20 @@ export class ReportPreviewComponent implements OnInit{
   public styleType: string = 'table';
   public dashboards: any[] = [];
 
+  private defaultColorScheme: ColorScheme = {
+    name: 'Defaul',
+    colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'],
+  }
+
+  public colorScheme: ReportColorScheme = {
+    bar: this.defaultColorScheme,
+    line: this.defaultColorScheme,
+    pie: this.defaultColorScheme,
+    doughnut: this.defaultColorScheme,
+    polarArea: this.defaultColorScheme,
+    radar: this.defaultColorScheme
+  };
+
   constructor(
     private fb: FormBuilder,
     private sessionStorageService: SessionStorageService,
@@ -107,7 +123,8 @@ export class ReportPreviewComponent implements OnInit{
    * 6. Fetching details of the current user
    */
   ngOnInit(): void {
-    const reportParams = this.sessionStorageService.getItem(`reportParams`)
+    const reportParams = this.sessionStorageService.getItem(`reportParams`);
+    log.info(`report params >>> `, reportParams)
     this.criteria = reportParams.criteria;
     this.sort = reportParams.sort;
     this.reportNameRec = reportParams.reportNameRec;
@@ -203,13 +220,6 @@ export class ReportPreviewComponent implements OnInit{
   createChartTypeForm(): void {
     this.chartTypeForm = this.fb.group({
       chartType: [''],
-      /*table: [''],
-      bar: [''],
-      line: [''],
-      pie: [''],
-      doughnut: [''],
-      polarArea: [''],
-      radar: [''],*/
     });
   }
 
@@ -241,7 +251,13 @@ export class ReportPreviewComponent implements OnInit{
     if(isIndexPresent !== -1) {
       this.displayChartTypes.splice(isIndexPresent, 1);
     } else {
-      this.displayChartTypes.push(selectedChartType.name);
+
+      if(selectedChartType.name === 'table') {
+        this.displayChartTypes.unshift(selectedChartType.name); // always set table as the first element of the array
+      } else {
+        this.displayChartTypes.push(selectedChartType.name);
+      }
+
     }
 
     this.chartType = this.displayChartTypes[this.displayChartTypes.length-1];
@@ -254,6 +270,7 @@ export class ReportPreviewComponent implements OnInit{
       this.shouldShowTable = false;
     }
     // this.shouldShowVisualization = false;
+    log.info(`display chart types >>> `, this.displayChartTypes);
     this.loadChart();
 
   }
@@ -372,19 +389,44 @@ export class ReportPreviewComponent implements OnInit{
 
 
   setChartColors(chartType, chartData) {
-    const colorScheme = ['red', 'orange', 'green', 'blue', 'indigo', 'violet'];
+    let colorScheme;
+
+    switch(chartType) {
+      case 'bar':
+        colorScheme = this.colorScheme.bar;
+        break;
+      case 'line':
+        colorScheme = this.colorScheme.line;
+        break;
+      case 'pie':
+        colorScheme = this.colorScheme.pie;
+      break;
+      case 'doughnut':
+        colorScheme = this.colorScheme.doughnut
+        break;
+      case 'polarArea':
+        colorScheme = this.colorScheme.polarArea
+        break;
+      case 'radar':
+        colorScheme = this.colorScheme.radar
+        break;
+      default:
+        colorScheme = { colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'] }
+    }
+
+    
     if(chartType === 'bar' || chartType === 'line') {
       chartData.datasets.forEach((dataset, index) => {
-        dataset.backgroundColor = colorScheme[index];
-        dataset.borderColor = colorScheme[index];
+        dataset.backgroundColor = colorScheme.colors[index];
+        dataset.borderColor = colorScheme.colors[index];
       });
     } else {
       chartData.datasets.forEach((dataset) => {
-        dataset.backgroundColor = colorScheme;
+        dataset.backgroundColor = colorScheme.colors;
         dataset.borderColor = '#fff';
       })
     }
-    // log.info(`chartData >>> `, chartData);
+  
     return chartData
   }
 
@@ -414,11 +456,14 @@ export class ReportPreviewComponent implements OnInit{
     let charts: Chart[] = [];
 
     this.displayChartTypes.forEach((chartType) => {
+
+      const colorSchemeId = this.colorScheme[chartType]?.id;
+
       const chart: Chart = {
         backgroundColor: "",
         borderColor: "",
         chartReportId: 0,
-        colorScheme: 0,
+        colorScheme: colorSchemeId,
         evenColor: "",
         evenOddAppliesTo: "",
         // id: 0,
@@ -472,20 +517,53 @@ export class ReportPreviewComponent implements OnInit{
     this.router.navigate(['/home/reportsv2/create-report'], {queryParams:{fromPreview: true}})
   }
 
-  showConditions(event) {
+  showConditions(event): void {
     this.conditionsOptionsValue = [];
     const query = event.target.value;
     const criterion = this.criteria.filter((item) => item.query === query)[0];
 
-    if (criterion.category === 'metrics') {
-      this.conditionsOptionsValue = this.metricConditions;
-    } else if (criterion.category !== 'dimensions' && criterion.category !== 'whenFilters') {
-      this.conditionsOptionsValue = this.dimensionConditions;
-    }
+    this.conditionsOptionsValue = this.setConditionsOptionsValue(criterion.category);
 
     this.filterForm.patchValue({
       operator: this.conditionsOptionsValue[0].value
     })
   }
 
+  setConditionsOptionsValue(category) {
+    let conditionsOptionsValue;
+
+    if (category === 'metrics') {
+      conditionsOptionsValue = this.metricConditions;
+      this.conditionsType = 'metrics';
+    } else if (category !== 'dimensions' && category !== 'whenFilters') {
+      conditionsOptionsValue = this.dimensionConditions;
+      this.conditionsType = 'dimensions';
+    } else if (category !== 'dimensions' && category === 'whenFilters') {
+      conditionsOptionsValue = this.dateConditions;
+      this.conditionsType = 'date';
+    }
+
+    return conditionsOptionsValue;
+  }
+
+  selectCondition(event) {
+    log.info(`selected condition`, event.target.value)
+  }
+
+  setColorScheme(colorScheme): void {
+    this.colorScheme[this.styleType] = colorScheme;
+    this.loadChart();
+    log.info(`selected color scheme >>> `, this.colorScheme, this.styleType);
+  }
+
+}
+
+
+interface ReportColorScheme {
+  bar: ColorScheme,
+  line: ColorScheme,
+  pie: ColorScheme,
+  doughnut: ColorScheme,
+  polarArea: ColorScheme,
+  radar: ColorScheme
 }
