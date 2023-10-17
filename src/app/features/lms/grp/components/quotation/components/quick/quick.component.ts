@@ -11,6 +11,7 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Pagination } from 'src/app/shared/data/common/pagination';
+import { Currency } from '../../../../models/currency';
 
 
 const log = new Logger ('QuickComponent');
@@ -22,11 +23,11 @@ const log = new Logger ('QuickComponent');
 })
 export class QuickComponent implements OnInit, OnDestroy {
   quickForm: FormGroup;
-  // clientList: ClientDTO[] = [] as ClientDTO[];
   clientList: { label: string, value: number }[] = [];
   productList: any[] = [
     { code: 0, description: 'SELECT PRODUCT' },
   ];
+  currencyList: { label: string; value: number; }[] = [];
   constructor (
     private fb: FormBuilder,
     private router: Router,
@@ -54,7 +55,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     ];
 
     public facultativeType = [
-      {label: ' inward', value: 'inward'},
+      {label: ' Inward', value: 'inward'},
       {label: ' Outward', value: 'outward'},
       {label: ' Normal', value: 'normal'},
     ];
@@ -96,6 +97,8 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.getPayFrequencies();
     this.getClientList();
     this.getProducts();
+    this.getAllCurrencies();
+    this.getCoverTypes();
   }
 
   ngOnDestroy(): void {
@@ -121,19 +124,25 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   onContinue () {
-    this.router.navigate(['/home/lms/grp/quotation/coverage']);
+    const quickFormValues = this.quickForm.get("quotationCalcType").value;
+    console.log(quickFormValues)
+    this.router.navigate(['/home/lms/grp/quotation/coverage'], {
+      queryParams: {
+        quotationCalcType: quickFormValues,
+      },
+    });
   }
 
 
   getPayFrequencies() {
     this.payFrequenciesService.getPayFrequencies().subscribe((freqs: PayFrequency[]) => {
-      this.frequencyOfPayment = freqs.map(frequency => ({ 
-        label: frequency.desc,
-        value: frequency.sht_desc 
-      })
-      );
+      this.frequencyOfPayment = freqs.map(frequency => ({
+        label: this.capitalizeFirstLetterOfEachWord(frequency.desc),
+        value: frequency.sht_desc
+      }));
     });
   }
+  
 
   getClientList() {
     this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
@@ -147,11 +156,34 @@ export class QuickComponent implements OnInit, OnDestroy {
   getProducts() {
     this.product_service.getListOfProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
-        label: product.description,
+        label: this.capitalizeFirstLetterOfEachWord(product.description),
         value: product.code
       }));
     });
   }
   
+  capitalizeFirstLetterOfEachWord(str) {
+    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+  }
   
+  
+  
+
+  getAllCurrencies() {
+    this.quickService.getAllCurrencies().subscribe((currencies: Currency[]) => {
+      this.currencyList = currencies.map((currency) => ({
+        label: this.formatCurrencyLabel(currency.desc, currency.symbol),
+        value: currency.code
+      }));
+    });
+  }
+  
+  formatCurrencyLabel(desc: string, symbol: string): string {
+    const formattedDesc = desc.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    return `${formattedDesc} (${symbol})`;
+  }
+  
+  
+  getCoverTypes() {
+  }
 }
