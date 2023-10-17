@@ -59,6 +59,19 @@ export class DynamicTableComponent {
     return !isNaN(dataValue);
   }
 
+  formatTableData(str) {
+    log.info(str, `is of type`, typeof str);
+    const stringToDate = new Date(str);
+    const stringToNumber = parseFloat(str)
+    log.info(`isStringToDate >>> `, stringToDate, typeof stringToDate);
+    log.info(`isStringToNumber >>> `, stringToNumber, typeof stringToNumber);
+
+    // if (typeof stringToNumber == number) {
+
+    // }
+    log.info(`-----------------------------------`)
+  }
+
   showCustomModal(data: any) {
     this.showCustomModalEmitter.emit({showModal: true, value: data});
   }

@@ -76,23 +76,6 @@
             </div>
           </ng-template>
 
-          <!--<div *ngIf="filters.length > 0" class="subject-area mt-4">
-            <span class="fw-medium ms-1 my-1">Filters</span>
-            <div class="content">
-              <div *ngFor="let filterName of filters" class="btn-group dropend">
-                <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ filterName.name }}
-                </button> &nbsp; &nbsp; &nbsp; &nbsp;
-                <ul class="dropdown-menu">
-                  <li *ngFor="let filterSubCategory of filterName.subCategory"
-                      (click)="selectCriteria(filters, filterName, filterSubCategory)">
-                    {{ filterSubCategory.name }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>-->
-
           <div *ngIf="dimensions.length > 0">
             <span class="fw-medium ms-1 my-1">Filters</span>
             <div style="border: solid 1px #eee; border-radius: 5px;">
@@ -146,7 +129,7 @@
 
           </div>
 
-          <div class="text-center">
+          <div *ngIf="shouldShowContinueButton" class="text-center">
             <button
               (click)="viewPreview()"
               class="btn btn-primary mt-3 continueBtn"

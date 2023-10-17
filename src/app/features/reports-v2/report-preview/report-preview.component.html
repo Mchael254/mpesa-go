@@ -56,8 +56,7 @@
             <div class="">
               <label for="style">Style</label>
               <p class="selected-visualization" (click)="showStyles()" id="style">
-                <!--<i [class]="selectedChartType.iconClass"></i>-->
-                <span class="ml-2">{{ this.styleType | titlecase }}</span>
+                <span class="ml-2">{{ styleType | titlecase }}</span>
                 <i class="pi pi-chevron-down float-end mt-1"></i>
               </p>
               <ul *ngIf="shouldShowStyles" class="fadeIn">
@@ -67,6 +66,11 @@
                   </li>
                 </ng-container>
               </ul>
+              <div class="color-scheme py-2" *ngIf="styleType !== 'table'">
+                <app-color-scheme
+                (selectedColorScheme)="setColorScheme($event)"
+                ></app-color-scheme>
+              </div>
             </div>
           </div>
 
@@ -172,7 +176,7 @@
           <div class="row g-3">
             <div class="col">
               <label for="column" class="form-label">Column</label>
-              <select (change)="showConditions($event)" formControlName="column" id="column" class="form-select" aria-label="Default select example">
+              <select (change)="showConditions($event)" formControlName="column" id="column" class="form-select">
                 <option
                   *ngFor="let criterion of criteria"
                   [value]="criterion.query"
@@ -183,7 +187,7 @@
             </div>
             <div class="col">
               <label for="operator" class="form-label">Operator</label>
-              <select formControlName="operator" id="operator" class="form-select" aria-label="Default select example">
+              <select (change)="selectCondition($event)" formControlName="operator" id="operator" class="form-select">
                 <option
                   *ngFor="let condition of conditionsOptionsValue"
                   [value]="condition.value"
@@ -194,7 +198,13 @@
             </div>
             <div class="col">
               <label for="value" class="form-label">Value</label>
-              <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
+              <span *ngIf="conditionsType !== 'date'">
+                <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
+              </span>
+              <span *ngIf="conditionsType === 'date'">
+                <input formControlName="value" type="date" id="value" class="form-control" aria-label="Value">
+                <!-- <p-calendar formControlName="value" selectionMode="range" [readonlyInput]="true"></p-calendar> -->
+              </span>
             </div>
             <div class="col p-1">
               <a

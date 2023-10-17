@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve  --proxy-config proxy.conf.json",
     "start:watch": "ng serve --watch  --proxy-config proxy.conf.json",
-    "build": "ng build --base-href=/TQV6/ --source-map",
+    "build": "ng build --base-href=/TQV6/",
     "build:prod": "npm run build --prod --aot",
     "test": "jest",
     "test:watch": "jest --watch --runInBand",
