@@ -9,21 +9,18 @@
     </div>
   </div>
 
-
-  <div class="full-border px-5" style="padding: 0;">
+  <div class="full-border px-5" style="padding: 0">
     <div>
       <div class="d-flex justify-content-between pt-3 siz">
         <div class="fw-bold text-black">Medical history</div>
       </div>
       <div class="text-black">
-
         <div class="col fadeIn">
           <div [formGroup]="medicalHistoryForm" class="w-100">
             <div class="my-lg-5">
-              <label class="required">1. Do you have a personal doctor?</label
-              >
+              <label class="required">1. Do you have a personal doctor?</label>
               <div></div>
-              <div class="row" >
+              <div class="row">
                 <div class="col-12">
                   <span class="form-check form-check-inline">
                     <input
@@ -45,21 +42,19 @@
                     />
                     <label class="form-check-label" for="female">No</label>
                   </span>
-
                 </div>
                 <div *ngIf="getValue('question1') === 'Y'">
                   <div class="row">
-
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                      <label for="surname">Surname</label>
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                      <label for="surname">Name</label>
                       <input
                         type="text"
                         class="form-control"
                         [id]="'surname'"
                       />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                      <label for="other_name">Other Name</label>
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                      <label for="other_name">Location</label>
                       <input
                         type="text"
                         class="form-control"
@@ -68,17 +63,16 @@
                     </div>
                   </div>
                   <div class="row">
-
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                      <label for="surname">Surname</label>
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                      <label for="surname">Phone No.</label>
                       <input
                         type="text"
                         class="form-control"
                         [id]="'surname'"
                       />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                      <label for="other_name">Other Name</label>
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                      <label for="other_name">Email Address</label>
                       <input
                         type="text"
                         class="form-control"
@@ -87,11 +81,7 @@
                     </div>
                   </div>
                 </div>
-
-
               </div>
-
-
             </div>
 
             <div class="my-lg-5">
@@ -123,14 +113,15 @@
               </div>
 
               <div class="row" *ngIf="getValue('question2') === 'Y'">
-
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-4 col-md-6 col-sm-12 py-3">
                   <label for="expected_date">Expected delivery date</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    [id]="'expected_date'"
-                  />
+                  <p-calendar
+                    appendTo="body"
+                    dateFormat="dd/mm/yy"
+                    [showIcon]="true"
+                    [showButtonBar]="true"
+                  >
+                  </p-calendar>
                 </div>
               </div>
             </div>
@@ -161,17 +152,17 @@
                   <label class="form-check-label" for="female">No</label>
                 </span>
               </div>
-              <div>
-              </div>
+              <div></div>
 
               <div class="row" *ngIf="getValue('question3') === 'Y'">
-
                 <div class="col-lg-6 col-md-6 col-sm-12">
                   <label for="expected_date" class="my-1">Description</label>
                   <textarea
                     type="text"
                     class="form-control"
-                    [id]="'expected_date'" cols="70" rows="5"
+                    [id]="'expected_date'"
+                    cols="70"
+                    rows="5"
                   ></textarea>
                 </div>
               </div>
@@ -179,7 +170,8 @@
 
             <div class="my-lg-5">
               <label class="required"
-                >4. Do you have any congenital defect/ abnormality/ Physical deformity/ Handicap?</label
+                >4. Do you have any congenital defect/ abnormality/ Physical
+                deformity/ Handicap?</label
               >
               <div></div>
               <span class="form-check form-check-inline">
@@ -205,193 +197,168 @@
             </div>
 
             <div class="my-lg-5">
-              <label class="required">5. Have you or any of you dependents ever suffered or do you suffer from or diagnosed with any of the following? Yes/No Questions.
-                If Yes, please provide dates, duration, description and treatment given</label
+              <label class="required"
+                >5. Have you or any of you dependents ever suffered or do you
+                suffer from or diagnosed with any of the following? Yes/No
+                Questions. If Yes, please provide dates, duration, description
+                and treatment given</label
               >
               <div></div>
-              <!-- <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="male"
-                  formControlName="question"
-                  value="Y"
-                />
-                <label class="form-check-label" for="male">Yes</label>
-              </span>
-              <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="female"
-                  formControlName="question"
-                  value="N"
-                />
-                <label class="form-check-label" for="female">No</label>
-              </span> -->
 
-
-
-
-              <div>
-                <div class="text-black mt-3">
-                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                    Beneficiaries and trustees
-                  </div>
-                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
-                    <div>Beneficiary(ies)</div>
-                    <div>
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm b-r"
-                      >
-                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-                      </button>
+              <div class="row col-lg-10 col-sm-12">
+                <div
+                  class="d-flex justify-content-between "
+                  style="padding: 0 0 0 0rem"
+                >
+                  <div></div>
+                  <div>
+                    <div
+                      (click)="addEmptyMedicalList(medicalListOne)"
+                      class="b-r d-flex justify-content-center align-content-center"
+                    >
+                      <i class="fa-solid fa-plus"></i>
                     </div>
                   </div>
-
-                  <p-table
-                    [value]="products"
-                    dataKey="id"
-                    editMode="row"
-                    responsiveLayout="stack"
-                    [tableStyle]="{ 'min-width': '50rem' }"
-                  >
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th style="width: 20%">Surname</th>
-                        <th style="width: 20%">Other Names</th>
-                        <th style="width: 10%">Gender</th>
-                        <th style="width: 20%">Relationship</th>
-                        <th style="width: 20%">Date of Birth</th>
-                        <th style="width: 20%">Contact</th>
-                        <th style="width: 20%">Benefit Proportion</th>
-                        <th style="width: 20%"></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template
-                      pTemplate="body"
-                      let-product
-                      let-editing="editing"
-                      let-ri="rowIndex"
-                    >
-                      <tr [pEditableRow]="product">
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.code }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" required />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.name }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.inventoryStatus }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <div
-                            class="flex align-items-center justify-content-center gap-2"
-                          >
-                            <button
-                              *ngIf="!editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pInitEditableRow
-                              icon="pi pi-pencil"
-                              (click)="onRowEditInit(product)"
-                              class="p-button-rounded p-button-text"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pSaveEditableRow
-                              icon="pi pi-check"
-                              (click)="onRowEditSave(product)"
-                              class="p-button-rounded p-button-text p-button-success mr-2"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pCancelEditableRow
-                              icon="pi pi-times"
-                              (click)="onRowEditCancel(product, ri)"
-                              class="p-button-rounded p-button-text p-button-danger"
-                            ></button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
                 </div>
+                <ng-container>
+                  <div class="table-responsive">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr style="font-weight: 400; font-size: 12px; height:3rem; background-color: var(--grey-color);">
+                          <th>Person</th>
+                          <th>Diagnosis</th>
+                          <th>Diagnosis Date</th>
+                          <th>Description</th>
+                          <th style="width: 2rem"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <ng-container
+                          *ngFor="let row of medicalListOne; let i = index"
+                        >
+                          <tr *ngIf="row['isEdit'] == true">
+                            <td>
+                              <select class="form-select" [id]="'clientType'">
+                                <option
+                                  style="font-size: 11px"
+                                  value=""
+                                  disabled
+                                  selected
+                                >
+                                  Type
+                                </option>
+
+                                <!-- <option [value]="'B'">
+                                  {{ "Beneficiary" | titlecase }}
+                                </option>
+                                <option [value]="'T'">
+                                  {{ "Trustee" | titlecase }}
+                                </option> -->
+                              </select>
+                            </td>
+                            <td>
+                              <select class="form-select" [id]="'clientType'">
+                                <option
+                                  style="font-size: 11px"
+                                  value=""
+                                  disabled
+                                  selected
+                                >
+                                  Type
+                                </option>
+
+                                <!-- <option [value]="'B'">
+                                  {{ "Beneficiary" | titlecase }}
+                                </option>
+                                <option [value]="'T'">
+                                  {{ "Trustee" | titlecase }}
+                                </option> -->
+                              </select>
+                            </td>
+                            <td>
+                              <p-calendar
+                                appendTo="body"
+                                dateFormat="dd/mm/yy"
+                                [showIcon]="true"
+                                [showButtonBar]="true"
+                              >
+                              </p-calendar>
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                class="form-control"
+                                required
+                              />
+                            </td>
+                            <td class="d-flex justify-content-between py-2">
+                              <div (click)="updateBeneficiary(i)" class="mx-2">
+                                <i class="fa-solid fa-check text-success"></i>
+                              </div>
+                              <div (click)="deleteMedicalListOne(i)" class="mx-2">
+                                <i class="fa-solid fa-x text-danger"></i>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr *ngIf="row['isEdit'] == false">
+                            <td>{{ row["first_name"] }}</td>
+                            <td>{{ row["other_name"] }}</td>
+                            <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                            <td>{{ row["percentage_benefit"] }}</td>
+                            <td>{{ row["age"] }}</td>
+                            <td>
+                              {{
+                                row["type"] === "B" ? "Beneficairy" : "Trustee"
+                              }}
+                            </td>
+                            <td class="d-flex justify-content-between py-2">
+                              <div (click)="editBeneficiary(i)" class="mx-2">
+                                <i class="fas fa-edit text-success"></i>
+                                <!-- Edit Icon -->
+                              </div>
+                              <div (click)="deleteMedicalListOne(i)" class="mx-2">
+                                <i class="fas fa-trash-alt text-danger"></i>
+                                <!-- Remove Icon -->
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-container>
+                      </tbody>
+                    </table>
+
+                    <div *ngIf="editEntity">
+                      <div
+                        style="
+                          left: 50%;
+                          right: 50%;
+                          width: 3rem;
+                          height: 3rem;
+                          position: relative;
+                        "
+                        class="spinner-border text-primary spinner-border"
+                        role="status"
+                      >
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="medicalListOne.length === 0"
+                    class="d-flex justify-content-center text-danger"
+                  >
+                    No Available Data!
+                  </div>
+                </ng-container>
               </div>
             </div>
 
             <div class="my-lg-5">
-              <label class="required">6. Are any of your family members (Parents, Siblings, Children) suffering from or have suffered from or have died of heart disease,
-                diabetes or high sugar levels in blood, cancer or any other hereditary or family specific disorder before attaining 55 years of age ?</label
+              <label class="required"
+                >6. Are any of your family members (Parents, Siblings, Children)
+                suffering from or have suffered from or have died of heart
+                disease, diabetes or high sugar levels in blood, cancer or any
+                other hereditary or family specific disorder before attaining 55
+                years of age ?</label
               >
               <div></div>
               <!-- <span class="form-check form-check-inline">
@@ -415,160 +382,151 @@
                 <label class="form-check-label" for="female">No</label>
               </span> -->
 
-
-
               <div>
-                <div class="text-black mt-3">
-                  <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
-                    Beneficiaries and trustees
-                  </div>
-                  <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
-                    <div>Beneficiary(ies)</div>
+                <div class="row col-lg-10 col-sm-12">
+                  <div
+                    class="d-flex justify-content-between "
+                    style="padding: 0 0 0 0rem"
+                  >
+                    <div></div>
                     <div>
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-sm b-r "
+                      <div
+                        (click)="addEmptyMedicalList(medicalListTwo)"
+                        class="b-r d-flex justify-content-center align-content-center"
                       >
-                      <i class="fa-solid fa-user-plus"></i>&nbsp; Add
-                      </button>
+                        <i class="fa-solid fa-plus"></i>
+                      </div>
                     </div>
                   </div>
-
-                  <p-table
-                    [value]="products"
-                    dataKey="id"
-                    editMode="row"
-                    responsiveLayout="stack"
-                    [tableStyle]="{ 'min-width': '50rem' }"
-                  >
-                    <ng-template pTemplate="header">
-                      <tr>
-                        <th style="width: 20%">Surname</th>
-                        <th style="width: 20%">Other Names</th>
-                        <th style="width: 10%">Gender</th>
-                        <th style="width: 20%">Relationship</th>
-                        <th style="width: 20%">Date of Birth</th>
-                        <th style="width: 20%">Contact</th>
-                        <th style="width: 20%">Benefit Proportion</th>
-                        <th style="width: 20%"></th>
-                      </tr>
-                    </ng-template>
-                    <ng-template
-                      pTemplate="body"
-                      let-product
-                      let-editing="editing"
-                      let-ri="rowIndex"
-                    >
-                      <tr [pEditableRow]="product">
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.code }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" required />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.name }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <p-dropdown [style]="{ width: '100%' }"></p-dropdown>
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.inventoryStatus }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <p-cellEditor>
-                            <ng-template pTemplate="input">
-                              <input pInputText type="text" />
-                            </ng-template>
-                            <ng-template pTemplate="output">
-                              {{ product.price | currency : "USD" }}
-                            </ng-template>
-                          </p-cellEditor>
-                        </td>
-                        <td>
-                          <div
-                            class="flex align-items-center justify-content-center gap-2"
+                  <ng-container>
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr style="font-weight: 400; font-size: 12px; height:3rem; background-color: var(--grey-color);">
+                            <th>Person</th>
+                            <th>Diagnosis</th>
+                            <th>Diagnosis Date</th>
+                            <th>Description</th>
+                            <th style="width: 2rem"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container
+                            *ngFor="let row of medicalListTwo; let i = index"
                           >
-                            <button
-                              *ngIf="!editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pInitEditableRow
-                              icon="pi pi-pencil"
-                              (click)="onRowEditInit(product)"
-                              class="p-button-rounded p-button-text"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pSaveEditableRow
-                              icon="pi pi-check"
-                              (click)="onRowEditSave(product)"
-                              class="p-button-rounded p-button-text p-button-success mr-2"
-                            ></button>
-                            <button
-                              *ngIf="editing"
-                              pButton
-                              pRipple
-                              type="button"
-                              pCancelEditableRow
-                              icon="pi pi-times"
-                              (click)="onRowEditCancel(product, ri)"
-                              class="p-button-rounded p-button-text p-button-danger"
-                            ></button>
-                          </div>
-                        </td>
-                      </tr>
-                    </ng-template>
-                  </p-table>
+                            <tr *ngIf="row['isEdit'] == true">
+                              <td>
+                                <select class="form-select" [id]="'clientType'">
+                                  <option
+                                    style="font-size: 11px"
+                                    value=""
+                                    disabled
+                                    selected
+                                  >
+                                    Type
+                                  </option>
+
+                                  <!-- <option [value]="'B'">
+                                    {{ "Beneficiary" | titlecase }}
+                                  </option>
+                                  <option [value]="'T'">
+                                    {{ "Trustee" | titlecase }}
+                                  </option> -->
+                                </select>
+                              </td>
+                              <td>
+                                <select class="form-select" [id]="'clientType'">
+                                  <option
+                                    style="font-size: 11px"
+                                    value=""
+                                    disabled
+                                    selected
+                                  >
+                                    Type
+                                  </option>
+
+                                  <!-- <option [value]="'B'">
+                                    {{ "Beneficiary" | titlecase }}
+                                  </option>
+                                  <option [value]="'T'">
+                                    {{ "Trustee" | titlecase }}
+                                  </option> -->
+                                </select>
+                              </td>
+                              <td>
+                                <p-calendar
+                                  appendTo="body"
+                                  dateFormat="dd/mm/yy"
+                                  [showIcon]="true"
+                                  [showButtonBar]="true"
+                                >
+                                </p-calendar>
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  required
+                                />
+                              </td>
+                              <td class="d-flex justify-content-between py-2">
+                                <div (click)="updateBeneficiary(i)" class="mx-2">
+                                  <i class="fa-solid fa-check text-success"></i>
+                                </div>
+                                <div (click)="deleteMedicalListTwo(i)" class="mx-2">
+                                  <i class="fa-solid fa-x text-danger"></i>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr *ngIf="row['isEdit'] == false">
+                              <td>{{ row["first_name"] }}</td>
+                              <td>{{ row["other_name"] }}</td>
+                              <td>{{ row["date_of_birth"] | date : "short" }}</td>
+                              <td>{{ row["percentage_benefit"] }}</td>
+                              <td>{{ row["age"] }}</td>
+                              <td>
+                                {{
+                                  row["type"] === "B" ? "Beneficairy" : "Trustee"
+                                }}
+                              </td>
+                              <td class="d-flex justify-content-between py-2">
+                                <div (click)="editBeneficiary(i)" class="mx-2">
+                                  <i class="fas fa-edit text-success"></i>
+                                  <!-- Edit Icon -->
+                                </div>
+                                <div (click)="deleteMedicalListTwo(i)" class="mx-2">
+                                  <i class="fas fa-trash-alt text-danger"></i>
+                                  <!-- Remove Icon -->
+                                </div>
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+
+                      <div *ngIf="editEntity">
+                        <div
+                          style="
+                            left: 50%;
+                            right: 50%;
+                            width: 3rem;
+                            height: 3rem;
+                            position: relative;
+                          "
+                          class="spinner-border text-primary spinner-border"
+                          role="status"
+                        >
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      *ngIf="medicalListOne.length === 0"
+                      class="d-flex justify-content-center text-danger"
+                    >
+                      No Available Data!
+                    </div>
+                  </ng-container>
                 </div>
               </div>
             </div>
@@ -579,13 +537,21 @@
   </div>
 
   <div class="d-flex justify-content-between p-3">
-    <button routerLink="/home/lms/ind/quotation/lifestyle-details" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+    <button
+      routerLink="/home/lms/ind/quotation/lifestyle-details"
+      style="padding: 0.6em"
+      type="button"
+      class="btn btn-primary btn-sm"
+    >
       <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
     </button>
-    <button routerLink="/home/lms/ind/quotation/summary" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
-      Continue
-      &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
-
+    <button
+      routerLink="/home/lms/ind/quotation/summary"
+      style="padding: 0.6em"
+      type="button"
+      class="btn btn-primary btn-sm"
+    >
+      Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>
   </div>
 </div>

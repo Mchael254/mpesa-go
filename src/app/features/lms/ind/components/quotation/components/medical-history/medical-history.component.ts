@@ -32,6 +32,9 @@ export class MedicalHistoryComponent implements OnDestroy {
       url: '/home/lms/ind/quotation/medical-history'
     },
   ];
+  medicalListOne: any[] = [];
+  medicalListTwo: any[] = [];
+  editEntity: boolean = false;
 
 
   medicalHistoryForm: FormGroup;
@@ -67,6 +70,33 @@ onRowEditCancel(product: any, index: number) {
     this.products[index] = this.clonedProducts[product.id as string];
     delete this.clonedProducts[product.id as string];
 }
+
+editBeneficiary(i){}
+deleteMedicalListOne( i: number) {
+  this.medicalListOne = this.deleteEntity(this.medicalListOne, i);
+};
+deleteMedicalListTwo( i: number) {
+  this.medicalListTwo = this.deleteEntity(this.medicalListTwo, i);
+};
+updateBeneficiary(i){}
+addEmptyMedicalList(medicalList: any[]) {
+  this.addEntity(medicalList);
+}
+
+private addEntity(d: any[]) {
+  this.editEntity = true;
+  d.push({ isEdit: true });
+  this.editEntity = false;
+  return d;
+};
+private deleteEntity(d: any[], i) {
+  this.editEntity = true;
+     d = d.filter((data, x) => {
+      return i !== x;
+    });
+    this.editEntity = false
+    return d;
+};
 
 ngOnDestroy(): void {
   console.log('MedicalHistoryComponent UNSUBSCRIBE');

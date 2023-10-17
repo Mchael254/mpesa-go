@@ -3,6 +3,8 @@ import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { timer } from 'rxjs';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
 
 
 @Component({
@@ -44,7 +46,7 @@ export class QuotationSummaryComponent {
   //   return this.emailForm1.get('email_type') as FormControl;
   // }
 
-  constructor(private fb: FormBuilder){
+  constructor(private fb: FormBuilder, private toast: ToastService, private route: Router){
 
     this.contactDetailsForm = this.fb.group({
       branch: [''],
@@ -76,6 +78,15 @@ export class QuotationSummaryComponent {
 
   selectShareType(value: string) {
     this.shareInputType = value === 'email' ? 'email' : 'phone';
+  }
+
+  nextPage(){
+    this.toast.success('PROPOSAL', 'NEXT SCREEN');
+    timer(1300).subscribe(() => {
+      this.route.navigate(["/home/lms/ind/proposal/summary"]);
+    })
+
+    
   }
 
 

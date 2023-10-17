@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 
 @Component({
   selector: 'app-payment-option',
@@ -12,9 +14,17 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   isMpesaSelected: boolean;
   isCardSelected: boolean;
   isBankSelected: boolean;
+  bankList: BankDTO[] = [];
 
-  constructor(){}
+  constructor(private bank_service: BankService){}
   ngOnInit(): void {
+    this.getBankList();
+  }
+
+  getBankList() {
+    this.bank_service.getBanks(1100).subscribe((data) => {
+      this.bankList = data;
+    });
   }
 
   clickMpesa(){

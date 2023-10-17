@@ -58,7 +58,7 @@
 
                         </div>
                         <div>
-                          <div
+                          <div (click)="addEmptyPolicyList(policyListOne)"
                             class="b-r d-flex justify-content-center align-content-center"
                           >
                             <i class="fa-solid fa-plus"></i>
@@ -67,7 +67,7 @@
                       </div>
                       <ng-container>
                         <div class="table-responsive">
-                          <table class="table table-bordered">
+                          <table formArrayName="responseOne" class="table table-bordered">
                             <thead>
                               <tr style="font-weight: 400; font-size: 12px">
                                 <th>Policy No.</th>
@@ -80,35 +80,46 @@
                             </thead>
                             <tbody>
                               <ng-container
-                                *ngFor="let row of benefricairyList$ | async; let i = index"
+                                *ngFor="let row of policyListOne; let i = index"
                               >
-                                <tr *ngIf="row['isEdit'] == true">
-                                  <td><input type="text" class="form-control" required /></td>
-                                  <td><input type="text" class="form-control" required /></td>
-                                  <td><input type="text" class="form-control" /></td>
-                                  <td><input type="text" class="form-control" /></td>
+                                <tr [formGroup]="insuranceHistoryFormOne" *ngIf="row['isEdit'] === true">
+                                  <td><input formControlName="pol_code" type="number" class="form-control" required /></td>
+                                  <td><input formControlName="prp_code" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="prem" type="number" class="form-control" /></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control" /></td>
+                                  <td><select
+                                    class="form-select"
+                                    formControlName="status"
+                                  >
+                                  <option style="font-size: 11px" value="" disabled selected>Status</option>
+                                  <ng-container *ngFor="let type of coverStatusTypeList">
+                                    <option [value]="type['name']">
+                                      {{ type['value'] | titlecase }}
+                                    </option>
+                                  </ng-container>
+
+                                  </select></td>
                                   <td class="d-flex justify-content-between py-2">
-                                    <div class="mx-2">
+                                    <div (click)="addResponseOne(i)" class="mx-2">
                                       <i class="fa-solid fa-check text-success"></i>
                                     </div>
-                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                    <div (click)="deletepolicyListOne(i)" class="mx-2">
                                       <i class="fa-solid fa-x text-danger"></i>
                                     </div>
                                   </td>
                                 </tr>
-                                <tr *ngIf="row['isEdit'] == false">
-                                  <td>{{ row["first_name"] }}</td>
-                                  <td>{{ row["other_name"] }}</td>
-                                  <td>{{ row["date_of_birth"] | date : "short" }}</td>
-                                  <td>{{ row["percentage_benefit"] }}</td>
-                                  <td>{{ row["age"] }}</td>
-                                  <td>{{ row["type"] }}</td>
+                                <tr *ngIf="row['isEdit'] === false">
+                                  <td>{{ row['pol_code'] }}</td>
+                                  <td>{{ row['prp_code']  }}</td>
+                                  <td>{{ row['prem']  }}</td>
+                                  <td>{{ row['sum_assured']  }}</td>
+                                  <td>{{ filterCoverStatusType(row['status'])  }}</td>
                                   <td class="d-flex justify-content-between py-2">
-                                    <div class="mx-2">
+                                    <div (click)="editPolicyOne(i)" class="mx-2">
                                       <i class="fas fa-edit text-success"></i>
                                       <!-- Edit Icon -->
                                     </div>
-                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                    <div (click)="deletepolicyListOne(i)" class="mx-2">
                                       <i class="fas fa-trash-alt text-danger"></i>
                                       <!-- Remove Icon -->
                                     </div>
@@ -135,10 +146,10 @@
                           </div>
                         </div>
                         <div
-                          *ngIf="(benefricairyList$ | async)?.length === 0"
+                          *ngIf="policyListOne.length === 0"
                           class="d-flex justify-content-center text-danger"
                         >
-                          No Available Beneficiary!
+                          No Available Policy!
                         </div>
                       </ng-container>
                     </div>
@@ -190,7 +201,7 @@
 
                         </div>
                         <div>
-                          <div
+                          <div (click)="addEmptyPolicyList(policyListTwo)"
                             class="b-r d-flex justify-content-center align-content-center"
                           >
                             <i class="fa-solid fa-plus"></i>
@@ -199,7 +210,7 @@
                       </div>
                       <ng-container>
                         <div class="table-responsive">
-                          <table class="table table-bordered">
+                          <table formArrayName="responseOne" class="table table-bordered">
                             <thead>
                               <tr style="font-weight: 400; font-size: 12px">
                                 <th>Policy No.</th>
@@ -212,35 +223,46 @@
                             </thead>
                             <tbody>
                               <ng-container
-                                *ngFor="let row of benefricairyList$ | async; let i = index"
+                                *ngFor="let row of policyListTwo; let i = index"
                               >
-                                <tr *ngIf="row['isEdit'] == true">
-                                  <td><input type="text" class="form-control" required /></td>
-                                  <td><input type="text" class="form-control" required /></td>
-                                  <td><input type="text" class="form-control" /></td>
-                                  <td><input type="text" class="form-control" /></td>
+                                <tr [formGroup]="insuranceHistoryFormTwo" *ngIf="row['isEdit'] === true">
+                                  <td><input formControlName="pol_code" type="number" class="form-control" required /></td>
+                                  <td><input formControlName="prp_code" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="prem" type="number" class="form-control" /></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control" /></td>
+                                  <td><select
+                                    class="form-select"
+                                    formControlName="status"
+                                  >
+                                  <option style="font-size: 11px" value="" disabled selected>Status</option>
+                                  <ng-container *ngFor="let type of coverStatusTypeList">
+                                    <option [value]="type['name']">
+                                      {{ type['value'] | titlecase }}
+                                    </option>
+                                  </ng-container>
+
+                                  </select></td>
                                   <td class="d-flex justify-content-between py-2">
-                                    <div class="mx-2">
+                                    <div (click)="addResponseTwo(i)" class="mx-2">
                                       <i class="fa-solid fa-check text-success"></i>
                                     </div>
-                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                    <div (click)="deletepolicyListTwo(i)" class="mx-2">
                                       <i class="fa-solid fa-x text-danger"></i>
                                     </div>
                                   </td>
                                 </tr>
-                                <tr *ngIf="row['isEdit'] == false">
-                                  <td>{{ row["first_name"] }}</td>
-                                  <td>{{ row["other_name"] }}</td>
-                                  <td>{{ row["date_of_birth"] | date : "short" }}</td>
-                                  <td>{{ row["percentage_benefit"] }}</td>
-                                  <td>{{ row["age"] }}</td>
-                                  <td>{{ row["type"] }}</td>
+                                <tr *ngIf="row['isEdit'] === false">
+                                  <td>{{ row['pol_code'] }}</td>
+                                  <td>{{ row['prp_code']  }}</td>
+                                  <td>{{ row['prem']  }}</td>
+                                  <td>{{ row['sum_assured']  }}</td>
+                                  <td>{{ filterCoverStatusType(row['status'])  }}</td>
                                   <td class="d-flex justify-content-between py-2">
-                                    <div class="mx-2">
+                                    <div (click)="editPolicyTwo(i)" class="mx-2">
                                       <i class="fas fa-edit text-success"></i>
                                       <!-- Edit Icon -->
                                     </div>
-                                    <div (click)="deleteBeneficiary(i)" class="mx-2">
+                                    <div (click)="deletepolicyListTwo(i)" class="mx-2">
                                       <i class="fas fa-trash-alt text-danger"></i>
                                       <!-- Remove Icon -->
                                     </div>
@@ -267,10 +289,10 @@
                           </div>
                         </div>
                         <div
-                          *ngIf="(benefricairyList$ | async)?.length === 0"
+                          *ngIf="policyListOne.length === 0"
                           class="d-flex justify-content-center text-danger"
                         >
-                          No Available Beneficiary!
+                          No Available Policy!
                         </div>
                       </ng-container>
                     </div>
