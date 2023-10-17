@@ -1,6 +1,13 @@
 .title{
     color:black
 }
+.title1{
+    color: #000;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
 .required{
     color:red
 }
@@ -25,3 +32,4 @@ line-height: normal;
     padding-right: 13px;
     white-space: nowrap;
 }
+
