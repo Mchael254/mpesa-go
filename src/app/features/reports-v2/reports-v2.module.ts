@@ -17,6 +17,10 @@ import { ReportPreviewComponent } from './report-preview/report-preview.componen
 import {InputTextModule} from "primeng/inputtext";
 import {CriteriaComponent} from "./criteria/criteria.component";
 import { ListReportComponent } from './list-report/list-report.component';
+import { ColorSchemeComponent } from './report-preview/color-scheme/color-scheme.component';
+
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -27,7 +31,8 @@ import { ListReportComponent } from './list-report/list-report.component';
     CreateDashboardComponent,
     ReportPreviewComponent,
     CriteriaComponent,
-    ListReportComponent
+    ListReportComponent,
+    ColorSchemeComponent
   ],
   imports: [
     CommonModule,
@@ -39,7 +44,9 @@ import { ListReportComponent } from './list-report/list-report.component';
     MegaMenuModule,
     MenuModule,
     DragDropModule,
-    InputTextModule
+    InputTextModule,
+    ColorPickerModule,
+    CalendarModule
   ]
 })
 export class ReportsV2Module { }

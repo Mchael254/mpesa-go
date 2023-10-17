@@ -24,7 +24,8 @@ export class CriteriaComponent implements OnInit{
   public dimensionConditions = [];
   public dateConditions = [];
 
-  public conditions = []
+  public conditions = [];
+  public conditionsType: string = '';
 
   public selectedCriterion: Criteria;
 
@@ -65,11 +66,24 @@ export class CriteriaComponent implements OnInit{
     this.conditions = [];
     this.selectedCriterion = criterion;
     this.conditions = criterion.category === 'metrics' ? this.metricConditions : this.dimensionConditions;
+    
+    if (criterion.category === 'metrics') {
+      this.conditions = this.metricConditions;
+      this.conditionsType = 'metrics';
+    } else if (criterion.category !== 'dimensions' && criterion.category !== 'whenFilters') {
+      this.conditions = this.dimensionConditions;
+      this.conditionsType = 'dimensions';
+    } else if (criterion.category !== 'dimensions' && criterion.category === 'whenFilters') {
+      this.conditions = this.dateConditions;
+      this.conditionsType = 'date';
+    }
+
     this.filterForm.patchValue({
       operator: this.conditions[0].value,
       value: ''
     });
     this.cdr.detectChanges();
+
   }
 
   /**
