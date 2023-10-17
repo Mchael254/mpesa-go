@@ -183,7 +183,11 @@ export class ReportService {
 
   deleteReportFromDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const options = {
+      headers: this.headers,
+      body: dashboardReport // Include the request body here
+    };
     return this.http.delete<DashboardReports>(
-      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, {headers: this.headers});
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, options);
   }
 }
