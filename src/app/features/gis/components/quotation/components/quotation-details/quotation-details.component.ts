@@ -129,7 +129,7 @@ export class QuotationDetailsComponent {
     //   console.log('No')
     // }
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-  
+    this.router.navigate(['/home/gis/quotation/risk-section-details'])
   }
 
   multiUser(){

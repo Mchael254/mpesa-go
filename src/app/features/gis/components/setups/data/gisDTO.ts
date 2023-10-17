@@ -832,6 +832,11 @@ export interface Binders{
     organization_code: number,
     version: number,
 }
+export class Binder {
+    _embedded!: {
+        binder_dto_list: Binders[]
+    }
+}
 export interface Premiums{
 
     code: number,
