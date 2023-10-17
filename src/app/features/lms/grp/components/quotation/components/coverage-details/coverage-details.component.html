@@ -4,11 +4,11 @@
       </div>
     <div id="container">
         <h5 class="mt-1">Cover details</h5>
-        <div class="add-client-button-container">
+        <!-- <div class="add-client-button-container">
             <button class="btn btn-success m-2 rounded-circle" (click)="showAggregateCoverDetailsModal()">&plus;</button>
-          </div>
+          </div> -->
               <!-- modal to capture detailed cover types details -->
-              <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel" aria-hidden="true"
+              <!-- <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel" aria-hidden="true"
               style="color: #333;">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -20,7 +20,6 @@
                     <form [formGroup]="detailedCovDetsForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- Content A (left side) -->
                                 <div>
                                     <div>
                                         <label for="detailedCoverType">Cover types</label>
@@ -90,7 +89,6 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <!-- Content B (right side) -->
                                 <div>
                                     <div>
                                         <label for="coverTypes">Select rate</label>
@@ -152,11 +150,11 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- end of modal to capture detailed cover types details -->
 
               <!-- modal to capture aggregate cover types details -->
-              <div class="modal fade" tabindex="-1" #addClientModal id="aggregateModal" aria-labelledby="aggregateModalLabel" aria-hidden="true"
+              <!-- <div class="modal fade" tabindex="-1" #addClientModal id="aggregateModal" aria-labelledby="aggregateModalLabel" aria-hidden="true"
               style="color: #333;">
                 <div class="modal-dialog modal-xl">
                   <div class="modal-content">
@@ -169,7 +167,6 @@
                     <form [formGroup]="aggregateForm">
                         <div class="row">
                             <div class="col-md-4">
-                                <!-- Content A (left side) -->
                                 <div>
                                     <div>
                                         <label for="aggregateMainCover">Cover types</label>
@@ -254,7 +251,6 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <!-- Content B (Center) -->
                                 <div>
                                     <div>
                                         <label for="aggregateCoverTypes">Select rate</label>
@@ -324,7 +320,6 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <!-- Content C (right side) -->
                                 <div>
                                     <div>
                                         <label for="aggregateSelectRate">Override premiums</label>
@@ -402,45 +397,106 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- end of modal to capture aggregate cover types details -->
 
+<!-- detailed -->
+<div *ngIf="newQuatationCalType === 'detailed'">
+    <p-table [value]="yourDataDetailed" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Cover type</th>
+            <th>Dependant type</th>
+            <th>Rate type</th>
+            <th>Premium mask</th>
+            <th>Rate</th>
+            <th>Rate division factor</th>
+            <th>% of main/yr SA</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData>
+          <tr>
+            <td>
+              <input type="checkbox" [(ngModel)]="rowData.isSelected" [disabled]="!rowData.isEditable" />
+              {{ rowData.coverType }}
+            </td>
+            <td>{{ rowData.dependantType }}</td>
+            <td>{{ rowData.rateType }}</td>
+            <td>
+              <ng-container *ngIf="!editing; else readOnly">
+                <input [(ngModel)]="rowData.premiumMask" name="premiumMask" type="text"
+                class="editaTableCell">
+              </ng-container>
+              <ng-template #readOnly>{{ rowData.premiumMask }}</ng-template>
+            </td>
+            <td>
+              <ng-container *ngIf="!editing; else readOnly">
+                <input [(ngModel)]="rowData.rate" name="rate" type="text" class="editaTableCell">
+              </ng-container>
+              <ng-template #readOnly>{{ rowData.rate }}</ng-template>
+            </td>
+            <td>{{ rowData.rateDivisionFactor }}</td>
+            <td>{{ rowData.percentOfMainYearSA }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+<!-- detailed -->
 
-              <p-table [value]="yourData" [paginator]="false" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'min-width': '50rem'}"
-              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50]">
-  <ng-template pTemplate="header">
-      <tr>
-          <th>Cover types</th>
-          <th>Select rate</th>
-          <th>Override premiums</th>
+
+<!-- aggregate -->
+<div *ngIf="newQuatationCalType === 'aggregate'">
+    <p-table
+      [value]="yourDataAggregate"
+      [paginator]="false"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      [tableStyle]="{'min-width': '50rem'}"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [rowsPerPageOptions]="[10, 25, 50]"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Cover type</th>
+          <th>Dependant type</th>
+          <th>Rate type</th>
           <th>Premium mask</th>
           <th>Rate</th>
           <th>Rate division factor</th>
           <th>% of main/yr SA</th>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage" let-columns>
-      <tr>
-          <td [attr.colspan]="columns?.length || 1" class="centered-message">
-              <div class="centered-content">
-                  No records captured. Click on + icon to add a record.
-              </div>
-          </td>
-      </tr>
-  </ng-template>
-
-  <ng-template pTemplate="body" let-rowData>
-      <tr>
-          <td>{{ rowData.coverType }}</td>
-          <td>{{ rowData.selectRate }}</td>
-          <td>{{ rowData.overridePremiums }}</td>
+          <th>No of Members</th>
+          <th>Average Earnings per member</th>
+          <th>Total member earnings</th>
+          <th>Average ANB</th>
+          <th>Override SA</th>
+          <th>Sum Assured</th>
+        </tr>
+      </ng-template>
+  
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+            <td>
+                <input type="checkbox" [(ngModel)]="rowData.isSelected" name="isSelected" />
+                {{ rowData.coverType }}
+              </td>
+          <td>{{ rowData.dependantType }}</td>
+          <td>{{ rowData.rateType }}</td>
           <td>{{ rowData.premiumMask }}</td>
           <td>{{ rowData.rate }}</td>
           <td>{{ rowData.rateDivisionFactor }}</td>
           <td>{{ rowData.percentOfMainYearSA }}</td>
-      </tr>
-  </ng-template>
-</p-table>
+          <td>{{ rowData.noOfMembers }}</td>
+          <td>{{ rowData.avgEarningsPerMember }}</td>
+          <td>{{ rowData.totalMemberEarnings }}</td>
+          <td>{{ rowData.avgANB }}</td>
+          <td>{{ rowData.overrideSA }}</td>
+          <td>{{ rowData.sumAssured }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  
+<!-- aggregate -->
 
 
         <h5 class="mt-5 mb-1">Category details</h5>
@@ -542,7 +598,7 @@
           </div>
           <!-- end of modal to capture category details -->
 
-            <p-table [value]="yourData" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
+            <p-table [value]="yourDataCat" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
     <ng-template pTemplate="header">
         <tr>
@@ -554,7 +610,7 @@
     </ng-template>
     <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-            <td [attr.colspan]="columns?.length || 1" *ngIf="yourData && yourData.length === 0" class="centered-message">
+            <td [attr.colspan]="columns?.length || 1" *ngIf="yourDataCat && yourDataCat.length === 0" class="centered-message">
                 <div class="centered-content">
                     No records captured. Click on + icon to add a record.
                 </div>
@@ -841,14 +897,14 @@
                          </div>
                          <div class="modal-footer">
                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeAddMemberDetailsModal()">Close</button>
-                           <button type="submit" class="btn btn-primary">Submit</button>
+                           <button type="submit" class="btn btn-primary" (click)="SubmitMemberDetailsForm()">Submit</button>
                          </div>
                        </div>
                      </div>
                    </div>
               <!-- end of modal to capture member details -->
 
-                <p-table [value]="" [tableStyle]="{'min-width': '100rem'}">
+                <p-table [value]="yourDataMemberDets" [tableStyle]="{'min-width': '100rem'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th pSortableColumn="code" style="width:10%">Surname <p-sortIcon field="code"></p-sortIcon></th>
@@ -865,18 +921,19 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-product>
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                          <td>{{ product.sname }}</td>
+                          <td>{{ product.name }}</td>
+                          <td>{{ product.dob }}</td>
+                          <td>{{ product.quantity }}</td>
+                          <td>{{ product.price }}</td>
+                          <td>{{ product.category }}</td>
+                          <td>{{ product.dependantType }}</td>
+                          <td>{{ product.monthlyEarnings }}</td>
+                          <td>{{ product.joiningDate }}</td>
+                          <td>{{ product.mainMemberNo }}</td>
                         </tr>
-                    </ng-template>
+                      </ng-template>
+                      
                 </p-table>
             </div>
     </div>
