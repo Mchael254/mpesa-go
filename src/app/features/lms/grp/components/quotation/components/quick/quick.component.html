@@ -33,6 +33,8 @@
                             [optionLabel]="'label'"
                             [style]="{ width: '80%' }"
                             formControlName='products' 
+                            [virtualScroll]="true" 
+                            [virtualScrollItemSize]="40"
                             placeholder="Select a Product"
                             class="select">
                 </p-dropdown>
@@ -111,10 +113,14 @@
                 <div class="label"><label>Currency</label></div>
                 <div>
                     <p-dropdown id='currency'
-                                [options]='currency'
+                                [options]='currencyList'
                                 [optionLabel]="'label'"
+                                [filter]="true"
+                                [filterBy]="'label'"
                                 [style]="{ width: '80%' }"
                                 formControlName='currency' 
+                                [virtualScroll]="true" 
+                                [virtualScrollItemSize]="50"
                                 placeholder="Select Currency"
                                 class="select">
                     </p-dropdown>
@@ -139,6 +145,7 @@
               <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
+                    id="detailed"
                     type="radio"
                     value="detailed"
                     id="quotationCalcType"
@@ -152,6 +159,7 @@
                 <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
+                    id="aggregate"
                     type="radio"
                     value="aggregate"
                     id="quotationCalcType"
