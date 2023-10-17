@@ -99,3 +99,13 @@ export interface PostTownDTO {
   shortDescription: string,
   stateId: number
 }
+
+export interface AdminstrativeUnitDTO { 
+  id: string,
+  name: string
+}
+
+export interface SubadminstrativeUnitDTO {
+  id: string,
+  name: string
+}

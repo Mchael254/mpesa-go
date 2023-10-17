@@ -104,8 +104,8 @@
                                     <select id="administrativeUnit" class="form-select mb-1" formControlName="administrativeUnit" 
                                         (change)="onCityChange($event)">
                                         <option value="" selected>Select Administrative Unit</option>
-                                        <option *ngFor="let admin of adminstrativeData" [value]="admin.value">
-                                            {{ admin.name | titlecase }}
+                                        <option *ngFor="let admin of adminstrativeData" [value]="admin.id">
+                                            {{ admin.name | uppercase }}
                                         </option>
                                     </select>
                                 </div>
@@ -118,8 +118,8 @@
                                     <select id="subadminstrativeUnit" class="form-select mb-1"
                                         formControlName="subadminstrativeUnit">
                                         <option value="" selected>Select Sub-administrative Unit</option>
-                                        <option *ngFor="let subadmin of subadminstrativeData" [value]="subadmin.value">
-                                            {{ subadmin.name | titlecase }}
+                                        <option *ngFor="let subadmin of subadminstrativeData" [value]="subadmin.id">
+                                            {{ subadmin.name | uppercase }}
                                         </option>
                                     </select>
                                 </div>
