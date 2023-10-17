@@ -16,6 +16,7 @@ import { QuotationDetailsComponent } from './components/quotation-details/quotat
 import { NormalQuoteComponent } from './components/normal-quote/normal-quote.component';
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
     TableModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    CalendarModule
   ]
 })
 export class QuotationModule { }
