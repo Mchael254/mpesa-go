@@ -86,6 +86,14 @@ export class ProductService {
     )
   
   }
+  getProductDetailsByCode(code: number): Observable<Products>{
+    
+    return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  
+  }
   getProductDocument(code: number): Observable<any>{
     
     return this.http.get<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents?productCode=${code}`).pipe(

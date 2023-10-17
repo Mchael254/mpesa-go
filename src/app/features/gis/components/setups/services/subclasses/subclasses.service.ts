@@ -94,4 +94,40 @@ createSubClass(data:Subclasses[]) {
       catchError(this.errorHandl)
     )
   }
+  getSubclassClauses():Observable<any>{
+    let page = 0;
+    let size = 1000;
+   const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    
+    })
+    const params = new HttpParams()
+    .set('page', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`, {
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )  }
+    getAllClauses():Observable<any>{
+      let page = 0;
+      let size = 1000;
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      
+      })
+      const params = new HttpParams()
+      .set('page', `${page}`)
+        .set('pageSize', `${size}`)
+      return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/clauses`, {
+        headers:headers,
+        params:params
+      }).pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )  }
 }
