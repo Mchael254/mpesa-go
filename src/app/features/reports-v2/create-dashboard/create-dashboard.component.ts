@@ -12,6 +12,7 @@ import {AppConfigService} from "../../../core/config/app-config-service";
 import {ChartConfiguration} from "chart.js/dist/types";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {Criteria} from "../../../shared/data/reports/criteria";
+import {NgxSpinnerService} from "ngx-spinner";
 
 const log = new Logger('CreateDashboardComponent');
 @Component({
@@ -48,8 +49,6 @@ export class CreateDashboardComponent implements OnInit {
   public chartDataArr = [];
   public measures: string[] = [];
   public criteria: Criteria[];
-  public shouldShowTable: boolean = true;
-  public isPreviewResultAvailable: boolean = null;
 
   constructor(
   private globalMessagingService: GlobalMessagingService,
@@ -60,6 +59,7 @@ export class CreateDashboardComponent implements OnInit {
   private utilService: UtilService,
   private router: Router,
   private appConfig: AppConfigService,
+  private spinner: NgxSpinnerService
   ) {}
 
 
@@ -67,24 +67,11 @@ export class CreateDashboardComponent implements OnInit {
    * The `ngOnInit` function initializes data and adds event listeners to clickable icons.
    */
   ngOnInit(): void {
+    this.spinner.show();
     this.createDashForm();
     this.addReportToDashForm();
     this.getChartReports();
     this.getAllDashboards();
-
-    this.basicData = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label: 'My First dataset',
-          data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-          label: 'My Second dataset',
-          data: [28, 48, 40, 19, 86, 27, 90]
-        }
-      ]
-    };
 
     this.items = [
       {
@@ -166,7 +153,7 @@ export class CreateDashboardComponent implements OnInit {
     if (this.createDashboardForm.valid) {
       const formValues = this.createDashboardForm.getRawValue();
       log.info('form value', formValues);
-      log.info('rep id', formValues.reportName.id);
+      log.info('rep id', formValues.reportName[0].id);
 
       const loggedInUser = this.authService.getCurrentUser();
       let id:number;
@@ -175,12 +162,19 @@ export class CreateDashboardComponent implements OnInit {
 
       }
       const createdByID = id;
-      const report: DashboardReports[] = [{
-        length: 0,
-        order: 0,
-        reportId: formValues.reportName.id,
-        width: 0
-      }]
+      let selectedReports = formValues.reportName;
+
+      const report: DashboardReports[] = selectedReports.map((selectedReport, index) => {
+        const reportId = selectedReport && selectedReport?.id ? selectedReport?.id : null;
+
+        return {
+          length: 0,
+          order: index,
+          reportId,
+          width: 0,
+        };
+      });
+
       const saveDashboard: Dashboard = {
         createdBy: createdByID,
         dashboardReports: report,
@@ -252,7 +246,7 @@ export class CreateDashboardComponent implements OnInit {
   /**
    * The delete function displays a success message indicating that a report has been deleted.
    */
-  deleteDashboard(id:string) {
+  deleteDashboard(id:number) {
     this.reportService.deleteDashboard(this.selectedItem).subscribe(res =>{
       log.info(`on delete response  >>>`, res);
       this.globalMessagingService.displaySuccessMessage('Success', 'Report Deleted' );
@@ -303,32 +297,10 @@ export class CreateDashboardComponent implements OnInit {
             dashboard.chartData = chartData;
           }
         }
+        this.spinner.hide();
         // log.info(`all dashboards >>>`, this.dashboards);
       });
   }
-  /*async getAllDashboards(): Promise<void> {
-    try {
-      const dashboards = await this.reportService.getDashboards().toPromise();
-
-      for (const dashboard of dashboards) {
-        if (dashboard.reports.length > 0) {
-          const report = dashboard.reports[0];
-          const measures = JSON.parse(report?.measures);
-          const dimensions = JSON.parse(report?.dimensions);
-          const filters = JSON.parse(report?.filter);
-
-          const chartData = await this.getReportFromCubeJS(measures, dimensions, filters);
-          dashboard.chartData = chartData;
-        }
-      }
-
-      // The dashboards are now populated with chartData
-      log.info(`dashboards >>>`, this.dashboards);
-    } catch (error) {
-      // Handle any errors here
-    }
-    this.cdr.detectChanges();
-  }*/
 
   getReportFromCubeJS(measures, dimensions, filters) {
     log.info('measures', measures);
@@ -352,26 +324,6 @@ export class CreateDashboardComponent implements OnInit {
       limit: 20,
     }
 
-   /*return this.cubejsApi.load(query).then(resultSet => {
-
-     this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
-     const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
-     const reportData = resultSet.series().map(s => s.series.map(r => r.value));
-
-     const chartData = {
-       labels: this.chartLabels,
-       datasets: this.reportService.generateReportDatasets(reportLabels, reportData, cubeMeasures)
-     };
-     this.chartDataArr.push(chartData);
-     log.info('chart data', chartData);
-     return chartData;
-
-     /!*this.tableDetails = this.reportService.prepareTableData(
-       reportLabels, reportData, dimensions, this.measures, this.criteria
-     );*!/
-
-      // log.info('report data >>>', reportsData);
-    })*/
     return new Promise((resolve) => {
       this.cubejsApi.load(query).then(resultSet => {
 
@@ -404,9 +356,6 @@ export class CreateDashboardComponent implements OnInit {
   /**
    * The function renameDashboard() is used to rename a dashboard.
    */
-  /**
-   * The function renameDashboard() is used to rename a dashboard.
-   */
   renameDashboard() {
 
   }
@@ -421,12 +370,18 @@ export class CreateDashboardComponent implements OnInit {
       log.info('form value', reportToDashForm);
       log.info('rep id', reportToDashForm.reportName.id);
 
-      const report: DashboardReports[] = [{
+    let selectedReports = reportToDashForm.reportName;
+    const report: DashboardReports[] = selectedReports.map((selectedReport, index) => {
+      const reportId = selectedReport && selectedReport?.id ? selectedReport?.id : null;
+
+      return {
         length: 0,
-        order: 0,
-        reportId: reportToDashForm.reportName.id,
-        width: 0
-      }]
+        order: index,
+        reportId,
+        width: 0,
+      };
+    });
+
       const saveDashboard: DashboardReport = {
         dashboardId: this.selectedItem,
         dashboardReports: report

@@ -17,6 +17,7 @@ import { ReportPreviewComponent } from './report-preview/report-preview.componen
 import {InputTextModule} from "primeng/inputtext";
 import {CriteriaComponent} from "./criteria/criteria.component";
 import { ListReportComponent } from './list-report/list-report.component';
+import {MultiSelectModule} from "primeng/multiselect";
 
 
 @NgModule({
@@ -29,17 +30,18 @@ import { ListReportComponent } from './list-report/list-report.component';
     CriteriaComponent,
     ListReportComponent
   ],
-  imports: [
-    CommonModule,
-    ReportsV2RoutingModule,
-    SharedModule,
-    DropdownModule,
-    FormsModule,
-    ProgressSpinnerModule,
-    MegaMenuModule,
-    MenuModule,
-    DragDropModule,
-    InputTextModule
-  ]
+    imports: [
+        CommonModule,
+        ReportsV2RoutingModule,
+        SharedModule,
+        DropdownModule,
+        FormsModule,
+        ProgressSpinnerModule,
+        MegaMenuModule,
+        MenuModule,
+        DragDropModule,
+        InputTextModule,
+        MultiSelectModule
+    ]
 })
 export class ReportsV2Module { }

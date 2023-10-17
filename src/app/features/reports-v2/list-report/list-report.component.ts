@@ -1,14 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {MenuItem} from "primeng/api";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger} from "../../../shared/services";
 import {ActivatedRoute} from "@angular/router";
-import {ChartReport} from "../../../shared/data/reports/dashboard";
+import {ChartReport, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
 import cubejs, {Query} from "@cubejs-client/core";
 import {AppConfigService} from "../../../core/config/app-config-service";
 import {ChartConfiguration} from "chart.js";
 import {TableDetail} from "../../../shared/data/table-detail";
+import {NgxSpinnerService} from "ngx-spinner";
+import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('ListReportComponent');
 @Component({
@@ -18,16 +19,6 @@ const log = new Logger('ListReportComponent');
 })
 export class ListReportComponent implements OnInit {
 
-  reportBreadCrumbItems: BreadCrumbItem[] = [
-    {
-      label: 'Dashboard',
-      url: '/home/reportsv2/create-dashboard'
-    },
-    {
-      label: 'Financial Reports',
-      url: '/home/reportsv2/list-report',
-    },
-  ];
   items: MenuItem[] = [];
   basicData: any;
   public dashboardId: number;
@@ -44,15 +35,21 @@ export class ListReportComponent implements OnInit {
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
+  selectedDashboard:any = null;
+  selectedReport:any = null;
   constructor(
     private reportService: ReportService,
     private route: ActivatedRoute,
     private appConfig: AppConfigService,
+    private spinner: NgxSpinnerService,
+    private globalMessagingService: GlobalMessagingService,
+    private cdr: ChangeDetectorRef,
   ) {
   }
 
   ngOnInit(): void {
 
+    this.spinner.show();
     this.items = [
       {
         items: [
@@ -130,7 +127,29 @@ export class ListReportComponent implements OnInit {
    * The function removeFromDashboard() is used to remove a report from a dashboard.
    */
   removeFromDashboard() {
+   /* log.info('dashboard id>', this.selectedDashboard);
+    log.info('report id>', this.selectedReport);*/
 
+    const report: DashboardReports[] = [{
+      length: 0,
+      order: 0,
+      reportId: this.selectedReport,
+      width: 0
+    }];
+
+    const deleteDashboard: DashboardReport = {
+      dashboardId: this.selectedDashboard,
+      dashboardReports: report
+    }
+
+    this.reportService.deleteReportFromDashboard(this.selectedDashboard, deleteDashboard)
+      .subscribe(res => {
+        log.info('on delete report', res);
+
+        this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully removed from dashboard' );
+      });
+    this.getDashboardById(this.selectedDashboard);
+    this.cdr.detectChanges;
   }
 
   /**
@@ -166,6 +185,7 @@ export class ListReportComponent implements OnInit {
             dashboard.chartData = chartData;
           }
         }
+        this.spinner.hide();
       })
   }
 
