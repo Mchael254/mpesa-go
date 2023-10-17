@@ -2,18 +2,19 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../shared/services/setups/country/country.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import { UtilService } from '../../../../shared/services/util/util.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
-import { CountryDTO, CountryDto, PostCountryDTO, PostStateDTO, PostTownDTO, StateDto, TownDto } from '../../../../shared/data/common/countryDto';
+import {
+  AdminstrativeUnitDTO, CountryDTO, PostCountryDTO,
+  PostStateDTO, PostTownDTO, StateDto, SubadminstrativeUnitDTO, TownDto
+} from '../../../../shared/data/common/countryDto';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { ReplaySubject, takeUntil } from 'rxjs';
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
-// import { CountryDTO, PostCountryDTO, PostStateDTO, PostTownDTO } from '../../data/organization-dto';
-import { OrganizationService } from '../../services/organization.service';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import stepData from '../../data/steps.json'
-import { MessageService } from 'primeng/api';
 
 const log = new Logger( 'CountryComponent');
 
@@ -38,6 +39,8 @@ export class CountryComponent implements OnInit {
   public stateData: StateDto[] = [];
   public townData: TownDto[] = [];
   public currenciesData: CurrencyDTO[];
+  public adminstrativeData: AdminstrativeUnitDTO[];
+  public subadminstrativeData: SubadminstrativeUnitDTO[];
   public groupId: string = 'countryTab';
   public response: any;
   public days: number[] = [];
@@ -47,6 +50,7 @@ export class CountryComponent implements OnInit {
   public countrySelected: CountryDTO;
   public selectedCountry: number;
   public filteredState: any;
+  public submitted = false;
   countryBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -77,19 +81,6 @@ export class CountryComponent implements OnInit {
     drugTrafficWEF: 'N',
     drugTrafficWET: 'N',
   }
-
-  adminstrativeData = [
-    { name: 'Counties', value: 'C' },
-    { name: 'States', value: 'S' },
-    { name: 'Provinces', value: 'P' },
-    { name: 'Regions', value: 'R' }
-  ]
-
-  subadminstrativeData = [
-    { name: 'District', value: 'D' },
-    { name: 'Sub-county', value: 'C' },
-    { name: 'Local Government Area', value: 'L' }
-  ]
 
   months = [
     { name: 'January', value: '01' },
@@ -126,10 +117,9 @@ export class CountryComponent implements OnInit {
     private fb: FormBuilder,
     private countryService: CountryService,
     private bankService: BankService,
-    private organizationService: OrganizationService,
     private mandatoryFieldsService: MandatoryFieldsService,
+    private utilService: UtilService,
     private globalMessagingService: GlobalMessagingService,
-    private messageService: MessageService,
     private cdr: ChangeDetectorRef,
   ) { }
   
@@ -139,7 +129,8 @@ export class CountryComponent implements OnInit {
     this.TownCreateForm();
     this.fetchCountries();
     this.fetchCurrencies();
-    // this.selectedMonth = '';
+    this.fetchAdminstrativeUnit();
+    this.fetchSubadminstrativeUnit();
   }
 
   ngOnDestroy(): void {}
@@ -241,7 +232,7 @@ export class CountryComponent implements OnInit {
             case 'C':
                 this.createCountryForm.patchValue({
                     administrativeUnit: 'C',
-                    subadminstrativeUnit: 'C',
+                    subadminstrativeUnit: 'SB',
                 });
                 this.fetchMainCityStates(this.countrySelected.id);
                 break;
@@ -250,21 +241,21 @@ export class CountryComponent implements OnInit {
                     administrativeUnit: 'S',
                     subadminstrativeUnit: 'D',
                 });
-                this.fetchStates(this.countrySelected.id);
+                this.fetchMainCityStates(this.countrySelected.id);
                 break;
             case 'P':
                 this.createCountryForm.patchValue({
                     administrativeUnit: 'P',
                     subadminstrativeUnit: 'D',
                 });
-                this.fetchProvinces(this.countrySelected.id);
+                this.fetchMainCityStates(this.countrySelected.id);
                 break;
             case 'R':
                 this.createCountryForm.patchValue({
                     administrativeUnit: 'R',
-                    subadminstrativeUnit: 'L',
+                    subadminstrativeUnit: 'LG',
                 });
-                this.fetchRegions(this.countrySelected.id);
+                this.fetchMainCityStates(this.countrySelected.id);
                 break;
         }
     }
@@ -306,11 +297,21 @@ export class CountryComponent implements OnInit {
       })
   }
 
-  fetchRegions(countryId: number) { }
-  fetchStates(countryId: number) { }
-  fetchProvinces(countryId: number) { }
-  fetchDistricts(stateId: number) { }
-  fetchLocalGovernmentAreas(stateId: number) {}
+  fetchAdminstrativeUnit() {
+    this.countryService.getAdminstrativeUnit()
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.adminstrativeData = data
+      })
+  }
+
+  fetchSubadminstrativeUnit() {
+    this.countryService.getSubadminstrativeUnit()
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.subadminstrativeData = data
+      })
+  }
 
   onCityChange(event: Event) {
     const selectedState = (event.target as HTMLSelectElement).value;
@@ -340,21 +341,57 @@ export class CountryComponent implements OnInit {
 
 
   saveCountry() {
+    this.submitted = true;
+    this.createCountryForm.markAllAsTouched();
+
+    if (this.createCountryForm.invalid) {
+       const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
+
+       let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
+
+       for (const control of invalidControls) {
+         if (!control.value) {
+           firstInvalidUnfilledControl = control;
+           break;
+         }
+       }
+
+       if (firstInvalidUnfilledControl) {
+         firstInvalidUnfilledControl.focus();
+         const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
+         if (scrollContainer) {
+           scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+         }
+       } else {
+         const firstInvalidControl = invalidControls[0];
+         if (firstInvalidControl) {
+           firstInvalidControl.focus();
+           const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
+           if (scrollContainer) {
+             scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+           }
+         }
+       }
+
+       this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
+       return;
+    }
+    
     const countryFormValues = this.createCountryForm.getRawValue();
     const countryId = this.countrySelected.id;
 
     const saveCountry: PostCountryDTO = {
-      adminRegMandatory: null,
-      adminRegType: 'C',
-      currSerial: null,
+      adminRegMandatory: this.countrySelected.adminRegMandatory,
+      adminRegType: this.countrySelected.adminRegType,
+      currSerial: this.countrySelected.currSerial,
       currency: countryFormValues.baseCurrency,
       drugTraffickingStatus: countryFormValues.drugTraffickingStatus,
       drugWefDate: countryFormValues.drugTrafficWEF,
       drugWetDate: countryFormValues.drugTrafficWET,
       highRiskWefDate: countryFormValues.riskLevelStatusWEF,
       highRiskWetDate: countryFormValues.riskLevelStatusWET,
-      id: null,
-      isShengen: null,
+      id: countryId || null,
+      isShengen: this.countrySelected.isShengen,
       mobilePrefix: countryFormValues.zipCode,
       name: countryFormValues.name,
       nationality: countryFormValues.nationality,
@@ -383,8 +420,8 @@ export class CountryComponent implements OnInit {
         })
     }
 
-    this.fetchCountries();
     this.createCountryForm.reset();
+    this.fetchCountries();
   }
 
   saveCounty() {
