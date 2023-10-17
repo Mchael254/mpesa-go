@@ -314,7 +314,7 @@ administationSubMenuList() : SidebarMenu[]{
     },
     {
       name:"CRM Setup",
-      link:"/home/crm/organization",
+      link:"/home/crm",
       value: "CRM_SETUP",
       isActive: true
     },

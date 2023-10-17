@@ -8,12 +8,14 @@ import { CrmRoutingModule } from './crm-routing.module';
 import { CountryComponent } from './components/country/country.component';
 import { SharedModule } from '../../shared/shared.module';
 import { OrganizationComponent } from './components/organization/organization.component';
+import { BaseCrmComponent } from './components/base-crm/base-crm.component';
 
 
 @NgModule({
   declarations: [
     CountryComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    BaseCrmComponent
   ],
   imports: [
     CommonModule,
