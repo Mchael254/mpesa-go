@@ -185,5 +185,6 @@ export class QuickComponent implements OnInit, OnDestroy {
   
   
   getCoverTypes() {
+    console.log("Cover types")
   }
 }
