@@ -18,6 +18,10 @@ import {InputTextModule} from "primeng/inputtext";
 import {CriteriaComponent} from "./criteria/criteria.component";
 import { ListReportComponent } from './list-report/list-report.component';
 import {MultiSelectModule} from "primeng/multiselect";
+import { ColorSchemeComponent } from './report-preview/color-scheme/color-scheme.component';
+
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -28,20 +32,23 @@ import {MultiSelectModule} from "primeng/multiselect";
     CreateDashboardComponent,
     ReportPreviewComponent,
     CriteriaComponent,
-    ListReportComponent
+    ListReportComponent,
+    ColorSchemeComponent
   ],
-    imports: [
-        CommonModule,
-        ReportsV2RoutingModule,
-        SharedModule,
-        DropdownModule,
-        FormsModule,
-        ProgressSpinnerModule,
-        MegaMenuModule,
-        MenuModule,
-        DragDropModule,
-        InputTextModule,
-        MultiSelectModule
-    ]
+  imports: [
+    CommonModule,
+    ReportsV2RoutingModule,
+    SharedModule,
+    DropdownModule,
+    FormsModule,
+    ProgressSpinnerModule,
+    MegaMenuModule,
+    MenuModule,
+    DragDropModule,
+    InputTextModule,
+    ColorPickerModule,
+    CalendarModule,
+    MultiSelectModule
+  ]
 })
 export class ReportsV2Module { }

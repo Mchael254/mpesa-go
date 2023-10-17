@@ -24,7 +24,8 @@ export class CriteriaComponent implements OnInit{
   public dimensionConditions = [];
   public dateConditions = [];
 
-  public conditions = []
+  public conditions = [];
+  public conditionsType: string = '';
 
   public selectedCriterion: Criteria;
 
@@ -65,11 +66,24 @@ export class CriteriaComponent implements OnInit{
     this.conditions = [];
     this.selectedCriterion = criterion;
     this.conditions = criterion.category === 'metrics' ? this.metricConditions : this.dimensionConditions;
+
+    if (criterion.category === 'metrics') {
+      this.conditions = this.metricConditions;
+      this.conditionsType = 'metrics';
+    } else if (criterion.category !== 'dimensions' && criterion.category !== 'whenFilters') {
+      this.conditions = this.dimensionConditions;
+      this.conditionsType = 'dimensions';
+    } else if (criterion.category !== 'dimensions' && criterion.category === 'whenFilters') {
+      this.conditions = this.dateConditions;
+      this.conditionsType = 'date';
+    }
+
     this.filterForm.patchValue({
       operator: this.conditions[0].value,
       value: ''
     });
     this.cdr.detectChanges();
+
   }
 
   /**
@@ -105,7 +119,7 @@ export class CriteriaComponent implements OnInit{
    * 1. creates a sort object within an array from selected criterion & selected sort type
    * 2. Emits the sort value and selected criterion to parent component for further manipulation
    * @param sort string
-   * @return void
+   * @return void 
    */
   addSorting(sort: string): void {
     const sortValue = [

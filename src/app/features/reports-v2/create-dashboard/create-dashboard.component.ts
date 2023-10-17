@@ -285,7 +285,7 @@ export class CreateDashboardComponent implements OnInit {
             const measures = JSON.parse(report?.measures);
             const dimensions = JSON.parse(report?.dimensions);
             const filters = JSON.parse(report?.filter);
-            log.info(`chart to use >>>`, res[2].reports[0].charts[0].type);
+            log.info(`chart to use >>>`, res[2]?.reports[0]?.charts[0]?.type);
 
             /*log.info(`measures >>>`, measures);
             log.info(`dimensions >>>`, dimensions);
