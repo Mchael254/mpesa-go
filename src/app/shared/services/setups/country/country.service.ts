@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {AppConfigService} from "../../../../core/config/app-config-service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {CountryDTO, PostCountryDTO, PostStateDTO, StateDTO , TownDto} from "../../../data/common/countryDto";
+import {AdminstrativeUnitDTO, CountryDTO, PostCountryDTO, PostStateDTO, StateDTO , SubadminstrativeUnitDTO, TownDto} from "../../../data/common/countryDto";
 import {Observable} from "rxjs/internal/Observable";
 import {Logger} from "../../logger/logger.service";
 
@@ -120,5 +120,21 @@ export class CountryService {
       Accept: 'application/json',
     });
     return this.http.post<PostStateDTO >(`/${this.baseUrl}/setups/states`, JSON.stringify(data), {headers:headers})
+  }
+
+  getAdminstrativeUnit(): Observable<AdminstrativeUnitDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<AdminstrativeUnitDTO[]>(`/${this.baseUrl}/setups/administrative-units`);
+  }
+
+  getSubadminstrativeUnit(): Observable<SubadminstrativeUnitDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<SubadminstrativeUnitDTO[]>(`/${this.baseUrl}/setups/sub-administrative-units`);
   }
 }
