@@ -30,9 +30,9 @@
         </div>
       </div>
 
-      <div class="row mx-0 mt-3 p-0 dragDropBoundary">
+<!--      <div class="row mx-0 mt-3 p-0 dragDropBoundary">
         <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let reportdata of report">
-<!--          <ng-container>-->
+&lt;!&ndash;          <ng-container>&ndash;&gt;
             <div class="card" *ngFor="let reportName of reportdata.reports">
               <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
               <div class="card-header border-0 text-sm-start bg-transparent"
@@ -46,18 +46,34 @@
               </div>
 
               <div class="card-body" >
-                 <!-- {{reportName.charts[0].type |json}}-->
+                 &lt;!&ndash; {{reportName.charts[0].type |json}}&ndash;&gt;
                   <app-dynamic-chart
                     [basicData]="chartData"
-                    [chartType]="reportName.charts[0].type"
+                    [chartType]="reportName?.charts[0]?.type"
                   ></app-dynamic-chart>
 
               </div>
             </div>
-<!--          </ng-container>-->
+&lt;!&ndash;          </ng-container>&ndash;&gt;
 
         </div>
+      </div>-->
+
+      <div class="row" *ngFor="let reportdata of report">
+        <div class="col-md-4 mt-3 p-2" *ngFor="let reportName of reportdata.reports">
+          <div class="border">
+            <p class="fw-medium mt-3">
+              {{reportName.name}}
+            </p>
+
+            <app-dynamic-chart
+              [basicData]="chartData"
+              [chartType]="reportName?.charts[0]?.type"
+            ></app-dynamic-chart>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 
