@@ -9,6 +9,9 @@ import {TableDetail} from "../../../shared/data/table-detail";
 import {ChartReports} from "../../../shared/data/reports/chart-reports";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import { Logger } from 'src/app/shared/services';
+
+const log = new Logger('ReportService');
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +73,14 @@ export class ReportService {
 
   // utils
   prepareTableData(reportLabels, reportData, dimensions, measures, criteria): TableDetail {
+    log.info(`--------------------------------`)
+    log.info(`report labels >>>`, reportLabels);
+    log.info(`reportData >>>`, reportData);
+    log.info(`dimensions >>>`, dimensions);
+    log.info(`measures >>>`, measures);
+    log.info(`criteria >>>`, criteria);
+    log.info(`--------------------------------`)
+
     const tableHead = [];
     const header = [...dimensions, ...measures];
 
