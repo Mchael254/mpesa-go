@@ -12,6 +12,7 @@ import { FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
+import { Modal } from 'bootstrap';
 @Component({
   selector: 'app-quotation-details',
   templateUrl: './quotation-details.component.html',
@@ -28,6 +29,10 @@ export class QuotationDetailsComponent {
   quotationForm:FormGroup;
   agents:any
   agentDetails:any
+  quotationsList:any;
+  quotation:any
+  quotationNo:any;
+  isChecked: boolean = false;
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -80,7 +85,7 @@ export class QuotationDetailsComponent {
   }
   getuser(){
    this.user = this.authService.getCurrentUserName()
-    console.log(this.user)
+   
   }
 
   createQuotationForm(){
@@ -114,27 +119,30 @@ export class QuotationDetailsComponent {
     })
   }
 
-  saveQuotationDetails(){
-  
-    
-    
-    // console.log(this.quotationForm.value)
-    // this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
-    //   console.log(data)
-    // })
-    // if(this.quotationForm.value.multiUser = 'Y'){
-    //   this.router.navigate(['/home/gis/quotation/quote-assigning'])
-    // }
-    // else{
-    //   console.log('No')
-    // }
-    this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    this.router.navigate(['/home/gis/quotation/risk-section-details'])
-  }
 
-  multiUser(){
-    console.log('Yes')
-  }
+  
+  saveQuotationDetails(){
+    this.sharedService.setQuotationFormDetails(this.quotationForm.value);
+    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+      this.quotationNo = data
+    })
+  
+    if(this.quotationForm.value.multiUser == 'Y'){
+      this.router.navigate(['/home/gis/quotation/quote-assigning'])
+    }else{
+      if (this.isChecked) {
+        this.router.navigate(['/home/gis/quotation/import-risks'])
+      } else {
+        this.router.navigate(['/home/gis/quotation/risk-section-details'])
+      }
+    
+     
+    }
+   
+  
+  } 
+
+  
   getAgents(){
     this.agentService.getAgents().subscribe(data=>{
       this.agents = data.content
@@ -150,6 +158,26 @@ export class QuotationDetailsComponent {
     
   }
 
+  getExistingQuotations(){
+    const clientId = this.quotationForm.value.clientCode
+    const fromDate = this.quotationForm.value.withEffectiveFromDate
+    const fromTo = this.quotationForm.value.withEffectiveToDate
+    this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
+      this.quotationsList = data
+      this.quotation = this.quotationsList.content
+
+      if(this.quotation.length > 0){
+        const element = document.getElementById('exampleModal') as HTMLElement;
+        const myModal = new Modal(element);
+        myModal.show();
+      }else{
+        this.saveQuotationDetails()
+      }
+     
+    })
+
+    
+  }
 
 
 }
