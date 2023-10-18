@@ -18,11 +18,15 @@ export class QuotationsService {
     })
   }
   getQuotationSources(){
-    return this.http.get(`/${this.baseUrl}/gis-quotation-service/api/v2/quotation-sources`)
+    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation-sources`)
   }
 
   createQuotation(data:quotationDTO,user){
-    return this.http.post(`/${this.baseUrl}/gis-quotation-service/api/v1/quotation?user=${user}`, JSON.stringify(data),this.httpOptions)
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation?user=${user}`, JSON.stringify(data),this.httpOptions)
       
+  }
+
+  getQuotations(clientId, dateFrom, dateTo){
+    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation?dateFrom=${dateFrom}&dateTo=${dateTo}&clientId=${clientId}`)
   }
 }
