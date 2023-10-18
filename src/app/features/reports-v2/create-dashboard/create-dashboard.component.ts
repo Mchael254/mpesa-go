@@ -285,7 +285,7 @@ export class CreateDashboardComponent implements OnInit {
             const measures = JSON.parse(report?.measures);
             const dimensions = JSON.parse(report?.dimensions);
             const filters = JSON.parse(report?.filter);
-            log.info(`chart to use >>>`, res[2]?.reports[0]?.charts[0]?.type);
+            log.info(`chart to use >>>`, res[1]?.reports[0]?.charts[0]?.type);
 
             /*log.info(`measures >>>`, measures);
             log.info(`dimensions >>>`, dimensions);
@@ -338,10 +338,29 @@ export class CreateDashboardComponent implements OnInit {
         this.chartDataArr.push(chartData);
         this.chartData = chartData;
 
+        let tableDimensions = [];
+        dimensions.forEach((el) => {
+          tableDimensions.push(`${el.transaction}.${el.query}`);
+        });
 
-        /*const tableDetails = this.reportService.prepareTableData(
-          reportLabels, reportData, dimensions, this.measures, this.criteria
-        );*/
+        let tableMeasures = [];
+        measures.forEach((el) => {
+          tableMeasures.push(`${el.transaction}.${el.query}`);
+        });
+
+        const tableCriteria = [...measures, ...dimensions];
+
+        log.info(`--------------------------------`)
+        log.info(`report labels >>>`, reportLabels);
+        log.info(`reportData >>>`, reportData);
+        log.info(`dimensions >>>`, tableDimensions);
+        log.info(`measures >>>`, tableMeasures);
+        log.info(`criteria >>>`, tableCriteria);
+        log.info(`--------------------------------`)
+
+        this.tableDetails = this.reportService.prepareTableData(
+          reportLabels, reportData, tableDimensions, tableMeasures, tableCriteria
+        );
 
         // chartData.tableDetails = tableDetails;
 
