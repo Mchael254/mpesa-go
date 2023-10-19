@@ -74,6 +74,7 @@ export class RiskSectionDetailsComponent {
   riskSectionList:riskSection[];
   sectionDetailsForm:FormGroup;
 
+  quotationDetails:any
 
   constructor(
     private router: Router,
@@ -105,6 +106,9 @@ export class RiskSectionDetailsComponent {
       log.debug(this.formData ,"Form Data")
       log.debug(this.clientFormData ,"CLIENT Form Data")
 
+
+      log.debug(this.formData ,"Form Data")
+    
       this.loadFormData();
       this.createRiskDetailsForm();
       this.createSectionDetailsForm();
@@ -395,6 +399,8 @@ toggleThirdDetails() {
     })
   }
 
-
+  finish(){
+    this.router.navigate(['/home/gis/quotation/quotation-summary'])
+  }
   
 }
