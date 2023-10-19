@@ -15,6 +15,7 @@ export const environment = {
   API_URLS: new Map<API_CONFIG, string>([
     [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
     [API_CONFIG.MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
+    [API_CONFIG.QUOTATIONS_SERVICE_BASE_URL, 'http://localhost:5002'],
   ]),
 
 };
