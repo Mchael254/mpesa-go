@@ -18,7 +18,7 @@ import {Router} from "@angular/router";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import _default from "chart.js/dist/core/core.interaction";
 import dataset = _default.modes.dataset;
-import { ColorScheme } from 'src/app/shared/data/reports/color-scheme';
+import { ColorScheme } from '../../../shared/data/reports/color-scheme';
 
 const log = new Logger('ReportPreviewComponent')
 
@@ -141,7 +141,12 @@ export class ReportPreviewComponent implements OnInit{
     this.displayChartTypes.push('table');
   }
 
-  fetchDashboards() {
+  /**
+   * gets all existing dashboards from the DB so that a user can select 
+   *  a specific dashboar when saving a report
+   * @returns void
+   */
+  fetchDashboards(): void {
     this.reportServiceV2.getDashboards()
       .pipe()
       .subscribe({
@@ -153,10 +158,13 @@ export class ReportPreviewComponent implements OnInit{
 
         }
       })
-  }
+  };
 
+  /**
+   * 
+   * @param reportParamFilters 
+   */
   populateSelectedFilters(reportParamFilters) {
-
     reportParamFilters.forEach(reportParamFilter => {
       const category = reportParamFilter.queryObject.category;
       let operator;
@@ -180,6 +188,10 @@ export class ReportPreviewComponent implements OnInit{
     })
   }
 
+  /**
+   * Fetch all fiter conditions (dateConditions | dimensionConditions | metricConditions)
+   * @returns void
+   */
   fetchFilterConditions(): void {
     const conditions = this.reportServiceV2.fetchFilterConditions();
     this.dateConditions = conditions.dateConditions;
@@ -204,7 +216,7 @@ export class ReportPreviewComponent implements OnInit{
   }
 
   /**
-   * creates filter form
+   * creates filter form 
    */
   createFilterForm(): void {
     this.filterForm = this.fb.group({
@@ -242,6 +254,12 @@ export class ReportPreviewComponent implements OnInit{
     this.loadChart();
   }
 
+  /**
+   * 1. selects a specific chart for display
+   * 2. sets table as the first chart to be displayed
+   * 3. calls the loadChart() method 
+   * @param event HTML event
+   */
   selectChart(event) {
     const formChartType = event.target.value;
     const selectedChartType = this.chartTypes.filter((item) => item.name === formChartType)[0];
@@ -270,7 +288,7 @@ export class ReportPreviewComponent implements OnInit{
       this.shouldShowTable = false;
     }
     // this.shouldShowVisualization = false;
-    log.info(`display chart types >>> `, this.displayChartTypes);
+    // log.info(`display chart types >>> `, this.displayChartTypes);
     this.loadChart();
 
   }
@@ -289,6 +307,10 @@ export class ReportPreviewComponent implements OnInit{
     this.shouldShowStyles = !this.shouldShowStyles;
   }
 
+  /**
+   * selects a particular chart to be styled
+   * @param styleType :string
+   */
   selectStyle(styleType) {
     this.shouldShowStyles = false;
     this.styleType = styleType;
@@ -330,8 +352,8 @@ export class ReportPreviewComponent implements OnInit{
     this.selectedFilters.splice(filterSelectedIndex, 1);
 
     const member = this.criteria.filter((item) => item.query === filter.column)[0];
-    log.info(`member >>>`, member, this.criteria);
-    log.info(`this.filter >>>`, member, this.filters);
+    // log.info(`member >>>`, member, this.criteria);
+    // log.info(`this.filter >>>`, member, this.filters);
     this.filters.forEach((filter, index) => {
       const testString = `${member.transaction}.${member.query}`;
       if (filter.member === testString) this.filters.splice(index, 1);
@@ -388,6 +410,12 @@ export class ReportPreviewComponent implements OnInit{
   }
 
 
+  /**
+   * Sets the colors of the selected charts
+   * @param chartType :string
+   * @param chartData :ChartData from cubeJS API
+   * @returns chartData 
+   */
   setChartColors(chartType, chartData) {
     let colorScheme;
 
@@ -517,6 +545,10 @@ export class ReportPreviewComponent implements OnInit{
     this.router.navigate(['/home/reportsv2/create-report'], {queryParams:{fromPreview: true}})
   }
 
+  /**
+   * Should conditions based the selected table column type (date | string | number)
+   * @param event HTML event
+   */
   showConditions(event): void {
     this.conditionsOptionsValue = [];
     const query = event.target.value;
@@ -529,7 +561,12 @@ export class ReportPreviewComponent implements OnInit{
     })
   }
 
-  setConditionsOptionsValue(category) {
+  /**
+   * sets the conditions to display based on the selected column type
+   * @param category 
+   * @returns conditionsOptions
+   */
+  setConditionsOptionsValue(category: string) {
     let conditionsOptionsValue;
 
     if (category === 'metrics') {
