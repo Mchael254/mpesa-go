@@ -32,6 +32,7 @@ export class QuotationDetailsComponent {
   quotationsList:any;
   quotation:any
   quotationNo:any;
+  quotationCode:any;
   isChecked: boolean = false;
   constructor(
     public bankService:BankService,
@@ -123,26 +124,41 @@ export class QuotationDetailsComponent {
   
   saveQuotationDetails(){
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
-      this.quotationNo = data
-    })
-  
-    if(this.quotationForm.value.multiUser == 'Y'){
-      this.router.navigate(['/home/gis/quotation/quote-assigning'])
-    }else{
-      if (this.isChecked) {
-        this.router.navigate(['/home/gis/quotation/import-risks'])
-      } else {
-        this.router.navigate(['/home/gis/quotation/risk-section-details'])
-      }
     
-     
-    }
-   
-  
-  } 
+    
+    if(this.quotationForm.value.multiUser == 'Y'){
+    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+    this.quotationNo = data;
+    console.log(this.quotationNo,"Quotation results:")    
+    this.router.navigate(['/home/gis/quotation/quote-assigning'])
+    })
+    
+    }else{
+    if (this.isChecked) {
+    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+    this.quotationNo = data
+    console.log(this.quotationNo)
+    this.router.navigate(['/home/gis/quotation/import-risks'])
+    })
+    
+    } else {
+    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+    this.quotationNo = data;
+    console.log(this.quotationNo,'quotation number output');
+    this.quotationCode=this.quotationNo._embedded[0].quotationCode;
+    this.sharedService.setQuotationDetails(this.quotationCode);
 
-  
+    this.router.navigate(['/home/gis/quotation/risk-section-details']);
+    })
+    
+    }
+    
+    
+    }
+    
+    
+    }
+
   getAgents(){
     this.agentService.getAgents().subscribe(data=>{
       this.agents = data.content
