@@ -1,0 +1,45 @@
+.sub-title{
+color:var(--primary-color);;
+font-size: 15px;
+font-style: normal;
+font-weight: 700;
+line-height: 18px; /* 112.5% */
+border-right: 0px
+}
+.title{
+color: #000;
+font-size: 12px;
+font-style: normal;
+font-weight: 700;
+line-height: 18px; 
+}
+#icon{
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+#icon i{
+    color: #00529B;
+}
+.label{
+color: rgba(0, 0, 0, 0.50);
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.content{
+color: #000;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.cancel{
+color: #00529B;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+text-decoration-line: underline;
+}
