@@ -9,7 +9,7 @@ import {TableDetail} from "../../../shared/data/table-detail";
 import {ChartReports} from "../../../shared/data/reports/chart-reports";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
-import { Logger } from 'src/app/shared/services';
+import { Logger } from '../../../shared/services';
 
 const log = new Logger('ReportService');
 

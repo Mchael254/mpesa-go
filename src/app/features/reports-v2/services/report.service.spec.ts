@@ -16,6 +16,7 @@ export class MockAppConfigService {
     };
   }
 }
+
 describe('ReportService', () => {
   let service: ReportServiceV2;
   let appConfigService: AppConfigService;
@@ -56,7 +57,7 @@ describe('ReportService', () => {
 
     const req = httpTestingController.expectOne(`/${baseUrl}/chart/chart-reports`);
     expect(req.request.method).toEqual('POST');
-    req.flush(report)
+    req.flush(report);
   });
 
   test('should get report by Id', () => {

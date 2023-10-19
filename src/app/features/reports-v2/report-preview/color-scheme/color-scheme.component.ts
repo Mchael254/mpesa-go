@@ -28,7 +28,7 @@ export class ColorSchemeComponent implements OnInit{
   public newColorScheme: ColorScheme = {
     name: '',
     colors: ['','', '', '', '']
-  }
+  };
 
   public numberOfColors: number = 5;
   public colorSchemeForm: FormGroup;
@@ -41,21 +41,19 @@ export class ColorSchemeComponent implements OnInit{
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
     private colorSchemeService: ColorSchemeService
-  ) {
-    
-  }
+  ) {}
 
   ngOnInit(): void {
     this.createColorSchemeForm();
     this.fetchAllColorSchemes();
   }
 
-  createColorSchemeForm() {
+  createColorSchemeForm(): void {
     const formGroupFields = this.getFormControlFields();
     this.colorSchemeForm = new FormGroup(formGroupFields);
   }
 
-  getFormControlFields() {
+  getFormControlFields(): object {
     this.fields = [];
     const colorInputs = {};
 
@@ -69,7 +67,7 @@ export class ColorSchemeComponent implements OnInit{
       formGroupFields[field] = new FormControl('#ffffff');
       this.fields.push(field);
     }
-    log.info(`fields >>>`, this.fields)
+    // log.info(`fields >>>`, this.fields, typeof formGroupFields);
     
     return formGroupFields;
   }
@@ -78,23 +76,36 @@ export class ColorSchemeComponent implements OnInit{
   /**
    * Emits the selected colorScheme to the parent object
    * @param selectedScheme 
+   * @returns void
    */
-  selectColorScheme(selectedScheme) {
+  selectColorScheme(selectedScheme): void {
     this.selectedColorScheme.emit(selectedScheme);
   }
 
 
-  addColorBox() {
+  /**
+   * Add an extra box for additiona color to color scheme
+   * @returns void
+   */
+  addColorBox(): void {
     this.newColorScheme.colors.push('');
     this.createColorSchemeForm();
   }
 
-  defineColorSchemeName(e) {
+
+  /**
+   * sets the name of the color scheme
+   * @param e type $event
+   */
+  defineColorSchemeName(e): void {
     this.colorSchemeName = e.target.value;
-    // log.info(`color scheme name >>> `, this.colorSchemeName);
   }
 
-  saveColorScheme() {
+  /**
+   * save color scheme to the DB
+   * @param void
+   */
+  saveColorScheme(): void {
     const formValueColors = this.colorSchemeForm.getRawValue();
     let colors = ``;
 
@@ -110,11 +121,15 @@ export class ColorSchemeComponent implements OnInit{
     this.colorSchemeService.createColorScheme(newColorScheme)
     .pipe(take(1))
     .subscribe(colorScheme => {
-      log.info(`color scheme created `, colorScheme);
+      // log.info(`color scheme created `, colorScheme);
     })
   }
 
-  fetchAllColorSchemes() {
+  /**
+   * get all existing color schemes from the DB
+   * @param void
+   */
+  fetchAllColorSchemes(): void {
     this.colorSchemeService.fetchAllColorSchemes()
     .pipe(take(1))
     .subscribe((colorSchemes) => {
@@ -124,18 +139,21 @@ export class ColorSchemeComponent implements OnInit{
           name: colorScheme.name,
           colors: colorScheme.colors.split(',')
         }
-        this.colourSchemes.push(scheme)
+        this.colourSchemes.push(scheme);
       });
-      log.info(`all color schemes >>> `, colorSchemes);
-    })
+    });
   }
 
-  deleteColorScheme(id: number) {
-    this.colorSchemeService.deleteColorScheme(id)
-    .pipe(take(1))
-    .subscribe(res => {
-      log.info(`successful delete `, res)
-    })
-  }
+  /**
+   * delete color scheme
+   * @param id :type number
+   */
+  // deleteColorScheme(id: number) {
+  //   this.colorSchemeService.deleteColorScheme(id)
+  //   .pipe(take(1))
+  //   .subscribe(res => {
+  //     log.info(`successful delete `, res)
+  //   })
+  // }
 
 }
