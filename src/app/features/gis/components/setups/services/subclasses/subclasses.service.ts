@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular
 import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
-import { Subclasses } from '../../data/gisDTO';
+import { Clause, Clauses, Subclasses, subclassClauses } from '../../data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -94,7 +94,7 @@ createSubClass(data:Subclasses[]) {
       catchError(this.errorHandl)
     )
   }
-  getSubclassClauses():Observable<any>{
+  getSubclassClauses():Observable<subclassClauses[]>{
     let page = 0;
     let size = 1000;
    const headers = new HttpHeaders({
@@ -105,14 +105,14 @@ createSubClass(data:Subclasses[]) {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`, {
+    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`, {
       headers:headers,
       params:params
     }).pipe(
       retry(1),
       catchError(this.errorHandl)
     )  }
-    getAllClauses():Observable<any>{
+    getAllClauses():Observable<Clauses>{
       let page = 0;
       let size = 1000;
      const headers = new HttpHeaders({
@@ -123,7 +123,7 @@ createSubClass(data:Subclasses[]) {
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/clauses`, {
+      return this.http.get<Clauses>(`/${this.baseurl}/${this.setupsbaseurl}/clauses`, {
         headers:headers,
         params:params
       }).pipe(
