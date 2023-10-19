@@ -79,13 +79,13 @@
                 <p-colorPicker [formControlName]="field" format="hex"></p-colorPicker>
               </span>
               <span style="float: left; padding: 5px">
-                <i (click)="addColorBox()" class="pi pi-plus"></i>
+                <i id="addColorBox" (click)="addColorBox()" class="pi pi-plus"></i>
               </span>
             </div>
           </div>
           <div class="row">
             <div class="offset-md-8 col-md-4 mt-4 text-end">
-              <button (click)="saveColorScheme()" type="button" class="btn btn-primary">Save</button>
+              <button id="saveColorScheme" (click)="saveColorScheme()" type="button" class="btn btn-primary">Save</button>
             </div>
           </div>
         </form>
