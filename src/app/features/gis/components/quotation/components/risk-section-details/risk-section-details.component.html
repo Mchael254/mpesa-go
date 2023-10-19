@@ -26,14 +26,14 @@
             <div class="row mt-2 mx-4">
               <div class="col-4">
                   <label for="minmax-buttons" id="quote-label">Product</label>
-                  <select class="form-select form-control-sm " id="quote-dropdown" >
+                  <select class="form-select form-control-sm " id="quote-dropdown" formControlName="productCode">
                     <option value="">{{description}}</option>
                     <option></option>
                 </select>                
               </div>
               <div class="col-4">
                   <label for="minmax-buttons" id="quote-label">Insured</label>
-                  <select class="form-select form-control-sm " id="quote-dropdown" >
+                  <select class="form-select form-control-sm " id="quote-dropdown" formControlName="insuredCode" >
                     <option value="">{{clientName}}</option>
                 </select>                
               </div>
@@ -43,7 +43,7 @@
               <div class="row mt-2 mx-4">
                   <div class="col-4">
                       <label for="minmax-buttons" id="quote-label">Risk ID</label>
-                      <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >  
+                      <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId">  
                        
                   </div>
                   <div class="col-4">
@@ -54,7 +54,7 @@
                   
                   <div class="col-4">
                       <label for="minmax-buttons" id="quote-label" class="required">Subclass</label>
-                      <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event)">
+                      <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event)" formControlName="subClassCode" >
                         <option *ngFor="let subclass of filteredSubclass" [value]="subclass.sub_class_code">{{subclass.sub_class_code}}</option>
                     </select>
                   </div>
@@ -63,8 +63,8 @@
               <div class="row mt-4 mx-4 mb-4">
                   <div class="col-4">
                       <label for="minmax-buttons" id="quote-label" class="required">Cover type</label>
-                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" >
-                          <option *ngFor="let covertype of subclassCoverType" [value]="covertype.code">{{covertype.coverTypeShortDescription}}</option>
+                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription" >
+                          <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.coverTypeShortDescription}}</option>
                       </select>    
                   </div>
                   <div class="col-4">
@@ -77,9 +77,20 @@
                   </div>
                   <div class="col-4">
                     <label for="minmax-buttons" id="quote-label">Cover Date</label>
-                    <p-calendar selectionMode="range" [readonlyInput]="true" dateFormat="dd.mm.yy" id="cover-date" [(ngModel)]="selectedDates"></p-calendar>
+                    <!-- <p-calendar
+                    selectionMode="range"
+                    [readonlyInput]="true"
+                    dateFormat="dd.mm.yy"
+                    id="cover-date"
+                    [(ngModel)]="selectedDates"
+                    
+                  ></p-calendar> -->
+                  <p-calendar selectionMode="range" [readonlyInput]="true" dateFormat="dd.mm.yy" formControlName="dateRange"></p-calendar>
+                  
                   </div>
               </div>
+              <button type="button" class="btn btn-primary " (click)="createRiskDetail()">Save Details</button>
+
           </form>
         </div>
       </div>
@@ -790,14 +801,14 @@
               <div class="modal-content">
                 <div class="modal-body">
                   <h5 class="modal-title mt-2" id="editScheduleLabel">Edit Risk Section Details</h5>                      
-                  <form >
+                  <form [formGroup]="sectionDetailsForm">
                       <!-- **ROW 1** -->
                       <div class="row" id="scheduleRows">
                         <div class="col-xl-6">
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">ID :</label>
                                 <div class="col-7">
-                                  <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="code">                            
                                 </div>
                               </div>
                         </div>
@@ -805,7 +816,7 @@
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Description:</label>
                                 <div class="col-7">
-                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             </div>
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">                             </div>
                                 </div>
                             </div>
                       </div>
@@ -815,7 +826,7 @@
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Rate Type :</label>
                                 <div class="col-7">
-                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="rateType">
                                     <option ></option>
                                     <option ></option>
                                   </select>                                          
@@ -826,7 +837,7 @@
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Type:</label>
                                 <div class="col-7">
-                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
                                     <option ></option>
                                     <option ></option>
                                   </select>                              
@@ -840,7 +851,7 @@
                           <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Free Limit :</label>
                               <div class="col-7">
-                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="freeLimit" >                            
                               </div>
                             </div>
                       </div>
@@ -848,7 +859,7 @@
                           <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Limit Amount:</label>
                               <div class="col-7">
-                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             </div>
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="limitAmount">                             </div>
                               </div>
                           </div>
                       </div>
@@ -858,7 +869,7 @@
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Group:</label>
                                 <div class="col-7">
-                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="calcGroup" >                            
                                 </div>
                               </div>
                         </div>
@@ -866,7 +877,7 @@
                             <div class="mb-3 row">
                                 <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Rate:</label>
                                 <div class="col-7">
-                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumRate">                            
                                   </div>
                                 </div>
                             </div>
@@ -877,7 +888,7 @@
                           <div class="mb-3 row">
                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div By:</label>
                             <div class="col-7">
-                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="rateDivisionFactor">
                             </div>
                           </div>
                         </div>
@@ -885,7 +896,7 @@
                           <div class="mb-3 row">
                             <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Multi Rate :</label>
                             <div class="col-7">
-                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierRate">
                             </div>
                           </div>
                         </div>
@@ -896,7 +907,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div Multi By:</label>
                               <div class="col-7">
-                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierDivisionFactor">
                               </div>
                             </div>
                           </div>
@@ -904,7 +915,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium:</label>
                               <div class="col-7">
-                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumAmount" >
                               </div>
                             </div>
                           </div>
@@ -915,7 +926,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Minimum Premium:</label>
                               <div class="col-7">
-                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
                               </div>
                             </div>
                           </div>
@@ -923,7 +934,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Accumulation:</label>
                               <div class="col-7">
-                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description" >
                               </div>
                             </div>
                           </div>
@@ -934,7 +945,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Remarks:</label>
                               <div class="col-7">
-                                <input type="text"  id="scheduleInput" class="form-control form-control-sm mb-1" >
+                                <input type="text"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
                               </div>
                             </div>
                           </div>
@@ -942,7 +953,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Declaration:</label>
                               <div class="col-7">
-                                <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
                                   <option ></option>
                                   <option >Yes</option>
                                   <option >No</option>
@@ -957,7 +968,7 @@
                             <div class="mb-3 row">
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Compute:</label>
                               <div class="col-7">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">  
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="compute">  
                               </div>
                             </div>
                           </div>
@@ -999,7 +1010,7 @@
               </div>
             </div>
           </div>
-          <p-table  [value]="" [tableStyle]="{ 'min-width': '300px' }">
+          <p-table  [value]="riskSectionList" [tableStyle]="{ 'min-width': '300px' }">
             <ng-template pTemplate="header">
                 <tr>
                     <th>Group</th>
@@ -1014,13 +1025,17 @@
 
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" >
+            <ng-template pTemplate="body" let-riskSectionList >
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{riskSectionList.calcGroup}}</td>
+                    <td>{{riskSectionList.rowNumber}}</td>
+                    <td>{{riskSectionList.code}}</td>
+                    <td>{{riskSectionList.sectionShortDescription}}</td>
+                    <td>{{riskSectionList.description}}</td>
+                    <td>{{riskSectionList.limitAmount}}</td>
+                    <td>{{riskSectionList.premiumAmount}}</td>
+                    <td>{{riskSectionList.rateType}}</td>
+
 
                 </tr>
             </ng-template>

@@ -24,3 +24,42 @@ export interface quotationDTO{
     withEffectiveFromDate: string,
     withEffectiveToDate:string
 }
+export interface quotationRisk{
+    binderCode: number,
+    coverTypeCode: number,
+    coverTypeShortDescription: string,
+    dateWithEffectFrom: string,
+    dateWithEffectTo: string,
+    insuredCode: number,
+    isNoClaimDiscountApplicable: string,
+    itemDescription: string,
+    location: string,
+    noClaimDiscountLevel: number,
+    productCode: number,
+    propertyId: string,
+    riskPremAmount: number,
+    // schedules: {},
+    subClassCode: number,
+    town: string
+}
+export interface riskSection{
+    calcGroup: number,
+    code: number,
+    compute: string,
+    description: string,
+    freeLimit: number,
+    limitAmount: number,
+    multiplierDivisionFactor: number,
+    multiplierRate: number,
+    premiumAmount: number,
+    premiumRate: number,
+    quotRiskCode: number,
+    rateDivisionFactor: number,
+    rateType: string,
+    rowNumber: number,
+    sectionCode: number,
+    sectionShortDescription: string,
+    sectionType: string,
+    sumInsuredLimitType: string,
+    sumInsuredRate: number
+}
