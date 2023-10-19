@@ -17,4 +17,20 @@ export class QuickService {
   getAllCurrencies() {
     return this.api.GET('currencies');
   }
+
+  getDurationTypes() {
+    return this.api.GET(`quotations/duration-types`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+  }
+
+  getQuotationCovers() {
+    return this.api.GET('dependent-types');
+  }
+
+  getUnitRate() {
+    return this.api.GET(`quotations/unit-rate`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+  }
+
+  getFacultativeTypes() {
+    return this.api.GET(`quotations/facultative-types`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+  }
 }
