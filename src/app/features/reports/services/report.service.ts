@@ -164,6 +164,12 @@ export class ReportService {
     return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
   }
 
+  updateChartReports(id:number, chartReport: ChartReports): Observable<ChartReports> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.put<ChartReports>(`/${baseUrl}/chart/chart-reports/${id}`
+      , JSON.stringify(chartReport), {headers: this.headers});
+  }
+
   /*Create a new dashboard*/
   saveDashboard(dashboard: Dashboard): Observable<Dashboard> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
