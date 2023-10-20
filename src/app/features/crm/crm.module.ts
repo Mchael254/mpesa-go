@@ -9,13 +9,19 @@ import { CountryComponent } from './components/country/country.component';
 import { SharedModule } from '../../shared/shared.module';
 import { OrganizationComponent } from './components/organization/organization.component';
 import { BaseCrmComponent } from './components/base-crm/base-crm.component';
+import { DivisionComponent } from './components/division/division.component';
+import { RegionComponent } from './components/region/region.component';
+import { BranchComponent } from './components/branch/branch.component';
 
 
 @NgModule({
   declarations: [
     CountryComponent,
     OrganizationComponent,
-    BaseCrmComponent
+    BaseCrmComponent,
+    DivisionComponent,
+    RegionComponent,
+    BranchComponent
   ],
   imports: [
     CommonModule,
