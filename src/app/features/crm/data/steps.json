@@ -7,17 +7,17 @@
     {
       "number": 2,
       "title": "Division",
-      "link": "/home/crm/country"
+      "link": "/home/crm/disivion"
     },
     {
       "number": 3,
       "title": "Region",
-      "link": "/home/crm/country"
+      "link": "/home/crm/region"
     },
     {
       "number": 4,
       "title": "Branch",
-      "link": "/home/crm/country"
+      "link": "/home/crm/branch"
     }
    
 ]
