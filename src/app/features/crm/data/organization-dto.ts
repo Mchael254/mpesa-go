@@ -104,3 +104,63 @@ export interface PostOrganizationDTO {
   customer_care_primary_phone_number: string,
   customer_care_secondary_phone_number: string,
 }
+
+export interface OrganizationDivisionDTO {
+  id: number,
+  is_default_division: string,
+  name: string,
+  order: number,
+  organization_id: number,
+  short_description: string,
+  status: string
+}
+
+export interface OrganizationRegionDTO {
+  agentSeqNo: string,
+  branchMgrSeqNo: string,
+  clientSequence: number,
+  code: number,
+  computeOverOwnBusiness: string,
+  dateFrom: string,
+  dateTo: string,
+  managerAllowed: string,
+  managerId: number,
+  name: string,
+  organization: string,
+  overrideCommissionEarned: string,
+  policySeqNo: number,
+  postingLevel: string,
+  preContractAgentSeqNo: number,
+  shortDescription: string
+}
+
+export interface PostOrganizationRegionDto {
+  agentSeqNo: string,
+  branchMgrSeqNo: string,
+  clientSequence: number,
+  code: number,
+  computeOverOwnBusiness: string,
+  dateFrom: string,
+  dateTo: string,
+  managerAllowed: string,
+  managerId: number,
+  name: string,
+  organizationId: number,
+  overrideCommissionEarned: string,
+  policySeqNo: number,
+  postingLevel: string,
+  preContractAgentSeqNo: number,
+  shortDescription: string
+}
+
+export interface YesNoDTO {
+  name: string,
+  value: string
+}
+
+export interface ManagersDTO {
+  agentShortDescription: string,
+  id: number,
+  name: string,
+  townCode: number
+}
