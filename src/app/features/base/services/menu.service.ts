@@ -124,7 +124,7 @@ export class MenuService{
 
   },],
     "CRM_SETUP":[{
-      name: 'Organization',
+      name: 'Organization Setups',
       nameSlug: 'org',
       icon: 'fa-solid fa-keyboard',
       menuItems: [
@@ -154,7 +154,29 @@ export class MenuService{
         }
       ],
       collapsed:true,
-    }],
+    },
+    {
+      name: 'Service Desk',
+      nameSlug: 'desk',
+      icon: 'fa-solid fa-gears',
+      menuItems: [],
+      collapsed:true,
+    },
+    {
+      name: 'Campaign Management',
+      nameSlug: 'campaign',
+      icon: 'fa-solid fa-align-center',
+      menuItems: [],
+      collapsed:true,
+    },
+    {
+      name: 'Portal Setups',
+      nameSlug: 'portal',
+      icon: 'fa-solid fa-magnifying-glass-chart',
+      menuItems: [],
+      collapsed:true,
+    },
+    ],
     "GIS_SETUP":[
     {
     name: 'Actions',
