@@ -27,7 +27,6 @@ const log = new Logger( 'OrganizationComponent');
 export class OrganizationComponent implements OnInit {
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  // public managersData: Pagination<StaffDto> = <Pagination<StaffDto>>{};
 
   public createOrganizationForm: FormGroup;
   steps = stepData;
@@ -50,8 +49,6 @@ export class OrganizationComponent implements OnInit {
   public url = "";
   public filteredManager: any;
   public selectedManager = '';
-  // public selectedCountryCode: string = '+254';
-  // public phoneNumber: string = '';
   public selectedOrg: OrganizationDTO;
   public isOrganizationSelected: boolean = false;
   public selectedOrganizationId: number | null = null;
