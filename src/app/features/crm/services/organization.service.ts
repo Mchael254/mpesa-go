@@ -1,9 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AppConfigService } from '../../../core/config/app-config-service';
-import { OrganizationDTO, PostOrganizationDTO } from '../data/organization-dto';
+import { ManagersDTO, OrganizationDTO, OrganizationDivisionDTO, OrganizationRegionDTO, PostOrganizationDTO, PostOrganizationRegionDto, YesNoDTO } from '../data/organization-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +11,20 @@ import { OrganizationDTO, PostOrganizationDTO } from '../data/organization-dto';
 export class OrganizationService {
 
   baseUrl = this.appConfig.config.contextPath.setup_services;
+  accountsBaseUrl = this.appConfig.config.contextPath.accounts_services;
 
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService,
   ) { }
+
+  getOptionValues(): Observable<YesNoDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    return this.http.get<YesNoDTO[]>(`/${this.baseUrl}/setups/yes-no-options` ,{headers:headers});
+  }
 
   getOrganization(): Observable<OrganizationDTO[]> {
     const headers = new HttpHeaders({
@@ -54,7 +63,101 @@ export class OrganizationService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.delete<OrganizationDTO[]>(`/${this.baseUrl}/setups/organizations/${organizationId}`,
+    return this.http.delete<OrganizationDTO>(`/${this.baseUrl}/setups/organizations/${organizationId}`,
       { headers: headers });
+  }
+
+  getOrganizationDivision(organizationId: number): Observable<OrganizationDivisionDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`);
+    return this.http.get<OrganizationDivisionDTO[]>(`/${this.baseUrl}/setups/divisions`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  createOrganizationDivision(data: OrganizationDivisionDTO): Observable<OrganizationDivisionDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<OrganizationDivisionDTO>(`/${this.baseUrl}/setups/divisions`, JSON.stringify(data),
+      { headers: headers })
+  }
+
+  updateOrganizationDivision(divisionId: number, data: OrganizationDivisionDTO): Observable<OrganizationDivisionDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<OrganizationDivisionDTO>(`/${this.baseUrl}/setups/divisions/${divisionId}`,
+      data, { headers: headers })
+  }
+
+  deleteOrganizationDivision(divisionId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<OrganizationDivisionDTO>(`/${this.baseUrl}/setups/divisions/${divisionId}`,
+      { headers: headers });
+  }
+
+  getOrganizationRegion(organizationId: number): Observable<OrganizationRegionDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`);
+    return this.http.get<OrganizationRegionDTO[]>(`/${this.baseUrl}/setups/regions`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  createOrganizationRegion(data: PostOrganizationRegionDto): Observable<PostOrganizationRegionDto> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostOrganizationRegionDto>(`/${this.baseUrl}/setups/regions`, JSON.stringify(data),
+      { headers: headers })
+  }
+
+  getRegionManagers(organizationId: number): Observable<ManagersDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`);
+    
+    return this.http.get<ManagersDTO[]>(`/${this.accountsBaseUrl}/accounts/region-managers`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  getBranchManagers(organizationId: number): Observable<ManagersDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`);
+    
+    return this.http.get<ManagersDTO[]>(`/${this.accountsBaseUrl}/accounts/branch-managers`
+      , {
+        headers: headers,
+        params: params
+      });
   }
 }
