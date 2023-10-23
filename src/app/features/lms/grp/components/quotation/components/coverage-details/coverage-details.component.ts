@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Logger } from 'src/app/shared/services';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
 
-const log = new Logger('CoverageDetailsComponent');
+@AutoUnsubscribe
 @Component({
   selector: 'app-coverage-details',
   templateUrl: './coverage-details.component.html',
@@ -14,9 +15,11 @@ export class CoverageDetailsComponent implements OnInit, OnDestroy {
 
 searchFormMemberDets: FormGroup;
 detailedCovDetsForm: FormGroup;
+newQuatationCalType: string
   constructor (
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
     ) {}
 
     public clients = [
@@ -25,51 +28,6 @@ detailedCovDetsForm: FormGroup;
       { label: 'Client 3', value: 'client3' },
       { label: 'Client 10', value: 'client10' },
       { label: 'Client 15', value: 'client15' },
-    ];
-
-    public products = [
-      {label: ' Britam Individual', value: 'britam'},
-      {label: ' Defined Contribution', value: 'defined'},
-      {label: ' Gratuity Fund', value: 'gratuity'},
-      {label: ' Minor Trust', value: 'minor'},
-      {label: ' Group Mortgage Foundation', value: 'mortgage'},
-    ];
-
-    public durationType = [
-      {label: ' Annual', value: 'annual'},
-      {label: ' Semi annual', value: 'semiAnnual'},
-      {label: ' Quarterly', value: 'quarterly'},
-      {label: ' Monthly', value: 'monthly'},
-      {label: ' Termly', value: 'termly'},
-      {label: ' Open', value: 'open'},
-    ];
-
-    public facultativeType = [
-      {label: ' inward', value: 'inward'},
-      {label: ' Outward', value: 'outward'},
-      {label: ' Normal', value: 'normal'},
-    ];
-
-    public quotationCovers = [
-      {label: ' Self', value: 'self'},
-      {label: ' Self and dependants', value: 'selfDependant'},
-      {label: ' Self and joint member', value: 'selfJoint'},
-      {label: ' Self and member', value: 'selfMember'},
-    ];
-
-    public frequencyOfPayment = [
-      {label: ' Annual', value: 'annual'},
-      {label: ' Semi annual', value: 'semiAnnual'},
-      {label: ' Quarterly', value: 'quarterly'},
-      {label: ' Monthly', value: 'monthly'},
-      {label: ' Termly', value: 'termly'},
-    ];
-
-    public unitRateOption = [
-      {label: ' Weighed age', value: 'weighedAge'},
-      {label: ' Single age', value: 'singleAge'},
-      {label: ' Average age', value: 'averageAge'},
-      {label: ' Others', value: 'others'},
     ];
 
     public currency = [
@@ -82,23 +40,171 @@ detailedCovDetsForm: FormGroup;
       {label: ' Peso', value: 'peso'},
       {label: ' Real', value: 'real'},
     ];
-
-    public quotationCalcType = [
-      {label: ' Detailed', value: 'detailed'},
-      {label: ' Aggregate', value: 'aggregate'},
+    
+    public yourDataDetailed = [
+      {
+        isSelected: true,
+        isEditable: false,
+        coverType: 'Type A',
+        dependantType: 'Dependant 1',
+        rateType: 'Rate Type 1',
+        premiumMask: 'Premium Mask 1',
+        rate: 0.05,
+        rateDivisionFactor: 1.2,
+        percentOfMainYearSA: 10,
+      },
+      {
+        isSelected: false,
+        isEditable: true,
+        coverType: 'Type B',
+        dependantType: 'Dependant 2',
+        rateType: 'Rate Type 2',
+        premiumMask: 'Premium Mask 2',
+        rate: 0.08,
+        rateDivisionFactor: 0.9,
+        percentOfMainYearSA: 15,
+      },
+      {
+        isSelected: false,
+        isEditable: true,
+        coverType: 'Type C',
+        dependantType: 'Dependant 3',
+        rateType: 'Rate Type 3',
+        premiumMask: 'Premium Mask 3',
+        rate: 0.07,
+        rateDivisionFactor: 1.0,
+        percentOfMainYearSA: 12,
+      },
     ];
-   public yourData: any[] = [];
+    
+
+    public yourDataAggregate = [
+      {
+        coverType: 'Type A',
+        dependantType: 'Dependant 1',
+        rateType: 'Rate Type 1',
+        premiumMask: 'Premium Mask 1',
+        rate: 0.05,
+        rateDivisionFactor: 1.2,
+        percentOfMainYearSA: 10,
+        noOfMembers: 50,
+        avgEarningsPerMember: 5000,
+        totalMemberEarnings: 250000,
+        avgANB: 45,
+        overrideSA: 0,
+        sumAssured: 0,
+      },
+      {
+        coverType: 'Type B',
+        dependantType: 'Dependant 2',
+        rateType: 'Rate Type 2',
+        premiumMask: 'Premium Mask 2',
+        rate: 0.08,
+        rateDivisionFactor: 0.9,
+        percentOfMainYearSA: 15,
+        noOfMembers: 75,
+        avgEarningsPerMember: 6000,
+        totalMemberEarnings: 450000,
+        avgANB: 60,
+        overrideSA: 0,
+        sumAssured: 0,
+      },
+      {
+        coverType: 'Type C',
+        dependantType: 'Dependant 3',
+        rateType: 'Rate Type 3',
+        premiumMask: 'Premium Mask 3',
+        rate: 0.07,
+        rateDivisionFactor: 1.0,
+        percentOfMainYearSA: 12,
+        noOfMembers: 60,
+        avgEarningsPerMember: 5500,
+        totalMemberEarnings: 330000,
+        avgANB: 55,
+        overrideSA: 0,
+        sumAssured: 0,
+      },
+    ];
+
+yourDataCat = [
+  {
+    description: 'Category A',
+    shortDescription: 'Cat A',
+    multipleOfEarnings: 1.5,
+    premiumMask: 'Mask A',
+  },
+  {
+    description: 'Category B',
+    shortDescription: 'Cat B',
+    multipleOfEarnings: 1.2,
+    premiumMask: 'Mask B',
+  },
+  {
+    description: 'Category C',
+    shortDescription: 'Cat C',
+    multipleOfEarnings: 1.0,
+    premiumMask: 'Mask C',
+  },
+];
+
+public yourDataMemberDets = [
+  {
+    sname: 'John',
+    name: 'Doe',
+    dob: '1980-05-15',
+    quantity: 'Male',
+    price: '12345',
+    category: 'Category A',
+    dependantType: 'Spouse',
+    monthlyEarnings: 5000,
+    joiningDate: '2022-01-10',
+    mainMemberNo: '9876',
+  },
+  {
+    sname: 'Smith',
+    name: 'Jane',
+    dob: '1975-08-20',
+    quantity: 'Female',
+    price: '54321',
+    category: 'Category B',
+    dependantType: 'Child',
+    monthlyEarnings: 6000,
+    joiningDate: '2021-11-05',
+    mainMemberNo: '6765',
+  },
+  {
+    sname: 'Johnson',
+    name: 'Bob',
+    dob: '1990-03-25',
+    quantity: 'Male',
+    price: '98765',
+    category: 'Category C',
+    dependantType: 'Spouse',
+    monthlyEarnings: 5500,
+    joiningDate: '2022-02-15',
+    mainMemberNo: '7654',
+  },
+];
+    
+    
+public editing = false;
 
 ngOnInit(): void {
   this.searchFormMember();
   this.detailedCoverDetails();
-  
+  this.SubmitMemberDetailsForm();
+  this.getQuotationCalType();
 }
 
 ngOnDestroy(): void {
   
 }
 
+getQuotationCalType() {
+  this.activatedRoute.queryParams.subscribe((queryParams) => {
+    this.newQuatationCalType = queryParams['quotationCalcType'];
+  });
+}
 searchFormMember() {
   this.searchFormMemberDets = this.fb.group({
     filterby: [""],
@@ -232,6 +338,13 @@ detailedCoverDetails(){
 
   onProceed () {
     this.router.navigate(['/home/lms/grp/quotation/summary']);
+  }
+
+  SubmitMemberDetailsForm() {
+    if(this.memberDetailsForm.valid) {
+      const memberDetailsFormValues = this.memberDetailsForm.getRawValue();
+      console.log("valiz", memberDetailsFormValues)
+    }
   }
 
 }

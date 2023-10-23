@@ -17,7 +17,6 @@ export const environment = {
     [API_CONFIG.MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
     [API_CONFIG.QUOTATIONS_SERVICE_BASE_URL, 'http://localhost:5002'],
 
-
     // [API_CONFIG.SETUPS_SERVICE_BASE_URL, '/lms/setups'],
     // [API_CONFIG.MARKETING_SERVICE_BASE_URL, '/lms/marketing'],
   ]),
