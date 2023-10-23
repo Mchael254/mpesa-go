@@ -1,48 +1,42 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
 import {
-  FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
-  Validators,
+  Validators
 } from '@angular/forms';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import { CountryService } from '../../../../../../../shared/services/setups/country/country.service';
 import {
   CountryDto,
   StateDto,
-  TownDto,
-} from 'src/app/shared/data/common/countryDto';
+  TownDto
+} from '../../../../../../../shared/data/common/countryDto';
 import {
   Observable,
-  filter,
   finalize,
-  lastValueFrom,
   map,
   of,
-  switchMap,
-  tap,
+  switchMap
 } from 'rxjs';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
-import { ClientTypeService } from 'src/app/shared/services/setups/client-type/client-type.service';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { BeneficiaryService } from '../../../../service/benefiary/beneficiary.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { BankBranchDTO, BankDTO } from 'src/app/shared/data/common/bank-dto';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { OccupationService } from 'src/app/shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
-import { SectorService } from 'src/app/shared/services/setups/sector/sector.service';
-import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { PartyService } from '../../../../service/party/party.service';
+import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
+import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
+import { ClientService } from '../../../../../../../features/entities/services/client/client.service';
+import { ClientDTO } from '../../../../../../../features/entities/data/ClientDTO';
+import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
+import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
+import { BankBranchDTO, BankDTO } from '../../../../../../../shared/data/common/bank-dto';
+import { BankService } from '../../../../../../../shared/services/setups/bank/bank.service';
+import { CurrencyService } from '../../../../../../../shared/services/setups/currency/currency.service';
+import { OccupationService } from '../../../../../../../shared/services/setups/occupation/occupation.service';
+import { OccupationDTO } from '../../../../../../../shared/data/common/occupation-dto';
+import { SectorService } from '../../../../../../../shared/services/setups/sector/sector.service';
+import { SectorDTO } from '../../../../../../../shared/data/common/sector-dto';
+import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
+import { PartyService } from '../../../../../service/party/party.service';
+import { RelationTypesService } from '../../../../../../lms/service/relation-types/relation-types.service';
 
 @Component({
   selector: 'app-personal-details',
@@ -56,14 +50,9 @@ export class PersonalDetailsComponent {
   personalDetailFormfields: any[];
   buttonConfig: any;
   clientDetailsForm: FormGroup;
-  escalationForm: FormGroup;
-  postalAddressForm: FormGroup;
-  residentialAddressForm: FormGroup;
   uploadForm: FormGroup;
-  uploadList: any[] = [];
   selectedUploadItem: string;
   clientTypeList: any[] = [];
-
   breadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -81,9 +70,6 @@ export class PersonalDetailsComponent {
 
   isTableOpen: boolean = false;
   countryList: CountryDto[] = [];
-  products!: any[];
-  statuses!: any[];
-  clonedProducts: { [s: string]: any } = {};
   branchList: OrganizationBranchDto[] = [];
   identifierTypeList: any[] = [];
   stateList: StateDto[] = [];
@@ -94,12 +80,11 @@ export class PersonalDetailsComponent {
   showTownSpinner: boolean;
   clientList: ClientDTO[] = [];
   beneficiaryForm: FormGroup;
-  trusteeForm: FormGroup;
   clientTitleList$: Observable<any[]>;
   isCLientListPresent: boolean = false;
   _openModal: boolean = true;
-  benefricairyList$: any[] = [];
-  guardianList$: any[] = [];
+  beneficiaryList: any[] = [];
+  guardianList: any[] = [];
   trusteeList$: Observable<any[]>;
   editEntity: boolean;
   editEntityTwo: boolean;
@@ -107,147 +92,79 @@ export class PersonalDetailsComponent {
   occupationList: OccupationDTO[] = [];
   sectorList: SectorDTO[] = [];
   beneficiaryTypeList: any[] = [];
+  relationTypeList: any[] = [];
+  showBeneficiaryAddButton: boolean = true;
 
   constructor(
     private session_storage: SessionStorageService,
-    private location: Location,
     private router: Router,
     private fb: FormBuilder,
     private country_service: CountryService,
     private branch_Service: BranchService,
-    private clienType_service: ClientTypeService,
+    private clientType_service: ClientTypeService,
     private client_service: ClientService,
-    private beneficiary_service: BeneficiaryService,
     private bank_service: BankService,
     private currency_service: CurrencyService,
     private occupation_service: OccupationService,
     private sector_service: SectorService,
     private toast: ToastService,
-    private party_service: PartyService
+    private party_service: PartyService,
+    private relation_type_service: RelationTypesService
   ) {
-    this.uploadList = [
-      {
-        label: 'Means of Identification',
-        value: 'IND',
-        items: [
-          { label: 'Mumbai', value: 'Mumbai' },
-          { label: 'Varanasi', value: 'Varanasi' },
-          { label: 'Nashik', value: 'Nashik' },
-          { label: 'Delhi', value: 'Delhi' },
-        ],
-      },
-      {
-        label: 'Bill Uploads',
-        value: 'us',
-        items: [
-          { label: 'Chicago', value: 'Chicago' },
-          { label: 'Los Angeles', value: 'Los Angeles' },
-          { label: 'New York', value: 'New York' },
-          { label: 'San Francisco', value: 'San Francisco' },
-        ],
-      },
-    ];
   }
 
   ngOnInit() {
     this.clientTitleList$ = this.client_service.getClientTitles(2);
     this.clientDetailsForm = this.getClientDetailsForm();
-    this.escalationForm = this.getEscalationForm();
     this.uploadForm = this.getUploadForm();
-    this.postalAddressForm = this.getPostalAddressForm();
-    this.residentialAddressForm = this.getResidentialForm();
     this.beneficiaryForm = this.getBeneficiaryForm();
-    this.trusteeForm = this.getBeneficiaryForm();
-
-    this.products = [
-      {
-        id: '1000',
-        code: 'f230fh0g3',
-        name: 'Bamboo Watch',
-        description: 'Product Description',
-        image: 'bamboo-watch.jpg',
-        price: 65,
-        category: 'Accessories',
-        quantity: 24,
-        inventoryStatus: 'INSTOCK',
-        rating: 5,
-      },
-    ];
-
-    this.statuses = [
-      { label: 'In Stock', value: 'INSTOCK' },
-      { label: 'Low Stock', value: 'LOWSTOCK' },
-      { label: 'Out of Stock', value: 'OUTOFSTOCK' },
-    ];
-
     this.getCountryList();
     this.getBranchList();
     this.getClientypeList();
     this.getIdentifierTypeList();
     this.getClientList();
-    this.getBeneficiariesByQuotationCode(20235318);
+    this.getBeneficiariesByQuotationCode();
     this.getBankList();
     this.getBankBranchList();
     this.getCurrencyList();
     this.getOccupationList();
     this.getSectorList();
     this.getAllBeneficiaryTypes();
+    this.getRelationTypes();
+  }
+  getRelationTypes() {
+    this.relation_type_service.getRelationTypes().subscribe((data:any[]) =>{
+      this.relationTypeList = data
+    })
   }
 
   getAllBeneficiaryTypes() {
     this.party_service.getAllBeneficiaryTypes().subscribe((data: any[]) => {
-      console.log(data);
-
       this.beneficiaryTypeList = [...data];
     });
   }
 
   getBeneficiaryForm(): FormGroup<any> {
     return this.fb.group({
+      beneficiary: this.generateBeneficiaryForm(),
+      guardian:this.generateGuardianForm(),
       first_name: [''],
       other_name: [''],
       date_of_birth: [''],
       percentage_benefit: [''],
     });
   }
-  getResidentialForm(): FormGroup<any> {
-    return this.fb.group({
-      town: [''],
-      road: [''],
-      house_no: [''],
-      u_bill: [''],
-      u_u_bill: [''],
-    });
-  }
-  getPostalAddressForm(): FormGroup<any> {
-    return this.fb.group({
-      po_box: [''],
-      country: [''],
-      county: [''],
-      town: [''],
-      p_address: [''],
-    });
-  }
+
   getUploadForm(): FormGroup<any> {
     return this.fb.group({
       selectedUploadItem: [''],
     });
   }
-  getEscalationForm(): FormGroup<any> {
-    return this.fb.group({
-      question: [''],
-    });
-  }
+
   getClientDetailsForm(): FormGroup<any> {
     return this.fb.group({
-      // Beneficary/Trusstees
-      party_first_name: [''],
-      party_last_name: [''],
-      party_dob: [new Date()],
-      party_percentage: [''],
-      party_telephone: [''],
-      party_type: [''],
-      // end
+      beneficiary: this.generateBeneficiaryForm(),
+      guardian:this.generateGuardianForm(),
 
       question: [''],
 
@@ -297,26 +214,14 @@ export class PersonalDetailsComponent {
       branch: ['', [Validators.required]],
       idNumber: ['', [Validators.required]],
       with_effect_from: ['', [Validators.required]],
-
       beneficiaries: this.fb.array([]),
     });
   }
-  calculateAge(dateOfBirth: string): number {
+  calculateAge(dateOfBirth): number {
     const today = new Date();
-    const dob = new Date(this.clientDetailsForm.get(dateOfBirth).value);
-    const age = today.getFullYear() - dob.getFullYear();
-
-    // Check if the birthday has occurred this year
-    if (
-      today.getMonth() < dob.getMonth() ||
-      (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
-    ) {
-      return age;
-    }
-
-    return age;
+    const dob = new Date(dateOfBirth);
+    return today.getFullYear() - dob.getFullYear();;
   }
-
   getClientList() {
     this.isCLientListPresent = false;
     this.client_service
@@ -326,42 +231,43 @@ export class PersonalDetailsComponent {
         this.clientList = data['content'];
       });
   }
-
   openTable() {
     this.isTableOpen = true;
   }
-
   closeTable() {
     this.isTableOpen = false;
   }
-  selectDate() {}
   saveButton(value) {
     value['webClntType'] = 'I';
     value['webClntIdRegDoc'] = 'I';
     // console.log(value);
     this.router.navigate(['/home/lms/ind/quotation/quotation-details']);
   }
-  goBack() {
-    this.location.back();
+  getValue(name: string){
+    return this.clientDetailsForm.get(name).value;
   }
-  onRowEditInit(product: any) {
-    // console.log(product);
+  generateBeneficiaryForm(): FormGroup<any> {
+    return this.fb.group({
+       code: [0],
+       first_name: [''],
+       other_name: [''],
+       date_of_birth: [],
+       percentage_benefit: [''],
+       relation_code: [''],
+       type: [''],
 
-    this.clonedProducts[product.id as string] = { ...product };
-    // console.log(this.clonedProducts);
+    });
   }
-  onRowEditSave(product: any) {
-    if (product.price > 0) {
-      delete this.clonedProducts[product.id as string];
-      // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product is updated' });
-    } else {
-      // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Price' });
-    }
+  generateGuardianForm(): FormGroup<any> {
+    return this.fb.group({
+      code: [0],
+      first_name: [''],
+      date_of_birth: [],
+      relation_code: [''],
+
+    });
   }
-  onRowEditCancel(product: any, index: number) {
-    this.products[index] = this.clonedProducts[product.id as string];
-    delete this.clonedProducts[product.id as string];
-  }
+
   selectCountry(_event) {
     this.showStateSpinner = true;
     let e = +_event.target.value;
@@ -388,6 +294,8 @@ export class PersonalDetailsComponent {
           return this.country_service.getTownsByMainCityState(data);
         }),
         finalize(() => {
+
+
           this.showTownSpinner = false;
         })
       )
@@ -395,6 +303,7 @@ export class PersonalDetailsComponent {
         this.townList = data;
       });
   }
+
   getCountryList() {
     this.country_service
       .getCountries()
@@ -420,15 +329,16 @@ export class PersonalDetailsComponent {
       });
   }
   getClientypeList() {
-    this.clienType_service
+    this.clientType_service
       .getClientTypes()
       .subscribe((data) => (this.clientTypeList = data));
   }
   getIdentifierTypeList() {
-    this.clienType_service.getIdentifierTypes().subscribe((data) => {
+    this.clientType_service.getIdentifierTypes().subscribe((data) => {
       this.identifierTypeList = data;
     });
   }
+
   selectClient(client: any) {
     let patchClient = {
       lastName: client['lastName'],
@@ -446,6 +356,7 @@ export class PersonalDetailsComponent {
     this.closeModal();
     this._openModal = false;
   }
+  // NO UNIT TESTED
   searchClient(event_) {
     this.isCLientListPresent = false;
     this.clientList = [];
@@ -459,18 +370,17 @@ export class PersonalDetailsComponent {
       )
       .subscribe((d) => {
         this.clientList = d['content'];
-        // console.log(this.clientList);
       });
   }
-  getBeneficiariesByQuotationCode(quote_code_: number) {
+  // NO UNIT TESTED
+  getBeneficiariesByQuotationCode() {
     let quote_code = +this.session_storage.get('quote_code');
-    this.beneficiary_service
-      .getListOfBeneficariesByQuotationCode(quote_code)
+    let proposal_code = +this.session_storage.get('proposal_code');
+    this.party_service
+      // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
+      .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
       .subscribe((data) => {
-        // console.log(data);
-        let beneficiary = [];
-
-        this.benefricairyList$ = data.map(data_ => {
+        this.beneficiaryList = data.map(data_ => {
           let benefiary = {};
           benefiary = data_['beneficiary_info']
           benefiary['percentage_benefit'] = data_['percentage_benefit']
@@ -480,52 +390,28 @@ export class PersonalDetailsComponent {
           benefiary['quote_code'] = data_['percentage_benefit']
           benefiary['percentage_benefit'] = data_['percentage_benefit']
           benefiary['isEdit'] = false
-
           return benefiary;
           });
 
-          console.log(this.benefricairyList$);
-
            //   // GUARDIAN
-          // let guardian = {};
-          // this.guardianList$ = data.map(data => {
+           if(data[0]['appointee_info']!==null){
+            this.guardianList = data.map(data => {
 
-          // guardian = data['appointee_info']
-          // guardian['proposal_code'] = data['proposal_code']
-          // guardian['code'] = data['code']
-          // guardian['quote_code'] = data['percentage_benefit']
-          // // guardian['percentage_benefit'] = data['percentage_benefit']
-          // // guardian['percentage_benefit'] = data['percentage_benefit'];
-          // guardian['isEdit'] = false
+              let guardian = {};
+              guardian = data['appointee_info']
+              guardian['proposal_code'] = data['proposal_code']
+              guardian['code'] = data['code']
+              guardian['quote_code'] = data['percentage_benefit']
+              guardian['isEdit'] = false
 
-          // return guardian;
-          // });
+              return guardian;
+              });
 
+           }
 
-
-        // this.benefricairyList$ = data['beneficiary_info'];
       });
-    // this.trusteeList$ = ben_service_list.pipe(
-    //   map((data_) => {
-    //     let temp_list = data_.map((data: {}) => {
-    //       let temp_data = {};
-    //       temp_data['code'] = data['code'];
-    //       temp_data['full_name'] = data['trustee_info']['first_name'];
-    //       temp_data['address'] = data['trustee_info']['address'];
-    //       temp_data['date_of_birth'] = new Date(
-    //         data['trustee_info']['date_of_birth']
-    //       );
-    //       temp_data['percentage_benefit'] = data['percentage_benefit'];
-    //       temp_data['age'] =
-    //         new Date().getFullYear() -
-    //         new Date(temp_data['date_of_birth']).getFullYear();
-    //       return temp_data;
-    //     });
-
-    //     return temp_list;
-    //   })
-    // );
   }
+
   getBankList() {
     this.bank_service.getBanks(1100).subscribe((data) => {
       this.bankList = data;
@@ -546,12 +432,12 @@ export class PersonalDetailsComponent {
       .getOccupations(2)
       .subscribe((data) => (this.occupationList = data));
   }
-
   getSectorList() {
     this.sector_service.getSectors(2).subscribe((data) => {
       this.sectorList = data;
     });
   }
+
 
   async nextPage() {
     let client_code = +this.session_storage.get('client_code');
@@ -623,83 +509,41 @@ export class PersonalDetailsComponent {
     // }
   }
 
-  createBeneficiary(data: any) {
+  createBeneficiary(beneficiary: any, guardian: any) {
     let quote_code = this.session_storage.get('quote_code');
-    // let quote_code = this.session_storage.get('quote_code');
-    let party = {
-      code: data['party_code'] ? data['party_code']: 0,
-      beneficiary_info: {
-        first_name: data['party_first_name'],
-        other_name: data['party_last_name'],
-        date_of_birth: data['party_dob'],
-        tel_no: data['party_last_name'],
-        mobile_no: data['party_last_name'],
-        email: null,
-        relation_code: 2021251,
-        postal_code: null,
-        address: null,
-        id_no: null,
-        passport_no: null,
-        age:
-          new Date().getFullYear() - new Date(data['party_dob']).getFullYear(),
-        town: null,
-      },
-      percentage_benefit: data['party_percentage'],
-      proposal_code: null,
-      // "proposal_no": "string",
-      quote_code: quote_code,
-      is_adopted: true,
-      type: data['party_type'],
-    };
-    return this.beneficiary_service.createBeneficary(party)
-    // return of();
+    let party = {...beneficiary}
+    party['beneficiary_info'] = {...beneficiary};
+    party['appointee_info'] = guardian;
+    party['proposal_code'] = null,
+    party['proposal_no'] = null,
+    party['quote_code'] =  quote_code,
+    party['is_adopted'] =  true
+    return this.party_service.createBeneficary(party)
   }
-
   updateBeneficiary(i) {
     this.editEntity = true;
-    let _ben = { ...this.clientDetailsForm.value };
-    let da = []
-    da = this.benefricairyList$.filter((data, x)=>{return i === x});
-    console.log(da);
-    if(da.length >0){
-      _ben['party_code'] = da[0]['code'];
-    }
-
-
-    this.createBeneficiary(_ben)
+    let beneficiary = {}
+    let guardian = {}
+    beneficiary = this.beneficiaryList.filter((data, x)=>{return i === x})[0];
+    guardian = this.guardianList.filter((data, x)=>{return data['code'] === beneficiary[0]['code']})[0];
+    let _benForm = { ...this.getValue('beneficiary') };
+    beneficiary = {..._benForm};
+    this.createBeneficiary(beneficiary, guardian===undefined? null: guardian)
     .pipe(finalize(()=>this.editEntity = false)).subscribe(data =>{
-
-        this.benefricairyList$ = this.benefricairyList$.map((data, x) => {
+        this.beneficiaryList = this.beneficiaryList.map((data, x) => {
           if (i === x) {
             let ben_tem = {};
-
-            ben_tem['first_name'] = _ben['party_first_name'];
-            ben_tem['other_name'] = _ben['party_last_name'];
-            ben_tem['code'] = data['code'];
-            ben_tem['date_of_birth'] = _ben['party_dob'];
-            ben_tem['type'] = _ben['party_type'];
-            ben_tem['percentage_benefit'] = _ben['party_percentage'];
-            ben_tem['age'] = new Date().getFullYear() - new Date(_ben['party_dob']).getFullYear();
+            ben_tem = beneficiary
+            ben_tem['relation_code'] = +beneficiary['relation_code']
+            ben_tem['age'] = new Date().getFullYear() - new Date(beneficiary['date_of_birth']).getFullYear();
             ben_tem['isEdit'] = false;
             return ben_tem;
           }
-
           return data;
         });
-
-        console.log(this.benefricairyList$);
-
-
-        let data_ = {};
-        data_['party_first_name'] = '';
-        data_['party_last_name'] = '';
-        data_['party_dob'] = '';
-        data_['party_percentage'] = '';
-        data_['party_type'] = '';
-        this.clientDetailsForm.patchValue(data_);
+        this.clientDetailsForm.get('beneficiary').reset();
         this.editEntity = false;
-
-
+        this.showBeneficiaryAddButton = true
 
     }, (err)=>{
       this.toast.danger('Fill all Available Field', 'INCORRECT INFO')
@@ -710,14 +554,50 @@ export class PersonalDetailsComponent {
 
   }
   addEmptyBeneficiary() {
-    this.addEntity(this.benefricairyList$);
+    this.showBeneficiaryAddButton = false
+    this.addEntity(this.beneficiaryList);
+  }
+  addEmptyGuardian() {
+    this.addEntity(this.guardianList);
   }
   deleteBeneficiary(i: number) {
-    this.benefricairyList$ = this.deleteEntity(this.benefricairyList$, i);
+    this.editEntity = true;
+    let beneficiary: {} = this.beneficiaryList.filter((data, x) => x===i)[0];
+    this.party_service.deleteBeneficiary(beneficiary['code']).subscribe((data)=>{
+      this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
+      this.editEntity = false;
+
+    })
+  }
+  deleteGuardian(i: number) {
+    let data: any[] = []
+    data = this.guardianList.filter((data, x) => i ===x);
+    if(data.length>0){
+      let beneficiary = this.beneficiaryList.filter((data_) => {return data_['code'] === data[0]['code']})
+      // this.party_service.createBeneficary({}).subscribe(data =>{
+        this.guardianList = this.deleteEntity(this.guardianList, i);
+
+      // });
+    }
+
+
   }
 
   editBeneficiary(i: number) {
-    this.benefricairyList$ = this.benefricairyList$.map((data, x) => {
+    this.showBeneficiaryAddButton = false
+    this.showCategoryDetstModal();
+    this.beneficiaryList = this.beneficiaryList.map((data, x) => {
+      if (i === x) {
+        data['date_of_birth'] = new Date(data['date_of_birth']);
+        this.clientDetailsForm.get('beneficiary').patchValue(data);
+      }
+      return data;
+    });
+  }
+
+  editGuardian(i: number) {
+
+    this.guardianList = this.guardianList.map((data, x) => {
       if (i === x) {
         let data_ = {};
 
@@ -748,6 +628,40 @@ export class PersonalDetailsComponent {
     return d;
   }
 
+  cancelEntity(d: any[], i, isButton) {
+    isButton = true
+
+    this.editEntity = true;
+    d = d.map((data, x) => {
+      if(x===i){
+        data = data['isEdit'] = false
+      }
+      return data
+    });
+    this.editEntity = false;
+    return d;
+  }
+
+  cancelBeneficiary(i) {
+    this.editEntity = true;
+    this.beneficiaryList = [...this.beneficiaryList.map((data, x) => {
+      if(x===i){
+        data['isEdit'] = false
+        return data;
+      }
+      return data
+    })]
+
+    if(this.beneficiaryList[i]['code'] ===undefined){
+      this.beneficiaryList = this.beneficiaryList.filter((data, x) => x!==i);
+    }
+    this.editEntity = false;
+    this.showBeneficiaryAddButton = true
+    this.clientDetailsForm.get('beneficiary').reset();
+
+    return this.beneficiaryList;
+  }
+
   private returnLowerCase(data: any) {
     let mapData = data.map((da) => {
       da['name'] = da['name'].toLowerCase();
@@ -762,5 +676,23 @@ export class PersonalDetailsComponent {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+  }
+
+  showCategoryDetstModal() {
+    const modal = document.getElementById('categoryDetsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+  }
+
+  closeCategoryDetstModal() {
+    const modal = document.getElementById('categoryDetsModal');
+    if (modal) {
+      modal.classList.remove('show')
+      modal.style.display = 'none';
+    }
+
   }
 }

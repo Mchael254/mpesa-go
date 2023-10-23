@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BeneficiaryService } from './beneficiary.service';
+import { RelationTypesService } from './relation-types.service';
 
-describe('BeneficiaryService', () => {
-  let service: BeneficiaryService;
+describe('RelationTypesService', () => {
+  let service: RelationTypesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(BeneficiaryService);
+    service = TestBed.inject(RelationTypesService);
   });
 
   it('should be created', () => {

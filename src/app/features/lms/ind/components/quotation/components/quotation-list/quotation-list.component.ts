@@ -1,8 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { TableDetail } from 'src/app/shared/data/table-detail';
-// import { QuotationForms } from '../../config/quotations.forms';
 import { Logger } from 'src/app/shared/services';
-import { StepperService } from 'src/app/shared/services/stepper/stepper.service';
 
 const logger = new Logger("QuotationComponent")
 @Component({

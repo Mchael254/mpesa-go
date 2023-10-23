@@ -3,10 +3,10 @@
   "version": "6.2.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve  --proxy-config proxy.conf.json",
+    "start": "ng serve  --proxy-config proxy.conf.json ",
     "start:watch": "ng serve --watch  --proxy-config proxy.conf.json",
     "build-x": "ng build --base-href=/TQV6/ --source-map",
-    "build": "ng build --base-href=/TQV6/",
+    "build": "ng build --base-href=/V6/",
     "buildn": "ng build",
     "build:prod": "npm run build --prod --aot",
     "test": "jest",
