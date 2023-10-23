@@ -9,7 +9,7 @@ import {LoaderComponent} from "./components/loader/loader.component";
 import {NotificationsComponent} from "./components/notifications/notifications.component";
 import {ToastModule} from "primeng/toast";
 import {ProgressBarModule} from "primeng/progressbar";
-import {HTTP_INTERCEPTORS, HttpClient} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {LoaderService} from "./services/loader.service";
 import { FileExtensionPipe } from './pipes/file-extension/file-extension.pipe';
 import { DocViewerComponent } from './components/doc-viewer/doc-viewer.component';
@@ -55,6 +55,7 @@ import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
+import { CountryService } from './services/setups/country/country.service';
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -85,6 +86,7 @@ const SERVICES = [
   HttpCacheService,
   JwtService,
   LoaderService,
+  CountryService,
   { provide: BrowserStorage, useClass: LocalBrowserStorageService },
 
   // interceptors
@@ -152,9 +154,8 @@ const SERVICES = [
         TranslateModule,
         ReactiveFormsModule,
         CalendarModule,
-        DropdownModule
-
-
+        DropdownModule,
+        HttpClientModule
     ],
     exports: [
         ErrorComponent,

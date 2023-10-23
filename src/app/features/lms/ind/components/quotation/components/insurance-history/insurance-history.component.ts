@@ -3,8 +3,8 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import stepData from '../../data/steps.json';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { PartyService } from '../../../../service/party/party.service';
-import { ClientHistoryService } from '../../../../service/client-history/client-history.service';
+import { ClientHistoryService } from 'src/app/features/lms/service/client-history/client-history.service';
+import { PartyService } from 'src/app/features/lms/service/party/party.service';
 
 @Component({
   selector: 'app-insurance-history',
@@ -41,7 +41,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
 
 
-  constructor(private fb: FormBuilder, private party_service: PartyService, private client_history_service:ClientHistoryService){
+  constructor(private fb: FormBuilder, private client_history_service:ClientHistoryService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       responseOne: [],
@@ -149,7 +149,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   // }
 
   getLmsInsHistList(){
-    this.party_service.getLmsInsHistList().subscribe((data)=>{
+    this.client_history_service.getLmsInsHistList().subscribe((data)=>{
       console.log(data);
 
     })
