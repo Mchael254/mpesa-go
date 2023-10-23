@@ -39,13 +39,26 @@ export class ReportServiceV2 {
       `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 
+
   /**
-   * gets a list of dashboards
+   * Get all reports from DB
+   * @param page 
+   * @param folder 
+   * @returns 
    */
-  getDashboards(): Observable<any> {
+  getReports(
+    page = 0,
+    folder = null
+  ): Observable<any> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<any>(
-      `/${baseUrl}/chart/dashboards`, {headers: this.headers});
+      `/${baseUrl}/chart/chart-reports?page=${page}`, {headers: this.headers});
+  }
+
+  findUserById(id: number): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.users_services;
+    return this.http.get<any>(
+      `/${baseUrl}/administration/users/16684626`, {headers: this.headers});
   }
 
   fetchFilterConditions() {

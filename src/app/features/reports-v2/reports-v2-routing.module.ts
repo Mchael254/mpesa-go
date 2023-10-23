@@ -5,6 +5,7 @@ import { ReportsComponent } from './reports/reports.component';
 import {CreateDashboardComponent} from "./create-dashboard/create-dashboard.component";
 import {ReportPreviewComponent} from "./report-preview/report-preview.component";
 import {ListReportComponent} from "./list-report/list-report.component";
+import { ReportManagementComponent } from './report-management/report-management.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,10 @@ const routes: Routes = [
   {
     path: 'list-report/:id',
     component: ListReportComponent
+  },
+  {
+    path: 'report-management',
+    component: ReportManagementComponent
   },
 ];
 
