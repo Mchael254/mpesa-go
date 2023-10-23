@@ -147,7 +147,7 @@ export class ReportPreviewComponent implements OnInit{
    * @returns void
    */
   fetchDashboards(): void {
-    this.reportServiceV2.getDashboards()
+    this.reportService.getDashboards()
       .pipe()
       .subscribe({
         next: ((dashboards) => {

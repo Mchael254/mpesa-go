@@ -22,6 +22,8 @@ import { ColorSchemeComponent } from './report-preview/color-scheme/color-scheme
 
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { CalendarModule } from 'primeng/calendar';
+import { ReportManagementComponent } from './report-management/report-management.component';
+import { TableModule } from 'primeng/table';
 
 
 @NgModule({
@@ -33,7 +35,8 @@ import { CalendarModule } from 'primeng/calendar';
     ReportPreviewComponent,
     CriteriaComponent,
     ListReportComponent,
-    ColorSchemeComponent
+    ColorSchemeComponent,
+    ReportManagementComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +51,8 @@ import { CalendarModule } from 'primeng/calendar';
     InputTextModule,
     ColorPickerModule,
     CalendarModule,
-    MultiSelectModule
+    MultiSelectModule,
+    TableModule,
   ]
 })
 export class ReportsV2Module { }
