@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { Logger } from '../../logger/logger.service';
 import { isObservable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../core/config/app-config-service';
 
 const log = new Logger('ClientTypeService');
 
