@@ -1,0 +1,21 @@
+ul.dropdown-menu {
+    border: solid 1px #eee;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+ul.dropdown-menu li {
+    cursor: pointer;
+}
+
+ul.dropdown-menu li:hover {
+    font-size: 1.1em;
+    background: #eee;
+    transition: font-size 500ms;
+}
+
+.preloader {
+    text-align: center;
+    margin: auto;
+    vertical-align: middle;
+}
