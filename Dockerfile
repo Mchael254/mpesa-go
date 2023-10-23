@@ -48,8 +48,9 @@ ARG CACHEBUST=1
 FROM nginx:mainline-alpine3.18-slim
 
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+
 # Copy the built Angular app and Compodoc documentation from previous stages
-COPY --from=builder /app/dist/turnquestv6-fe/ /usr/share/nginx/html/
+COPY --from=builder /app/dist/turnquestv6-fe/ /usr/share/nginx/html/V6/
 # COPY --from=compodoc-builder /app/documentation /usr/share/nginx/html/documentation
 
 # Expose port 80 to the outside world
@@ -57,6 +58,3 @@ EXPOSE 80
 
 # Start the Nginx web server
 CMD ["nginx", "-g", "daemon off;"]
-
-# docker build -t tqfe .
-# docker run -p 8080:80 tqfe

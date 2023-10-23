@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { map } from 'rxjs/internal/operators/map';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { PayFrequencyService } from 'src/app/features/lms/grp/service/pay-frequency/pay-frequency.service';
 import { PayFrequency } from 'src/app/features/lms/grp/models/payFrequency';

@@ -11,24 +11,23 @@ import { QuotationSummaryComponent } from './components/quotation-summary/quotat
 import { InsuranceHistoryComponent } from './components/insurance-history/insurance-history.component';
 import { LifestyleDetailsComponent } from './components/lifestyle-details/lifestyle-details.component';
 import { MedicalHistoryComponent } from './components/medical-history/medical-history.component';
+import { BeneficiaryPipe } from '../../../pipe/beneficiary/beneficiary.pipe';
+import { RelationTypePipe } from '../../../pipe/relation-type/relation-type.pipe';
 
-
+const components = [
+  QuotationListComponent,
+  PersonalDetailsComponent,
+  QuotationSummaryComponent,
+  QuotationDetailsComponent,
+  QuickComponent,
+  InsuranceHistoryComponent,
+  LifestyleDetailsComponent,
+  MedicalHistoryComponent,
+];
+const pipes = [BeneficiaryPipe, RelationTypePipe];
 
 @NgModule({
-  declarations: [
-    QuotationListComponent,
-    PersonalDetailsComponent,
-    QuotationSummaryComponent,
-    QuotationDetailsComponent,
-    QuickComponent,
-    InsuranceHistoryComponent,
-    LifestyleDetailsComponent,
-    MedicalHistoryComponent
-  ],
-  imports: [
-    CommonModule,
-    QuotationRoutingModule,
-    SharedModule
-  ]
+  declarations: [...components, ...pipes],
+  imports: [CommonModule, QuotationRoutingModule, SharedModule],
 })
-export class QuotationModule { }
+export class QuotationModule {}

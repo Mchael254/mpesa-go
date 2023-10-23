@@ -5,8 +5,20 @@ services:
       context: .
       dockerfile: Dockerfile.angular
     ports:
-      - "8080:80"  # Map the Angular app to port 8080 on your host
+      - "80:80"  # Map the Angular app to port 8080 on your host
+    volumes:
+      # - ./dist/turnquestv6-fe/:/usr/share/nginx/html/V6
+      - ./dist/:/usr/share/nginx/html/V6
+      # - ./documentation/:/usr/share/nginx/html/document
+      - ./documentation/:/usr/share/nginx/html/document
 
+  # nginx:
+  #   build:
+  #     context: ./nginx/
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - ./nginx/:/usr/share/nginx/html/
   # compodoc:
   #   build:
   #     context: .

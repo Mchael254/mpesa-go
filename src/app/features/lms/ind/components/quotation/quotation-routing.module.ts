@@ -16,6 +16,8 @@ const routes: Routes = [
   {path: 'lifestyle-details', component:LifestyleDetailsComponent },
   {path: 'medical-history', component:MedicalHistoryComponent },
   {path: 'summary', component:QuotationSummaryComponent },
+
+
   // { path: 'quotation', loadChildren: () => import('./components/quotation/quick-quote.module').then(m => m.QuickQuoteModule) }
 ];
 

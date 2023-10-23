@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
-import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/internal/operators/map';
-import { tap } from 'rxjs/internal/operators/tap';
+import { environment } from '../../../../environments/environment';
 import { API_CONFIG } from '../../../../environments/api_service_config';
+import { AppConfigService } from '../../../core/config/app-config-service';
 
 
 @Injectable({
@@ -14,10 +13,10 @@ export class ApiService {
   private baseURL = environment.API_URLS.get(API_CONFIG.SETUPS_SERVICE_BASE_URL);
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private appConfig: AppConfigService ) {}
 
   private getHeaders(): HttpHeaders {
-    
+
     let headers = new HttpHeaders();
         headers = headers.append('Accept', 'application/json');
         headers = headers.append('Content-Type', 'application/json');
@@ -52,7 +51,6 @@ export class ApiService {
     const url = `${this.baseURL}/${endpoint}`;
     // const headers = this.getHeaders();
     // const options = { headers, params };
-
     return this.http.get<T>(url).pipe(
       // tap(data => console.log(data))
       );
@@ -64,6 +62,14 @@ export class ApiService {
     const headers = this.getHeaders();
 
     return this.http.post<T>(url, data, { headers });
+  }
+
+  DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    const url = `${this.baseURL}/${endpoint}`;
+    const headers = this.getHeaders();
+
+    return this.http.delete<T>(url, { headers });
   }
 
 }
