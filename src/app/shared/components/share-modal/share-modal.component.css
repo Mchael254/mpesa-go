@@ -1,0 +1,29 @@
+.circle {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #b2b9c070;
+  border-radius: 50%;
+  /*background-color: #b2b9c070;*/
+  margin:auto;
+  cursor: pointer;
+}
+.copy-container {
+  display: flex;
+  align-items: center;
+}
+
+#copy-text {
+  flex: 1;
+  padding: 3px;
+  border: 0px;
+  color: #00529B;
+}
+
+.copy-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: transparent;
+  color: #00529B;
+  border: none;
+  border-radius: 4px;
+}
