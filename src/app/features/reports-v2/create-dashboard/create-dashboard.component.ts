@@ -13,6 +13,8 @@ import {ChartConfiguration} from "chart.js/dist/types";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {NgxSpinnerService} from "ngx-spinner";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import {ChartReports} from "../../../shared/data/reports/chart-reports";
 
 const log = new Logger('CreateDashboardComponent');
 @Component({
@@ -27,7 +29,7 @@ export class CreateDashboardComponent implements OnInit {
   public createDashboardForm: FormGroup;
   public addReportToDashboardForm: FormGroup;
 
-  public chartReports: any[] = [];
+  public chartReports: ChartReports[][] | undefined;
   chartRepName: any = [];
   selectedChartReport: any = [];
 
@@ -187,9 +189,11 @@ export class CreateDashboardComponent implements OnInit {
           log.info(`save response  >>>`, res);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Dashboard');
 
+          setTimeout(() => {
+            this.getAllDashboards();
+            this.cdr.detectChanges();
+          }, 3000);
         })
-      this.getAllDashboards();
-      this.cdr.detectChanges();
 
     }
     else {
@@ -251,9 +255,11 @@ export class CreateDashboardComponent implements OnInit {
       log.info(`on delete response  >>>`, res);
       this.globalMessagingService.displaySuccessMessage('Success', 'Report Deleted' );
 
+      setTimeout(() => {
+        this.getAllDashboards();
+        this.cdr.detectChanges();
+      }, 3000);
     })
-    this.getAllDashboards();
-    this.cdr.detectChanges();
 
   }
 
@@ -274,6 +280,7 @@ export class CreateDashboardComponent implements OnInit {
    * The function `getAllDashboards` retrieves all dashboards from the report service and logs them.
    */
   async getAllDashboards(): Promise<void> {
+    this.dashboards = [] = [];
     this.reportService.getDashboards()
       .subscribe(async res => {
         this.dashboards = res;
@@ -350,13 +357,13 @@ export class CreateDashboardComponent implements OnInit {
 
         const tableCriteria = [...measures, ...dimensions];
 
-        log.info(`--------------------------------`)
+        /*log.info(`--------------------------------`)
         log.info(`report labels >>>`, reportLabels);
         log.info(`reportData >>>`, reportData);
         log.info(`dimensions >>>`, tableDimensions);
         log.info(`measures >>>`, tableMeasures);
         log.info(`criteria >>>`, tableCriteria);
-        log.info(`--------------------------------`)
+        log.info(`--------------------------------`)*/
 
         this.tableDetails = this.reportService.prepareTableData(
           reportLabels, reportData, tableDimensions, tableMeasures, tableCriteria
@@ -422,5 +429,9 @@ export class CreateDashboardComponent implements OnInit {
   moveToListReport(id:number) {
     this.router.navigate([`home/reportsv2/list-report`],
       {queryParams: {dashboardId: id }});
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.dashboards, event.previousIndex, event.currentIndex);
   }
 }

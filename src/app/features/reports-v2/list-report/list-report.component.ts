@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {MenuItem} from "primeng/api";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger} from "../../../shared/services";
@@ -10,6 +10,8 @@ import {ChartConfiguration} from "chart.js";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
+import {RenameChartsDTO} from "../../../shared/data/reports/chart-reports";
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 const log = new Logger('ListReportComponent');
 @Component({
@@ -23,6 +25,7 @@ export class ListReportComponent implements OnInit {
   basicData: any;
   public dashboardId: number;
   public report: ChartReport[] = [];
+  updatedReport: RenameChartsDTO;
 
   public chartLabels: string[];
   public chartData: ChartConfiguration<'bar'|'line'|'scatter'|'bubble'|'pie'|'doughnut'|'polarArea'|'radar'>['data'] = {
@@ -36,7 +39,12 @@ export class ListReportComponent implements OnInit {
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
   selectedDashboard:any = null;
+  selectedReportId:number = null;
   selectedReport:any = null;
+
+  @ViewChild('textInput') textInput: ElementRef | undefined;
+  isEditable: boolean = false;
+
   constructor(
     private reportService: ReportService,
     private route: ActivatedRoute,
@@ -56,25 +64,53 @@ export class ListReportComponent implements OnInit {
           {
             label: 'Share',
             command: () => {
-              this.shareReport();
+              // this.shareReport();
+              const modal = document.getElementById('shareModal');
+              if (modal) {
+                modal.classList.add('show');
+                modal.style.display = 'block';
+                const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+                if (modalBackdrop) {
+                  modalBackdrop.classList.add('show');
+                }
+              }
             }
           },
           {
             label: 'Download',
             command: () => {
-              this.downloadReport();
+              // this.downloadReport();
+              const modal = document.getElementById('downloadModal');
+              if (modal) {
+                modal.classList.add('show');
+                modal.style.display = 'block';
+                const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+                if (modalBackdrop) {
+                  modalBackdrop.classList.add('show');
+                }
+              }
             }
           },
           {
             label: 'Rename',
             command: () => {
-              this.renameReport();
+              // this.renameReport();
+              this.toggleEditability(this.selectedReportId);
             }
           },
           {
             label: 'Remove from dashboard',
             command: () => {
-              this.removeFromDashboard();
+              // this.removeFromDashboard();
+              const modal = document.getElementById('deleteDashboardModal');
+              if (modal) {
+                modal.classList.add('show');
+                modal.style.display = 'block';
+                const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+                if (modalBackdrop) {
+                  modalBackdrop.classList.add('show');
+                }
+              }
             }
           },
         ]
@@ -133,7 +169,7 @@ export class ListReportComponent implements OnInit {
     const report: DashboardReports[] = [{
       length: 0,
       order: 0,
-      reportId: this.selectedReport,
+      reportId: this.selectedReportId,
       width: 0
     }];
 
@@ -147,9 +183,12 @@ export class ListReportComponent implements OnInit {
         log.info('on delete report', res);
 
         this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully removed from dashboard' );
+
+        setTimeout(() => {
+          this.getDashboardById(this.selectedDashboard);
+          this.cdr.detectChanges();
+        }, 3000);
       });
-    this.getDashboardById(this.selectedDashboard);
-    this.cdr.detectChanges;
   }
 
   /**
@@ -158,6 +197,7 @@ export class ListReportComponent implements OnInit {
    * to retrieve.
    */
   getDashboardById(id:number) {
+    this.report= [] = [];
     this.reportService.getDashboardsById(id)
       .subscribe(reportData => {
 
@@ -222,26 +262,6 @@ export class ListReportComponent implements OnInit {
       limit: 20,
     }
 
-    /*return this.cubejsApi.load(query).then(resultSet => {
-
-      this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
-      const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
-      const reportData = resultSet.series().map(s => s.series.map(r => r.value));
-
-      const chartData = {
-        labels: this.chartLabels,
-        datasets: this.reportService.generateReportDatasets(reportLabels, reportData, cubeMeasures)
-      };
-      this.chartDataArr.push(chartData);
-      log.info('chart data', chartData);
-      return chartData;
-
-      /!*this.tableDetails = this.reportService.prepareTableData(
-        reportLabels, reportData, dimensions, this.measures, this.criteria
-      );*!/
-
-       // log.info('report data >>>', reportsData);
-     })*/
     return new Promise((resolve) => {
       this.cubejsApi.load(query).then(resultSet => {
 
@@ -255,15 +275,102 @@ export class ListReportComponent implements OnInit {
         };
         this.chartDataArr.push(chartData);
         this.chartData = chartData;
+
+        let tableDimensions = [];
+        dimensions.forEach((el) => {
+          tableDimensions.push(`${el.transaction}.${el.query}`);
+        });
+
+        let tableMeasures = [];
+        measures.forEach((el) => {
+          tableMeasures.push(`${el.transaction}.${el.query}`);
+        });
+
+        const tableCriteria = [...measures, ...dimensions];
+
         log.info('chart data', chartData);
         resolve(chartData);
 
-        /*this.tableDetails = this.reportService.prepareTableData(
-          reportLabels, reportData, dimensions, this.measures, this.criteria
-        );*/
+        this.tableDetails = this.reportService.prepareTableData(
+          reportLabels, reportData, tableDimensions, tableMeasures, tableCriteria
+        );
 
         // log.info('report data >>>', reportsData);
       })
     })
+  }
+
+  /**
+   * The function "closeDeleteModal" is used to hide and remove the delete dashboard modal and its backdrop.
+   */
+  closeDeleteModal() {
+    const modal = document.getElementById('deleteDashboardModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+  }
+
+  /**
+   * The function toggles the editability of a report and logs the report ID.
+   * @param event - The `event` parameter is an object that represents the event that triggered the `toggleEditability`
+   * function. It could be an event object that contains information about the event, such as the type of event, the target
+   * element, or any other relevant data. The specific properties and structure of the `
+   */
+  toggleEditability(event) {
+    const reportId = this.selectedReport;
+    if (reportId) {
+      this.isEditable = !this.isEditable;
+    }
+
+    log.info('report rename id', this.selectedReport);
+  }
+
+  /**
+   * The `handleEnter` function is triggered when the Enter key is pressed, and it updates a report with a new name.
+   * @param {any} event - The `event` parameter is an object that represents the event that triggered the function. In this
+   * case, it is used to check if the Enter key was pressed.
+   */
+  handleEnter(event: any) {
+    const reportId = this.selectedReportId;
+    if (event.key === 'Enter') {
+      // this.renameReport(reportId);
+      const renameValue = event.target.value;
+
+      const updateReport: RenameChartsDTO = {
+        name: renameValue,
+        reportId: this.selectedReportId
+      }
+      log.info('report on enter',this.selectedReport)
+      log.info('report on enter',updateReport)
+      this.reportService.updateChartReports(reportId, updateReport)
+        .subscribe(res => {
+          this.updatedReport = res;
+          log.info('updated report', this.updatedReport);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully updated' );
+
+          setTimeout(() => {
+            this.getDashboardById(this.dashboardId);
+            this.cdr.detectChanges();
+          }, 3000);
+        })
+    }
+  }
+
+  /**
+   * The "drop" function is used to move an item within an array based on the previous and current index values.
+   * @param event - The event parameter is an object that contains information about the drag and drop event. It includes
+   * properties such as previousIndex, which represents the index of the item before it was moved, and currentIndex, which
+   * represents the index of the item after it was moved.
+   */
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.report[0].reports, event.previousIndex, event.currentIndex);
+
+    log.info('prev pos', event.previousIndex);
+    log.info('current pos', event.currentIndex);
   }
 }

@@ -6,7 +6,7 @@ import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {Report} from "../../../shared/data/reports/report";
 import {TableDetail} from "../../../shared/data/table-detail";
-import {ChartReports} from "../../../shared/data/reports/chart-reports";
+import {ChartReports, RenameChartsDTO} from "../../../shared/data/reports/chart-reports";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
 import { Logger } from '../../../shared/services';
@@ -164,10 +164,10 @@ export class ReportService {
     return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
   }
 
-  updateChartReports(id:number, chartReport: ChartReports): Observable<ChartReports> {
+  updateChartReports(id:number, chartReportRename: RenameChartsDTO): Observable<RenameChartsDTO> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    return this.http.put<ChartReports>(`/${baseUrl}/chart/chart-reports/${id}`
-      , JSON.stringify(chartReport), {headers: this.headers});
+    return this.http.put<RenameChartsDTO>(`/${baseUrl}/chart/chart-reports/${id}/name`
+      , JSON.stringify(chartReportRename), {headers: this.headers});
   }
 
   /*Create a new dashboard*/

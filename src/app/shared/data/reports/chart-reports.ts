@@ -48,3 +48,8 @@ export interface Charts {
   width: null,
   length: null
 }
+export interface RenameChartsDTO {
+  dashboardId?: number,
+  name: string,
+  reportId?: number
+}

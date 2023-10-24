@@ -11,3 +11,6 @@
 :host ::ng-deep .p-element .p-submenu-header {
   display:none;
 }
+.move {
+  cursor: move;
+}
