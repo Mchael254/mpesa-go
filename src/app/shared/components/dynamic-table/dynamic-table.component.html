@@ -7,6 +7,7 @@
       [paginator]="tableDetails?.paginator"
       [rows]="tableDetails?.rowsPerPage || 5"
       [showCurrentPageReport]="true"
+      [resizableColumns]="true"
       [globalFilterFields]="tableDetails?.globalFilterFields"
     >
       <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
@@ -85,6 +86,7 @@
       [paginator]="tableDetails?.paginator"
       [rows]="tableDetails.rowsPerPage || 5"
       [showCurrentPageReport]="true"
+      [resizableColumns]="true"
       [totalRecords]="tableDetails?.totalElements"
       [globalFilterFields]="tableDetails?.globalFilterFields"
     >
