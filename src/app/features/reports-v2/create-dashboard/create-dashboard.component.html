@@ -10,9 +10,9 @@
           <button class="btn btn-outline-primary float-end createDashBtn"
                   data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
         </div>
-        <div class="row mx-0 mt-3 p-0 dragDropBoundary">
+        <div class="row mx-0 mt-3 p-0 dragDropBoundary" cdkDropList (cdkDropListDropped)="drop($event)">
           <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards">
-            <div class="card res">
+            <div class="card">
               <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
               <div class="card-header border-0 text-sm-start bg-transparent">
 
