@@ -30,46 +30,44 @@
         </div>
       </div>
 
-<!--      <div class="row mx-0 mt-3 p-0 dragDropBoundary">
-        <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let reportdata of report">
-&lt;!&ndash;          <ng-container>&ndash;&gt;
-            <div class="card" *ngFor="let reportName of reportdata.reports">
-              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-              <div class="card-header border-0 text-sm-start bg-transparent"
-                   style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">
-                {{reportName.name}}
-                <span class="icon-container float-end" (click)="selectedDashboard = reportdata.id;selectedReport = reportName.id;menu3.toggle($event)">
-                <i class="fa fa-ellipsis-v clickable"></i>
-              </span>
-                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
-
+      <div class="row mx-0 mt-3 p-0 dragDropBoundary" *ngFor="let reportdata of report"  cdkDropList (cdkDropListDropped)="drop($event)">
+        <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
+          <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+            <div class="row card-header border-0 text-sm-start bg-transparent">
+              <div class="col-md-10">
+                <input #textInput type="text" [id]="reportName.name" class="form-control" [value]="reportName.name | titlecase"
+                       [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
               </div>
-
-              <div class="card-body" >
-                 &lt;!&ndash; {{reportName.charts[0].type |json}}&ndash;&gt;
-                  <app-dynamic-chart
-                    [basicData]="chartData"
-                    [chartType]="reportName?.charts[0]?.type"
-                  ></app-dynamic-chart>
-
+              <div class="col-md-2">
+                <span class="float-end"
+                      (click)="selectedDashboard = reportdata.id;
+                      selectedReportId = reportName.id;
+                      selectedReport = reportName;
+                      menu3.toggle($event)"
+                      style="cursor: pointer;">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
               </div>
             </div>
-&lt;!&ndash;          </ng-container>&ndash;&gt;
+            <div class="card-body">
+              <div
+                *ngIf="reportName?.charts[0]?.type==='table';
+               else showChart"
+              >
+              <app-dynamic-table
+                [tableDetails]="tableDetails"
+              ></app-dynamic-table>
+            </div>
 
-        </div>
-      </div>-->
+            <ng-template #showChart>
+              <app-dynamic-chart
+                [basicData]="chartData"
+                [chartType]="reportName?.charts[0]?.type"
+              ></app-dynamic-chart>
+            </ng-template>
 
-      <div class="row" *ngFor="let reportdata of report">
-        <div class="col-md-4 mt-3 p-2" *ngFor="let reportName of reportdata.reports">
-          <div class="border">
-            <p class="fw-medium mt-3">
-              {{reportName.name}}
-            </p>
-
-            <app-dynamic-chart
-              [basicData]="chartData"
-              [chartType]="reportName?.charts[0]?.type"
-            ></app-dynamic-chart>
+            </div>
           </div>
         </div>
       </div>
@@ -77,6 +75,29 @@
     </div>
   </div>
 
+  <!-- Delete confirmation dialogue Modal -->
+  <div class="modal fade" id="deleteDashboardModal" tabindex="-1" aria-labelledby="deleteDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <p>Are you sure you want to delete?</p>
+            <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
+            <button type="button" class="btn btn-danger" id="deleteDashboard" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="removeFromDashboard();closeDeleteModal()">Yes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-share-modal></app-share-modal>
+  <app-download-modal></app-download-modal>
 
 
 </div>

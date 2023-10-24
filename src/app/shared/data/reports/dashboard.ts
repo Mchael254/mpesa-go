@@ -20,6 +20,14 @@ export interface DashboardReport {
   dashboardReports: DashboardReports[],
 }
 
+export interface DashboardRes {
+  id: number,
+  createdBy: number,
+  createdDate: string,
+  name: string,
+  reports: ReportV2[];
+}
+
 export interface ChartReport {
   createdBy: number,
   createdDate: string,
