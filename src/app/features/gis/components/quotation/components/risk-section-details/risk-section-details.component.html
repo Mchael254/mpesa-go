@@ -758,11 +758,11 @@
 
             <!-- Add Risk Section Modal -->
             <div class="modal fade" id="addSection" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered " style="width: 367px;" role="document">
+              <div class="modal-dialog modal-dialog-centered modal-lg "  role="document">
                 <div class="modal-content">
                   <div class="modal-body">
                     <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Risk Sections</h5> 
-                    <div class="search-container mb-3">
+                    <!-- <div class="search-container mb-3">
                       <span class="search-icon"><i class="fa fa-search"></i></span>
                       <input type="text" placeholder="Search">
                     </div>
@@ -783,10 +783,188 @@
                       <label class="form-check-label" for="flexCheckDefault">
                         Sum assured
                       </label>
-                    </div>
+                    </div> -->
+                    <form [formGroup]="sectionDetailsForm">
+                      <!-- **ROW 1** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">ID :</label>
+                                <div class="col-7">
+                                  <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="code">                            
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Description:</label>
+                                <div class="col-7">
+                                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">                             </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 2** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Rate Type :</label>
+                                <div class="col-7">
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="rateType">
+                                    <option value="FXD">FIXED</option>
+                                    <option ></option>
+                                  </select>                                          
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Type:</label>
+                                <div class="col-7">
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
+                                    <option ></option>
+                                    <option ></option>
+                                  </select>                              
+                                  </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 3** -->
+                      <div class="row" id="scheduleRows">
+                      <div class="col-xl-6">
+                          <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Free Limit :</label>
+                              <div class="col-7">
+                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="freeLimit" >                            
+                              </div>
+                            </div>
+                      </div>
+                      <div class="col-xl-6">
+                          <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Limit Amount:</label>
+                              <div class="col-7">
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="limitAmount">                             </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- **ROW 4** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Group:</label>
+                                <div class="col-7">
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="calcGroup" >                            
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Rate:</label>
+                                <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumRate">                            
+                                  </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 5** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                          <div class="mb-3 row">
+                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div By:</label>
+                            <div class="col-7">
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="rateDivisionFactor">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-6">
+                          <div class="mb-3 row">
+                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Multi Rate :</label>
+                            <div class="col-7">
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierRate">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                        <!-- **ROW 6** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div Multi By:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierDivisionFactor">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumAmount" >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 7** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Minimum Premium:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Accumulation:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description" >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 8** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Remarks:</label>
+                              <div class="col-7">
+                                <input type="text"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Declaration:</label>
+                              <div class="col-7">
+                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
+                                  <option ></option>
+                                  <option >Yes</option>
+                                  <option >No</option>
+                                </select>    
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 9** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Compute:</label>
+                              <div class="col-7">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="compute">  
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                           
+                          </div>
+                        </div>
+                      
+                     
+                  </form>
                     
                     <div class="mt-4 d-flex justify-content-end">
-                      <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal">Save Details</button>
+                      <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal" (click)="createRiskSection()">Save Details</button>
   
                     </div>                    
                    
