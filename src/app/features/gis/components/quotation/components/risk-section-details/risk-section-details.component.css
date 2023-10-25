@@ -153,10 +153,10 @@
     background-color: #00529B;
 
 }
-.btn-primary{
+/* .btn-primary{
     border-radius: 4px;
     background: #00529B;
-}
+} */
 #saveDetails{
    font-size: 12px;
 }
@@ -206,7 +206,7 @@
   }
   ::ng-deep .p-calendar{
     height: 35px;
-    width: 300px;
+    width: 350px;
     
   }
   /* ::ng-deep .p-datepicker table{
@@ -229,7 +229,17 @@
     font-size: 14px;
 
   }
-  
+  #addSectionModal{
+    width:367px;
+
+  }
+  #search-input-Rsection{
+    border: none;
+    background-color: transparent;
+    width:200px;
+  }
+  /* #search-input-Rsection:focus{
+    border-color: transparent;  } */
 
 
   
