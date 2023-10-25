@@ -3,10 +3,10 @@
      <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
      <div class="container mx-2 mt-n1">     
           <div class="card">
-            <div class="card-body">
+            <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
                 <p class="title mt-2">Quote details</p>
-                <div class="row">
+                <div class="row ">
                     <div class="col-3">
                         <div class="row">
                            
@@ -14,7 +14,7 @@
                                 <p class="summary-label">Quote number:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value">37493</p>
+                                <p class="summary-value ps-3">37493</p>
                             </div>
                         </div>
                     </div>
@@ -49,14 +49,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <div class="row ">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4">
                                 <p class="summary-label">Period of insurance:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value">August 29, 2023 to August 28 2024</p>
+                                <p class="summary-value ps-2">August 29, 2023 to August 28 2024</p>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                         <tr>
                           <td colspan="1"></td>
         
-                          <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
+                          <td colspan="10" style="padding:20px;padding-left: 200px;" id="empty">No data to display.</td>
                         </tr>
         
                       </ng-template>
@@ -131,9 +131,81 @@
 
             </div>
           </div>
-          <div class="row mt-4 mb-4">
-            <div class="col-9">
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote">Cancel quote</button>
+
+        <div class="float-start mt-4 mb-4 " >
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote" id="btnCancelQuote">Cancel quote</button>
+                    
+        </div>
+        <div class="float-end mt-4 mb-4  ">
+            <button  type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
+            <button   class="btn btn-primary" type="submit" id="btnCancelQuote">Accept quote</button>
+        </div>
+        <!-- Cancel Quote Modal -->
+        <div  class="modal fade"  id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content  ps-4 pt-4 pe-4">
+                <p class="cancelQouteTitle">Please provide a reason for your cancellation</p>
+                <p class="cancelQouteTitle">Reason</p>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
+
+
+                <div class="row mt-4 mb-4">
+                    <div class="col-4"></div>
+                    <div class="col-8">  
+                        <div class="row">
+                            <div class="col-6 d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary" id="closeBtn" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" id="cancelQoute" >Cancel Quote</button>
+                            </div>
+                        </div>                                    
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- Share Quote Modal -->
+        <div  class="modal fade"  id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content  ps-4 pt-4 pe-4">
+
+                  <div class="row">
+                    <div class="col-3">                                      
+                        <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="email" /> 
+                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'email' }">Email</span>
+                    </div>
+                    <div class="col-3">                                      
+                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="sms" /> 
+                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'sms' }">SMS</span>
+                    </div>
+                    <div class="col-4">
+                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="whatsapp" /> 
+                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">WhatsApp</span>
+
+                    </div>
+                  </div>
+          
+                  <div class="form-group mt-3">
+                    <label class="mb-3" for="clientName" id="shareLabel">Client Name</label>
+                    <input type="text"  [(ngModel)]="clientName" id="clientName" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label class="mb-3 mt-3"  id="shareLabel" [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
+                    <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" />
+                  </div>
+                <div class="row mt-4 mb-4">
+                    <div class="col-6"></div>
+                    <div class="col-6 d-flex justify-content-end">                                      
+                        <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal" >Send</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row mt-4 mb-4">
+            <div class="col-8">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote" id="btnCancelQuote">Cancel quote</button>
                 <div  class="modal fade"  id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content  ps-4 pt-4 pe-4">
@@ -159,10 +231,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-4 ">
                 <div class="row">
-                    <div class="col-6">
-                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareQuote">Share quote</button>
+                    <div class="col-6 d-flex justify-content-end" >
+                        <button  type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
                         <div  class="modal fade"  id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content  ps-4 pt-4 pe-4">
@@ -201,13 +273,12 @@
                             </div>
                           </div>
                     </div>
-                    <div class="col-6">
-                        <button class="btn btn-primary" type="submit">Accept quote</button>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button   class="btn btn-primary" type="submit" id="btnCancelQuote">Accept quote</button>
                     </div>
-
                 </div>
             </div>
           </div>
-          <br><br><br> <br><br><br>
+          <br><br><br> <br><br><br> -->
     </div>
 </div>
