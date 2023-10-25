@@ -44,6 +44,10 @@ export class QuotationsService {
     return this.http.post(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
 
   }
+  updateRiskSection(quotationRiskCode ,data:riskSection[]){
+    return this.http.put(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+
+  }
  
 }
 

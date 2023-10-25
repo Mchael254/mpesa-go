@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import {Logger} from '../../../../../../shared/shared.module'
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, subclassClauses } from '../../../setups/data/gisDTO';
+import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, subclassClauses, subclassSection } from '../../../setups/data/gisDTO';
 import { ProductService } from '../../../../../gis/services/product/product.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -15,6 +15,7 @@ import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { riskSection } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
 const log = new Logger('RiskSectionDetailsComponent');
 
 @Component({
@@ -72,10 +73,17 @@ export class RiskSectionDetailsComponent {
   selectedClauses:any
 
   riskSectionList:riskSection[];
+  sectionList:subclassSection[];
+  selectedSectionList:subclassSection[];
   sectionDetailsForm:FormGroup;
 
   quotationDetails:any
 
+  checkedSectionCode:any;
+  checkedSectionDesc:any;
+  checkedSectionType:any;
+  sectionArray:any;
+  selectedSection:any;
   constructor(
     private router: Router,
     private messageService:MessageService,
@@ -86,6 +94,7 @@ export class RiskSectionDetailsComponent {
     public binderService:BinderService,
     public clientService:ClientService,
     public quotationService:QuotationsService,
+    public sectionService:SectionsService,
 
     public fb:FormBuilder,
     public cdr:ChangeDetectorRef,
@@ -111,22 +120,36 @@ export class RiskSectionDetailsComponent {
     
       this.loadFormData();
       this.createRiskDetailsForm();
-      this.createSectionDetailsForm();
-
-     
+      this.createSectionDetailsForm();     
   }
- toggleSchedule() {
-  this.isCollapsibleOpen = !this.isCollapsibleOpen;
-}
-toggleOtherDetails() {
-  this.isOtherDetailsOpen = !this.isOtherDetailsOpen;
-}
-toggleSectionDetails() {
-  this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
-}
-toggleThirdDetails() {
-  this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
-}
+  /** 
+ * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+ * state of a Schedule section. 
+ */
+  toggleSchedule() {
+    this.isCollapsibleOpen = !this.isCollapsibleOpen;
+  }
+   /** 
+ * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+ * state of a Other Details section. 
+ */
+  toggleOtherDetails() {
+    this.isOtherDetailsOpen = !this.isOtherDetailsOpen;
+  }
+   /** 
+ * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+ * state of a Section. 
+ */
+  toggleSectionDetails() {
+    this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
+  }
+   /** 
+ * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
+ * state of a Third section. 
+ */
+  toggleThirdDetails() {
+    this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
+  }
 
 
   
@@ -159,7 +182,11 @@ toggleThirdDetails() {
       this.cdr.detectChanges();
     })
   }
-
+ /** 
+ * Handles subclass selection.
+ * Updates the selected subclass code, logs the selection, and loads related data.
+ * It loads cover types, binders, and subclass clauses based on the selected value.
+ */
   onSubclassSelected(event: any) {
     const selectedValue = event.target.value; // Get the selected value
     this.selectedSubclassCode=selectedValue;
@@ -186,6 +213,10 @@ toggleThirdDetails() {
         this.cdr.detectChanges();
       })
     }
+    /** 
+ * Loads form data from a shared quotation service.
+ * Retrieves and assigns various form-related details and initiates related data requests.
+ */
   loadFormData(){
     log.debug(this.sharedService.getQuotationFormDetails(),"Form List")
     this.selectProductCode=this.formData.productCode;
@@ -197,6 +228,11 @@ toggleThirdDetails() {
     this.getClient();
     
   }
+  /**
+ * Fetches client data and updates properties.
+ * Retrieves client details via an HTTP request and updates properties
+ * such as 'clientList' and 'clientName' for quotation generation.
+ */
   getClient(){
     this.clientService.getClients().subscribe(data=>{
       this.clientList = data.content
@@ -210,6 +246,11 @@ toggleThirdDetails() {
     })
   }
 
+  /**
+ * Fetches product details by code.
+ * Retrieves product details by sending an HTTP request with 'selectProductCode'.
+ * Updates properties, including 'productList' and 'description'.
+ */
   getProductByCode(){
     this.gisService.getProductDetailsByCode(this.selectProductCode).subscribe(res=>{
       this.productList = res;
@@ -218,7 +259,11 @@ toggleThirdDetails() {
     })
   }
 
-  
+  /**
+ * Creates and initializes a risk details form.
+ * It defines form controls for various risk-related fields,
+ *  setting initial values and validation rules.
+ */
   createRiskDetailsForm(){
     this.riskDetailsForm=this.fb.group({
       binderCode: ['', Validators.required],
@@ -271,6 +316,13 @@ toggleThirdDetails() {
   //     this.coverToDate = null;
   //   }
   // }
+
+  /**
+ * Retrieves subclass clauses and updates related properties.
+ * Sends an HTTP request to fetch subclass clauses, filters them based on a provided 'code',
+ * and updates properties like 'selectedSubClauseList' and 'selectedClauseCode'.
+ * Also initiates the 'loadAllClauses()' method.
+ */
   loadSubclassClauses(code:any){
     this.subclassService.getSubclassClauses().subscribe(data =>{
       this.SubclauseList=data;
@@ -291,6 +343,11 @@ toggleThirdDetails() {
    
   // }
 
+  /**
+ * Loads all available clauses and updates related properties.
+ * Retrieves all available clauses through an HTTP request, filters them based on the
+ * 'selectedClauseCode', and updates 'clauseList' and 'selectedClauseList'.
+ */
   loadAllClauses(){
     this.subclassService.getAllClauses().subscribe(data =>{
       this.clauseList=data._embedded.clause_dto_list
@@ -298,10 +355,23 @@ toggleThirdDetails() {
       log.debug('ClauseSelectdList',this.selectedClauseList)
     })
   }
- backLink(){
+  /**
+ * Navigates back to the quotation details page.
+ * Uses the Angular Router to navigate to the 'quotation-details' page within the 'gis' module
+ * when called, effectively returning to the previous page.
+ */
+  backLink(){
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
- 
+
+  /**
+ * Creates a new risk detail for a quotation.
+ * Takes the data from the 'riskDetailsForm', processes it, and sends it to the server
+ * to create a new risk detail associated with the current quotation. It then handles
+ * the response data and displays a success or error message.
+ * Additionally, it initiates the 'loadRiskSections()' method to update risk sections.
+
+ */
   createRiskDetail(){
     const risk = this.riskDetailsForm.value;
     const dateWithEffectFromC=risk.dateRange[0];
@@ -348,17 +418,38 @@ toggleThirdDetails() {
         this.riskDetailsForm.reset()
       }
       this.loadRiskSections();
+      this.loadRiskSubclassSection();
 
 
     })
 
   }
+
+  /**
+ * Loads and updates risk sections for the created risk.
+ * Retrieves risk sections by sending an HTTP request with the 'riskCode' and updates
+ * the 'riskSectionList' property, which likely represents sections associated with the risk.
+ */
   loadRiskSections(){
     this.quotationService.getRiskSection(this.riskCode,).subscribe(data =>{
       this.riskSectionList=data;
       log.debug("Section List", this.riskSectionList)
     })
   }
+  loadRiskSubclassSection(){
+    this.sectionService.getSubclassSections(this.selectedSubclassCode).subscribe(data =>{
+      this.sectionList=data;
+      this.selectedSectionList=this.sectionList.filter(section=>section.subclassCode == this.selectedSubclassCode);
+
+      log.debug("Filtered Section List", this.selectedSectionList)
+
+    })
+  }
+  /**
+ * Creates and initializes a section details form.
+ * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
+ * Defines form controls for various section-related fields, setting initial values as needed.
+ */
   createSectionDetailsForm(){
     this.sectionDetailsForm=this.fb.group({
       calcGroup: [''],
@@ -383,12 +474,48 @@ toggleThirdDetails() {
   });
   }
   
+  onCheckboxChange(section: subclassSection) {
+
+    log.debug("Checked Section Data",section)
+    this.checkedSectionCode=section.sectionCode;
+    this.checkedSectionDesc=section.sectionShortDescription;
+    this.checkedSectionType=section.sectionType;
+
+  }
+  
+  
+  /**
+ * Creates a new risk section associated with the current risk.
+ * Takes section data from the 'sectionDetailsForm', sends it to the server
+ * to create a new risk section associated with the current risk, and handles
+ * the response data by displaying a success or error message.
+ */
   createRiskSection(){
     const section = this.sectionDetailsForm.value;
-    const sectionArray = [section];
+    this.sectionArray = [section];
+    section.calcGroup = 1;
+    section.code = null;
+    section.compute = null;
+    section.description = null;
+    section.freeLimit = 0;
+    section.limitAmount = 0;
+    section.multiplierDivisionFactor = 0;
+    section.multiplierRate = 0;
+    section.premiumAmount = 0;
+    section.premiumRate = 0;
+    section.rateDivisionFactor = 0;
+    section.rateType = null;
+    section.rowNumber = 0;
+    section.sumInsuredLimitType = null;
+    section.sumInsuredRate = 0;
 
-    log.debug("Section Form",section)
-    this.quotationService.createRiskSection(this.riskCode,sectionArray).subscribe(data =>{
+    section.sectionCode=this.checkedSectionCode;
+    section.sectionShortDescription=this.checkedSectionDesc;
+    section.sectionType=this.checkedSectionType;
+
+    log.debug("Section Form Array",this.sectionArray)
+    this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
+      
       try {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset()
@@ -396,6 +523,26 @@ toggleThirdDetails() {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
         this.sectionDetailsForm.reset()
       }
+    })
+  }
+  onSelectSection(event: any){
+    this.selectedSection=event;
+    this.sectionDetailsForm.patchValue( this.selectedSection)
+  }
+  updateRiskSection(){
+    const section = this.sectionDetailsForm.value;
+    this.sectionArray = [section];
+
+    this.quotationService.updateRiskSection(this.riskCode,this.sectionArray).subscribe((data)=>{
+      try{
+        this.sectionDetailsForm.reset()
+        log.info(section)
+        this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
+      }catch(error){
+        log.info(section)
+        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        this.sectionDetailsForm.reset()
+      }  
     })
   }
 

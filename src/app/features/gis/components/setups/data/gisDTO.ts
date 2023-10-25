@@ -365,6 +365,23 @@ export interface Sections{
     dtlDescription: null,
     organizationCode: number
 }
+export interface subclassSection{
+    code: number,
+    wef: string,
+    wet: string,
+    sectionCode: number,
+    sectionShortDescription: string,
+    subclassCode: number,
+    excessDetails: string,
+    szaCode: number,
+    szaShortDesc: string,
+    sectionType: string,
+    declaration: string,
+    newSectionCode: number,
+    newSectionShortDescription: number,
+    version: number;
+    selected: boolean;
+}
 /**CLAUSES SETUP */
 export interface Clause {
     code: number,
