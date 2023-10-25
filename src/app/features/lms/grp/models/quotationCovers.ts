@@ -1,7 +1,6 @@
 export interface QuotationCovers {
-     code: number, 
-     sht_desc: string, 
-     desc: string,
+     name: string,
+     value: string,
 }
 
 export interface DurationTypes {
