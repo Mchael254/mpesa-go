@@ -182,6 +182,7 @@ export class ReportService {
     return this.http.get<any>(`/${baseUrl}/chart/dashboards`);
   }
 
+
   getDashboardsById(id:number): Observable<any> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<any>(`/${baseUrl}/chart/dashboards/${id}`);
