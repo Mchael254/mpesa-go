@@ -29,6 +29,8 @@ export class RiskSectionDetailsComponent {
   quotationRiskCode:any;
   quotationRiskData:any;
 
+  riskCode:any;
+
   town:any;
   insuredCode:any;
   clientList:ClientDTO[];
@@ -105,6 +107,7 @@ export class RiskSectionDetailsComponent {
 
       this.loadFormData();
       this.createRiskDetailsForm();
+      this.createSectionDetailsForm();
 
      
   }
@@ -309,19 +312,47 @@ toggleThirdDetails() {
     // risk.subClassCode=this.selectedSubclassCode;
     delete risk.dateRange;
     const riskArray = [risk];
+    // const propertyIdValue = this.riskDetailsForm.get('propertyId').value;
 
     this.quotationService.createQuotationRisk(this.quotationCode,riskArray).subscribe(data =>{
       this.quotationRiskData=data;
-      // this.quotationRiskCode=this.quotationRiskData._embedded[0];
 
+      // this.quotationRiskCode = this.quotationRiskData._embedded[0]; 
+      // this.quotationRiskCode.forEach(([key, value]) => {
+      //   console.log(`${key}: ${value}`);
+      // });
+      const quotationRiskCode = this.quotationRiskData._embedded[0];
+      if (quotationRiskCode) {
+        for (const key in quotationRiskCode) {
+          if (quotationRiskCode.hasOwnProperty(key)) {
+            const value = quotationRiskCode[key];
+            console.log(`${value}`);
+            this.riskCode=value;
+              }
+        }
+      } else {
+        console.log("The quotationRiskCode object is not defined.");
+      }
+      
       log.debug( this.quotationRiskData,"Quotation Risk Code Data");
+      log.debug( this.quotationRiskCode,"Quotation Risk Code ");
+      try {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created' });
+        this.riskDetailsForm.reset()
+      } catch (error) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.riskDetailsForm.reset()
+      }
+      this.loadRiskSections();
+
+
     })
-    log.debug(risk,"RESULT FROM THE FORM")
 
   }
   loadRiskSections(){
-    this.quotationService.getRiskSection(this.quotationRiskCode,).subscribe(data =>{
+    this.quotationService.getRiskSection(this.riskCode,).subscribe(data =>{
       this.riskSectionList=data;
+      log.debug("Section List", this.riskSectionList)
     })
   }
   createSectionDetailsForm(){
@@ -350,8 +381,10 @@ toggleThirdDetails() {
   
   createRiskSection(){
     const section = this.sectionDetailsForm.value;
+    const sectionArray = [section];
 
-    this.quotationService.createRiskSection(this.quotationRiskCode,section).subscribe(data =>{
+    log.debug("Section Form",section)
+    this.quotationService.createRiskSection(this.riskCode,sectionArray).subscribe(data =>{
       try {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset()
