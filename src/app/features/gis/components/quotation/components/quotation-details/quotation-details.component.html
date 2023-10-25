@@ -1,6 +1,6 @@
 <div class="mx-4 mt-3">
-    <p class="title">Quotations:Client Details </p>
-    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    <p class="title">Quotations:Quotation Details </p>
+    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
     <form [formGroup]="quotationForm">
     <div class="card mb-4">
         <div class="card-body">
@@ -238,13 +238,13 @@
                    <p class="title1 mt-4 float-start">Do you wish to Continue Creating the Quotation?</p>
                    <div class="mt-3 float-end">
                     <button class="btn btn-outline-primary" data-bs-dismiss="modal">No,I don't</button>
-                    <button class="btn btn-primary" style="margin-left: 10px;" (click)="saveQuotationDetails()">Yes, continue</button>
+                    <button class="btn btn-primary" style="margin-left: 10px;" data-bs-dismiss="modal" (click)="saveQuotationDetails()">Yes, continue</button>
                    </div>
                   </div>
             </div>
           </div>
     </div>
-   
+
            
               
             

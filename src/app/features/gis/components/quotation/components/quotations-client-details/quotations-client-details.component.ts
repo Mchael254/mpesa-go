@@ -36,6 +36,7 @@ export class QuotationsClientDetailsComponent {
   clientDetails:ClientDTO;
   clientForm:FormGroup;
   textColor: string = 'black';
+  uploadFile:any;
     constructor(
     public clientService:ClientService,
     public countryService:CountryService,

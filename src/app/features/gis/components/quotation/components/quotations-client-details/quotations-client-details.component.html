@@ -1,6 +1,6 @@
 <div class="mx-4 mt-3">
     <p class="title">Quotations:Client Details </p>
-    <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
 
   <form [formGroup]="clientForm">
     <div class="card mb-4">
@@ -300,8 +300,9 @@
       <div class="card mb-4">
         <div class="card-body">
             <p class="text-muted">Upload documents</p>
-            <input type="file" class="form-control" class="custom-file-upload" id="inputGroupFile01">
-           
+            <input type="file" id="inputProfileImg" formControlName="uploadFile" hidden [ngModel]="uploadFile" />
+            <label  for="inputProfileImg" class="img_upload"  style="margin-right: 15px;margin-top: 5px;">Choose File</label>
+
         </div>
       </div>
       <div class="float-start"></div>

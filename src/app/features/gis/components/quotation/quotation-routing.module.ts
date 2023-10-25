@@ -10,6 +10,7 @@ import { RiskSectionDetailsComponent } from './components/risk-section-details/r
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 
 const routes: Routes = [
   {
@@ -41,6 +42,9 @@ const routes: Routes = [
   },
   {
     path:'import-risks',component:ImportRisksComponent
+  },
+  {
+    path:'quotation-summary',component:QuotationSummaryComponent
   }
 ];
 
