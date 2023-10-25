@@ -1,5 +1,9 @@
 .title{
-    color:black
+    color: #000;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px; 
 }
 .title1{
     color: #000;
