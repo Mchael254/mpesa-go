@@ -3,6 +3,7 @@ import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/c
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
+import { subclassSection } from '../../data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +53,25 @@ export class SectionsService {
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
     return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections`,{
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getSubclassSections(subClassCode:number): Observable<subclassSection[]>{
+    let page = 0;
+    let size = 10000;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+
+    })
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<subclassSection[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections?subClassCode=${subClassCode}`,{
       headers:headers,
       params:params
     }).pipe(
