@@ -23,7 +23,7 @@ export class QuickService {
   }
 
   getQuotationCovers() {
-    return this.api.GET('dependent-types');
+    return this.api.GET('quotations/dependant-types', API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
   }
 
   getUnitRate() {
