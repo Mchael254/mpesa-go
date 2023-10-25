@@ -13,6 +13,16 @@ export class ProductService {
 
   constructor(private api:ApiService, private http: HttpClient) {   }
 
+  getListOfGroupProduct(){
+    return this.api.GET('products?page=0&size=22&class_type=G')
+    .pipe(
+      map((_prod: any) => {
+        return _prod['content'];
+    }),
+    // catchError((_err) =>  {})
+    );
+  }
+
   getListOfProduct(){
     return this.api.GET('products?page=0&size=22&class_type=O')
     .pipe(
