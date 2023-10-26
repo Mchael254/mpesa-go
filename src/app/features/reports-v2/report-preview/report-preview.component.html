@@ -22,14 +22,6 @@
                 <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
                 <i class="pi pi-chevron-down float-end mt-1"></i>
               </p>
-              <!--<ul *ngIf="shouldShowVisualization" class="fadeIn">
-                <ng-container *ngFor="let chartType of chartTypes">
-                  <li class="chart-type" (click)="selectChartType(chartType)">
-                    <i [class]="chartType.iconClass"></i>
-                    <span class="ml-2">{{ chartType.name | titlecase }}</span>
-                  </li>
-                </ng-container>
-              </ul>-->
             </div>
 
             <ng-container *ngIf="shouldShowVisualization">
@@ -37,7 +29,7 @@
                 <div *ngFor="let chartType of chartTypes" class="form-check">
                   <input
                     (click)="selectChart($event)"
-                    class="form-check-input"
+                    class="form-check-input select-chart"
                     type="checkbox"
                     [value]="chartType.name"
                     [attr.id]="chartType.name"
@@ -97,7 +89,6 @@
               type="text"
               class="text-center bg-transparent btn-full-width"
               placeholder="Pilot report"
-              [(ngModel)]="reportNameRec"
               disabled
             >
           </div>
@@ -187,7 +178,7 @@
             </div>
             <div class="col">
               <label for="operator" class="form-label">Operator</label>
-              <select (change)="selectCondition($event)" formControlName="operator" id="operator" class="form-select">
+              <select formControlName="operator" id="operator" class="form-select">
                 <option
                   *ngFor="let condition of conditionsOptionsValue"
                   [value]="condition.value"
@@ -221,7 +212,7 @@
           <div class="row g-3 text-dark my-1" id="selectedFilters">
             <div class="col">{{ filter.column }}</div>
             <div class="col">{{ filter?.operator?.label }}</div>
-            <div class="col">{{ filter.value }}</div>
+            <div class="col">{{ filter?.value }}</div>
             <div class="col text-center text-danger" style="cursor: pointer">
               <i class="pi pi-times remove-filter" (click)="removeFilter(filter)"></i>
             </div>

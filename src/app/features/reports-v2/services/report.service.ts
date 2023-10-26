@@ -58,7 +58,7 @@ export class ReportServiceV2 {
   findUserById(id: number): Observable<any> {
     const baseUrl = this.appConfig.config.contextPath.users_services;
     return this.http.get<any>(
-      `/${baseUrl}/administration/users/16684626`, {headers: this.headers});
+      `/${baseUrl}/administration/users/${id}`, {headers: this.headers});
   }
 
   updateReport(report: ReportV2): Observable<ReportV2> {
