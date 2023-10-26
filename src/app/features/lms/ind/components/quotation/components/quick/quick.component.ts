@@ -274,7 +274,6 @@ export class QuickComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (prem) => {
-            console.log(prem);
             this.session_storage.set('quote_code',prem['quote_code'])
             this.session_storage.set('client_code',prem['client_code'])
             this.session_storage.set('quick_quote',prem)

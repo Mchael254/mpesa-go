@@ -5,7 +5,6 @@ import { Logger } from 'src/app/shared/services';
 import { QuickService } from '../../../../service/quick.service';
 import { PayFrequencyService } from '../../../../service/pay-frequency/pay-frequency.service';
 import { PayFrequency } from '../../../../models/payFrequency';
-import { untilDestroyed } from 'src/app/shared/shared.module';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
@@ -174,11 +173,11 @@ export class QuickComponent implements OnInit, OnDestroy {
       }));
     });
   }
-  
+
   formatCurrencyLabel(desc: string, symbol: string): string {
     const formattedDesc = desc.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
     return `${formattedDesc} (${symbol})`;
-  } 
+  }
 
   getDurationTypes() {
     this.quickService.getDurationTypes().subscribe((durationType: DurationTypes[]) =>{

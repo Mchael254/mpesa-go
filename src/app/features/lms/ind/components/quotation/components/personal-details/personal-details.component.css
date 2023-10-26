@@ -16,9 +16,10 @@ label {
 }
 
 .t_hover:hover {
-  background-color: rgba(20, 48, 134, 0.782) !important;
   color: rgba(255, 255, 255, 0.782) !important;
   font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid black;
 }
 
 .btn {
@@ -64,8 +65,8 @@ label {
 }
 
 .modal-content {
-  transform: translateX(-120px) !important;
-  width: 150% !important;
+  transform: translateX(50px) !important;
+  width: 100% !important;
 
 }
 
