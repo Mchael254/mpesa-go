@@ -63,21 +63,23 @@ export class HeaderSubMenuComponent implements OnInit {
   }
 
   openModal() {
-    // Open the Bootstrap modal programmatically
+
     const modal = document.getElementById('NewQuoteModal');
     if (modal) {
       modal.classList.add('show');
-
-
+      modal.style.display = 'block';
     }
   }
   closeModal() {
-    const modal = document.getElementById('NewQuoteModal');
+
+      const modal = document.getElementById('NewQuoteModal');
     if (modal) {
-      modal.classList.remove('show');
+      modal.classList.remove('show')
       modal.style.display = 'none';
-      }
+    }
   }
+
+
 
 
 

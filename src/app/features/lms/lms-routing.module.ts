@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { QuotationListComponent } from './ind/components/quotation/components/quotation-list/quotation-list.component';
+import { QuotationListComponent } from './components/quotation-list/quotation-list.component';
 import { AuthGuard } from 'src/app/shared/services/guard/auth-guard.service';
 
 const routes: Routes = [

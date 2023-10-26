@@ -5,7 +5,7 @@
  **
  ****************************************************************************/
 
-import { environment } from "src/environments/environment";
+import { environment } from "../../../../environments/environment";
 
 /**
  * Simple logger system with the possibility of registering custom outputs.

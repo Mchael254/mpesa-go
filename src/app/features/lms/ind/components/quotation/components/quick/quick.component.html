@@ -39,7 +39,7 @@
                   <div class="w-75">
                     <label class="required">Date of Birth</label>
                     <div>
-                      <p-calendar formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+                      <p-calendar ngDefaultControl formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
                         <ng-template pTemplate="header" >
                           <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
                         </ng-template>
