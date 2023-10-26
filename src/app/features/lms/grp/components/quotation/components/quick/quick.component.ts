@@ -5,14 +5,17 @@ import { Logger } from 'src/app/shared/services';
 import { QuickService } from '../../../../service/quick.service';
 import { PayFrequencyService } from '../../../../service/pay-frequency/pay-frequency.service';
 import { PayFrequency } from '../../../../models/payFrequency';
-import { untilDestroyed } from 'src/app/shared/shared.module';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Pagination } from 'src/app/shared/data/common/pagination';
 import { Currency } from '../../../../models/currency';
 import { DurationTypes, FacultativeType, QuotationCovers, UnitRate } from '../../../../models/quotationCovers';
+import { ProductService } from 'src/app/features/lms/service/product/product.service';
+import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { debounceTime } from 'rxjs/internal/operators/debounceTime';
+import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 
 
 const log = new Logger ('QuickComponent');
@@ -34,6 +37,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   frequencyOfPayment: { label: string, value: string }[] = [];
   unitRateOption: UnitRate [] =  [];
   facultativeType: FacultativeType [] = [];
+  intermediaries: AgentDTO[] = [];
 
 
   constructor (
@@ -42,21 +46,9 @@ export class QuickComponent implements OnInit, OnDestroy {
     private quickService: QuickService,
     private payFrequenciesService: PayFrequencyService,
     private client_service: ClientService,
-    private product_service: ProductService
+    private product_service: ProductService,
+    private intermediaryService: IntermediaryService
     ) {}
-
-    public products = [
-      {label: ' Britam Individual', value: 'britam'},
-      {label: ' Defined Contribution', value: 'defined'},
-      {label: ' Gratuity Fund', value: 'gratuity'},
-      {label: ' Minor Trust', value: 'minor'},
-      {label: ' Group Mortgage Foundation', value: 'mortgage'},
-    ];
-
-    public quotationCalcType = [
-      {label: ' Detailed', value: 'detailed'},
-      {label: ' Aggregate', value: 'aggregate'},
-    ];
 
   ngOnInit(): void {
     this.quickQuoteForm();
@@ -68,6 +60,9 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.getQuotationCovers();
     this.getUnitRate();
     this.getFacultativeTypes();
+    this.getIntermediaries();
+    this.searchClient();
+    this.searchAgent();
   }
 
   ngOnDestroy(): void {
@@ -77,6 +72,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   quickQuoteForm() {
     this.quickForm = this.fb.group({
       clients: [""],
+      branch: [""],
       products: [""],
       durationType: [""],
       facultativeType: [""],
@@ -94,7 +90,6 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   onContinue () {
     const quickFormValues = this.quickForm.get("quotationCalcType").value;
-    console.log(quickFormValues)
     this.router.navigate(['/home/lms/grp/quotation/coverage'], {
       queryParams: {
         quotationCalcType: quickFormValues,
@@ -116,6 +111,23 @@ export class QuickComponent implements OnInit, OnDestroy {
     });
   }
 
+  searchClient() {
+    this.quickForm.get('clients').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
+    .subscribe((clientTyped) => {
+      if(clientTyped.length > 0) {
+        this.client_service.searchClients(0, 5, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
+          this.clientList = data.content.map(client =>({
+            label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}-${client.id}`),
+            value: client.id
+          }));
+        })
+      }
+      else {
+        this.getClientList();
+      }
+    });
+  }
+
   getClientList() {
     this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
       this.clientList = data.content.map(client => ({
@@ -125,8 +137,27 @@ export class QuickComponent implements OnInit, OnDestroy {
     });
   }
 
+  searchAgent() {
+    this.quickForm.get('intermediary').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
+    .subscribe((agentTyped) => {
+        if(agentTyped.length > 0) {
+        this.intermediaryService.searchAgent(0, 5, agentTyped).subscribe((data) => {
+          this.intermediaries = data.content
+        });
+      } else {
+        this.getIntermediaries();
+      }
+    });
+  }
+
+  getIntermediaries() {
+    this.intermediaryService.getAgents().subscribe((data) => {
+      this.intermediaries = data.content
+    })
+  }
+
   getProducts() {
-    this.product_service.getListOfProduct().subscribe((products) => {
+    this.product_service.getListOfGroupProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
         value: product.code
@@ -160,7 +191,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   getQuotationCovers() {
     this.quickService.getQuotationCovers().subscribe((quotationCovers: QuotationCovers[]) => {
       this.quotationCovers = quotationCovers.map(cover => {
-        cover.desc = this.capitalizeFirstLetterOfEachWord(cover.desc);
+        cover.value = this.capitalizeFirstLetterOfEachWord(cover.value);
         return cover;
       });
     });

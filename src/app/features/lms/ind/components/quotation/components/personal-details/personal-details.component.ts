@@ -295,6 +295,8 @@ export class PersonalDetailsComponent {
           return this.country_service.getTownsByMainCityState(data);
         }),
         finalize(() => {
+
+
           this.showTownSpinner = false;
         })
       )
@@ -411,6 +413,7 @@ export class PersonalDetailsComponent {
       this.sectorList = data;
     });
   }
+
 
   async nextPage() {
     let client_code = +this.session_storage.get('client_code');
