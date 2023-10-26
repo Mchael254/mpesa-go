@@ -9,15 +9,15 @@
 .title{
     color: #000;
     font-family: Roboto;
-    font-size: 24px;
+    font-size: 20px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     line-height: normal;
 }
 .title2{
     color: #000;
     font-family: Roboto;
-    font-size: 20px;
+    font-size: 18px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
@@ -25,7 +25,7 @@
 .details-label{
     color: #000;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -34,27 +34,43 @@
     color: #000;
     /* text-align: right; */
     font-family: Roboto;
-    font-size: 48px;
+    font-size: 40px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
+    
 }
 .btn-link{
     text-decoration: underline;
     color: #00529B;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
 }
+#btnCoverTypes{
+font-size: 14px;
+
+}
 .modal-title{
     color: #000;
     font-family: Roboto;
-    font-size: 24px;
+    font-size: 18px;
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+}
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0em;
+    color: rgba(0, 0, 0, 0.6);
+    padding: 5px;
+    text-align: center;
+    
 }
 /* #shareRadio{
     color: red;
@@ -67,7 +83,7 @@
 #shareLabel{
     color: #000;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
@@ -77,14 +93,14 @@
     border: 1px solid rgba(0, 0, 0, 0.20);
     color:  #000;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 14px;
 }
 #clientName{
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.20);
     color:  #000;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 14px;
 }
 #sendQoute{
     border-radius: 4px;
@@ -93,6 +109,11 @@
 }
 .bold-label {
     font-weight: 500;
+    font-size: 14px;
+  }
+  #shareQuoteLabel{
+    font-size: 14px;
+
   }
   
 /* .bold-radio {
