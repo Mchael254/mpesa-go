@@ -2,24 +2,14 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../../../../shared/services/setups/country/country.service';
 import {
   CountryDto,
   StateDto,
-  TownDto
+  TownDto,
 } from '../../../../../../../shared/data/common/countryDto';
-import {
-  Observable,
-  finalize,
-  map,
-  of,
-  switchMap
-} from 'rxjs';
+import { Observable, finalize, map, of, switchMap } from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
@@ -27,7 +17,10 @@ import { ClientService } from '../../../../../../../features/entities/services/c
 import { ClientDTO } from '../../../../../../../features/entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
-import { BankBranchDTO, BankDTO } from '../../../../../../../shared/data/common/bank-dto';
+import {
+  BankBranchDTO,
+  BankDTO,
+} from '../../../../../../../shared/data/common/bank-dto';
 import { BankService } from '../../../../../../../shared/services/setups/bank/bank.service';
 import { CurrencyService } from '../../../../../../../shared/services/setups/currency/currency.service';
 import { OccupationService } from '../../../../../../../shared/services/setups/occupation/occupation.service';
@@ -37,6 +30,7 @@ import { SectorDTO } from '../../../../../../../shared/data/common/sector-dto';
 import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
 import { PartyService } from '../../../../../service/party/party.service';
 import { RelationTypesService } from '../../../../../../lms/service/relation-types/relation-types.service';
+import { StringManipulation } from '../../../../../util/string_manipulation';
 
 @Component({
   selector: 'app-personal-details',
@@ -93,7 +87,6 @@ export class PersonalDetailsComponent {
   sectorList: SectorDTO[] = [];
   beneficiaryTypeList: any[] = [];
   relationTypeList: any[] = [];
-  showBeneficiaryAddButton: boolean = true;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -110,8 +103,7 @@ export class PersonalDetailsComponent {
     private toast: ToastService,
     private party_service: PartyService,
     private relation_type_service: RelationTypesService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.clientTitleList$ = this.client_service.getClientTitles(2);
@@ -131,11 +123,19 @@ export class PersonalDetailsComponent {
     this.getSectorList();
     this.getAllBeneficiaryTypes();
     this.getRelationTypes();
+
+    if (Number(this.session_storage.get('client_code')) > 0) {
+      let clientId = Number(this.session_storage.get('client_code'));
+      this.client_service.getClientById(clientId).subscribe((data) => {
+        // To work on Later
+        console.log(data);
+      });
+    }
   }
   getRelationTypes() {
-    this.relation_type_service.getRelationTypes().subscribe((data:any[]) =>{
-      this.relationTypeList = data
-    })
+    this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
+      this.relationTypeList = data;
+    });
   }
 
   getAllBeneficiaryTypes() {
@@ -146,11 +146,10 @@ export class PersonalDetailsComponent {
 
   getBeneficiaryForm(): FormGroup<any> {
     return this.fb.group({
-      beneficiary: this.generateBeneficiaryForm(),
-      guardian:this.generateGuardianForm(),
-      first_name: [''],
-      other_name: [''],
-      date_of_birth: [''],
+      code: [],
+      beneficiary_info: this.generateBeneficiaryForm(),
+      appointee_info: this.generateBeneficiaryForm(),
+      type: [''],
       percentage_benefit: [''],
     });
   }
@@ -164,7 +163,7 @@ export class PersonalDetailsComponent {
   getClientDetailsForm(): FormGroup<any> {
     return this.fb.group({
       beneficiary: this.generateBeneficiaryForm(),
-      guardian:this.generateGuardianForm(),
+      guardian: this.generateGuardianForm(),
 
       question: [''],
 
@@ -220,7 +219,7 @@ export class PersonalDetailsComponent {
   calculateAge(dateOfBirth): number {
     const today = new Date();
     const dob = new Date(dateOfBirth);
-    return today.getFullYear() - dob.getFullYear();;
+    return today.getFullYear() - dob.getFullYear();
   }
   getClientList() {
     this.isCLientListPresent = false;
@@ -243,28 +242,30 @@ export class PersonalDetailsComponent {
     // console.log(value);
     this.router.navigate(['/home/lms/ind/quotation/quotation-details']);
   }
-  getValue(name: string){
+  getValue(name: string) {
     return this.clientDetailsForm.get(name).value;
   }
   generateBeneficiaryForm(): FormGroup<any> {
     return this.fb.group({
-       code: [0],
-       first_name: [''],
-       other_name: [''],
-       date_of_birth: [],
-       percentage_benefit: [''],
-       relation_code: [''],
-       type: [''],
-
+      code: [0],
+      first_name: [''],
+      other_name: [''],
+      date_of_birth: [],
+      percentage_benefit: [''],
+      tel_no: [''],
+      gender: [''],
+      contact: [''],
+      relation_code: [''],
+      type: [''],
     });
   }
   generateGuardianForm(): FormGroup<any> {
     return this.fb.group({
       code: [0],
       first_name: [''],
+      contact: [''],
       date_of_birth: [],
       relation_code: [''],
-
     });
   }
 
@@ -374,40 +375,15 @@ export class PersonalDetailsComponent {
   }
   // NO UNIT TESTED
   getBeneficiariesByQuotationCode() {
+    this.editEntity = true;
     let quote_code = +this.session_storage.get('quote_code');
     let proposal_code = +this.session_storage.get('proposal_code');
     this.party_service
       // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
+      .pipe(finalize(() =>this.editEntity = false))
       .subscribe((data) => {
-        this.beneficiaryList = data.map(data_ => {
-          let benefiary = {};
-          benefiary = data_['beneficiary_info']
-          benefiary['percentage_benefit'] = data_['percentage_benefit']
-          benefiary['proposal_code'] = data_['proposal_code']
-          benefiary['type'] = data_['type']
-          benefiary['code'] = data_['code']
-          benefiary['quote_code'] = data_['percentage_benefit']
-          benefiary['percentage_benefit'] = data_['percentage_benefit']
-          benefiary['isEdit'] = false
-          return benefiary;
-          });
-
-           //   // GUARDIAN
-           if(data[0]['appointee_info']!==null){
-            this.guardianList = data.map(data => {
-
-              let guardian = {};
-              guardian = data['appointee_info']
-              guardian['proposal_code'] = data['proposal_code']
-              guardian['code'] = data['code']
-              guardian['quote_code'] = data['percentage_benefit']
-              guardian['isEdit'] = false
-
-              return guardian;
-              });
-
-           }
+        this.beneficiaryList = data
 
       });
   }
@@ -509,52 +485,74 @@ export class PersonalDetailsComponent {
     // }
   }
 
-  createBeneficiary(beneficiary: any, guardian: any) {
-    let quote_code = this.session_storage.get('quote_code');
-    let party = {...beneficiary}
-    party['beneficiary_info'] = {...beneficiary};
-    party['appointee_info'] = guardian;
-    party['proposal_code'] = null,
-    party['proposal_no'] = null,
-    party['quote_code'] =  quote_code,
-    party['is_adopted'] =  true
-    return this.party_service.createBeneficary(party)
-  }
-  updateBeneficiary(i) {
-    this.editEntity = true;
-    let beneficiary = {}
-    let guardian = {}
-    beneficiary = this.beneficiaryList.filter((data, x)=>{return i === x})[0];
-    guardian = this.guardianList.filter((data, x)=>{return data['code'] === beneficiary[0]['code']})[0];
-    let _benForm = { ...this.getValue('beneficiary') };
-    beneficiary = {..._benForm};
-    this.createBeneficiary(beneficiary, guardian===undefined? null: guardian)
-    .pipe(finalize(()=>this.editEntity = false)).subscribe(data =>{
-        this.beneficiaryList = this.beneficiaryList.map((data, x) => {
-          if (i === x) {
-            let ben_tem = {};
-            ben_tem = beneficiary
-            ben_tem['relation_code'] = +beneficiary['relation_code']
-            ben_tem['age'] = new Date().getFullYear() - new Date(beneficiary['date_of_birth']).getFullYear();
-            ben_tem['isEdit'] = false;
-            return ben_tem;
-          }
-          return data;
-        });
-        this.clientDetailsForm.get('beneficiary').reset();
-        this.editEntity = false;
-        this.showBeneficiaryAddButton = true
+  // createBeneficiary(beneficiary: any, guardian: any) {
+  //   let quote_code = this.session_storage.get('quote_code');
+  //   let party = {...beneficiary}
+  //   party['beneficiary_info'] = {...beneficiary};
+  //   party['appointee_info'] = guardian;
+  //   party['proposal_code'] = null,
+  //   party['proposal_no'] = null,
+  //   party['quote_code'] =  quote_code,
+  //   party['is_adopted'] =  true
+  //   return this.party_service.createBeneficary(party)
+  // }
+  // updateBeneficiary(i) {
+  //   this.editEntity = true;
+  //   let beneficiary = {}
+  //   let guardian = {}
+  //   beneficiary = this.beneficiaryList.filter((data, x)=>{return i === x})[0];
+  //   guardian = this.guardianList.filter((data, x)=>{return data['code'] === beneficiary[0]['code']})[0];
+  //   let _benForm = { ...this.getValue('beneficiary') };
+  //   beneficiary = {..._benForm};
+  //   this.createBeneficiary(beneficiary, guardian===undefined? null: guardian)
+  //   .pipe(finalize(()=>this.editEntity = false)).subscribe(data =>{
+  //       this.beneficiaryList = this.beneficiaryList.map((data, x) => {
+  //         if (i === x) {
+  //           let ben_tem = {};
+  //           ben_tem = beneficiary
+  //           ben_tem['relation_code'] = +beneficiary['relation_code']
+  //           ben_tem['age'] = new Date().getFullYear() - new Date(beneficiary['date_of_birth']).getFullYear();
+  //           ben_tem['isEdit'] = false;
+  //           return ben_tem;
+  //         }
+  //         return data;
+  //       });
+  //       this.clientDetailsForm.get('beneficiary').reset();
+  //       this.editEntity = false;
+  //       this.showBeneficiaryAddButton = true
 
-    }, (err)=>{
-      this.toast.danger('Fill all Available Field', 'INCORRECT INFO')
-      console.log(err['error']);
+  //   }, (err)=>{
+  //     this.toast.danger('Fill all Available Field', 'INCORRECT INFO')
+  //     console.log(err['error']);
 
+  //   })
+
+  // }
+
+  saveBeneficiary() {
+    // console.log(this.beneficiaryForm.value);
+    let beneficiary = { ...this.beneficiaryForm.value };
+    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('client_code'));
+    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('quote_code'));
+    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('proposal_code'));
+    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('proposal_code'));
+    beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(beneficiary['percentage_benefit']);
+    // let be_relation_code = beneficiary['beneficiary_info']['relation_code'];
+    // let ap_relation_code = beneficiary['appointee_info']['relation_code'];
+    beneficiary['appointee_info']['relation_code'] = StringManipulation.returnNullIfEmpty(beneficiary['appointee_info']['relation_code'])
+    beneficiary['beneficiary_info']['relation_code'] = StringManipulation.returnNullIfEmpty(beneficiary['beneficiary_info']['relation_code'])
+    beneficiary['code'] = StringManipulation.returnNullIfEmpty(beneficiary['code'])
+    // console.log(beneficiary);
+    if(!this.checkIfGuardianIsNeeded()){
+      beneficiary['appointee_info'] = null;
+    }
+    return this.party_service.createBeneficary(beneficiary).subscribe(data => {
+      this.getBeneficiariesByQuotationCode();
+      this.closeCategoryDetstModal();
     })
-
 
   }
   addEmptyBeneficiary() {
-    this.showBeneficiaryAddButton = false
     this.addEntity(this.beneficiaryList);
   }
   addEmptyGuardian() {
@@ -562,41 +560,46 @@ export class PersonalDetailsComponent {
   }
   deleteBeneficiary(i: number) {
     this.editEntity = true;
-    let beneficiary: {} = this.beneficiaryList.filter((data, x) => x===i)[0];
-    this.party_service.deleteBeneficiary(beneficiary['code']).subscribe((data)=>{
-      this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
-      this.editEntity = false;
-
-    })
+    let beneficiary: {} = this.beneficiaryList.filter((data, x) => x === i)[0];
+    this.party_service
+      .deleteBeneficiary(beneficiary['code'])
+      .subscribe((data) => {
+        this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
+        this.editEntity = false;
+      });
   }
   deleteGuardian(i: number) {
-    let data: any[] = []
-    data = this.guardianList.filter((data, x) => i ===x);
-    if(data.length>0){
-      let beneficiary = this.beneficiaryList.filter((data_) => {return data_['code'] === data[0]['code']})
+    let data: any[] = [];
+    data = this.guardianList.filter((data, x) => i === x);
+    if (data.length > 0) {
+      let beneficiary = this.beneficiaryList.filter((data_) => {
+        return data_['code'] === data[0]['code'];
+      });
       // this.party_service.createBeneficary({}).subscribe(data =>{
-        this.guardianList = this.deleteEntity(this.guardianList, i);
+      this.guardianList = this.deleteEntity(this.guardianList, i);
 
       // });
     }
-
-
   }
 
   editBeneficiary(i: number) {
-    this.showBeneficiaryAddButton = false
     this.showCategoryDetstModal();
     this.beneficiaryList = this.beneficiaryList.map((data, x) => {
       if (i === x) {
-        data['date_of_birth'] = new Date(data['date_of_birth']);
-        this.clientDetailsForm.get('beneficiary').patchValue(data);
+        let be_date = data?.beneficiary_info?.date_of_birth;
+    let ap_date = data?.appointee_info?.date_of_birth;
+        if(!StringManipulation.isEmpty(ap_date)) data['appointee_info']['date_of_birth'] = new Date(data['appointee_info']['date_of_birth']);
+    if(!StringManipulation.isEmpty(be_date)) data['beneficiary_info']['date_of_birth'] = new Date(data['beneficiary_info']['date_of_birth']);
+
+        this.beneficiaryForm.patchValue(data);
+        console.log(data);
+
       }
       return data;
     });
   }
 
   editGuardian(i: number) {
-
     this.guardianList = this.guardianList.map((data, x) => {
       if (i === x) {
         let data_ = {};
@@ -629,14 +632,14 @@ export class PersonalDetailsComponent {
   }
 
   cancelEntity(d: any[], i, isButton) {
-    isButton = true
+    isButton = true;
 
     this.editEntity = true;
     d = d.map((data, x) => {
-      if(x===i){
-        data = data['isEdit'] = false
+      if (x === i) {
+        data = data['isEdit'] = false;
       }
-      return data
+      return data;
     });
     this.editEntity = false;
     return d;
@@ -644,19 +647,20 @@ export class PersonalDetailsComponent {
 
   cancelBeneficiary(i) {
     this.editEntity = true;
-    this.beneficiaryList = [...this.beneficiaryList.map((data, x) => {
-      if(x===i){
-        data['isEdit'] = false
+    this.beneficiaryList = [
+      ...this.beneficiaryList.map((data, x) => {
+        if (x === i) {
+          data['isEdit'] = false;
+          return data;
+        }
         return data;
-      }
-      return data
-    })]
+      }),
+    ];
 
-    if(this.beneficiaryList[i]['code'] ===undefined){
-      this.beneficiaryList = this.beneficiaryList.filter((data, x) => x!==i);
+    if (this.beneficiaryList[i]['code'] === undefined) {
+      this.beneficiaryList = this.beneficiaryList.filter((data, x) => x !== i);
     }
     this.editEntity = false;
-    this.showBeneficiaryAddButton = true
     this.clientDetailsForm.get('beneficiary').reset();
 
     return this.beneficiaryList;
@@ -668,6 +672,30 @@ export class PersonalDetailsComponent {
       return da;
     });
     return mapData;
+  }
+
+  getValueBeneficiaryValue(name: string = 'question1') {
+    return this.beneficiaryForm.get(name).value;
+  }
+
+  checkIfGuardianIsNeeded() {
+    let date_ = this.calculateAgeWithMonth(this.getValueBeneficiaryValue('beneficiary_info.date_of_birth'));
+    let type = this.getValueBeneficiaryValue('type');
+    return type === 'B' && date_ < 18;
+  }
+
+  private calculateAgeWithMonth(dateOfBirth) {
+    const currentDate = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    // Check if the birthdate has occurred this year already.
+    if (currentDate.getMonth() < birthDate.getMonth() ||
+      (currentDate.getMonth() === birthDate.getMonth() &&
+        currentDate.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
   }
   closeModal() {
     this._openModal = true;
@@ -684,15 +712,13 @@ export class PersonalDetailsComponent {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-
   }
 
   closeCategoryDetstModal() {
     const modal = document.getElementById('categoryDetsModal');
     if (modal) {
-      modal.classList.remove('show')
+      modal.classList.remove('show');
       modal.style.display = 'none';
     }
-
   }
 }
