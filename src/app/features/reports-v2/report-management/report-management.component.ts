@@ -52,7 +52,7 @@ export class ReportManagementComponent implements OnInit{
       next: (res) => { 
         this.reports = res;
         this.totalRecords = res.totalElements;
-        log.info(`reports >>>`, res);
+        // log.info(`reports >>> `, res);
         this.shouldShowTable = true;
       },
       error: (e) => { 
