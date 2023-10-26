@@ -1,8 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/internal/operators/map';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { API_CONFIG } from 'src/environments/api_service_config';
 export class ProductService {
 
 
-  constructor(private api:ApiService) {   }
+  constructor(private api:ApiService, private http: HttpClient) {   }
 
   getListOfProduct(){
     return this.api.GET('products?page=0&size=22&class_type=O')

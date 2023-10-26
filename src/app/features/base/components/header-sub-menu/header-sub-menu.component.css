@@ -43,13 +43,6 @@
   border-bottom: 0.5px solid var(--primary-color);
 }
 
-.card-modal {
-  /* border: 2px solid var(--primary-color); */
-  border-radius: 0;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-}
 
 .sub-card {
   padding: 0.5rem;
@@ -94,8 +87,21 @@
 
 .sub-card {
   margin-right: 1.5rem;
+  padding: 0.5rem;
+  font-weight: 800;
+  font-size: 12px;
+  border-radius: 0.9rem;
+  text-transform: uppercase;
+  border: 0.1px solid #8080804a;
 }
 
-.modal-content {
-  width: 50rem !important;
+.modal-content-sub-header {
+  width: 30rem !important;
+  transform: translate(1rem, 15rem);
+  height: 10rem;
+  padding: 0.4rem;
+}
+
+.modal {
+  z-index: 999999 !important;
 }

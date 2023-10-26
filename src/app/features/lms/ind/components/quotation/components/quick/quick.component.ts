@@ -2,17 +2,17 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ProductService } from 'src/app/features/lms/ind/service/product/product.service';
 import { finalize } from 'rxjs/internal/operators/finalize';
-import { first, mergeMap, tap, debounceTime, switchMap, of, timer, delay, pipe } from 'rxjs';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { first, mergeMap, tap, debounceTime, switchMap, of, timer} from 'rxjs';
+import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
+import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
+import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
+import { ProductService } from '../../../../../../../features/lms/service/product/product.service';
 
 @Component({
   selector: 'app-quick',
@@ -54,6 +54,11 @@ export class QuickComponent implements OnInit, OnDestroy {
     private product_service: ProductService,
     private toast: ToastService
   ) {
+
+  }
+
+  ngOnInit(): void {
+
     this.quickForm = this.fb.group({
       date_of_birth: [''],
       gender: ['M'],
@@ -67,9 +72,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.shareForm = this.fb.group({
       name: [''],
     });
-  }
 
-  ngOnInit(): void {
     this.spinner.show('whole');
     this.product_service
       .getListOfProduct()
@@ -271,7 +274,6 @@ export class QuickComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (prem) => {
-            console.log(prem);
             this.session_storage.set('quote_code',prem['quote_code'])
             this.session_storage.set('client_code',prem['client_code'])
             this.session_storage.set('quick_quote',prem)
