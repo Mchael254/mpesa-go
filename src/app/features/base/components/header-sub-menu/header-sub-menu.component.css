@@ -22,7 +22,7 @@
 
 .dropdown-menu {
   border-radius: 0;
-  font-size: 12px;
+  font-size: 0.9em;
   border: 0;
   z-index: 100000;
 }

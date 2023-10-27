@@ -53,6 +53,8 @@ export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateModule} from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
+import { ShareModalComponent } from './components/share-modal/share-modal.component';
+import { DownloadModalComponent } from './components/download-modal/download-modal.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CountryService } from './services/setups/country/country.service';
@@ -135,7 +137,9 @@ const SERVICES = [
     DynamicSetupTableScreenComponent,
     DynamicSetupWizardWelcomeScreenComponent,
     CustomFilterPipe,
-    SafeResourceUrlPipe
+    SafeResourceUrlPipe,
+    ShareModalComponent,
+    DownloadModalComponent
 
 
   ],
@@ -157,35 +161,37 @@ const SERVICES = [
         DropdownModule,
         HttpClientModule
     ],
-    exports: [
-        ErrorComponent,
-        HideMessageDirective,
-        NotificationsComponent,
-        LoaderComponent,
-        FileExtensionPipe,
-        DocViewerComponent,
-        OtpComponent,
-        DynamicTableComponent,
-        CopyrightFooterComponent,
-        DynamicChartComponent,
-        SpinnerComponent,
-        DynamicFormComponent,
-        DynamicBreadcrumbComponent,
-        StepperComponent,
-        DynamicSimpleModalComponent,
-        DynamicFormModalComponent,
-        NgxSpinnerModule,
-        DynamicSetupSearchListScreenComponent,
-        TranslateModule,
-        DynamicSetupWizardWelcomeScreenComponent,
-        ReactiveFormsModule,
-        CustomFilterPipe,
-        SafeResourceUrlPipe,
-        CalendarModule,
-        TableModule,
-        DropdownModule
+  exports: [
+    ErrorComponent,
+    HideMessageDirective,
+    NotificationsComponent,
+    LoaderComponent,
+    FileExtensionPipe,
+    DocViewerComponent,
+    OtpComponent,
+    DynamicTableComponent,
+    CopyrightFooterComponent,
+    DynamicChartComponent,
+    SpinnerComponent,
+    DynamicFormComponent,
+    DynamicBreadcrumbComponent,
+    StepperComponent,
+    DynamicSimpleModalComponent,
+    DynamicFormModalComponent,
+    NgxSpinnerModule,
+    DynamicSetupSearchListScreenComponent,
+    TranslateModule,
+    DynamicSetupWizardWelcomeScreenComponent,
+    ReactiveFormsModule,
+    CustomFilterPipe,
+    SafeResourceUrlPipe,
+    ShareModalComponent,
+    DownloadModalComponent,
+    CalendarModule,
+    TableModule,
+    DropdownModule
 
-    ],
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {

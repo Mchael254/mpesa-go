@@ -56,8 +56,8 @@ export class MenuService{
 
   ],
     "STAFF_PERF":[{
-    name: 'My Emloyees',
-    nameSlug: 'emloyees',
+    name: 'My Employees',
+    nameSlug: 'employees',
     link:'./home/entity/staff/list',
     icon: 'fa-solid fa-user-tie',
     svgContent: `
@@ -251,7 +251,37 @@ export class MenuService{
     collapsed:true,
   },
 
-  ]}
+  ],
+    "ANALYTICS":[
+      {
+        name: 'Actions',
+        nameSlug: 'actions',
+        icon: 'fa-solid fa-gears',
+        menuItems: [
+          {
+            name: 'Create Report',
+            link: "/home/reportsv2/create-report"
+          },
+          {
+            name: 'Create Dashboard',
+            link: "/home/reportsv2/create-dashboard"
+          },
+        ],
+
+        collapsed:true,
+      },
+      {
+      name: 'Analytics',
+      nameSlug: 'analytics',
+      icon: 'fa-solid fa-chart-pie',
+      menuItems: [
+        { name: 'Dashboards', link: "home/reportsv2" },
+        { name: 'My Reports', link: "" },
+        { name: 'Shared Reports', link: "" }
+      ],
+
+      collapsed:true,
+    }],}
 
 public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
     {
@@ -352,5 +382,23 @@ quotationSubMenuList(): SidebarMenu[]{
     },
   ]}
 
+  analyticsSubMenuList(): SidebarMenu[]{
+    return  [
+      {
+        name:"Create Report",
+        link: "/home/reportsv2/create-report",
+        value: "ANALYTICS"
+      },
+      {
+        name:"Create Dashboard",
+        link:"/home/reportsv2/create-dashboard",
+        value: "ANALYTICS"
+      },
+      {
+        name:"Dashboard",
+        link:"/home/reportsv2",
+        value: "ANALYTICS"
+      },
+    ]}
 
 }

@@ -70,6 +70,7 @@ export class CreateReportComponent implements OnInit{
   private user: any = null;
   private userId: number = 0;
   private folderId: number = 0; // defaults to My Reports
+  private filters =  [];
 
   constructor(
     private fb: FormBuilder,
@@ -82,13 +83,13 @@ export class CreateReportComponent implements OnInit{
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {}
+
   ngOnInit(): void {
     this.activatedRoute.queryParams
       .pipe(
         take(1)
       ).subscribe((params) => {
       this.reportId = params['reportId'];
-      // log.info(`params >>> `, params, this.reportId);
       if (this.reportId !== undefined) {
         this.getReport();
       }
@@ -135,7 +136,6 @@ export class CreateReportComponent implements OnInit{
   }
 
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
-    console.log(`subject area from click`, s)
     this.selectedSubjectArea = s.subjectAreaName;
     this.subjectAreaCategories = null;
     this.showSubjectAreas = false;
@@ -144,7 +144,6 @@ export class CreateReportComponent implements OnInit{
       .pipe(take(1))
       .subscribe(res => {
         this.subjectAreaCategories = res;
-        // log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
         this.cdr.detectChanges();
       });
   }
@@ -212,6 +211,7 @@ export class CreateReportComponent implements OnInit{
     const query = {
       measures: this.measures,
       dimensions: this.dimensions,
+      filters: this.filters,
       limit: 20
     }
     log.info(`query for cube >>> `, query);
@@ -273,6 +273,16 @@ export class CreateReportComponent implements OnInit{
       this.dimensions.splice(index, 1);
     }
 
+  }
+
+  updateFilter(filterSort) {
+    this.criteria.forEach((criterion) => {
+      if (criterion == filterSort.queryObject) {
+        criterion.filter = filterSort.queryObject.filter
+        this.filters.push(filterSort?.filter)
+      }
+    });
+    this.loadChart();
   }
 
   showVisualizationList(): void {
