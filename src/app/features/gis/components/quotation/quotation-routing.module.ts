@@ -20,7 +20,7 @@ const routes: Routes = [
   //   path: 'quick-quote', component:QuickQuoteDetailsComponent
   // },
   {
-    path: 'quick-quote-details', component:QuickQuoteFormComponent
+    path: 'quick-quote', component:QuickQuoteFormComponent
   },
   {
     path: 'cover-type-details', component:CoverTypesDetailsComponent
