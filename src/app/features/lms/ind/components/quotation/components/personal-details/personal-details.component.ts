@@ -31,6 +31,7 @@ import { ToastService } from '../../../../../../../shared/services/toast/toast.s
 import { PartyService } from '../../../../../service/party/party.service';
 import { RelationTypesService } from '../../../../../../lms/service/relation-types/relation-types.service';
 import { StringManipulation } from '../../../../../util/string_manipulation';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 @Component({
   selector: 'app-personal-details',
@@ -124,8 +125,8 @@ export class PersonalDetailsComponent {
     this.getAllBeneficiaryTypes();
     this.getRelationTypes();
 
-    if (Number(this.session_storage.get('client_code')) > 0) {
-      let clientId = Number(this.session_storage.get('client_code'));
+    if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
+      let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
       this.client_service.getClientById(clientId).subscribe((data) => {
         // To work on Later
         console.log(data);
@@ -352,7 +353,7 @@ export class PersonalDetailsComponent {
       clientType: client['clientType']['code'],
       phoneNumber: client['phoneNumber'],
     };
-    this.session_storage.set('client_code', client['idNumber']);
+    this.session_storage.set(SESSION_KEY.CLIENT_CODE, client['idNumber']);
     this.clientDetailsForm.patchValue(patchClient);
     this.closeModal();
     this._openModal = false;
@@ -376,8 +377,8 @@ export class PersonalDetailsComponent {
   // NO UNIT TESTED
   getBeneficiariesByQuotationCode() {
     this.editEntity = true;
-    let quote_code = +this.session_storage.get('quote_code');
-    let proposal_code = +this.session_storage.get('proposal_code');
+    let quote_code = +this.session_storage.get(SESSION_KEY.QUOTE_CODE);
+    let proposal_code = +this.session_storage.get(SESSION_KEY.PROPOSAL_CODE);
     this.party_service
       // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
@@ -416,7 +417,7 @@ export class PersonalDetailsComponent {
 
 
   async nextPage() {
-    let client_code = +this.session_storage.get('client_code');
+    let client_code = +this.session_storage.get(SESSION_KEY.CLIENT_CODE);
     let formValue = this.clientDetailsForm.value;
 
     // if(this.clientDetailsForm.valid){
@@ -532,10 +533,10 @@ export class PersonalDetailsComponent {
   saveBeneficiary() {
     // console.log(this.beneficiaryForm.value);
     let beneficiary = { ...this.beneficiaryForm.value };
-    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('client_code'));
-    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('quote_code'));
-    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('proposal_code'));
-    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get('proposal_code'));
+    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
+    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_CODE));
+    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
+    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
     beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(beneficiary['percentage_benefit']);
     // let be_relation_code = beneficiary['beneficiary_info']['relation_code'];
     // let ap_relation_code = beneficiary['appointee_info']['relation_code'];

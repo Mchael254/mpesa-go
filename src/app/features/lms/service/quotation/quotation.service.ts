@@ -16,4 +16,8 @@ export class QuotationService {
   getLmsIndividualQuotationWebQuoteByCode(code:number){
     return this.api.GET(`quotations/web-quote/${code}`, API_CONFIG.MARKETING_SERVICE_BASE_URL);
   }
+
+  getLmsIndividualQuotationTelQuoteByCode(code:number){
+    return this.api.GET(`quotations/tel-quote/${code}`, API_CONFIG.MARKETING_SERVICE_BASE_URL);
+  }
 }

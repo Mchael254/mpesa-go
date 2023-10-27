@@ -2,12 +2,11 @@ import { Component } from '@angular/core';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 
 @Component({
-  selector: 'app-policy-list',
-  templateUrl: './policy-list.component.html',
-  styleUrls: ['./policy-list.component.css']
+  selector: 'app-maturities',
+  templateUrl: './maturities.component.html',
+  styleUrls: ['./maturities.component.css']
 })
-export class PolicyListComponent {
-
+export class MaturitiesComponent {
   colsInd = [
     { field: 'quote_no', header: 'Quote No' },
     { field: 'premium', header: 'Client.' },
@@ -23,8 +22,8 @@ export class PolicyListComponent {
     rows: this.rowsInd,
     // globalFilterFields: this.globalFilterFieldsInd,
     showFilter: false,
-    showSorting: true,
-    paginator: true,
+    showSorting: false,
+    paginator: false,
   };
 
   constructor(){}
