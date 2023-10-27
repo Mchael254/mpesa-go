@@ -1,6 +1,5 @@
-
 import { Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import { SidebarMenu } from '../model/sidebar.menu';
 
 @Injectable({
@@ -309,6 +308,16 @@ teamSubMenuList() : SidebarMenu[]{
       link:"/view-employees",
       value: "STAFF_PERF"
     },
+  ];
+}
+
+policySubMenuList() : SidebarMenu[]{
+  return [
+    {
+      name:"Policies",
+      link: "/home/lms/policy/list",
+      value: "POLICY"
+    }
   ];
 }
 claimSubMenuList(): SidebarMenu[]{
