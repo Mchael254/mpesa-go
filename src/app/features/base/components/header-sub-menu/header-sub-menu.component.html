@@ -150,7 +150,7 @@
                   data-bs-target="#NewQuoteModal"
                   for="top-right"
                   class="label-text"
-                  (click)="navLink('/home/lms/ind/quotation/list')"
+                  (click)="navLink('/home/lms/quotation/list')"
                   >New Quotation <i class="fa-solid fa-plus"></i
                 ></label>
               </div>
@@ -196,7 +196,7 @@
 
               <div class="d-flex justify-content-end">
                 <label
-                  (click)="navLink('/home/lms/ind/quotation/list')"
+                  (click)="navLink('/home/lms/quotation/list')"
                   class="text-plain"
                   for="bottom-right"
                   >View Quotations</label
@@ -322,17 +322,123 @@
 
 
 
-<div class="modal fade" id="NewQuoteModal" tabindex="-1" role="dialog" aria-labelledby="NewQuoteModalTitle"
-  aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-centered" role="document" >
-    <div class="modal-content" style="border: 0.2px solid var(--primary-color);">
-      <!-- <div class="modal-header border-0">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div> -->
+
+
+<!-- <div  class="modal fade" #NewQuoteModal id="NewQuoteModal" tabindex="-1" role="dialog" aria-labelledby="NewQuoteModalTitle"
+  aria-hidden="true">
+  <div  class="modal-dialog modal-dialog-centered" role="document">
+    <div  class="modal-content" style="border: 0.2px solid var(--primary-color);">
       <div class="modal-body card-modal">
-        <div class="card sub-card" routerLink="/home/lms/ind/quotation/quick-quote/quick" (click)="closeModal()" style="font-size: 1.6rem;">LMS</div>
-        <div class="card sub-card" (click)="closeModal()" style="font-size: 1.7rem;">GIS</div>
+        <div data-bs-dismiss="modal" aria-label="Close" class="card sub-card" routerLink="/home/lms/ind/quotation/quick" (click)="closeModal()">
+          <div class=" with-background-image lms-ind-image"  >
+            <div class="sub-card-content ">
+              &nbsp;
+
+            </div>
+          </div>
+          <div class="sub-card-text  d-flex justify-content-center">LMS Individual</div>
+        </div>
+
+        <div id="NewQuoteModal" class="card sub-card" routerLink="/home/lms/grp/quotation/quick" (click)="closeModal()">
+          <div class=" with-background-image lms-grp-image" >
+            <div class="sub-card-content ">
+              &nbsp;
+
+            </div>
+          </div>
+          <div class="sub-card-text  d-flex justify-content-center">LMS Group</div>
+        </div>
+
+        <div id="NewQuoteModal" class="card sub-card" (click)="closeModal()" routerLink="/home/gis/quotation/quick-quote">
+          <div class=" with-background-image gis-image" >
+            <div class="sub-card-content ">
+              &nbsp;
+
+            </div>
+          </div>
+          <div class="sub-card-text  d-flex justify-content-center">GIS</div>
+        </div>
+
+
       </div>
     </div>
   </div>
-</div>
+</div> -->
+
+
+
+
+<div class="modal fade" tabindex="-1" #NewQuoteModal id="NewQuoteModal" aria-labelledby="NewQuoteModal" aria-hidden="true"
+          style="color: #333;">
+            <div class="modal-dialog">
+              <div class="modal-content modal-content-sub-header">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="NewQuoteModal">Capture category details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  ></button>
+                </div> -->
+                <div class="modal-body">
+                  <div class="d-flex justify-content-between">
+
+                    <div data-bs-dismiss="modal"  class="card sub-card" routerLink="/home/lms/ind/quotation/quick" (click)="closeModal()">
+                      <div class=" with-background-image lms-ind-image"  >
+                        <div class="sub-card-content ">
+                          &nbsp;
+
+                        </div>
+                      </div>
+                      <div class="sub-card-text  d-flex justify-content-center">LMS Individual</div>
+                    </div>
+
+                    <div data-bs-dismiss="modal"  class="card sub-card" routerLink="/home/lms/grp/quotation/quick" (click)="closeModal()">
+                      <div class=" with-background-image lms-grp-image" >
+                        <div class="sub-card-content ">
+                          &nbsp;
+
+                        </div>
+                      </div>
+                      <div class="sub-card-text  d-flex justify-content-center">LMS Group</div>
+                    </div>
+
+
+                    <div data-bs-dismiss="modal"  class="card sub-card" (click)="closeModal()" routerLink="/home/gis/quotation/quick-quote">
+                      <div class=" with-background-image gis-image" >
+                        <div class="sub-card-content ">
+                          &nbsp;
+
+                        </div>
+                      </div>
+                      <div class="sub-card-text  d-flex justify-content-center">GIS</div>
+                    </div>
+
+
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+          <!-- <div class="modal fade" tabindex="-1" #NewQuoteModal id="NewQuoteModal" aria-labelledby="NewQuoteModal" aria-hidden="true"
+          style="color: #333;">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+
+
+                </div>
+              </div>
+            </div>
+          </div> -->

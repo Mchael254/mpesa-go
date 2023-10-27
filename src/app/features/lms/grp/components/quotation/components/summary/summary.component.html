@@ -1,0 +1,427 @@
+<div class="container">
+    <div class="container">
+        <app-stepper></app-stepper>
+    </div>
+    <div id="container">
+        <div class="col-md-12 text-center">
+            <h4>Group quote summary</h4>
+            <h6 class="mt-4" style="color: gray;">Here is the quote summary for the <b style="color: black;">Whole life
+                    product</b></h6>
+            <h5 class="mt-3" style="color: gray;">
+                <label style="margin-right: 30px; display: inline-block; width: 100px;">Premium</label>
+                <span style="color: black;">{{premiumForScreen3}}</span>
+            </h5>
+            <h5 class="mt-2" style="color: gray;">
+                <label style="margin-right: 30px; display: inline-block; width: 100px; white-space: nowrap;">Sum
+                    assured</label>
+                <span style="color: black;">{{sumAssuredForScreen3}}</span>
+            </h5>
+            <hr class="mt-4 custom-hr">
+        </div>
+
+        <div class="row col-12 mt-3" style="color: black; padding-left: 25px;">
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Product: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Currency: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Commission amount: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Quotation status: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Frequency of Payment: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Inception date: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Intermediary: </td>
+                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="summary-container col-12 mt-5" style="padding-right: 40px;">
+            <div class="summary col-md-4 col-sm-12 col-xs-12 mx-3">
+                <h5>Cover summary</h5>
+                <div>
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
+                        <h6 style="color: black;">Cover 1</h6>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Main Cover: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Cover types: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Select rates: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 col-xs-12 mt-4" style="padding-left: 20px;">
+                        <h6 style="color: black;">Cover 2</h6>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Main Cover: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Cover types: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 50%; align-items: left; color: grey;">Select rates: </td>
+                                <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-12 text-center mb-1">
+                        <a href="#" style="text-decoration: underline;"
+                            (click)="showCoverSummary(); $event.preventDefault();">
+                            view more <i class="fas fa-plus-circle"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="summary col-md-4 col-sm-12 col-xs-12 mx-3">
+                <h5>Category summary</h5>
+                <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
+                    <h6 style="color: black;">Category 1</h6>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
+                            <td style="width: 40%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
+                            <td style="width: 40%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12 mt-4" style="padding-left: 20px;">
+                    <h6 style="color: black;">Category 2</h6>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
+                            <td style="width: 40%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
+                            <td style="width: 40%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-12 col-sm-12 col-xs-12 text-center mt-5">
+                    <a href="#" style="text-decoration: underline;"
+                        (click)="showCategorySummary(); $event.preventDefault();">
+                        view more <i class="fas fa-plus-circle"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="summary col-md-4 col-sm-12 col-xs-12 mx-3">
+                <h5>Members summary</h5>
+                <div class="col-md-12 col-xs-12 mt-4" style="padding-left: 20px;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Members Covered: </td>
+                            <td style="width: 30%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Members above override FCL: </td>
+                            <td style="width: 30%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Members to reinsurance: </td>
+                            <td style="width: 30%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Computed FCL: </td>
+                            <td style="width: 30%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">FCL override: </td>
+                            <td style="width: 30%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-12 text-center mt-5" style="padding-top: 40px;">
+                    <a href="#" style="text-decoration: underline;"
+                        (click)="showMembersSummary(); $event.preventDefault();">
+                        view members list
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        <!-- beginning of modals for group quote summary -->
+        <!-- modal for members summary -->
+        <div class="modal fade" tabindex="-1" #memberSummaryModal id="memberSummaryModal"
+            aria-labelledby="memberSummaryModal" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="memberSummaryModalLabel">Member details</h5>
+                    </div>
+ 
+                    <div class="modal-body">
+                        <form [formGroup]="searchFormMemberDets" class="mb-1">
+                            <div class="row">
+                              <div class="col-md-1 d-none d-sm-block">
+                                <div class="label" style="color: black;">Filter by</div>
+                              </div>
+                              <div class="col-md-2 col-sm-6">
+                                <div class="form-group mb-1">
+                                  <p-dropdown
+                                    id='filterby'
+                                    [options]=''
+                                    [optionLabel]="'label'"
+                                    [style]="{ width: '100%', height: '38px', 'line-height': '10px' }"
+                                    formControlName='filterby'
+                                    placeholder="Select option">
+                                  </p-dropdown>
+                                </div>
+                              </div>
+                              <div class="col-md-2 col-sm-6">
+                                <div class="form-group mb-1">
+                                  <input
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    formControlName="greaterOrEqual"
+                                    id="greaterOrEqual"
+                                    placeholder="greater than, equals...">
+                                </div>
+                              </div>
+                              <div class="col-md-2 col-sm-6">
+                                <div class="form-group mb-1">
+                                  <input
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    formControlName="valueEntered"
+                                    id="valueEntered"
+                                    placeholder="Enter value">
+                                </div>
+                              </div>
+                              <div class="col-md-2 col-sm-6 offset-md-3 offset-sm-0 justify-content-end">
+                                <div class="form-group mb-1">
+                                  <div class="input-group">
+                                        <div class="box">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                          <input
+                                            type="text"
+                                            class="custom-form-control"
+                                            formControlName="searchMember"
+                                            id="searchMember"
+                                            placeholder="Search..."
+                                            [style]="{ height: '38px' }"
+                                          />
+                                        </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </form>                          
+                          
+                        <div class="card">
+                            <p-table [value]="" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                                [tableStyle]="{'min-width': '50rem'}"
+                                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                                [rowsPerPageOptions]="[10,25,50]">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th style="width:11.11%">Surname</th>
+                                        <th style="width:11.11%">Other names</th>
+                                        <th style="width:11.11%">Premium</th>
+                                        <th style="width:11.11%">Sum Assured</th>
+                                        <th style="width:11.11%">Date of birth</th>
+                                        <th style="width:11.11%">Gender</th>
+                                        <th style="width:11.11%">Payroll/Member no.</th>
+                                        <th style="width:11.11%">Category</th>
+                                        <th style="width:11.11%">Dependant type</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+
+                        <div class="mt-5">
+                            <h6 style="color: black;">Member summary</h6>
+                            <p-table [value]="" [tableStyle]="{'max-width': '30rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Surname</th>
+                                        <th>Other name</th>
+                                        <th>Cover type</th>
+                                        <th>Sum assured</th>
+    
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-product>
+                                    <tr>
+                                        <td>{{product.code}}</td>
+                                        <td>{{product.name}}</td>
+                                        <td>{{product.category}}</td>
+                                        <td>{{product.quantity}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="closeMembersSummary()">Back to summary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal for members summary -->
+
+        <!-- modal for category summary -->
+        <div class="modal fade" tabindex="-1" #memberSummaryModal id="categorySummaryModal"
+            aria-labelledby="categorySummaryModal" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
+                        <button type="button" class="btn-close custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="closeCategorySummary()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Short descripton</th>
+                                        <th>Description</th>
+                                        <th>Multiple of earnings</th>
+                                        <th>Premium mask</th>
+                                        <th>Description</th>
+                                        <th>Cover</th>
+                                        <th>Max type allowed</th>
+                                        <th>Minimum amount</th>
+                                        <th>Limit amount</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-customer>
+                                    <tr>
+                                        <td>{{customer.name}}</td>
+                                        <td>{{customer.country.name}}</td>
+                                        <td>{{customer.company}}</td>
+                                        <td>{{customer.representative.name}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="closeCategorySummary()">Back to summary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal for category summary -->
+
+        <!-- modal for cover summary -->
+        <div class="modal fade" tabindex="-1" #memberSummaryModal id="coverSummaryModal"
+            aria-labelledby="coverSummaryModal" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="coverSummaryModalLabel">Cover details</h5>
+                        <button type="button" class="btn-close custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="closeCoverSummary()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Main cover</th>
+                                        <th>Cover types</th>
+                                        <th>Select rate</th>
+                                        <th>Override premiums</th>
+                                        <th>Premium mask</th>
+                                        <th>Rate</th>
+                                        <th>Rate division factor</th>
+                                        <th>% of main/yr SA</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-customer>
+                                    <tr>
+                                        <td>{{customer.name}}</td>
+                                        <td>{{customer.country.name}}</td>
+                                        <td>{{customer.company}}</td>
+                                        <td>{{customer.representative.name}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="closeCoverSummary()">Back to summary</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of modal for cover summary -->
+
+        <!-- end of modals for groupe quote summary -->
+
+    </div>
+    <div class="button-container">
+        <button type="button" class="btn btn-info buttonS" onclick="onProceed()">Share</button>
+        <button type="button" class="btn btn-primary buttonP" onclick="onProceed()">Proceed</button>
+    </div>
+</div>

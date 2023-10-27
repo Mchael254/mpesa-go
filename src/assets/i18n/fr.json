@@ -14,6 +14,8 @@
     "view_all": "VOIR TOUT",
     "summary" : "Résumé",
     "my_policies": "Mes Polices",
-    "my_quotations": "Mes Devis"
+    "my_quotations": "Mes Devis",
+    "quotation": "citation"
+
   }
 }

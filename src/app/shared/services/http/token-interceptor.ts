@@ -49,6 +49,9 @@ export class TokenInterceptor implements HttpInterceptor {
       device = deviceInfo.device;
     }
 
+
+    console.log("INTERCEPTOR >>>>>>" + token);
+
     if (token) {
       const authReq = req.clone({
         withCredentials: true,

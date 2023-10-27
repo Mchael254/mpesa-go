@@ -93,7 +93,7 @@ export class AccountStatusService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.patch<boolean>(`/${baseUrl}/accounts/accounts/${id}/status`, JSON.stringify(statusUpdate), {headers:headers})
+    return this.http.patch<boolean>(`/${baseUrl}/${id}/status`, JSON.stringify(statusUpdate), {headers:headers})
   }
 
 }

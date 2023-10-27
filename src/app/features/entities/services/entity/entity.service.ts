@@ -126,7 +126,7 @@ export class EntityService {
       // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/accounts/parties/all-parties`,
+    return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/parties/all-parties`,
       {
         headers:headers,
         params: params
@@ -141,7 +141,7 @@ export class EntityService {
       'Accept': 'application/json',
     });
 
-    return this.http.get<EntityDto>(`/${baseUrl}/accounts/parties/${partyId}`,{headers:headers});
+    return this.http.get<EntityDto>(`/${baseUrl}/parties/${partyId}`,{headers:headers});
   }
   getEntityByPartyId(id: number): Observable<ReqPartyById > {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
@@ -149,7 +149,7 @@ export class EntityService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.get<ReqPartyById >(`/${baseUrl}/accounts/parties/` + id, {headers:headers});
+    return this.http.get<ReqPartyById >(`/${baseUrl}/parties/` + id, {headers:headers});
   }
 
   getIdentityType(): Observable<IdentityModeDTO []> {
@@ -161,7 +161,7 @@ export class EntityService {
     const params = new HttpParams()
       .set('organizationId', 2);
 
-    return this.http.get<IdentityModeDTO []>(`/${baseUrl}/accounts/identity-modes`,
+    return this.http.get<IdentityModeDTO []>(`/${baseUrl}/identity-modes`,
       {
         headers:headers,
         params:params,
@@ -178,7 +178,7 @@ export class EntityService {
     const params = new HttpParams()
     .set('organizationId', `${organizationId}`);
 
-    return this.http.get<PartyTypeDto[]>(`/${baseUrl}/accounts/party-types`, {headers:headers,params:params});
+    return this.http.get<PartyTypeDto[]>(`/${baseUrl}/party-types`, {headers:headers,params:params});
   }
 
   saveEntityDetails(data: EntityResDTO): Observable<EntityDto> {
@@ -187,14 +187,14 @@ export class EntityService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<EntityDto>(`/${baseUrl}/accounts/parties`, JSON.stringify(data), {headers:headers})
+    return this.http.post<EntityDto>(`/${baseUrl}/parties`, JSON.stringify(data), {headers:headers})
   }
 
   uploadProfileImage(partyId: number, file: File) {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     let form = new FormData;
     form.append('file', file, file.name);
-    return this.http.post<any>(`/${baseUrl}/accounts/parties/${partyId}/upload-profile-image`, form );
+    return this.http.post<any>(`/${baseUrl}/parties/${partyId}/upload-profile-image`, form );
   }
 
   getAccountById(id: number): Observable<AccountReqPartyId[]> {
@@ -203,7 +203,7 @@ export class EntityService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.get<AccountReqPartyId[]>(`/${baseUrl}/accounts/parties/`+ id +`/accounts`, {headers:headers});
+    return this.http.get<AccountReqPartyId[]>(`/${baseUrl}/parties/`+ id +`/accounts`, {headers:headers});
   }
 
   getClientTitles(organizationId: number): Observable<ClientTitleDTO[]> {
@@ -214,6 +214,6 @@ export class EntityService {
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`);
 
-    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/accounts/client-titles`, {headers:header, params:params})
+    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/client-titles`, {headers:header, params:params})
   }
 }

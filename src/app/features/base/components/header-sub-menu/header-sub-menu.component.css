@@ -43,22 +43,65 @@
   border-bottom: 0.5px solid var(--primary-color);
 }
 
-.card-modal {
-  /* border: 2px solid var(--primary-color); */
-  border-radius: 0;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-}
 
 .sub-card {
-  padding: 2rem;
-  margin-right: 1em;
-  font-weight: 700;
+  padding: 0.5rem;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 .sub-card:hover {
   border: 2px solid var(--primary-color);
   background-color: var(--primary-color);
   color: #fff;
+}
+
+
+.with-background-image {
+  /* background-image: url('src/assets/svg/lms.svg'); Replace with the actual path to your SVG file */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 100px 90px;
+  /* height: 10rem;
+  width: 10rem; */
+}
+
+.sub-card-content{
+  width: 6rem;
+  height: 5rem;
+}
+
+.lms-grp-image{
+  background-image: url('src/assets/svg/lms-grp.svg'); /* Replace with the actual path to your SVG file */
+
+}
+
+.lms-ind-image{
+  background-image: url('src/assets/svg/lms-ind.svg'); /* Replace with the actual path to your SVG file */
+
+}
+.gis-image {
+  background-image: url('src/assets/svg/gis.svg'); /* Replace with the actual path to your SVG file */
+
+}
+
+.sub-card {
+  margin-right: 1.5rem;
+  padding: 0.5rem;
+  font-weight: 800;
+  font-size: 12px;
+  border-radius: 0.9rem;
+  text-transform: uppercase;
+  border: 0.1px solid #8080804a;
+}
+
+.modal-content-sub-header {
+  width: 30rem !important;
+  transform: translate(1rem, 15rem);
+  height: 10rem;
+  padding: 0.4rem;
+}
+
+.modal {
+  z-index: 999999 !important;
 }

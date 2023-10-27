@@ -1,0 +1,27 @@
+.change_Color {
+  background-color: #ffffff;
+  font-weight: 400;
+  color: #333;
+  transition: all 0.6s; /* Adjust the duration as needed */
+}
+
+.change_Color:hover {
+  background-color: #eeeeee !important;
+  font-weight: 700 !important;
+  color: black !important;
+  cursor: pointer;
+}
+
+.nav-tabs {
+
+  border-bottom: 0;
+}
+
+.nav-link.active {
+  background-color: #f6f6f699;
+  border-radius: 0;
+}
+
+.action-buttons-container {
+  margin-bottom: 5px;
+}
