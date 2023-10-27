@@ -56,6 +56,8 @@ import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CountryService } from './services/setups/country/country.service';
+import { TabMenuModule } from 'primeng/tabmenu';
+
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -183,7 +185,8 @@ const SERVICES = [
         SafeResourceUrlPipe,
         CalendarModule,
         TableModule,
-        DropdownModule
+        DropdownModule,
+        TabMenuModule
 
     ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

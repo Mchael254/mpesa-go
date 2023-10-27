@@ -187,22 +187,21 @@
                 <div class="container">
                   <div class="row">
 
-                    <ng-container *ngFor="let coverType of summaryRecord['quick_quote_covers']">
+                    <ng-container *ngFor="let coverType of summaryRecord['tel_quote_covers']">
                     <div class="col-md-6">
-                      <!-- {{coverType |json}} -->
                       <div class="m-4">
-                        <div>Child birth expense</div>
+                        <div>{{coverType['tqcvt_cvt_sht_desc'] | uppercase }}</div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Premium:
                           </span>
-                          <span class="fw-light">{{ summaryRecord['premium'] }}</span>
+                          <span class="fw-light">{{ coverType['tqcvt_premium'] | number }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Sum assured:
                           </span>
-                          <span class="fw-light">{{ "300000" }}</span>
+                          <span class="fw-light">{{ coverType['tqcvt_sa'] | number}}</span>
                         </div>
                       </div>
                     </div>

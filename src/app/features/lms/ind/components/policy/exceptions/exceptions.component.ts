@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 
 @Component({
-  selector: 'app-policy-list',
-  templateUrl: './policy-list.component.html',
-  styleUrls: ['./policy-list.component.css']
+  selector: 'app-exceptions',
+  templateUrl: './exceptions.component.html',
+  styleUrls: ['./exceptions.component.css']
 })
-export class PolicyListComponent {
+export class ExceptionsComponent {
 
   colsInd = [
     { field: 'quote_no', header: 'Quote No' },
@@ -23,8 +23,8 @@ export class PolicyListComponent {
     rows: this.rowsInd,
     // globalFilterFields: this.globalFilterFieldsInd,
     showFilter: false,
-    showSorting: true,
-    paginator: true,
+    showSorting: false,
+    paginator: false,
   };
 
   constructor(){}
