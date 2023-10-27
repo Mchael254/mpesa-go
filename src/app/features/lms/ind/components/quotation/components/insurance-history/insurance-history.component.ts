@@ -4,7 +4,8 @@ import stepData from '../../data/steps.json';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { ClientHistoryService } from 'src/app/features/lms/service/client-history/client-history.service';
-import { PartyService } from 'src/app/features/lms/service/party/party.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 @Component({
   selector: 'app-insurance-history',
@@ -41,7 +42,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
 
 
-  constructor(private fb: FormBuilder, private client_history_service:ClientHistoryService){
+  constructor(private fb: FormBuilder, private client_history_service:ClientHistoryService, private session_storage: SessionStorageService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       responseOne: [],
@@ -59,6 +60,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   createInsuranceHistoryFormFormGroup() {
     return this.fb.group({
+      code: [],
       pol_code: [''], // You can set initial values or validations as needed
       prp_code: [''],
       prem: [''],
@@ -72,16 +74,19 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   addResponseOne(x) {
-    let r = this.insuranceHistoryFormOne.value;
-    r['isEdit'] = false
+    // let r = this.insuranceHistoryFormOne.value;
+    // r['isEdit'] = false
     this.policyListOne = this.policyListOne.map((data, i) =>{
       if(i===x){
         let temp = this.insuranceHistoryFormOne.value;
         temp['isEdit'] = false
+        console.log(temp);
+
         return temp;
       }
       return data;
     })
+
     this.insuranceHistoryFormOne.reset();
 
   }
@@ -144,15 +149,10 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.policyListTwo.indexOf(pol, x);
     this.insuranceHistoryFormTwo.patchValue(pol.length>0? pol[0]: {});
   }
-  // addEmptyPolicyList(policyList: any[]) {
-  //   this.addEntity(policyList);
-  // }
 
   getLmsInsHistList(){
-    this.client_history_service.getLmsInsHistList().subscribe((data)=>{
-      console.log(data);
-
-    })
+    let clientCode = this.session_storage.get(SESSION_KEY.CLIENT_CODE)
+    this.client_history_service.getLmsInsHistList(clientCode).subscribe((data)=>{ console.log(data); });
   }
 
   getAllCoverStatusTypes(){

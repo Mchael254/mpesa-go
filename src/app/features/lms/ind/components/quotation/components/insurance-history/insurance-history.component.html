@@ -87,10 +87,8 @@
                                   <td><input formControlName="prp_code" type="text" class="form-control" required /></td>
                                   <td><input formControlName="prem" type="number" class="form-control" /></td>
                                   <td><input formControlName="sum_assured" type="number" class="form-control" /></td>
-                                  <td><select
-                                    class="form-select"
-                                    formControlName="status"
-                                  >
+                                  <td>
+                                    <select class="form-select" formControlName="status" >
                                   <option style="font-size: 11px" value="" disabled selected>Status</option>
                                   <ng-container *ngFor="let type of coverStatusTypeList">
                                     <option [value]="type['name']">
@@ -98,7 +96,8 @@
                                     </option>
                                   </ng-container>
 
-                                  </select></td>
+                                  </select>
+                                </td>
                                   <td class="d-flex justify-content-between py-2">
                                     <div (click)="addResponseOne(i)" class="mx-2">
                                       <i class="fa-solid fa-check text-success"></i>

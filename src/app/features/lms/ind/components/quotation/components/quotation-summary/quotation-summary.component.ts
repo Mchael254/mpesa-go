@@ -141,24 +141,12 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
   getLmsIndividualQuotationWebQuoteByCode() {
     let code = StringManipulation.returnNullIfEmpty(
-      this.session_storage_Service.get(SESSION_KEY.QUICK_CODE)
+      this.session_storage_Service.get(SESSION_KEY.QUOTE_CODE)
     );
 
     this.quotation_service
-      .getLmsIndividualQuotationWebQuoteByCode(code)
-      // .pipe(
-      //   switchMap((dat:any) => {
-
-      //   console.log(dat);
-      //   this.summaryRecord = { ...dat };
-      //   let _data = {...dat};
-      //   _data = _data
-      //   // this.summaryRecord = { ...data };
-
-      //   return this.cover_type_service.getCoverTypeByCode(dat['quick_quote_covers'][0]['cover_type_code']);
-      // }))
+      .getLmsIndividualQuotationTelQuoteByCode(code)
       .subscribe((data: {}) => {
-        console.log(data);
         this.summaryRecord = { ...data };
       });
   }
@@ -169,7 +157,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     let quote_code = +this.session_storage_Service.get(SESSION_KEY.QUOTE_CODE);
     let proposal_code = +this.session_storage_Service.get(SESSION_KEY.PROPOSAL_CODE);
     this.party_service
-      // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
       .subscribe((data) => {
         this.beneficiaryList = data

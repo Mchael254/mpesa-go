@@ -13,8 +13,7 @@ export class ClientHistoryService {
     return this.api.GET('client-history/cover-status-types', API_CONFIG.MARKETING_SERVICE_BASE_URL);
   }
 
-  getLmsInsHistList(prpCode = null, cover_status = null){
-    return this.api.GET(`client-history/insurance?prpCode=${prpCode}&cover_status=${cover_status}`);
+  getLmsInsHistList(clientCode = null){
+    return this.api.GET(`client-history/insurance?clnt_code=${clientCode}`, API_CONFIG.MARKETING_SERVICE_BASE_URL);
   }
-
 }
