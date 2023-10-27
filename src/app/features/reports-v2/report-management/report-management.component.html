@@ -42,8 +42,8 @@
                                     {{ getFolderCategoryName(report.folder) }}
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li>My Reports</li>
-                                  <li>Shared Reports</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">My Reports</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">Shared Reports</li>
                                 </ul>
                             </div>
                         </td>
@@ -54,7 +54,13 @@
                                     {{ getDashboardName(report.dashboardId) }}
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li *ngFor="let dashboad of dashboards">{{ dashboad?.name }}</li>
+                                  <li 
+                                    *ngFor="let dashboad of dashboards"
+                                    class="reAssignReportDashboard"
+                                    (click)="reAssignReportDashboard(dashboad.id, report)"
+                                  >
+                                    {{ dashboad?.name }}
+                                </li>
                                 </ul>
                             </div>
                         </td>
@@ -64,10 +70,22 @@
                                     <i class="pi pi-ellipsis-v"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li>Rename</li>
+                                  <li
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#saveReportModal"
+                                    (click)="selectReport(report)"
+                                  >
+                                    Rename
+                                </li>
                                   <li>Share</li>
                                   <li>Download</li>
-                                  <li>Delete</li>
+                                  <li 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteReportModal"
+                                    (click)="selectReport(report)"
+                                  >
+                                  Delete
+                                </li>
                                 </ul>
                             </div>                              
                         </td>
@@ -79,3 +97,41 @@
     </div>
     
 </div>
+
+
+<!-- Save Report Modal -->
+<div class="modal fade" id="saveReportModal" tabindex="-1" aria-labelledby="saveReportModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+  
+            <app-save-report-modal
+               [report]="selectedReport" 
+               (reportToSave)="saveReport($event)"
+            ></app-save-report-modal>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Report Modal -->
+<div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title text-danger text-center">
+                Delete {{ selectedReport?.name }}?
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">        
+            <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button class="btn btn-danger float-end" (click)="deleteReport(selectedReport?.id)">Confirm Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

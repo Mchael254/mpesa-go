@@ -58,7 +58,25 @@ export class ReportServiceV2 {
   findUserById(id: number): Observable<any> {
     const baseUrl = this.appConfig.config.contextPath.users_services;
     return this.http.get<any>(
-      `/${baseUrl}/administration/users/16684626`, {headers: this.headers});
+      `/${baseUrl}/administration/users/${id}`, {headers: this.headers});
+  }
+
+  updateReport(report: ReportV2): Observable<ReportV2> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.put<ReportV2>(
+      `/${baseUrl}/chart/chart-reports/${report.id}`, JSON.stringify(report), {headers: this.headers});
+  }
+
+  deleteReportCharts(id: number) {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.delete<ReportV2>(
+      `/${baseUrl}/chart/chart-reports/${id}/charts`, {headers: this.headers});
+  }
+
+  deleteReport(id: number): Observable<ReportV2> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.delete<ReportV2>(
+      `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 
   fetchFilterConditions() {

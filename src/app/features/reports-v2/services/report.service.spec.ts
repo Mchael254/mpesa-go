@@ -83,6 +83,94 @@ describe('ReportService', () => {
     req.flush(report)
   });
 
+  test('should get reports', () => {
+    const baseUrl = appConfigService.config.contextPath.accounts_services;
+    const report: ReportV2 = {
+      charts: [],
+      createdDate: "",
+      dashboardId: 0,
+      dimensions: "",
+      folder: "",
+      measures: "",
+      name: "",
+      id: 222
+    }
+
+    service.getReports().subscribe(reports => {
+      expect(reports).toBeTruthy();
+      expect(reports).toBe([report]);
+    });
+
+    const req = httpTestingController.expectOne(`/${baseUrl}/chart/chart-reports?page=0`);
+    expect(req.request.method).toEqual('GET');
+    req.flush([report])
+  });
+
+  test('should get user by Id', () => {
+    const baseUrl = appConfigService.config.contextPath.users_services;
+    const user = {
+      id: 123,
+      name: 'Tunde Ogunjimi',
+      email: 'ogunjimi.tunde@turnkeyafrica.com'
+    }
+
+    service.findUserById(user.id).subscribe(res => {
+      expect(res).toBeTruthy();
+      expect(res).toBe(user);
+    });
+
+    const req = httpTestingController.expectOne(`/${baseUrl}/administration/users/${user.id}`);
+    expect(req.request.method).toEqual('GET');
+    req.flush(user)
+  });
+
+  test('should update report', () => {
+    const baseUrl = appConfigService.config.contextPath.accounts_services;
+    const report: ReportV2 = {
+      charts: [],
+      createdDate: "",
+      dashboardId: 0,
+      dimensions: "",
+      folder: "",
+      measures: "",
+      name: "",
+      id: 222
+    }
+
+    service.updateReport(report).subscribe(res => {
+      expect(res).toBeTruthy();
+      expect(res).toBe(report);
+    });
+
+    const req = httpTestingController.expectOne(`/${baseUrl}/chart/chart-reports/${report.id}`);
+    expect(req.request.method).toEqual('PUT');
+    req.flush(report)
+  });
+
+  test('should delete report charts', () => {
+    const baseUrl = appConfigService.config.contextPath.accounts_services;
+
+    service.deleteReportCharts(222).subscribe(res => {
+      expect(res).toBeTruthy();
+    });
+
+    const req = httpTestingController.expectOne(`/${baseUrl}/chart/chart-reports/222/charts`);
+    expect(req.request.method).toEqual('DELETE');
+    req.flush(null)
+  });
+
+  test('should delete report', () => {
+    const baseUrl = appConfigService.config.contextPath.accounts_services;
+
+    service.deleteReport(222).subscribe(res => {
+      expect(res).toBeTruthy();
+    });
+
+    const req = httpTestingController.expectOne(`/${baseUrl}/chart/chart-reports/222`);
+    expect(req.request.method).toEqual('DELETE');
+    req.flush(null)
+  });
+
   test('should fetch filter conditions', () => {
     service.fetchFilterConditions();
     expect(service.fetchFilterConditions.call).toBeTruthy();

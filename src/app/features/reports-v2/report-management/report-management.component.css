@@ -6,6 +6,7 @@ ul.dropdown-menu {
 
 ul.dropdown-menu li {
     cursor: pointer;
+    margin-bottom: 10px;
 }
 
 ul.dropdown-menu li:hover {

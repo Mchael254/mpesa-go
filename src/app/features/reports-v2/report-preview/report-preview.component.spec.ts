@@ -9,14 +9,15 @@ import {WebAdmin} from "../../../shared/data/web-admin";
 import {AuthService} from "../../../shared/services/auth.service";
 import {MessageService} from "primeng/api";
 import {AppConfigService} from "../../../core/config/app-config-service";
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {CUSTOM_ELEMENTS_SCHEMA, DebugElement, NO_ERRORS_SCHEMA} from "@angular/core";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {createSpyObj} from "jest-createspyobj";
 import {ReportService} from "../../reports/services/report.service";
 import {ReportV2} from "../../../shared/data/reports/report";
 import {ReportServiceV2} from "../services/report.service";
-import cubejs, {CubejsApi} from "@cubejs-client/core";
+import cubejs from "@cubejs-client/core";
+import { By } from '@angular/platform-browser';
 
 export class MockAppConfigService {
   get config() {
@@ -103,6 +104,13 @@ export class MockCubeJsApi {
   }
 }
 
+export function findComponent<T>(
+  fixture: ComponentFixture<T>,
+  selector: string,
+): DebugElement {
+  return fixture.debugElement.query(By.css(selector));
+}
+
 describe('ReportPreviewComponent', () => {
   const reportServiceStub = createSpyObj('ReportService', [
     'createReport', 'fetchFilterConditions'
@@ -158,6 +166,7 @@ describe('ReportPreviewComponent', () => {
       imports: [
         HttpClientTestingModule,
         ReactiveFormsModule,
+        FormsModule,
       ],
       providers: [
         MessageService,
@@ -176,6 +185,20 @@ describe('ReportPreviewComponent', () => {
     fixture.detectChanges();
   });
 
+  beforeEach(() => {
+    component.chartTypes = [
+      // { iconClass: 'pi pi-table', name: 'table'},
+      { iconClass: 'pi pi-chart-bar', name: 'bar'},
+      { iconClass: 'pi pi-chart-line', name: 'line'},
+      { iconClass: 'pi pi-chart-pie', name: 'pie'},
+      { iconClass: 'pi pi-chart-bar', name: 'doughnut'},
+      { iconClass: 'pi pi-chart-bar', name: 'polarArea'},
+      { iconClass: 'pi pi-chart-bar', name: 'radar'},
+    ];
+
+    fixture.detectChanges();
+  });
+
   test('should create', () => {
     expect(component).toBeTruthy();
     expect(component.createFilterForm.call).toBeTruthy();
@@ -184,6 +207,7 @@ describe('ReportPreviewComponent', () => {
   });
 
   test('should select chart type', () => {
+    component.shouldShowStyles = true;
     const visualizationBtn = fixture.debugElement.nativeElement.querySelector('.selected-visualization');
     visualizationBtn.click();
     fixture.detectChanges();
@@ -194,9 +218,10 @@ describe('ReportPreviewComponent', () => {
 
     expect(component.chartType).toBe('table');
     expect(component.shouldShowTable).toBe(true);
-    expect(component.shouldShowVisualization).toBe(false);
+    expect(component.shouldShowVisualization).toBe(true);
     expect(component.loadChart.call).toBeTruthy();
-  })
+  });
+
 
   test('should add Filter', () => {
     const event = { target: { value: 'yAgoPremium' }}
@@ -212,10 +237,11 @@ describe('ReportPreviewComponent', () => {
     expect(component.selectedFilters.length).toBe(2);
   });
 
+
   test('should remove Filter', () => {
     component.selectedFilters = [
       {
-        column: `yAgoPremium `,
+        column: `yAgoPremium`,
         operator: 'lt',
         value: 1000000
       }
@@ -228,6 +254,7 @@ describe('ReportPreviewComponent', () => {
 
     expect(component.selectedFilters.length).toBe(0);
   });
+
 
   test('should save report', () => {
     component.saveReportForm.controls['reportName'].setValue('Sample report');
@@ -242,11 +269,57 @@ describe('ReportPreviewComponent', () => {
     // write assertions
   });
 
+
   test('should go back to previous page', () => {
     const button = fixture.debugElement.nativeElement.querySelector('#backBtn');
     button.click();
     fixture.detectChanges();
     // write assertions
-  })
+  });
+
+
+  test('should set color scheme', () => {
+    component.styleType = 'bar';
+    component.displayChartTypes.length = 2;
+    fixture.detectChanges();
+
+    const selectedColorScheme = {
+      id: 123,
+      name: 'Test Color Scheme',
+      colors: ['#4f1033', '#c5113e', '#d9ff6b', '#98aa00', '#34362d'],
+    }
+    const colorScheme = findComponent(fixture, 'app-color-scheme');
+    colorScheme.triggerEventHandler('selectedColorScheme', selectedColorScheme);
+    
+    expect(component.colorScheme['bar']).toBe(selectedColorScheme);
+    expect(component.loadChart.call).toBeTruthy();
+  });
+
+  test('should select chart', () => {
+    component.shouldShowVisualization = true;
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.nativeElement.querySelector('.select-chart');
+    button.click();
+    fixture.detectChanges();
+
+    expect(component.chartType).toBe('bar');
+    expect(component.displayChartTypes.length).toBe(2);
+  });
+
+
+  test('should set chart colors', () => {
+    component.chartType = 'bar';
+    component.isPreviewResultAvailable = true;
+    component.displayChartTypes = ['bar', 'table'];
+
+    fixture.detectChanges();
+
+    const dynamicChart = findComponent(fixture, 'app-dynamic-chart');
+    dynamicChart.triggerEventHandler('basicData', null);
+    // write assertions
+  });
+
+  
 
 });

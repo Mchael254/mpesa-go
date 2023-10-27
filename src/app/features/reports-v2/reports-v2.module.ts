@@ -24,6 +24,7 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { CalendarModule } from 'primeng/calendar';
 import { ReportManagementComponent } from './report-management/report-management.component';
 import { TableModule } from 'primeng/table';
+import { SaveReportModalComponent } from './save-report-modal/save-report-modal.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { TableModule } from 'primeng/table';
     CriteriaComponent,
     ListReportComponent,
     ColorSchemeComponent,
-    ReportManagementComponent
+    ReportManagementComponent,
+    SaveReportModalComponent
   ],
   imports: [
     CommonModule,
