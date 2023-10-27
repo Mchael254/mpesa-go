@@ -2,7 +2,12 @@
     <div class="card p-3">
         
         <div class="preloader" *ngIf="!shouldShowTable">
-            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            <p-progressSpinner
+                styleClass="w-0.5em h-0.5em "
+                strokeWidth="3"
+                fill="var(--surface-ground)"
+                animationDuration=".6s"
+              ></p-progressSpinner>
         </div>
         <div class="mt-5" *ngIf="shouldShowTable">
             <p-table 
