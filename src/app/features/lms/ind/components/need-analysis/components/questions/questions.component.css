@@ -1,0 +1,22 @@
+.radio-row {
+  display: flex; /* Display children in a row */
+  align-items: flex-start; /* Vertically center children */
+  flex-direction: column;
+}
+
+.radio-button {
+  margin-right: 10px; /* Add space between radio buttons */
+  padding-top: 0.5rem;
+  font-size: 13px;
+}
+
+@media screen and (max-width: 767px) {
+  .radio-button {
+    margin-right: 8px; /* Add space between radio buttons */
+    padding-top: 0.4rem !important;
+    font-size: 11px !important;
+  }
+  .fw-bold {
+    font-size: 12px;
+  }
+}

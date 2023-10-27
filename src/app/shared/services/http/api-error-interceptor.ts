@@ -21,10 +21,12 @@ import { Router } from '@angular/router';
 import {Message, MessageService} from "primeng/api";
 import { Logger } from '../logger/logger.service';
 import { UtilService } from '../util/util.service';
+import { AutoUnsubscribe } from '../AutoUnsubscribe';
 
 const log = new Logger('ApiErrorInterceptor');
 
 @Injectable()
+@AutoUnsubscribe
 export class ApiErrorInterceptor implements HttpInterceptor {
   constructor(
     private messageService: MessageService,
@@ -63,7 +65,7 @@ export class ApiErrorInterceptor implements HttpInterceptor {
       }),
       catchError((err) => {
         log.info('catchError', err);
-        let messages: Message[] = [];
+        // let messages: Message[] = [];
 
         // if (err.status === 401 || err.status === 403) {
         //   messages.push({
@@ -79,22 +81,22 @@ export class ApiErrorInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse) {
           if (err.headers.has('api_error_type')) {
             log.info(`ERROR: ${JSON.stringify(err.error)}`);
-            messages = this.prepareApiError(err.error);
+            // messages = this.prepareApiError(err.error);
 
-            log.warn(messages);
+            // log.warn(messages);
           } else {
             // httpResponse but of no valid implementation
             log.error('Error fetched: ', err.error );
             // log.error(err);
-            messages.push({
-              severity: 'error',
-              summary: 'error',
-              detail:
-                err.error?.message ||
-                err.error['error_description'] ||
-                [...(err.error['errors'] || [])].join('\n') ||
-                err.statusText,
-            });
+            // messages.push({
+            //   severity: 'error',
+            //   summary: 'error',
+            //   detail:
+            //     err.error?.message ||
+            //     err.error['error_description'] ||
+            //     [...(err.error['errors'] || [])].join('\n') ||
+            //     err.statusText,
+            // });
           }
 
           // if (err.status === 401 /*|| err.status === 403*/) {
@@ -102,11 +104,11 @@ export class ApiErrorInterceptor implements HttpInterceptor {
           // }
         } else {
           // fallback
-          messages = this.prepareApiError(err);
+          // messages = this.prepareApiError(err);
         }
         // this.loaderService.forceStop();
-        this.messageService.clear();
-        this.messageService.addAll(messages);
+        // this.messageService.clear();
+        // this.messageService.addAll(messages);
 
         return throwError(err);
       }),
