@@ -124,7 +124,7 @@ export class ReportPreviewComponent implements OnInit{
    */
   ngOnInit(): void {
     const reportParams = this.sessionStorageService.getItem(`reportParams`);
-    log.info(`report params >>> `, reportParams)
+    // log.info(`report params >>> `, reportParams)
     this.criteria = reportParams.criteria;
     this.sort = reportParams.sort;
     this.reportNameRec = reportParams.reportNameRec;
@@ -236,25 +236,6 @@ export class ReportPreviewComponent implements OnInit{
   }
 
   /**
-   * 1. selects chart to be displayed
-   * 2. fetch chart details by calling the loadChart() method
-   * @param chartType
-   */
-  selectChartType(chartType: { iconClass: string; name: ChartType | string }): void {
-    log.info(`selected chartType `, chartType);
-    this.chartType = chartType.name;
-    this.selectedChartType = chartType
-    // @ts-ignore
-    if (this.chartType === 'table') {
-      this.shouldShowTable = true;
-    } else {
-      this.shouldShowTable = false;
-    }
-    this.shouldShowVisualization = false;
-    this.loadChart();
-  }
-
-  /**
    * 1. selects a specific chart for display
    * 2. sets table as the first chart to be displayed
    * 3. calls the loadChart() method 
@@ -277,7 +258,6 @@ export class ReportPreviewComponent implements OnInit{
       }
 
     }
-
     this.chartType = this.displayChartTypes[this.displayChartTypes.length-1];
     this.styleType = this.chartType;
 
@@ -305,6 +285,7 @@ export class ReportPreviewComponent implements OnInit{
    */
   showStyles(): void {
     this.shouldShowStyles = !this.shouldShowStyles;
+    log.info(`should show styles >>> `, this.shouldShowStyles);
   }
 
   /**
@@ -351,9 +332,11 @@ export class ReportPreviewComponent implements OnInit{
     const filterSelectedIndex = this.selectedFilters.indexOf(filter)
     this.selectedFilters.splice(filterSelectedIndex, 1);
 
-    const member = this.criteria.filter((item) => item.query === filter.column)[0];
-    // log.info(`member >>>`, member, this.criteria);
-    // log.info(`this.filter >>>`, member, this.filters);
+    const member = this.criteria.filter((item) => {
+      // log.info(`item >>> `, item, filter, item.query === filter.column);
+      return item.query === filter.column;
+    })[0];
+
     this.filters.forEach((filter, index) => {
       const testString = `${member.transaction}.${member.query}`;
       if (filter.member === testString) this.filters.splice(index, 1);
@@ -522,13 +505,13 @@ export class ReportPreviewComponent implements OnInit{
       width: 0
     }
 
-    log.info(`report to save`, report)
+    // log.info(`report to save`, report)
 
     this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          log.info(`saved report >>>`, res);
+          // log.info(`saved report >>>`, res);
           this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
         },
         error: (e) => {
@@ -583,14 +566,13 @@ export class ReportPreviewComponent implements OnInit{
     return conditionsOptionsValue;
   }
 
-  selectCondition(event) {
-    log.info(`selected condition`, event.target.value)
-  }
+  // selectCondition(event) {
+  //   log.info(`selected condition`, event.target.value)
+  // }
 
   setColorScheme(colorScheme): void {
     this.colorScheme[this.styleType] = colorScheme;
     this.loadChart();
-    log.info(`selected color scheme >>> `, this.colorScheme, this.styleType);
   }
 
 }
