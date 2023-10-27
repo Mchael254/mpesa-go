@@ -24,6 +24,7 @@ export class HeaderSubMenuComponent implements OnInit {
   reinsuranceubMenuList: SidebarMenu[];
   accountSubMenuList: SidebarMenu[];
   quotationSubMenuList: SidebarMenu[];
+  analyticsSubMenuList: SidebarMenu[];
   searchTerm: any;
   nameSearchTerm:any;
   idSearchTerm:any;
@@ -42,6 +43,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
     this.accountSubMenuList = this.menuService.accountSubMenuList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
+    this.analyticsSubMenuList = this.menuService.analyticsSubMenuList();
   }
 
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {

@@ -6,6 +6,12 @@ import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {Report} from "../../../shared/data/reports/report";
 import {TableDetail} from "../../../shared/data/table-detail";
+import {ChartReports, RenameChartsDTO} from "../../../shared/data/reports/chart-reports";
+import {Pagination} from "../../../shared/data/common/pagination";
+import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import { Logger } from '../../../shared/services';
+
+const log = new Logger('ReportService');
 
 @Injectable({
   providedIn: 'root'
@@ -67,6 +73,14 @@ export class ReportService {
 
   // utils
   prepareTableData(reportLabels, reportData, dimensions, measures, criteria): TableDetail {
+    log.info(`--------------------------------`)
+    log.info(`report labels >>>`, reportLabels);
+    log.info(`reportData >>>`, reportData);
+    log.info(`dimensions >>>`, dimensions);
+    log.info(`measures >>>`, measures);
+    log.info(`criteria >>>`, criteria);
+    log.info(`--------------------------------`)
+
     const tableHead = [];
     const header = [...dimensions, ...measures];
 
@@ -77,7 +91,7 @@ export class ReportService {
     });
 
     const tableRows = []; // always initialize table to empty array before populating
-    const elementLength = reportLabels[0].length;
+    const elementLength = reportLabels[0]?.length;
     let enhancedChartLabels = [];
 
     for (let i=0; i < elementLength; i++) {
@@ -91,7 +105,7 @@ export class ReportService {
     let tableData = [...enhancedChartLabels];
     reportData.forEach((x) => tableData.push(x));
 
-    const dataLength = tableData[0].length;
+    const dataLength = tableData[0]?.length;
 
     for(let i = 0; i < dataLength; i++) {
       const rowData = [];
@@ -145,4 +159,53 @@ export class ReportService {
     return datasets;
   }
 
+  getChartReports(): Observable<Pagination<ChartReports[]>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
+  }
+
+  updateChartReports(id:number, chartReportRename: RenameChartsDTO): Observable<RenameChartsDTO> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.put<RenameChartsDTO>(`/${baseUrl}/chart/chart-reports/${id}/name`
+      , JSON.stringify(chartReportRename), {headers: this.headers});
+  }
+
+  /*Create a new dashboard*/
+  saveDashboard(dashboard: Dashboard): Observable<Dashboard> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.post<Dashboard>(
+      `/${baseUrl}/chart/dashboards`, JSON.stringify(dashboard), {headers: this.headers});
+  }
+
+  getDashboards(): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<any>(`/${baseUrl}/chart/dashboards`);
+  }
+
+
+  getDashboardsById(id:number): Observable<any> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.get<any>(`/${baseUrl}/chart/dashboards/${id}`);
+  }
+
+  deleteDashboard(dashboardId: number): Observable<string> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.delete<string>(`/${baseUrl}/chart/dashboards/${dashboardId}`, {headers: this.headers});
+  }
+
+  addReportToDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.post<DashboardReports>(
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, JSON.stringify(dashboardReport), {headers: this.headers});
+  }
+
+  deleteReportFromDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const options = {
+      headers: this.headers,
+      body: dashboardReport // Include the request body here
+    };
+    return this.http.delete<DashboardReports>(
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, options);
+  }
 }

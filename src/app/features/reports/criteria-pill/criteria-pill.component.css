@@ -19,3 +19,11 @@
   padding: 10px 5px;
   color: #00529b;
 }
+
+.dropdown-menu {
+  border: solid 1px #eee;
+}
+
+.dropdown-menu li {
+  list-style-type: none;
+}

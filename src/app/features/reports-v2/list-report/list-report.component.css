@@ -1,0 +1,16 @@
+.divBackground {
+  background-color: rgba(0, 82, 155, 0.25);
+  --bs-gutter-x: 0;
+}
+:host ::ng-deep .p-menu {
+  top: 6%!important;
+  left: 75%!important;
+  width: 8em;
+  font-family: Roboto;
+}
+:host ::ng-deep .p-element .p-submenu-header {
+  display:none;
+}
+.move {
+  cursor: move;
+}

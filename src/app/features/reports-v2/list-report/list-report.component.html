@@ -1,0 +1,103 @@
+<div class="base-content-section">
+  <div class="card">
+    <div class="card-body">
+      <div class="me-4 mt-3">
+        <app-dynamic-breadcrumb [breadCrumbItems]="[
+            {
+              label: 'Dashboard',
+              url: '/home/reportsv2/create-dashboard'
+            },
+            {
+              label: report[0]?.name,
+              url: '/home/reportsv2/list-report',
+            },
+          ]">
+        </app-dynamic-breadcrumb>
+      </div>
+
+      <div class="row col-lg-12 mt-4 bs- divBackground">
+        <div class="col-lg-4 text-center">
+          <p class="fs-2 text-black">$ 2.03 M</p>
+          <label>Quota premium</label>
+        </div>
+        <div class="col-lg-4 text-center">
+          <p class="fs-2 text-black">869</p>
+          <label>YTD premium</label>
+        </div>
+        <div class="col-lg-4 text-center">
+          <p class="fs-2 text-black">$ 699 k</p>
+          <label>Net premium</label>
+        </div>
+      </div>
+
+      <div class="row mx-0 mt-3 p-0 dragDropBoundary" *ngFor="let reportdata of report"  cdkDropList (cdkDropListDropped)="drop($event)">
+        <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
+          <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
+            <div class="row card-header border-0 text-sm-start bg-transparent">
+              <div class="col-md-10">
+                <input #textInput type="text" [id]="reportName.name" class="form-control" [value]="reportName.name | titlecase"
+                       [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
+              </div>
+              <div class="col-md-2">
+                <span class="float-end"
+                      (click)="selectedDashboard = reportdata.id;
+                      selectedReportId = reportName.id;
+                      selectedReport = reportName;
+                      menu3.toggle($event)"
+                      style="cursor: pointer;">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                <p-menu #menu3 [model]="items" [popup]="true"></p-menu>
+              </div>
+            </div>
+            <div class="card-body">
+              <div
+                *ngIf="reportName?.charts[0]?.type==='table';
+               else showChart"
+              >
+              <app-dynamic-table
+                [tableDetails]="tableDetails"
+              ></app-dynamic-table>
+            </div>
+
+            <ng-template #showChart>
+              <app-dynamic-chart
+                [basicData]="chartData"
+                [chartType]="reportName?.charts[0]?.type"
+              ></app-dynamic-chart>
+            </ng-template>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Delete confirmation dialogue Modal -->
+  <div class="modal fade" id="deleteDashboardModal" tabindex="-1" aria-labelledby="deleteDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <p>Are you sure you want to delete?</p>
+            <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
+            <button type="button" class="btn btn-danger" id="deleteDashboard" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="removeFromDashboard();closeDeleteModal()">Yes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-share-modal></app-share-modal>
+  <app-download-modal></app-download-modal>
+
+
+</div>

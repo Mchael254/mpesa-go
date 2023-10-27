@@ -20,7 +20,7 @@
     "logLevel": "debug"
   },
 
-  "/charts": {
+  "/chart-reports": {
     "target": "http://localhost:1036/",
     "secure": false,
     "changeOrigin": true,
