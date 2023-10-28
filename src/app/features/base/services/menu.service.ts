@@ -41,7 +41,7 @@ export class MenuService{
       name: 'Actions',
       nameSlug: 'actions',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},],
+      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Quote Need Analysis', link:"/home/lms/need-analysis"},],
 
       collapsed:true,
     },
@@ -49,7 +49,7 @@ export class MenuService{
       name: 'Quotation',
       nameSlug: 'quotation',
       icon: 'fa-solid fa-quote-right',
-      menuItems: [ {name:'Quotation List', link:"/home/lms/ind/quotation/list"}],
+      menuItems: [ {name:'Quotation List', link:"/home/lms/quotation/list"}],
       collapsed:true,
     }
 
@@ -372,12 +372,12 @@ quotationSubMenuList(): SidebarMenu[]{
   return  [
     {
       name:"Create Quick Quote",
-      link: "/home/lms/ind/quotation/list",
+      link: "/home/lms/quotation/list",
       value: "QUOTATION"
     },
     {
       name:"View Quotations",
-      link:"/home/lms/ind/quotation/list",
+      link:"/home/lms/quotation/list",
       value: "QUOTATION"
     },
   ]}

@@ -1,0 +1,319 @@
+<div class="container-fluid">
+  <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div class="full-border p-5">
+    <div>
+      <div class="d-flex justify-content-between">
+        <div class="fw-bold text-black">Insurance history</div>
+      </div>
+      <div class="text-black">
+        <div class="col fadeIn">
+          <div [formGroup]="insuranceHistoryForm" class="w-100">
+            <div>
+              <div class="my-5">
+              <label class="required"
+                >Do you have any active, lapsed, paid up or surrendered life
+                assurance policy from any life assurance company ?</label
+              >
+              <div></div>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="male"
+                  formControlName="question1"
+                  value="Y"
+                />
+                <label class="form-check-label" for="male">Yes</label>
+              </span>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="female"
+                  formControlName="question1"
+                  value="N"
+                />
+                <label class="form-check-label" for="female">No</label>
+              </span>
+
+
+              <div>
+                <div class="text-black" *ngIf="getValue('question1') === 'Y'">
+                  <div>
+                    <div class="text-black">
+                      <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                        Beneficiaries and Trustees
+                      </div> -->
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                        <div>
+
+                        </div>
+                        <div>
+                          <div (click)="addEmptyPolicyList(policyListOne)"
+                            class="b-r d-flex justify-content-center align-content-center"
+                          >
+                            <i class="fa-solid fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container>
+                        <div class="table-responsive">
+                          <table formArrayName="responseOne" class="table table-bordered">
+                            <thead>
+                              <tr style="font-weight: 400; font-size: 12px">
+                                <th>Policy No.</th>
+                                <th>Insurance Company</th>
+                                <th>Annual Premium</th>
+                                <th>Sum Assured</th>
+                                <th>Status</th>
+                                <th style="width: 2rem"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container
+                                *ngFor="let row of policyListOne; let i = index"
+                              >
+                                <tr [formGroup]="insuranceHistoryFormOne" *ngIf="row['isEdit'] === true">
+                                  <td><input formControlName="pol_code" type="number" class="form-control" required /></td>
+                                  <td><input formControlName="prp_code" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="prem" type="number" class="form-control" /></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control" /></td>
+                                  <td><select
+                                    class="form-select"
+                                    formControlName="status"
+                                  >
+                                  <option style="font-size: 11px" value="" disabled selected>Status</option>
+                                  <ng-container *ngFor="let type of coverStatusTypeList">
+                                    <option [value]="type['name']">
+                                      {{ type['value'] | titlecase }}
+                                    </option>
+                                  </ng-container>
+
+                                  </select></td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="addResponseOne(i)" class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
+                                    </div>
+                                    <div (click)="deletepolicyListOne(i)" class="mx-2">
+                                      <i class="fa-solid fa-x text-danger"></i>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="row['isEdit'] === false">
+                                  <td>{{ row['pol_code'] }}</td>
+                                  <td>{{ row['prp_code']  }}</td>
+                                  <td>{{ row['prem']  }}</td>
+                                  <td>{{ row['sum_assured']  }}</td>
+                                  <td>{{ filterCoverStatusType(row['status'])  }}</td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="editPolicyOne(i)" class="mx-2">
+                                      <i class="fas fa-edit text-success"></i>
+                                      <!-- Edit Icon -->
+                                    </div>
+                                    <div (click)="deletepolicyListOne(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
+                                      <!-- Remove Icon -->
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
+                          <div *ngIf="editEntity">
+                            <div
+                              style="
+                                left: 50%;
+                                right: 50%;
+                                width: 3rem;
+                                height: 3rem;
+                                position: relative;
+                              "
+                              class="spinner-border text-primary spinner-border"
+                              role="status"
+                            >
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          *ngIf="policyListOne.length === 0"
+                          class="d-flex justify-content-center text-danger"
+                        >
+                          No Available Policy!
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            </div>
+
+
+            <div class="my-5">
+              <label class="required"
+                >Has any proposal on your life ever been declined, deferred,
+                withdrawn or accepted on special terms ?</label
+              >
+              <div></div>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="male"
+                  formControlName="question2"
+                  value="Y"
+                />
+                <label class="form-check-label" for="male">Yes</label>
+              </span>
+              <span class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="female"
+                  formControlName="question2"
+                  value="N"
+                />
+                <label class="form-check-label" for="female">No</label>
+              </span>
+
+              <div>
+                <div class="text-black" *ngIf="getValue('question2') ==='Y'">
+                  <div>
+                    <div class="text-black">
+                      <!-- <div style="color: var(--grey-color); padding: 0 0 1rem 0rem">
+                        Beneficiaries and Trustees
+                      </div> -->
+                      <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                        <div>
+
+                        </div>
+                        <div>
+                          <div (click)="addEmptyPolicyList(policyListTwo)"
+                            class="b-r d-flex justify-content-center align-content-center"
+                          >
+                            <i class="fa-solid fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-container>
+                        <div class="table-responsive">
+                          <table formArrayName="responseOne" class="table table-bordered">
+                            <thead>
+                              <tr style="font-weight: 400; font-size: 12px">
+                                <th>Policy No.</th>
+                                <th>Insurance Company</th>
+                                <th>Annual Premium</th>
+                                <th>Sum Assured</th>
+                                <th>Status</th>
+                                <th style="width: 2rem"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <ng-container
+                                *ngFor="let row of policyListTwo; let i = index"
+                              >
+                                <tr [formGroup]="insuranceHistoryFormTwo" *ngIf="row['isEdit'] === true">
+                                  <td><input formControlName="pol_code" type="number" class="form-control" required /></td>
+                                  <td><input formControlName="prp_code" type="text" class="form-control" required /></td>
+                                  <td><input formControlName="prem" type="number" class="form-control" /></td>
+                                  <td><input formControlName="sum_assured" type="number" class="form-control" /></td>
+                                  <td><select
+                                    class="form-select"
+                                    formControlName="status"
+                                  >
+                                  <option style="font-size: 11px" value="" disabled selected>Status</option>
+                                  <ng-container *ngFor="let type of coverStatusTypeList">
+                                    <option [value]="type['name']">
+                                      {{ type['value'] | titlecase }}
+                                    </option>
+                                  </ng-container>
+
+                                  </select></td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="addResponseTwo(i)" class="mx-2">
+                                      <i class="fa-solid fa-check text-success"></i>
+                                    </div>
+                                    <div (click)="deletepolicyListTwo(i)" class="mx-2">
+                                      <i class="fa-solid fa-x text-danger"></i>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr *ngIf="row['isEdit'] === false">
+                                  <td>{{ row['pol_code'] }}</td>
+                                  <td>{{ row['prp_code']  }}</td>
+                                  <td>{{ row['prem']  }}</td>
+                                  <td>{{ row['sum_assured']  }}</td>
+                                  <td>{{ filterCoverStatusType(row['status'])  }}</td>
+                                  <td class="d-flex justify-content-between py-2">
+                                    <div (click)="editPolicyTwo(i)" class="mx-2">
+                                      <i class="fas fa-edit text-success"></i>
+                                      <!-- Edit Icon -->
+                                    </div>
+                                    <div (click)="deletepolicyListTwo(i)" class="mx-2">
+                                      <i class="fas fa-trash-alt text-danger"></i>
+                                      <!-- Remove Icon -->
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-container>
+                            </tbody>
+                          </table>
+
+                          <div *ngIf="editEntity">
+                            <div
+                              style="
+                                left: 50%;
+                                right: 50%;
+                                width: 3rem;
+                                height: 3rem;
+                                position: relative;
+                              "
+                              class="spinner-border text-primary spinner-border"
+                              role="status"
+                            >
+                              <span class="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          *ngIf="policyListOne.length === 0"
+                          class="d-flex justify-content-center text-danger"
+                        >
+                          No Available Policy!
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between">
+    <button routerLink="/home/lms/ind/quotation/client-details" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
+    </button>
+    <button routerLink="/home/lms/ind/quotation/lifestyle-details" style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
+      Continue
+      &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+
+    </button>
+  </div>
+</div>

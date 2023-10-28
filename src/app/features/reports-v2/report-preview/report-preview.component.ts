@@ -212,7 +212,7 @@ export class ReportPreviewComponent implements OnInit{
     this.saveReportForm.patchValue({
       reportName: this.reportNameRec,
       destination: 'M'
-    })
+    });
   }
 
   /**
@@ -463,6 +463,7 @@ export class ReportPreviewComponent implements OnInit{
     const formValues = this.saveReportForm.getRawValue();
     const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
+    log.debug(`formValues >>> `, formValues)
 
     let charts: Chart[] = [];
 
@@ -505,14 +506,18 @@ export class ReportPreviewComponent implements OnInit{
       width: 0
     }
 
-    // log.info(`report to save`, report)
+    console.log(`report to save >>> `, formValues.dashboard)
+
+    let urlPath = formValues.dashboard !== '' ? 
+      `list-report?dashboardId=${formValues.dashboard}` : 'report-management';
 
     this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          // log.info(`saved report >>>`, res);
+          console.log(`saved report >>>`, res);
           this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+          this.router.navigate([`/home/reportsv2/${urlPath}`])
         },
         error: (e) => {
           this.globalMessagingService.displayErrorMessage('error', 'Report not saved')

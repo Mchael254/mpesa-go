@@ -13,7 +13,6 @@ import {SharedModule} from "../../shared/shared.module";
 import {ChartModule} from "primeng/chart";
 import { TicketsSummaryComponent } from './components/dashboard/tickets-summary/tickets-summary.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { CalendarComponent } from './components/dashboard/calendar/calendar.component';
 import { CalendarLayoutComponent } from './components/dashboard/calendar-layout/calendar-layout.component';
