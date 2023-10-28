@@ -159,7 +159,7 @@ export class CreateReportComponent implements OnInit {
     this.reportService.getSubjectAreas()
       .subscribe((res) => {
         this.subjectAreas = res;
-        log.info(`all Subject Areas >>>`, this.subjectAreas);
+        console.log(`all Subject Areas >>>`, this.subjectAreas);
       });
   }
   /**

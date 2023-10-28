@@ -7,7 +7,9 @@
     "chart_services": "chart-reports",
     "gis_services": "gis",
     "ticket_services": "turnquest",
+    "lms": "lms",
     "api":"api"
+
   },
 
   "organization": {

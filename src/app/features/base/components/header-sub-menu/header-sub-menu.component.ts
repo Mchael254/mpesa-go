@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Logger } from 'src/app/shared/services';
@@ -15,6 +15,8 @@ const log = new Logger("HeaderSubMenuComponent")
 })
 @AutoUnsubscribe
 export class HeaderSubMenuComponent implements OnInit {
+  @ViewChild('NewQuoteModal') modalElement: ElementRef;
+
   defaultSidebar: SidebarMenu | undefined;
   administationSubMenuList: SidebarMenu[];
   teamSubMenuList: SidebarMenu[];
@@ -26,10 +28,12 @@ export class HeaderSubMenuComponent implements OnInit {
   searchTerm: any;
   nameSearchTerm:any;
   idSearchTerm:any;
+  close_modal: boolean = false;
 
   constructor(private menuService: MenuService, private router:Router){
     this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
   }
+
 
 
   ngOnInit(): void {
@@ -61,18 +65,24 @@ export class HeaderSubMenuComponent implements OnInit {
   }
 
   openModal() {
-    // Open the Bootstrap modal programmatically
+
     const modal = document.getElementById('NewQuoteModal');
     if (modal) {
       modal.classList.add('show');
+      modal.style.display = 'block';
     }
   }
   closeModal() {
-    // Close the Bootstrap modal programmatically
-    const modal = document.getElementById('NewQuoteModal');
+
+      const modal = document.getElementById('NewQuoteModal');
     if (modal) {
-      modal.classList.remove('show'); // Remove the 'show' class to hide the modal
-      modal.setAttribute('aria-hidden', 'true');
+      modal.classList.remove('show')
+      modal.style.display = 'none';
     }
   }
+
+
+
+
+
 }
