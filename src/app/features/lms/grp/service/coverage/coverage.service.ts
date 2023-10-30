@@ -12,6 +12,6 @@ export class CoverageService {
   ) { }
 
   getCategoryDetails(quotation_code: number) {
-    return this.api.GET(`quotations/${quotation_code}/categories`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+    return this.api.GET(`quotations/${quotation_code}/categories`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 }

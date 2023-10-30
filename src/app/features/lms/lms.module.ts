@@ -9,7 +9,7 @@ import { CoverTypePipe } from './pipe/cover-type/cover-type.pipe';
 @NgModule({
   declarations: [
     PolicyListComponent,
-    
+
 
   ],
   imports: [
