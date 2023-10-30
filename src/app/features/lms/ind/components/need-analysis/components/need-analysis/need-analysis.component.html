@@ -1,6 +1,15 @@
 
-<div class="container-fluid">
-  <div class="full-border p-5">
+<div class="container-fluid pb-4" style="padding-bottom: 5rem !important;">
+  <div class="full-border p-5" style=" position: relative;" class="mt-1">
+    <ngx-spinner
+name="analysis_view"
+  type="ball-clip-rotate-multiple"
+
+  [fullScreen]="false"
+  color="#00529B"
+  size="medium"
+  bdColor="rgba(255, 255, 255, 0.0)"
+></ngx-spinner>
     <div>
       <div class="d-flex justify-content-between">
         <div class="fw-bold text-black">Need Analysis</div>
@@ -9,7 +18,7 @@
       <div class="pb-4" >
         <div class=" d-flex justify-content-center">
           <div class=" w-50 pb-2 pt-4" style="color: var(--grey-color);">
-            <div>Step 1 of 2</div>
+            <div>Step {{questionSelected.length}}</div>
           </div>
 
         </div>
@@ -23,13 +32,14 @@
 
       </div>
 
-      <div>
+      <div *ngFor="let item of questionSelected; let i = index;">
         <div>
-          <app-questions></app-questions>
+          <app-questions *ngIf="questionSelected[i]?.options && questionSelected[i]?.options.length>0 " [questions]=item [optionPosition]=optionSelected[i] [index]=i+1 (selectOption)="selectOption($event)"></app-questions>
+          <div *ngIf="questionSelected[i]?.products && questionSelected[i]?.products.length>0">
+            <app-analysis-product-list [products]="questionSelected[i]?.products"></app-analysis-product-list>
+          </div>
         </div>
-        <div>
-          <app-analysis-product-list></app-analysis-product-list>
-        </div>
+
 
       </div>
 
