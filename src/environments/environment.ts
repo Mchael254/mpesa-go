@@ -19,7 +19,7 @@ export const environment = {
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:5009'],
 
     // [API_CONFIG.SETUPS_SERVICE_BASE_URL, '/lms/setups'],
-    // [API_CONFIG.MARKETING_SERVICE_BASE_URL, '/lms/marketing'],
+    // [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, '/lms/marketing'],
   ]),
   TENANT_ID: API_TENANT_ID.MUTUAL,
 

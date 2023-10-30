@@ -61,7 +61,7 @@ export class ProductService {
   }
 
   premium_computation(prem_obj: { lead: {}; quote: {}; }): Observable<any> {
-    return this.api.POST('quotations/quick-quote', prem_obj, API_CONFIG.MARKETING_SERVICE_BASE_URL)
+    return this.api.POST('quotations/quick-quote', prem_obj, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
     .pipe(
       map((_compute: any) => {
         return _compute;
