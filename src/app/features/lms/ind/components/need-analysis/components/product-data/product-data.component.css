@@ -1,0 +1,18 @@
+.picture {
+  /* Background image properties */
+  background-size: cover; /* Adjust to your preferences */
+  background-position: center; /* Adjust to your preferences */
+
+  /* Width and height properties */
+  width: 250px; /* Set your desired width */
+  height: 190px; /* Set your desired height */
+
+  /* Additional styles */
+  border: 1px solid #ccc; /* Add a border if desired */
+  border-radius: 4px; /* Add border radius for rounded corners */
+  color: #000; /* Text color */
+  text-align: center; /* Center the content horizontally */
+  border: #e9e9ec80 solid 3px;
+  /* background-image: url('https://www.investopedia.com/thmb/pQAGRubgg4rB1-GaeUP8lITRais=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/how-does-insurance-sector-work.asp-FINAL-1ccff64db9f84b479921c47c008b08c6.png'); */
+
+}
