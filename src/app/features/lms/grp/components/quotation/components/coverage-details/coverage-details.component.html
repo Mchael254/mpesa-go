@@ -401,7 +401,7 @@
               <!-- end of modal to capture aggregate cover types details -->
 
 <!-- detailed -->
-<div *ngIf="newQuatationCalType === 'detailed'">
+<div *ngIf="quatationCalType === 'D'">
     <p-table [value]="yourDataDetailed" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template pTemplate="header">
           <tr>
@@ -412,6 +412,7 @@
             <th>Rate</th>
             <th>Rate division factor</th>
             <th>% of main/yr SA</th>
+            <th>Action</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData>
@@ -437,6 +438,14 @@
             </td>
             <td>{{ rowData.rateDivisionFactor }}</td>
             <td>{{ rowData.percentOfMainYearSA }}</td>
+            <td>
+                <button class="edit-button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button class="delete-button">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+              </td>
           </tr>
         </ng-template>
       </p-table>
@@ -445,7 +454,7 @@
 
 
 <!-- aggregate -->
-<div *ngIf="newQuatationCalType === 'aggregate'">
+<div *ngIf="quatationCalType === 'A'">
     <p-table
       [value]="yourDataAggregate"
       [paginator]="false"
@@ -470,6 +479,7 @@
           <th>Average ANB</th>
           <th>Override SA</th>
           <th>Sum Assured</th>
+          <th>Action</th>
         </tr>
       </ng-template>
   
@@ -491,6 +501,15 @@
           <td>{{ rowData.avgANB }}</td>
           <td>{{ rowData.overrideSA }}</td>
           <td>{{ rowData.sumAssured }}</td>
+          <!-- <td>
+            <button class="edit-button">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+            <button class="delete-button">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+            </button>
+          </td> -->
+          <td><i class="fa fa-ellipsis-v" aria-hidden="true"></i></td>
         </tr>
       </ng-template>
     </p-table>
@@ -907,16 +926,17 @@
                 <p-table [value]="yourDataMemberDets" [tableStyle]="{'min-width': '100rem'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th pSortableColumn="code" style="width:10%">Surname <p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="sname" style="width:10%">Surname <p-sortIcon field="sname"></p-sortIcon></th>
                             <th pSortableColumn="name" style="width:10%">Other name <p-sortIcon field="name"></p-sortIcon></th>
-                            <th pSortableColumn="category" style="width:10%">Date of birth <p-sortIcon field="category"></p-sortIcon></th>
+                            <th pSortableColumn="dob" style="width:10%">Date of birth <p-sortIcon field="dob"></p-sortIcon></th>
                             <th pSortableColumn="quantity" style="width:10%">Gender <p-sortIcon field="quantity"></p-sortIcon></th>
                             <th pSortableColumn="price" style="width:10%">Payroll/Member no <p-sortIcon field="price"></p-sortIcon></th>
-                            <th pSortableColumn="code" style="width:10%">Category <p-sortIcon field="code"></p-sortIcon></th>
-                            <th pSortableColumn="code" style="width:10%">Dependant type <p-sortIcon field="code"></p-sortIcon></th>
-                            <th pSortableColumn="code" style="width:10%">Monthly earnings <p-sortIcon field="code"></p-sortIcon></th>
-                            <th pSortableColumn="code" style="width:10%">Joining date<p-sortIcon field="code"></p-sortIcon></th>
-                            <th pSortableColumn="code" style="width:10%">Main member no<p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="category" style="width:10%">Category <p-sortIcon field="category"></p-sortIcon></th>
+                            <th pSortableColumn="dependantType" style="width:10%">Dependant type <p-sortIcon field="dependantType"></p-sortIcon></th>
+                            <th pSortableColumn="monthlyEarnings" style="width:10%">Monthly earnings <p-sortIcon field="monthlyEarnings"></p-sortIcon></th>
+                            <th pSortableColumn="joiningDate" style="width:10%">Joining date<p-sortIcon field="joiningDate"></p-sortIcon></th>
+                            <th pSortableColumn="mainMemberNo" style="width:10%">Main member no<p-sortIcon field="mainMemberNo"></p-sortIcon></th>
+                            <th style="width:10%">Action</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-product>
@@ -931,6 +951,14 @@
                           <td>{{ product.monthlyEarnings }}</td>
                           <td>{{ product.joiningDate }}</td>
                           <td>{{ product.mainMemberNo }}</td>
+                          <td>
+                            <button class="edit-button">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <button class="delete-button">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                          </td>
                         </tr>
                       </ng-template>
                       

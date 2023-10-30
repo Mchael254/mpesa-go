@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/shared/services';
 import { QuickService } from '../../../../service/quick.service';
@@ -16,6 +16,12 @@ import { IntermediaryService } from 'src/app/features/entities/services/intermed
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
+import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
+import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
+import { GrpQuoteDetails } from '../../../../models/quoteDetails';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { formatDate } from '@angular/common';
 
 
 const log = new Logger ('QuickComponent');
@@ -31,13 +37,15 @@ export class QuickComponent implements OnInit, OnDestroy {
   productList: any[] = [
     { code: 0, description: 'SELECT PRODUCT' },
   ];
-  currencyList: { label: string; value: number; }[] = [];
+  currencyList: Currency[] = [];
   quotationCovers: QuotationCovers [] = [];
   durationType: DurationTypes [] = []
   frequencyOfPayment: { label: string, value: string }[] = [];
   unitRateOption: UnitRate [] =  [];
   facultativeType: FacultativeType [] = [];
   intermediaries: AgentDTO[] = [];
+  branch: OrganizationBranchDto[];
+  quoteDetails: GrpQuoteDetails
 
 
   constructor (
@@ -47,7 +55,10 @@ export class QuickComponent implements OnInit, OnDestroy {
     private payFrequenciesService: PayFrequencyService,
     private client_service: ClientService,
     private product_service: ProductService,
-    private intermediaryService: IntermediaryService
+    private intermediaryService: IntermediaryService,
+    private branchService: BranchService,
+    private currencyService: CurrencyService,
+    private session_storage: SessionStorageService,
     ) {}
 
   ngOnInit(): void {
@@ -63,6 +74,8 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.getIntermediaries();
     this.searchClient();
     this.searchAgent();
+    this.getBranch();
+    // this.retrievQuoteDets();
   }
 
   ngOnDestroy(): void {
@@ -71,29 +84,20 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   quickQuoteForm() {
     this.quickForm = this.fb.group({
-      clients: [""],
+      clients: ["", [Validators.required] ],
       branch: [""],
-      products: [""],
-      durationType: [""],
-      facultativeType: [""],
-      quotationCovers: [""],
-      frequencyOfPayment: [""],
-      unitRateOption: [""],
-      currency: [""],
-      effectiveDate: [""],
-      quotationCalcType: [""],
-      intermediary: [""],
-      commissionRate: [""],
+      products: ["", [Validators.required] ],
+      durationType: ["", [Validators.required] ],
+      facultativeType: ["", [Validators.required] ],
+      quotationCovers: ["", [Validators.required] ],
+      frequencyOfPayment: ["", [Validators.required] ],
+      unitRateOption: ["", [Validators.required] ],
+      currency: ["", [Validators.required] ],
+      effectiveDate: ["", [Validators.required] ],
+      quotationCalcType: ["", [Validators.required] ],
+      intermediary: ["", [Validators.required] ],
+      commissionRate: ["", [Validators.required] ],
 
-    });
-  }
-
-  onContinue () {
-    const quickFormValues = this.quickForm.get("quotationCalcType").value;
-    this.router.navigate(['/home/lms/grp/quotation/coverage'], {
-      queryParams: {
-        quotationCalcType: quickFormValues,
-      },
     });
   }
 
@@ -157,19 +161,18 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.product_service.getListOfGroupProduct().subscribe((products) => {
+    this.product_service.getListOfProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
         value: product.code
       }));
     });
   }
-
   getAllCurrencies() {
-    this.quickService.getAllCurrencies().subscribe((currencies: Currency[]) => {
+    this.currencyService.getAllCurrencies().subscribe((currencies) => {
       this.currencyList = currencies.map((currency) => ({
-        label: this.formatCurrencyLabel(currency.desc, currency.symbol),
-        value: currency.code
+        label: this.formatCurrencyLabel(currency.name, currency.symbol),
+        value: currency.id
       }));
     });
   }
@@ -207,6 +210,91 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.quickService.getFacultativeTypes().subscribe((facultative: FacultativeType[]) => {
      this.facultativeType = facultative;
     });
+  }
+
+  getBranch() {
+    this.branchService.getBranches(2).subscribe((branch: OrganizationBranchDto[]) => {
+      this.branch = branch;
+    });
+
+  }
+
+  onContinue () {
+    if(this.quickForm.valid) {
+      const quickFormQuotationCalcType = this.quickForm.get("quotationCalcType").value;
+      const commissionRatePattern = /^[0-9]*(\.[0-9]+)?$/;
+      const commissionRateValue = this.quickForm.getRawValue().commissionRate;
+
+      const formData = this.quickForm.value;
+
+      const apiRequest = {
+        "effective_date": formatDate(formData.effectiveDate, 'yyyy-MM-dd', 'en-US'),
+        // "product_code": formData.products.value,
+        "product_code": 2021675,
+        // "client_code": formData.clients.value,
+        "client_code": 212120912884,
+        "facultative_type": formData.facultativeType.name,
+        "cover_type_dependant": formData.quotationCovers.name,
+        "calculation_type": formData.quotationCalcType,
+        "duration_type": formData.durationType.name,
+        "frequency_of_payment": formData.frequencyOfPayment.value,
+        "unit_rate": formData.unitRateOption.value,
+        // "agent_code": formData.intermediary.id,
+        "agent_code": 2020201235490,
+        "branch_code": formData.branch.id,
+        "currency_code": formData.currency.value,
+        "commission_rate": formData.commissionRate
+      };
+
+        if (!commissionRatePattern.test(commissionRateValue || (commissionRateValue === '' || null))) {
+          console.log("Enter a valid commission rate value!")
+          alert("Enter a valid commission rate value!");
+          return;
+        }
+
+        const quoteData = {
+          formData
+        };
+
+      this.quickService.postQuoteDetails(apiRequest).subscribe((details: GrpQuoteDetails) => {
+        this.quoteDetails = details;
+        console.log(this.quoteDetails, this.quoteDetails.quotation_code, this.quoteDetails.quotation_code.toString())
+        // Store quotation_code in session storage
+        this.session_storage.set('quotation_code', this.quoteDetails.quotation_code.toString());
+        //Store the obj quoteData in sessionStorage
+        this.session_storage.set('quotation_code', JSON.stringify(quoteData));
+      });
+
+      // const quotation_code = 20237347;
+      
+      // this.quickService.updateQuoteDetails(quotation_code, apiRequest).subscribe((details) => {
+      // });
+      this.router.navigate(['/home/lms/grp/quotation/coverage'], {
+        queryParams: {
+          quotationCalcType: quickFormQuotationCalcType,
+          quotationCode: this.quoteDetails.quotation_code
+        },
+      });
+
+      
+
+      } else {
+        alert("Fill all fields");
+      }
+    
+  }
+
+  retrievQuoteDets() {
+    const storedQuoteData = this.session_storage.get('quotation_code');
+
+    if (storedQuoteData) {
+      const quoteData = JSON.parse(storedQuoteData);
+      const formData = quoteData.formData;
+      console.log("effectiveDate", formData)
+      this.quickForm.patchValue(formData);
+      // formData.effective_date = this.datePipe.transform(new Date(formData.effective_date), 'dd/MM/yy');
+      // this.quickForm.patchValue(formData);
+    }
   }
 
 }

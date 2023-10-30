@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { CoverageService } from '../../../../service/coverage/coverage.service';
 
 
 @AutoUnsubscribe
@@ -15,11 +16,13 @@ export class CoverageDetailsComponent implements OnInit, OnDestroy {
 
 searchFormMemberDets: FormGroup;
 detailedCovDetsForm: FormGroup;
-newQuatationCalType: string
+quatationCalType: string;
+quotationCode: number;
   constructor (
     private fb: FormBuilder,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private coverageService: CoverageService
     ) {}
 
     public clients = [
@@ -194,6 +197,7 @@ ngOnInit(): void {
   this.detailedCoverDetails();
   this.SubmitMemberDetailsForm();
   this.getQuotationCalType();
+  this.getCategoryDets(this.quotationCode);
 }
 
 ngOnDestroy(): void {
@@ -202,7 +206,8 @@ ngOnDestroy(): void {
 
 getQuotationCalType() {
   this.activatedRoute.queryParams.subscribe((queryParams) => {
-    this.newQuatationCalType = queryParams['quotationCalcType'];
+    this.quatationCalType = queryParams['quotationCalcType'];
+    this.quotationCode = queryParams['quotationCode'];
   });
 }
 searchFormMember() {
@@ -343,8 +348,13 @@ detailedCoverDetails(){
   SubmitMemberDetailsForm() {
     if(this.memberDetailsForm.valid) {
       const memberDetailsFormValues = this.memberDetailsForm.getRawValue();
-      console.log("valiz", memberDetailsFormValues)
     }
+  }
+
+  getCategoryDets(quotationCode: number) {
+    this.coverageService.getCategoryDetails(20237348).subscribe((categoryDets) =>{
+      console.log('categoryDets',categoryDets)
+    });
   }
 
 }
