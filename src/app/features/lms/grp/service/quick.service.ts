@@ -33,4 +33,12 @@ export class QuickService {
   getFacultativeTypes() {
     return this.api.GET(`quotations/facultative-types`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
   }
+
+  postQuoteDetails(apiRequest) {
+    return this.api.POST('quotations', apiRequest, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+  }
+
+  updateQuoteDetails(quotation_code: number, apiRequest) {
+    return this.api.PUT(`quotations/${quotation_code}`, apiRequest, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+  }
 }
