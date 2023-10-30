@@ -20,6 +20,7 @@ export class ApiService {
     let headers = new HttpHeaders();
         headers = headers.append('Accept', 'application/json');
         headers = headers.append('Content-Type', 'application/json');
+        headers = headers.append('X-TenantID', 'lifeco');
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -49,9 +50,9 @@ export class ApiService {
   GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
-    // const headers = this.getHeaders();
+    const headers = this.getHeaders();
     // const options = { headers, params };
-    return this.http.get<T>(url).pipe(
+    return this.http.get<T>(url, { headers }).pipe(
       // tap(data => console.log(data))
       );
   }

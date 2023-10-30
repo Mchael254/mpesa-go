@@ -17,7 +17,6 @@
 
 .client-details,
 .product-details {
-  color: #000;
   font-family: Roboto;
   font-size: 16px;
   font-style: normal;
@@ -45,16 +44,6 @@
   border-radius: 4px;
   background: #FFF;
   margin: 10px;
-}
-
-.date {
-  width: 300px;
-  height: 35px;
-  flex-shrink: 0;
-  border-radius: 4px;
-  border: 0.5px solid #868E96;
-  background: #FFF;
-  margin-left: 10px;
 }
 
 #inline {
