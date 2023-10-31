@@ -1,10 +1,11 @@
 import {ReportV2} from "./report";
 
-export interface Dashboard {
+export interface CreateUpdateDashboardDTO {
   createdBy: number,
   dashboardReports: DashboardReports[],
   id?: number,
   name: string,
+  organizationId: number,
   chartData?:any
 }
 
@@ -15,7 +16,7 @@ export interface DashboardReports {
   width: number
 }
 
-export interface DashboardReport {
+export interface AddReportToDashDTO {
   dashboardId: number,
   dashboardReports: DashboardReports[],
 }
@@ -28,10 +29,11 @@ export interface DashboardRes {
   reports: ReportV2[];
 }
 
-export interface ChartReport {
+export interface ListDashboardsDTO {
   createdBy: number,
   createdDate: string,
   reports: ReportV2[],
   id?: number,
+  organizationId: number,
   name: string,
 }

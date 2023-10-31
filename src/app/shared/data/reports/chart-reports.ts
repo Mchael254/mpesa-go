@@ -48,7 +48,8 @@ export interface Charts {
   width: null,
   length: null
 }
-export interface RenameChartsDTO {
+/*This DTO is used to rename Dashboards and Reports*/
+export interface RenameDTO {
   dashboardId?: number,
   name: string,
   reportId?: number

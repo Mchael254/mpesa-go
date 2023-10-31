@@ -11,21 +11,30 @@
                   data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
         </div>
         <div class="row mx-0 mt-3 p-0 dragDropBoundary" cdkDropList (cdkDropListDropped)="drop($event)">
-          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards">
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards; let i = index">
             <div class="card">
               <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-              <div class="card-header border-0 text-sm-start bg-transparent">
+              <div class="row card-header border-0 text-sm-start bg-transparent">
 
-                <span style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
-                (click)="moveToListReport(dashboard.id)">{{dashboard?.name | titlecase }}</span>
+                <div class="col-md-10">
+                  <span *ngIf="!isEditable"
+                    style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
+                        (click)="moveToListReport(dashboard.id)">{{dashboard?.name | titlecase }}</span>
+                  <div class="mb-3" *ngIf="isEditable">
+                    <input type="text" class="form-control" id="id" [value]="dashboard?.name"
+                           [disabled]="selectedItem !== dashboards[i].id" (keyup)="handleEnter($event)">
+                  </div>
 
-                <span class="icon-container float-end" (click)="selectedItem = dashboard.id;menu.toggle($event)">
+                </div>
+                <div class="col-md-2">
+                  <span class="icon-container float-end" (click)="selectedItem = dashboard.id;menu.toggle($event)">
                   <i class="fa fa-ellipsis-v clickable"></i>
                 </span>
-                <p-menu #menu [model]="items" [popup]="true"></p-menu>
+                  <p-menu #menu [model]="items" [popup]="true"></p-menu>
+                </div>
 
               </div>
-              <ng-container *ngIf="dashboard.chartData">
+              <ng-container *ngIf="chartData">
                 <div class="card-body">
                   <div
                     *ngIf="dashboard.reports[0]?.charts[0]?.type==='table';
@@ -38,7 +47,7 @@
 
                   <ng-template #showChart>
                     <app-dynamic-chart
-                      [basicData]="dashboard?.chartData"
+                      [basicData]="chartData"
                       [chartType]="dashboard?.reports[0]?.charts[0]?.type"
                     ></app-dynamic-chart>
                   </ng-template>
@@ -55,6 +64,13 @@
     </div>
   </div>
 
+  <!--<div class="bound-box" #myBounds>
+
+    <div ngDraggable ngResizable  [inBounds]="true" [bounds]="myBounds" rzContainment="parent" rzHandles="all" class="resizable-widget" (mouseup)="newPosition($event)">
+      <h4 class="widget-header" >Resizable</h4>
+    </div>
+
+  </div>-->
 
   <!-- Create Dashboard Modal -->
   <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardLabel" aria-hidden="true">

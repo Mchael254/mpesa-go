@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {AppConfigService} from "../../../core/config/app-config-service";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {Report} from "../../../shared/data/reports/report";
 import {TableDetail} from "../../../shared/data/table-detail";
-import {ChartReports, RenameChartsDTO} from "../../../shared/data/reports/chart-reports";
+import {ChartReports, RenameDTO} from "../../../shared/data/reports/chart-reports";
 import {Pagination} from "../../../shared/data/common/pagination";
-import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import {CreateUpdateDashboardDTO, AddReportToDashDTO, DashboardReports} from "../../../shared/data/reports/dashboard";
 import { Logger } from '../../../shared/services';
 
 const log = new Logger('ReportService');
@@ -164,16 +164,16 @@ export class ReportService {
     return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
   }
 
-  updateChartReports(id:number, chartReportRename: RenameChartsDTO): Observable<RenameChartsDTO> {
+  renameChartReports(id:number, chartReportRename: RenameDTO): Observable<RenameDTO> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    return this.http.put<RenameChartsDTO>(`/${baseUrl}/chart/chart-reports/${id}/name`
+    return this.http.put<RenameDTO>(`/${baseUrl}/chart/chart-reports/${id}/name`
       , JSON.stringify(chartReportRename), {headers: this.headers});
   }
 
   /*Create a new dashboard*/
-  saveDashboard(dashboard: Dashboard): Observable<Dashboard> {
+  saveDashboard(dashboard: CreateUpdateDashboardDTO): Observable<CreateUpdateDashboardDTO> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    return this.http.post<Dashboard>(
+    return this.http.post<CreateUpdateDashboardDTO>(
       `/${baseUrl}/chart/dashboards`, JSON.stringify(dashboard), {headers: this.headers});
   }
 
@@ -193,19 +193,26 @@ export class ReportService {
     return this.http.delete<string>(`/${baseUrl}/chart/dashboards/${dashboardId}`, {headers: this.headers});
   }
 
-  addReportToDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+  addReportToDashboard(dashboardId: number, dashboardReport: AddReportToDashDTO): Observable<DashboardReports> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.post<DashboardReports>(
       `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, JSON.stringify(dashboardReport), {headers: this.headers});
   }
 
-  deleteReportFromDashboard(dashboardId: number, dashboardReport: DashboardReport): Observable<DashboardReports> {
+  deleteReportFromDashboard(dashboardId: number, reportId: number): Observable<any> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const options = {
-      headers: this.headers,
-      body: dashboardReport // Include the request body here
-    };
-    return this.http.delete<DashboardReports>(
-      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, options);
+    const params = new HttpParams()
+      .set('reportId', `${reportId}`);
+
+    const headers = this.headers;
+
+    return this.http.delete<any>(
+      `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, {headers, params});
+  }
+
+  renameDashboard(id:number, dashboardRename: RenameDTO): Observable<RenameDTO> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    return this.http.put<RenameDTO>(`/${baseUrl}/chart/dashboards/${id}/name`
+      , JSON.stringify(dashboardRename), {headers: this.headers});
   }
 }
