@@ -33,8 +33,11 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   ];
 
   insuranceHistoryForm: FormGroup;
+  bmiForm: FormGroup;
   countryList: CountryDto[] = [];
   frequencyOfPayment: any[] = [];
+  bmi:{}={};
+
   constructor(private fb: FormBuilder, private country_service:CountryService, private payFrequenciesService: PayFrequencyService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
@@ -42,10 +45,27 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       question3: ['N'],
       question4: ['N'],
     });
+    this.bmiForm = this.fb.group({
+      height: [],
+      weight: [],
+      bmi: [],
+    })
   }
   ngOnInit(): void {
     this.getCountryList();
     this.getPayFrequencies();
+  }
+
+
+  getBMI(){
+    let bmi = {};
+    bmi['height']= this.bmiForm.get('height').value;
+    bmi['weight']= this.bmiForm.get('weight').value;
+    this.payFrequenciesService
+    .bmi(bmi['height'], bmi['weight'])
+    .subscribe(data =>{
+      this.bmi = data
+    })
   }
 
   getValue(name: string = 'sa_prem_select') {

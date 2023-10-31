@@ -15,4 +15,12 @@ export class ClientHistoryService {
   getLmsInsHistList(clientCode = null){
     return this.api.GET(`client-history/insurance?clnt_code=${clientCode}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
+
+  saveInsuranceHistory(data: any){
+    return this.api.POST('client-history/insurance', data, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+  }
+
+  deleteInsuranceHistory(code: number){
+    return this.api.DELETE(`client-history/insurance/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+  }
 }

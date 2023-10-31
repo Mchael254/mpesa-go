@@ -17,24 +17,26 @@
       <div class="text-black">
         <div class="col fadeIn">
           <div class="row">
-            <div class="col-lg-4 col-sm-12">
-              <label for="height" class="mt-3 mb-1">Height (cm)</label>
-              <input type="text" class="form-control" [id]="'height'" />
-            </div>
-            <div class="col-lg-4 col-sm-12">
-              <label for="weight" class="mt-3 mb-1">Weight (kg)</label>
-              <input type="text" class="form-control" [id]="'weight'" />
-            </div>
-            <div class="col-lg-4 col-sm-12">
-              <label for="weight" class="mt-3 mb-1 fw-bold">Your BMI</label>
-              <input
-                type="text"
-                disabled
-                value="100.59"
-                class="form-control"
-                [id]="'weight'"
-              />
-            </div>
+            <ng-container [formGroup] = bmiForm>
+              <div class="col-lg-4 col-sm-12">
+                <label for="height" class="mt-3 mb-1">Height (cm)</label>
+                <input type="number" class="form-control"(keyup.enter)="getBMI()" formControlName="height" [id]="'height'" />
+              </div>
+              <div class="col-lg-4 col-sm-12">
+                <label for="weight" class="mt-3 mb-1">Weight (kg)</label>
+                <input type="number" formControlName="weight" class="form-control" [id]="'weight'" (keyup.enter)="getBMI()"/>
+              </div>
+              <div class="col-lg-4 col-sm-12" *ngIf="bmi['bmi']">
+                <label for="weight" class="mt-3 mb-1 fw-bold"></label>
+                <div>
+                  <label for="weight" class="mt-3 mb-1 fw-bold">Your BMI: </label> {{bmi['bmi']}}
+                </div>
+
+              </div>
+            </ng-container>
+
+
+
             <div [formGroup]="insuranceHistoryForm" class="w-100">
               <div class="my-4">
                 <label class="required"
