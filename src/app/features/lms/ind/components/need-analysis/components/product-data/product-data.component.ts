@@ -18,7 +18,7 @@ export class ProductDataComponent {
   }
 
   setDynamicBackground() {
-    this.imageUrl =`./assets/images/${this.productId}.png`;
+    this.imageUrl =`./assets/images/${this.productId}.jpg`;
     console.log(this.imageUrl);
 
     const element = this.el.nativeElement.querySelector('.picture');
