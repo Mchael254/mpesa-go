@@ -55,3 +55,39 @@
   flex: 1;
   overflow: auto;
 }
+::ng-deep .p-datatable-thead tr th{
+  font-size: 8px !important;
+}
+::ng-deep .p-datatable-tbody tr td{
+  font-size: 8px !important;
+  padding: 0px!important;
+  line-height: 25px !important;
+}
+
+::ng-deep p-paginator {
+  display:none;
+}
+
+
+.bound-box{
+  border: dotted;
+  background-image: url('https://placeimg.com/200/200/animals');
+  border-color: red;
+  height: 200px;
+  width: 200px;
+  max-height: 200px;
+  max-width: 200px;
+}
+
+.resizable-widget{
+  background-color: blue;
+  opacity: 0.5;
+  border: none;
+}
+.ng-draggable {
+  cursor: grab;
+}
+
+.ng-dragging {
+  cursor: grabbing;
+}
