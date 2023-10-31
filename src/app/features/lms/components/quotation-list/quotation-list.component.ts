@@ -51,7 +51,8 @@ export class QuotationListComponent implements OnInit {
           return this.quotation_service
             .getLmsIndividualQuotationWebQuoteList(page, size)
             .pipe(map((data) =>{
-              console.log(data);
+              // console.log(data);
+              this.quotationListInd['rows'] = data['content'];
               this.webQuoteTotalLength = Number(data['total_elements']);
 
               return data['content']}))
@@ -61,6 +62,9 @@ export class QuotationListComponent implements OnInit {
                   da['product_desc'] = x.filter((xa) => {
                     return xa['code'] === da['product_code'];
                   })[0]['description'];
+
+                  // console.log(da);
+
                   return da;
                 });
               }),
@@ -161,7 +165,6 @@ export class QuotationListComponent implements OnInit {
   }
 
   selectRow(i: any) {
-    // console.log(i);
     this.session_service.set('quote_code', i['quote_no']);
     this.session_service.set('client_code', i['client_code']);
     this.session_service.set('quick_code', i['code']);
