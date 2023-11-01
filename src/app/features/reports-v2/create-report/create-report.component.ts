@@ -11,6 +11,7 @@ import {GlobalMessagingService} from "../../../shared/services/messaging/global-
 import {ActivatedRoute, Router} from "@angular/router";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {ReportServiceV2} from "../services/report.service";
+import { ReportV2 } from 'src/app/shared/data/reports/report';
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -47,6 +48,8 @@ export class CreateReportComponent implements OnInit {
   sort: any = [];
   subCategoryCategoryAreas: any[] = [];
   public shouldShowContinueButton: boolean = false;
+  public selectedReport: ReportV2;
+  public reportId: number;
 
   constructor(
     private fb: FormBuilder,
@@ -68,7 +71,7 @@ export class CreateReportComponent implements OnInit {
    */
   ngOnInit(): void {
     const isFromPreview = this.activatedRoute.snapshot.queryParams['fromPreview'];
-    const reportId = this.activatedRoute.snapshot.params['id'];
+    this.reportId = +this.activatedRoute.snapshot.params['id'];
     const reportParams = this.sessionStorageService.getItem(`reportParams`);
 
     if (isFromPreview && reportParams) {
@@ -76,8 +79,8 @@ export class CreateReportComponent implements OnInit {
       this.filters = reportParams.filters;
       this.sort = reportParams.sort;
       this.reportNameRec = reportParams.reportNameRec;
-    } else if (reportId) {
-      this.getReport(reportId)
+    } else if (this.reportId) {
+      this.getReport(this.reportId)
     }
     this.getSubjectAreas();
     this.createSearchForm();
@@ -105,10 +108,12 @@ export class CreateReportComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: (res) => {
+          this.selectedReport = res;
           this.measures = JSON.parse(res.measures);
           this.dimensions = JSON.parse(res.dimensions);
           this.filters = JSON.parse(res.filter);
-          this.criteria = [...this.measures, ...this.dimensions]
+          this.criteria = [...this.measures, ...this.dimensions];
+          this.reportNameRec = res.name;
           log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
         },
         error: (e) => { log.info(`error >>>`, e)}
@@ -268,15 +273,38 @@ export class CreateReportComponent implements OnInit {
    * 1. creates a report parameters and save to session storage for use on next screen
    * 2. navigate to report-preview screen
    */
+  // viewPreview(): void {
+  //   const reportParams = {
+  //     criteria: this.criteria,
+  //     reportNameRec: this.reportNameRec,
+  //     filters: this.filters,
+  //     sort: this.sort,
+  //   }
+  //   this.sessionStorageService.setItem(`reportParams`, reportParams);
+  //   this.router.navigate(['/home/reportsv2/preview'])
+  // }
+
   viewPreview(): void {
+    const reportNameRec = this.reportName === '' ? this.selectedReport.name : ''
+
     const reportParams = {
       criteria: this.criteria,
       reportNameRec: this.reportNameRec,
-      filters: this.filters,
-      sort: this.sort,
+      filters: this.filters || this.selectedReport.filter,
+      sort: this.sort || this.selectedReport.sort,
+      dashboardId: this.selectedReport?.dashboardId,
+      folder: this.selectedReport?.folder,
+      charts: this.selectedReport?.charts,
+      createdBy: this.selectedReport?.createdBy,
     }
     this.sessionStorageService.setItem(`reportParams`, reportParams);
-    this.router.navigate(['/home/reportsv2/preview'])
+
+    if(isNaN(this.reportId)) {
+      this.router.navigate(['/home/reportsv2/preview']);
+    } else {
+      this.router.navigate([`/home/reportsv2/preview/${this.reportId}`]);
+    }
+    
   }
 
   /**

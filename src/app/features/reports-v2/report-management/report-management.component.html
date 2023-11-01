@@ -75,7 +75,8 @@
                                     <i class="pi pi-ellipsis-v"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li
+                                    <li (click)="gotoEditReport(report)">Edit</li>
+                                    <li
                                     data-bs-toggle="modal"
                                     data-bs-target="#saveReportModal"
                                     (click)="selectReport(report)"
