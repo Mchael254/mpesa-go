@@ -1,19 +1,26 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
 import {MenuItem} from "primeng/api";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger} from "../../../shared/services";
 import {ActivatedRoute} from "@angular/router";
-import {ChartReport, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import {
+  ListDashboardsDTO,
+  AddReportToDashDTO,
+  DashboardReports,
+  CreateUpdateDashboardDTO
+} from "../../../shared/data/reports/dashboard";
 import cubejs, {Query} from "@cubejs-client/core";
 import {AppConfigService} from "../../../core/config/app-config-service";
 import {ChartConfiguration} from "chart.js";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
-import {RenameChartsDTO} from "../../../shared/data/reports/chart-reports";
+import {RenameDTO} from "../../../shared/data/reports/chart-reports";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 const log = new Logger('ListReportComponent');
+
+export let browserRefresh = false;
 @Component({
   selector: 'app-list-report',
   templateUrl: './list-report.component.html',
@@ -24,8 +31,8 @@ export class ListReportComponent implements OnInit {
   items: MenuItem[] = [];
   basicData: any;
   public dashboardId: number;
-  public report: ChartReport[] = [];
-  updatedReport: RenameChartsDTO;
+  public dashboard: ListDashboardsDTO[] = [];
+  updatedReport: RenameDTO;
 
   public chartLabels: string[];
   public chartData: ChartConfiguration<'bar'|'line'|'scatter'|'bubble'|'pie'|'doughnut'|'polarArea'|'radar'>['data'] = {
@@ -42,8 +49,15 @@ export class ListReportComponent implements OnInit {
   selectedReportId:number = null;
   selectedReport:any = null;
 
-  @ViewChild('textInput') textInput: ElementRef | undefined;
   isEditable: boolean = false;
+
+  unsavedChanges = false;
+
+  public orderedReports: any;
+
+  previousPosition: number;
+  currentPosition: number;
+  dragDroppedData: any[];
 
   constructor(
     private reportService: ReportService,
@@ -173,12 +187,12 @@ export class ListReportComponent implements OnInit {
       width: 0
     }];
 
-    const deleteDashboard: DashboardReport = {
+    const deleteDashboard: AddReportToDashDTO = {
       dashboardId: this.selectedDashboard,
       dashboardReports: report
     }
 
-    this.reportService.deleteReportFromDashboard(this.selectedDashboard, deleteDashboard)
+    this.reportService.deleteReportFromDashboard(this.selectedDashboard, this.selectedReportId)
       .subscribe(res => {
         log.info('on delete report', res);
 
@@ -197,15 +211,15 @@ export class ListReportComponent implements OnInit {
    * to retrieve.
    */
   getDashboardById(id:number) {
-    this.report= [] = [];
+    this.dashboard= [] = [];
     this.reportService.getDashboardsById(id)
       .subscribe(reportData => {
 
         let reportArr = [];
         reportArr.push(reportData);
-        this.report = reportArr;
+        this.dashboard = reportArr;
         // this.reportName = this.report.name
-        log.info('report data', this.report);
+        log.info('report data', this.dashboard);
 
         for (const dashboard of reportArr) {
 
@@ -316,6 +330,36 @@ export class ListReportComponent implements OnInit {
   }
 
   /**
+   * The function "openSaveModal" displays a modal for saving a dashboard.
+   */
+  openSaveModal() {
+    const modal = document.getElementById('saveDashboardModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
+  }
+
+  /**
+   * The function "closeSaveModal" hides the save dashboard modal and its backdrop.
+   */
+  closeSaveModal() {
+    const modal = document.getElementById('saveDashboardModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+  }
+
+  /**
    * The function toggles the editability of a report and logs the report ID.
    * @param event - The `event` parameter is an object that represents the event that triggered the `toggleEditability`
    * function. It could be an event object that contains information about the event, such as the type of event, the target
@@ -341,17 +385,18 @@ export class ListReportComponent implements OnInit {
       // this.renameReport(reportId);
       const renameValue = event.target.value;
 
-      const updateReport: RenameChartsDTO = {
+      const updateReport: RenameDTO = {
         name: renameValue,
         reportId: this.selectedReportId
       }
       log.info('report on enter',this.selectedReport)
       log.info('report on enter',updateReport)
-      this.reportService.updateChartReports(reportId, updateReport)
+      this.reportService.renameChartReports(reportId, updateReport)
         .subscribe(res => {
           this.updatedReport = res;
           log.info('updated report', this.updatedReport);
           this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully updated' );
+          this.isEditable = false;
 
           setTimeout(() => {
             this.getDashboardById(this.dashboardId);
@@ -367,10 +412,74 @@ export class ListReportComponent implements OnInit {
    * properties such as previousIndex, which represents the index of the item before it was moved, and currentIndex, which
    * represents the index of the item after it was moved.
    */
-  drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.report[0].reports, event.previousIndex, event.currentIndex);
+  drop(event: CdkDragDrop<ListDashboardsDTO[]>) {
+    moveItemInArray(this.dashboard[0].reports, event.previousIndex, event.currentIndex);
 
-    log.info('prev pos', event.previousIndex);
-    log.info('current pos', event.currentIndex);
+    log.info('>>>>>', this.dashboard)
+    log.info('prev pos', event.previousIndex + 1);
+    log.info('current pos', event.currentIndex + 1);
+    log.info('data', event.container.data);
+
+    this.currentPosition = event.currentIndex;
+    this.previousPosition = event.previousIndex;
+    this.dragDroppedData = event.container.data;
+
+    for (let i=0; i<this.dashboard[0].reports?.length; i++) {
+      this.dashboard[0].reports[i].order = i;
+      // log.info('>>>i', i)
+    }
+
+    this.orderedReports = this.dashboard[0].reports;
+
+    log.info('list reports ordering', this.dashboard[0].reports);
+
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    const isUnsaved = this.previousPosition !== null || this.currentPosition !== null || this.dragDroppedData !== null;
+    log.info('Is unsaved>>', isUnsaved);
+    if (isUnsaved) {
+      log.info('test reload');
+      this.openSaveModal();
+      $event.returnValue = true;
+    }
+  }
+
+  /**
+   * The function `updateReportOrder()` updates the order of reports in a dashboard and saves the changes.
+   */
+  updateReportOrder() {
+
+    const report: DashboardReports[] = this.dashboard[0].reports.map((orderedReport) => {
+
+      return {
+        length: 0,
+        order: orderedReport.order,
+        reportId: orderedReport.id,
+        width: 0,
+      };
+    });
+
+    const saveOrderedReports: CreateUpdateDashboardDTO = {
+      organizationId: 2,
+      createdBy: this.dashboard[0].createdBy,
+      dashboardReports: report,
+      id: this.dashboard[0].id,
+      name: this.dashboard[0].name
+    }
+    log.info('ordered details', saveOrderedReports);
+
+    this.reportService.saveDashboard(saveOrderedReports)
+      .subscribe(res => {
+        log.info(`save response  >>>`, res);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated records');
+
+        setTimeout(() => {
+          this.getDashboardById(this.dashboard[0].id);
+          this.cdr.detectChanges();
+        }, 3000);
+      })
+  }
+
 }

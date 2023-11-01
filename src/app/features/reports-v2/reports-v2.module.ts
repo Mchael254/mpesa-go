@@ -25,6 +25,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ReportManagementComponent } from './report-management/report-management.component';
 import { TableModule } from 'primeng/table';
 import { SaveReportModalComponent } from './save-report-modal/save-report-modal.component';
+import {AngularDraggableModule} from "angular2-draggable";
 
 
 @NgModule({
@@ -40,21 +41,22 @@ import { SaveReportModalComponent } from './save-report-modal/save-report-modal.
     ReportManagementComponent,
     SaveReportModalComponent
   ],
-  imports: [
-    CommonModule,
-    ReportsV2RoutingModule,
-    SharedModule,
-    DropdownModule,
-    FormsModule,
-    ProgressSpinnerModule,
-    MegaMenuModule,
-    MenuModule,
-    DragDropModule,
-    InputTextModule,
-    ColorPickerModule,
-    CalendarModule,
-    MultiSelectModule,
-    TableModule,
-  ]
+    imports: [
+        CommonModule,
+        ReportsV2RoutingModule,
+        SharedModule,
+        DropdownModule,
+        FormsModule,
+        ProgressSpinnerModule,
+        MegaMenuModule,
+        MenuModule,
+        DragDropModule,
+        InputTextModule,
+        ColorPickerModule,
+        CalendarModule,
+        MultiSelectModule,
+        TableModule,
+        AngularDraggableModule,
+    ]
 })
 export class ReportsV2Module { }
