@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO} from "../../../data/ticketsDTO";
+import {NewTicketDto, TicketModuleDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {TicketsService} from "../../../services/tickets.service";
@@ -13,6 +13,7 @@ import {AppConfigService} from "../../../../../core/config/app-config-service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -29,6 +30,17 @@ export class ViewTicketsComponent implements OnInit {
   ticketModules: TicketModuleDTO[] = [];
 
   showReassignTicketsModal: boolean;
+
+  public sortingForm: FormGroup;
+  ticketTypesData : TicketTypesDTO[];
+
+  today = new Date();
+  year = this.today.getFullYear(); // Get the current year
+  month = (this.today.getMonth() + 1).toString().padStart(2, '0'); // Get the current month and pad with leading zero if necessary
+  day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
+
+  dateToday = `${this.year}-${this.month}-${this.day}`;
+  dateFrom = `${this.year-2}-${this.month}-${this.day}`;
 
   globalFilterFields = [
     'createdOn',
@@ -54,13 +66,17 @@ export class ViewTicketsComponent implements OnInit {
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
     private localStorageService: LocalStorageService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private fb: FormBuilder,
   )
   {
 
   }
   ngOnInit(): void {
     this.getAllTicketsFromCubeJs();
+    this.createSortForm();
+    this.getAllTicketTypes();
+    this.getAllTicketModules();
   }
 
   getAllTicketsFromCubeJs() {
@@ -435,5 +451,73 @@ export class ViewTicketsComponent implements OnInit {
       this.toggleReassignModal(false);
       log.info('Reassign dto received: ', event);
     }
+  }
+
+  createSortForm() {
+    this.sortingForm = this.fb.group({
+      fromDate: '',
+      toDate: '',
+      ticketTypes: '',
+      ticketModules: ''
+    });
+  }
+
+  sortTickets() {
+    const sortValues = this.sortingForm.getRawValue();
+    log.info('form value', sortValues);
+    const payload: any = {
+      fromDate: sortValues.fromDate ? sortValues.fromDate : this.dateFrom,
+      toDate: sortValues.toDate ? sortValues.toDate : this.dateToday,
+      ticketTypes: sortValues.ticketTypes ? sortValues.ticketTypes : '',
+      ticketModules: sortValues.ticketModules ? sortValues.ticketModules : ''
+    }
+
+    if (payload.ticketModules === '') {
+      return this.filteredTickets =  this.allTickets;
+    }
+
+    this.filteredTickets = this.allTickets.filter((t) => {
+      return payload.ticketModules === t.systemModule;
+    });
+    log.info(`tickets >>>`, this.filteredTickets);
+
+    /*this.ticketsService.sortTickets(
+      this.pageNo,
+      this.pageSize,
+      payload.fromDate,
+      payload.toDate,
+      payload.ticketTypes,
+      payload.ticketModules
+      )
+      .subscribe(data => {
+        this.tickets = data;
+        this.cdr.detectChanges();
+      })*/
+  }
+
+  getAllTicketTypes() {
+    this.ticketsService.getTicketTypes()
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.ticketTypesData = data;
+        }
+      )
+  }
+
+  getAllTicketModules(){
+    this.ticketsService.getTicketModules()
+      .pipe(untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.ticketModules = data;
+        }
+      );
+  }
+
+  ngOnDestroy(): void {
   }
 }

@@ -33,7 +33,6 @@
 
           <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories" style="padding: 4rem 0;">
             <p-progressSpinner styleClass="w-0.5em h-0.5em " strokeWidth="3" fill="var(--surface-ground)" animationDuration=".6s" ></p-progressSpinner>
-
           </div>
           <ng-template #showSubjectAreaCategories>
             <ng-container *ngFor="let category of subjectAreaCategories">
@@ -113,15 +112,24 @@
           <ng-container *ngIf="isCriteriaButtonActive">
             <div class="row" style="padding: 0 2rem 2rem 1rem">
               <ng-container *ngFor="let criteriaItem of criteria">
-                <div class="col-sm-3 fadeInDown" >
+                <div class="col-sm-4 fadeInDown" >
                   <app-criteria-pill
                     [queryObject]="criteriaItem"
                     (deleteCriteriaDetails)="deleteCriteria($event)"
+                    (filter)="updateFilter($event)"
                   ></app-criteria-pill>
                 </div>
               </ng-container>
             </div>
           </ng-container>
+
+          <!--<ng-container *ngIf="isCriteriaButtonActive">
+            <app-criteria
+              (deleteCriteriaDetails)="deleteCriteria($event)"
+              (filter)="updateFilter($event)"
+              [criteria]="criteria"
+            ></app-criteria>
+          </ng-container>-->
 
           <ng-container *ngIf="!isCriteriaButtonActive">
             <div class="preview-nav">
@@ -188,8 +196,8 @@
                     ></app-dynamic-chart>
                   </div>
                 </ng-template>
-
               </div>
+
             </div>
           </ng-container>
 
