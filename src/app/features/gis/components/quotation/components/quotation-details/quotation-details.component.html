@@ -19,8 +19,11 @@
             </div>
             
             <div class="col-xl-4">
-                <label for=""class="quote-label">Client<span class="required"></span></label>
-                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="clientCode" readonly>
+                <label for=""class="quote-label">Agent<span class="required"></span></label>
+                <select class="form-select form-select-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
+                    <option selected="true" disabled="disabled"></option> 
+                    <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
+                </select> 
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Branch<span class="required" ></span></label>
@@ -49,20 +52,7 @@
             </div>
            
           </div>
-          <div class="row mb-4">
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Agent<span class="required"></span></label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
-                    <option selected="true" disabled="disabled"></option> 
-                    <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
-                </select> 
-            </div>
-            <div class="col-xl-4">
-                <label for=""class="quote-label">Agent Short Description</label>
-                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="agentShortDescription"  readonly>
-            </div>
-            <div class="col-xl-4"></div>
-          </div>
+       
          
           <div class="collapse" id="collapseExample">
            
@@ -76,7 +66,7 @@
                     <label for=""class="quote-label">Introducer</label>
                     <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="introducerCode">
                 </div>
-                <div class="col-xl-4">
+                <div class="col-xl-4">      
                     <label for=""class="quote-label">Likelihood</label>
                     <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
@@ -121,7 +111,7 @@
               
             </div>
           </div>
-          <p class="more" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">More Details</p>
+          <p class="more" (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">More Details <span class="ml-1" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" > <i class="pi pi-angle-double-up" style="font-size:13px" *ngIf="!show" data-toggle="collapse" data-target="#collapseExample"></i><i class="pi pi-angle-double-down" style="font-size:13px" *ngIf="show" data-toggle="collapse" data-target="#collapseExample"></i></span> </p>
         </div>
     </div>
     <div class="card mb-4">
@@ -149,14 +139,16 @@
 
 
             <div class="col-xl-4">
-                <label for=""class="quote-label">Cover time</label>
-                <input type="number" id="quote-input" class="form-control form-control-sm mb-1" >
+                <label for=""class="quote-label">Cover time</label><br>
+                <p-calendar selectionMode="range" [readonlyInput]="true"  id="quote-date"  dateFormat="dd.mm.yy" formControlName="dateRange"></p-calendar>
+                  
+                <!-- <input type="number" id="quote-input" class="form-control form-control-sm mb-1" > -->
             </div>
           </div>
           <div>
             <p class="mb-4">Import risks <input type="checkbox" (change)="isChecked = !isChecked" id="importRisks" class="ml-3"></p>
             
-            <p class="more" data-bs-toggle="collapse" data-bs-target="#collapseProductClauses">Product Clauses</p>
+            <p class="more" (click)="showProduct=!showProduct" data-bs-toggle="collapse" data-bs-target="#collapseProductClauses">Product Clauses<span class="ml-1" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" > <i class="pi pi-angle-double-up" style="font-size:13px" *ngIf="!showProduct" data-toggle="collapse" data-target="#collapseExample"></i><i class="pi pi-angle-double-down" style="font-size:13px" *ngIf="showProduct" data-toggle="collapse" data-target="#collapseExample"></i></span> </p>
             <div class="collapse" id="collapseProductClauses">
                 <p-table 
                 [value]="clauses"
@@ -199,15 +191,16 @@
     </div>
 
 </form>
+
     <div class="float-end mb-4">
-        <button class="btn btn-primary" (click)="saveQuotationDetails()">Assign Tasks</button>
+        <button class="btn btn-primary" (click)="test()">Assign Tasks</button>
         <button class="btn btn-primary"  (click)="getExistingQuotations()" >Next</button>
     </div>
     
     
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="min-width: 700px">
+            <div class="modal-content" style="min-width:700px">
                 <div class="modal-body">
                    <p class="title1 mb-4">Client's Already Existing Quotations</p>
                    <p-table 
@@ -216,7 +209,8 @@
                    styleClass="p-datatable-sm"
                    styleClass="p-datatable-striped"
                    class='ui-datatable' 
-                   [tableStyle]="{ 'min-width': '50rem' }">
+                   [tableStyle]="{ 'min-width': '50rem' }"
+                   [scrollable]="true" scrollHeight="400px" >
                        <ng-template pTemplate="header">
                            <tr>
                                <th>Quotation Number</th>

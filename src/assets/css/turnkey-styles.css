@@ -26,7 +26,7 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 0;
+  border-radius: 4px;
   color: #fff;
   margin-right: 5px;
 }
@@ -46,14 +46,14 @@ html,body {
 }
 
 .btn-outline-primary {
-  border-radius: 0;
+  border-radius: 4px;
   background: #fff;
   border: solid 1px #00529b;
   color: #00529b;
 }
 
 .btn-outline-primary:hover {
-  border-radius: 0;
+  border-radius: 4px;
   background: #00529b;
   border: solid 1px #00529b;
   color: #fff;
@@ -348,7 +348,10 @@ h5.htxt {
 }
 
 .form-control {
-  border-radius: 0;
+  border-radius: 4px;
+}
+.form-select{
+  border-radius: 4px;
 }
 /*Login ends*/
 

@@ -36,6 +36,8 @@ export class QuotationsClientDetailsComponent {
   clientDetails:ClientDTO;
   clientForm:FormGroup;
   textColor: string = 'black';
+  clientTypeName: string
+  
   uploadFile:any;
     constructor(
     public clientService:ClientService,
@@ -98,7 +100,7 @@ export class QuotationsClientDetailsComponent {
     })
   }
   getbranch(){
-    this.branchService.getBranches(2).subscribe(data=>{
+    this.branchService.getBranch().subscribe(data=>{
       this.branch = data
     })
   }
@@ -118,6 +120,13 @@ export class QuotationsClientDetailsComponent {
     this.clientService.getClientById(id).subscribe(data=>{
       this.clientDetails = data;
       console.log(this.clientDetails)
+      this.clientTypeName = this.clientDetails.clientType.clientTypeName
+      if(this.clientTypeName = 'INDIVIDUAL'){
+        this.clientForm.controls['clientTypeId'].setValue('I')
+        
+      }else{
+        this.clientForm.controls['clientTypeId'].setValue('C')
+      }
       this.clientForm.patchValue(this.clientDetails)
       
     })
