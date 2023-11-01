@@ -64,7 +64,7 @@
         <br>
         <div class="card" id="section">
             <div class="card-body">
-                <p class="card-title">Section</p>
+                <p class="card-title mb-3">Section</p>
                 <div class="input-group mb-3">
                     <input type="text" 
                            class="form-control me-2" 
@@ -201,7 +201,7 @@
                                             <div class="mb-3 row">
                                                 <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Description:</label>
                                                 <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
+                                                <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
                                                     <option value="Percent">Percent</option>
                                                     <option value="Per Mile">Per Mille</option>
                                                     <option value="Amount">Amount</option>
@@ -217,7 +217,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Division Factor:</label>
                                                     <div class="col-7">
-                                                    <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="divisionFactor">                            
+                                                    <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="divisionFactor" >                            
                                                     </div>
                                                 </div>
                                             </div>
@@ -225,7 +225,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Type:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateType">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateType" >
                                                         <option value="FXD">Fixed</option>
                                                         <option value="RCU">Recurring</option>
                                                         <option value="STEP">Range(step)</option>
@@ -241,7 +241,7 @@
                                             <div class="mb-3 row">
                                                 <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Rate Frequency Type:</label>
                                                 <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateFrequencyType">
+                                                <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateFrequencyType">
                                                     <option value="A">Annually</option>
                                                     <option value="M">Monthly</option>
                                                     <option value="Q">Quaterly</option>
@@ -250,15 +250,12 @@
                                                 </div>
                                             </div>
                                             </div>
-                                            <div class="col-xl-6">
+                                            <div class="col-xl-6" >
                                                 <div class="mb-3 row">
-                                                    <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Select Rate Table:</label>
+                                                    <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel" >Select Rate Table:</label>
                                                     <div class="col-7">
-                                                        <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription" [attr.disabled]="'disabled'" >
                                                             <option value="Percent"></option>
-                                                            <option value="Per Mile"></option>
-                                                            <option value="Amount"></option>
-                                                            <option value="Others"></option>
                                                         </select>                                                   
                                                      </div>
                                                 </div>
@@ -316,7 +313,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Proparated /Full:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="proratedOrFull">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="proratedOrFull">
                                                         <option value="P">Prorated</option>
                                                         <option value="F">Full</option>
                                                     </select>
@@ -330,7 +327,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Level:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="noClaimDiscountLevel">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="noClaimDiscountLevel">
                                                         <option value="1">1</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
@@ -360,7 +357,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Ex,Protector App?:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="isExProtectorApplication">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="isExProtectorApplication">
                                                         <option value="Y">Yes</option>
                                                         <option value="N">No</option>
 
@@ -383,7 +380,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Applicable?:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="isNoClaimDiscountApplicable">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="isNoClaimDiscountApplicable">
                                                         <option value="Y">Yes</option>
                                                         <option value="N">No</option>
 
@@ -406,7 +403,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Applicable:</label>
                                                     <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="doesCashBackApply">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="doesCashBackApply">
                                                         <option value="Y">Yes</option>
                                                         <option value="N">No</option>
 
@@ -418,7 +415,7 @@
                                                 <div class="mb-3 row">
                                                     <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Level:</label>
                                                     <div class="col-7">
-                                                        <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="cashBackLevel">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="cashBackLevel">
                                                             <option value="1">1</option>
                                                             <option value="2">2</option>
                                                             <option value="3">3</option>
@@ -451,284 +448,281 @@
                                 <p class="modal-title  mb-2" id="AddChargesTitle">
                                     <span class="me-2"><i class="fa-solid fa-arrow-left" style="width: 24px; height: 24px;" ></i></span>
                                     Edit Premium Rates</p>                              
-                            <form  [formGroup]="premiumForm">
+                                    <form  [formGroup]="premiumForm">
                                
-                                <!-- **ROW 1** -->
-                                <div class="row" id="PreiumRows">
-                                    <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Range From:</label>
-                                            <div class="col-7">
-                                              <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeFrom">                            
+                                        <!-- **ROW 1** -->
+                                        <div class="row" id="PreiumRows">
+                                            <div class="col-xl-6">
+                                                <div class="mb-3 row">
+                                                    <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Range From:</label>
+                                                    <div class="col-7">
+                                                      <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeFrom">                            
+                                                    </div>
+                                                  </div>
                                             </div>
-                                          </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">*Range To:</label>
-                                            <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeTo">                             </div>
-                                            </div>
-                                        </div>
-                                </div>
-                                  <!-- **ROW 2** -->
-                                <div class="row" id="PreiumRows">
-                                    <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">*Rate:</label>
-                                            <div class="col-7">
-                                              <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rate">                            
-                                            </div>
-                                          </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Description:</label>
-                                            <div class="col-7">
-                                            <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
-                                                <option value="Percent">Percent</option>
-                                                <option value="Per Mile">Per Mille</option>
-                                                <option value="Amount">Amount</option>
-                                                <option value="Others">Others</option>
-                                            </select>
-                                            </div>
-                                        </div>
-                                        </div>
-                                </div>
-                                    <!-- **ROW 3** -->
-                                    <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Division Factor:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="divisionFactor">                            
+                                            <div class="col-xl-6">
+                                                <div class="mb-3 row">
+                                                    <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">*Range To:</label>
+                                                    <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rangeTo">                             </div>
+                                                    </div>
                                                 </div>
-                                            </div>
                                         </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Type:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateType">
-                                                    <option value="FXD">Fixed</option>
-                                                    <option value="RCU">Recurring</option>
-                                                    <option value="STEP">Range(step)</option>
-                                                    <option value="ABS">Range(Abs)</option>
-                                                </select>
-                                                </div>
+                                          <!-- **ROW 2** -->
+                                        <div class="row" id="PreiumRows">
+                                            <div class="col-xl-6">
+                                                <div class="mb-3 row">
+                                                    <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">*Rate:</label>
+                                                    <div class="col-7">
+                                                      <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="rate">                            
+                                                    </div>
+                                                  </div>
                                             </div>
-                                            </div>
-                                    </div>
-                                    <!-- **ROW 4** -->
-                                    <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                        <div class="mb-3 row">
-                                            <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Rate Frequency Type:</label>
-                                            <div class="col-7">
-                                            <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateFrequencyType">
-                                                <option value="A">Annually</option>
-                                                <option value="M">Monthly</option>
-                                                <option value="Q">Quaterly</option>
-                                                <option value="S">Semi-Annually</option>
-                                            </select>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Select Rate Table:</label>
-                                                <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
-                                                        <option value="Percent"></option>
-                                                        <option value="Per Mile"></option>
-                                                        <option value="Amount"></option>
-                                                        <option value="Others"></option>
-                                                    </select>                                                   
-                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- **ROW 5** -->
-                                    <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Maximum Rate:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="maximumRate">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Minimum Rate:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="minimumRate">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <!-- **ROW 6** -->
-                                     <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Free Limit:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="freeLimit">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Minimum Amount:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="premiumMinimumAmount">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <!-- **ROW 7** -->
-                                     <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Endorsment Min Amount:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="premiumEndorsementMinimumAmount">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Proparated /Full:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="proratedOrFull">
-                                                    <option value="P">Prorated</option>
-                                                    <option value="F">Full</option>
-                                                </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <!-- **ROW 8** -->
-                                     <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Level:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="noClaimDiscountLevel">
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5">5</option>
-                                                    <option value="6">6</option>
-                                                    <option value="7">7</option>
-                                                    <option value="8">8</option>
-                                                    <option value="9">9</option>
-                                                    <option value="10">10</option>
-                                                </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Mutiplier Rate:</label>
-                                                <div class="col-7">
-                                                <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="multiplierRate">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- **ROW 9** -->
-                                    <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Ex,Protector App?:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="isExProtectorApplication">
-                                                    <option value="Y">Yes</option>
-                                                    <option value="N">No</option>
-
-                                                </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">WEF</label>
-                                                <div class="col-7">
-                                                <input type="date" class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="dateWithEffectFrom">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                     <!-- **ROW 10** -->
-                                    <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Applicable?:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="isNoClaimDiscountApplicable">
-                                                    <option value="Y">Yes</option>
-                                                    <option value="N">No</option>
-
-                                                </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">WET</label>
-                                                <div class="col-7">
-                                                <input type="date" class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="dateWithEffectTo">                            
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                       <!-- **ROW 11** -->
-                                       <div class="row" id="PreiumRows">
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Applicable:</label>
-                                                <div class="col-7">
-                                                <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="doesCashBackApply">
-                                                    <option value="Y">Yes</option>
-                                                    <option value="N">No</option>
-
-                                                </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6">
-                                            <div class="mb-3 row">
-                                                <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Level:</label>
-                                                <div class="col-7">
-                                                    <select class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="cashBackLevel">
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                        <option value="8">8</option>
-                                                        <option value="9">9</option>
-                                                        <option value="10">10</option>
+                                            <div class="col-xl-6">
+                                                <div class="mb-3 row">
+                                                    <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Description:</label>
+                                                    <div class="col-7">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription">
+                                                        <option value="Percent">Percent</option>
+                                                        <option value="Per Mile">Per Mille</option>
+                                                        <option value="Amount">Amount</option>
+                                                        <option value="Others">Others</option>
                                                     </select>
                                                     </div>
-                                            </div>
+                                                </div>
+                                                </div>
                                         </div>
-                                        </div>
-                           
-                                        <div class="row mt-3 mb-2">
-                                            <div class="col-6 ">
-                                                <button type="button" class="btn btn-outline-primary"  id="cancelPremium" (click)="hideEditPremiumCard()">Cancel</button>
+                                            <!-- **ROW 3** -->
+                                            <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Division Factor:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="divisionFactor">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Rate Type:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateType">
+                                                            <option value="FXD">Fixed</option>
+                                                            <option value="RCU">Recurring</option>
+                                                            <option value="SRG">Range(step)</option>
+                                                            <option value="ARG">Range(Abs)</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                    </div>
                                             </div>
-                                            <div class="col-6 d-flex justify-content-end">
-                                                <button type="button" class="btn btn-primary" id="save" (click)="hideEditPremiumCard();updatePremium()">Save</button>
-
+                                            <!-- **ROW 4** -->
+                                            <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                <div class="mb-3 row">
+                                                    <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Rate Frequency Type:</label>
+                                                    <div class="col-7">
+                                                    <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateFrequencyType">
+                                                        <option value="A">Annually</option>
+                                                        <option value="M">Monthly</option>
+                                                        <option value="Q">Quaterly</option>
+                                                        <option value="S">Semi-Annually</option>
+                                                    </select>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Select Rate Table:</label>
+                                                        <div class="col-7">
+                                                            <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="rateDescription" >
+                                                                <option value="Percent" disabled></option>
+                                                               
+                                                            </select>                                                   
+                                                         </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                          </div>
-                          </form>
+                                            <!-- **ROW 5** -->
+                                            <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Maximum Rate:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="maximumRate">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Minimum Rate:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="minimumRate">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <!-- **ROW 6** -->
+                                             <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Free Limit:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="freeLimit">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Minimum Amount:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="premiumMinimumAmount">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <!-- **ROW 7** -->
+                                             <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Endorsment Min Amount:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="premiumEndorsementMinimumAmount">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">*Proparated /Full:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="proratedOrFull">
+                                                            <option value="P">Prorated</option>
+                                                            <option value="F">Full</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <!-- **ROW 8** -->
+                                             <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Level:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="noClaimDiscountLevel">
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                            <option value="6">6</option>
+                                                            <option value="7">7</option>
+                                                            <option value="8">8</option>
+                                                            <option value="9">9</option>
+                                                            <option value="10">10</option>
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">Mutiplier Rate:</label>
+                                                        <div class="col-7">
+                                                        <input type="number" id="addChargesInput" class="form-control form-control-sm mb-1" formControlName="multiplierRate">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- **ROW 9** -->
+                                            <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">Ex,Protector App?:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="isExProtectorApplication">
+                                                            <option value="Y">Yes</option>
+                                                            <option value="N">No</option>
+    
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">WEF</label>
+                                                        <div class="col-7">
+                                                        <input type="date" class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="dateWithEffectFrom">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <!-- **ROW 10** -->
+                                            <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">NCD Applicable?:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="isNoClaimDiscountApplicable">
+                                                            <option value="Y">Yes</option>
+                                                            <option value="N">No</option>
+    
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="minmax-buttons" class="col-5 col-form-label" id="addpremiumLabel">WET</label>
+                                                        <div class="col-7">
+                                                        <input type="date" class="form-control form-control-sm mb-1" id="addpremiumInput" formControlName="dateWithEffectTo">                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                               <!-- **ROW 11** -->
+                                               <div class="row" id="PreiumRows">
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Applicable:</label>
+                                                        <div class="col-7">
+                                                        <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="doesCashBackApply">
+                                                            <option value="Y">Yes</option>
+                                                            <option value="N">No</option>
+    
+                                                        </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="mb-3 row">
+                                                        <label for="addpremiumInput" class="col-5 col-form-label" id="addpremiumLabel">CashBack Level:</label>
+                                                        <div class="col-7">
+                                                            <select class="form-select form-control-sm mb-1" id="addpremiumInput" formControlName="cashBackLevel">
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
+                                                                <option value="5">5</option>
+                                                                <option value="6">6</option>
+                                                                <option value="7">7</option>
+                                                                <option value="8">8</option>
+                                                                <option value="9">9</option>
+                                                                <option value="10">10</option>
+                                                            </select>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                   
+                                    <div class="row mt-3 mb-2">
+                                      <div class="col-6 ">
+                                        <button type="button" class="btn btn-outline-primary"  id="cancelPremium"(click)="hideEditPremiumCard()">Cancel</button>
+                                      </div>
+                                      <div class="col-6 d-flex justify-content-end">
+                                        <button type="button" class="btn btn-primary" id="save"  (click)="hideEditPremiumCard();updatePremium()">Save</button>
+                                      </div>
+                                    </div>
+                                  </form>
                              
                             </div>
                           </div>
