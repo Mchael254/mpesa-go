@@ -55,6 +55,8 @@ export class PremiumRateComponent implements OnInit {
   showDeleteCover:boolean = false;
   showcover:boolean = false;
   showButtons: boolean = true;
+  // isDisabled: boolean = true; 
+
 
 
 
