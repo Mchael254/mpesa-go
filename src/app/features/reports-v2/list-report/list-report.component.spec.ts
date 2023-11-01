@@ -13,7 +13,7 @@ import cubejs from "@cubejs-client/core";
 import {MessageService} from "primeng/api";
 import {DynamicBreadcrumbComponent} from "../../../shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component";
 import {MenuModule} from "primeng/menu";
-import {DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import {AddReportToDashDTO, DashboardReports} from "../../../shared/data/reports/dashboard";
 
 export class MockAppConfigService {
   get config() {
@@ -100,7 +100,7 @@ describe('ListReportComponent', () => {
       width: 0
     }];
 
-    const deleteDashboard: DashboardReport = {
+    const deleteDashboard: AddReportToDashDTO = {
       dashboardId: null,
       dashboardReports: report
     }

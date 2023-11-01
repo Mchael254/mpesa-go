@@ -4,7 +4,12 @@ import {MenuItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger, UtilService} from "../../../shared/services";
-import {Dashboard, DashboardReport, DashboardReports} from "../../../shared/data/reports/dashboard";
+import {
+  CreateUpdateDashboardDTO,
+  AddReportToDashDTO,
+  DashboardReports,
+  ListDashboardsDTO
+} from "../../../shared/data/reports/dashboard";
 import {AuthService} from "../../../shared/services/auth.service";
 import {Router} from "@angular/router";
 import cubejs, {Query} from "@cubejs-client/core";
@@ -14,7 +19,7 @@ import {TableDetail} from "../../../shared/data/table-detail";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {NgxSpinnerService} from "ngx-spinner";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
-import {ChartReports} from "../../../shared/data/reports/chart-reports";
+import {ChartReports, RenameDTO} from "../../../shared/data/reports/chart-reports";
 
 const log = new Logger('CreateDashboardComponent');
 @Component({
@@ -33,10 +38,11 @@ export class CreateDashboardComponent implements OnInit {
   chartRepName: any = [];
   selectedChartReport: any = [];
 
-  public dashboards: any[] = [];
-  public selectedDashboard: Dashboard;
+  public dashboards: ListDashboardsDTO[] = [];
+  public selectedDashboard: CreateUpdateDashboardDTO;
   selectedItem:any = null;
   public dashboardReport: DashboardReports;
+  updatedDashboard: RenameDTO;
 
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
@@ -51,6 +57,10 @@ export class CreateDashboardComponent implements OnInit {
   public chartDataArr = [];
   public measures: string[] = [];
   public criteria: Criteria[];
+
+  unsavedChanges = false;
+  isEditable: boolean = false;
+  position;
 
   constructor(
   private globalMessagingService: GlobalMessagingService,
@@ -81,7 +91,8 @@ export class CreateDashboardComponent implements OnInit {
           {
             label: 'Rename dashboard',
             command: () => {
-              this.renameDashboard();
+              // this.renameDashboard();
+              this.toggleEditability(this.selectedItem);
             }
           },
           {
@@ -177,7 +188,8 @@ export class CreateDashboardComponent implements OnInit {
         };
       });
 
-      const saveDashboard: Dashboard = {
+      const saveDashboard: CreateUpdateDashboardDTO = {
+        organizationId: 2,
         createdBy: createdByID,
         dashboardReports: report,
         id: 0,
@@ -408,7 +420,7 @@ export class CreateDashboardComponent implements OnInit {
       };
     });
 
-      const saveDashboard: DashboardReport = {
+      const saveDashboard: AddReportToDashDTO = {
         dashboardId: this.selectedItem,
         dashboardReports: report
 
@@ -431,7 +443,55 @@ export class CreateDashboardComponent implements OnInit {
       {queryParams: {dashboardId: id }});
   }
 
+  toggleEditability(event: any) {
+    const dashboardId = this.selectedItem;
+    if (dashboardId) {
+      this.isEditable = !this.isEditable;
+    }
+
+    log.info('dashboard id', dashboardId);
+  }
+
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.dashboards, event.previousIndex, event.currentIndex);
+  }
+
+  handleEnter(event: any) {
+    const selectedDashboardId = this.selectedItem;
+    if (event.key === 'Enter') {
+      const renameValue = event.target.value;
+
+      const updateDashboard: RenameDTO = {
+        name: renameValue,
+        dashboardId: selectedDashboardId
+      }
+
+      log.info('dashboard on enter',updateDashboard)
+
+      this.reportService.renameDashboard(selectedDashboardId, updateDashboard)
+        .subscribe(res => {
+          this.updatedDashboard = res;
+          log.info('updated dashboard', this.updatedDashboard);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Dashboard successfully updated' );
+          this.isEditable = false;
+
+          setTimeout(() => {
+            this.getAllDashboards();
+            this.cdr.detectChanges();
+          }, 3000);
+        })
+    }
+  }
+
+  newPosition(event){
+    const boundingRect = event.currentTarget.getBoundingClientRect();
+    const element = event.currentTarget;
+
+    // const x = event.pageX - boundingRect.left;
+    const x = element.offsetLeft;
+    const y = element.offsetTop;
+
+    this.position = "(" + x+", " + y +")";
+    console.log('yeah');
   }
 }

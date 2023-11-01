@@ -8,7 +8,7 @@
               url: '/home/reportsv2/create-dashboard'
             },
             {
-              label: report[0]?.name,
+              label: dashboard[0]?.name,
               url: '/home/reportsv2/list-report',
             },
           ]">
@@ -30,13 +30,20 @@
         </div>
       </div>
 
-      <div class="row mx-0 mt-3 p-0 dragDropBoundary" *ngFor="let reportdata of report"  cdkDropList (cdkDropListDropped)="drop($event)">
+      <div class="row mx-0 mt-3 p-0 dragDropBoundary" *ngFor="let reportdata of dashboard"
+           cdkDropList [cdkDropListData]="dashboard"
+           (cdkDropListDropped)="drop($event)">
         <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
           <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
             <div class="row card-header border-0 text-sm-start bg-transparent">
               <div class="col-md-10">
-                <input #textInput type="text" [id]="reportName.name" class="form-control" [value]="reportName.name | titlecase"
-                       [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
+                <span *ngIf="!isEditable"
+                      style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">{{reportName?.name | titlecase }}</span>
+
+                <div class="mb-3" *ngIf="isEditable">
+                  <input type="text" class="form-control" id="id" [value]="reportName?.name"
+                         [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
+                </div>
               </div>
               <div class="col-md-2">
                 <span class="float-end"
@@ -99,5 +106,26 @@
   <app-share-modal></app-share-modal>
   <app-download-modal></app-download-modal>
 
+  <!-- save confirmation dialogue Modal -->
+  <div class="modal fade" id="saveDashboardModal" tabindex="-1" aria-labelledby="saveDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h6 class="text-black">Save changes</h6>
+<!--          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeSaveModal()"></button>-->
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <p class="text-black">You have made changes to your dashboard</p>
+            <button type="button" class="btn btn-danger mx-2" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="closeSaveModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" id="saveDashboard" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="updateReportOrder(); closeSaveModal()">Save</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
