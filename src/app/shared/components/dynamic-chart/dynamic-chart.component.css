@@ -1,3 +1,10 @@
 .set-title {
   font-size: 11px;
 }
+.res {
+  resize: both;
+  overflow: auto;
+}
+::ng-deep p-chart canvas {
+  height: 40vh;
+}

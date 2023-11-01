@@ -1,0 +1,93 @@
+.createDashBtn {
+  border-radius: 4px;
+  border: 1px solid #00529B;
+}
+.modal-title {
+  font-size: 16px;
+  color: #000;
+  font-weight: 400;
+}
+.btn-close {
+  color: #EE3945;
+  font-size: 16px;
+}
+:host ::ng-deep .p-menu {
+  top: 6%!important;
+  left: 75%!important;
+  width: 8em;
+  font-family: Roboto;
+}
+:host ::ng-deep .p-element .p-submenu-header {
+  display:none;
+}
+.icon-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-container .fa::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border: 2px solid #b2b9c070;
+  border-radius: 50%;
+  background-color: #b2b9c070;
+  display: none;
+}
+.icon-container.active .fa::after {
+  display: block; /* Display the circle when the container has the "active" class */
+}
+.move {
+  cursor: move;
+}
+.res {
+  resize: both;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;
+  overflow: auto;
+}
+::ng-deep .p-datatable-thead tr th{
+  font-size: 8px !important;
+}
+::ng-deep .p-datatable-tbody tr td{
+  font-size: 8px !important;
+  padding: 0px!important;
+  line-height: 25px !important;
+}
+
+::ng-deep p-paginator {
+  display:none;
+}
+
+
+.bound-box{
+  border: dotted;
+  background-image: url('https://placeimg.com/200/200/animals');
+  border-color: red;
+  height: 200px;
+  width: 200px;
+  max-height: 200px;
+  max-width: 200px;
+}
+
+.resizable-widget{
+  background-color: blue;
+  opacity: 0.5;
+  border: none;
+}
+.ng-draggable {
+  cursor: grab;
+}
+
+.ng-dragging {
+  cursor: grabbing;
+}

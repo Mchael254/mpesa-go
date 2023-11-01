@@ -1,9 +1,71 @@
 <div class="pill-box">
   <div class="pill-title">
-    {{ queryObject.subCategoryName }}
-    <span>
-      <i class="pi pi-times" (click)="selectCriteria(queryObject)"></i>
-    </span>
+    <div class="row">
+      <div class="col-sm-8">
+        {{ queryObject.subCategoryName }}
+      </div>
+      <div class="col-sm-4 text-end">
+
+        <div class="btn-group ">
+          <span data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="pi pi-sort-amount-down"></i>
+          </span>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item sort" (mouseover)="shouldShowSortOption=true">
+                Sort
+              </a>
+              <ul class="fadeIn" [ngStyle]="{'display': shouldShowSortOption ? 'block' : 'none' }">
+                <li><a class="dropdown-item">Ascending</a></li>
+                <li><a class="dropdown-item">Descending</a></li>
+              </ul>
+            </li>
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#filter">Filter</a></li>
+          </ul>
+        </div>
+
+        <i class="pi pi-times" (click)="selectCriteria(queryObject)"></i>
+      </div>
+    </div>
   </div>
   <div class="pill-criteria">{{ queryObject.queryName }}</div>
+</div>
+<ng-container *ngIf="queryObject.filter">
+  <span class="text-secondary" style="font-size: 0.8em">
+  <i class="pi pi-sort-amount-down"></i>
+    {{ queryObject.filter }}
+</span>
+</ng-container>
+
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-9">
+            <form [formGroup]="filterForm">
+              <div class="mb-3">
+                <label for="condition" class="form-label">Condition</label>
+                <select formControlName="operator" id="condition" class="form-select" aria-label="Default select example">
+                  <option [value]="condition.value" *ngFor="let condition of conditions">{{ condition.label }}</option>
+                </select>
+              </div>
+              <div class="mb-5">
+                <label for="value" class="form-label">Value</label>
+                <input formControlName="value" id="value" type="text" class="form-control">
+              </div>
+              <div class="text-center">
+                <button (click)="addFilter(queryObject)" class="btn btn-primary ps-5 pe-5">Apply</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-sm-3 text-end">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
