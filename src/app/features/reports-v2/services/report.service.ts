@@ -73,9 +73,9 @@ export class ReportServiceV2 {
       `/${baseUrl}/chart/chart-reports/${id}/charts`, {headers: this.headers});
   }
 
-  deleteReport(id: number): Observable<ReportV2> {
+  deleteReport(id: number) {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    return this.http.delete<ReportV2>(
+    return this.http.delete(
       `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 

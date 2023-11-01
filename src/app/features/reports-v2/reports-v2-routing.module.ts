@@ -33,6 +33,10 @@ const routes: Routes = [
     component: ReportPreviewComponent
   },
   {
+    path: 'preview/:id',
+    component: ReportPreviewComponent
+  },
+  {
     path: 'list-report',
     component: ListReportComponent
   },

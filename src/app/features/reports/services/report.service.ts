@@ -73,13 +73,13 @@ export class ReportService {
 
   // utils
   prepareTableData(reportLabels, reportData, dimensions, measures, criteria): TableDetail {
-    log.info(`--------------------------------`)
-    log.info(`report labels >>>`, reportLabels);
-    log.info(`reportData >>>`, reportData);
-    log.info(`dimensions >>>`, dimensions);
-    log.info(`measures >>>`, measures);
-    log.info(`criteria >>>`, criteria);
-    log.info(`--------------------------------`)
+    // log.info(`--------------------------------`)
+    // log.info(`report labels >>>`, reportLabels);
+    // log.info(`reportData >>>`, reportData);
+    // log.info(`dimensions >>>`, dimensions);
+    // log.info(`measures >>>`, measures);
+    // log.info(`criteria >>>`, criteria);
+    // log.info(`--------------------------------`)
 
     const tableHead = [];
     const header = [...dimensions, ...measures];
