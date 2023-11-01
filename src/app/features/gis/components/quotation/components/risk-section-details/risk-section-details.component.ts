@@ -109,7 +109,7 @@ export class RiskSectionDetailsComponent {
     ngOnInit(): void {
       this.formData = this.sharedService.getQuotationFormDetails();
       this.clientFormData=this.sharedService.getFormData();
-      this.quotationCode=this.sharedService.getQuotationDetails();
+      this.quotationCode=this.sharedService.getQuotationCode();
 
       log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:")
       log.debug(this.formData ,"Form Data")

@@ -43,3 +43,7 @@ font-weight: 600;
 line-height: normal;
 text-decoration-line: underline;
 }
+
+li{
+    cursor:pointer
+}

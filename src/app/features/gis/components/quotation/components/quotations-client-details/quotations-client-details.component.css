@@ -45,4 +45,17 @@ cursor:pointer
     border: 1px solid var(--primary-color);
     
 }
+#icon{
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 9px;
+    padding-right: 9px;
+}
+#icon i{
+    color: #00529B;
+}
+
 
