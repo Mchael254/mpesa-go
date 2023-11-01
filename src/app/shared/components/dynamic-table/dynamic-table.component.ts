@@ -60,16 +60,16 @@ export class DynamicTableComponent {
   }
 
   formatTableData(str) {
-    log.info(str, `is of type`, typeof str);
+    // log.info(str, `is of type`, typeof str);
     const stringToDate = new Date(str);
     const stringToNumber = parseFloat(str)
-    log.info(`isStringToDate >>> `, stringToDate, typeof stringToDate);
-    log.info(`isStringToNumber >>> `, stringToNumber, typeof stringToNumber);
+    // log.info(`isStringToDate >>> `, stringToDate, typeof stringToDate);
+    // log.info(`isStringToNumber >>> `, stringToNumber, typeof stringToNumber);
 
     // if (typeof stringToNumber == number) {
 
     // }
-    log.info(`-----------------------------------`)
+    // log.info(`-----------------------------------`)
   }
 
   showCustomModal(data: any) {

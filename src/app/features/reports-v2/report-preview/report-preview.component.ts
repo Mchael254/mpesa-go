@@ -14,7 +14,7 @@ import {Chart, ReportV2} from "../../../shared/data/reports/report";
 import {ReportServiceV2} from "../services/report.service";
 import {take} from "rxjs/operators";
 import {AuthService} from "../../../shared/services/auth.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import _default from "chart.js/dist/core/core.interaction";
 import dataset = _default.modes.dataset;
@@ -101,6 +101,8 @@ export class ReportPreviewComponent implements OnInit{
     radar: this.defaultColorScheme
   };
 
+  private reportId: number;
+
   constructor(
     private fb: FormBuilder,
     private sessionStorageService: SessionStorageService,
@@ -111,6 +113,7 @@ export class ReportPreviewComponent implements OnInit{
     private router: Router,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
+    private activatedRoute: ActivatedRoute,
   ) {}
 
   /**
@@ -123,8 +126,9 @@ export class ReportPreviewComponent implements OnInit{
    * 6. Fetching details of the current user
    */
   ngOnInit(): void {
+    this.reportId = +this.activatedRoute.snapshot.params['id'];
     const reportParams = this.sessionStorageService.getItem(`reportParams`);
-    // log.info(`report params >>> `, reportParams)
+    log.info(`report params >>> `, reportParams, this.reportId);
     this.criteria = reportParams.criteria;
     this.sort = reportParams.sort;
     this.reportNameRec = reportParams.reportNameRec;
@@ -138,11 +142,20 @@ export class ReportPreviewComponent implements OnInit{
     this.fetchDashboards();
 
     this.currentUser = this.authService.getCurrentUser();
-    this.displayChartTypes.push('table');
+
+    if(isNaN(this.reportId)) {
+      this.displayChartTypes.push('table');
+    } else {
+      reportParams.charts.forEach((chart) => {
+        log.info(`chart >>>`, chart);
+        this.displayChartTypes.push(chart.type);
+      })
+    }
+
   }
 
   /**
-   * gets all existing dashboards from the DB so that a user can select 
+   * gets all existing dashboards from the DB so that a user can select
    *  a specific dashboar when saving a report
    * @returns void
    */
@@ -161,8 +174,8 @@ export class ReportPreviewComponent implements OnInit{
   };
 
   /**
-   * 
-   * @param reportParamFilters 
+   *
+   * @param reportParamFilters
    */
   populateSelectedFilters(reportParamFilters) {
     reportParamFilters.forEach(reportParamFilter => {
@@ -216,7 +229,7 @@ export class ReportPreviewComponent implements OnInit{
   }
 
   /**
-   * creates filter form 
+   * creates filter form
    */
   createFilterForm(): void {
     this.filterForm = this.fb.group({
@@ -238,7 +251,7 @@ export class ReportPreviewComponent implements OnInit{
   /**
    * 1. selects a specific chart for display
    * 2. sets table as the first chart to be displayed
-   * 3. calls the loadChart() method 
+   * 3. calls the loadChart() method
    * @param event HTML event
    */
   selectChart(event) {
@@ -397,7 +410,7 @@ export class ReportPreviewComponent implements OnInit{
    * Sets the colors of the selected charts
    * @param chartType :string
    * @param chartData :ChartData from cubeJS API
-   * @returns chartData 
+   * @returns chartData
    */
   setChartColors(chartType, chartData) {
     let colorScheme;
@@ -425,7 +438,7 @@ export class ReportPreviewComponent implements OnInit{
         colorScheme = { colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'] }
     }
 
-    
+
     if(chartType === 'bar' || chartType === 'line') {
       chartData.datasets.forEach((dataset, index) => {
         dataset.backgroundColor = colorScheme.colors[index];
@@ -437,7 +450,7 @@ export class ReportPreviewComponent implements OnInit{
         dataset.borderColor = '#fff';
       })
     }
-  
+
     return chartData
   }
 
@@ -463,7 +476,7 @@ export class ReportPreviewComponent implements OnInit{
     const formValues = this.saveReportForm.getRawValue();
     const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
-    log.debug(`formValues >>> `, formValues)
+    log.info(`formValues >>> `, formValues)
 
     let charts: Chart[] = [];
 
@@ -478,7 +491,7 @@ export class ReportPreviewComponent implements OnInit{
         colorScheme: colorSchemeId,
         evenColor: "",
         evenOddAppliesTo: "",
-        // id: 0,
+        // id: 0, // 16685487
         length: 0,
         name: "",
         oddColor: "",
@@ -506,18 +519,53 @@ export class ReportPreviewComponent implements OnInit{
       width: 0
     }
 
-    console.log(`report to save >>> `, formValues.dashboard)
+    log.info(`report to save >>> `, report, this.reportId);
 
-    let urlPath = formValues.dashboard !== '' ? 
-      `list-report?dashboardId=${formValues.dashboard}` : 'report-management';
+    if(isNaN(this.reportId)) {
+      this.createReport(report);
+    } else {
+      report.id = this.reportId;
+      this.updateReport(report);
+    }
 
+  }
+
+  createReport(report: ReportV2): void {
     this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          console.log(`saved report >>>`, res);
           this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
-          this.router.navigate([`/home/reportsv2/${urlPath}`])
+
+          if ((report.dashboardId).toString() === '') {
+            this.router.navigate([`/home/reportsv2/report-management`])
+          } else {
+            this.router.navigate([`/home/reportsv2/list-report`],
+              { queryParams: { dashboardId: report.dashboardId }})
+          }
+
+        },
+        error: (e) => {
+          this.globalMessagingService.displayErrorMessage('error', 'Report not saved')
+        }
+      });
+  }
+
+
+  updateReport(report: ReportV2): void {
+    this.reportServiceV2.updateReport(report)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+
+          if ((report.dashboardId).toString() === '') {
+            this.router.navigate([`/home/reportsv2/report-management`])
+          } else {
+            this.router.navigate([`/home/reportsv2/list-report`],
+              { queryParams: { dashboardId: report.dashboardId }})
+          }
+
         },
         error: (e) => {
           this.globalMessagingService.displayErrorMessage('error', 'Report not saved')
@@ -551,7 +599,7 @@ export class ReportPreviewComponent implements OnInit{
 
   /**
    * sets the conditions to display based on the selected column type
-   * @param category 
+   * @param category
    * @returns conditionsOptions
    */
   setConditionsOptionsValue(category: string) {
