@@ -32,6 +32,8 @@ import { PartyService } from '../../../../../service/party/party.service';
 import { RelationTypesService } from '../../../../../../lms/service/relation-types/relation-types.service';
 import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-personal-details',
@@ -88,6 +90,7 @@ export class PersonalDetailsComponent {
   sectorList: SectorDTO[] = [];
   beneficiaryTypeList: any[] = [];
   relationTypeList: any[] = [];
+  documentList: any;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -103,7 +106,9 @@ export class PersonalDetailsComponent {
     private sector_service: SectorService,
     private toast: ToastService,
     private party_service: PartyService,
-    private relation_type_service: RelationTypesService
+    private relation_type_service: RelationTypesService,
+    private dms_service: DmsService,
+    private spinner_Service: NgxSpinnerService
   ) {}
 
   ngOnInit() {
@@ -124,6 +129,7 @@ export class PersonalDetailsComponent {
     this.getSectorList();
     this.getAllBeneficiaryTypes();
     this.getRelationTypes();
+    this.getDocumentsByClientId();
 
     if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
       let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
@@ -486,52 +492,8 @@ export class PersonalDetailsComponent {
     // }
   }
 
-  // createBeneficiary(beneficiary: any, guardian: any) {
-  //   let quote_code = this.session_storage.get('quote_code');
-  //   let party = {...beneficiary}
-  //   party['beneficiary_info'] = {...beneficiary};
-  //   party['appointee_info'] = guardian;
-  //   party['proposal_code'] = null,
-  //   party['proposal_no'] = null,
-  //   party['quote_code'] =  quote_code,
-  //   party['is_adopted'] =  true
-  //   return this.party_service.createBeneficary(party)
-  // }
-  // updateBeneficiary(i) {
-  //   this.editEntity = true;
-  //   let beneficiary = {}
-  //   let guardian = {}
-  //   beneficiary = this.beneficiaryList.filter((data, x)=>{return i === x})[0];
-  //   guardian = this.guardianList.filter((data, x)=>{return data['code'] === beneficiary[0]['code']})[0];
-  //   let _benForm = { ...this.getValue('beneficiary') };
-  //   beneficiary = {..._benForm};
-  //   this.createBeneficiary(beneficiary, guardian===undefined? null: guardian)
-  //   .pipe(finalize(()=>this.editEntity = false)).subscribe(data =>{
-  //       this.beneficiaryList = this.beneficiaryList.map((data, x) => {
-  //         if (i === x) {
-  //           let ben_tem = {};
-  //           ben_tem = beneficiary
-  //           ben_tem['relation_code'] = +beneficiary['relation_code']
-  //           ben_tem['age'] = new Date().getFullYear() - new Date(beneficiary['date_of_birth']).getFullYear();
-  //           ben_tem['isEdit'] = false;
-  //           return ben_tem;
-  //         }
-  //         return data;
-  //       });
-  //       this.clientDetailsForm.get('beneficiary').reset();
-  //       this.editEntity = false;
-  //       this.showBeneficiaryAddButton = true
-
-  //   }, (err)=>{
-  //     this.toast.danger('Fill all Available Field', 'INCORRECT INFO')
-  //     console.log(err['error']);
-
-  //   })
-
-  // }
 
   saveBeneficiary() {
-    // console.log(this.beneficiaryForm.value);
     let beneficiary = { ...this.beneficiaryForm.value };
     beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
     beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_CODE));
@@ -698,6 +660,49 @@ export class PersonalDetailsComponent {
 
     return age;
   }
+
+  fileChange(event): void {
+    console.log(event);
+
+    // let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+
+    // const fileList: FileList = event.target.files;
+    // if (fileList.length > 0) {
+    //     const file = fileList[0];
+
+    //     const formData = new FormData();
+    //     formData.append('file', file, file.name);
+    //     this.dms_service.saveClientDocument(client_code, flename, formData)
+    // }
+}
+
+getFileChange(event){
+  console.log(event);
+
+}
+
+  getDocumentsByClientId(){
+    this.spinner_Service.show('download_view');
+    let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    this.dms_service.getClientDocumentById(client_code)
+    .pipe(finalize(() =>{this.spinner_Service.hide('download_view');}))
+    .subscribe(data =>{
+      console.log(data);
+      this.spinner_Service.hide('download_view');
+      this.documentList = data['content']
+    });
+  }
+
+  downloadBase64File(url:string) {
+    this.spinner_Service.show('download_view');
+    this.dms_service.downloadFileById(url).pipe(finalize(()=>{
+      this.spinner_Service.hide('download_view');
+    })).subscribe(()=>{
+      this.spinner_Service.hide('download_view');
+    })
+  }
+
+
   closeModal() {
     this._openModal = true;
     const modal = document.getElementById('newClientModal');

@@ -7,6 +7,10 @@ import { CountryService } from 'src/app/shared/services/setups/country/country.s
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { PayFrequencyService } from 'src/app/features/lms/grp/service/pay-frequency/pay-frequency.service';
 import { PayFrequency } from 'src/app/features/lms/grp/models/payFrequency';
+import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -38,13 +42,15 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   frequencyOfPayment: any[] = [];
   bmi:{}={};
 
-  constructor(private fb: FormBuilder, private country_service:CountryService, private payFrequenciesService: PayFrequencyService){
+  constructor(private fb: FormBuilder, private router: Router, private session_service: SessionStorageService,
+    private country_service:CountryService, private payFrequenciesService: PayFrequencyService, private lifestyle_service: LifestyleService){
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       question2: ['N'],
       question3: ['N'],
       question4: ['N'],
     });
+
     this.bmiForm = this.fb.group({
       height: [],
       weight: [],
@@ -54,6 +60,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getCountryList();
     this.getPayFrequencies();
+    this.getClientLifeStyleById();
   }
 
 
@@ -90,9 +97,37 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
+  getClientLifeStyleById(){
+    let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
+    this.lifestyle_service.getClientLifeStyleById(client_code).subscribe(data =>{
+
+      this.bmiForm.patchValue({
+        height: data['height'],
+        weight: data['weight'],
+        bmi: data['clientBmi'],
+      })
+      console.log(data);
+
+    })
+  }
+
+  saveClientLisfeStyle(){
+    let payload = {}
+
+    // this.lifestyle_service.saveLifeStyle(payload).subscribe((data :any) => {
+    //   this.bmiForm.patchValue({
+    //     height: data['height'],
+    //     weight: data['weight'],
+    //     bmi: data['clientBmi'],
+    //   });
+
+
+    // })
+    this.router.navigate(['/home/lms/ind/quotation/medical-history'])
+  }
+
   ngOnDestroy(): void {
     console.log('LifestyleDetailsComponent UNSUBSCRIBE');
-
   }
 
 }
