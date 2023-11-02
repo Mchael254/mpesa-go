@@ -10,6 +10,7 @@ export class SharedQuotationsService {
   formData: any;
   quotationDetails:any;
   quotationCode:any;
+  quotationNum:any;
 
   setFormData(data: any) {
     this.formData = data;
@@ -27,15 +28,18 @@ export class SharedQuotationsService {
     return this.quotationDetails;
   }
 
-  setQuotationDetails(data){
-    this.quotationCode = data;
-    // console.log(this.quotationCode,'Kelvine quotation Code')
+  setQuotationDetails(quotationNo,quotationCode){
+    this.quotationCode = quotationCode;
+    this.quotationNum = quotationNo
+    
   }
 
-  getQuotationDetails(){
+  getQuotationCode(){
     return this.quotationCode;
-
   }
 
+  getQuotationNumber(){
+    return this.quotationNum;
+  }
 
 }

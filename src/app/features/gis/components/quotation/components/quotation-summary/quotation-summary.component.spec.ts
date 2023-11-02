@@ -19,3 +19,9 @@ describe('QuotationSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+
+
+
+
+
