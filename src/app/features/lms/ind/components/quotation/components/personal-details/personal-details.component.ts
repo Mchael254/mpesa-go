@@ -174,7 +174,7 @@ export class PersonalDetailsComponent {
 
       question: [''],
 
-      selectedUploadItem: [''],
+      selectedUploadItem: [],
       po_box: [''],
 
       county: [''],
@@ -302,8 +302,6 @@ export class PersonalDetailsComponent {
           return this.country_service.getTownsByMainCityState(data);
         }),
         finalize(() => {
-
-
           this.showTownSpinner = false;
         })
       )
@@ -388,10 +386,9 @@ export class PersonalDetailsComponent {
     this.party_service
       // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
-      .pipe(finalize(() =>this.editEntity = false))
+      .pipe(finalize(() => (this.editEntity = false)))
       .subscribe((data) => {
-        this.beneficiaryList = data
-
+        this.beneficiaryList = data;
       });
   }
 
@@ -420,7 +417,6 @@ export class PersonalDetailsComponent {
       this.sectorList = data;
     });
   }
-
 
   async nextPage() {
     let client_code = +this.session_storage.get(SESSION_KEY.CLIENT_CODE);
@@ -492,28 +488,46 @@ export class PersonalDetailsComponent {
     // }
   }
 
-
   saveBeneficiary() {
     let beneficiary = { ...this.beneficiaryForm.value };
-    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_CODE));
-    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
-    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
-    beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(beneficiary['percentage_benefit']);
+    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.CLIENT_CODE)
+    );
+    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.QUOTE_CODE)
+    );
+    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
+    );
+    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
+    );
+    beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(
+      beneficiary['percentage_benefit']
+    );
     // let be_relation_code = beneficiary['beneficiary_info']['relation_code'];
     // let ap_relation_code = beneficiary['appointee_info']['relation_code'];
-    beneficiary['appointee_info']['relation_code'] = StringManipulation.returnNullIfEmpty(beneficiary['appointee_info']['relation_code'])
-    beneficiary['beneficiary_info']['relation_code'] = StringManipulation.returnNullIfEmpty(beneficiary['beneficiary_info']['relation_code'])
-    beneficiary['code'] = StringManipulation.returnNullIfEmpty(beneficiary['code'])
+    beneficiary['appointee_info']['relation_code'] =
+      StringManipulation.returnNullIfEmpty(
+        beneficiary['appointee_info']['relation_code']
+      );
+    beneficiary['beneficiary_info']['relation_code'] =
+      StringManipulation.returnNullIfEmpty(
+        beneficiary['beneficiary_info']['relation_code']
+      );
+    beneficiary['code'] = StringManipulation.returnNullIfEmpty(
+      beneficiary['code']
+    );
     // console.log(beneficiary);
-    if(!this.checkIfGuardianIsNeeded()){
+    if (!this.checkIfGuardianIsNeeded()) {
       beneficiary['appointee_info'] = null;
     }
-    return this.party_service.createBeneficary(beneficiary).subscribe(data => {
-      this.getBeneficiariesByQuotationCode();
-      this.closeCategoryDetstModal();
-    })
-
+    return this.party_service
+      .createBeneficary(beneficiary)
+      .subscribe((data) => {
+        this.getBeneficiariesByQuotationCode();
+        this.closeCategoryDetstModal();
+      });
   }
   addEmptyBeneficiary() {
     this.addEntity(this.beneficiaryList);
@@ -550,13 +564,18 @@ export class PersonalDetailsComponent {
     this.beneficiaryList = this.beneficiaryList.map((data, x) => {
       if (i === x) {
         let be_date = data?.beneficiary_info?.date_of_birth;
-    let ap_date = data?.appointee_info?.date_of_birth;
-        if(!StringManipulation.isEmpty(ap_date)) data['appointee_info']['date_of_birth'] = new Date(data['appointee_info']['date_of_birth']);
-    if(!StringManipulation.isEmpty(be_date)) data['beneficiary_info']['date_of_birth'] = new Date(data['beneficiary_info']['date_of_birth']);
+        let ap_date = data?.appointee_info?.date_of_birth;
+        if (!StringManipulation.isEmpty(ap_date))
+          data['appointee_info']['date_of_birth'] = new Date(
+            data['appointee_info']['date_of_birth']
+          );
+        if (!StringManipulation.isEmpty(be_date))
+          data['beneficiary_info']['date_of_birth'] = new Date(
+            data['beneficiary_info']['date_of_birth']
+          );
 
         this.beneficiaryForm.patchValue(data);
         console.log(data);
-
       }
       return data;
     });
@@ -642,7 +661,9 @@ export class PersonalDetailsComponent {
   }
 
   checkIfGuardianIsNeeded() {
-    let date_ = this.calculateAgeWithMonth(this.getValueBeneficiaryValue('beneficiary_info.date_of_birth'));
+    let date_ = this.calculateAgeWithMonth(
+      this.getValueBeneficiaryValue('beneficiary_info.date_of_birth')
+    );
     let type = this.getValueBeneficiaryValue('type');
     return type === 'B' && date_ < 18;
   }
@@ -652,56 +673,106 @@ export class PersonalDetailsComponent {
     const birthDate = new Date(dateOfBirth);
     let age = currentDate.getFullYear() - birthDate.getFullYear();
     // Check if the birthdate has occurred this year already.
-    if (currentDate.getMonth() < birthDate.getMonth() ||
+    if (
+      currentDate.getMonth() < birthDate.getMonth() ||
       (currentDate.getMonth() === birthDate.getMonth() &&
-        currentDate.getDate() < birthDate.getDate())) {
+        currentDate.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
 
     return age;
   }
 
-  fileChange(event): void {
-    console.log(event);
+  getFileChange(event) {
+    this.clientDetailsForm
+      .get('selectedUploadItem')
+      .setValue(event.target.value);
+  }
 
-    // let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
-
-    // const fileList: FileList = event.target.files;
-    // if (fileList.length > 0) {
-    //     const file = fileList[0];
-
-    //     const formData = new FormData();
-    //     formData.append('file', file, file.name);
-    //     this.dms_service.saveClientDocument(client_code, flename, formData)
-    // }
-}
-
-getFileChange(event){
-  console.log(event);
-
-}
-
-  getDocumentsByClientId(){
+  uploadFile(event) {
     this.spinner_Service.show('download_view');
     let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
-    this.dms_service.getClientDocumentById(client_code)
-    .pipe(finalize(() =>{this.spinner_Service.hide('download_view');}))
+    let fileName = StringManipulation.returnNullIfEmpty(
+      this.getValue('selectedUploadItem')
+    );
+    const fileList: FileList = event.target.files;
+    if (fileList.length > 0) {
+      const file = fileList[0];
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      this.dms_service
+        .saveClientDocument(client_code, fileName, formData)
+        .pipe(
+          finalize(() => {
+            this.spinner_Service.hide('download_view');
+          })
+        )
+        .subscribe((data) => {
+          this.documentList.push(data);
+          const fileInput = document.getElementById(
+            'uploadFile'
+          ) as HTMLInputElement;
+          if (fileInput) {
+            fileInput.value = ''; // Reset the input
+          }
+          this.spinner_Service.hide('download_view');
+        });
+    }
+  }
+
+  deleteDocumentFileById(code:string, x){
+    this.spinner_Service.show('download_view');
+
+    this.dms_service.deleteDocumentById(code)
+    .pipe(
+      finalize(() => {
+        this.spinner_Service.hide('download_view');
+      })
+    )
     .subscribe(data =>{
       console.log(data);
-      this.spinner_Service.hide('download_view');
-      this.documentList = data['content']
-    });
-  }
 
-  downloadBase64File(url:string) {
-    this.spinner_Service.show('download_view');
-    this.dms_service.downloadFileById(url).pipe(finalize(()=>{
+      this.documentList = this.documentList.filter((data, i) => i!==x);
       this.spinner_Service.hide('download_view');
-    })).subscribe(()=>{
-      this.spinner_Service.hide('download_view');
+
     })
+
   }
 
+  isImage(name){
+    return ['jpeg', 'png', 'jpg'].includes(name)
+  }
+
+  getDocumentsByClientId() {
+    this.spinner_Service.show('download_view');
+    let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    this.dms_service
+      .getClientDocumentById(client_code)
+      .pipe(
+        finalize(() => {
+          this.spinner_Service.hide('download_view');
+        })
+      )
+      .subscribe((data) => {
+        this.spinner_Service.hide('download_view');
+        this.documentList = data['content'];
+      });
+  }
+
+  downloadBase64File(url: string) {
+    this.spinner_Service.show('download_view');
+    this.dms_service
+      .downloadFileById(url)
+      .pipe(
+        finalize(() => {
+          this.spinner_Service.hide('download_view');
+        })
+      )
+      .subscribe(() => {
+        this.spinner_Service.hide('download_view');
+      });
+  }
 
   closeModal() {
     this._openModal = true;
