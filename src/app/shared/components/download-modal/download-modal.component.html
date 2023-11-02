@@ -1,0 +1,74 @@
+<!--Download Modal-->
+<div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDownloadModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <p class="text-black">choose file format</p>
+          <div class="row col-lg-12">
+            <div class="col-lg-6 text-center">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="pdf">
+                <label class="form-check-label text-black" for="pdf">
+                  pdf
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="csv">
+                <label class="form-check-label text-black" for="csv">
+                  csv
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="docx">
+                <label class="form-check-label text-black" for="docx">
+                  docx
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="xslx">
+                <label class="form-check-label text-black" for="xslx">
+                  xslx
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="jpeg">
+                <label class="form-check-label text-black" for="jpeg">
+                  jpeg
+                </label>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="download" id="ppt">
+                <label class="form-check-label text-black" for="ppt">
+                  ppt
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-primary">
+              Export
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,6 @@
 @charset "utf-8";
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap');
 
-
 * {
   --primary-color:  #00529B;
   --grey-color: #868E96;
@@ -28,34 +27,23 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 0;
+  /*border-radius: 0;*/
   color: #fff;
   margin-right: 5px;
 }
 
 .btn-success {
-  border-radius: 0;
   color: #fff;
   margin-right: 5px;
 }
 
-.btn-danger {
-  border-radius: 0;
-}
-
-.btn-outline-secondary {
-  border-radius: 0;
-}
-
 .btn-outline-primary {
-  border-radius: 0;
   background: #fff;
   border: solid 1px #00529b;
   color: #00529b;
 }
 
 .btn-outline-primary:hover {
-  border-radius: 0;
   background: #00529b;
   border: solid 1px #00529b;
   color: #fff;
@@ -80,7 +68,6 @@ html,body {
 
 .setups .card {
   padding: 20px;
-  border-radius: 0;
 }
 
 .setups .listing {
@@ -246,14 +233,9 @@ html,body {
   color: var(--primary-color)!important;
 }
 
-.base-content .base-content-section .form-control {
-  border-radius: 0;
-}
-
 .base-content .base-content-section .calendar .card-header {
   background: var(--primary-color);
   color: #fff;
-  border-radius: 0;
 }
 
 .base-content .base-content-section .calendar .form-select {
@@ -350,10 +332,7 @@ h5.htxt {
   color: #000000;
 }
 
-.form-control {
-    border-radius: 3px;
-    border: 1px solid #07070751;
-}
+
 /*Login ends*/
 
 /*Common*/
