@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NewBusinessService } from '../../service/new-business/new-business.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-need-analysis',
@@ -22,7 +23,9 @@ export class NeedAnalysisComponent implements OnInit {
 
   getQuestions(){
     this.spinner_service.show('analysis_view')
-    this.new_business_service.getNeedAnalysis().subscribe(data =>{
+    this.new_business_service.getNeedAnalysis().pipe(finalize(() => {
+      this.spinner_service.hide('analysis_view')
+    })).subscribe(data =>{
       // console.log(data['question']);
       this.questionData = data['question'];
       // this.questionData['isSelected'] = true;

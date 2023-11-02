@@ -220,7 +220,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
             return data;
           })
           .filter((data) => {
-            return ['A', 'S'].includes(data['cover_status']);
+            return ['A', 'S', 'PU', 'L'].includes(data['cover_status']);
           });
         if (this.policyListOne.length > 0)
           this.insuranceHistoryForm.get('question1').setValue('Y');
@@ -231,7 +231,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
             return data;
           })
           .filter((data) => {
-            return ['w', 'D', 'W'].includes(data['cover_status']);
+            return ['w', 'D', 'W', 'V', 'J'].includes(data['cover_status']);
           });
         if (this.policyListTwo.length > 0)
           this.insuranceHistoryForm.get('question2').setValue('Y');

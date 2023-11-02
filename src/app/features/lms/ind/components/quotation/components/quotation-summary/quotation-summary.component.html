@@ -449,14 +449,23 @@
                 data-bs-parent="#accordionFlushExample"
               >
                 <div class="accordion-body">
-                    <div class="col-md-6">
-                      <div class="m-4">
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Identification document: </span>
-                          <a class="fw-light">{{'mypassport.pdf'}}</a>
+                    <div class="col-md-6" style="position: relative">
+                      <ngx-spinner
+                      name="download_view"
+                        type="ball-clip-rotate-multiple"
+                        [fullScreen]="false"
+                        color="#00529B"
+                        size="medium"
+                        bdColor="rgba(255, 255, 255, 0.966)"
+                      ></ngx-spinner>
+
+                      <div class="m-4" *ngFor="let item of documentList; let i = index">
+                        <div class="d-flex justify-content-start">
+                          <span class="font-grey__font-eight__700">{{i+1}}.</span>
+                          <a (click)="downloadBase64File(item['backend_file_url'])" class="fw-light click">{{item['type'] | lowercase}}.{{item['file_extension'] | lowercase}}</a>
                         </div>
 
-                        <div class="d-flex justify-content-between">
+                        <!-- <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"> Utility:
                             </span>
                           <a class="fw-light">{{'electricity_bill.pdf'}}</a>
@@ -464,7 +473,7 @@
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"> Passport pictures: </span>
                           <a class="fw-light">{{'mypicture.jpg'}}</a>
-                        </div>
+                        </div> -->
 
 
                       </div>
