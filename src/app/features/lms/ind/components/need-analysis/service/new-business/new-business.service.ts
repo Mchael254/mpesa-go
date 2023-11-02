@@ -10,6 +10,6 @@ export class NewBusinessService {
   constructor(private api: ApiService) { }
 
   getNeedAnalysis(){
-  return this.api.GET('need-analysis/new-business/653e1d0ffd0e527413be9e74', API_CONFIG.JSON_SERVICE_BASE_URL)
+  return this.api.GET('need-analysis/new-business/6542bdd96ab7402d60e2a912', API_CONFIG.JSON_SERVICE_BASE_URL)
   }
 }
