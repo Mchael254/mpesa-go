@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/internal/operators/map';
@@ -11,7 +10,7 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 export class ProductService {
 
 
-  constructor(private api:ApiService, private http: HttpClient) {   }
+  constructor(private api:ApiService) {   }
 
   getListOfGroupProduct(){
     return this.api.GET('products?page=0&size=22&class_type=G')
