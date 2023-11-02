@@ -19,25 +19,39 @@
           <div class="row">
             <ng-container [formGroup] = bmiForm>
               <div class="col-lg-4 col-sm-12">
-                <label for="height" class="mt-3 mb-1">Height (cm)</label>
+
+                <label for="height" class="mt-3 mb-1 ">Height (cm)</label>
+                <span   *ngIf="bmiNotReady">
+                  <div
+                    style="width: 1.4rem; height: 1.4rem"
+                    class="spinner-border text-primary spinner-border"
+                    role="status"
+                  >
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </span>
                 <input type="number" class="form-control"(keyup.enter)="getBMI()" formControlName="height" [id]="'height'" />
               </div>
               <div class="col-lg-4 col-sm-12">
                 <label for="weight" class="mt-3 mb-1">Weight (kg)</label>
                 <input type="number" formControlName="weight" class="form-control" [id]="'weight'" (keyup.enter)="getBMI()"/>
               </div>
-              <div class="col-lg-4 col-sm-12" *ngIf="bmi['bmi']">
+
+              <div class="col-lg-4 col-sm-12" *ngIf="bmi['bmi'] || !bmiNotReady">
                 <label for="weight" class="mt-3 mb-1 fw-bold"></label>
                 <div>
-                  <label for="weight" class="mt-3 mb-1 fw-bold">Your BMI: </label> {{bmi['bmi']}}
-                </div>
 
+                  <label for="weight" class="mt-3 mb-1 fw-bold">Your BMI: </label> {{bmi['bmi'] || 0}}
+
+                </div>
               </div>
+
+
             </ng-container>
 
 
 
-            <div [formGroup]="insuranceHistoryForm" class="w-100">
+            <div [formGroup]="clientLifestyleForm" class="w-100">
               <div class="my-4">
                 <label class="required"
                   >Is your occupation associated with any specific hazard or do
@@ -50,7 +64,7 @@
                     class="form-check-input"
                     type="radio"
                     id="male"
-                    formControlName="question1"
+                    formControlName="isClientHazardous"
                     value="Y"
                   />
                   <label class="form-check-label" for="male">Yes</label>
@@ -60,13 +74,13 @@
                     class="form-check-input"
                     type="radio"
                     id="female"
-                    formControlName="question1"
+                    formControlName="isClientHazardous"
                     value="N"
                   />
                   <label class="form-check-label" for="female">No</label>
                 </span>
 
-                <div class="row" *ngIf="getValue('question1') == 'Y'">
+                <div class="row" *ngIf="getValue('isClientHazardous') == 'Y'">
                   <div class="col-lg-6 col-sm-12" >
                     <div><label for="desc_q1" class="mt-3 mb-1">Description</label></div>
                     <textarea id="desc_q1" cols="50" rows="5"></textarea>
@@ -167,6 +181,7 @@
                       <div class="col-lg-4 col-md-6 col-sm-12">
                         <label for="surname">Quantity</label>
                         <input
+                        formControlName="tobaccoQuantity"
                           type="text"
                           class="form-control"
                           [id]="'surname'"
@@ -174,7 +189,7 @@
                       </div>
                       <div class="col-lg-4 col-md-6 col-sm-12">
                         <label for="clientType">Frequency</label>
-                        <select class="form-select" [id]="'clientType'">
+                        <select class="form-select" [id]="'clientType'" formControlName="tobaccoFrequency">
                           <ng-container
                             *ngFor="
                               let product of frequencyOfPayment
@@ -189,6 +204,7 @@
                       <div class="col-lg-4 col-md-6 col-sm-12">
                         <label for="surname">Period Consumed</label>
                         <input
+                        formControlName="tobaccoConsumptionPeriod"
                           type="text"
                           class="form-control"
                           [id]="'surname'"
@@ -241,6 +257,7 @@
                             <div class="col-lg-4 col-md-6 col-sm-12">
                               <label for="surname">Quantity</label>
                               <input
+                              formControlName="alcoholQuantity"
                                 type="text"
                                 class="form-control"
                                 [id]="'surname'"
@@ -248,7 +265,7 @@
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-12">
                               <label for="clientType">Frequency</label>
-                              <select class="form-select" [id]="'clientType'">
+                              <select class="form-select" [id]="'clientType'" formControlName="alcoholFrequency">
                                 <ng-container
                             *ngFor="
                               let product of frequencyOfPayment
@@ -263,6 +280,7 @@
                             <div class="col-lg-4 col-md-6 col-sm-12">
                               <label for="surname">Period Consumed</label>
                               <input
+                              formControlName="alcoholConsumptionPeriod"
                                 type="text"
                                 class="form-control"
                                 [id]="'surname'"
