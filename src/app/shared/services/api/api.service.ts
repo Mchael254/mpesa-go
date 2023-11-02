@@ -17,10 +17,10 @@ export class ApiService {
 
   private getHeaders(): HttpHeaders {
 
-    let headers = new HttpHeaders();
-        headers = headers.append('Accept', 'application/json');
-        headers = headers.append('Content-Type', 'application/json');
-        headers = headers.append('X-TenantId', environment.TENANT_ID);
+    let headers = new HttpHeaders()
+    .set('Accept', 'application/json')
+    .set('Content-Type', 'application/json')
+    .set('X-TenantId', environment.TENANT_ID);
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -61,6 +61,17 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
+    return this.http.post<T>(url, data, { headers });
+  }
+
+  FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    const url = `${this.baseURL}/${endpoint}`;
+
+    const headers = new HttpHeaders()
+      .set('Accept', 'application/json')
+      .set('X-TenantId', environment.TENANT_ID);
+
     return this.http.post<T>(url, data, { headers });
   }
 
