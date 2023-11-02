@@ -1,0 +1,143 @@
+<div class="p-3">
+    <div class="card p-3">
+        
+        <div class="preloader" *ngIf="!shouldShowTable">
+            <p-progressSpinner
+                styleClass="w-0.5em h-0.5em "
+                strokeWidth="3"
+                fill="var(--surface-ground)"
+                animationDuration=".6s"
+              ></p-progressSpinner>
+        </div>
+        <div class="mt-5" *ngIf="shouldShowTable">
+            <p-table 
+                [value]="reports.content" 
+                [tableStyle]="{ 'min-width': '50rem' }"
+                [paginator]="true"
+                [rows]="rows"
+                [totalRecords]="reports.totalElements"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                (onPage)="pageChange($event)"
+                [showCurrentPageReport]="true"
+            >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Created By</th>
+                        <th>Category</th>
+                        <th>Date Created</th>
+                        <th>Dashboard</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-report>
+                    <tr>
+                        <td>{{ report.id }}</td>
+                        <td>{{ report.name }}</td>
+                        <td>
+                            <!-- <ng-container *ngIf="getUserName(report.createdBy) | async as userName">
+                                {{ userName?.name }}
+                            </ng-container> -->
+                            {{ report.createdBy }}
+                        </td>
+                        <td>
+                            <div class="btn-group dropend">
+                                <a class="btn btn-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ getFolderCategoryName(report.folder) }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">My Reports</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">Shared Reports</li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td>{{ report.createdDate | date }}</td>
+                        <td>
+                            <div class="btn-group dropend">
+                                <a class="btn btn-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ getDashboardName(report.dashboardId) }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                  <li 
+                                    *ngFor="let dashboad of dashboards"
+                                    class="reAssignReportDashboard"
+                                    (click)="reAssignReportDashboard(dashboad.id, report)"
+                                  >
+                                    {{ dashboad?.name }}
+                                </li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group dropend">
+                                <a class="btn btn-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="pi pi-ellipsis-v"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li (click)="gotoEditReport(report)">Edit</li>
+                                    <li
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#saveReportModal"
+                                    (click)="selectReport(report)"
+                                  >
+                                    Rename
+                                </li>
+                                  <li>Share</li>
+                                  <li>Download</li>
+                                  <li 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteReportModal"
+                                    (click)="selectReport(report)"
+                                  >
+                                  Delete
+                                </li>
+                                </ul>
+                            </div>                              
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        
+    </div>
+    
+</div>
+
+
+<!-- Save Report Modal -->
+<div class="modal fade" id="saveReportModal" tabindex="-1" aria-labelledby="saveReportModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+  
+            <app-save-report-modal
+               [report]="selectedReport" 
+               (reportToSave)="saveReport($event)"
+            ></app-save-report-modal>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Report Modal -->
+<div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        
+        <div class="modal-header">
+            <h5 class="modal-title text-danger text-center">
+                Delete {{ selectedReport?.name }}?
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">        
+            <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button class="btn btn-danger float-end" (click)="deleteReport(selectedReport?.id)">Confirm Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

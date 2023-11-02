@@ -1,0 +1,190 @@
+<div class="base-content-section">
+  <div class="card">
+    <div class="card-body">
+      <div class="row col-sm-12 mx-0">
+        <div class="text-center col-sm-4 mt-5"></div>
+        <div class="text-center col-sm-4 mt-5">
+          <input type="search" class="form-control" placeholder="Search">
+        </div>
+        <div class="col-sm-4 mt-5">
+          <button class="btn btn-outline-primary float-end createDashBtn"
+                  data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
+        </div>
+        <div class="row mx-0 mt-3 p-0 dragDropBoundary" cdkDropList (cdkDropListDropped)="drop($event)">
+          <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards; let i = index">
+            <div class="card">
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <div class="row card-header border-0 text-sm-start bg-transparent">
+
+                <div class="col-md-10">
+                  <span *ngIf="!isEditable"
+                    style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
+                        (click)="moveToListReport(dashboard.id)">{{dashboard?.name | titlecase }}</span>
+                  <div class="mb-3" *ngIf="isEditable">
+                    <input type="text" class="form-control" id="id" [value]="dashboard?.name"
+                           [disabled]="selectedItem !== dashboards[i].id" (keyup)="handleEnter($event)">
+                  </div>
+
+                </div>
+                <div class="col-md-2">
+                  <span class="icon-container float-end" (click)="selectedItem = dashboard.id;menu.toggle($event)">
+                  <i class="fa fa-ellipsis-v clickable"></i>
+                </span>
+                  <p-menu #menu [model]="items" [popup]="true"></p-menu>
+                </div>
+
+              </div>
+              <ng-container *ngIf="chartData">
+                <div class="card-body">
+                  <div
+                    *ngIf="dashboard.reports[0]?.charts[0]?.type==='table';
+               else showChart"
+                  >
+                    <app-dynamic-table
+                      [tableDetails]="tableDetails"
+                    ></app-dynamic-table>
+                  </div>
+
+                  <ng-template #showChart>
+                    <app-dynamic-chart
+                      [basicData]="chartData"
+                      [chartType]="dashboard?.reports[0]?.charts[0]?.type"
+                    ></app-dynamic-chart>
+                  </ng-template>
+
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!--<div class="bound-box" #myBounds>
+
+    <div ngDraggable ngResizable  [inBounds]="true" [bounds]="myBounds" rzContainment="parent" rzHandles="all" class="resizable-widget" (mouseup)="newPosition($event)">
+      <h4 class="widget-header" >Resizable</h4>
+    </div>
+
+  </div>-->
+
+  <!-- Create Dashboard Modal -->
+  <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h1 class="modal-title" id="createDashboardLabel">Create dashboard</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form [formGroup]="createDashboardForm">
+            <div class="mb-3">
+              <label for="dashboardName" class="form-label">Dashboard name
+                <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="dashboardName" formControlName="dashboardName">
+            </div>
+            <div class="col-sm-12 mb-3">
+              <label class="form-label">Add report(s)</label><br>
+              <p-multiSelect
+                [options]="chartReports"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name"
+                display="chip"
+                [style]="{ width: '100%' }"
+                placeholder="Select report"
+                id="chartReportDropdown"
+                formControlName="reportName"
+              >
+                <ng-template let-chartReport pTemplate="item">
+                  <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                    <div
+                    >
+                      {{ chartReport.name }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add report Modal -->
+  <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeAddReportModal()"></button>
+        </div>
+        <div class="modal-body">
+
+          <form [formGroup]="addReportToDashboardForm">
+            <div class="col-sm-12 mb-3">
+              <label class="form-label">Select report</label><br>
+              <p-multiSelect
+                [options]="chartReports"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name"
+                display="chip"
+                [style]="{ width: '100%' }"
+                placeholder="Select report"
+                id="chartReportDropdown"
+                formControlName="reportName"
+              >
+                <ng-template let-chartReport pTemplate="item">
+                  <div class="flex align-items-center gap-2" style="font-size: 14px; font-weight: 400;">
+                    <div
+                    >
+                      {{ chartReport.name }}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" id="addReport" class="btn btn-primary" data-bs-dismiss="modal"
+                  style="border-radius: 4px; margin: auto" (click)="addReportToDashboard();closeAddReportModal()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation dialogue Modal -->
+  <div class="modal fade" id="deleteDashboardModal" tabindex="-1" aria-labelledby="deleteDashboardLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <p>Are you sure you want to delete?</p>
+            <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
+            <button type="button" class="btn btn-danger" id="deleteDashboard" data-bs-dismiss="modal"
+                    style="border-radius: 4px; margin: auto" (click)="deleteDashboard(this.selectedItem);closeDeleteModal()">Yes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
