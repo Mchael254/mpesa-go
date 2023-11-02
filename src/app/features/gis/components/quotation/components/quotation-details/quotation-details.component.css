@@ -37,3 +37,9 @@ line-height: normal;
     white-space: nowrap;
 }
 
+::ng-deep .p-calendar{
+    height: 30px;
+    width: 350px;
+    border-radius: 4px;
+    
+  }

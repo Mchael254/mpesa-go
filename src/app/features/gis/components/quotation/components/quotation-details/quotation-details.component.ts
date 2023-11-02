@@ -34,6 +34,9 @@ export class QuotationDetailsComponent {
   quotationNo:any;
   quotationCode:any;
   isChecked: boolean = false;
+  show:boolean=true;
+  showProduct:boolean=true;
+  quotationNum:string
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -58,10 +61,11 @@ export class QuotationDetailsComponent {
     this.getAgents()
     this.quotationForm.controls['clientCode'].setValue(this.formData.id);
     this.quotationForm.controls['clientType'].setValue(this.formData.clientTypeId);
+
   }
 
   getbranch(){
-    this.branchService.getBranches(2).subscribe(data=>{
+    this.branchService.getBranch().subscribe(data=>{
       this.branch = data
     })
   }
@@ -115,16 +119,18 @@ export class QuotationDetailsComponent {
       multiUser:[''],
       comments:[''],
       internalComments:[''],
-      introducerCode:['']
-
+      introducerCode:[''],
+      dateRange:['']
     })
   }
 
+test(){
+  console.log(this.quotationForm.value.dateRange)
 
+}
   
   saveQuotationDetails(){
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    
     
     if(this.quotationForm.value.multiUser == 'Y'){
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
@@ -146,7 +152,8 @@ export class QuotationDetailsComponent {
     this.quotationNo = data;
     console.log(this.quotationNo,'quotation number output');
     this.quotationCode=this.quotationNo._embedded[0].quotationCode;
-    this.sharedService.setQuotationDetails(this.quotationCode);
+    this.quotationNum = this.quotationNo._embedded[0].quotationNumber
+    this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
 
     this.router.navigate(['/home/gis/quotation/risk-section-details']);
     })

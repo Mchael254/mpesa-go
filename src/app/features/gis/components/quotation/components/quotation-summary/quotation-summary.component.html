@@ -3,74 +3,66 @@
     <app-stepper [currentStep]="5" [stepperData]="steps"></app-stepper>
 
 
-    <div class="card mb-4">
-       <div class="header mx-4 mt-3">
-        <p class="sub-title">
+    <div class="card mb-3">
+       <div class="header mx-4 mt-2 mb-2">
+        <!-- <p class="sub-title" data-bs-toggle="tab" data-bs-target="#nav-home">
             Quotation Details
-        </p>
+        </p> -->
+
+
+        <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link sub-title active" data-bs-toggle="tab" data-bs-target="#summary">Quotation Details</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link sub-title" data-bs-toggle="tab" data-bs-target="#authorization">Authorization & Reports </a>
+            </li>
+          </ul>
+      
+          <!-- <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">One</div>
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">Two</div>
+           
+          </div> -->
        </div>
           
     
     </div>
+    <div class="tab-content" id="nav-tabContent">
 
-    <div class="card mb-4">
-        <div class="card-body">
-          
-           
-              <div class="row">
-                <div class="col-4">
-                  <p class="sub-title">Details</p>
-                </div>
-                <div class="col-8 d-flex justify-content-end">
-                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
-                </div>
-              </div>
+   
+    <div id="authorization" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="card">
+            <div class="card-body">
+                <h6>Choose Report</h6>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-home-tab" id="summary">
+        <div class="card mb-4">
+            <div class="card-body">
               
-              <div class="collapse mt-4" id="collapseExample">
-               <div class="row">
-                <div class="col-md-4">
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="label">Quotation Number</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="content">ZG/Q/1000/010101/23/0000017</p>
-                        </div>
-                    </div>
-                  
-                </div>
-                <div class="col-md-4">
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="label">Client</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="content">Remy Rema</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="label">Agent</p>
-                        </div>
-                        <div class="col-6">
-                            <p class="content">Direct</p>
-                        </div>
-                    </div>
-                </div>
-                </div>
-
-                <div class="row">
+                <p class="sub-title">Details</p>
+                  <!-- <div class="row"> -->
+                    <!-- <div class="col-4">
+                      <p class="sub-title">Details</p>
+                    </div> -->
+                    <!-- <div class="col-8 d-flex justify-content-end">
+                      <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        <i class="fa-solid fa-chevron-down"></i>
+                      </button>
+                    </div> -->
+                  <!-- </div>
+                   -->
+                  <!-- <div class="collapse mt-4" id="collapseExample"> -->
+                   <div class="row">
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-6">
-                                <p class="label">Branch</p>
+                                <p class="label">Quotation Number</p>
                             </div>
                             <div class="col-6">
-                                <p class="content">NAIROBI</p>
+                                <p class="content">{{quotationCode}}</p>
                             </div>
                         </div>
                       
@@ -78,34 +70,33 @@
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-6">
-                                <p class="label">Cover From</p>
+                                <p class="label">Client</p>
                             </div>
                             <div class="col-6">
-                                <p class="content">19/07/2023</p>
+                                <p class="content" >{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-6">
-                                <p class="label">Cover To</p>
+                                <p class="label">Agent</p>
                             </div>
                             <div class="col-6">
-                                <p class="content">19/07/2023</p>
+                                <p class="content">Direct</p>
                             </div>
                         </div>
                     </div>
                     </div>
-
-
+    
                     <div class="row">
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Currency</p>
+                                    <p class="label">Branch</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">KES</p>
+                                    <p class="content">NAIROBI</p>
                                 </div>
                             </div>
                           
@@ -113,33 +104,34 @@
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Prosper</p>
+                                    <p class="label">Cover From</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content"> </p>
+                                    <p class="content">{{quotationDetails.coverFrom}}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Introducer</p>
+                                    <p class="label">Cover To</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">Test</p>
+                                    <p class="content">{{quotationDetails.coverTo}}</p>
                                 </div>
                             </div>
                         </div>
                         </div>
-
+    
+    
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Quotation Expiry Date</p>
+                                        <p class="label">Currency</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">19/07/2023</p>
+                                        <p class="content">KES</p>
                                     </div>
                                 </div>
                               
@@ -147,33 +139,33 @@
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Status</p>
+                                        <p class="label">Prosper</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content"> Active</p>
+                                        <p class="content"> </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Source</p>
+                                        <p class="label">Introducer</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">Walk In</p>
+                                        <p class="content"></p>
                                     </div>
                                 </div>
                             </div>
                             </div>
-
-                            <div class="row mb-3">
+    
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="label">Internal Comments</p>
+                                            <p class="label">Quotation Expiry Date</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content"></p>
+                                            <p class="content">{{quotationDetails.expiryDate}}</p>
                                         </div>
                                     </div>
                                   
@@ -181,59 +173,72 @@
                                 <div class="col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="label">External Comments</p>
+                                            <p class="label">Status</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content"> </p>
+                                            <p class="content"> Active</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                   
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <p class="label">Source</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="content">Walk In</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 </div>
-
-
-                    <p class="cancel float-start">Cancel Quotation</p>
-                    <div class="float-end">
-                        <button class="btn btn-outline-primary" style="margin-right: 10px;">Edit Details</button>
-                        <button class="btn btn-primary">Compute Premium</button>
-
-                    </div>
-               </div>
-              </div>
-              
-        </div>
-
-
-        <div class="card mb-4">
-            <div class="card-body">
-              
-               
-                  <div class="row">
-                    <div class="col-4">
-                      <p class="sub-title">Product Details</p>
-                    </div>
-                    <div class="col-8 d-flex justify-content-end">
-                      <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
-                        <i class="fa-solid fa-chevron-down"></i>
-                      </button>
-                    </div>
-                  </div>
-                  
-                 
+    
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <p class="label">Internal Comments</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="content"></p>
+                                            </div>
+                                        </div>
+                                      
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <p class="label">External Comments</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="content"> </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                       
+                                    </div>
+                                    </div>
+    
+    
+                        <p class="cancel float-start">Cancel Quotation</p>
+                        <div class="float-end">
+                            <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit Details</button>
+                            <button class="btn btn-primary">Compute Premium</button>
+    
+                        </div>
+                   <!-- </div> -->
                   </div>
                   
             </div>
-
-
+    
+    
             <div class="card mb-4">
                 <div class="card-body">
                   
                    
                       <div class="row">
                         <div class="col-4">
-                          <p class="sub-title">Risk Details</p>
+                          <p class="sub-title">Product Details</p>
                         </div>
                         <div class="col-8 d-flex justify-content-end">
                           <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
@@ -246,14 +251,15 @@
                       </div>
                       
                 </div>
-
+    
+    
                 <div class="card mb-4">
                     <div class="card-body">
                       
                        
                           <div class="row">
                             <div class="col-4">
-                              <p class="sub-title">External Claims Experience</p>
+                              <p class="sub-title">Risk Details</p>
                             </div>
                             <div class="col-8 d-flex justify-content-end">
                               <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
@@ -266,4 +272,30 @@
                           </div>
                           
                     </div>
+    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                          
+                           
+                              <div class="row">
+                                <div class="col-4">
+                                  <p class="sub-title">External Claims Experience</p>
+                                </div>
+                                <div class="col-8 d-flex justify-content-end">
+                                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                  </button>
+                                </div>
+                              </div>
+                              
+                             
+                              </div>
+                              
+                        </div>
+                        <div class="mt-4"></div>
+
+                       
+    </div>
+</div>
+   
     </div>

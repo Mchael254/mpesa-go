@@ -48,6 +48,10 @@ export class QuotationsService {
     return this.http.put(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
 
   }
+  getQuotationDetails(quotationNo){
+    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation/view?quotationNo=${quotationNo}`)
+  }
+  
  
 }
 
