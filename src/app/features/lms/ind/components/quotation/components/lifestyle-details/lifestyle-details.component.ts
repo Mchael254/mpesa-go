@@ -11,6 +11,7 @@ import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifesty
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Router } from '@angular/router';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 
 
 @Component({
@@ -36,16 +37,24 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
     },
   ];
 
-  insuranceHistoryForm: FormGroup;
+  clientLifestyleForm: FormGroup;
   bmiForm: FormGroup;
   countryList: CountryDto[] = [];
   frequencyOfPayment: any[] = [];
   bmi:{}={};
+  bmiNotReady: boolean = false;
 
   constructor(private fb: FormBuilder, private router: Router, private session_service: SessionStorageService,
     private country_service:CountryService, private payFrequenciesService: PayFrequencyService, private lifestyle_service: LifestyleService){
-    this.insuranceHistoryForm = this.fb.group({
-      question1: ['N'],
+    this.clientLifestyleForm = this.fb.group({
+      code: [],
+      isClientHazardous: ['N'],
+      tobaccoFrequency: [],
+      tobaccoConsumptionPeriod: [],
+      tobaccoQuantity: [],
+      alcoholFrequency: [],
+      alcoholQuantity: [],
+      alcoholConsumptionPeriod: [],
       question2: ['N'],
       question3: ['N'],
       question4: ['N'],
@@ -55,6 +64,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       height: [],
       weight: [],
       bmi: [],
+      clientBmi: [],
     })
   }
   ngOnInit(): void {
@@ -65,18 +75,22 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
 
 
   getBMI(){
+    this.bmiNotReady = true
     let bmi = {};
     bmi['height']= this.bmiForm.get('height').value;
     bmi['weight']= this.bmiForm.get('weight').value;
     this.payFrequenciesService
     .bmi(bmi['height'], bmi['weight'])
-    .subscribe(data =>{
+    .subscribe((data: any) =>{
+      this.bmiNotReady = false
       this.bmi = data
+
+      this.bmiForm.patchValue({...data})
     })
   }
 
   getValue(name: string = 'sa_prem_select') {
-    return this.insuranceHistoryForm.get(name).value;
+    return this.clientLifestyleForm.get(name).value;
   }
 
   getPayFrequencies() {
@@ -99,31 +113,42 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
 
   getClientLifeStyleById(){
     let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
-    this.lifestyle_service.getClientLifeStyleById(client_code).subscribe(data =>{
+    this.lifestyle_service.getClientLifeStyleById(client_code).subscribe((data: any) =>{
 
       this.bmiForm.patchValue({
         height: data['height'],
         weight: data['weight'],
         bmi: data['clientBmi'],
+        clientBmi: data['clientBmi'],
       })
       console.log(data);
+      this.clientLifestyleForm.patchValue({
+        ...data
+      })
 
     })
   }
 
   saveClientLisfeStyle(){
-    let payload = {}
-
-    // this.lifestyle_service.saveLifeStyle(payload).subscribe((data :any) => {
-    //   this.bmiForm.patchValue({
-    //     height: data['height'],
-    //     weight: data['weight'],
-    //     bmi: data['clientBmi'],
-    //   });
+    let client_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.CLIENT_CODE));
+    let payload = {...this.clientLifestyleForm.value, ...this.bmiForm.value};
+    payload['webClientCode'] = client_code
+    payload['clientBmi'] = payload['bmi']
+    console.log(payload);
 
 
-    // })
-    this.router.navigate(['/home/lms/ind/quotation/medical-history'])
+    this.lifestyle_service.saveLifeStyle(payload).subscribe((data :any) => {
+      console.log(data);
+
+      // this.bmiForm.patchValue({
+      //   height: data['height'],
+      //   weight: data['weight'],
+      //   bmi: data['clientBmi'],
+      // });
+
+
+    })
+    // this.router.navigate(['/home/lms/ind/quotation/medical-history'])
   }
 
   ngOnDestroy(): void {
