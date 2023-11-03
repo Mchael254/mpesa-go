@@ -1,28 +1,40 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { CoverageService } from '../../../../service/coverage/coverage.service';
+import { CategoryDetailsDto } from '../../../../models/categoryDetails';
+import { CoverTypePerProdDTO, CoverTypesDto, SelectRateTypeDTO } from '../../../../models/coverTypes/coverTypesDto';
 
 
 @AutoUnsubscribe
 @Component({
   selector: 'app-coverage-details',
   templateUrl: './coverage-details.component.html',
-  styleUrls: ['./coverage-details.component.css']
+  styleUrls: ['./coverage-details.component.css'],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverageDetailsComponent implements OnInit, OnDestroy {
 
 searchFormMemberDets: FormGroup;
+categoryDetailForm: FormGroup;
 detailedCovDetsForm: FormGroup;
 quatationCalType: string;
 quotationCode: number;
+categoryDetails: CategoryDetailsDto[] = [];
+categoryCode: number
+coverTypes: CoverTypesDto[]
+isEditMode: boolean = false;
+SelectRateType: SelectRateTypeDTO[];
+coverTypePerProd: CoverTypePerProdDTO[];
+// public editing: boolean = false;
   constructor (
     private fb: FormBuilder,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private coverageService: CoverageService
+    private coverageService: CoverageService,
+    private cdr: ChangeDetectorRef
     ) {}
 
     public clients = [
@@ -55,100 +67,8 @@ quotationCode: number;
         rate: 0.05,
         rateDivisionFactor: 1.2,
         percentOfMainYearSA: 10,
-      },
-      {
-        isSelected: false,
-        isEditable: true,
-        coverType: 'Type B',
-        dependantType: 'Dependant 2',
-        rateType: 'Rate Type 2',
-        premiumMask: 'Premium Mask 2',
-        rate: 0.08,
-        rateDivisionFactor: 0.9,
-        percentOfMainYearSA: 15,
-      },
-      {
-        isSelected: false,
-        isEditable: true,
-        coverType: 'Type C',
-        dependantType: 'Dependant 3',
-        rateType: 'Rate Type 3',
-        premiumMask: 'Premium Mask 3',
-        rate: 0.07,
-        rateDivisionFactor: 1.0,
-        percentOfMainYearSA: 12,
-      },
-    ];
-    
-
-    public yourDataAggregate = [
-      {
-        coverType: 'Type A',
-        dependantType: 'Dependant 1',
-        rateType: 'Rate Type 1',
-        premiumMask: 'Premium Mask 1',
-        rate: 0.05,
-        rateDivisionFactor: 1.2,
-        percentOfMainYearSA: 10,
-        noOfMembers: 50,
-        avgEarningsPerMember: 5000,
-        totalMemberEarnings: 250000,
-        avgANB: 45,
-        overrideSA: 0,
-        sumAssured: 0,
-      },
-      {
-        coverType: 'Type B',
-        dependantType: 'Dependant 2',
-        rateType: 'Rate Type 2',
-        premiumMask: 'Premium Mask 2',
-        rate: 0.08,
-        rateDivisionFactor: 0.9,
-        percentOfMainYearSA: 15,
-        noOfMembers: 75,
-        avgEarningsPerMember: 6000,
-        totalMemberEarnings: 450000,
-        avgANB: 60,
-        overrideSA: 0,
-        sumAssured: 0,
-      },
-      {
-        coverType: 'Type C',
-        dependantType: 'Dependant 3',
-        rateType: 'Rate Type 3',
-        premiumMask: 'Premium Mask 3',
-        rate: 0.07,
-        rateDivisionFactor: 1.0,
-        percentOfMainYearSA: 12,
-        noOfMembers: 60,
-        avgEarningsPerMember: 5500,
-        totalMemberEarnings: 330000,
-        avgANB: 55,
-        overrideSA: 0,
-        sumAssured: 0,
-      },
-    ];
-
-yourDataCat = [
-  {
-    description: 'Category A',
-    shortDescription: 'Cat A',
-    multipleOfEarnings: 1.5,
-    premiumMask: 'Mask A',
-  },
-  {
-    description: 'Category B',
-    shortDescription: 'Cat B',
-    multipleOfEarnings: 1.2,
-    premiumMask: 'Mask B',
-  },
-  {
-    description: 'Category C',
-    shortDescription: 'Cat C',
-    multipleOfEarnings: 1.0,
-    premiumMask: 'Mask C',
-  },
-];
+      }
+    ]
 
 public yourDataMemberDets = [
   {
@@ -189,22 +109,24 @@ public yourDataMemberDets = [
   },
 ];
     
-    
-public editing = false;
 
-ngOnInit(): void {
+ngOnInit() {
   this.searchFormMember();
   this.detailedCoverDetails();
   this.SubmitMemberDetailsForm();
-  this.getQuotationCalType();
-  this.getCategoryDets(this.quotationCode);
+  this.getParams();
+  this.getCategoryDets();
+  this.getCoverTypes();
+  this.categoryDetailsForm();
+  this.getCoverTypesPerProduct();
+  this.getSelectRateTypes();
 }
 
 ngOnDestroy(): void {
   
 }
 
-getQuotationCalType() {
+getParams() {
   this.activatedRoute.queryParams.subscribe((queryParams) => {
     this.quatationCalType = queryParams['quotationCalcType'];
     this.quotationCode = queryParams['quotationCode'];
@@ -250,12 +172,14 @@ detailedCoverDetails(){
 
   });
 
-  categoryDetailsForm = this.fb.group({
+  categoryDetailsForm() {
+    this.categoryDetailForm = this.fb.group({
     description: ["", [Validators.required]],
     premiumMask: ["", [Validators.required]],
     shortDescription: ["", [Validators.required]],
     multiplesOfEarnings: ["", [Validators.required]],
   });
+}
 
   memberDetailsForm = this.fb.group({
     surname: [""],
@@ -278,7 +202,39 @@ detailedCoverDetails(){
     }
   }
 
+  showEditDetailedCoverDetailsModal(coverTypes: CoverTypesDto) {
+    this.isEditMode = true;
+    console.log("detailedEdit", this.isEditMode)
+    const modal = document.getElementById('detailedModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+    if (coverTypes) {
+     console.log("patched", coverTypes)
+      this.detailedCovDetsForm.patchValue({
+        detailedCoverType: coverTypes.cvt_desc,
+        detailedPercentageMainYr: coverTypes.main_sumassured_percentage,
+        rate: coverTypes.premium_rate,
+        selectRate: coverTypes.cvt_rate_type,
+        premiumMask: coverTypes.premium_mask_short_description,
+        rateDivFactor: coverTypes.rate_division_factor
+      });
+    }
+  }
+
   showAggregateCoverDetailsModal() {
+    const modal = document.getElementById('aggregateModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  showEditAggregateCoverDetailsModal(coverTypes) {
+    this.isEditMode = true;
+    console.log("aggregateEdit", this.isEditMode)
     const modal = document.getElementById('aggregateModal');
     if (modal) {
       modal.classList.add('show');
@@ -291,6 +247,27 @@ detailedCoverDetails(){
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
+    }
+
+  }
+
+  showEditCategoryDetstModal(categoryDetails) {
+    this.isEditMode = true;
+    const modal = document.getElementById('categoryDetsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+    this.categoryCode = categoryDetails.category_unique_code;
+
+    if (categoryDetails) {
+      this.categoryDetailForm.patchValue({
+        description: categoryDetails.category_category,
+        shortDescription: categoryDetails.short_description,
+        multiplesOfEarnings: categoryDetails.period,
+        premiumMask: categoryDetails.cover_type_code
+      });
     }
 
   }
@@ -330,6 +307,8 @@ detailedCoverDetails(){
       modal.classList.remove('show')
       modal.style.display = 'none';
     }
+    this.isEditMode = false
+    this.categoryDetailForm.reset();
 
   }
   closeAddMemberDetailsModal() {
@@ -351,10 +330,97 @@ detailedCoverDetails(){
     }
   }
 
-  getCategoryDets(quotationCode: number) {
-    this.coverageService.getCategoryDetails(20237348).subscribe((categoryDets) =>{
-      console.log('categoryDets',categoryDets)
+  getCategoryDets() {
+      this.coverageService.getCategoryDetails(this.quotationCode).subscribe((categoryDets: CategoryDetailsDto[]) =>{
+      this.categoryDetails = categoryDets;
     });
   }
+
+  getCoverTypes() {
+    this.coverageService.getCoverTypes(this.quotationCode).subscribe((coverTypes: CoverTypesDto[]) => {
+      this.coverTypes = coverTypes
+      console.log("coverTypes", this.coverTypes)
+    });
+  }
+
+  getCoverTypesPerProduct() {
+    this.coverageService.getCoverTypesPerProduct(2021675).subscribe((coversPerProd: CoverTypePerProdDTO[]) => {
+      console.log("coversPerProd", coversPerProd);
+    
+      const formatCvtDesc = (desc) => {
+        return desc.charAt(0).toUpperCase() + desc.slice(1).toLowerCase();
+      };
+    
+      const uniqueCvtDescs = new Set();
+      this.coverTypePerProd = coversPerProd.filter(item => {
+        if (!uniqueCvtDescs.has(item.cvt_desc)) {
+          uniqueCvtDescs.add(item.cvt_desc);
+          item.cvt_desc = formatCvtDesc(item.cvt_desc);
+          return true;
+        }
+        return false;
+      });
+    });
+    
+  }
+
+  getSelectRateTypes() {
+    this.coverageService.getSelectRateType().subscribe((SelectRateTypes: SelectRateTypeDTO[]) => {
+      console.log("SelectRateTypes", SelectRateTypes)
+      this.SelectRateType = SelectRateTypes
+    });
+  }
+
+  onSaveCatDets() {
+    const categoryDetailFormData = this.categoryDetailForm.value;
+    const mappedCatDetails = {
+      "category_category": categoryDetailFormData.description,
+      "short_description": categoryDetailFormData.shortDescription,
+      "premium_mask_short_description": categoryDetailFormData.premiumMask.premium_mask_short_description,
+      "period": categoryDetailFormData.multiplesOfEarnings,
+      "quotation_code": this.quotationCode
+    }
+    this.coverageService.postCategoryDetails(mappedCatDetails, ).subscribe((catDets: CategoryDetailsDto) => {
+      return this.categoryDetails.push(catDets);
+    
+    });
+
+    this.categoryDetailForm.reset();
+    this.cdr.detectChanges();
+  }
+
+  onSaveEditCatDets() {
+    const categoryDetailFormData = this.categoryDetailForm.value;
+    const mappedCatDetails = {
+      "category_category": categoryDetailFormData.description,
+      "short_description": categoryDetailFormData.shortDescription,
+      "premium_mask_desc": categoryDetailFormData.premiumMask.premium_mask_short_description,
+      "period": categoryDetailFormData.multiplesOfEarnings,
+      "quotation_code": this.quotationCode,
+      "category_unique_code": this.categoryCode
+    };
+    this.coverageService.updateCategoryDetails(this.categoryCode, mappedCatDetails).subscribe((catDets) => {
+      
+      this.cdr.detectChanges();
+    });
+    this.closeCategoryDetstModal();
+  }
+  
+  
+  deleteCategoryDets(categoryDetails) {
+    const confirmation = window.confirm('Are you sure you want to delete this category?');
+    if (confirmation) {
+      const categoryIdToDelete = categoryDetails.category_unique_code;
+      console.log('categoryIdToDelete', categoryIdToDelete)
+  
+      this.coverageService.deleteCategoryDetails(categoryIdToDelete).subscribe((del) => {
+        this.cdr.detectChanges();
+        // this.categoryDetails = this.categoryDetails.filter(item => item.category_unique_code !== categoryIdToDelete);
+        console.log("Deleted", del);
+      });
+    }
+    this.cdr.detectChanges();
+  }
+  
 
 }

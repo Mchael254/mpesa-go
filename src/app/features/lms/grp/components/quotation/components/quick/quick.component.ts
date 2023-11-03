@@ -75,7 +75,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.searchClient();
     this.searchAgent();
     this.getBranch();
-    // this.retrievQuoteDets();
+    this.retrievQuoteDets();
   }
 
   ngOnDestroy(): void {
@@ -161,7 +161,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.product_service.getListOfProduct().subscribe((products) => {
+    this.product_service.getListOfGroupProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
         value: product.code
@@ -258,30 +258,29 @@ export class QuickComponent implements OnInit, OnDestroy {
 
       this.quickService.postQuoteDetails(apiRequest).subscribe((details: GrpQuoteDetails) => {
         this.quoteDetails = details;
-        console.log(this.quoteDetails, this.quoteDetails.quotation_code, this.quoteDetails.quotation_code.toString())
         // Store quotation_code in session storage
         this.session_storage.set('quotation_code', this.quoteDetails.quotation_code.toString());
         //Store the obj quoteData in sessionStorage
         this.session_storage.set('quotation_code', JSON.stringify(quoteData));
+
+        this.router.navigate(['/home/lms/grp/quotation/coverage'], {
+          queryParams: {
+            quotationCalcType: quickFormQuotationCalcType,
+            quotationCode: this.quoteDetails.quotation_code
+          },
+        });
       });
 
       // const quotation_code = 20237347;
       
       // this.quickService.updateQuoteDetails(quotation_code, apiRequest).subscribe((details) => {
       // });
-      this.router.navigate(['/home/lms/grp/quotation/coverage'], {
-        queryParams: {
-          quotationCalcType: quickFormQuotationCalcType,
-          quotationCode: this.quoteDetails.quotation_code
-        },
-      });
 
       
 
       } else {
         alert("Fill all fields");
       }
-    
   }
 
   retrievQuoteDets() {
@@ -290,10 +289,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
       const formData = quoteData.formData;
-      console.log("effectiveDate", formData)
       this.quickForm.patchValue(formData);
-      // formData.effective_date = this.datePipe.transform(new Date(formData.effective_date), 'dd/MM/yy');
-      // this.quickForm.patchValue(formData);
     }
   }
 

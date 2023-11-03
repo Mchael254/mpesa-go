@@ -7,13 +7,17 @@
         <!-- <div class="add-client-button-container">
             <button class="btn btn-success m-2 rounded-circle" (click)="showAggregateCoverDetailsModal()">&plus;</button>
           </div> -->
+          <div class="add-client-button-container">
+            <button class="btn btn-success m-1 rounded-circle" *ngIf="quatationCalType === 'D'" (click)="showDetailedCoverDetailsModal()">&plus;</button>
+            <button class="btn btn-success m-1 rounded-circle" *ngIf="quatationCalType === 'A'" (click)="showAggregateCoverDetailsModal()">&plus;</button>
+        </div>
               <!-- modal to capture detailed cover types details -->
-              <!-- <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel" aria-hidden="true"
+              <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel" aria-hidden="true"
               style="color: #333;">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="detailedModalLabel">Capture Cover type details</h5>
+                      <h5 class="modal-title" id="detailedModalLabel">Capture detailed Cover type details</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeDetailedModal()"></button>
                     </div>
                     <div class="modal-body">
@@ -27,9 +31,9 @@
                                     <div class="form-group">
                                         <div>
                                             <p-dropdown id='detailedCoverType'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '100%' }"
+                                                        [options]='coverTypePerProd'
+                                                        [optionLabel]="'cvt_desc'"
+                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='detailedCoverType' 
                                                         placeholder="Select Covert type"
                                                         >
@@ -38,7 +42,7 @@
                                     </div>
                                     
                                 </div>
-                                <div class="mt-3">
+                                <!-- <div class="mt-3">
                                     <div>
                                         <label for="selectRate">Override premiums</label>
                                     </div>
@@ -47,28 +51,28 @@
                                             <p-dropdown id='selectRate'
                                                         [options]='currency'
                                                         [optionLabel]="'label'"
-                                                        [style]="{ width: '100%' }"
+                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='overridePremiums' 
                                                         placeholder="Select Rate"
                                                         >
                                             </p-dropdown>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="mt-3">
                                     <div>
                                         <label for="premiumMask">% of Main/yr SA</label>
                                     </div>
                                     <div class="form-group">
                                         <div>
-                                            <p-dropdown id='premiumMask'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '100%' }"
-                                                        formControlName='detailedPercentageMainYr' 
-                                                        placeholder="Select Premium mask"
-                                                        >
-                                            </p-dropdown>
+                                            <input 
+                                                type="text"
+                                                pInputText
+                                                class="form-control"
+                                                id="detailedPercentageMainYr" 
+                                                [style]="{ width: '100%' }"
+                                                formControlName="detailedPercentageMainYr" 
+                                                placeholder="% of Main/yr SA">
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +88,7 @@
                                             id="sumAssured" 
                                             [style]="{ width: '100%' }"
                                             formControlName="rate" 
-                                            placeholder="Category">
+                                            placeholder="rate">
                                     </div>
                                 </div>
                             </div>
@@ -96,11 +100,11 @@
                                     <div class="form-group">
                                         <div>
                                             <p-dropdown id='coverTypes'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '100%' }"
+                                                        [options]='SelectRateType'
+                                                        [optionLabel]="'value'"
+                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='selectRate' 
-                                                        placeholder="Select Cover type"
+                                                        placeholder="Select rate"
                                                         >
                                             </p-dropdown>
                                         </div>
@@ -113,11 +117,11 @@
                                     <div class="form-group">
                                         <div>
                                             <p-dropdown id='overridePremiums'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '100%' }"
+                                                        [options]='coverTypes'
+                                                        [optionLabel]="'premium_mask_short_description'"
+                                                        [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='premiumMask' 
-                                                        placeholder="Select Currency"
+                                                        placeholder="Select prem mask"
                                                         >
                                             </p-dropdown>
                                         </div>
@@ -136,7 +140,7 @@
                                                 id="sumAssured" 
                                                 [style]="{ width: '100%' }"
                                                 formControlName="rateDivFactor" 
-                                                placeholder="Category">
+                                                placeholder="rate div factor">
                                         </div>
                                     </div>
                                 </div>
@@ -150,16 +154,16 @@
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
               <!-- end of modal to capture detailed cover types details -->
 
               <!-- modal to capture aggregate cover types details -->
-              <!-- <div class="modal fade" tabindex="-1" #addClientModal id="aggregateModal" aria-labelledby="aggregateModalLabel" aria-hidden="true"
+              <div class="modal fade" tabindex="-1" #addClientModal id="aggregateModal" aria-labelledby="aggregateModalLabel" aria-hidden="true"
               style="color: #333;">
                 <div class="modal-dialog modal-xl">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="aggregateModalLabel">Capture Cover type details</h5>
+                      <h5 class="modal-title" id="aggregateModalLabel">Capture Aggregate Cover type details</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                       (click)="closeAggregateCoverDetailsModal()"></button>
                     </div>
@@ -173,8 +177,8 @@
                                     </div>
                                     <div class="form-group">
                                             <p-dropdown id='aggregateMainCover'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
+                                                        [options]='coverTypePerProd'
+                                                        [optionLabel]="'cvt_desc'"
                                                         [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggregateCoverType' 
                                                         placeholder="Select Cover type"
@@ -189,8 +193,8 @@
                                     </div>
                                     <div class="form-group">
                                             <p-dropdown id='aggrgateOverridePremiums'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
+                                                        [options]='coverTypes'
+                                                        [optionLabel]="'premium_mask_short_description'"
                                                         [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggrgatePremiumMask' 
                                                         placeholder="Select Premium mask"
@@ -201,17 +205,18 @@
                                 <div class="mt-3">
                                     <div>
                                         <label for="aggregateRateDivFactor">% of Main/yr SA</label>
+                                         <!-- INPUT -->
                                     </div>
                                     <div class="form-group">
                                         <div>
-                                            <p-dropdown id='aggregateRateDivFactor'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
-                                                        formControlName='aggregatePercentageMainYr' 
-                                                        placeholder="Select % of Main/yr SA"
-                                                        >
-                                            </p-dropdown>
+                                            <input 
+                                                type="text"
+                                                pInputText
+                                                class="form-control"
+                                                id="aggregatePercentageMainYr" 
+                                                [style]="{ width: '80%' }"
+                                                formControlName="aggregatePercentageMainYr" 
+                                                placeholder="No of members">
                                         </div>
                                     </div>
                                 </div>
@@ -258,8 +263,8 @@
                                     <div class="form-group">
                                         <div>
                                             <p-dropdown id='aggregateCoverTypes'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
+                                                        [options]='SelectRateType'
+                                                        [optionLabel]="'value'"
                                                         [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='aggregateSelectRate' 
                                                         placeholder="Select Rate"
@@ -297,7 +302,7 @@
                                                         [optionLabel]="'label'"
                                                         [style]="{ width: '80%', height:'38px', 'line-height': '10px' }"
                                                         formControlName='dependantType' 
-                                                        placeholder="Select Percentage of..."
+                                                        placeholder="Select dependant type"
                                                         >
                                             </p-dropdown>
                                         </div>
@@ -322,17 +327,20 @@
                             <div class="col-md-4">
                                 <div>
                                     <div>
-                                        <label for="aggregateSelectRate">Override premiums</label>
+                                        <label for="aggregateSelectRate">Override premium</label>
+                                        <!-- INPUT -->
                                     </div>
                                     <div class="form-group">
-                                            <p-dropdown id='aggregateSelectRate'
-                                                        [options]='currency'
-                                                        [optionLabel]="'label'"
-                                                        [style]="{ width: '80%', height: '38px', 'line-height': '10px' }"
-                                                        formControlName='overridePremiums' 
-                                                        placeholder="Select Override premiums"
-                                                        >
-                                            </p-dropdown>
+                                            <div>
+                                                <input 
+                                                    type="text"
+                                                    pInputText
+                                                    class="form-control"
+                                                    id="overridePremiums" 
+                                                    [style]="{ width: '80%' }"
+                                                    formControlName="overridePremiums" 
+                                                    placeholder="Override premium">
+                                            </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
@@ -397,17 +405,17 @@
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
               <!-- end of modal to capture aggregate cover types details -->
 
 <!-- detailed -->
 <div *ngIf="quatationCalType === 'D'">
-    <p-table [value]="yourDataDetailed" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table [value]="coverTypes" [tableStyle]="{ 'min-width': '50rem' }">
         <ng-template pTemplate="header">
           <tr>
             <th>Cover type</th>
             <th>Dependant type</th>
-            <th>Rate type</th>
+            <th>Select Rate</th>
             <th>Premium mask</th>
             <th>Rate</th>
             <th>Rate division factor</th>
@@ -415,31 +423,17 @@
             <th>Action</th>
           </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData>
+        <ng-template pTemplate="body" let-coverTypes >
           <tr>
+            <td style="text-align: left;">{{ coverTypes.cvt_desc | titlecase }} </td>
+            <td style="text-align: center;">{{ coverTypes.dty_description | titlecase }}</td>
+            <td style="text-align: center;">{{ coverTypes.cvt_rate_type}}</td>
+            <td style="text-align: center;">{{ coverTypes.premium_mask_short_description }}</td>
+            <td style="text-align: right;">{{ coverTypes.premium_rate }} </td>
+            <td style="text-align: center;">{{ coverTypes.rate_division_factor }}</td>
+            <td style="text-align: center;">{{ coverTypes.main_sumassured_percentage }}</td>
             <td>
-              <input type="checkbox" [(ngModel)]="rowData.isSelected" [disabled]="!rowData.isEditable" />
-              {{ rowData.coverType }}
-            </td>
-            <td>{{ rowData.dependantType }}</td>
-            <td>{{ rowData.rateType }}</td>
-            <td>
-              <ng-container *ngIf="!editing; else readOnly">
-                <input [(ngModel)]="rowData.premiumMask" name="premiumMask" type="text"
-                class="editaTableCell">
-              </ng-container>
-              <ng-template #readOnly>{{ rowData.premiumMask }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="!editing; else readOnly">
-                <input [(ngModel)]="rowData.rate" name="rate" type="text" class="editaTableCell">
-              </ng-container>
-              <ng-template #readOnly>{{ rowData.rate }}</ng-template>
-            </td>
-            <td>{{ rowData.rateDivisionFactor }}</td>
-            <td>{{ rowData.percentOfMainYearSA }}</td>
-            <td>
-                <button class="edit-button">
+                <button class="edit-button" (click)="showEditDetailedCoverDetailsModal(coverTypes)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </button>
                 <button class="delete-button">
@@ -448,7 +442,7 @@
               </td>
           </tr>
         </ng-template>
-      </p-table>
+      </p-table> 
     </div>
 <!-- detailed -->
 
@@ -456,7 +450,7 @@
 <!-- aggregate -->
 <div *ngIf="quatationCalType === 'A'">
     <p-table
-      [value]="yourDataAggregate"
+      [value]="coverTypes"
       [paginator]="false"
       [rows]="10"
       [showCurrentPageReport]="true"
@@ -483,33 +477,29 @@
         </tr>
       </ng-template>
   
-      <ng-template pTemplate="body" let-rowData>
+      <ng-template pTemplate="body" let-coverTypes>
         <tr>
-            <td>
-                <input type="checkbox" [(ngModel)]="rowData.isSelected" name="isSelected" />
-                {{ rowData.coverType }}
-              </td>
-          <td>{{ rowData.dependantType }}</td>
-          <td>{{ rowData.rateType }}</td>
-          <td>{{ rowData.premiumMask }}</td>
-          <td>{{ rowData.rate }}</td>
-          <td>{{ rowData.rateDivisionFactor }}</td>
-          <td>{{ rowData.percentOfMainYearSA }}</td>
-          <td>{{ rowData.noOfMembers }}</td>
-          <td>{{ rowData.avgEarningsPerMember }}</td>
-          <td>{{ rowData.totalMemberEarnings }}</td>
-          <td>{{ rowData.avgANB }}</td>
-          <td>{{ rowData.overrideSA }}</td>
-          <td>{{ rowData.sumAssured }}</td>
-          <!-- <td>
-            <button class="edit-button">
-                <i class="fa fa-pencil" aria-hidden="true"></i>
-            </button>
-            <button class="delete-button">
-                <i class="fa fa-trash" aria-hidden="true"></i>
-            </button>
-          </td> -->
-          <td><i class="fa fa-ellipsis-v" aria-hidden="true"></i></td>
+            <td style="text-align: left;">{{ coverTypes.cvt_desc | titlecase }}</td>
+            <td style="text-align: center;">{{ coverTypes.dty_description | titlecase }}</td>
+            <td style="text-align: right;">{{ coverTypes.cvt_rate_type }}</td>
+            <td style="text-align: center;">{{ coverTypes.premium_mask_short_description }}</td>
+            <td style="text-align: right;">{{ coverTypes.use_cvr_rate }}</td>
+            <td style="text-align: right;">{{ coverTypes.rate_division_factor }}</td>
+            <td style="text-align: center;">{{ coverTypes.main_sumassured_percentage }}</td>
+            <td style="text-align: center;">{{ coverTypes.total_members }} </td>
+            <td style="text-align: center;">{{ coverTypes.average_earning_per_member }}</td>
+            <td style="text-align: center;">{{ coverTypes.total_member_earnings }}</td>
+            <td style="text-align: center;">{{ coverTypes.average_anb }} </td>
+            <td style="text-align: right;">{{ coverTypes.sum_assured | number}} </td>
+            <td style="text-align: right;">{{ coverTypes.sum_assured }}</td>
+            <td style="text-align: right;">
+                <button class="edit-button" (click)="showEditAggregateCoverDetailsModal(coverTypes)">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button class="delete-button">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </td>
         </tr>
       </ng-template>
     </p-table>
@@ -521,7 +511,7 @@
         <h5 class="mt-5 mb-1">Category details</h5>
         <div style="max-width: 50rem;">
           <div class="add-client-button-container">
-            <button class="btn btn-success m-2 rounded-circle" (click)="showCategoryDetstModal()">&plus;</button>
+            <button class="btn btn-success m-1 rounded-circle" (click)="showCategoryDetstModal()">&plus;</button>
           </div>
           <!-- modal to capture category details -->
           <div class="modal fade" tabindex="-1" #categoryDetsModal id="categoryDetsModal" aria-labelledby="categoryDetsModal" aria-hidden="true"
@@ -534,7 +524,7 @@
                   (click)="closeCategoryDetstModal()"></button>
                 </div>
                 <div class="modal-body">
-                <form [formGroup]="categoryDetailsForm">
+                <form [formGroup]="categoryDetailForm">
                     <div class="row">
                         <div class="col-md-6">
                             <!-- Content A (left side) -->
@@ -557,9 +547,9 @@
                                 </div>
                                 <div class="form-group">
                                     <div>
-                                        <p-dropdown id='premiumMask'
-                                                    [options]='currency'
-                                                    [optionLabel]="'label'"
+                                        <p-dropdown id='premium_mask_short_description'
+                                                    [options]='coverTypes'
+                                                    [optionLabel]="'premium_mask_short_description'"
                                                     [style]="{ width: '100%', height: '38px', 'line-height': '10px' }"
                                                     formControlName='premiumMask' 
                                                     placeholder="Select premium mask"
@@ -578,16 +568,14 @@
                                     <label class="label" for="shortDescription">Short description<span class="required"></span></label>
                                 </div>
                                 <div class="form-group">
-                                    <div asteriskRequired>
-                                        <p-dropdown id='shortDescription'
-                                                    [options]='currency'
-                                                    [optionLabel]="'label'"
-                                                    [style]="{ width: '100%', height:'38px', 'line-height': '10px' }"
-                                                    formControlName='shortDescription' 
-                                                    placeholder="Select Short desc"
-                                                    >
-                                        </p-dropdown>
-                                    </div>
+                                    <div class="form-group">
+                                        <input 
+                                                type="text"
+                                                type="text"
+                                                pInputText
+                                                class="form-control"
+                                                formControlName="shortDescription"/>
+                            </div>
                                 </div>
                                 
                             </div>
@@ -610,14 +598,15 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeCategoryDetstModal()">Close</button>
-                  <button type="button" class="btn btn-primary">Save</button>
+                  <!-- <button type="button" class="btn btn-primary" (click)="onSaveCatDets()">Save</button> -->
+                  <button type="button" class="btn btn-primary" (click)="isEditMode ? onSaveEditCatDets() : onSaveCatDets()">Save</button>
                 </div>
               </div>
             </div>
           </div>
           <!-- end of modal to capture category details -->
 
-            <p-table [value]="yourDataCat" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
+<p-table *ngIf="categoryDetails" [value]="categoryDetails" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
     <ng-template pTemplate="header">
         <tr>
@@ -625,23 +614,33 @@
             <th style="width:12.5%">Short description</th>
             <th style="width:12.5%">Multiple of Earnings</th>
             <th style="width:12.5%">Premium mask</th>
+            <th>Action</th>
         </tr>
     </ng-template>
+    <ng-template pTemplate="body" let-categoryDetails let-columns="columns">
+        <tr>
+            <td>{{ categoryDetails.category_category | titlecase }}</td>
+            <td>{{ categoryDetails.short_description | titlecase }}</td>
+            <td>{{ categoryDetails.period }}</td>
+            <td>{{ categoryDetails.premium_mask_desc }}</td>
+            <td>
+                <button class="edit-button" (click)="showEditCategoryDetstModal(categoryDetails)">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <button class="delete-button" (click)="deleteCategoryDets(categoryDetails)">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+    </ng-template>
+
     <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-            <td [attr.colspan]="columns?.length || 1" *ngIf="yourDataCat && yourDataCat.length === 0" class="centered-message">
+            <td *ngIf="categoryDetails && categoryDetails.length === 0" class="centered-message">
                 <div class="centered-content">
                     No records captured. Click on + icon to add a record.
                 </div>
             </td>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr>
-            <td>{{ rowData.description }}</td>
-            <td>{{ rowData.shortDescription }}</td>
-            <td>{{ rowData.multipleOfEarnings }}</td>
-            <td>{{ rowData.premiumMask }}</td>
         </tr>
     </ng-template>
 </p-table>
