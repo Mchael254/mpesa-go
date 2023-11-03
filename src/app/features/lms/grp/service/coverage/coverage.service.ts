@@ -13,6 +13,7 @@ export class CoverageService {
 
   getCategoryDetails(quotation_code: number) {
     return this.api.GET(`category/${quotation_code}/categories`, API_CONFIG.QUOTATIONS_SERVICE_BASE_URL);
+
   }
 
   postCategoryDetails(categoryDets) {

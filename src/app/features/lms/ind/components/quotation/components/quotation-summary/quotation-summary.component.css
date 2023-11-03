@@ -22,3 +22,7 @@ div > div > span:nth-child(2) {
   cursor: pointer;
   color: var(--primary-color) !important;
 }
+
+.click:hover {
+  cursor: pointer;
+}
