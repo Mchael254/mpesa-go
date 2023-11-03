@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { QuotationListComponent } from './components/quotation-list/quotation-list.component';
-import { AuthGuard } from 'src/app/shared/services/guard/auth-guard.service';
+import { PolicyListComponent } from './components/policy-list/policy-list.component';
 
 const routes: Routes = [
   {
     path: 'quotation',
     children: [{ path: 'list', component: QuotationListComponent }],
+  },
+  {
+    path: 'policy',
+    children: [{ path: 'list', component: PolicyListComponent }],
   },
 
   {

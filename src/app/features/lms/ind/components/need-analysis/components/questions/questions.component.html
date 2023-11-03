@@ -1,13 +1,51 @@
 <div class="row justify-content-center">
-  <div class="col-lg-12 col-sm-12">
-    <div class="card shadow rounded-0 m-1">
-      <div class="card-body centered-content">
-        <div class="text-black fw-bold">{{'1. '}}  {{'Who would you like to protect'}}</div>
-        <div style="padding-left: 1rem;">{{'Protect a life'}}</div>
+  <!-- {{questions | json}} -->
+  <ng-container *ngIf="!questions['isSelected']; else notSelected">
+    <div class="col-lg-12 col-sm-12">
+      <div class="m-3">
+        <div>
+          <div class="text-black fw-medium">
+            {{ index }}. {{ questions["question"] }}
+          </div>
+          <div class="text-black ">
+            <div
+              class="radio-row "
+              *ngFor="let option of questions['options']; let j = index"
+              (click)="selectOptionEmitter(j)"
+            >
+              <label class="radio-button option">
+                <input
+                  type="radio"
+                  name="option"
+                  value="Option 1"
+
+                />
+                {{ option["option"] }}
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+  <ng-template #notSelected>
+    <ng-container>
+      <div
+        class="col-lg-12 col-sm-12 mb-2"
+      >
+        <div class="card shadow rounded-0 m-1">
+          <div class="card-body centered-content">
+            <div class="text-black fw-medium">
+              {{ index }}. {{ questions["question"] }}
+            </div>
+            <div class="option_selected">{{ questions['options'][optionPosition]['option']  }}</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
 
+  <!--
   <div class="col-lg-12 col-sm-12">
     <div class="card shadow rounded-0 m-1">
       <div class="card-body centered-content">
@@ -16,30 +54,5 @@
       </div>
     </div>
   </div>
-
-
-  <div class="col-lg-12 col-sm-12">
-    <div class=" m-3">
-      <div>
-        <div class="text-black fw-bold">{{'3. '}}  {{'Who would you like to protect'}}</div>
-        <div style="padding-left: 1rem;" class="text-black">
-
-          <div class="radio-row">
-            <label class="radio-button">
-                <input type="radio" name="option" value="Option 1"> Option 1
-            </label>
-            <label class="radio-button">
-                <input type="radio" name="option" value="Option 2"> Option 2
-            </label>
-            <label class="radio-button">
-                <input type="radio" name="option" value="Option 3"> Option 3
-            </label>
-        </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-
+ -->
 </div>
