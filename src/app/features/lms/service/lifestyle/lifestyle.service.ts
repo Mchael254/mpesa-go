@@ -11,11 +11,15 @@ export class LifestyleService {
   constructor(private api:ApiService) {}
 
   getClientLifeStyleById(code: number){
-    return this.api.GET(`${this.LIFESTYLE_BASE_URL}/${code}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
+    return this.api.GET(`${this.LIFESTYLE_BASE_URL}?clientCode=${code}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
   }
 
   saveLifeStyle(lifestyle_data: any){
     return this.api.POST(`${this.LIFESTYLE_BASE_URL}`, lifestyle_data, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
+  }
+
+  updateLifeStyle(lifestyle_data: any){
+    return this.api.PUT(`${this.LIFESTYLE_BASE_URL}/${lifestyle_data['code']}`, lifestyle_data, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
   }
 
   getClientMedicalHistoryById(code: number){
