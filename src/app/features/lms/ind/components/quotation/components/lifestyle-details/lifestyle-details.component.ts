@@ -114,14 +114,15 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   getClientLifeStyleById(){
     let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
     this.lifestyle_service.getClientLifeStyleById(client_code).subscribe((data: any) =>{
-
       this.bmiForm.patchValue({
         height: data['height'],
         weight: data['weight'],
         bmi: data['clientBmi'],
         clientBmi: data['clientBmi'],
       })
-      console.log(data);
+      this.bmi['bmi'] = data['clientBmi'];
+      if(data['alcoholQuantity']) this.clientLifestyleForm.get('question4').setValue('Y')
+      if(data['tobaccoQuantity']) this.clientLifestyleForm.get('question3').setValue('Y')
       this.clientLifestyleForm.patchValue({
         ...data
       })
@@ -132,23 +133,21 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   saveClientLisfeStyle(){
     let client_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.CLIENT_CODE));
     let payload = {...this.clientLifestyleForm.value, ...this.bmiForm.value};
-    payload['webClientCode'] = client_code
-    payload['clientBmi'] = payload['bmi']
-    console.log(payload);
+    payload['webClientCode'] = client_code;
+    payload['clientBmi'] = payload['bmi'];
 
 
-    this.lifestyle_service.saveLifeStyle(payload).subscribe((data :any) => {
-      console.log(data);
+    if(payload['code']!=null){
+      this.lifestyle_service.updateLifeStyle(payload).subscribe((data :any) => {
+        this.router.navigate(['/home/lms/ind/quotation/medical-history']);
+     })
 
-      // this.bmiForm.patchValue({
-      //   height: data['height'],
-      //   weight: data['weight'],
-      //   bmi: data['clientBmi'],
-      // });
+    }else{
+      this.lifestyle_service.saveLifeStyle(payload).subscribe((data :any) => {
+        this.router.navigate(['/home/lms/ind/quotation/medical-history']);
+      })
+    }
 
-
-    })
-    // this.router.navigate(['/home/lms/ind/quotation/medical-history'])
   }
 
   ngOnDestroy(): void {
