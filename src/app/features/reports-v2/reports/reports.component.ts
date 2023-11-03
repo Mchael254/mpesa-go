@@ -63,6 +63,9 @@ export class ReportsComponent implements OnInit  {
     this.activeTab = 'sharedReports';
   }
 
-  viewReports() {}
+  viewReports() {
+    console.log(`view reports`);
+    this.router.navigate([`home/reportsv2/report-management`])
+  }
 
 }

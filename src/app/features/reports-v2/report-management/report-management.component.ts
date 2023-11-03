@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ReportServiceV2 } from '../services/report.service';
 import {Logger} from "../../../shared/services";
 import { take } from 'rxjs';
 import { ReportService } from '../../reports/services/report.service';
 import { Chart, ReportV2 } from 'src/app/shared/data/reports/report';
 import { SaveReportModalComponent } from '../save-report-modal/save-report-modal.component';
+import { Router } from '@angular/router';
 
 const log = new Logger('ReportManagementComponent');
 
@@ -29,6 +30,8 @@ export class ReportManagementComponent implements OnInit{
   constructor(
     private reportServiceV2: ReportServiceV2,
     private reportService: ReportService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
 
   }
@@ -46,16 +49,17 @@ export class ReportManagementComponent implements OnInit{
    * @returns void
    */
   getReports(): void {
+    this.reports = { content: []};
     this.reportServiceV2.getReports()
     .pipe(take(1))
     .subscribe({
-      next: (res) => { 
+      next: (res) => {
         this.reports = res;
         this.totalRecords = res.totalElements;
         // log.info(`reports >>> `, res);
         this.shouldShowTable = true;
       },
-      error: (e) => { 
+      error: (e) => {
         log.debug(`error: `, e);
         this.shouldShowTable = true;
       }
@@ -146,7 +150,8 @@ export class ReportManagementComponent implements OnInit{
     .subscribe({
       next: (res) => {
         log.info(`report successfully deleted`);
-        // this.deleteReportCharts(id);
+        this.getReports();
+        this.cdr.detectChanges();
       },
       error: (e) => {
         log.info(`delete failed >>>`, e);
@@ -154,24 +159,28 @@ export class ReportManagementComponent implements OnInit{
     })
   }
 
-  deleteReportCharts(id: number) {
-    this.reportServiceV2.deleteReportCharts(id)
-    .pipe(take(1))
-    .subscribe({
-      next: (res) => {
-        log.info(`report charts successfully deleted`, res);
-        // this.deleteReport(id);
-      },
-      error: (e) => {
-        log.info(`delete failed >>>`, e);
-      }
-    })
-  }
+  // deleteReportCharts(id: number) {
+  //   this.reportServiceV2.deleteReportCharts(id)
+  //   .pipe(take(1))
+  //   .subscribe({
+  //     next: (res) => {
+  //       log.info(`report charts successfully deleted`, res);
+  //       this.deleteReport(id);
+  //     },
+  //     error: (e) => {
+  //       log.info(`delete failed >>>`, e);
+  //     }
+  //   })
+  // }
 
 
   selectReport(report: ReportV2) {
     this.selectedReport = report;
     this.child.patchFormValues(report);
+  }
+
+  gotoEditReport(report: ReportV2): void {
+    this.router.navigate([`home/reportsv2/edit-report/${report.id}`])
   }
 
 }
