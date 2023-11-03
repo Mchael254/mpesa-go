@@ -13,6 +13,7 @@ import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubs
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
 import { ProductService } from '../../../../../../../features/lms/service/product/product.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 @Component({
   selector: 'app-quick',
@@ -274,9 +275,9 @@ export class QuickComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (prem) => {
-            this.session_storage.set('quote_code',prem['quote_code'])
-            this.session_storage.set('client_code',prem['client_code'])
-            this.session_storage.set('quick_quote',prem)
+            this.session_storage.set(SESSION_KEY.QUOTE_CODE, prem['quote_code']);
+            this.session_storage.set(SESSION_KEY.CLIENT_CODE, prem['client_code']);
+            this.session_storage.set(SESSION_KEY.QUICK_CODE, prem);
 
             this.quickQuoteSummary.mutate((da: any) => {
               da['prem_result'] = prem['premium'];

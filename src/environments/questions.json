@@ -1,0 +1,72 @@
+{
+  "question": "What ",
+  "options": [
+    {
+      "option": "Hiking",
+      "question": "What type of terrain do you enjoy hiking in?",
+      "options": [
+        {
+          "option": "Mountain trails",
+          "question": "How challenging should the hike be?",
+          "options": [
+            {
+              "option": "Easy, for beginners",
+              "question": "What's your favorite mountain range?",
+              "options": null,
+              "products": [
+                "WHOLE LIFE",
+                "MUTUAL LIFE",
+                "MUTUAL WHOLE LIFE"
+              ]
+            },
+            {
+              "option": "Moderate, for intermediate hikers",
+              "question": "How many miles can you hike?",
+              "options": [
+                "5-10 miles",
+                "10-20 miles",
+                "Over 20 miles"
+              ]
+            },
+            {
+              "option": "Difficult, for experienced hikers",
+              "question": "Are you comfortable with camping?",
+              "options": [
+                {
+                  "option": "Yes",
+                  "question": "What's your preferred camping style?",
+                  "options": [
+                    "Backpacking",
+                    "Car camping",
+                    "Glamping"
+                  ]
+                },
+                {
+                  "option": "No",
+                  "question": "Do you enjoy day hikes or overnight hikes?",
+                  "options": [
+                    "Day hikes",
+                    "Overnight hikes",
+                    "Both"
+                  ]
+                }
+              ]
+            }
+          ],
+          "products": null
+        },
+        {
+          "option": "Forest trails",
+          "question": "What's your preferred season for hiking?",
+          "options": [
+            "Spring",
+            "Summer",
+            "Fall"
+          ]
+        }
+      ],
+      "products": null
+    }
+  ],
+  "products": null
+}

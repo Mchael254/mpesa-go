@@ -24,10 +24,10 @@
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Branch</label></div>
             <div>
-                <p-dropdown id='value'
-                            [options]='clientList'
-                            [optionLabel]="'label'"
-                            [dataKey]="'value'"
+                <p-dropdown id='branch'
+                            [options]='branch'
+                            [optionLabel]="'name'"
+                            [dataKey]="'id'"
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             placeholder="Select a Branch"
                             formControlName='branch' 
@@ -132,8 +132,6 @@
                                 [filterBy]="'label'"
                                 [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                                 formControlName='currency' 
-                                [virtualScroll]="true" 
-                                [virtualScrollItemSize]="50"
                                 placeholder="Select Currency"
                                 class="select">
                     </p-dropdown>
@@ -158,9 +156,8 @@
               <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
-                    id="detailed"
                     type="radio"
-                    value="detailed"
+                    value="D"
                     id="quotationCalcType"
                     name="quotationCalcType"
                     formControlName="quotationCalcType"
@@ -172,9 +169,8 @@
                 <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
-                    id="aggregate"
                     type="radio"
-                    value="aggregate"
+                    value="A"
                     id="quotationCalcType"
                     name="quotationCalcType"
                     formControlName="quotationCalcType"

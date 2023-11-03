@@ -3,6 +3,9 @@ import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 
 @Component({
@@ -40,17 +43,29 @@ export class MedicalHistoryComponent implements OnDestroy {
   medicalHistoryForm: FormGroup;
   clonedProducts: any;
   products: any;
-  constructor(private fb: FormBuilder){
+  constructor(private fb: FormBuilder,  private lifestyle_service: LifestyleService, private session_service: SessionStorageService){
     this.medicalHistoryForm = this.fb.group({
       question1: ['N'],
       question2: ['N'],
       question3: ['N'],
       question4: ['N'],
     });
+
+    this.getMedicalHistoryByClientId();
   }
 
   getValue(name: string = 'question1') {
     return this.medicalHistoryForm.get(name).value;
+  }
+
+  getMedicalHistoryByClientId(){
+    let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
+    this.lifestyle_service.getClientMedicalHistoryById(client_code)
+    .subscribe(data => {
+
+      console.log(data);
+
+    })
   }
 
   onRowEditInit(product: any) {
