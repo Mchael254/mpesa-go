@@ -168,8 +168,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   cancelpolicyListOne(i: number) {
     this.policyListOne = this.policyListOne.map((data, x) => {
-      data['isEdit'] = false
-
+      data['isEdit'] = false;
       return data;
     });
   }
@@ -187,8 +186,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
   cancelpolicyListTwo(i: number) {
     this.policyListTwo = this.policyListTwo.map((data, x) => {
-      data['isEdit'] = false
-
+      data['isEdit'] = false;
       return data;
     });
   }
@@ -243,7 +241,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.client_history_service
       .getAllCoverStatusTypes()
       .subscribe((data: any[]) => {
-        console.log(data);
+        // console.log(data);
         this.coverStatusTypeList = [...data];
       });
   }

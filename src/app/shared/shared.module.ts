@@ -190,7 +190,9 @@ const SERVICES = [
         CalendarModule,
         TableModule,
         DropdownModule,
-        TabMenuModule
+        TabMenuModule,
+        ShareModalComponent,
+    DownloadModalComponent
 
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
