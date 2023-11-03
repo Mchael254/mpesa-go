@@ -1,0 +1,57 @@
+.color-box {
+  height: 22px;
+  width: 22px;
+  float: left;
+  margin-right: 2px;
+  border-radius: 5px;
+}
+
+.table {
+  margin-bottom: 0.2rem;
+}
+
+.table tr {
+  cursor: pointer;
+}
+
+.table tr:hover {
+  border: solid 1px #eee;
+  border-radius: 15px;
+}
+
+.table tr td:hover {
+  padding: 2px;
+  transition: padding 200ms;
+}
+
+.table tr td {
+  line-height: 15px;
+  padding: 0;
+}
+
+.colors {
+  width: 60%;
+}
+
+.color-name {
+  width: 30%;
+}
+
+.color-selected {
+  width: 10%;
+}
+
+.create-new {
+  text-decoration: underline;
+}
+
+.modal-content {
+  margin-top: 20vh;
+}
+
+.form-control-color {
+  border: thin #eee 1px;
+  margin-right: 3px;
+  width: 30px;
+  height: 30px;
+}

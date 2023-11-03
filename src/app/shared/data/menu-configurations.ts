@@ -72,7 +72,7 @@ export const menuConfigurations = {
             {
               title:'Client & Insured Setups',
               children:[
-                
+
                 {
                   title: 'Interested Parties',
                   link: '/home/gis/interested-parties',
@@ -154,7 +154,7 @@ export const menuConfigurations = {
         link: '/home/dashboard'
     },
   ],
-  
+
   reports: [
     {
       title: 'Home',
@@ -185,7 +185,28 @@ export const menuConfigurations = {
       ]
     }
   ],
-  
+
+  reportsv2: [
+    {
+      title: 'Home',
+      icon: 'home-outline',
+      link: '/home/dashboard',
+    },
+    {
+      title: 'Analytics',
+      icon: 'briefcase-outline',
+      link: '/home/reports-v2',
+      home: true,
+      children: [
+        {
+          title: 'New Report',
+          icon: 'briefcase-outline',
+          link: '/home/reports-v2/create-report',
+        },
+      ]
+    }
+  ],
+
   Accounts: [
     {
       title: 'Home',

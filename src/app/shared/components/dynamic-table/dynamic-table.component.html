@@ -1,146 +1,152 @@
 <ng-container *ngIf="!tableDetails?.isLazyLoaded">
-  <p-table
-    #dt1
-    [columns]="tableDetails?.cols"
-    [value]="tableDetails?.rows"
-    [paginator]="tableDetails?.paginator"
-    [rows]="tableDetails?.rowsPerPage || 5"
-    [showCurrentPageReport]="true"
-    [globalFilterFields]="tableDetails?.globalFilterFields"
-  >
-    <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
-      <div class="row">
-        <div class="col-sm-8">
-          <p class="fw-normal text-muted">{{ tableDetails?.title }}</p>
-        </div>
-        <div class="col-sm-4">
+  <div class="border p-2">
+    <p-table
+      #dt1
+      [columns]="tableDetails?.cols"
+      [value]="tableDetails?.rows"
+      [paginator]="tableDetails?.paginator"
+      [rows]="tableDetails?.rowsPerPage || 5"
+      [showCurrentPageReport]="true"
+      [resizableColumns]="true"
+      [globalFilterFields]="tableDetails?.globalFilterFields"
+    >
+      <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
+        <div class="row">
+          <div class="col-sm-8">
+            <p class="fw-normal text-muted">{{ tableDetails?.title }}</p>
+          </div>
+          <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
           <i class="pi pi-search"></i>
           <input pInputText class="p-inputtext-sm"  type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search keyword" />
       </span>
+          </div>
         </div>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
-          {{ col.header }}
-          <span *ngIf="tableDetails.showSorting">
+      </ng-template>
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+            {{ col.header }}
+            <span *ngIf="tableDetails.showSorting">
           <p-sortIcon field="{{ col.field }}"></p-sortIcon>
         </span>
-          <span *ngIf="tableDetails.showFilter">
+            <span *ngIf="tableDetails.showFilter">
           <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
         </span>
-        </th>
-        <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView">
-          Actions
-        </th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr>
-        <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
-          <span *ngIf="!isNumber(rowData[col.field])">{{ rowData[col.field] }}</span>
-          <span *ngIf="isNumber(rowData[col.field])" style="float: right">{{ rowData[col.field] | number:'1.2-2'}}</span>
-<!--          {{ rowData[col.field] }}-->
-        </td>
-        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
-          <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]"><i class="fa-regular fa-eye" style="font-size: 17px;"></i></a>
-          <!-- Use routerLink with the input properties -->
-        </td>
-        <td *ngIf="tableDetails?.showCustomModalOnView">
-          <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
-            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
-            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-          </button>
-        </td>
-        <td *ngIf="tableDetails?.showCustomModalOnView">
-          <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsById(rowData[tableDetails.urlIdentifier])">
-            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
-          </button>
-        </td>
+          </th>
+          <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView">
+            Actions
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
+            <span >{{ rowData[col.field] }} {{ formatTableData(rowData[col.field]) }}</span>
+            <!-- <span *ngIf="isNumber(rowData[col.field])">{{ rowData[col.field] }}</span> -->
+            <!--          {{ rowData[col.field] | number:'1.2-2' }}-->
+          </td>
+          <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+            <a [routerLink]="[tableDetails?.url, tableDetails?.rows[tableDetails.urlIdentifier]]"><i class="fa-regular fa-eye" style="font-size: 17px;"></i></a>
+            <!-- Use routerLink with the input properties -->
+          </td>
+          <td *ngIf="tableDetails?.showCustomModalOnView">
+            <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
+              <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+            </button>
+          </td>
+          <td *ngIf="tableDetails?.showCustomModalOnView">
+            <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsById(rowData[tableDetails.urlIdentifier])">
+              <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+            </button>
+          </td>
 
 
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="9">{{ tableDetails?.noDataFoundMessage || 'No data found'}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9">{{ tableDetails?.noDataFoundMessage || 'No data found'}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </ng-container>
 <ng-container *ngIf="tableDetails?.isLazyLoaded">
-  <p-table
-    #dt1
-    (onLazyLoad)="lazyLoad($event)"
-    [lazy]="true"
-    responsiveLayout="stack"
-    scrollHeight="flex"
-    [columns]="tableDetails?.cols"
-    [value]="tableDetails?.rows"
-    [paginator]="tableDetails?.paginator"
-    [rows]="tableDetails.rowsPerPage || 5"
-    [showCurrentPageReport]="true"
-    [totalRecords]="tableDetails?.totalElements"
-    [globalFilterFields]="tableDetails?.globalFilterFields"
-  >
-    <ng-template pTemplate="caption" >
-      <div class="row">
-        <div class="col-sm-8">
-          <p class="fw-normal text-muted">{{ tableDetails.title }}</p>
-        </div>
-        <div class="col-sm-4">
+  <div class="border p-2">
+    <p-table
+      #dt1
+      (onLazyLoad)="lazyLoad($event)"
+      [lazy]="true"
+      responsiveLayout="stack"
+      scrollHeight="flex"
+      [columns]="tableDetails?.cols"
+      [value]="tableDetails?.rows"
+      [paginator]="tableDetails?.paginator"
+      [rows]="tableDetails.rowsPerPage || 5"
+      [showCurrentPageReport]="true"
+      [resizableColumns]="true"
+      [totalRecords]="tableDetails?.totalElements"
+      [globalFilterFields]="tableDetails?.globalFilterFields"
+    >
+      <ng-template pTemplate="caption" >
+        <div class="row">
+          <div class="col-sm-8">
+            <p class="fw-normal text-muted">{{ tableDetails.title }}</p>
+          </div>
+          <div class="col-sm-4">
         <span class="p-input-icon-left mr-auto float-end">
           <i class="pi pi-search"></i>
           <input style="border-radius: 0; height: 35px;" pInputText class="p-inputtext-sm" type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Search keyword" />
       </span>
+          </div>
         </div>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
-          {{ col.header }}
-          <span *ngIf="tableDetails.showSorting">
+      </ng-template>
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+            {{ col.header }}
+            <span *ngIf="tableDetails.showSorting">
           <p-sortIcon field="{{ col.field }}"></p-sortIcon>
         </span>
-          <span *ngIf="tableDetails.showFilter">
+            <span *ngIf="tableDetails.showFilter">
           <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
         </span>
-        </th>
-        <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView">
-          Actions
-        </th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr>
-        <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
-          {{ rowData[col.field] }}
-        </td>
-        <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
-          <a  style="font-size: 0.9em; border-radius: 4px;" [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">
+          </th>
+          <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView">
+            Actions
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+          <td *ngFor="let col of columns" (click)="viewDetails(rowData)">
+            {{ rowData[col.field] }}
+          </td>
+          <td *ngIf="tableDetails?.url"> <!-- Add a cell for the action column -->
+            <a  style="font-size: 0.9em; border-radius: 4px;" [routerLink]="[tableDetails?.url, rowData[tableDetails.urlIdentifier]]">
 
-            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
-            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-          </a>
-          <!-- Use routerLink with the input properties -->
-        </td>
-        <td *ngIf="tableDetails?.showCustomModalOnView">
-          <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
-            <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
-            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-          </button>
-        </td>
-        <td *ngIf="tableDetails?.viewDetailsOnView">
-          <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsWithId(rowData[tableDetails.urlIdentifier])">
-            <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
-          </button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+              <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+            </a>
+            <!-- Use routerLink with the input properties -->
+          </td>
+          <td *ngIf="tableDetails?.showCustomModalOnView">
+            <button type="button" class="btn btn-link actionbtn" (click)="showCustomModal(rowData)">
+              <!-- <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view -->
+              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+            </button>
+          </td>
+          <td *ngIf="tableDetails?.viewDetailsOnView">
+            <button type="button" class="btn btn-link actionbtn" (click)="viewDetailsWithId(rowData[tableDetails.urlIdentifier])">
+              <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </ng-container>
 
 

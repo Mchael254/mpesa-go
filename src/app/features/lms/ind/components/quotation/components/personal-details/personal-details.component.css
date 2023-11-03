@@ -85,6 +85,11 @@ tr.ng-star-inserted {
 .dropdown-menu {
   border: solid 1px gray;
 }
+
+.doc_check:hover {
+  color: black;
+  font-weight: 800;
+}
 @media (min-width: 768px) {
   .justify-md {
     justify-content: start;

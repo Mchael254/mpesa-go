@@ -53,6 +53,8 @@ export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateModule} from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
+import { ShareModalComponent } from './components/share-modal/share-modal.component';
+import { DownloadModalComponent } from './components/download-modal/download-modal.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CountryService } from './services/setups/country/country.service';
@@ -137,7 +139,9 @@ const SERVICES = [
     DynamicSetupTableScreenComponent,
     DynamicSetupWizardWelcomeScreenComponent,
     CustomFilterPipe,
-    SafeResourceUrlPipe
+    SafeResourceUrlPipe,
+    ShareModalComponent,
+    DownloadModalComponent
 
 
   ],
@@ -188,7 +192,7 @@ const SERVICES = [
         DropdownModule,
         TabMenuModule
 
-    ],
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {

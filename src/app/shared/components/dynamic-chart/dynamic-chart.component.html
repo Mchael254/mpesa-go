@@ -1,13 +1,7 @@
 
-<div class="row">
-  <div class="row">
-    <p class="text-primary fw-bold set-title">
-      {{ chartTitle | uppercase }} <br>
-      <!--<span class="fs-5">KSH 20,000</span>-->
-    </p>
-  </div>
+<div class="border">
   <p-chart
-    height="400"
+    [height]="'100%'"
     [type]="chartType"
     [data]="basicData"
     [options]="basicOptions"
