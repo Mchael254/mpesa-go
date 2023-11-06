@@ -40,14 +40,14 @@ export class ReportPreviewComponent implements OnInit{
     },
   ];
 
-  public chartTypes: {iconClass: string, name: ChartType | string}[] = [
-    { iconClass: 'pi pi-table', name: 'table'},
-    { iconClass: 'pi pi-chart-bar', name: 'bar'},
-    { iconClass: 'pi pi-chart-line', name: 'line'},
-    { iconClass: 'pi pi-chart-pie', name: 'pie'},
-    { iconClass: 'pi pi-chart-bar', name: 'doughnut'},
-    { iconClass: 'pi pi-chart-bar', name: 'polarArea'},
-    { iconClass: 'pi pi-chart-bar', name: 'radar'},
+  public chartTypes: {iconClass: string, name: ChartType | string, isSelected: boolean}[] = [
+    { iconClass: 'pi pi-table', name: 'table', isSelected: true },
+    { iconClass: 'pi pi-chart-bar', name: 'bar', isSelected: false },
+    { iconClass: 'pi pi-chart-line', name: 'line', isSelected: false },
+    { iconClass: 'pi pi-chart-pie', name: 'pie', isSelected: false },
+    { iconClass: 'pi pi-chart-bar', name: 'doughnut', isSelected: false },
+    { iconClass: 'pi pi-chart-bar', name: 'polarArea', isSelected: false },
+    { iconClass: 'pi pi-chart-bar', name: 'radar', isSelected: false },
   ];
 
   public conditions = [];
@@ -58,7 +58,7 @@ export class ReportPreviewComponent implements OnInit{
   public conditionsType: string = '';
 
   public chartType: ChartType | string = "table";
-  public displayChartTypes: string[] = [];
+  public displayChartTypes: Chart[] = [];
   public selectedChartType = { iconClass: 'pi pi-table', name: 'Table'}
   public shouldShowTable: boolean = true;
   public shouldShowVisualization: boolean = false;
@@ -102,6 +102,7 @@ export class ReportPreviewComponent implements OnInit{
   };
 
   private reportId: number;
+  public reportParams: any;
 
   constructor(
     private fb: FormBuilder,
@@ -127,14 +128,14 @@ export class ReportPreviewComponent implements OnInit{
    */
   ngOnInit(): void {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
-    const reportParams = this.sessionStorageService.getItem(`reportParams`);
-    log.info(`report params >>> `, reportParams, this.reportId);
-    this.criteria = reportParams.criteria;
-    this.sort = reportParams.sort;
-    this.reportNameRec = reportParams.reportNameRec;
+    this.reportParams = this.sessionStorageService.getItem(`reportParams`);
+    log.info(`report params >>> `, this.reportParams, this.reportId);
+    this.criteria = this.reportParams.criteria;
+    this.sort = this.reportParams.sort;
+    this.reportNameRec = this.reportParams.reportNameRec;
 
     this.fetchFilterConditions();
-    this.populateSelectedFilters(reportParams.filters);
+    this.populateSelectedFilters(this.reportParams.filters);
     this.createFilterForm();
     this.createSaveReportForm();
     this.createChartTypeForm();
@@ -144,11 +145,29 @@ export class ReportPreviewComponent implements OnInit{
     this.currentUser = this.authService.getCurrentUser();
 
     if(isNaN(this.reportId)) {
-      this.displayChartTypes.push('table');
+      const chart: Chart = {
+        backgroundColor: '',
+        borderColor: '',
+        chartReportId: 0,
+        colorScheme: 0,
+        evenColor: '',
+        evenOddAppliesTo: '',
+        length: 0,
+        name: '',
+        oddColor: '',
+        order: 0,
+        type: 'table',
+        width: 0
+      }
+      this.displayChartTypes.push(chart);
     } else {
-      reportParams.charts.forEach((chart) => {
-        log.info(`chart >>>`, chart);
-        this.displayChartTypes.push(chart.type);
+      this.reportParams.charts.forEach((chart) => {
+
+        const index = this.chartTypes.indexOf(
+          this.chartTypes.filter((item) => item.name === chart.type)[0]);
+
+        this.chartTypes[index].isSelected = true;
+        this.displayChartTypes.push(chart);
       })
     }
 
@@ -217,6 +236,7 @@ export class ReportPreviewComponent implements OnInit{
    * 2. patches reportName and destination folder to saveReportForm
    */
   createSaveReportForm(): void {
+    const folder = !isNaN(this.reportId) ? this.reportParams.folder : 'M';
     this.saveReportForm = this.fb.group({
       reportName: [''],
       dashboard: [''],
@@ -224,7 +244,7 @@ export class ReportPreviewComponent implements OnInit{
     });
     this.saveReportForm.patchValue({
       reportName: this.reportNameRec,
-      destination: 'M'
+      destination: folder,
     });
   }
 
@@ -255,26 +275,42 @@ export class ReportPreviewComponent implements OnInit{
    * @param event HTML event
    */
   selectChart(event) {
-    const formChartType = event.target.value;
-    const selectedChartType = this.chartTypes.filter((item) => item.name === formChartType)[0];
+    const type = event.target.value;
+    const selectedChartType = this.chartTypes.filter((item) => item.name === type)[0];
+    const chartToAdd: Chart = {
+      backgroundColor: '',
+      borderColor: '',
+      chartReportId: 0,
+      colorScheme: 0,
+      evenColor: '',
+      evenOddAppliesTo: '',
+      length: 0,
+      name: '',
+      oddColor: '',
+      order: 0,
+      type,
+      width: 0
+    }
 
-    const isIndexPresent = this.displayChartTypes.indexOf(selectedChartType.name);
+    // const isIndexPresent = this.displayChartTypes.indexOf(selectedChartType.name);
+    const isIndexPresent = this.displayChartTypes.findIndex((item) => item.type === type);
+    log.info(`formChartType >>> `, type, selectedChartType, chartToAdd, isIndexPresent)
 
     if(isIndexPresent !== -1) {
       this.displayChartTypes.splice(isIndexPresent, 1);
     } else {
-
       if(selectedChartType.name === 'table') {
-        this.displayChartTypes.unshift(selectedChartType.name); // always set table as the first element of the array
+        this.displayChartTypes.unshift(chartToAdd); // always set table as the first element of the array
       } else {
-        this.displayChartTypes.push(selectedChartType.name);
+        this.displayChartTypes.push(chartToAdd);
       }
 
     }
-    this.chartType = this.displayChartTypes[this.displayChartTypes.length-1];
+    log.info('display chart types >>> ', this.displayChartTypes);
+
+    this.chartType = (this.displayChartTypes[this.displayChartTypes.length-1]).type;
     this.styleType = this.chartType;
 
-    // @ts-ignore
     if (this.chartType === 'table') {
       this.shouldShowTable = true;
     } else {
@@ -480,25 +516,24 @@ export class ReportPreviewComponent implements OnInit{
 
     let charts: Chart[] = [];
 
-    this.displayChartTypes.forEach((chartType) => {
-
-      const colorSchemeId = this.colorScheme[chartType]?.id;
-
-      const chart: Chart = {
-        backgroundColor: "",
-        borderColor: "",
-        chartReportId: 0,
-        colorScheme: colorSchemeId,
-        evenColor: "",
-        evenOddAppliesTo: "",
-        // id: 0, // 16685487
-        length: 0,
-        name: "",
-        oddColor: "",
-        order: 0,
-        type: chartType,
-        width: 0
-      };
+    this.displayChartTypes.forEach((chart) => {
+      const colorSchemeId = this.colorScheme[chart?.type]?.id || 0;
+      chart.colorScheme = colorSchemeId;
+      // const chart: Chart = {
+      //   backgroundColor: "",
+      //   borderColor: "",
+      //   chartReportId: 0,
+      //   colorScheme: colorSchemeId,
+      //   evenColor: "",
+      //   evenOddAppliesTo: "",
+      //   // id: 0, // 16685487
+      //   length: 0,
+      //   name: "",
+      //   oddColor: "",
+      //   order: 0,
+      //   type: chartType,
+      //   width: 0
+      // };
       charts.push(chart)
     })
 
@@ -511,7 +546,7 @@ export class ReportPreviewComponent implements OnInit{
       dimensions: JSON.stringify(dimensionsToSave),
       filter: JSON.stringify(this.filters),
       folder: formValues.destination,
-      // id: 0,
+      id: null,
       length: 0,
       measures: JSON.stringify(measuresToSave),
       name: formValues.reportName,

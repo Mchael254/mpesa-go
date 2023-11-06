@@ -49,17 +49,17 @@ export class ReportManagementComponent implements OnInit{
    * @returns void
    */
   getReports(): void {
-    this.reports = null;
+    this.reports = { content: []};
     this.reportServiceV2.getReports()
     .pipe(take(1))
     .subscribe({
-      next: (res) => { 
+      next: (res) => {
         this.reports = res;
         this.totalRecords = res.totalElements;
         // log.info(`reports >>> `, res);
         this.shouldShowTable = true;
       },
-      error: (e) => { 
+      error: (e) => {
         log.debug(`error: `, e);
         this.shouldShowTable = true;
       }
