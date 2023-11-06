@@ -58,6 +58,8 @@ import { DownloadModalComponent } from './components/download-modal/download-mod
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CountryService } from './services/setups/country/country.service';
+import { TabMenuModule } from 'primeng/tabmenu';
+
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
@@ -161,35 +163,36 @@ const SERVICES = [
         DropdownModule,
         HttpClientModule
     ],
-  exports: [
-    ErrorComponent,
-    HideMessageDirective,
-    NotificationsComponent,
-    LoaderComponent,
-    FileExtensionPipe,
-    DocViewerComponent,
-    OtpComponent,
-    DynamicTableComponent,
-    CopyrightFooterComponent,
-    DynamicChartComponent,
-    SpinnerComponent,
-    DynamicFormComponent,
-    DynamicBreadcrumbComponent,
-    StepperComponent,
-    DynamicSimpleModalComponent,
-    DynamicFormModalComponent,
-    NgxSpinnerModule,
-    DynamicSetupSearchListScreenComponent,
-    TranslateModule,
-    DynamicSetupWizardWelcomeScreenComponent,
-    ReactiveFormsModule,
-    CustomFilterPipe,
-    SafeResourceUrlPipe,
-    ShareModalComponent,
-    DownloadModalComponent,
-    CalendarModule,
-    TableModule,
-    DropdownModule
+    exports: [
+        ErrorComponent,
+        HideMessageDirective,
+        NotificationsComponent,
+        LoaderComponent,
+        FileExtensionPipe,
+        DocViewerComponent,
+        OtpComponent,
+        DynamicTableComponent,
+        CopyrightFooterComponent,
+        DynamicChartComponent,
+        SpinnerComponent,
+        DynamicFormComponent,
+        DynamicBreadcrumbComponent,
+        StepperComponent,
+        DynamicSimpleModalComponent,
+        DynamicFormModalComponent,
+        NgxSpinnerModule,
+        DynamicSetupSearchListScreenComponent,
+        TranslateModule,
+        DynamicSetupWizardWelcomeScreenComponent,
+        ReactiveFormsModule,
+        CustomFilterPipe,
+        SafeResourceUrlPipe,
+        CalendarModule,
+        TableModule,
+        DropdownModule,
+        TabMenuModule,
+        ShareModalComponent,
+        DownloadModalComponent
 
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
