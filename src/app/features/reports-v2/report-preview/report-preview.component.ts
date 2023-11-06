@@ -244,6 +244,7 @@ export class ReportPreviewComponent implements OnInit{
     });
     this.saveReportForm.patchValue({
       reportName: this.reportNameRec,
+      dashboard: this.reportParams.dashboardId,
       destination: folder,
     });
   }
