@@ -4,6 +4,7 @@ import {AppConfigService} from '../../../../core/config/app-config-service'
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
+import { quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,14 @@ import { QuotationsDTO } from '../../data/quotations-dto';
 export class QuotationsService {
 
   baseUrl = this.appConfig.config.contextPath.gis_services;
-  setupsbaseurl = "setups/api/v1"
+  setupsbaseurl = "setups/api/v1";
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+
+    })
+  }
 
   constructor(
     private http: HttpClient,
@@ -88,4 +96,35 @@ export class QuotationsService {
       catchError(this.errorHandl)
     ) 
   }
+   createQuotation(data:quotationDTO,user){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation?user=${user}`, JSON.stringify(data),this.httpOptions)
+      
+  }
+  createQuotationRisk(quotationCode ,data:quotationRisk[]){
+    console.log(JSON.stringify(data),"Data from the service")
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),this.httpOptions)
+  }
+  getRiskSection(quotationRiskCode):Observable<riskSection[]>{
+    return this.http.get<riskSection[]>(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`)
+
+  }
+  createRiskSection(quotationRiskCode ,data:riskSection[]){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+
+  }
+  updateRiskSection(quotationRiskCode ,data:riskSection[]){
+    return this.http.put(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+
+  }
+  getClientQuotations(quotationNo){
+    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation/view?quotationNo=${quotationNo}`)
+  }
+  // computePremium(quotationCode) {
+  //   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium?quotationCode=${quotationCode}`, {});
+  // }
+  computePremium(quotationCode) {
+    const params = new HttpParams().set('quotationCode', quotationCode);
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`, null);
+  }
+  
 }
