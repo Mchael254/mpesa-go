@@ -561,7 +561,7 @@ export interface Subclasses{
     claimReviewDays: String,
     claimScreenCode: String,
     classCode: String,
-    code: String,
+    code: number,
     declarationPenaltyPercentage: String,
     description: String,
     doesDisabilityScaleApply: String,

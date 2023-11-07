@@ -87,7 +87,11 @@ border: 1px solid #00529B;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
+    /* text-align: center; */
 }
+/* ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    text-align: center;
+} */
 #closeBtn{
     font-size: 15px;
 }

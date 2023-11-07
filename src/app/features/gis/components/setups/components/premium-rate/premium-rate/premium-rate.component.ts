@@ -55,7 +55,6 @@ export class PremiumRateComponent implements OnInit {
   showDeleteCover:boolean = false;
   showcover:boolean = false;
   showButtons: boolean = true;
-  // isDisabled: boolean = true; 
 
 
 
@@ -95,7 +94,6 @@ export class PremiumRateComponent implements OnInit {
     return this.subclassService.getAllSubclasses().subscribe(data=>{
       this.subClassList=data;
       this.filteredSubclass=this.subClassList;
-      // log.debug(this.subClassList,"Subclass List")
       this.spinner.hide();
 
       this.cdr.detectChanges();
@@ -114,11 +112,7 @@ export class PremiumRateComponent implements OnInit {
     });
     this.loadAllSections(code);
     this.selectedSubClassPeril=code
-    // log.debug(this.selectedSubClassPeril,"this is the subclassPerilCode")
-    this.loadAllBinders(code);
-    // this.selectedBinder=code;
-    // this.loadAllPremiums(code);
-    
+    this.loadAllBinders();
   }
   /**
  * Filters the list of subclasses based on a search input.
@@ -141,7 +135,6 @@ export class PremiumRateComponent implements OnInit {
     return this.subclassService.getSubclassSectionBySCode(code).subscribe(data=>{
       this.sectionList=data;
       this.filteredSection=this.sectionList;
-      // log.debug(this.sectionList)
       this.cdr.detectChanges();
     })
   }
@@ -177,12 +170,22 @@ export class PremiumRateComponent implements OnInit {
  *
  * @param code - The subclass code for which binders are loaded.
  */
-  loadAllBinders(code:any){
-    this.binderService.getAllBinders().subscribe(data=>{
+  // loadAllBinders(code:any){
+  //   this.binderService.getAllBinders().subscribe(data=>{
+  //     this.binderList=data;
+  //     this.binderListDetails = this.binderList._embedded.binder_dto_list;
+  //     this.selectedBinderList=this.binderListDetails.filter(binder=>binder.sub_class_code === this.selectedSubClassPeril);
+  //    log.debug("SELECTED BINDER:",this.selectedBinderList)
+  //     this.cdr.detectChanges();
+
+  //   })
+  // }
+  loadAllBinders(){
+    this.binderService.getAllBindersQuick(this.selectedSubClassPeril).subscribe(data=>{
       this.binderList=data;
       this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      this.selectedBinderList=this.binderListDetails.filter(binder=>binder.sub_class_code === code);
-     
+      this.selectedBinderList=this.binderListDetails.filter(binder=>binder.sub_class_code === this.selectedSubClassPeril);
+     log.debug("SELECTED BINDER:",this.binderListDetails)
       this.cdr.detectChanges();
 
     })
@@ -217,12 +220,9 @@ export class PremiumRateComponent implements OnInit {
  */
   loadAllPremiums( binderCode:any, subclassCode:any){
    let sectionCode =  this.selectedSection.sectionCode 
-    // log.debug(sectionCode,binderCode,subclassCode, "The code from get all premiums")
     this.service.getAllPremiums(sectionCode, binderCode, subclassCode).subscribe(data=>{
       this.premiumList=data;
-      // log.debug(this.premiumList,"premium List")
       this.selectedPremuimList=this.premiumList.filter(premium=>premium.sectionCode === sectionCode && premium.binderCode === binderCode && premium.subClassCode === subclassCode);
-      // log.debug(this.selectedPremuimList,"Premium slected")
       this.cdr.detectChanges();
 
     })
@@ -296,11 +296,9 @@ createPremium(){
   premium.isSumInsuredLimitApplicable = "Y";
   this.service.createPremium(premium).subscribe((data: {}) => {
     try {
-      // log.debug(this.premiumForm.value);
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Saved' });
       this.premiumForm.reset()
     } catch (error) {
-      // log.debug(this.premiumForm.value);
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
       this.premiumForm.reset()
     }
@@ -382,16 +380,7 @@ updatePremium(){
     }  
   })
 }
-// deletePremium(){
-//   let id = this.selectedPremiumRate.code;
-//     this.service.deletePremium(id).subscribe((data)=>{
-//       try{
-//         this.messageService.add({severity:'success', summary: 'Success', detail: 'Deleted Succesfully'});
-//       }catch(error){
-//         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
-//       }
-//     })
-// }
+
 /**
  * Deletes a premium rate based on the selected premium rate and its code.
  * If a valid premium rate with a code is selected, it sends a delete request to the 'service' to delete the premium rate.
@@ -461,17 +450,7 @@ hideEditPremiumCard() {
   this.showEditPremium = false;
   this.showButtons = true;
 }
-// showCoverCard() {
-//   this.showcover = true;
-//   this.showAddPremium = false;
-//   this.showEditPremium = false;
-//   this.showDeleteCover=false;
-//   this.showButtons = false;
-// }
-// hideCoverCard() {
-//   this.showcover = false;
-//   this.showButtons = true;
-// }
+
 
 
 }

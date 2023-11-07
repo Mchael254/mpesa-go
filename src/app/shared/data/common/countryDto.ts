@@ -1,7 +1,8 @@
 export interface CountryDto {
   id: number,
   short_description: string,
-  name: string
+  name: string,
+  mobilePrefix:number
 }
 export interface StateDto {
   id: number,
