@@ -138,14 +138,14 @@ export class CreateReportComponent implements OnInit {
         log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
 
         const metrics = res.filter((item) => item.name === 'Metrics');
-        log.info('metrics >>>>',metrics[0]);
+        // log.info('metrics >>>>',metrics[0]);
         this.metrics = metrics[0];
 
         const dimensions = res.filter((item) => item.name !== 'Metrics');
-        log.info('dimensions >>>', dimensions);
+        // log.info('dimensions >>>', dimensions);
         this.dimensions = dimensions;
 
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
       });
   }
 
@@ -164,7 +164,6 @@ export class CreateReportComponent implements OnInit {
     this.reportService.getSubjectAreas()
       .subscribe((res) => {
         this.subjectAreas = res;
-        console.log(`all Subject Areas >>>`, this.subjectAreas);
       });
   }
   /**

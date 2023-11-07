@@ -60,7 +60,7 @@ export class SaveReportModalComponent implements OnInit {
       .pipe()
       .subscribe({
         next: ((dashboards) => {
-          log.info(`dashboards >>>`, dashboards);
+          // log.info(`dashboards >>>`, dashboards);
           this.dashboards = dashboards;
         }),
         error: (e) => {
