@@ -42,7 +42,7 @@ return throwError(errorMessage);
 
 getAllSubclasses(): Observable<Subclasses[]>{
   let page = 0;
-  let size = 100;
+  let size = 1000;
 const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
