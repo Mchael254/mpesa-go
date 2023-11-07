@@ -58,7 +58,26 @@ getAllBindersQuotation():Observable<Binder>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.http.get<Binder>(`/${this.baseurl}/${this.setupsbaseurl}/binders`,{
+  return this.http.get<Binder>(`/${this.baseurl}/${this.setupsbaseurl}/binders}`,{
+    headers:headers,
+    params:params
+  }).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  )
+} 
+getAllBindersQuick(subclassCode):Observable<Binder>{
+  let page = 0;
+  let size = 1000;
+ const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  
+  })
+  const params = new HttpParams()
+  .set('page', `${page}`)
+    .set('pageSize', `${size}`)
+  return this.http.get<Binder>(`/${this.baseurl}/${this.setupsbaseurl}/binders?subclassCode=${subclassCode}`,{
     headers:headers,
     params:params
   }).pipe(

@@ -14,7 +14,7 @@
                                 <p class="summary-label">Quote number:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ps-3">37493</p>
+                                <p class="summary-value ps-3">{{quotationNo}}</p>
                             </div>
                         </div>
                     </div>
@@ -24,7 +24,7 @@
                                 <p class="summary-label">Quote date:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value">August 28 2023</p>
+                                <p class="summary-value">{{quoteDate}}</p>
                             </div>
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                 <p class="summary-label">Name of insured:</p>
                             </div>
                             <div class="col-6">
-                                <p class="summary-value">Clarice Clarice</p>
+                                <p class="summary-value">{{insuredCode}}</p>
                             </div>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                                 <p class="summary-label">Intermediary:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value">Direct</p>
+                                <p class="summary-value">{{agentDesc}}</p>
                             </div>
                         </div>
                     </div>
@@ -56,14 +56,14 @@
                                 <p class="summary-label">Period of insurance:</p>
                             </div>
                             <div class="col-6" id="value">
-                                <p class="summary-value ps-2">August 29, 2023 to August 28 2024</p>
+                                <p class="summary-value ps-2">{{coverFrom+" to "+coverTo}}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- PRODUCT DETAILS -->
                 <p class="title mt-4">Product details</p>
-                <p-table [value]="" [tableStyle]="{ 'min-width': '608px' }">
+                <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Product</th>
@@ -73,30 +73,26 @@
                             <th>Stamp duty</th>
                             <th>Premium</th>
                             <th>Total premium</th>
-
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" >
+                    <ng-template pTemplate="body" let-quotationDetails>
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
+                            <td>{{ quotationDetails.quotationProduct[0].product }}</td>
+                            <td>{{ quotationDetails.riskInformation[0].sectionsDetails[0].limitAmount | number}}</td>
+                            <td>{{ quotationDetails.taxInformation[0].amount| number }}</td>
+                            <td>{{ quotationDetails.taxInformation[2].amount | number }}</td>
+                            <td>{{ quotationDetails.taxInformation[3].amount | number }}</td>
+                            <td>{{ quotationDetails.quotationProduct[0].premium | number}}</td>
+                            <td>{{ quotationDetails.quotationProduct[0].premium | number}}</td>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                          <td colspan="1"></td>
-        
-                          <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
+                            <td colspan="7" style="padding: 20px; padding-left: 300px;" id="empty">No data to display.</td>
                         </tr>
-        
-                      </ng-template>
+                    </ng-template>
                 </p-table>
+                
                 <!-- RISK DETAILS -->
                 <p class="title mt-5">Risk details</p>
                 <p-table [value]="" [tableStyle]="{ 'min-width': '608px' }">
@@ -106,9 +102,7 @@
                             <th>Reg no.</th>
                             <th>Cover type</th>
                             <th>Options</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
+                            
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" >

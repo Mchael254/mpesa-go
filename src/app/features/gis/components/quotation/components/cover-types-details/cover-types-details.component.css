@@ -72,6 +72,22 @@ font-size: 14px;
     text-align: center;
     
 }
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+    font-size:16px ;
+    color: rgba(0, 0, 0, 0.60);
+    padding-top: 9px;
+    padding-bottom: 9px;
+    text-align: left;
+}
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding:10px;
+    color: rgba(0, 0, 0, 0.60);
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
 /* #shareRadio{
     color: red;
     font-family: Roboto;

@@ -136,6 +136,13 @@ export class ProductService {
       catchError(this.errorHandl) 
     );
   }
+  getProductSubclasses (productCode): Observable<SubclassesDTO>{
+
+    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`).pipe(
+      retry(1),
+      catchError(this.errorHandl) 
+    );
+  }
   getsubclassByCode(code: any): Observable<SubclassesDTO>{
     return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`).pipe(
       

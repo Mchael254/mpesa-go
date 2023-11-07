@@ -11,6 +11,9 @@ export class SharedQuotationsService {
   quotationDetails:any;
   quotationCode:any;
   quotationNum:any;
+  quickQuotationCode:any;
+  quickSectionList:any;
+  sumInsuredValue:any;
 
   setFormData(data: any) {
     this.formData = data;
@@ -36,6 +39,30 @@ export class SharedQuotationsService {
 
   getQuotationCode(){
     return this.quotationCode;
+  }
+  setQuickQuotationDetails(data){
+    this.quickQuotationCode = data;
+    // console.log(this.quotationCode,'Kelvine quotation Code')
+  }
+
+  getQuickQuotationDetails(){
+    return this.quickQuotationCode;
+  }
+  setQuickSectionDetails(data){
+    this.quickSectionList = data;
+    // console.log(this.quotationCode,'Kelvine quotation Code')
+  }
+
+  getQuickSectionDetails(){
+    return this.quickSectionList;
+  }
+  setSumInsured(data){
+    this.sumInsuredValue = data;
+    // console.log(this.quotationCode,'Kelvine quotation Code')
+  }
+
+  getSumInsured(){
+    return this.sumInsuredValue;
   }
 
   getQuotationNumber(){
