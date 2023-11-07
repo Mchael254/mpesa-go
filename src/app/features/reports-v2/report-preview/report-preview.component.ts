@@ -129,7 +129,7 @@ export class ReportPreviewComponent implements OnInit{
   ngOnInit(): void {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
     this.reportParams = this.sessionStorageService.getItem(`reportParams`);
-    log.info(`report params >>> `, this.reportParams, this.reportId);
+    // log.info(`report params >>> `, this.reportParams, this.reportId);
     this.criteria = this.reportParams.criteria;
     this.sort = this.reportParams.sort;
     this.reportNameRec = this.reportParams.reportNameRec;
@@ -183,7 +183,7 @@ export class ReportPreviewComponent implements OnInit{
       .pipe()
       .subscribe({
         next: ((dashboards) => {
-          log.info(`dashboards >>>`, dashboards);
+          // log.info(`dashboards >>>`, dashboards);
           this.dashboards = dashboards;
         }),
         error: (e) => {
@@ -295,7 +295,7 @@ export class ReportPreviewComponent implements OnInit{
 
     // const isIndexPresent = this.displayChartTypes.indexOf(selectedChartType.name);
     const isIndexPresent = this.displayChartTypes.findIndex((item) => item.type === type);
-    log.info(`formChartType >>> `, type, selectedChartType, chartToAdd, isIndexPresent)
+    // log.info(`formChartType >>> `, type, selectedChartType, chartToAdd, isIndexPresent)
 
     if(isIndexPresent !== -1) {
       this.displayChartTypes.splice(isIndexPresent, 1);
@@ -307,7 +307,7 @@ export class ReportPreviewComponent implements OnInit{
       }
 
     }
-    log.info('display chart types >>> ', this.displayChartTypes);
+    // log.info('display chart types >>> ', this.displayChartTypes);
 
     this.chartType = (this.displayChartTypes[this.displayChartTypes.length-1]).type;
     this.styleType = this.chartType;
@@ -335,7 +335,7 @@ export class ReportPreviewComponent implements OnInit{
    */
   showStyles(): void {
     this.shouldShowStyles = !this.shouldShowStyles;
-    log.info(`should show styles >>> `, this.shouldShowStyles);
+    // log.info(`should show styles >>> `, this.shouldShowStyles);
   }
 
   /**
@@ -423,6 +423,7 @@ export class ReportPreviewComponent implements OnInit{
 
     this.cubejsApi.load(query).then(resultSet => {
       // this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
+      log.info(`resultSet >>>`, resultSet);
       const chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
       const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
       const reportData = resultSet.series().map(s => s.series.map(r => r.value));
@@ -513,7 +514,7 @@ export class ReportPreviewComponent implements OnInit{
     const formValues = this.saveReportForm.getRawValue();
     const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
-    log.info(`formValues >>> `, formValues)
+    // log.info(`formValues >>> `, formValues)
 
     let charts: Chart[] = [];
 
@@ -555,7 +556,7 @@ export class ReportPreviewComponent implements OnInit{
       width: 0
     }
 
-    log.info(`report to save >>> `, report, this.reportId);
+    // log.info(`report to save >>> `, report, this.reportId);
 
     if(isNaN(this.reportId)) {
       this.createReport(report);
@@ -573,7 +574,7 @@ export class ReportPreviewComponent implements OnInit{
         next: (res) => {
           this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
 
-          if ((report.dashboardId).toString() === '') {
+          if ((report.dashboardId)?.toString() === '' || report.dashboardId === undefined) {
             this.router.navigate([`/home/reportsv2/report-management`])
           } else {
             this.router.navigate([`/home/reportsv2/list-report`],
