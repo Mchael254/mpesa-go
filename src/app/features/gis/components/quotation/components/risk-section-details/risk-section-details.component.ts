@@ -40,6 +40,11 @@ export class RiskSectionDetailsComponent {
   selectedClientList:ClientDTO[];
 
   subClassList:Subclass[];
+  allSubclassList:Subclasses[]
+  // filteredSubclass:Subclass[];
+  // selectedSubclassCode:any;
+  allMatchingSubclasses=[];
+
   subclassCoverType:any;
   coverTypeCode:any;
   filteredSubclass:Subclass[];
@@ -54,9 +59,9 @@ export class RiskSectionDetailsComponent {
   productList:Products;
   description:any;
 
-  binderList:Binders[]=[];
-  // binderListDetails:Binders[];
-  selectedBinderList:Binders[];
+  binderList:any;
+  binderListDetails:any;
+  selectedBinderList:any;
   selectedBinderCode:any;
 
   selectedDates: Date[]=[];
@@ -84,6 +89,9 @@ export class RiskSectionDetailsComponent {
   checkedSectionType:any;
   sectionArray:any;
   selectedSection:any;
+
+  isFromDateSelected = false;
+  isToDateSelected = false;
   constructor(
     private router: Router,
     private messageService:MessageService,
@@ -107,20 +115,22 @@ export class RiskSectionDetailsComponent {
     public isThirdDetailsOpen = false;
  
     ngOnInit(): void {
+
       this.formData = this.sharedService.getQuotationFormDetails();
       this.clientFormData=this.sharedService.getFormData();
       this.quotationCode=this.sharedService.getQuotationCode();
 
-      log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:")
-      log.debug(this.formData ,"Form Data")
-      log.debug(this.clientFormData ,"CLIENT Form Data")
+      log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
+      log.debug(this.formData ,"Form Data");
+      log.debug(this.clientFormData ,"CLIENT Form Data");
 
 
-      log.debug(this.formData ,"Form Data")
-    
-      this.loadFormData();
+      log.debug(this.formData ,"Form Data");
+      this.loadAllSubclass();
+
+      // this.loadFormData();
       this.createRiskDetailsForm();
-      this.createSectionDetailsForm();     
+      this.createSectionDetailsForm();  
   }
   /** 
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
@@ -151,20 +161,54 @@ export class RiskSectionDetailsComponent {
     this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
   }
 
+  showSelectFromDateMessage() {
+    if (!this.isFromDateSelected) {
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover From" date.' });
+    }
+  }
 
-  
- /**
+  showSelectToDateMessage() {
+    if (!this.isFromDateSelected) {
+      this.isFromDateSelected = true;
+      this.messageService.clear();
+      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover To" date.' });
+    } else if (!this.isToDateSelected) {
+      this.isToDateSelected = true;
+      this.messageService.clear();
+    }
+  }
+   /**
  * Fetches all subclass data from the subclass service,
  */
-  // loadAllSubclass(){
-  //   return this.subclassService.getAllSubclasses().subscribe(data=>{
-  //     this.subClassList=data;
-  //     log.debug(this.subClassList,"Subclass List")
-  //     this.cdr.detectChanges();
+   loadAllSubclass(){
+    return this.subclassService.getAllSubclasses().subscribe(data=>{
+      this.allSubclassList=data;
+      log.debug(this.allSubclassList," from the service All Subclass List");
+      this.cdr.detectChanges();
+      this.loadFormData()
+    })
+  }
+  /** 
+ * Loads form data from a shared quotation service.
+ * Retrieves and assigns various form-related details and initiates related data requests.
+ */
+  loadFormData(){
 
-  //   })
-  // }
+    log.debug(this.sharedService.getQuotationFormDetails(),"Form List")
+    this.selectProductCode=this.formData.productCode;
+    this.insuredCode=this.formData.clientCode;
+    this.town=this.formData.clientCode
+    log.debug( this.selectProductCode,"Selected Product Code")
+    this.getProductByCode();
+    this.getProductSubclass(this.selectProductCode);
+    // this.getSubclasses();
+    
+    this.getClient();
+    
+  }
 
+  
+ 
    /**
  * Retrieves product subclasses for a specific product.
  *
@@ -174,14 +218,33 @@ export class RiskSectionDetailsComponent {
  * @param productCode - The code of the product for which subclasses are to be retrieved. *
  * @returns void
  */
-   getSubclasses() {
-    this.gisService.getASubclasses().subscribe(data => {
-      this.subClassList = data._embedded.product_subclass_dto_list
-      this.filteredSubclass = this.subClassList.filter(prod => prod.product_code == this.selectProductCode)
-      log.debug(this.filteredSubclass, 'Selected Product code Subclass')
+  //  getSubclasses() {
+  //   this.gisService.getASubclasses().subscribe(data => {
+  //     this.subClassList = data._embedded.product_subclass_dto_list
+  //     this.filteredSubclass = this.subClassList.filter(prod => prod.product_code == this.selectProductCode)
+  //     log.debug(this.filteredSubclass, 'Selected Product code Subclass')
+  //     this.cdr.detectChanges();
+  //   })
+  // }
+  
+  getProductSubclass(code: number) {
+    this.gisService.getProductSubclasses(code).subscribe(data => {
+      this.subClassList = data._embedded.product_subclass_dto_list;
+      log.debug(this.subClassList, 'Product Subclass List');
+
+
+      this.subClassList.forEach(element => {
+        const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
+        this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
+      });
+  
+      log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
+  
+  
       this.cdr.detectChanges();
-    })
+    });
   }
+ 
  /** 
  * Handles subclass selection.
  * Updates the selected subclass code, logs the selection, and loads related data.
@@ -195,7 +258,7 @@ export class RiskSectionDetailsComponent {
     log.debug(this.selectedSubclassCode,'Sekected Subclass Code')
 
     this.loadCovertypeBySubclassCode(selectedValue);
-    this.loadAllBinders(selectedValue);
+    this.loadAllBinders();
     this.loadSubclassClauses(selectedValue);
   }
 
@@ -213,21 +276,7 @@ export class RiskSectionDetailsComponent {
         this.cdr.detectChanges();
       })
     }
-    /** 
- * Loads form data from a shared quotation service.
- * Retrieves and assigns various form-related details and initiates related data requests.
- */
-  loadFormData(){
-    log.debug(this.sharedService.getQuotationFormDetails(),"Form List")
-    this.selectProductCode=this.formData.productCode;
-    this.insuredCode=this.formData.clientCode;
-    this.town=this.formData.clientCode
-    log.debug( this.selectProductCode,"Selected Product Code")
-    this.getProductByCode();
-    this.getSubclasses();
-    this.getClient();
-    
-  }
+  
   /**
  * Fetches client data and updates properties.
  * Retrieves client details via an HTTP request and updates properties
@@ -294,17 +343,27 @@ export class RiskSectionDetailsComponent {
  *
  * @param code - The subclass code for which binders are loaded.
  */
-   loadAllBinders(code:any){
-    this.binderService.getAllBindersQuotation().subscribe(data=>{
-      this.binderList=data._embedded.binder_dto_list;
-      this.selectedBinderList=this.binderList.filter(binder=>binder.sub_class_code == code);
-      this.selectedBinderCode=this.selectedBinderList[0].code;
-     log.debug('Filtered Binder', this.selectedBinderList);
-     log.debug('Filtered Binder code', this.selectedBinderCode);
+  //  loadAllBinders(code:any){
+  //   this.binderService.getAllBindersQuotation().subscribe(data=>{
+  //     this.binderList=data._embedded.binder_dto_list;
+  //     this.selectedBinderList=this.binderList.filter(binder=>binder.sub_class_code == code);
+  //     this.selectedBinderCode=this.selectedBinderList[0].code;
+  //    log.debug('Filtered Binder', this.selectedBinderList);
+  //    log.debug('Filtered Binder code', this.selectedBinderCode);
 
-      this.cdr.detectChanges();
+  //     this.cdr.detectChanges();
 
-    })
+  //   })
+  // }
+  loadAllBinders() {
+    this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
+       this.binderList=data;
+        this.binderListDetails = this.binderList._embedded.binder_dto_list;
+        console.log("All Binders Details:", this.binderListDetails); // Debugging
+        this.selectedBinderCode=this.binderListDetails[0].code;
+
+        this.cdr.detectChanges();
+    });
   }
   
   // getSelectedDates() {

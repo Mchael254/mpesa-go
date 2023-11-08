@@ -55,8 +55,8 @@
                   <div class="col-4">
                       <label for="minmax-buttons" id="quote-label" class="required">Subclass</label>
                       <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event)" formControlName="subClassCode" >
-                        <option *ngFor="let subclass of filteredSubclass" [value]="subclass.sub_class_code">{{subclass.sub_class_code}}</option>
-                    </select>
+                        <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">{{subclass.description}}</option>
+                      </select>
                   </div>
 
               </div>
@@ -69,23 +69,23 @@
                   </div>
                   <div class="col-4">
                       <label for="minmax-buttons" id="quote-label"  class="required">Premium band</label>
-                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" >
-                          <option *ngFor="let binder of selectedBinderList" [value]="binder.code">
+                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"  >
+                          <option *ngFor="let binder of binderListDetails" [value]="binder.code">
                             {{binder.binder_name}}
                           </option>
                       </select>    
                   </div>
                   <div class="col-4">
                     <label for="minmax-buttons" id="quote-label">Cover Date</label>
-                    <!-- <p-calendar
-                    selectionMode="range"
-                    [readonlyInput]="true"
-                    dateFormat="dd.mm.yy"
-                    id="cover-date"
-                    [(ngModel)]="selectedDates"
-                    
-                  ></p-calendar> -->
-                  <p-calendar selectionMode="range" [readonlyInput]="true" dateFormat="dd.mm.yy" formControlName="dateRange"></p-calendar>
+                    <p-calendar
+                            selectionMode="range"
+                            [readonlyInput]="true"
+                            formControlName="dateRange"
+                            dateFormat="dd.mm.yy"
+                            (click)="showSelectFromDateMessage()"
+                            (onSelect)="showSelectToDateMessage()"
+                          ></p-calendar> 
+                  <!-- <p-calendar selectionMode="range" [readonlyInput]="true" dateFormat="dd.mm.yy" formControlName="dateRange"></p-calendar> -->
                   
                   </div>
               </div>
@@ -1035,7 +1035,7 @@
               </div>
             </div>
           </div>
-          <p-table  [value]="sectionArray" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single" [(selection)]="selectedSection" dataKey="code" >
+          <!-- <p-table  [value]="sectionArray" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single" [(selection)]="selectedSection" dataKey="code" >
             <ng-template pTemplate="header">
                 <tr>
                     <th>Group</th>
@@ -1070,8 +1070,80 @@
                 </tr>
 
               </ng-template>
+        </p-table> -->
+        <!-- <p-table [value]="sectionArray" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row"> -->
+          <p-table [value]="sectionArray" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row"   styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Group</th>
+                    <th>Row Num</th>
+                    <th>Code</th>
+                    <th>Short Description</th>
+                    <th>Description</th>
+                    <th>Limit Amount</th>
+                    <th>Premium Rate</th>
+                    <th>Rate Type</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
+                <tr [pEditableRow]="sectionArray">
+                    <td>
+                        {{sectionArray.calcGroup}}
+                    </td>
+                    <td>
+                        {{sectionArray.rowNumber}}
+                    </td>
+                    <td>
+                        {{sectionArray.code}}
+                    </td>
+                    <td>
+                        {{sectionArray.sectionShortDescription}}
+                    </td>
+                    <td>
+                        {{sectionArray.description}}
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.limitAmount">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.limitAmount}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.premiumRate">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.premiumRate}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.rateType">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.rateType}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"  class="p-button-rounded p-button-text"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="updateRiskSection()" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button>
+                    </td>
+                </tr>
+            </ng-template>
         </p-table>
-          </div>
+        
+          
+      </div>
         </div>
       </div>
        <!-- Risk Clauses card -->
