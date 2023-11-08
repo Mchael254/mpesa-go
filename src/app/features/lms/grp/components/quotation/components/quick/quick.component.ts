@@ -134,6 +134,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   getClientList() {
     this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+      console.log("clients", data)
       this.clientList = data.content.map(client => ({
         label: `${client.firstName} ${client.lastName}`,
         value: client.id
@@ -161,7 +162,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.product_service.getListOfGroupProduct().subscribe((products) => {
+    this.product_service.getListOfProduct().subscribe((products) => {
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
         value: product.code
