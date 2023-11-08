@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
@@ -15,6 +15,7 @@ import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
+import { Table } from 'primeng/table';
 @Component({
   selector: 'app-quotations-client-details',
   templateUrl: './quotations-client-details.component.html',
@@ -39,6 +40,8 @@ export class QuotationsClientDetailsComponent {
   clientTypeName: string
   
   uploadFile:any;
+  @ViewChild('dt1') dt1: Table | undefined;
+
     constructor(
     public clientService:ClientService,
     public countryService:CountryService,
@@ -131,7 +134,9 @@ export class QuotationsClientDetailsComponent {
       
     })
   }
-
+  applyFilterGlobal($event, stringVal) {
+    this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
 
   createForm(){
     this.clientForm = this.fb.group({

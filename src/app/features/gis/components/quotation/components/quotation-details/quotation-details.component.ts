@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
@@ -13,12 +13,24 @@ import { Router } from '@angular/router';
 import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { Modal } from 'bootstrap';
+import { introducersDTO } from '../../data/introducersDTO';
+import { Logger } from 'src/app/shared/services/logger/logger.service';
+import { AccountContact } from 'src/app/shared/data/account-contact';
+import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
+import { WebAdmin } from 'src/app/shared/data/web-admin';
+import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
+import { Table } from 'primeng/table';
+import { HttpErrorResponse } from '@angular/common/http';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+
+const log = new Logger('QuotationSummaryComponent');
 @Component({
   selector: 'app-quotation-details',
   templateUrl: './quotation-details.component.html',
   styleUrls: ['./quotation-details.component.css']
 })
 export class QuotationDetailsComponent {
+  @ViewChild(Table) private dataTable: Table;
   steps = quoteStepsData;
   branch:OrganizationBranchDto[];
   currency:CurrencyDTO[]
@@ -36,7 +48,13 @@ export class QuotationDetailsComponent {
   isChecked: boolean = false;
   show:boolean=true;
   showProduct:boolean=true;
-  quotationNum:string
+  quotationNum:string;
+  introducers:any;
+  productSubclassList:any
+  productDetails:any
+  userDetails: AccountContact | ClientAccountContact | WebAdmin;
+  selected:any;
+
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -47,7 +65,10 @@ export class QuotationDetailsComponent {
     public fb:FormBuilder,
     private router: Router,
     public  agentService:IntermediaryService,
-    public quotationService:QuotationsService
+    public  quotationService:QuotationsService,
+    public  productSubclass:ProductSubclassService,   
+    private globalMessagingService: GlobalMessagingService,
+
   ){}
 
   ngOnInit(): void {
@@ -60,8 +81,9 @@ export class QuotationDetailsComponent {
     this.createQuotationForm();
     this.getAgents()
     this.quotationForm.controls['clientCode'].setValue(this.formData.id);
+    this.quotationForm.controls['branchCode'].setValue(this.formData.branchCode);
     this.quotationForm.controls['clientType'].setValue(this.formData.clientTypeId);
-
+    this.getIntroducers();
   }
 
   getbranch(){
@@ -69,24 +91,71 @@ export class QuotationDetailsComponent {
       this.branch = data
     })
   }
-  getCurrency(){
+  getCurrency(){  
     this.bankService.getCurrencies().subscribe(data=>{
       this.currency = data
     })
   }
+  getCurrencyCode(){
+    this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
+  console.log(this.quotationForm.value)
+  }
   
   getProductClauses(){
+    
+
     this.clauseService.getClauses().subscribe(data=>{
       const clauseList = data
       this.clauses = clauseList._embedded.clause_dto_list.slice(0,10)
-     
+    
     })
 
   }
-  getProduct(){
-    this.productService.getAllProducts().subscribe(data=>{
-      this.products = data
+
+  getProductClause(e){
+    this.productService.getProductByCode(e.target.value).subscribe(res=>{
+      this.productDetails = res
+     console.log(this.productDetails.code)
+     this.productService.getASubclasses().subscribe(data=>{
+      
+      const Product = data
+      this.productSubclassList = Product._embedded.product_subclass_dto_list
+      
+      
+      this.productSubclassList.forEach(el => {
+        if(el.product_code == this.productDetails.code){
+          console.log(el.sub_class_code)
+          // This is where I call the subclass clause endpoint 
+        }
+        
+      });
+     })
     })
+  }
+  getProduct(){
+    this.productService.getAllProducts().subscribe(res=>{
+      const ProdList = res
+      this.products = ProdList
+     
+      this.products.forEach(element => {
+        this.productService.getASubclasses().subscribe(data=>{
+          const Product = data
+          this.productSubclassList = Product._embedded.product_subclass_dto_list
+          
+          this.productSubclassList.forEach(el => {
+            if(el.product_code == element.code){
+              
+            }
+            
+          });
+       
+          
+        })
+        
+      });
+     
+    })
+  
   }
   getuser(){
    this.user = this.authService.getCurrentUserName()
@@ -120,18 +189,17 @@ export class QuotationDetailsComponent {
       comments:[''],
       internalComments:[''],
       introducerCode:[''],
-      dateRange:['']
+      dateRange:[''],
+      RFQDate:[''],
+      expiryDate:['']
     })
   }
 
-test(){
-  console.log(this.quotationForm.value.dateRange)
 
-}
   
   saveQuotationDetails(){
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    
+   
     if(this.quotationForm.value.multiUser == 'Y'){
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data;
@@ -158,13 +226,9 @@ test(){
     this.router.navigate(['/home/gis/quotation/risk-section-details']);
     })
     
-    }
-    
-    
-    }
-    
-    
-    }
+    } 
+  }  
+}
 
   getAgents(){
     this.agentService.getAgents().subscribe(data=>{
@@ -185,6 +249,7 @@ test(){
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.withEffectiveFromDate
     const fromTo = this.quotationForm.value.withEffectiveToDate
+    this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
       this.quotationsList = data
       this.quotation = this.quotationsList.content
@@ -201,6 +266,47 @@ test(){
 
     
   }
+  getIntroducers(){
+    this.quotationService.getIntroducers().subscribe(res=>{
+      this.introducers = res
+    })
+  }
 
+  getProductSubclass(){
+  }
+ 
+  editRow(details,code){
+    this.clauseService.updateClause(details,code).subscribe(res=>{
+      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated' );
+      },(error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+       
+      }
+    )
+  }
+updateCoverToDate(e) {
+    
+    const coverFromDate= e.target.value
+    if (coverFromDate) {
+      const selectedDate = new Date(coverFromDate);
+      selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+      const coverToDate = selectedDate.toISOString().split('T')[0];
+      this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
 
+     
+    } 
+  }
+
+updateQuotationExpiryDate(e){
+  const RFQDate = e.target.value
+  if (RFQDate) {
+    const selectedDate = new Date(RFQDate);
+    selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+    const expiryDate = selectedDate.toISOString().split('T')[0];
+    this.quotationForm.controls['expiryDate'].setValue(expiryDate);
+
+    log.debug(expiryDate)
+  } 
+}
 }
