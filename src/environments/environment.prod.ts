@@ -17,6 +17,6 @@ export const environment = {
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020'],
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
   ]),
-  TENANT_ID: API_TENANT_ID.LIFECO,
+  TENANT_ID: API_TENANT_ID.MUTUAL,
 
 };
