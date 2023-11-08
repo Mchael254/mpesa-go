@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ReportServiceV2 } from '../services/report.service';
 import {Logger} from "../../../shared/services";
-import { take } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ReportService } from '../../reports/services/report.service';
-import { Chart, ReportV2 } from 'src/app/shared/data/reports/report';
+import { Chart, ReportV2 } from '../../../shared/data/reports/report';
 import { SaveReportModalComponent } from '../save-report-modal/save-report-modal.component';
 import { Router } from '@angular/router';
+import { GlobalMessagingService } from '../../../shared/services/messaging/global-messaging.service';
 
 const log = new Logger('ReportManagementComponent');
 
@@ -25,6 +26,7 @@ export class ReportManagementComponent implements OnInit{
   public first: number = 0;
   public rows: number = 10;
   public totalRecords: number;
+  public createBy$: Observable<any>;
 
 
   constructor(
@@ -32,6 +34,7 @@ export class ReportManagementComponent implements OnInit{
     private reportService: ReportService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private globalMessagingService: GlobalMessagingService
   ) {
 
   }
@@ -56,8 +59,8 @@ export class ReportManagementComponent implements OnInit{
       next: (res) => {
         this.reports = res;
         this.totalRecords = res.totalElements;
-        // log.info(`reports >>> `, res);
         this.shouldShowTable = true;
+        // log.info(`reports >>>`, res)
       },
       error: (e) => {
         log.debug(`error: `, e);
@@ -91,16 +94,9 @@ export class ReportManagementComponent implements OnInit{
     return dashboardName;
   }
 
-  getUserName(id) {
-    // return this.reportServiceV2.findUserById(id)
-    // .pipe(take(1))
-    // .subscribe({
-    //   next: (res) => {
-    //     log.info(`user >>> `, res)
-    //   },
-    //   error: (e) => { log.debug(`error: `, e) }
-    // })
-  }
+  // getUserName(id: number) {
+  //   return this.reportServiceV2.findUserById(id);
+  // }
 
   pageChange(event) {
     const page = (event.rows / event.first)
@@ -113,7 +109,7 @@ export class ReportManagementComponent implements OnInit{
       const reportToSave: ReportV2 = {
         ...report,
         folder,
-        dashboardId: 16684968,
+        dashboardId: report.dashboardId,
       };
       this.saveReport(reportToSave);
     }
@@ -130,12 +126,11 @@ export class ReportManagementComponent implements OnInit{
   }
 
   saveReport(report: ReportV2) {
-    log.info(`before >>> `, report, );
     this.reportServiceV2.updateReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          log.info(`report udpate successfully`, res);
+          // log.info(`report udpate successfully`, res);
           this.getReports();
         },
         error: (e) => {
@@ -150,29 +145,15 @@ export class ReportManagementComponent implements OnInit{
     .subscribe({
       next: (res) => {
         log.info(`report successfully deleted`);
-        this.getReports();
-        this.cdr.detectChanges();
+        this.globalMessagingService.displaySuccessMessage('success', 'Report successfully deleted')
+        this.ngOnInit();
       },
       error: (e) => {
         log.info(`delete failed >>>`, e);
+        this.globalMessagingService.displayErrorMessage('error', 'Report not deleted')
       }
     })
   }
-
-  // deleteReportCharts(id: number) {
-  //   this.reportServiceV2.deleteReportCharts(id)
-  //   .pipe(take(1))
-  //   .subscribe({
-  //     next: (res) => {
-  //       log.info(`report charts successfully deleted`, res);
-  //       this.deleteReport(id);
-  //     },
-  //     error: (e) => {
-  //       log.info(`delete failed >>>`, e);
-  //     }
-  //   })
-  // }
-
 
   selectReport(report: ReportV2) {
     this.selectedReport = report;
