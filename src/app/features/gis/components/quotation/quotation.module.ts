@@ -19,6 +19,7 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { CalendarModule } from 'primeng/calendar';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { InputTextModule } from 'primeng/inputtext'; 
 
@@ -46,7 +47,8 @@ import { InputTextModule } from 'primeng/inputtext';
     SharedModule,
     CalendarModule,
     DialogModule,
-    InputTextModule
+    InputTextModule,
+    DropdownModule
   ]
 })
 export class QuotationModule { }

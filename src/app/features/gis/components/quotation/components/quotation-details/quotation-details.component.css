@@ -43,3 +43,18 @@ line-height: normal;
     border-radius: 4px;
     
   }
+
+::ng-deep .p-dropdown{
+    height: 31px;
+    width: 360px;
+}
+::ng-deep .p-dropdown .p-dropdown-label.p-placeholder{
+padding:3px;
+
+
+}
+
+::ng-deep
+.p-dropdown .p-dropdown-label {
+    padding: 3px;
+}
