@@ -120,7 +120,7 @@
                                         <p class="label">Currency</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">KES</p>
+                                        <p class="content">{{quotationDetails.currency}}</p>
                                     </div>
                                 </div>
                               
@@ -228,7 +228,7 @@
                 <div class="card-body">
                   
                    
-                      <div class="row mb-4">
+                      <div class="row">
                         <div class="col-4">
                           <p class="sub-title">Product Details</p>
                         </div>
@@ -242,10 +242,13 @@
                         <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th>Code</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
+                                <th>Product</th>
+                                <th>Cover From</th>
+                                <th>Cover To</th>
+                                <th>Premium</th>
+                                <th>Commission</th>
+                                <th>Binder</th>
+                                <th>No Binder</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-data>
@@ -271,13 +274,37 @@
                               <p class="sub-title">Risk Details</p>
                             </div>
                             <div class="col-8 d-flex justify-content-end">
-                              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
+                              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskDetails" aria-expanded="false" aria-controls="collapseExample">
                                 <i class="fa-solid fa-chevron-down"></i>
                               </button>
                             </div>
                           </div>
                           
-                         
+                          <div class="collapse" id="riskDetails">
+                            <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Description</th>
+                                    <th>Subclass</th>
+                                    <th>Cover Type</th>
+                                    <th>SI</th>
+                                    <th>Premium</th>
+                                    <th>Comm amt</th>
+                                    <th>But Charge</th>
+                                    <th>Cover From</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-data>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </ng-template>
+                            </p-table>
+                          </div>
                           </div>
                           
                     </div>
@@ -291,12 +318,34 @@
                                   <p class="sub-title">External Claims Experience</p>
                                 </div>
                                 <div class="col-8 d-flex justify-content-end">
-                                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
+                                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#experience" aria-expanded="false" aria-controls="collapseExample">
                                     <i class="fa-solid fa-chevron-down"></i>
                                   </button>
                                 </div>
                               </div>
-                              
+                              <div class="collapse" id="experience">
+                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Cover From</th>
+                                        <th>Cover To</th>
+                                        <th>Premium</th>
+                                        <th>Commission</th>
+                                        <th>Binder</th>
+                                        <th>No Binder</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-data>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </ng-template>
+                                </p-table>
+                              </div>
                              
                               </div>
                               

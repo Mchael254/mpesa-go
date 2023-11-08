@@ -53,6 +53,8 @@ export class QuotationDetailsComponent {
   productSubclassList:any
   productDetails:any
   userDetails: AccountContact | ClientAccountContact | WebAdmin;
+  selected:any;
+
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -94,6 +96,10 @@ export class QuotationDetailsComponent {
       this.currency = data
     })
   }
+  getCurrencyCode(){
+    this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
+  console.log(this.quotationForm.value)
+  }
   
   getProductClauses(){
     
@@ -106,10 +112,24 @@ export class QuotationDetailsComponent {
 
   }
 
-  getProductClause(code){
-    this.productService.getProductByCode(code).subscribe(res=>{
+  getProductClause(e){
+    this.productService.getProductByCode(e.target.value).subscribe(res=>{
       this.productDetails = res
-     
+     console.log(this.productDetails.code)
+     this.productService.getASubclasses().subscribe(data=>{
+      
+      const Product = data
+      this.productSubclassList = Product._embedded.product_subclass_dto_list
+      
+      
+      this.productSubclassList.forEach(el => {
+        if(el.product_code == this.productDetails.code){
+          console.log(el.sub_class_code)
+          // This is where I call the subclass clause endpoint 
+        }
+        
+      });
+     })
     })
   }
   getProduct(){
@@ -179,7 +199,7 @@ export class QuotationDetailsComponent {
   
   saveQuotationDetails(){
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-    
+   
     if(this.quotationForm.value.multiUser == 'Y'){
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data;
@@ -229,6 +249,7 @@ export class QuotationDetailsComponent {
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.withEffectiveFromDate
     const fromTo = this.quotationForm.value.withEffectiveToDate
+    this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
       this.quotationsList = data
       this.quotation = this.quotationsList.content

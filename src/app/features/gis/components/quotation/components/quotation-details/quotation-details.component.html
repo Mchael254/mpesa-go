@@ -36,11 +36,22 @@
           </div>
           <div class="row mb-4">
             <div class="col-xl-4">
-                <label for=""class="quote-label">Currency<span class="required"></span></label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="currencyCode" placement="right" >
+                <label for=""class="quote-label">Currency<span class="required"></span></label><br>
+                <!-- <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="currencyCode" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of currency"  [value]="data.id">{{data.name}}</option>
-                </select> 
+                </select>  -->
+                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" placeholder="Select an option" [filter]="true" ></p-dropdown>
+<!-- 
+                <p-dropdown [options]="currency"  optionLabel="name" formControlName="currencyCode" [filter]="true" filterBy="name" [showClear]="true" placeholder="Select an option">
+                   
+                    <ng-template let-data pTemplate="item">
+                        <div class="flex align-items-center gap-2">
+                          
+                            <div>{{ data.name }}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown> -->
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Request for quote date</label>
@@ -126,7 +137,7 @@
           <div class="row mt-3 mb-3">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Product</label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="productCode" placement="right" >
+                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="productCode" (change)="getProductClause($event)" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of products" (click)="getProductClause(data.code)" [value]="data.code">{{data.description}}</option>
                 </select> 
@@ -175,16 +186,7 @@
                             <td>
                                 <p-tableCheckbox [value]="data"></p-tableCheckbox>
                             </td>
-                            <!-- <td>
-                                <p-cellEditor>
-                                    <ng-template pTemplate="input">
-                                        <input pInputText type="text" [(ngModel)]="data.heading">
-                                    </ng-template>
-                                    <ng-template pTemplate="output">
-                                        {{data.heading}}
-                                    </ng-template>
-                                </p-cellEditor>
-                            </td> -->
+                        
                             <td  style=" white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
