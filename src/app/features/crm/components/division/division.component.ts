@@ -32,6 +32,7 @@ export class DivisionComponent implements OnInit {
   public divisionBranchData: any;
   public selectedRadioValue: string | null = null;
   public selectedOrg: OrganizationDTO;
+  public selectedDivision: OrganizationDivisionDTO;
   public selectedDefaultStatus: string = 'No';
 
   public statuses = [
@@ -74,7 +75,6 @@ export class DivisionComponent implements OnInit {
 
   DivisionCreateForm() {
     this.createDivisionForm = this.fb.group({
-      organization: [''],
       shortDescription: [''],
       name: [''],
       divisionOrder: [''],
@@ -131,6 +131,10 @@ export class DivisionComponent implements OnInit {
     this.renderer.setStyle(this.confirmationModal.nativeElement, 'display', 'none');
   }
 
+  onDivisionRowSelect(division: OrganizationDivisionDTO) {
+    this.selectedDivision = division;
+  }
+
   saveDivision() {
     this.closeDivisionModal();
     const organizationFormValues = this.createDivisionForm.getRawValue();
@@ -168,21 +172,69 @@ export class DivisionComponent implements OnInit {
 
   private finalizeDivisionSave(formValues: any, isDefault: string) {
 
-    const saveOrganizationDivision: OrganizationDivisionDTO = {
-      id: null,
-      is_default_division: isDefault,
-      name: formValues.name,
-      order: formValues.divisionOrder,
-      organization_id: this.selectedOrg.id,
-      short_description: formValues.shortDescription,
-      status: formValues.divisionStatus
-    };
-    this.organizationService.createOrganizationDivision(saveOrganizationDivision)
-      .subscribe(data => { 
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Division');
-      });
     
-    this.onNext();
+
+    if (!this.selectedDivision) {
+      const saveOrganizationDivision: OrganizationDivisionDTO = {
+        id: null,
+        is_default_division: isDefault,
+        name: formValues.name,
+        order: formValues.divisionOrder,
+        organization_id: this.selectedOrg.id,
+        short_description: formValues.shortDescription,
+        status: formValues.divisionStatus
+      };
+      this.organizationService.createOrganizationDivision(saveOrganizationDivision)
+        .subscribe(data => { 
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Division');
+        });
+    }
+    else {
+      const divisionId = this.selectedDivision.id;
+
+      const saveOrganizationDivision: OrganizationDivisionDTO = {
+        id: divisionId,
+        is_default_division: isDefault,
+        name: formValues.name,
+        order: formValues.divisionOrder,
+        organization_id: this.selectedOrg.id,
+        short_description: formValues.shortDescription,
+        status: formValues.divisionStatus
+      };
+      this.organizationService.updateOrganizationDivision(divisionId, saveOrganizationDivision)
+        .subscribe(data => { 
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Division');
+        });
+    }
+  }
+
+  editDivision() {
+    if (this.selectedDivision) {
+      this.openDivisionModal();
+      this.createDivisionForm.patchValue({
+        shortDescription: this.selectedDivision.short_description,
+        name: this.selectedDivision.name,
+        divisionOrder: this.selectedDivision.order,
+        divisionStatus: this.selectedDivision.status,
+        default: this.selectedDivision.is_default_division,
+      });
+    }
+    else {
+      log.error('Error', 'No Division is selected.')
+    }
+  }
+
+  deleteDivision() {
+    if (this.selectedDivision) {
+      const divisionId = this.selectedDivision.id;
+      this.organizationService.deleteOrganizationDivision(divisionId)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Division');
+        })
+    }
+    else {
+      log.error('Error', 'No Division is Selected!');
+    }
   }
 
   onNext() {

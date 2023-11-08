@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AppConfigService } from '../../../core/config/app-config-service';
-import { ManagersDTO, OrganizationDTO, OrganizationDivisionDTO, OrganizationRegionDTO, PostOrganizationDTO, PostOrganizationRegionDto, YesNoDTO } from '../data/organization-dto';
+import {
+  BranchContactDTO, BranchDivisionDTO, ManagersDTO, OrganizationBranchDTO, OrganizationDTO,
+  OrganizationDivisionDTO, OrganizationRegionDTO, PostOrganizationDTO, PostOrganizationRegionDTO, YesNoDTO
+} from '../data/organization-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +49,7 @@ export class OrganizationService {
   uploadLogo(organizationId: number, file: File) {
     let form = new FormData;
     form.append('file', file, file.name);
-    return this.http.post<any>(`/${this.baseUrl}/setups/organizations/${organizationId}/logo`, form );
+    return this.http.post<any>(`/${this.baseUrl}/setups/organizations/${organizationId}/update-logo`, form );
   }
 
   updateOrganization(organizationId: number, data: PostOrganizationDTO): Observable<PostOrganizationDTO> {
@@ -122,13 +125,31 @@ export class OrganizationService {
       });
   }
 
-  createOrganizationRegion(data: PostOrganizationRegionDto): Observable<PostOrganizationRegionDto> {
+  createOrganizationRegion(data: PostOrganizationRegionDTO): Observable<PostOrganizationRegionDTO> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<PostOrganizationRegionDto>(`/${this.baseUrl}/setups/regions`, JSON.stringify(data),
+    return this.http.post<PostOrganizationRegionDTO>(`/${this.baseUrl}/setups/regions`, JSON.stringify(data),
       { headers: headers })
+  }
+
+  updateOrganizationRegion(regionId: number, data: PostOrganizationRegionDTO): Observable<PostOrganizationRegionDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostOrganizationRegionDTO>(`/${this.baseUrl}/setups/regions/${regionId}`,
+      data, { headers: headers })
+  }
+
+  deleteOrganizationRegion(regionId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<OrganizationDivisionDTO>(`/${this.baseUrl}/setups/regions/${regionId}`,
+      { headers: headers });
   }
 
   getRegionManagers(organizationId: number): Observable<ManagersDTO[]> {
@@ -159,5 +180,98 @@ export class OrganizationService {
         headers: headers,
         params: params
       });
+  }
+
+  getOrganizationBranch(organizationId: number, regionId: number): Observable<OrganizationBranchDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`)
+      .set('regionId', `${regionId}`)
+    return this.http.get<OrganizationBranchDTO[]>(`/${this.baseUrl}/setups/branches`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  createOrganizationBranch(data: OrganizationBranchDTO): Observable<OrganizationBranchDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<OrganizationBranchDTO>(`/${this.baseUrl}/setups/branches`, JSON.stringify(data),
+      { headers: headers })
+  }
+
+  updateOrganizationBranch(branchId: number, data: OrganizationBranchDTO): Observable<OrganizationBranchDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<OrganizationBranchDTO>(`/${this.baseUrl}/setups/branches/${branchId}`,
+      data, { headers: headers })
+  }
+
+  deleteOrganizationBranch(branchId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<OrganizationBranchDTO>(`/${this.baseUrl}/setups/branches/${branchId}`,
+      { headers: headers });
+  }
+
+  getOrganizationBranchDivision(branchId: number): Observable<BranchDivisionDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<BranchDivisionDTO[]>(`/${this.baseUrl}/setups/branches/${branchId}/divisions`,
+    {headers: headers})
+
+  }
+
+  getOrganizationBranchContact(branchId: number): Observable<BranchContactDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('branchId', `${branchId}`);
+    return this.http.get<BranchContactDTO[]>(`/${this.baseUrl}/setups/branch-contacts`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  createOrganizationBranchContact(data: BranchContactDTO): Observable<BranchContactDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<BranchContactDTO>(`/${this.baseUrl}/setups/branch-contacts`, JSON.stringify(data),
+      { headers: headers })
+  }
+
+  updateOrganizationBranchContact(branchId: number, data: BranchContactDTO): Observable<BranchContactDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<BranchContactDTO>(`/${this.baseUrl}/setups/branch-contacts/${branchId}`,
+      data, { headers: headers })
+  }
+
+  deleteOrganizationBranchContact(branchId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<BranchContactDTO>(`/${this.baseUrl}/setups/branch-contacts/${branchId}`,
+      { headers: headers });
   }
 }

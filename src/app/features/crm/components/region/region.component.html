@@ -51,8 +51,8 @@
             <div class="col-4">
               <div class="float-end">
                 <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#region"></i></span>
-                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editRegion()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteRegion()"></i></span>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-region>
-                  <tr>
+                  <tr class="custom-table" (click)="onRegionRowClick(region)">
                     <td class="body">{{ region.name }}</td>
                     <td class="body">{{ region.overrideCommissionEarned }}</td>
                     <td class="body">{{ region.managerId }}</td>
@@ -114,15 +114,15 @@
               <div class="float-end">
                 <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
                     data-bs-target="#bank"></i></span>
-                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editRegionBank()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteRegionBank()"></i></span>
               </div>
             </div>
           </div>
           <div class="row mb-5">
             <div class="col-12">
               <p-table 
-                  [value]="banksData" 
+                  [value]="bankRegionData" 
                   styleClass="p-datatable-sm" 
                   responsiveLayout="scroll" 
                   [scrollable]="true"
@@ -137,9 +137,9 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-bank>
-                  <tr>
+                  <tr class="custom-table" (click)="onRegionBankRowClick(bank)">
                     <td class="body">{{ bank.shortDescription }}</td>
-                    <td class="body">{{ bank.name }}</td>
+                    <td class="body">{{ bank.bankRegionName }}</td>
                     <td class="body">{{ bank.wef }}</td>
                     <td class="body">{{ bank.wet }}</td>
                   </tr>
@@ -240,7 +240,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="createRegionForm">
+        <form [formGroup]="createRegionBankForm">
           <div class="row">
             <div class="form-group mb-3">
               <label for="shortDescription" class="form-label">Short Description</label>
@@ -262,16 +262,19 @@
                 onblur="(this.type='text')" formControlName="wet">
             </div>
             <div class="form-group mb-3">
-              <label for="divisionOrder" class="form-label">Manager</label>
+              <label for="manager" class="form-label">Manager</label>
               <select id="manager" class="form-select  mb-1" formControlName="manager">
                 <option value="" selected>Select Manager</option>
+                <option *ngFor="let manager of regionManagersData" [value]="manager.id">
+                  {{ manager.name | titlecase }}
+                </option>
               </select>
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveRegion()">Save Details</button>
+        <button type="button" class="btn btn-primary" (click)="saveRegionBank()">Save Details</button>
       </div>
     </div>
   </div>
