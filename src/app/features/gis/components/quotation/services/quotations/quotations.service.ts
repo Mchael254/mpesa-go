@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection } from '../../data/quotationsDTO';
 import { Observable } from 'rxjs';
+import { introducersDTO } from '../../data/introducersDTO';
 @Injectable({
   providedIn: 'root'
 })
@@ -52,6 +53,18 @@ export class QuotationsService {
     return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation/view?quotationNo=${quotationNo}`)
   }
   
+  getIntroducers(): Observable<introducersDTO>{
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      });
+      return this.http.get<introducersDTO>(`/${this.baseUrl}/setups/api/v1/introducers`, {headers:headers});
+    
+  }
+
+  computePremium(quotationCode){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
+  }
  
 }
 

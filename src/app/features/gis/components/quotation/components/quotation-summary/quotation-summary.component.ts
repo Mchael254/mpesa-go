@@ -15,6 +15,7 @@ const log = new Logger('QuotationSummaryComponent');
 export class QuotationSummaryComponent {
   steps = quoteStepsData;
   quotationCode:any
+  quotationNumber:any;
   quotationDetails:any
   moreDetails:any 
   clientDetails:any
@@ -25,6 +26,7 @@ export class QuotationSummaryComponent {
   ){}
   ngOnInit(): void {
     this.quotationCode=this.sharedService.getQuotationNumber();
+    this.quotationNumber=this.sharedService.getQuotationCode();
     this.getQuotationDetails()
     this.clientDetails = this.sharedService.getFormData()
     
@@ -41,5 +43,11 @@ export class QuotationSummaryComponent {
 
   editDetails(){
     this.router.navigate(['/home/gis/quotation/quotation-details'])
+  }
+
+  computePremium(){
+    this.quotationService.computePremium(this.quotationCode).subscribe(res=>{
+      log.debug(res)
+    })
   }
 }
