@@ -192,7 +192,8 @@ const SERVICES = [
         DropdownModule,
         TabMenuModule,
         ShareModalComponent,
-    DownloadModalComponent
+        DownloadModalComponent
+
 
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
