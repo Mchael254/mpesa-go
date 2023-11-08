@@ -5,7 +5,7 @@
   </div>
   <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
   <div class="row">
-    <form [formGroup]="createDivisionForm" class="gap-3">
+    <form class="gap-3">
       <div class="card mb-3">
         <div class="card-header bg-transparent">
           <span class="float-start mt-3">Organization Definition</span>
@@ -18,7 +18,7 @@
             <div class="col-sm-4">
               <div class="form-group mb-4">
                 <label for="organization" class="form-label">Select an Organization</label>
-                <select id="organization" class="form-select  mb-1" formControlName="organization" (change)="onOrganizationChange($event)"
+                <select id="organization" class="form-select  mb-1" (change)="onOrganizationChange($event)"
                   [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
                   <option value="" selected>Select organization</option>
                   <option *ngFor="let organization of organizationsData" [value]="organization.id">{{ organization.name }}
@@ -43,8 +43,8 @@
               <div class="float-end">
                 <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
                     data-bs-target="#division"></i></span>
-                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editDivision()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteDivision()"></i></span>
               </div>
             </div>
           </div>
@@ -67,7 +67,7 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-division>
-                  <tr>
+                  <tr class="custom-table" (click)="onDivisionRowSelect(division)">
                     <td class="body">{{ division.name }}</td>
                     <td class="body">{{ division.short_description }}</td>
                     <td class="body">{{ division.order }}</td>
