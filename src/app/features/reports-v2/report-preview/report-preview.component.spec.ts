@@ -18,6 +18,7 @@ import {ReportV2} from "../../../shared/data/reports/report";
 import {ReportServiceV2} from "../services/report.service";
 import cubejs from "@cubejs-client/core";
 import { By } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 
 export class MockAppConfigService {
   get config() {
@@ -81,6 +82,39 @@ export class MockSessionStorageService {
     filter:'Gross Premium gt 1000000000'
   }
 
+  charts = [
+    {
+      backgroundColor: null,
+      borderColor: null,
+      chartReportId: 16685588,
+      colorScheme: "0",
+      evenColor: null,
+      evenOddAppliesTo: null,
+      id: 16685589,
+      length: 0,
+      name: "Clean-Up Report",
+      oddColor: null,
+      order: 0,
+      type: "table",
+      width: 0,
+    },
+    {
+      backgroundColor: null,
+      borderColor: null,
+      chartReportId: 16685588,
+      colorScheme: "0",
+      evenColor: null,
+      evenOddAppliesTo: null,
+      id: 16685590,
+      length: 0,
+      name: "Clean-Up Report",
+      oddColor: null,
+      order: 0,
+      type: "bar",
+      width: 0,
+    },
+  ]
+
 
 
   setItem() {
@@ -92,7 +126,8 @@ export class MockSessionStorageService {
       criteria: this.criteria,
       reportNameRec: 'Sample Report',
       filters: [{filter: this.filter, queryObject: this.queryObject}],
-      sort: []
+      sort: [],
+      charts: this.charts
     }
   }
 
@@ -113,7 +148,7 @@ export function findComponent<T>(
 
 describe('ReportPreviewComponent', () => {
   const reportServiceStub = createSpyObj('ReportService', [
-    'createReport', 'fetchFilterConditions'
+    'createReport', 'fetchFilterConditions', 'updateReport'
   ]);
 
   let component: ReportPreviewComponent;
@@ -158,6 +193,7 @@ describe('ReportPreviewComponent', () => {
   }
 
   beforeEach(() => {
+    jest.spyOn(reportServiceStub, 'updateReport' ).mockReturnValue(of(report));
     jest.spyOn(reportServiceStub, 'createReport' ).mockReturnValue(of(report));
     jest.spyOn(reportServiceStub, 'fetchFilterConditions' ).mockReturnValue(filterConditions);
 
@@ -175,6 +211,7 @@ describe('ReportPreviewComponent', () => {
         { provide: SessionStorageService, useClass: MockSessionStorageService },
         { provide: ReportServiceV2, useValue: reportServiceStub },
         { provide: cubejs, useClass: MockCubeJsApi },
+        { provide: ActivatedRoute, useValue: {snapshot: {params: {id: 12345}}} }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
     });
@@ -188,12 +225,12 @@ describe('ReportPreviewComponent', () => {
   beforeEach(() => {
     component.chartTypes = [
       // { iconClass: 'pi pi-table', name: 'table'},
-      { iconClass: 'pi pi-chart-bar', name: 'bar'},
-      { iconClass: 'pi pi-chart-line', name: 'line'},
-      { iconClass: 'pi pi-chart-pie', name: 'pie'},
-      { iconClass: 'pi pi-chart-bar', name: 'doughnut'},
-      { iconClass: 'pi pi-chart-bar', name: 'polarArea'},
-      { iconClass: 'pi pi-chart-bar', name: 'radar'},
+      { iconClass: 'pi pi-chart-bar', name: 'bar', isSelected: false },
+      { iconClass: 'pi pi-chart-line', name: 'line', isSelected: false },
+      { iconClass: 'pi pi-chart-pie', name: 'pie', isSelected: false },
+      { iconClass: 'pi pi-chart-bar', name: 'doughnut', isSelected: false },
+      { iconClass: 'pi pi-chart-bar', name: 'polarArea', isSelected: false },
+      { iconClass: 'pi pi-chart-bar', name: 'radar', isSelected: false },
     ];
 
     fixture.detectChanges();
@@ -303,15 +340,15 @@ describe('ReportPreviewComponent', () => {
     button.click();
     fixture.detectChanges();
 
-    expect(component.chartType).toBe('bar');
-    expect(component.displayChartTypes.length).toBe(2);
+    expect(component.chartType).toBe('table');
+    expect(component.displayChartTypes.length).toBe(1);
   });
 
 
   test('should set chart colors', () => {
     component.chartType = 'bar';
     component.isPreviewResultAvailable = true;
-    component.displayChartTypes = ['bar', 'table'];
+    // component.displayChartTypes = ['bar', 'table'];
 
     fixture.detectChanges();
 
