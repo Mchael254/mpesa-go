@@ -12,7 +12,7 @@ export class CoverTypesDto {
     computed_premium: string | null;
     cover_duration_type: string | null;
     cover_term: string | null;
-    cover_type_code: string | null;
+    cover_type_code: number;
     cover_type_unique_code: number;
     cvt_desc: string;
     cvt_main_cover: string;
@@ -36,7 +36,7 @@ export class CoverTypesDto {
     limit: string | null;
     lnty_code: string | null;
     load_age_factor: string | null;
-    loading_discount: string | null;
+    loading_discount?: string | null;
     loan_amount_per_member: string | null;
     loan_interval_per_member: string | null;
     loan_repayment_period: string | null;
@@ -45,7 +45,7 @@ export class CoverTypesDto {
     multiple_earnings_period: string | null;
     multiplier: string | null;
     multiplier_division_factor: string | null;
-    override_facultative_amount: string | null;
+    override_facultative_amount: number | null;
     percentage_payable: string | null;
     premium: number;
     premium_but_charge_amount: string | null;
