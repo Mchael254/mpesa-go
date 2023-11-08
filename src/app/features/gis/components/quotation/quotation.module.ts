@@ -19,7 +19,9 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { CalendarModule } from 'primeng/calendar';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
 
+import { InputTextModule } from 'primeng/inputtext'; 
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { DialogModule } from 'primeng/dialog';
     ReactiveFormsModule,
     SharedModule,
     CalendarModule,
-    DialogModule
+    DialogModule,
+    InputTextModule,
+    DropdownModule
   ]
 })
 export class QuotationModule { }
