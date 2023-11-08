@@ -29,6 +29,7 @@ export class HeaderSubMenuComponent implements OnInit {
   nameSearchTerm:any;
   idSearchTerm:any;
   close_modal: boolean = false;
+  policySubMenuList: SidebarMenu[];
 
   constructor(private menuService: MenuService, private router:Router){
     this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
@@ -39,6 +40,7 @@ export class HeaderSubMenuComponent implements OnInit {
   ngOnInit(): void {
     this.administationSubMenuList = this.menuService.administationSubMenuList();
     this.teamSubMenuList = this.menuService.teamSubMenuList();
+    this.policySubMenuList = this.menuService.policySubMenuList();
     this.claimSubMenuList = this.menuService.teamSubMenuList();
     this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
     this.accountSubMenuList = this.menuService.accountSubMenuList();
@@ -65,7 +67,6 @@ export class HeaderSubMenuComponent implements OnInit {
   }
 
   openModal() {
-
     const modal = document.getElementById('NewQuoteModal');
     if (modal) {
       modal.classList.add('show');
@@ -73,16 +74,10 @@ export class HeaderSubMenuComponent implements OnInit {
     }
   }
   closeModal() {
-
-      const modal = document.getElementById('NewQuoteModal');
+    const modal = document.getElementById('NewQuoteModal');
     if (modal) {
       modal.classList.remove('show')
       modal.style.display = 'none';
     }
   }
-
-
-
-
-
 }
