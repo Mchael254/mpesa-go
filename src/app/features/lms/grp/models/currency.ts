@@ -1,6 +1,8 @@
 export interface Currency {
-    code: number,
+    decimalWord: string,
+    id: number,
+    name: string,
+    numberWord:string,
+    roundingOff: number,
     symbol: string,
-    desc: string,
-    rnd: number,
 }

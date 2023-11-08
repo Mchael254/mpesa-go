@@ -28,21 +28,21 @@ export class QuotationListComponent implements OnInit {
     private product_service: ProductService,
     private router: Router,
     private session_service: SessionStorageService,
-    private spinner: NgxSpinnerService,
+    private spinner: NgxSpinnerService
   ) {
     this.getListOfWebQuote();
   }
   ngOnInit(): void {}
 
-  paginate(value){
-    let pageObj = {...value};
+  paginate(value) {
+    let pageObj = { ...value };
     let page = 0;
-    page = Math.round(pageObj['first']/pageObj['rows']);
-    if(pageObj['first']===0) page=0;
-    this.getListOfWebQuote(page, pageObj['rows'])
+    page = Math.round(pageObj['first'] / pageObj['rows']);
+    if (pageObj['first'] === 0) page = 0;
+    this.getListOfWebQuote(page, pageObj['rows']);
   }
 
-  getListOfWebQuote(page=0, size=5) {
+  getListOfWebQuote(page = 0, size = 5) {
     this.spinner.show('lms_ind_view');
     this.product_service
       .getListOfProduct()
@@ -50,32 +50,40 @@ export class QuotationListComponent implements OnInit {
         switchMap((x: any[]) => {
           return this.quotation_service
             .getLmsIndividualQuotationWebQuoteList(page, size)
-            .pipe(map((data) =>{
-              console.log(data);
-              this.webQuoteTotalLength = Number(data['total_elements']);
-
-              return data['content']}))
             .pipe(
-              map((data_) => {
-                return data_.map((da) => {
-                  da['product_desc'] = x.filter((xa) => {
-                    return xa['code'] === da['product_code'];
-                  })[0]['description'];
-                  return da;
-                });
-              }),
-              finalize(() => {
-                this.spinner.hide('lms_ind_view');
-              })
+              map((data) => {
+                if (data['content'].length > 0) {
+                  let content = [...data['content']];
+                  content = content.map((cont) => {
+                    let ma = x.find((xa) => {
+                      return xa['code'] === cont['product_code'];
+                    });
+                    cont['product_desc'] = ma?.description;
+                    return cont;
+                  });
+                  this.quotationListInd['rows'] = content;
+                }
+                this.webQuoteTotalLength = Number(data['total_elements']);
 
+                return data['content'];
+              })
             );
+        }),
+        map((data_: any[]) => {
+          return data_;
+        }),
+        finalize(() => {
+          this.spinner.hide('lms_ind_view');
         })
       )
-      .subscribe((data) => {
-        this.quotationListInd['rows'] = data;
-
-      },
-      (err) => {this.spinner.hide('lms_ind_view')});
+      .subscribe(
+        (data) => {
+          // this.quotationListInd['rows'] = data;
+        },
+        (err) => {
+          this.spinner.hide('lms_ind_view');
+        }
+      );
   }
 
   cols = [
@@ -161,7 +169,6 @@ export class QuotationListComponent implements OnInit {
   }
 
   selectRow(i: any) {
-    // console.log(i);
     this.session_service.set('quote_code', i['quote_no']);
     this.session_service.set('client_code', i['client_code']);
     this.session_service.set('quick_code', i['code']);
