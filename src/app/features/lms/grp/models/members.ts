@@ -1,0 +1,48 @@
+export interface MembersDTO {
+        anb: number;
+        blood_pressure_loading: null | number;
+        category_code: number;
+        cover_wef: string;
+        date_joined: null | string;
+        dependant_type_code: number;
+        dependant_type_short_description: string;
+        diastolic_pressure: null | number;
+        employee_contribution: null | number;
+        employee_voluntary_contribution: null | number;
+        employee_voluntary_type: null | number;
+        employer_contribution: null | number;
+        group_occupation_code: number;
+        height: null | number;
+        identity_number: null | number;
+        if_sumassured_exceeds_fcl: string;
+        joint_member: string;
+        life_class_code: null | number;
+        loading_division_factor: null | number;
+        loading_rate: null | number;
+        loading_type: null | number;
+        loan_issue_date: null | string;
+        medical_requirements_group_code: null | number;
+        medical_total_sum_assured: null | number;
+        member_code: number;
+        member_number: string;
+        member_schedule_number: null | number;
+        member_unique_code: number;
+        monthly_earnings: null | number;
+        monthly_multiple_earnings_period: null | number;
+        number_of_joint_members: number;
+        original_loan_amount: null | number;
+        original_loan_amount_repayment_period: null | number;
+        principal: null | number;
+        principal_member_code: number;
+        quotation_code: number;
+        remarks: null | string;
+        savings_amount: null | number;
+        sex: string;
+        status: string;
+        systolic_pressure: null | number;
+        total_contribution: null | number;
+        total_sum_assured: number;
+        weight: null | number;
+        weight_loading: null | number;
+      }
+      
