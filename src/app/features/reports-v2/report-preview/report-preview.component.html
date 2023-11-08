@@ -33,7 +33,7 @@
                     type="checkbox"
                     [value]="chartType.name"
                     [attr.id]="chartType.name"
-                    [checked]="chartType.name === 'table'"
+                    [checked]="chartType.isSelected"
                   >
                   <label class="form-check-label" [attr.for]="chartType.name">
                     <i [class]="chartType.iconClass"></i> {{ chartType.name }}
@@ -52,9 +52,9 @@
                 <i class="pi pi-chevron-down float-end mt-1"></i>
               </p>
               <ul *ngIf="shouldShowStyles" class="fadeIn">
-                <ng-container *ngFor="let styleType of displayChartTypes" >
-                  <li class="chart-type" (click)="selectStyle(styleType)">
-                    <span class="ml-2">{{ styleType | titlecase }}</span>
+                <ng-container *ngFor="let style of displayChartTypes" >
+                  <li class="chart-type" (click)="selectStyle(style?.type)">
+                    <span class="ml-2">{{ style?.type | titlecase }}</span>
                   </li>
                 </ng-container>
               </ul>
@@ -120,20 +120,20 @@
               ></p-progressSpinner>
             </div>
 
-            <ng-container *ngFor="let chartType of displayChartTypes">
+            <ng-container *ngFor="let chart of displayChartTypes">
               <div
-                *ngIf="chartType !== 'table' && isPreviewResultAvailable"
+                *ngIf="chart?.type !== 'table' && isPreviewResultAvailable"
                 style="max-height: 800px"
                 class="col-md-6 my-1 p-2"
               >
                 <app-dynamic-chart
-                  [chartType]="chartType"
-                  [basicData]="setChartColors(chartType, chartData)"
+                  [chartType]="chart?.type"
+                  [basicData]="setChartColors(chart?.type, chartData)"
                 ></app-dynamic-chart>
               </div>
               <div
                 class="col-md-12 my-1"
-                *ngIf="chartType === 'table' && isPreviewResultAvailable;"
+                *ngIf="chart?.type === 'table' && isPreviewResultAvailable;"
               >
                 <app-dynamic-table
                   [tableDetails]="tableDetails"
