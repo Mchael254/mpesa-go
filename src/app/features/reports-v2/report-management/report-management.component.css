@@ -20,3 +20,8 @@ ul.dropdown-menu li:hover {
     margin: auto;
     vertical-align: middle;
 }
+
+.p-datatable-tbody tr td,
+p-table tr > th {
+    font-size: 1rem!important;
+}
