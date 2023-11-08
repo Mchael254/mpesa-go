@@ -3,7 +3,6 @@
         <app-dynamic-breadcrumb [breadCrumbItems]="countryBreadCrumbItems">
         </app-dynamic-breadcrumb>
     </div>
-    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     <div class="row">
         <form [formGroup]="createCountryForm" class="gap-3">
             <div class="card mb-3">
@@ -22,12 +21,12 @@
                                         (onChange)="onCountryChange()" 
                                         optionLabel="name" 
                                         optionValue="id"
-                                        formControlName="country" 
+                                        formControlName="country"
                                         id="country" 
                                         [filter]="true" 
                                         filterBy="name" 
                                         [showClear]="true"
-                                        [style]="{ width: '100%'}" 
+                                        [style]="{ width: '100%', height: '30%'}"
                                         placeholder="Select Country">
                                     </p-dropdown>
                                     <!-- <select id="country" class="form-select mb-1" formControlName="country" 
@@ -54,7 +53,7 @@
                     <div class="float-end mt-3">
                         <span class="icon-circle"><i class="fa-solid fa-plus"></i></span>
                         <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                        <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                        <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteCountry(selectedCountry)"></i></span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -225,8 +224,8 @@
                                 <div class="col-sm-4">
                                     <div class="float-end">
                                         <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#county"></i></span>
-                                        <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                                        <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                                        <span class="icon-circle"><i class="pi pi-pencil" (click)="editState()"></i></span>
+                                        <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteState()"></i></span>
                                     </div>
                                 </div>
                             </div>
@@ -300,7 +299,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <p-table 
-                                        [value]="townData" 
+                                        [value]="districtData " 
                                         styleClass="p-datatable-sm" 
                                         responsiveLayout="scroll"
                                         [scrollable]="true" 
@@ -312,10 +311,10 @@
                                                 <th class="head">Name</th>
                                             </tr>
                                         </ng-template>
-                                        <ng-template pTemplate="body" let-town>
-                                            <tr>
-                                                <td class="body">{{ town.id }}</td>
-                                                <td class="body">{{ town.name }}</td>
+                                        <ng-template pTemplate="body" let-district>
+                                            <tr class="custom-table" (click)="onDistrictRowSelect(district)">
+                                                <td class="body">{{ district.id }}</td>
+                                                <td class="body">{{ district.name }}</td>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="emptymessage">
@@ -347,9 +346,9 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="float-end">
-                                <span class="icon-circle"><i class="fa-solid fa-plus"data-bs-toggle="modal" data-bs-target="#town"></i></span>
-                                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#town"></i></span>
+                                <span class="icon-circle"><i class="pi pi-pencil" (click)="editTown()"></i></span>
+                                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteTown()"></i></span>
                             </div>
                         </div>
                     </div>
@@ -369,7 +368,7 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-town>
-                                    <tr>
+                                    <tr class="custom-table" (click)="onTownRowSelect(town)">
                                         <td class="body">{{ town.id }}</td>
                                         <td class="body">{{ town.name }}</td>
                                     </tr>
@@ -386,19 +385,19 @@
             </div>
             <div class="card mb-3">
                 <div class="card-header bg-transparent float-start">
-                    <span class="float-start mt-3">Country Holidays</span>
+                    <span class="float-start mt-3">Country Holidays</span> 
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
                         <label for="filterBy" class="col-sm-1 col-form-label">Filter by:</label>
                         <div class="form-group col-sm-2">
-                            <select class="form-select" id="filterByDay">
+                            <select class="form-select" [id]="'filterByDay1'">
                                 <option value="">Select Day</option>
                                 <option *ngFor="let day of days" [value]="day">{{ day }}</option>
                             </select>
                         </div>
                         <div class="form-group col-sm-2">
-                            <select class="form-select" id="filterByMonth" #selectedMonthSelect
+                            <select class="form-select" [id]="'filterByMonth1'" #selectedMonthSelect
                                 (change)="updateDays(selectedMonthSelect.value)">
                                 <option value="">Select Month</option>
                                 <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
@@ -406,15 +405,16 @@
                         </div>
                         <div class="col-sm-7">
                             <div class="float-end">
-                                <span class="icon-circle"><i class="fa-solid fa-plus"></i></span>
-                                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#holiday"></i></span>
+                                <span class="icon-circle"><i class="pi pi-pencil" (click)="editHoliday()"></i></span>
+                                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteHoliday()"></i></span>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-6">
-                            <p-table [value]="holidays" 
+                        <div class="col-12">
+                            <p-table 
+                                [value]="countryHolidayData" 
                                 styleClass="p-datatable-sm" 
                                 responsiveLayout="scroll" 
                                 class="ui-datatable">
@@ -426,10 +426,10 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-holiday>
-                                    <tr>
-                                        <td class="body">{{ holiday }}</td>
-                                        <td class="body">{{ holiday }}</td>
-                                        <td class="body">{{ holiday }}</td>
+                                    <tr class="custom-table" (click)="onHolidayRowSelect(holiday)">
+                                        <td class="body">{{ holiday.description }}</td>
+                                        <td class="body">{{ holiday.day }}</td>
+                                        <td class="body">{{ holiday.month }}</td>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="emptymessage">
@@ -443,18 +443,11 @@
                 </div>
             </div>
         </form>
-        <!-- <div class="row mt-1">
-            <div class="col-12">
-                <div class="row float-end">
-                    <button class="btn btn-primary mt-auto align-self-end" (click)="save()">Save</button>
-                </div>
-            </div>
-        </div> -->
     </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="county" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" #countyModal id="county" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog align-items-center">
         <div class="modal-content">
             <div class="modal-header">
@@ -474,13 +467,13 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" (click)="saveCountry()">Save Details</button>
+                <button type="button" class="btn btn-primary" (click)="saveState()">Save Details</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="town" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" #townModal id="town" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog align-items-center">
         <div class="modal-content">
             <div class="modal-header">
@@ -505,6 +498,52 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" (click)="saveTown()">Save Details</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" #holidayModal id="holiday" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog align-items-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add a Country Holiday</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createHolidayForm">
+                    <div class="mb-3">
+                        <label for="shortDescription" class="form-label">Short Description</label>
+                        <input type="text" class="form-control" id="shortDescription" placeholder="Short Description"
+                            formControlName="shortDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label for="month" class="form-label">Month</label>
+                        <select class="form-select" [id]="'filterByMonth2'" #selectedMonthSelect2
+                            (change)="updateDays(selectedMonthSelect2.value)" formControlName="month">
+                            <option value="">Select Month</option>
+                            <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Day Date</label>
+                        <select class="form-select" [id]="'filterByDay2'" formControlName="date">
+                            <option value="">Select Day</option>
+                            <option *ngFor="let day of days" [value]="day">{{ day }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status"  formControlName="status">
+                            <option value="">Status</option>
+                            <option value="A">Active</option>
+                            <option value="I">Inactive</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="saveCountryHoliday()">Save Details</button>
             </div>
         </div>
     </div>

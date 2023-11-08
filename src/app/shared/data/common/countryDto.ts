@@ -109,3 +109,30 @@ export interface SubadminstrativeUnitDTO {
   id: string,
   name: string
 }
+
+export interface SubCountyDTO {
+  countryCode: number,
+  id: number,
+  name: string,
+  shortDescription: string,
+  stateCode: number
+}
+
+export interface CountryHolidayDTO {
+  countryCode: number,
+  countryName: string,
+  day: number,
+  description: string,
+  id: number,
+  month: number,
+  status: string
+}
+
+export interface PostCountryHolidayDTO {
+  countryCode: number,
+  day: number,
+  description: string,
+  id: number,
+  month: number, 
+  status: string
+}
