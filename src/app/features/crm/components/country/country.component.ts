@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../../../shared/services/setups/country/country.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import {
-  AdminstrativeUnitDTO, CountryDTO, PostCountryDTO,
-  PostStateDTO, PostTownDTO, StateDto, SubadminstrativeUnitDTO, TownDto
+  AdminstrativeUnitDTO, CountryDTO, CountryHolidayDTO, PostCountryDTO,
+  PostCountryHolidayDTO,
+  PostStateDTO, PostTownDTO, StateDto, SubCountyDTO, SubadminstrativeUnitDTO, TownDto
 } from '../../../../shared/data/common/countryDto';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
@@ -14,7 +15,6 @@ import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { ReplaySubject, takeUntil } from 'rxjs';
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
-import stepData from '../../data/steps.json'
 
 const log = new Logger( 'CountryComponent');
 
@@ -25,28 +25,36 @@ country data, including form validation and fetching data from services. */
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.css']
 })
-export class CountryComponent implements OnInit {
+export class CountryComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('countyModal') countyModal: ElementRef;
+  @ViewChild('townModal') townModal: ElementRef;
+  @ViewChild('holidayModal') holidayModal: ElementRef;
 
   public createCountryForm: FormGroup;
   public createCountyForm: FormGroup;
   public createTownForm: FormGroup;
+  public createHolidayForm: FormGroup;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  steps = stepData;
-
   public countriesData: CountryDTO[] = [];
   public stateData: StateDto[] = [];
+  public districtData: SubCountyDTO[] = [];
   public townData: TownDto[] = [];
-  public currenciesData: CurrencyDTO[];
-  public adminstrativeData: AdminstrativeUnitDTO[];
-  public subadminstrativeData: SubadminstrativeUnitDTO[];
+  public currenciesData: CurrencyDTO[] = [];
+  public adminstrativeData: AdminstrativeUnitDTO[] = [];
+  public subadminstrativeData: SubadminstrativeUnitDTO[] = [];
+  public countryHolidayData: CountryHolidayDTO[] = [];
   public groupId: string = 'countryTab';
   public response: any;
   public days: number[] = [];
-  public holidays: any;
   public selectedCityState: number;
   public selectedStateId: number;
+  public selectedState: StateDto;
+  public selectedDistrict: SubCountyDTO;
+  public selectedTown: TownDto;
+  public selectedHoliday: CountryHolidayDTO;
   public countrySelected: CountryDTO;
   public selectedCountry: number;
   public filteredState: any;
@@ -74,7 +82,7 @@ export class CountryComponent implements OnInit {
     zipCode: 'Y',
     administrativeUnit: 'Y',
     subadminstrativeUnit: 'Y',
-    unSactionWEF: 'N',
+    unSactionWEF: 'N ',
     unSactionWET: 'N',
     riskLevelStatusWEF: 'N',
     riskLevelStatusWET: 'N',
@@ -115,6 +123,7 @@ export class CountryComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private renderer: Renderer2,
     private countryService: CountryService,
     private bankService: BankService,
     private mandatoryFieldsService: MandatoryFieldsService,
@@ -127,11 +136,14 @@ export class CountryComponent implements OnInit {
     this.CountryCreateForm();
     this.CountyCreateForm();
     this.TownCreateForm();
+    this.CountryHolidayForm();
     this.fetchCountries();
     this.fetchCurrencies();
     this.fetchAdminstrativeUnit();
     this.fetchSubadminstrativeUnit();
   }
+
+  ngAfterViewInit() { }
 
   ngOnDestroy(): void {}
 
@@ -141,8 +153,14 @@ export class CountryComponent implements OnInit {
  * of days in the selected month.
  * @param {string} selectedMonth - A string representing the selected month.
  */
+  // updateDays(selectedMonth: string) {
+  //   const selectedMonthDays = this.daysInMonth[selectedMonth];
+  //   this.days = Array.from({ length: selectedMonthDays }, (_, i) => i + 1);
+  // }
+
   updateDays(selectedMonth: string) {
     const selectedMonthDays = this.daysInMonth[selectedMonth];
+    this.createHolidayForm.get('date').setValue(''); // Clear the previous day selection
     this.days = Array.from({ length: selectedMonthDays }, (_, i) => i + 1);
   }
 
@@ -207,6 +225,45 @@ export class CountryComponent implements OnInit {
     });
   }
 
+  CountryHolidayForm() {
+    this.createHolidayForm = this.fb.group({
+      shortDescription: '',
+      month: '',
+      date: '',
+      status: ''
+    })
+  }
+
+  openCountyModal() {
+    this.renderer.addClass(this.countyModal.nativeElement, 'show');
+    this.renderer.setStyle(this.countyModal.nativeElement, 'display', 'block');
+  }
+
+  closeCountyModal() {
+    this.renderer.removeClass(this.countyModal.nativeElement, 'show');
+    this.renderer.setStyle(this.countyModal.nativeElement, 'display', 'none');
+  }
+
+  openTownModal() {
+    this.renderer.addClass(this.townModal.nativeElement, 'show');
+    this.renderer.setStyle(this.townModal.nativeElement, 'display', 'block');
+  }
+
+  closeTownModal() {
+    this.renderer.removeClass(this.townModal.nativeElement, 'show');
+    this.renderer.setStyle(this.townModal.nativeElement, 'display', 'none');
+  }
+
+  openHolidayModal() {
+    this.renderer.addClass(this.holidayModal.nativeElement, 'show');
+    this.renderer.setStyle(this.holidayModal.nativeElement, 'display', 'block');
+  }
+
+  closeHolidayModal() {
+    this.renderer.removeClass(this.holidayModal.nativeElement, 'show');
+    this.renderer.setStyle(this.holidayModal.nativeElement, 'display', 'none');
+  }
+
   onCountryChange() {
     const selectedCountryId= this.selectedCountry;
     this.countrySelected = this.countriesData.find(country => country.id === selectedCountryId)
@@ -235,6 +292,8 @@ export class CountryComponent implements OnInit {
                     subadminstrativeUnit: 'SB',
                 });
                 this.fetchMainCityStates(this.countrySelected.id);
+                this.districtData = [];
+                this.townData = [];
                 break;
             case 'S':
                 this.createCountryForm.patchValue({
@@ -242,6 +301,8 @@ export class CountryComponent implements OnInit {
                     subadminstrativeUnit: 'D',
                 });
                 this.fetchMainCityStates(this.countrySelected.id);
+                this.districtData = [];
+                this.townData = [];
                 break;
             case 'P':
                 this.createCountryForm.patchValue({
@@ -249,6 +310,8 @@ export class CountryComponent implements OnInit {
                     subadminstrativeUnit: 'D',
                 });
                 this.fetchMainCityStates(this.countrySelected.id);
+                this.districtData = [];
+                this.townData = [];
                 break;
             case 'R':
                 this.createCountryForm.patchValue({
@@ -256,8 +319,11 @@ export class CountryComponent implements OnInit {
                     subadminstrativeUnit: 'LG',
                 });
                 this.fetchMainCityStates(this.countrySelected.id);
+                this.districtData = [];
+                this.townData = [];
                 break;
-        }
+      }
+      this.fetchCountryHoliday(this.countrySelected.id);
     }
   }
 
@@ -285,7 +351,20 @@ export class CountryComponent implements OnInit {
     log.info(`Fetching city states list for country, ${countryId}`);
     this.countryService.getMainCityStatesByCountry(countryId)
       .subscribe( (data) => {
-        this.stateData  = data;
+        // this.stateData = data;
+        if (data && data.length > 0) {
+          this.stateData = data;
+        } else {
+          this.stateData = null;
+        }
+      })
+  }
+
+  fetchDistricts(stateId:number){
+    log.info(`Fetching towns list for city-state, ${stateId}`);
+    this.countryService.getSubCountyByStateId(stateId)
+      .subscribe( (data) => {
+        this.districtData = data;
       })
   }
 
@@ -313,6 +392,15 @@ export class CountryComponent implements OnInit {
       })
   }
 
+  fetchCountryHoliday(countryCode: number) {
+    this.countryService.getCountryHoliday(countryCode)
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.countryHolidayData = data
+        log.info(`country holiday data`, this.countryHolidayData);
+      })
+  }
+
   onCityChange(event: Event) {
     const selectedState = (event.target as HTMLSelectElement).value;
     this.selectedCityState = parseInt(selectedState, 10);
@@ -334,121 +422,346 @@ export class CountryComponent implements OnInit {
       });
   }
 
-  onRowClick(state: any) {
+  deleteCountry(countryId: number | null ): void {
+    if (countryId !== null) {
+      this.countryService.deleteCountry(countryId)
+        .subscribe(() => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully Deleted a Country');
+        })
+      log.info(`selected country`, countryId);
+    }
+    else {
+      log.info('No Country is selected');
+    }
+    this.fetchCountries();
+    this.createCountryForm.reset();
+  }
+
+
+  onRowClick(state: StateDto) {
+    this.selectedState = state;
     this.selectedStateId = state.id;
+    this.fetchDistricts(this.selectedStateId);
     this.fetchTowns(this.selectedStateId);
+  }
+
+  onDistrictRowSelect(district: SubCountyDTO) {
+    this.selectedDistrict = district;
+  }
+  
+  onTownRowSelect(town: TownDto) {
+    this.selectedTown = town
+  }
+
+  onHolidayRowSelect(holiday: CountryHolidayDTO) {
+    this.selectedHoliday = holiday;
   }
 
 
   saveCountry() {
-    this.submitted = true;
-    this.createCountryForm.markAllAsTouched();
+    // this.submitted = true;
+    // this.createCountryForm.markAllAsTouched();
 
-    if (this.createCountryForm.invalid) {
-       const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
+    // if (this.createCountryForm.invalid) {
+    //    const invalidControls = Array.from(document.querySelectorAll('.is-invalid')) as Array<HTMLInputElement | HTMLSelectElement>;
 
-       let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
+    //    let firstInvalidUnfilledControl: HTMLInputElement | HTMLSelectElement | null = null;
 
-       for (const control of invalidControls) {
-         if (!control.value) {
-           firstInvalidUnfilledControl = control;
-           break;
-         }
-       }
+    //    for (const control of invalidControls) {
+    //      if (!control.value) {
+    //        firstInvalidUnfilledControl = control;
+    //        break;
+    //      }
+    //    }
 
-       if (firstInvalidUnfilledControl) {
-         firstInvalidUnfilledControl.focus();
-         const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
-         if (scrollContainer) {
-           scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
-         }
-       } else {
-         const firstInvalidControl = invalidControls[0];
-         if (firstInvalidControl) {
-           firstInvalidControl.focus();
-           const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
-           if (scrollContainer) {
-             scrollContainer.scrollTop = firstInvalidControl.offsetTop;
-           }
-         }
-       }
+    //    if (firstInvalidUnfilledControl) {
+    //      firstInvalidUnfilledControl.focus();
+    //      const scrollContainer = this.utilService.findScrollContainer(firstInvalidUnfilledControl);
+    //      if (scrollContainer) {
+    //        scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+    //      }
+    //    } else {
+    //      const firstInvalidControl = invalidControls[0];
+    //      if (firstInvalidControl) {
+    //        firstInvalidControl.focus();
+    //        const scrollContainer = this.utilService.findScrollContainer(firstInvalidControl);
+    //        if (scrollContainer) {
+    //          scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+    //        }
+    //      }
+    //    }
 
-       this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
-       return;
+    //    this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
+    //    return;
+    // }
+
+    if (!this.countrySelected) {
+      const countryFormValues = this.createCountryForm.getRawValue();
+
+      const saveCountry: PostCountryDTO = {
+        adminRegMandatory: null,
+        adminRegType: countryFormValues.administrativeUnit,
+        currSerial: null,
+        currency: countryFormValues.baseCurrency,
+        drugTraffickingStatus: countryFormValues.drugTraffickingStatus,
+        drugWefDate: countryFormValues.drugTrafficWEF,
+        drugWetDate: countryFormValues.drugTrafficWET,
+        highRiskWefDate: countryFormValues.riskLevelStatusWEF,
+        highRiskWetDate: countryFormValues.riskLevelStatusWET,
+        id: null,
+        isShengen: null,
+        mobilePrefix: countryFormValues.zipCode,
+        name: countryFormValues.name,
+        nationality: countryFormValues.nationality,
+        risklevel: null,
+        short_description: countryFormValues.shortDescription,
+        telephoneMaximumLength: null,
+        telephoneMinimumLength: null,
+        unSanctionWefDate: countryFormValues.unSactionWEF,
+        unSanctionWetDate: countryFormValues.unSactionWET,
+        unSanctioned: null,
+        zipCode: countryFormValues.zipCode
+      };
+      // Create a new country
+      this.countryService.createCountry(saveCountry)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country');
+        });
+
+      this.createCountryForm.reset();
     }
-    
-    const countryFormValues = this.createCountryForm.getRawValue();
-    const countryId = this.countrySelected.id;
+    else {
+      const countryFormValues = this.createCountryForm.getRawValue();
+      const countryId = this.countrySelected.id;
 
-    const saveCountry: PostCountryDTO = {
-      adminRegMandatory: this.countrySelected.adminRegMandatory,
-      adminRegType: this.countrySelected.adminRegType,
-      currSerial: this.countrySelected.currSerial,
-      currency: countryFormValues.baseCurrency,
-      drugTraffickingStatus: countryFormValues.drugTraffickingStatus,
-      drugWefDate: countryFormValues.drugTrafficWEF,
-      drugWetDate: countryFormValues.drugTrafficWET,
-      highRiskWefDate: countryFormValues.riskLevelStatusWEF,
-      highRiskWetDate: countryFormValues.riskLevelStatusWET,
-      id: countryId || null,
-      isShengen: this.countrySelected.isShengen,
-      mobilePrefix: countryFormValues.zipCode,
-      name: countryFormValues.name,
-      nationality: countryFormValues.nationality,
-      risklevel: null,
-      short_description: countryFormValues.shortDescription,
-      telephoneMaximumLength: null,
-      telephoneMinimumLength: null,
-      unSanctionWefDate: countryFormValues.unSactionWEF,
-      unSanctionWetDate: countryFormValues.unSactionWET,
-      unSanctioned: null,
-      zipCode: countryFormValues.zipCode
-    }
-
-    if (countryId) {
+      const saveCountry: PostCountryDTO = {
+        adminRegMandatory: this.countrySelected.adminRegMandatory,
+        adminRegType: countryFormValues.administrativeUnit,
+        currSerial: this.countrySelected.currSerial,
+        currency: countryFormValues.baseCurrency,
+        drugTraffickingStatus: countryFormValues.drugTraffickingStatus,
+        drugWefDate: countryFormValues.drugTrafficWEF,
+        drugWetDate: countryFormValues.drugTrafficWET,
+        highRiskWefDate: countryFormValues.riskLevelStatusWEF,
+        highRiskWetDate: countryFormValues.riskLevelStatusWET,
+        id: countryId,
+        isShengen: this.countrySelected.isShengen,
+        mobilePrefix: countryFormValues.zipCode,
+        name: countryFormValues.name,
+        nationality: countryFormValues.nationality,
+        risklevel: null,
+        short_description: countryFormValues.shortDescription,
+        telephoneMaximumLength: null,
+        telephoneMinimumLength: null,
+        unSanctionWefDate: countryFormValues.unSactionWEF,
+        unSanctionWetDate: countryFormValues.unSactionWET,
+        unSanctioned: null,
+        zipCode: countryFormValues.zipCode
+      };
       // Update an existing country
       this.countryService.updateCountry(countryId, saveCountry)
         .subscribe(data => {
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country');
         });
     }
-    else {
-      // Create a new country
-      this.countryService.createCountry(saveCountry)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country');
-        })
-    }
-
-    this.createCountryForm.reset();
     this.fetchCountries();
   }
 
-  saveCounty() {
-    const countyFormValues = this.createCountyForm.getRawValue();
+  saveState() {
+    
+    if (!this.selectedState) {
+      const countyFormValues = this.createCountyForm.getRawValue();
 
-    const saveState: PostStateDTO = {
-      countryId: this.countrySelected.id,
-      id: null,
-      name: countyFormValues.name,
-      shortDescription: countyFormValues.shortDescription
+      const saveState: PostStateDTO = {
+        countryId: this.countrySelected.id,
+        id: null,
+        name: countyFormValues.name,
+        shortDescription: countyFormValues.shortDescription
+      };
+      this.countryService.createState(saveState)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a State');
+        });
     }
+    else {
+      const countyFormValues = this.createCountyForm.getRawValue();
+      const stateId = this.selectedState.id;
 
-    this.countryService.createState(saveState)
-      .subscribe(data => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a State');
-      })
+      const saveState: PostStateDTO = {
+        countryId: this.countrySelected.id,
+        id: stateId,
+        name: countyFormValues.name,
+        shortDescription: countyFormValues.shortDescription
+      };
+      this.countryService.updateState(stateId, saveState)
+        .subscribe(data => { 
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a State');
+          this.closeCountyModal();
+        });
+    }
   }
 
   saveTown() {
-    const townFormValues = this.createTownForm.getRawValue
 
-    const saveTown: PostTownDTO = {
-      countryId: this.countrySelected.id,
-      id: null,
-      name: townFormValues.name,
-      shortDescription: '',
-      stateId: 0
+    if (!this.selectedTown) {
+      const townFormValues = this.createTownForm.getRawValue();
+
+      const saveTown: PostTownDTO = {
+        countryId: this.countrySelected.id,
+        id: null,
+        name: townFormValues.name,
+        shortDescription: townFormValues.shortDescription,
+        stateId: this.selectedStateId
+      };
+      this.countryService.createTown(saveTown)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Town');
+        });
+    }
+    else {
+      const townFormValues = this.createTownForm.getRawValue();
+      const townId = this.selectedTown.id
+
+      const saveTown: PostTownDTO = {
+        countryId: this.countrySelected.id,
+        id: townId,
+        name: townFormValues.name,
+        shortDescription: townFormValues.shortDescription,
+        stateId: this.selectedStateId
+      };
+      this.countryService.updateTown(townId, saveTown)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Town');
+          this.closeTownModal();
+        })
+    }
+  }
+
+  saveCountryHoliday() {
+
+    if (!this.selectedHoliday) {
+      const countryHolidayFormValues = this.createHolidayForm.getRawValue();
+
+      const day = parseInt(countryHolidayFormValues.date, 10);
+      const month = parseInt(countryHolidayFormValues.month, 10);
+
+      const saveCountryHoliday: PostCountryHolidayDTO = {
+        countryCode: this.countrySelected.id,
+        day: day,
+        description: countryHolidayFormValues.shortDescription,
+        id: null,
+        month: month,
+        status: countryHolidayFormValues.status
+      };
+      this.countryService.createCountryHoliday(saveCountryHoliday)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country Holiday');
+        })
+    }
+    else {
+      this.closeHolidayModal();
+      const countryHolidayFormValues = this.createHolidayForm.getRawValue();
+      const holidayId = this.selectedHoliday.id;
+
+      const day = parseInt(countryHolidayFormValues.date, 10);
+      const month = parseInt(countryHolidayFormValues.month, 10);
+
+      const saveCountryHoliday: PostCountryHolidayDTO = {
+        countryCode: this.countrySelected.id,
+        day: day,
+        description: countryHolidayFormValues.shortDescription,
+        id: holidayId,
+        month: month,
+        status: countryHolidayFormValues.status
+      };
+      this.countryService.updateCountryHoliday(holidayId, saveCountryHoliday)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country Holiday');
+        })
+    }
+  }
+
+  editState() {
+    if (this.selectedState) {
+      log.info('Editing State:', this.selectedState);
+      this.openCountyModal();
+      this.createCountyForm.patchValue({
+        shortDescription: this.selectedState.shortDescription,
+        name: this.selectedState.name
+      });
+
+    }
+    else {
+      log.info('No State is selected!.')
+    }
+  }
+
+  deleteState() {
+    if (this.selectedState) {
+      const stateId = this.selectedState.id;
+      this.countryService.deleteState(stateId)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a state');
+        })
+    }
+    else {
+      log.info('No state is selected.');
+    }
+  }
+
+  editTown() {
+    if (this.selectedTown) {
+      log.info('Editing Town:', this.selectedTown);
+      this.openTownModal();
+      this.createTownForm.patchValue({
+        shortDescription: this.selectedTown.shortDescription,
+        name: this.selectedTown.name,
+        postalCode: ''
+      })
+    }
+    else {
+      log.info('No Town is selected!.');
+    }
+  }
+
+  deleteTown() {
+    if (this.selectedTown) {
+      const townId = this.selectedTown.id;
+      this.countryService.deleteTown(townId)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a town');
+        })
+    }
+    else {
+      log.error('Error', 'No Town is Selected!');
+    }
+  }
+
+  editHoliday() {
+    if (this.selectedHoliday) {
+      this.openHolidayModal();
+      this.createHolidayForm.patchValue({
+        shortDescription: this.selectedHoliday.description,
+        month: this.selectedHoliday.month,
+        date: this.selectedHoliday.day,
+        status: this.selectedHoliday.status
+      });
+    }
+    else {
+      log.error('Error', 'No Holiday Selected!');
+    }
+  }
+
+  deleteHoliday() {
+    if (this.selectedHoliday) {
+      const holidayId = this.selectedHoliday.id;
+      this.countryService.deleteCountryHoliday(holidayId)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a holiday');
+        })
+    }
+    else {
+      log.error('Error', 'No Holiday Selected!');
     }
   }
 
