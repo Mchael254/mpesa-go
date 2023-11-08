@@ -13,8 +13,9 @@ import { Observable, finalize, map, of, switchMap } from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
-import { ClientService } from '../../../../../../../features/entities/services/client/client.service';
-import { ClientDTO } from '../../../../../../../features/entities/data/ClientDTO';
+import { ClientService as CRMClientService  } from '../../../../../../entities/services/client/client.service';
+import { ClientService as LMSClientService  } from '../../../../../service/client/client.service';
+import { ClientDTO } from '../../../../../../entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
 import {
@@ -29,7 +30,7 @@ import { SectorService } from '../../../../../../../shared/services/setups/secto
 import { SectorDTO } from '../../../../../../../shared/data/common/sector-dto';
 import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
 import { PartyService } from '../../../../../service/party/party.service';
-import { RelationTypesService } from '../../../../../../lms/service/relation-types/relation-types.service';
+import { RelationTypesService } from '../../../../../service/relation-types/relation-types.service';
 import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
@@ -91,6 +92,7 @@ export class PersonalDetailsComponent {
   beneficiaryTypeList: any[] = [];
   relationTypeList: any[] = [];
   documentList: any;
+  isBeneficiaryLoading: boolean = false;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -99,7 +101,7 @@ export class PersonalDetailsComponent {
     private country_service: CountryService,
     private branch_Service: BranchService,
     private clientType_service: ClientTypeService,
-    private client_service: ClientService,
+    private crm_client_service: CRMClientService,
     private bank_service: BankService,
     private currency_service: CurrencyService,
     private occupation_service: OccupationService,
@@ -108,11 +110,12 @@ export class PersonalDetailsComponent {
     private party_service: PartyService,
     private relation_type_service: RelationTypesService,
     private dms_service: DmsService,
-    private spinner_Service: NgxSpinnerService
+    private spinner_Service: NgxSpinnerService,
+    private lms_client_service: LMSClientService
   ) {}
 
   ngOnInit() {
-    this.clientTitleList$ = this.client_service.getClientTitles(2);
+    this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
     this.clientDetailsForm = this.getClientDetailsForm();
     this.uploadForm = this.getUploadForm();
     this.beneficiaryForm = this.getBeneficiaryForm();
@@ -133,7 +136,7 @@ export class PersonalDetailsComponent {
 
     if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
       let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-      this.client_service.getClientById(clientId).subscribe((data) => {
+      this.crm_client_service.getClientById(clientId).subscribe((data) => {
         // To work on Later
         console.log(data);
       });
@@ -223,14 +226,14 @@ export class PersonalDetailsComponent {
       beneficiaries: this.fb.array([]),
     });
   }
-  calculateAge(dateOfBirth): number {
+  calculateAge(dateOfBirth: string | number | Date): number {
     const today = new Date();
     const dob = new Date(dateOfBirth);
     return today.getFullYear() - dob.getFullYear();
   }
   getClientList() {
     this.isCLientListPresent = false;
-    this.client_service
+    this.crm_client_service
       .getClients()
       .pipe(finalize(() => (this.isCLientListPresent = true)))
       .subscribe((data) => {
@@ -275,7 +278,6 @@ export class PersonalDetailsComponent {
       relation_code: [''],
     });
   }
-
   selectCountry(_event) {
     this.showStateSpinner = true;
     let e = +_event.target.value;
@@ -309,7 +311,6 @@ export class PersonalDetailsComponent {
         this.townList = data;
       });
   }
-
   getCountryList() {
     this.country_service
       .getCountries()
@@ -344,7 +345,6 @@ export class PersonalDetailsComponent {
       this.identifierTypeList = data;
     });
   }
-
   selectClient(client: any) {
     let patchClient = {
       lastName: client['lastName'],
@@ -370,7 +370,7 @@ export class PersonalDetailsComponent {
     of(data)
       .pipe(
         switchMap((inputText: string) => {
-          return this.client_service.searchClients(0, 5, inputText.trim());
+          return this.crm_client_service.searchClients(0, 5, inputText.trim());
         }),
         finalize(() => (this.isCLientListPresent = true))
       )
@@ -421,6 +421,35 @@ export class PersonalDetailsComponent {
   async nextPage() {
     let client_code = +this.session_storage.get(SESSION_KEY.CLIENT_CODE);
     let formValue = this.clientDetailsForm.value;
+    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country))
+    console.log(formValue);
+    let postValue = {
+      category: "C",
+      country: countryData,
+      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+      dateOfBirth: null,
+      effectiveDateFrom: formValue?.with_effect_from,
+      effectiveDateTo: formValue?.with_effect_to,
+      id: 0,
+      identityNumber: formValue?.idNumber,
+      modeOfIdentityId: null,
+      name: `${formValue?.firstName} ${formValue?.lastName}` ,
+      organizationId: 2,
+      partyTypeId: 100,
+      pinNumber: formValue?.pinNumber,
+      profileImage: null,
+      profilePicture: null,
+
+
+    }
+
+    console.log(postValue)
+
+    // this.lms_client_service
+    //   .saveClient({})
+    //   .subscribe((data: any) => {
+    //     console.log(data);
+    //   })
 
     // if(this.clientDetailsForm.valid){
     // if(true){
@@ -480,7 +509,7 @@ export class PersonalDetailsComponent {
     //     this.client_service.createClient(client).subscribe((data) => {
     //       console.log(data);
     // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+    await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
     //     });
     //   }
     // }else{
@@ -489,6 +518,8 @@ export class PersonalDetailsComponent {
   }
 
   saveBeneficiary() {
+    this.spinner_Service.show('beneficiary_modal_screen');
+    this.isBeneficiaryLoading = true;
     let beneficiary = { ...this.beneficiaryForm.value };
     beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.CLIENT_CODE)
@@ -523,10 +554,17 @@ export class PersonalDetailsComponent {
       beneficiary['appointee_info'] = null;
     }
     return this.party_service
-      .createBeneficary(beneficiary)
+      .createBeneficiary(beneficiary)
+      .pipe(finalize(()=>{
+        this.isBeneficiaryLoading = false;
+        this.spinner_Service.hide('beneficiary_modal_screen');
+      }))
       .subscribe((data) => {
         this.getBeneficiariesByQuotationCode();
         this.closeCategoryDetstModal();
+        this.beneficiaryForm.reset();
+        this.spinner_Service.hide('beneficiary_modal_screen');
+        this.isBeneficiaryLoading = false;
       });
   }
   addEmptyBeneficiary() {
@@ -627,26 +665,26 @@ export class PersonalDetailsComponent {
     return d;
   }
 
-  cancelBeneficiary(i) {
-    this.editEntity = true;
-    this.beneficiaryList = [
-      ...this.beneficiaryList.map((data, x) => {
-        if (x === i) {
-          data['isEdit'] = false;
-          return data;
-        }
-        return data;
-      }),
-    ];
-
-    if (this.beneficiaryList[i]['code'] === undefined) {
-      this.beneficiaryList = this.beneficiaryList.filter((data, x) => x !== i);
-    }
-    this.editEntity = false;
-    this.clientDetailsForm.get('beneficiary').reset();
-
-    return this.beneficiaryList;
-  }
+  // cancelBeneficiary(i) {
+  //   this.editEntity = true;
+  //   this.beneficiaryList = [
+  //     ...this.beneficiaryList.map((data, x) => {
+  //       if (x === i) {
+  //         data['isEdit'] = false;
+  //         return data;
+  //       }
+  //       return data;
+  //     }),
+  //   ];
+  //
+  //   if (this.beneficiaryList[i]['code'] === undefined) {
+  //     this.beneficiaryList = this.beneficiaryList.filter((data, x) => x !== i);
+  //   }
+  //   this.editEntity = false;
+  //   this.clientDetailsForm.get('beneficiary').reset();
+  //
+  //   return this.beneficiaryList;
+  // }
 
   private returnLowerCase(data: any) {
     let mapData = data.map((da) => {
@@ -789,6 +827,11 @@ export class PersonalDetailsComponent {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+  }
+
+  cancelBeneficiary(){
+    this.beneficiaryForm.reset();
+    this.closeCategoryDetstModal();
   }
 
   closeCategoryDetstModal() {

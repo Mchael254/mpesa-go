@@ -28,9 +28,10 @@ export class BranchService {
       'Accept': 'application/json',
     })
     const params = new HttpParams()
-      .set('organizationId', organizationId);
+      .set('organizationId', organizationId)
+      .set('regionId', 28);
 
-    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organization-branches`, {
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/branches`, {
       headers: headers,
       params: params,
     });
@@ -45,10 +46,14 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    })
+    });
+    const params = new HttpParams()
+      .set('organizationId', 2)
+      .set('regionId', 28);
 
-    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/organization-branches/${branchId}`, {
+    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/branches/${branchId}`, {
       headers: headers,
+      params:params
     });
   }
 
