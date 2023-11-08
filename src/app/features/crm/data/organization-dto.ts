@@ -78,6 +78,8 @@ export interface PostOrganizationDTO {
   manager: number,
   motto: string,
   name: string,
+  organizationGroupLogo: string,
+  organizationLogo: string,
   organization_type: string,
   physicalAddress: string,
   pin_number: string,
@@ -134,7 +136,7 @@ export interface OrganizationRegionDTO {
   shortDescription: string
 }
 
-export interface PostOrganizationRegionDto {
+export interface PostOrganizationRegionDTO {
   agentSeqNo: string,
   branchMgrSeqNo: string,
   clientSequence: number,
@@ -163,4 +165,56 @@ export interface ManagersDTO {
   id: number,
   name: string,
   townCode: number
+}
+
+export interface OrganizationBranchDTO {
+  bnsCode: number,
+  countryId: number,
+  countryName: string,
+  emailAddress: string,
+  generalPolicyClaim: string,
+  id: number,
+  logo: string,
+  managerAllowed: string,
+  managerId: number,
+  managerName: string,
+  managerSeqNo: string,
+  name: string,
+  organizationId: number,
+  overrideCommissionAllowed: string,
+  physicalAddress: string,
+  policyPrefix: string,
+  policySequence: number,
+  postalAddress: string,
+  postalCode: string,
+  regionId: number,
+  regionName: string,
+  shortDescription: string,
+  stateId: number,
+  stateName: string,
+  telephone: string,
+  townId: number,
+  townName: string
+}
+
+export interface BranchDivisionDTO {
+  branchId: number,
+  branchName: string,
+  divisionId: number,
+  divisionName: string,
+  id: number,
+  withEffectiveFrom: string,
+  withEffectiveTo: string
+}
+
+export interface BranchContactDTO {
+  branchId: number,
+  designation: string,
+  emailAddress: string,
+  id: number,
+  idNumber: string,
+  mobile: string,
+  name: string,
+  physicalAddress: string,
+  telephone: string
 }

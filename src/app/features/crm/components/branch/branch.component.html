@@ -33,7 +33,7 @@
             <div class="col-sm-4">
               <div class="form-group mb-4">
                 <label for="region" class="form-label">Select a Region</label>
-                <select id="region" class="form-select  mb-1" formControlName="region"
+                <select id="region" class="form-select  mb-1" formControlName="region" (change)="onRegionChange($event)"
                   [ngClass]="{ 'is-invalid': f['region']?.invalid && (f['region']?.dirty || f['region']?.touched) }">
                   <option value="" selected>Select Region</option>
                   <option *ngFor="let region of regionData" [value]="region.code">{{ region.name }}
@@ -71,7 +71,7 @@
           <div class="row mb-5">
             <div class="col-12">
               <p-table 
-                  [value]="branchData" 
+                  [value]="BranchesData" 
                   styleClass="p-datatable-sm" 
                   responsiveLayout="scroll" 
                   [scrollable]="true"
@@ -92,17 +92,17 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-branch>
-                  <tr>
+                  <tr class="custom-table" (click)="onBranchRowSelect(branch)">
                     <td class="body">{{ branch.id}}</td>
                     <td class="body">{{ branch.ref }}</td>
                     <td class="body">{{ branch.name }}</td>
                     <td class="body">{{ branch.physicalAddress }}</td>
-                    <td class="body">{{ branch.email }}</td>
-                    <td class="body">{{ branch.postal }}</td>
-                    <td class="body">{{ branch.contact }}</td>
-                    <td class="body">{{ branch.manager }}</td>
+                    <td class="body">{{ branch.emailAddress }}</td>
+                    <td class="body">{{ branch.postalAddress }}</td>
+                    <td class="body">{{ branch.telephone }}</td>
+                    <td class="body">{{ branch.managerName }}</td>
                     <td class="body">{{ branch.managerAllowed }}</td>
-                    <td class="body">{{ branch.commOverride }}</td>
+                    <td class="body">{{ branch.overrideCommissionAllowed }}</td>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
@@ -133,7 +133,7 @@
           <div class="row mb-5">
             <div class="col-12">
               <p-table 
-                  [value]="branchDivision" 
+                  [value]="BranchDivisionData" 
                   styleClass="p-datatable-sm" 
                   responsiveLayout="scroll" 
                   [scrollable]="true"

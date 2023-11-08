@@ -462,69 +462,58 @@ export class OrganizationComponent implements OnInit {
   }
 
   onSave() {
-    const organizationFormValues = this.createOrganizationForm.getRawValue();
-    const organizationId = this.selectedOrg.id;
+    
+    if (!this.selectedOrg) {
+      const organizationFormValues = this.createOrganizationForm.getRawValue();
 
-    const primaryCountryCode = organizationFormValues.countryCode;
-    const primaryPhoneNumber = organizationFormValues.primaryTelephone;
+      const primaryCountryCode = organizationFormValues.countryCode;
+      const primaryPhoneNumber = organizationFormValues.primaryTelephone;
 
-    const secondaryCountryCode = organizationFormValues.countryCode2;
-    const secondaryPhoneNumber = organizationFormValues.secondaryTelephone;
+      const secondaryCountryCode = organizationFormValues.countryCode2;
+      const secondaryPhoneNumber = organizationFormValues.secondaryTelephone;
 
-    const primaryCombinedPhoneNumber = this.extractPhoneNumber(primaryCountryCode, primaryPhoneNumber);
-    const secondaryCombinedPhoneNumber = this.extractPhoneNumber(secondaryCountryCode, secondaryPhoneNumber);
+      const primaryCombinedPhoneNumber = this.extractPhoneNumber(primaryCountryCode, primaryPhoneNumber);
+      const secondaryCombinedPhoneNumber = this.extractPhoneNumber(secondaryCountryCode, secondaryPhoneNumber);
 
-    const saveOrganization: PostOrganizationDTO = {
-      countryId: organizationFormValues.country,
-      currency_id: organizationFormValues.baseCurrency,
-      emailAddress: organizationFormValues.emailAddress,
-      faxNumber: '',
-      groupId: null,
-      id: organizationId || null,
-      license_number: '',
-      manager: organizationFormValues.manager,
-      motto: organizationFormValues.motto,
-      name: organizationFormValues.name,
-      organization_type: organizationFormValues.organizationType,
-      physicalAddress: organizationFormValues.physicalAddress,
-      pin_number: organizationFormValues.pinNumber,
-      postalAddress: organizationFormValues.postalAddress,
-      postalCode: organizationFormValues.postalCode,
-      primaryTelephoneNo: primaryCombinedPhoneNumber,
-      primarymobileNumber: secondaryCombinedPhoneNumber,
-      registrationNo: '',
-      secondaryMobileNumber: '',
-      secondaryTelephoneNo: '',
-      short_description: organizationFormValues.shortDescription,
-      stateId: organizationFormValues.stateName,
-      townId: organizationFormValues.town,
-      vatNumber: organizationFormValues.vatNumber,
-      webAddress: organizationFormValues.webLink,
-      bank_account_name: organizationFormValues.accountName,
-      bank_account_number: organizationFormValues.accountNumber,
-      swiftCode: organizationFormValues.swiftCode,
-      bankId: organizationFormValues.bankName,
-      bankBranchId: organizationFormValues.bankBranch,
-      paybill: organizationFormValues.paybill,
-      customer_care_email: organizationFormValues.customerCareName,
-      customer_care_name: organizationFormValues.customerCareEmail,
-      customer_care_primary_phone_number: organizationFormValues.customerCarePriNumber,
-      customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber
-    }
-
-    if (organizationId) {
-      // Update an existing organization
-      this.organizationService.updateOrganization(organizationId, saveOrganization)
-        .subscribe(data => {
-          // data.id = saveOrganization.id;
-          // this.savedOrganization = data;
-          // if (this.selectedFile) {
-          //   this.uploadImage(this.savedOrganization.id);
-          // } else {
-            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated the Organization');
-          // }
-        });
-    } else {
+      const saveOrganization: PostOrganizationDTO = {
+        countryId: organizationFormValues.country,
+        currency_id: organizationFormValues.baseCurrency,
+        emailAddress: organizationFormValues.emailAddress,
+        faxNumber: '',
+        groupId: null,
+        id: null,
+        license_number: '',
+        manager: organizationFormValues.manager,
+        motto: organizationFormValues.motto,
+        name: organizationFormValues.name,
+        organization_type: organizationFormValues.organizationType,
+        physicalAddress: organizationFormValues.physicalAddress,
+        pin_number: organizationFormValues.pinNumber,
+        postalAddress: organizationFormValues.postalAddress,
+        postalCode: organizationFormValues.postalCode,
+        primaryTelephoneNo: primaryCombinedPhoneNumber,
+        primarymobileNumber: secondaryCombinedPhoneNumber,
+        registrationNo: '',
+        secondaryMobileNumber: '',
+        secondaryTelephoneNo: '',
+        short_description: organizationFormValues.shortDescription,
+        stateId: organizationFormValues.stateName,
+        townId: organizationFormValues.town,
+        vatNumber: organizationFormValues.vatNumber,
+        webAddress: organizationFormValues.webLink,
+        bank_account_name: organizationFormValues.accountName,
+        bank_account_number: organizationFormValues.accountNumber,
+        swiftCode: organizationFormValues.swiftCode,
+        bankId: organizationFormValues.bankName,
+        bankBranchId: organizationFormValues.bankBranch,
+        paybill: organizationFormValues.paybill,
+        customer_care_email: organizationFormValues.customerCareName,
+        customer_care_name: organizationFormValues.customerCareEmail,
+        customer_care_primary_phone_number: organizationFormValues.customerCarePriNumber,
+        customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber,
+        organizationGroupLogo: organizationFormValues.groupLogo,
+        organizationLogo: organizationFormValues.logo
+      };
       // Create a new organization
       this.organizationService.createOrganization(saveOrganization)
         .subscribe(data => {
@@ -537,6 +526,70 @@ export class OrganizationComponent implements OnInit {
           // }
         });
     }
+    else {
+      const organizationFormValues = this.createOrganizationForm.getRawValue();
+      const organizationId = this.selectedOrg.id;
+
+      const primaryCountryCode = organizationFormValues.countryCode;
+      const primaryPhoneNumber = organizationFormValues.primaryTelephone;
+
+      const secondaryCountryCode = organizationFormValues.countryCode2;
+      const secondaryPhoneNumber = organizationFormValues.secondaryTelephone;
+
+      const primaryCombinedPhoneNumber = this.extractPhoneNumber(primaryCountryCode, primaryPhoneNumber);
+      const secondaryCombinedPhoneNumber = this.extractPhoneNumber(secondaryCountryCode, secondaryPhoneNumber);
+
+      const saveOrganization: PostOrganizationDTO = {
+        countryId: organizationFormValues.country,
+        currency_id: organizationFormValues.baseCurrency,
+        emailAddress: organizationFormValues.emailAddress,
+        faxNumber: '',
+        groupId: null,
+        id: organizationId || null,
+        license_number: '',
+        manager: organizationFormValues.manager,
+        motto: organizationFormValues.motto,
+        name: organizationFormValues.name,
+        organization_type: organizationFormValues.organizationType,
+        physicalAddress: organizationFormValues.physicalAddress,
+        pin_number: organizationFormValues.pinNumber,
+        postalAddress: organizationFormValues.postalAddress,
+        postalCode: organizationFormValues.postalCode,
+        primaryTelephoneNo: primaryCombinedPhoneNumber,
+        primarymobileNumber: secondaryCombinedPhoneNumber,
+        registrationNo: '',
+        secondaryMobileNumber: '',
+        secondaryTelephoneNo: '',
+        short_description: organizationFormValues.shortDescription,
+        stateId: organizationFormValues.stateName,
+        townId: organizationFormValues.town,
+        vatNumber: organizationFormValues.vatNumber,
+        webAddress: organizationFormValues.webLink,
+        bank_account_name: organizationFormValues.accountName,
+        bank_account_number: organizationFormValues.accountNumber,
+        swiftCode: organizationFormValues.swiftCode,
+        bankId: organizationFormValues.bankName,
+        bankBranchId: organizationFormValues.bankBranch,
+        paybill: organizationFormValues.paybill,
+        customer_care_email: organizationFormValues.customerCareName,
+        customer_care_name: organizationFormValues.customerCareEmail,
+        customer_care_primary_phone_number: organizationFormValues.customerCarePriNumber,
+        customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber,
+        organizationGroupLogo: organizationFormValues.groupLogo,
+        organizationLogo: organizationFormValues.logo
+      };
+      // Update an existing organization
+      this.organizationService.updateOrganization(organizationId, saveOrganization)
+        .subscribe(data => {
+          // data.id = saveOrganization.id;
+          // this.savedOrganization = data;
+          // if (this.selectedFile) {
+          //   this.uploadLogo(this.savedOrganization.id);
+          // } else {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated the Organization');
+          // }
+        });
+    }
 
     this.fetchOrganization();
     this.createOrganizationForm.reset();
@@ -546,8 +599,8 @@ export class OrganizationComponent implements OnInit {
     this.organizationService.uploadLogo(organizationId, this.selectedFile)
       .subscribe( res => {
         log.info(res);
-        // this.savedOrganization.logo = res.file;
-        // this.savedOrganization.groupLogo = res.file;
+        this.savedOrganization.organizationLogo = res.file;
+        this.savedOrganization.organizationGroupLogo = res.file;
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Organization');
         this.fetchOrganization();
         this.createOrganizationForm.reset();
