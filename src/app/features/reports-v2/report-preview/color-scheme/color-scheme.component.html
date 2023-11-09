@@ -1,0 +1,96 @@
+<ng-container *ngFor="let scheme of colourSchemes">
+  <table class="table table-borderless mb-2">
+    <tbody>
+    <tr id="select-color-scheme" (click)="selectColorScheme(scheme)">
+      <td class="colors">
+        <ng-container *ngFor="let color of scheme.colors">
+        <div
+          class="color-box"
+          [style.background]="color"
+          [style.border]="color"
+        ></div>
+      </ng-container>
+      </td>
+      <td class="color-name">
+        {{ scheme.name }}
+      </td>
+      <td class="color-selected">
+        <i *ngIf="scheme.selected" class="pi pi-check" style="font-weight: bold; font-size: 0.9rem"></i>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</ng-container>
+
+<div class="scheme">
+  <table class="table table-borderless">
+    <tbody>
+    <tr>
+      <td class="colors">
+        <ng-container *ngFor="let color of ['white','white','white','white', 'white']">
+          <div
+            class="color-box"
+            [style.background]="color"
+            style="border: #000 1px solid"
+          ></div>
+        </ng-container>
+      </td>
+      <td class="text-primary color-name fw-medium create-new" data-bs-toggle="modal" data-bs-target="#colorSchemeModal">
+        Create new
+      </td>
+      <td></td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="colorSchemeModal" tabindex="-1" aria-labelledby="colorSchemeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">      
+        
+        <div class="mb-3">
+          <label for="colorName" class="form-label">Enter color scheme name</label>
+          <input 
+            type="text" class="form-control" 
+            id="colorName" 
+            aria-describedby="colorNameHelp"
+            placeholder="Color scheme name"
+            (keyup)="defineColorSchemeName($event)"
+            >
+        </div>
+
+        <form [formGroup]="colorSchemeForm" class="mt-5">
+          <p>Pick a square to add color</p>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <span *ngFor="let field of fields" style="float: left; margin-right: 5px;">
+                <!-- <input 
+                [formControlName]="field"
+                [style.background]="field"
+                type="color" 
+                class="form-control form-control-color" 
+                value="#ffffff"
+                > -->
+                <p-colorPicker [formControlName]="field" format="hex"></p-colorPicker>
+              </span>
+              <span style="float: left; padding: 5px">
+                <i id="addColorBox" (click)="addColorBox()" class="pi pi-plus"></i>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-md-8 col-md-4 mt-4 text-end">
+              <button id="saveColorScheme" (click)="saveColorScheme()" type="button" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

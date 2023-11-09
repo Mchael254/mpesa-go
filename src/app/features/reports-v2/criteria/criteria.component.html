@@ -1,0 +1,94 @@
+<div class="row p-3">
+  <div *ngFor="let criterion of criteria" class="col-md-4">
+    <div class="row pill-box fadeIn">
+
+      <div class="col-md-9 text-primary">
+        {{ criterion.queryName }}
+      </div>
+      <div class="col-md-3 text-end">
+        <div class="btn-group me-2">
+          <span id="selectCriteriaBtn" (click)="selectCriteria(criterion)" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="pi pi-sort-amount-down text-secondary"></i>
+          </span>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item sort" (mouseover)="shouldShowSortOption=true">
+                Sort
+              </a>
+              <ul class="fadeIn" [ngStyle]="{'display': shouldShowSortOption ? 'block' : 'none' }">
+                <li><a class="dropdown-item sorting" (click)="addSorting('asc')">Ascending</a></li>
+                <li><a class="dropdown-item sorting" (click)="addSorting('desc')">Descending</a></li>
+              </ul>
+            </li>
+            <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#filter">Filter</a></li>
+          </ul>
+        </div>
+        <i class="pi pi-times text-danger" (click)="deleteCriteria(criterion)"></i>
+      </div>
+    </div>
+
+    <ng-container *ngIf="criterion.filter">
+      <span class="text-secondary filter-option" style="font-size: 0.8em">
+        <i class="pi pi-sort-amount-down"></i>
+        {{ criterion.filter }}
+      </span>  <br>
+    </ng-container>
+
+    <ng-container *ngIf="criterion.sort">
+      <span class="text-secondary filter-option" style="font-size: 0.8em">
+        <i class="pi pi-sort-amount-down"></i>
+        {{ criterion.sort }}
+      </span>
+    </ng-container>
+  </div>
+</div>
+
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-9">
+            <p class="fw-medium text-center text-primary" *ngIf="selectedCriterion">
+              {{ selectedCriterion?.queryName }}
+            </p>
+            <form [formGroup]="filterForm">
+              <div class="mb-3">
+                <label for="condition" class="form-label">Condition</label>
+
+                <select formControlName="operator" id="condition" class="form-select" aria-label="Default select example">
+                  <option *ngFor="let condition of conditions" [value]="condition.value">
+                    {{ condition.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="mb-5">
+                <label for="value" class="form-label">Value</label>
+                <span *ngIf="conditionsType !== 'date'">
+                  <input formControlName="value" id="value" type="text" class="form-control">
+                </span>
+                <span *ngIf="conditionsType === 'date'">
+                  <input formControlName="value" type="date" id="value" class="form-control" aria-label="Value">
+                  <!-- <p-calendar formControlName="value" selectionMode="range" [readonlyInput]="true"></p-calendar> -->
+                </span>
+              </div>
+              <div class="text-center">
+                <a id="addFilterBtn" (click)="addFilter()" class="btn btn-primary ps-5 pe-5">Apply</a>
+              </div>
+            </form>
+
+            <form>
+
+            </form>
+          </div>
+          <div class="col-sm-3 text-end">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

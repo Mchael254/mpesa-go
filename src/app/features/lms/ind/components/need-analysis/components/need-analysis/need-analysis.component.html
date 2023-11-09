@@ -1,0 +1,40 @@
+
+<div class="container-fluid pb-4" style="padding-bottom: 5rem !important;">
+  <div class="full-border p-5" style=" position: relative;" class="mt-1">
+    <ngx-spinner
+name="analysis_view"
+  type="ball-clip-rotate-multiple"
+
+  [fullScreen]="false"
+  color="#00529B"
+  size="medium"
+  bdColor="rgba(255, 255, 255, 0.0)"
+></ngx-spinner>
+    <div class="full-border">
+      <div class="d-flex justify-content-between">
+        <div class="fw-bold text-black">Need Analysis</div>
+      </div>
+
+      <div class="pb-4" >
+
+      </div>
+
+      <div >
+        <div *ngFor="let item of questionSelected; let i = index;">
+          <div>
+            <div *ngIf="!(questionData['products'] && questionData['products'].length>0)">
+              <app-questions *ngIf="questionSelected[i]?.options && questionSelected[i]?.options.length>0 " [questions]=item [optionPosition]=optionSelected[i] [index]=i+1 (selectOption)="selectOption($event)"></app-questions>
+            </div>
+
+            <div *ngIf="questionSelected[i]?.products && questionSelected[i]?.products.length>0 ">
+              <app-analysis-product-list [products]="questionSelected[i]?.products"></app-analysis-product-list>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+  </div>
+</div>

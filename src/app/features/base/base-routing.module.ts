@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BaseComponent } from './base.component';
+import { AuthGuard } from 'src/app/shared/services/guard/auth-guard.service';
 
 const routes: Routes = [{
   path: '',
@@ -36,6 +37,10 @@ const routes: Routes = [{
     {
       path: 'reports',
       loadChildren: () => import('../reports/reports.module').then(m => m.ReportsModule)
+    },
+    {
+      path: 'reportsv2',
+      loadChildren: () => import('../reports-v2/reports-v2.module').then(m => m.ReportsV2Module)
     },
     {
       path: 'administration',

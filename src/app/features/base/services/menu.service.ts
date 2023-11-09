@@ -1,6 +1,5 @@
-
 import { Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import { SidebarMenu } from '../model/sidebar.menu';
 
 @Injectable({
@@ -49,7 +48,7 @@ export class MenuService{
       name: 'Actions',
       nameSlug: 'actions',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},],
+      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Quote Need Analysis', link:"/home/lms/need-analysis"},],
 
       collapsed:true,
     },
@@ -57,15 +56,15 @@ export class MenuService{
       name: 'Quotation',
       nameSlug: 'quotation',
       icon: 'fa-solid fa-quote-right',
-      menuItems: [ {name:'Quotation List', link:"/home/lms/ind/quotation/list"}],
+      menuItems: [ {name:'Quotation List', link:"/home/lms/quotation/list"}],
       collapsed:true,
     }
 
 
   ],
     "STAFF_PERF":[{
-    name: 'My Emloyees',
-    nameSlug: 'emloyees',
+    name: 'My Employees',
+    nameSlug: 'employees',
     link:'./home/entity/staff/list',
     icon: 'fa-solid fa-user-tie',
     svgContent: `
@@ -301,8 +300,46 @@ export class MenuService{
     menuItems: [],
     collapsed:true,
   },
+  {
+    name: 'Quick Quote',
+    nameSlug: 'ShortPeriod',
+    icon: 'fa-solid fa-dumbbell',
+    link:'/home/gis/quotation/quick-quote',
+    menuItems: [],
+    collapsed:true,
+  },
 
-  ]}
+  ],
+    "ANALYTICS":[
+      {
+        name: 'Actions',
+        nameSlug: 'actions',
+        icon: 'fa-solid fa-gears',
+        menuItems: [
+          {
+            name: 'Create Report',
+            link: "/home/reportsv2/create-report"
+          },
+          {
+            name: 'Create Dashboard',
+            link: "/home/reportsv2/create-dashboard"
+          },
+        ],
+
+        collapsed:true,
+      },
+      {
+      name: 'Analytics',
+      nameSlug: 'analytics',
+      icon: 'fa-solid fa-chart-pie',
+      menuItems: [
+        { name: 'Dashboards', link: "home/reportsv2" },
+        { name: 'My Reports', link: "" },
+        { name: 'Shared Reports', link: "" }
+      ],
+
+      collapsed:true,
+    }],}
 
 public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
     {
@@ -362,6 +399,16 @@ teamSubMenuList() : SidebarMenu[]{
     },
   ];
 }
+
+policySubMenuList() : SidebarMenu[]{
+  return [
+    {
+      name:"Policies",
+      link: "/home/lms/policy/list",
+      value: "POLICY"
+    }
+  ];
+}
 claimSubMenuList(): SidebarMenu[]{
   return [
     {
@@ -393,15 +440,33 @@ quotationSubMenuList(): SidebarMenu[]{
   return  [
     {
       name:"Create Quick Quote",
-      link: "/home/lms/ind/quotation/list",
+      link: "/home/lms/quotation/list",
       value: "QUOTATION"
     },
     {
       name:"View Quotations",
-      link:"/home/lms/ind/quotation/list",
+      link:"/home/lms/quotation/list",
       value: "QUOTATION"
     },
   ]}
 
+  analyticsSubMenuList(): SidebarMenu[]{
+    return  [
+      {
+        name:"Create Report",
+        link: "/home/reportsv2/create-report",
+        value: "ANALYTICS"
+      },
+      {
+        name:"Create Dashboard",
+        link:"/home/reportsv2/create-dashboard",
+        value: "ANALYTICS"
+      },
+      {
+        name:"Dashboard",
+        link:"/home/reportsv2",
+        value: "ANALYTICS"
+      },
+    ]}
 
 }

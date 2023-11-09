@@ -6,7 +6,7 @@
     "accounts": "Konten",
     "team": "Team",
     "administration": "Verwaltung",
-    "new_chart": "neue Grafik",
+    "new_report": "neue Grafik",
     "analytics": "Analytik",
     "reinsurance": "Rückversicherung",
     "tickets": "Tickets",
@@ -14,6 +14,8 @@
     "view_all": "ALLE ANSEHEN",
     "summary" : "Zusammenfassung",
     "my_policies": "Meine Richtlinien",
-    "my_quotations": "Meine Angebote"
+    "my_quotations": "Meine Angebote",
+    "quotation": "Angebot"
+
   }
 }

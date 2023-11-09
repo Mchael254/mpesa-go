@@ -5,10 +5,10 @@ import { SequenceService } from '../../../services/system-sequences/sequences.se
 import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import {MessageService} from "primeng/api";
-import { BranchService } from '../../../../../../../shared/services/setups/branch.service';
 import { IntermediaryService } from '../../../../../../entities/services/intermediary/intermediary.service';
 import { ProductService } from '../../../../../../gis/services/product/product.service';
 import { of, throwError } from 'rxjs';
+import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
 
 describe('SystemSequencesComponent', () => {
   let component: SystemSequencesComponent;
@@ -27,7 +27,7 @@ describe('SystemSequencesComponent', () => {
         HttpClientTestingModule
       ],
       providers: [
-        FormBuilder, 
+        FormBuilder,
         SequenceService,
         MessageService,
         IntermediaryService,
@@ -131,7 +131,7 @@ describe('SystemSequencesComponent', () => {
     expect(branchService.getBranches(2).subscribe((data) =>{
       component.branch= data;
     })).toBeTruthy();
-    
+
   });
   it('should get agents', () => {
     jest.spyOn(agentService, 'getAgents').mockReturnValue(of());
@@ -139,7 +139,7 @@ describe('SystemSequencesComponent', () => {
     expect(agentService.getAgents().subscribe((data) =>{
       component.agents= data;
     })).toBeTruthy();
-    
+
   });
   it('should get all products', () => {
     jest.spyOn(productService, 'getAllProducts').mockReturnValue(of());
@@ -147,7 +147,7 @@ describe('SystemSequencesComponent', () => {
     expect(productService.getAllProducts().subscribe((data) =>{
       component.product= data;
     })).toBeTruthy();
-    
+
   });
   it('should create a missing sequence successfully and show success message', () => {
 
@@ -174,7 +174,7 @@ describe('SystemSequencesComponent', () => {
     const selectedNodeKey = '123';
     component.selectedNode = { key: selectedNodeKey };
 
-    
+
 
     const mockResponse = {}; // Mock response from the sequenceService
 

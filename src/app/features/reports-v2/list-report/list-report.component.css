@@ -1,0 +1,27 @@
+.divBackground {
+  background-color: rgba(0, 82, 155, 0.25);
+  --bs-gutter-x: 0;
+}
+:host ::ng-deep .p-menu {
+  top: 6%!important;
+  left: 75%!important;
+  width: 8em;
+  font-family: Roboto;
+}
+:host ::ng-deep .p-element .p-submenu-header {
+  display:none;
+}
+.move {
+  cursor: move;
+}
+::ng-deep .p-datatable-thead tr th{
+  font-size: 8px !important;
+}
+::ng-deep .p-datatable-tbody tr td{
+  font-size: 8px !important;
+  padding: 0px!important;
+  line-height: 25px !important;
+}
+::ng-deep p-paginator {
+  display:none;
+}

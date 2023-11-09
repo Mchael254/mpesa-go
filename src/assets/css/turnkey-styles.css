@@ -3,6 +3,7 @@
 
 * {
   --primary-color:  #00529B;
+  --grey-color: #868E96;
 
 }
 
@@ -26,34 +27,25 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 0;
+  border-radius: 4px;
   color: #fff;
   margin-right: 5px;
 }
 
 .btn-success {
-  border-radius: 0;
   color: #fff;
   margin-right: 5px;
 }
 
-.btn-danger {
-  border-radius: 0;
-}
-
-.btn-outline-secondary {
-  border-radius: 0;
-}
-
 .btn-outline-primary {
-  border-radius: 0;
+  border-radius: 4px;
   background: #fff;
   border: solid 1px #00529b;
   color: #00529b;
 }
 
 .btn-outline-primary:hover {
-  border-radius: 0;
+  border-radius: 4px;
   background: #00529b;
   border: solid 1px #00529b;
   color: #fff;
@@ -71,13 +63,13 @@ html,body {
   width: 120px
 }
 
-.form-select {
-  border-radius: 0;
-}
+/* .form-select {
+    border-radius: 2px;
+    border: 1px solid #07070761;
+} */
 
 .setups .card {
   padding: 20px;
-  border-radius: 0;
 }
 
 .setups .listing {
@@ -243,14 +235,9 @@ html,body {
   color: var(--primary-color)!important;
 }
 
-.base-content .base-content-section .form-control {
-  border-radius: 0;
-}
-
 .base-content .base-content-section .calendar .card-header {
   background: var(--primary-color);
   color: #fff;
-  border-radius: 0;
 }
 
 .base-content .base-content-section .calendar .form-select {
@@ -348,7 +335,10 @@ h5.htxt {
 }
 
 .form-control {
-  border-radius: 0;
+  border-radius: 4px;
+}
+.form-select{
+  border-radius: 4px;
 }
 /*Login ends*/
 
@@ -494,11 +484,17 @@ h5.htxt {
 }
 
 .full-border {
-  border: 1px solid #ccc; /* Adjust border style and color as per your preference */
-  padding: 2rem; /* Add padding to create space between form elements and the border */
-  border-radius: 5px; /* Optional: Add border radius for rounded corners */
-  margin: 10px;
+  padding: 2rem 4rem 2rem 2rem;
+  width: 100%;
   background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.34);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 0.9em;
+  margin: 20px 2px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .action-buttons-container {
@@ -511,7 +507,7 @@ h5.htxt {
 
 .card {
   background-color: white;
-  border-radius: 0 px;
+  border-radius: 0px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -586,4 +582,81 @@ h5.htxt {
   color: white;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
+}
+
+.form-check > input {
+  border: 2px solid black;
+}
+.form-check-input:checked {
+  background-color: #000000;
+}
+
+.form-check-input:checked,
+.form-check-input:active
+ {
+  background-color: #000000;
+  border: 2px solid black;
+
+}
+
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.1rem 0.1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  padding: 0.6rem 0.6rem;
+}
+tr > td > p-celleditor > input {
+  width: 150px;
+}
+
+p-celleditor > p-dropdown .p-dropdown {
+  height: 30px;
+  border-radius: 0;
+  border: solid 1px black;
+  transform: translateY(3px);
+}
+
+.p-button.p-button-icon-only {
+  border-radius: 0;
+  background-color: white !important;
+  color: var(--primary-color);
+  font-weight: 500;
+
+}
+
+.p-button.p-button-icon-only:hover {
+  border-radius: 0;
+  background-color: white !important;
+  color: rgb(14, 30, 66);
+}
+
+p-table tr > th {
+  font-size: 12px;
+  width: 10%;
+}
+
+.b-r {
+  width: 2.5rem; height: 2.5rem; border-radius: 10rem;
+  background-color: rgb(217, 217, 235);
+  /* border: 1px rgb(8, 32, 81) solid; */
+  cursor:pointer;
+  color:var(--primary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.b-r:hover {
+  width: 2.4rem; height: 2.4rem; border-radius: 10rem;
+  background-color: rgb(172, 172, 176);
+  border: none;
+  cursor:pointer;
+  color:var(--primary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }

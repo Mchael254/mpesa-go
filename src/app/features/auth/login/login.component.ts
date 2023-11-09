@@ -6,8 +6,10 @@ import { Observable } from 'rxjs';
 import { UserCredential } from '../../base/util';
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
-import {UtilService} from "../../../shared/services";
+import {Logger, UtilService} from "../../../shared/services";
 import {AuthService} from "../../../shared/services/auth.service";
+
+const log = new Logger('LoginComponent')
 
 @Component({
   selector: 'app-login',
@@ -101,6 +103,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.authenticateUser(authenticationData, (data) => {
       if(data != null){
         let message: string = data.message;
+
+        if (data.allowMultifactor === 'N') {
+          log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
+          return this.authService.attemptAuth(authenticationData);
+        }
+
         this.expiryMessage = message;
         if (data.accountStatus ===true && data.emailAddress != null) {
           if (this.loginForm.get('rememberMe').value) {
@@ -144,7 +152,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         }else{
           /*ToDo: Implement password expired here*/
           this.errorOccurred = true;
-          this.errorMessage = 'Error Occured, please try again';
+          this.errorMessage = 'Error Occurred, please try again';
           this.cdr.detectChanges()
         }
       }
