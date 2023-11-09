@@ -394,13 +394,13 @@ h5.htxt {
 
 
 .help{
-font-family: 'Lato';
-font-style: normal;
-font-weight: 700;
-font-size: 14px;
-line-height: 17px;
-text-decoration: underline;
-color: #00529B;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 17px;
+  text-decoration: underline;
+  color: #00529B;
 }
 .text-plain:hover {
   border: 1px solid var(--primary-color);
@@ -516,7 +516,7 @@ color: #00529B;
 }
 
 .card-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 10px;
 }
 

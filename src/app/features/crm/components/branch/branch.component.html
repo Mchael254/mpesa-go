@@ -1,0 +1,242 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <app-stepper [currentStep]="4" [stepperData]="steps"></app-stepper>
+  <div class="row">
+    <form [formGroup]="createBranchForm" class="gap-3">
+      <div class="card mb-3">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3">Organization Definition</span>
+          <span class="float-end mt-3">
+            <button type="button" class="btn btn-primary">Create New</button>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group mb-4">
+                <label for="organization" class="form-label">Select an Organization</label>
+                <select id="organization" class="form-select  mb-1" formControlName="organization" (change)="onOrganizationChange($event)"
+                  [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
+                  <option value="" selected>Select organization</option>
+                  <option *ngFor="let organization of organizationsData" [value]="organization.id">{{ organization.name }}
+                  </option>
+                </select>
+                <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)"
+                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['organization']?.errors }">
+                  <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group mb-4">
+                <label for="region" class="form-label">Select a Region</label>
+                <select id="region" class="form-select  mb-1" formControlName="region" (change)="onRegionChange($event)"
+                  [ngClass]="{ 'is-invalid': f['region']?.invalid && (f['region']?.dirty || f['region']?.touched) }">
+                  <option value="" selected>Select Region</option>
+                  <option *ngFor="let region of regionData" [value]="region.code">{{ region.name }}
+                  </option>
+                </select>
+                <div *ngIf="f['region']?.invalid && (f['region']?.dirty || f['region']?.touched)"
+                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['region']?.errors }">
+                  <div *ngIf="f['region']?.errors['required']">Region is required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Branch Details</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="form-group col-4">
+              <input type="text" class="form-control" placeholder="Search by name" aria-label="search"
+                aria-describedby="search">
+            </div>
+            <div class="col-8">
+              <div class="float-end">
+                <span class="icon-circle"><i class="pi pi-arrow-right-arrow-left"></i></span>
+                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
+                    data-bs-target="#branchContact"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="BranchesData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">ID</th>
+                    <th class="head">Ref</th>
+                    <th class="head">Name</th>
+                    <th class="head">Physical Address</th>
+                    <th class="head">Email</th>
+                    <th class="head">Postal Address</th>
+                    <th class="head">Contact</th>
+                    <th class="head">Manager</th>
+                    <th class="head">Manager Allowed</th>
+                    <th class="head">Override Commission</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-branch>
+                  <tr class="custom-table" (click)="onBranchRowSelect(branch)">
+                    <td class="body">{{ branch.id}}</td>
+                    <td class="body">{{ branch.ref }}</td>
+                    <td class="body">{{ branch.name }}</td>
+                    <td class="body">{{ branch.physicalAddress }}</td>
+                    <td class="body">{{ branch.emailAddress }}</td>
+                    <td class="body">{{ branch.postalAddress }}</td>
+                    <td class="body">{{ branch.telephone }}</td>
+                    <td class="body">{{ branch.managerName }}</td>
+                    <td class="body">{{ branch.managerAllowed }}</td>
+                    <td class="body">{{ branch.overrideCommissionAllowed }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No branch detail's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Branch Division</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="float-end">
+                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
+                    data-bs-target="#branchContact"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="BranchDivisionData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Division Name</th>
+                    <th class="head">Branch Name</th>
+                    <th class="head">Branch Division WEF</th>
+                    <th class="head">Branch Division WET</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-branchD>
+                  <tr>
+                    <td class="body">{{ branchD.divisionName }}</td>
+                    <td class="body">{{ branchD.branchName }}</td>
+                    <td class="body">{{ branchD.wef }}</td>
+                    <td class="body">{{ branchD.wet }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No branch division's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Branch Contacts</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="form-group col-4">
+              <input type="text" class="form-control" placeholder="Search by name, home or email address" 
+              aria-label="search" aria-describedby="search">
+            </div>
+            <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+            <div class="form-group col-3">
+              <input type="text" class="form-control" name="filterByDay" placeholder="Date" onfocus="(this.type='date')"
+                onblur="(this.type='text')">
+            </div>
+            <div class="col-4">
+              <div class="float-end">
+                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
+                    data-bs-target="#branchContact"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="branchContacts" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Contact Name</th>
+                    <th class="head">Designation</th>
+                    <th class="head">Mobile Number</th>
+                    <th class="head">Telephone</th>
+                    <th class="head">NIN No</th>
+                    <th class="head">Home Address</th>
+                    <th class="head">Email Address</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-contact>
+                  <tr>
+                    <td class="body">{{ contact.contactName }}</td>
+                    <td class="body">{{ contact.designation }}</td>
+                    <td class="body">{{ contact.mobile}}</td>
+                    <td class="body">{{ contact.telephone }}</td>
+                    <td class="body">{{ contact.ninNumber }}</td>
+                    <td class="body">{{ contact.homeAddress}}</td>
+                    <td class="body">{{ contact.emailAddress}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No branch contact's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="row mt-1">
+      <div class="col-12">
+        <div class="row float-end">
+          <button class="btn btn-primary mt-auto align-self-end" (click)="onNext()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
