@@ -90,7 +90,7 @@ export class StaffService {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    return this.http.post<NewAccountCreatedResponse>(`/${this.baseAccountsUrl}/accounts/accounts`, userData, {headers});
+    return this.http.post<NewAccountCreatedResponse>(`/${this.baseAccountsUrl}/accounts`, userData, {headers});
   }
 
   /**

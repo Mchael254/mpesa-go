@@ -1,0 +1,55 @@
+.centered-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.card {
+  height: 2.8rem;
+}
+.card-body.centered-content > span:nth-child(2){
+  padding-left: 0.5rem;
+}
+
+/* Styles for screens with a minimum width of 992px (Tablets) to 1199px (Small PCs) */
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+
+  .fw-bold {
+    font-size: 12px !important;
+  }
+
+}
+.card:hover {
+  background-color: rgba(0, 0, 0, 0.899);
+  color: white;
+  cursor: pointer;
+}
+
+/* Styles for screens with a minimum width of 768px (Tablets) to 991px (Small Tablets) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .row.sub-border > div:nth-child(1){
+    border-bottom: 1px solid rgba(0, 0, 0, 0.244);
+    border-right: 0px solid black;
+  }
+}
+
+/* Styles for screens with a maximum width of 767px (Mobile Phones) and below */
+@media screen and (max-width: 767px) {
+
+  .fs-6 {
+    font-size: 12px !important;
+  }
+  .row.sub-border > div:nth-child(1){
+    border-bottom: 1px solid rgba(0, 0, 0, 0.244);
+    border-right: 0px solid black;
+  }
+  .gap-below {
+    padding-bottom: 0.5rem;
+  }
+
+  .fw-bold {
+    font-size: 12px !important;
+  }
+}
+

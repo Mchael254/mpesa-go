@@ -9,7 +9,7 @@ import {LoaderComponent} from "./components/loader/loader.component";
 import {NotificationsComponent} from "./components/notifications/notifications.component";
 import {ToastModule} from "primeng/toast";
 import {ProgressBarModule} from "primeng/progressbar";
-import {HTTP_INTERCEPTORS, HttpClient} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {LoaderService} from "./services/loader.service";
 import { FileExtensionPipe } from './pipes/file-extension/file-extension.pipe';
 import { DocViewerComponent } from './components/doc-viewer/doc-viewer.component';
@@ -53,6 +53,15 @@ export { RoleGuard, AuthGuard } from './services/guard';
 import {TranslateModule} from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
+import { ShareModalComponent } from './components/share-modal/share-modal.component';
+import { DownloadModalComponent } from './components/download-modal/download-modal.component';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
+import { CountryService } from './services/setups/country/country.service';
+import { TabMenuModule } from 'primeng/tabmenu';
+
+
+
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
@@ -81,6 +90,7 @@ const SERVICES = [
   HttpCacheService,
   JwtService,
   LoaderService,
+  CountryService,
   { provide: BrowserStorage, useClass: LocalBrowserStorageService },
 
   // interceptors
@@ -129,7 +139,9 @@ const SERVICES = [
     DynamicSetupTableScreenComponent,
     DynamicSetupWizardWelcomeScreenComponent,
     CustomFilterPipe,
-    SafeResourceUrlPipe
+    SafeResourceUrlPipe,
+    ShareModalComponent,
+    DownloadModalComponent
 
 
   ],
@@ -146,8 +158,10 @@ const SERVICES = [
         RouterLink,
         NgxSpinnerModule,
         TranslateModule,
-        ReactiveFormsModule
-
+        ReactiveFormsModule,
+        CalendarModule,
+        DropdownModule,
+        HttpClientModule
     ],
     exports: [
         ErrorComponent,
@@ -172,9 +186,16 @@ const SERVICES = [
         DynamicSetupWizardWelcomeScreenComponent,
         ReactiveFormsModule,
         CustomFilterPipe,
-        SafeResourceUrlPipe
+        SafeResourceUrlPipe,
+        CalendarModule,
+        TableModule,
+        DropdownModule,
+        TabMenuModule,
+        ShareModalComponent,
+        DownloadModalComponent
 
-    ],
+
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {

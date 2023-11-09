@@ -202,7 +202,7 @@ export class TicketsService {
 
   // get all transactions for a supervisor
   getAllTransactions(
-    pageNo: number = 0,
+    pageNo: number,
     pageSize: number,
     fromDate: string,
     toDate: string,
@@ -458,6 +458,7 @@ export class TicketsService {
 
   getQuotation(quotationNo: string) {
     const  baseUrl = this.appConfig.config.contextPath.gis_services;
+
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',

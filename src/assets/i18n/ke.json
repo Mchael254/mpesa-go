@@ -7,13 +7,15 @@
     "tickets": "Tiketi",
     "team": "Timu",
     "administration": "Utawala",
-    "new_chart": "grafu_mpya",
+    "new_report": "grafu_mpya",
     "analytics": "Uchambuzi",
     "reinsurance": "Bima ya kurejesha",
     "no_of_tickets": "Idadi ya Tiketi",
     "view_all": "ANGALIA YOTE",
     "summary" : "Muhtasari",
     "my_policies": "Sera Zangu",
-    "my_quotations": "Nukuu Zangu"
+    "my_quotations": "Nukuu Zangu",
+    "quotation": "nukuu"
+
   }
 }

@@ -133,7 +133,7 @@ describe('AccountStatusService', () => {
     service.updateAccountStatus(accountId, statusUpdateDetails).subscribe(res => {
       expect(res).toBeTruthy();
     });
-    // const req = httpTestingController.expectOne(`${baseUrl}/accounts/accounts/${accountId}/status`, JSON.stringify(statusUpdateDetails));
+    // const req = httpTestingController.expectOne(`${baseUrl}/${accountId}/status`, JSON.stringify(statusUpdateDetails));
     // expect(req.request.method).toEqual('PATCH');
     // expect(req.request.body).toEqual(true);
     //

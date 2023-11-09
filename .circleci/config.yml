@@ -1,0 +1,83 @@
+version: 2.1
+orbs:
+  browser-tools: circleci/browser-tools@1.4.6
+jobs:
+  build:
+    working_directory: ~/turnquestv6-fe
+    docker:
+      - image: cimg/node:16.13.1-browsers
+    steps:
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
+      - run:
+          command: |
+            google-chrome --version
+            chromedriver --version
+          name: Check install
+      - checkout
+      - restore_cache:
+          key: turnquestv6-fe-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm install
+      - save_cache:
+          key: turnquestv6-fe-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "node_modules"
+      - run: npm run test
+      # - run:
+      #     name: Linting
+      #     command: npm run lint  # Run linting checks as part of the build
+      - run:
+          name: Build Angular App
+          command: npm run build
+
+  # deploy_staging:
+  #   docker:
+  #     - image: circleci/node:14.17
+  #   working_directory: ~/turnquestv6-fe
+
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Deploy to Staging
+  #         command: |
+  #           # Replace this with your actual deployment commands to staging
+  #           # For example, deploying to a staging server, a cloud platform, or using a CI/CD tool.
+  #           echo "Deploying to Staging"
+  #           # Your deployment commands here
+
+  # deploy_production:
+  #   docker:
+  #     - image: circleci/node:14.17
+  #   working_directory: ~/turnquestv6-fe
+
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Deploy to Production
+  #         command: |
+  #           # Replace this with your actual deployment commands to production
+  #           # For example, deploying to a production server, a cloud platform, or using a CI/CD tool.
+  #           echo "Deploying to Production"
+  #           # Your deployment commands here
+
+workflows:
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/  # Ignore no branches, run on all branches
+      # - deploy_staging:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      # - deploy_production:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
