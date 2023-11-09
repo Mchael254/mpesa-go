@@ -40,6 +40,10 @@ export class CriteriaPillComponent implements OnInit {
     });
   }
 
+  /**
+   * Emits the selected criteria to the parent component
+   * @returns void
+   */
   selectCriteria(criteria: Criteria) {
     this.deleteCriteriaDetails.emit(criteria);
   }

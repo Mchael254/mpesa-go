@@ -57,4 +57,20 @@ export class BranchService {
     });
   }
 
+
+  //This method is for testing purposes only
+
+  getBranch():Observable<OrganizationBranchDto[]>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+   
+
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organizations/2/branches`, {
+      headers: headers,
+    
+    });
+  }
+
 }
