@@ -1,0 +1,66 @@
+<div class="mx-4 mt-3">
+    <p class="title">Quotations:Client Details </p>
+    <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="mb-4">Multi-user entry</h6>
+            <form [formGroup]="multiUserForm">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <label for="" class="quote-label">Select User</label>
+                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="user">
+                </div>
+                <div class="col-md-4"> <label for="" class="quote-label">Select Subclass</label>
+                    <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="subclass"  placement="right" >
+                        <option selected="true" disabled="disabled"></option> 
+                        <option *ngFor="let data of subclass"  [value]="data.code">{{data.description}}</option>
+                    </select> 
+                </div>
+                <div class="col-md-4 mt-3">
+                    <button class="btn btn-primary" (click)="assignUser()">Assign User</button>
+                </div>
+            </div>
+            </form>
+
+            <p-table 
+            [value]="assigned"
+            [resizableColumns]="true" 
+            styleClass="p-datatable-sm"
+
+            class='ui-datatable mb-4' 
+            [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>User name</th>
+                        <th>Subclass Assigned</th>
+                        
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                    <tr>
+                     
+                        <td>{{ data.user }}</td>
+                        <td>{{ data.subclass }}</td>
+                        
+                        
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="1"></td>
+                
+                      <td colspan="10" style="padding:50px;padding-left: 350px;" id="empty">No records Found</td>
+                    </tr>
+                
+                  </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <p class="back float-start" [routerLink]="['/home/gis/quotation/quotation-details']">Back</p>
+    <div class="float-end mb-4">
+        <button class="btn btn-primary">Assign Tasks</button>
+        <button class="btn btn-primary" [routerLink]="['/home/gis/quotation/import-risks']">Next</button>
+    </div>
+</div>

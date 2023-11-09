@@ -50,7 +50,7 @@ export class TokenInterceptor implements HttpInterceptor {
     }
 
 
-//     console.log("INTERCEPTOR >>>>>>" + token);
+    console.log("INTERCEPTOR >>>>>>" + token);
 
     if (token) {
       const authReq = req.clone({

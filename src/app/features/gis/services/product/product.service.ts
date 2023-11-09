@@ -86,6 +86,14 @@ export class ProductService {
     )
   
   }
+  getProductDetailsByCode(code: number): Observable<Products>{
+    
+    return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  
+  }
   getProductDocument(code: number): Observable<any>{
     
     return this.http.get<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents?productCode=${code}`).pipe(
@@ -124,6 +132,13 @@ export class ProductService {
   getASubclasses (): Observable<SubclassesDTO>{
 
     return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?pageNo=0&pageSize=90`).pipe(
+      retry(1),
+      catchError(this.errorHandl) 
+    );
+  }
+  getProductSubclasses (productCode): Observable<SubclassesDTO>{
+
+    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`).pipe(
       retry(1),
       catchError(this.errorHandl) 
     );

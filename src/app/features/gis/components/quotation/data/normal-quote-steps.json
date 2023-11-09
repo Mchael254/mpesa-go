@@ -1,0 +1,24 @@
+[
+    {
+      "number": 1,
+      "title": "Client details",
+      "link": "/home/gis/quotation/quotations-client-details"
+    },
+    {
+      "number": 2,
+      "title": "Quotation Details",
+      "link": "/home/gis/quotation/quotation-details"
+    },
+  
+    {
+      "number": 3,
+      "title": "Risk-section details",
+      "link": "/home/gis/quotation/risk-section-details"
+    },
+    {
+        "number": 4,
+        "title": "Quotation summary",
+        "link": "/home/gis/quotation/quotation-summary"
+      }
+   
+]
