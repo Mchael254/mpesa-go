@@ -7,13 +7,14 @@
     "tickets": "票务",
     "team": "团队",
     "administration": "管理",
-    "new_chart": "新图表",
+    "new_report": "新图表",
     "analytics": "分析",
     "reinsurance": "再保险",
     "no_of_tickets": "门票数量",
     "view_all": "查看全部",
     "summary" : "概括",
     "my_policies": "我的保单",
-    "my_quotations": "我的报价"
+    "my_quotations": "我的报价",
+    "quotation": "报价"
   }
 }

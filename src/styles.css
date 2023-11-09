@@ -5,10 +5,12 @@
 @import "~@fortawesome/fontawesome-free/css/brands.css";
 @import "assets/css/turnkey-styles.css";
 
+@import "node_modules/@costlydeveloper/ngx-awesome-popup/styles/theme";
+
 .fadeIn {
   -webkit-animation-name: fadeIn;
   animation-name: fadeIn;
-  animation-duration: 1s;
+  animation-duration: 1.5s;
 }
 
 @-webkit-keyframes fadeIn {
@@ -30,6 +32,55 @@
     opacity: 1;
   }
 }
+
+.bounceOutDown {
+  -webkit-animation-name: bounceOutDown;
+  animation-name: bounceOutDown;
+    animation-duration: 1.9s;
+
+}
+
+@-webkit-keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 10px, 0);
+    transform: translate3d(0, 10px, 0);
+  }
+
+  40%,
+  45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 2000px, 0);
+    transform: translate3d(0, 2000px, 0);
+  }
+}
+
+@keyframes bounceOutDown {
+  20% {
+    -webkit-transform: translate3d(0, 10px, 0);
+    transform: translate3d(0, 10px, 0);
+  }
+
+  40%,
+  45% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, -20px, 0);
+  }
+
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 2000px, 0);
+    transform: translate3d(0, 2000px, 0);
+  }
+}
+
+
 
 .p-fluid .p-inputtext {
   width: 100%;
@@ -66,3 +117,47 @@ tr.ng-star-inserted {
   border: 0;
   border-radius: 0;
 }
+
+.p-calendar {
+  display: flex !important;
+  border-radius: 0 !important;
+  height: 2.4rem !important;
+}
+.p-inputtext {
+  border-radius: 0;
+}
+
+.p-button.p-button-icon-only {
+  border-radius: 0;
+  background-color: var(--primary-color);
+}
+
+
+.toast-wrapper.standard-toast .evolve-toast .text-wrapper-section .text-wrapper {
+  font-weight: 500;
+  color: black;
+  font-size: 13px
+}
+
+.toast-wrapper.standard-toast .evolve-toast .toast-title-content {
+  color: #940e0e;
+}
+
+.toast-wrapper.standard-toast .evolve-toast .toast-title-content {
+  color: #000000 !important;
+  font-weight: 600;
+}
+
+.toast-entity {
+  width: 450px !important;
+}
+
+
+.spinner-border-resize {
+  --bs-spinner-width: 1.2rem !important;
+  --bs-spinner-height: 1.2rem !important;
+  margin-left: 0.5rem;
+
+  font-size: 7px;
+}
+

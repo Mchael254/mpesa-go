@@ -1,0 +1,289 @@
+<div class="base-content-section dashboard">
+  <div class="card">
+    <div class="card-header bg-transparent">
+      <span class="float-start text-primary fw-bold">
+        <i class="pi pi-chevron-left"></i>
+        Reports
+      </span>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-3 border-0 border-end p-4">
+          <div class="me-4">
+            <app-dynamic-breadcrumb [breadCrumbItems]="createReportBreadCrumbItems">
+            </app-dynamic-breadcrumb>
+          </div>
+
+          <div class="visualizations">
+            <div class="">
+              <label for="visualization">Visualization</label>
+              <p class="selected-visualization" (click)="showVisualizationList()" id="visualization">
+                <i [class]="selectedChartType.iconClass"></i>
+                <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
+                <i class="pi pi-chevron-down float-end mt-1"></i>
+              </p>
+            </div>
+
+            <ng-container *ngIf="shouldShowVisualization">
+              <form class="fadeIn chart-type-form">
+                <div *ngFor="let chartType of chartTypes" class="form-check">
+                  <input
+                    (click)="selectChart($event)"
+                    class="form-check-input select-chart"
+                    type="checkbox"
+                    [value]="chartType.name"
+                    [attr.id]="chartType.name"
+                    [checked]="chartType.isSelected"
+                  >
+                  <label class="form-check-label" [attr.for]="chartType.name">
+                    <i [class]="chartType.iconClass"></i> {{ chartType.name }}
+                  </label>
+                </div>
+              </form>
+            </ng-container>
+
+          </div>
+
+          <div class="visualizations mt-3" *ngIf="displayChartTypes.length > 0">
+            <div class="">
+              <label for="style">Style</label>
+              <p class="selected-visualization" (click)="showStyles()" id="style">
+                <span class="ml-2">{{ styleType | titlecase }}</span>
+                <i class="pi pi-chevron-down float-end mt-1"></i>
+              </p>
+              <ul *ngIf="shouldShowStyles" class="fadeIn">
+                <ng-container *ngFor="let style of displayChartTypes" >
+                  <li class="chart-type" (click)="selectStyle(style?.type)">
+                    <span class="ml-2">{{ style?.type | titlecase }}</span>
+                  </li>
+                </ng-container>
+              </ul>
+              <div class="color-scheme py-2" *ngIf="styleType !== 'table'">
+                <app-color-scheme
+                (selectedColorScheme)="setColorScheme($event)"
+                ></app-color-scheme>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button
+              class="btn btn-outline-primary mt-3 continueBtn float-start"
+              (click)="backToCreateReport()"
+              id="backBtn"
+            >Go Back
+            </button>
+            <button
+              class="btn btn-primary mt-3 continueBtn float-end"
+              data-bs-toggle="modal"
+              data-bs-target="#saveReportModal"
+            >Save
+            </button>
+          </div>
+
+        </div>
+
+        <div class="col-sm-9 text-center">
+          <div class="text-center" id="reportName">
+            <input
+              type="text"
+              class="text-center bg-transparent btn-full-width"
+              placeholder="Pilot report"
+              disabled
+              [attr.value]="reportNameRec"
+            >
+          </div>
+
+          <form>
+            <div class="row">
+              <div class="col-md-5 mt-3">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input type="text" pInputText class="p-inputtext-sm" placeholder="Search"/>
+                </span>
+              </div>
+              <div class="col-md-4 offset-md-2 mt-3 text-end">
+                <span class="float-end" data-bs-toggle="modal" data-bs-target="#advancedFilterModal">
+                  <i class="pi pi-filter"></i> advanced filter
+                </span>
+              </div>
+            </div>
+          </form>
+
+          <div class="row p-3">
+            <div class="text-center" *ngIf="!isPreviewResultAvailable" style="padding: 4rem 0;">
+              <p-progressSpinner
+                styleClass="w-0.5em h-0.5em "
+                strokeWidth="3"
+                fill="var(--surface-ground)"
+                animationDuration=".6s"
+              ></p-progressSpinner>
+            </div>
+
+            <ng-container *ngFor="let chart of displayChartTypes">
+              <div
+                *ngIf="chart?.type !== 'table' && isPreviewResultAvailable"
+                style="max-height: 800px"
+                class="col-md-6 my-1 p-2"
+              >
+                <app-dynamic-chart
+                  [chartType]="chart?.type"
+                  [basicData]="setChartColors(chart?.type, chartData)"
+                ></app-dynamic-chart>
+              </div>
+              <div
+                class="col-md-12 my-1"
+                *ngIf="chart?.type === 'table' && isPreviewResultAvailable;"
+              >
+                <app-dynamic-table
+                  [tableDetails]="tableDetails"
+                ></app-dynamic-table>
+              </div>
+            </ng-container>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Advanced filter Modal -->
+<div class="modal fade" id="advancedFilterModal" tabindex="-1" aria-labelledby="advancedFilterModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Advanced filter</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="filterForm" class="mb-3">
+          <div class="row g-3">
+            <div class="col">
+              <label for="column" class="form-label">Column</label>
+              <select (change)="showConditions($event)" formControlName="column" id="column" class="form-select">
+                <option
+                  *ngFor="let criterion of criteria"
+                  [value]="criterion.query"
+                >
+                  {{ criterion.queryName }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="operator" class="form-label">Operator</label>
+              <select formControlName="operator" id="operator" class="form-select">
+                <option
+                  *ngFor="let condition of conditionsOptionsValue"
+                  [value]="condition.value"
+                >
+                  {{ condition.label }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="value" class="form-label">Value</label>
+              <span *ngIf="conditionsType !== 'date'">
+                <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
+              </span>
+              <span *ngIf="conditionsType === 'date'">
+                <input formControlName="value" type="date" id="value" class="form-control" aria-label="Value">
+                <!-- <p-calendar formControlName="value" selectionMode="range" [readonlyInput]="true"></p-calendar> -->
+              </span>
+            </div>
+            <div class="col p-1">
+              <a
+                class="btn btn-outline-primary mt-4 btn-full-width"
+                (click)="addFilter()"
+                id="addFilterBtn"
+              >Add
+              </a>
+            </div>
+          </div>
+        </form>
+
+        <ng-container *ngFor="let filter of selectedFilters">
+          <div class="row g-3 text-dark my-1" id="selectedFilters">
+            <div class="col">{{ filter.column }}</div>
+            <div class="col">{{ filter?.operator?.label }}</div>
+            <div class="col">{{ filter?.value }}</div>
+            <div class="col text-center text-danger" style="cursor: pointer">
+              <i class="pi pi-times remove-filter" (click)="removeFilter(filter)"></i>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="text-center mt-5">
+          <button type="button" class="btn btn-primary" (click)="loadChart()">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Save Report Modal -->
+<div class="modal fade" id="saveReportModal" tabindex="-1" aria-labelledby="saveReportModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+
+        <form [formGroup]="saveReportForm">
+          <div class="row g-3">
+            <div class="col">
+              <label for="report" class="form-label">Report</label>
+              <input formControlName="reportName" type="text" id="report" class="form-control" aria-label="Value">
+            </div>
+            <div class="col">
+              <label for="dashboard" class="form-label">Dashboard</label>
+                <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
+                  <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
+                    {{ dashboard.name }}
+                  </option>
+                </select>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <p class="form-label">Pick a destination for your report</p>
+            <div class="col-md-4">
+              <input
+                formControlName="destination"
+                class="form-check-input me-2"
+                type="radio"
+                value="M"
+                id="my-reports"
+              >
+              <label class="text-dark" for="my-reports">
+                My reports
+              </label>
+            </div>
+            <div class="col-md-4">
+              <input
+                formControlName="destination"
+                class="form-check-input me-2"
+                type="radio"
+                value="S"
+                id="shared-reports"
+              >
+              <label class="text-dark" for="shared-reports">
+                Shared reports
+              </label>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center mt-5">
+          <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@
       <div style="color: white; padding: 0 0rem; display: flex; font-size: 1.5rem;">
         <div class="dropdown" style="padding: 0 1rem;">
           <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
-          <div class="dropdown-content" style="min-width: 110px; font-size: 1.6rem; ">
+          <div class="dropdown-content" style="min-width: 120px; font-size: 1.6rem; z-index: 999999;">
             <div *ngFor="let language of languages">
               <a (click)="selectLanguage(language)">
                 <span [class]="language.class"></span> <span style="color: black; font-size: 14px;"> {{language.lang}}</span>
@@ -19,9 +19,10 @@
         </div>
         <div class="dropdown profile">
           <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span>
+            <span class="float-end">
               <img [src]="getUserImage()" class="rounded-circle" [alt]="user?.name?.substring(0, 1)+'W'">
               <!-- {{user?.name?.substring(0, 1)?.toUppercase() | uppercase}} -->
+              {{ user?.name }}
             </span>
           </button>
           <ul class="dropdown-menu">

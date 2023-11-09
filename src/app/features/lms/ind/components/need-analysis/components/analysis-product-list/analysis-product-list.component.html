@@ -1,0 +1,81 @@
+<div class="text-black fw-medium pr-4">Please select a product to proceed</div>
+
+<div>
+  <div class="row justify-content-start p-4">
+    <ng-container *ngFor="let item of products">
+      <div class="col-lg-3 col-md-6 col-sm-12 px-2">
+        <app-product-data [productId]="item"></app-product-data>
+      </div>
+
+    </ng-container>
+
+      <!-- <div class="col-lg-3 col-md-6 col-sm-12 px-2 d-flex">
+        <div class="card shadow rounded-0 m-1">
+          <div class="card-body centered-content">
+            <div class="text-black fw-bold picture">
+
+            </div>
+            <div class="text-black fw-bold pt-2" style="font-size: 12px; ">{{ "Term Life insurance" }}</div>
+            <div
+              class="fw-medium pb-2"
+              style="color: var(--grey-color); font-size: 11px"
+            >
+              {{ "Provides coverage for a specific term" }}
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+
+    <!-- <div class="col-lg-3 col-md-6 col-sm-12 px-2 d-flex">
+      <div class="card shadow rounded-0 m-1">
+        <div class="card-body centered-content">
+          <div class="text-black fw-bold">
+            {{ "2. " }} {{ "Who would you like to protect" }}
+          </div>
+          <div class="text-black fw-bold pt-2" style="font-size: 12px; ">{{ "Term Life insurance" }}</div>
+          <div
+            class="fw-medium pb-2"
+            style="color: var(--grey-color); font-size: 11px"
+          >
+            {{ "Provides coverage for a specific term" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-12 px-2 d-flex">
+      <div class="card shadow rounded-0 m-1">
+        <div class="card-body centered-content">
+          <div class="text-black fw-bold">
+            {{ "2. " }} {{ "Who would you like to protect" }}
+          </div>
+          <div class="text-black fw-bold pt-2" style="font-size: 12px; ">{{ "Term Life insurance" }}</div>
+          <div
+            class="fw-medium pb-2"
+            style="color: var(--grey-color); font-size: 11px"
+          >
+            {{ "Provides coverage for a specific term" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-12 px-2 d-flex">
+      <div class="card shadow rounded-0 m-1">
+        <div class="card-body centered-content">
+          <div class="text-black fw-bold">
+            {{ "2. " }} {{ "Who would you like to protect" }}
+          </div>
+          <div class="text-black fw-bold pt-2" style="font-size: 12px; ">{{ "Term Life insurance" }}</div>
+          <div
+            class="fw-medium pb-2"
+            style="color: var(--grey-color); font-size: 11px"
+          >
+            {{ "Provides coverage for a specific term" }}
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</div>

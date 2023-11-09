@@ -70,6 +70,7 @@ export class CreateReportComponent implements OnInit{
   private user: any = null;
   private userId: number = 0;
   private folderId: number = 0; // defaults to My Reports
+  private filters =  [];
 
   constructor(
     private fb: FormBuilder,
@@ -83,23 +84,12 @@ export class CreateReportComponent implements OnInit{
     private activatedRoute: ActivatedRoute
   ) {}
 
-  /**
-   * Initializes component by:
-   * 1. Creating a search form
-   * 2. Creating a save report form
-   * 3. Getting a report when reportId exists in params
-   * 4. Getting the currently logged in user
-   * 5. Getting a list of existing reports
-   * 6. Getting a list of folders
-   * @return void
-   */
   ngOnInit(): void {
     this.activatedRoute.queryParams
       .pipe(
         take(1)
       ).subscribe((params) => {
       this.reportId = params['reportId'];
-      // log.info(`params >>> `, params, this.reportId);
       if (this.reportId !== undefined) {
         this.getReport();
       }
@@ -116,12 +106,12 @@ export class CreateReportComponent implements OnInit{
 
     this.getReports();
     this.getFolders();
+
+    // const extras = this.localStorage.getItem('extras');
+    // const loginDetails = this.localStorage.getItem('details');
+    // log.info(`extras | loginDetails >>>`, extras, loginDetails)
   }
 
-  /**
-   * Creates the search form
-   * @returns void
-   */
   createSearchForm(): void {
     this.searchForm = this.fb.group({
       searchTerm: [''],
@@ -129,10 +119,6 @@ export class CreateReportComponent implements OnInit{
     });
   }
 
-  /**
-   * Creates the save report form
-   * @returns void
-   */
   createSaveReportForm(): void {
     this.saveReportForm = this.fb.group({
       reportSearch: [''],
@@ -141,10 +127,6 @@ export class CreateReportComponent implements OnInit{
     });
   }
 
-  /**
-   * Fetches a list of subject areas
-   * @returns void
-   */
   getSubjectAreas(): void {
     this.reportService.getSubjectAreas()
       .subscribe((res) => {
@@ -153,13 +135,7 @@ export class CreateReportComponent implements OnInit{
       });
   }
 
-  /**
-   * Fetches a list of categories under the selected subject area
-   * @returns void
-   * @param s - the selected subject area
-   */
   getCategoriesBySubjectAreaId(s: SubjectArea): void {
-    console.log(`subject area from click`, s)
     this.selectedSubjectArea = s.subjectAreaName;
     this.subjectAreaCategories = null;
     this.showSubjectAreas = false;
@@ -168,20 +144,10 @@ export class CreateReportComponent implements OnInit{
       .pipe(take(1))
       .subscribe(res => {
         this.subjectAreaCategories = res;
-        // log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
         this.cdr.detectChanges();
       });
   }
 
-  /**
-   * 1. Selects a criteria and
-   * 2. Splits the criteria into a list of measures and dimensions for cubeJs API consumption
-   * 3. Calls the splitDimensionAndMeasure() method to accomplish #2 above
-   * @param category
-   * @param subCategory
-   * @param query
-   * @returns void
-   */
   selectCriteria(category, subCategory, query): void {
 
     this.queryObject = {
@@ -206,10 +172,6 @@ export class CreateReportComponent implements OnInit{
     this.splitDimensionsAndMeasures(this.queryObject);
   }
 
-  /**
-   * Splits the selected criteria into a list of dimensions and measures
-   * @returns void
-   */
   splitDimensionsAndMeasures(queryObject: Criteria): void {
     const criterion = `${queryObject.transaction}.${queryObject.query}`;
     if (queryObject.category === 'metrics') {
@@ -219,13 +181,6 @@ export class CreateReportComponent implements OnInit{
     }
   }
 
-  /**
-   * Checks if a criteria exists based on the combination of the transaction type and query
-   * @param criterion
-   * @param measures
-   * @param dimensions
-   * @returns boolean
-   */
   checkIfCriterionExists(criterion, measures, dimensions): boolean {
     if (measures.indexOf(criterion) === -1 && dimensions.indexOf(criterion) === -1 ) {
       return false;
@@ -234,11 +189,6 @@ export class CreateReportComponent implements OnInit{
     }
   }
 
-  /**
-   * Toggles between criteria lists and preview chart in the template, calls loadChart() when preview is active
-   * @param selected
-   * @returns void
-   */
   toggleCriteriaPreview(selected: string): void {
     this.isCriteriaButtonActive = selected === 'criteria' ? true : false;
     log.info(`isCriteriaButtonActive`, this.isCriteriaButtonActive)
@@ -247,15 +197,6 @@ export class CreateReportComponent implements OnInit{
     }
   }
 
-  /**
-   * 1. Loads chart by calling the cubeJS API based on previously defined values i.e.:
-   * i. criteria
-   * ii. isPreviewAvailable
-   * iii. measures
-   * iv. dimensions
-   * 2. Calls a helper method for generating a dynamic tables based on result fetched from cubeJS API
-   * @returns void
-   */
   loadChart(): void {
 
     if (this.reportId) {
@@ -270,6 +211,7 @@ export class CreateReportComponent implements OnInit{
     const query = {
       measures: this.measures,
       dimensions: this.dimensions,
+      filters: this.filters,
       limit: 20
     }
     log.info(`query for cube >>> `, query);
@@ -292,11 +234,7 @@ export class CreateReportComponent implements OnInit{
     });
   }
 
-  /**
-   * Adds a report to dashboard
-   * @returns void
-   */
-  addReportToDashboard(): void {
+  addReportToDashboard() {
     const reportToSave: any /*Report*/ = {
       criteria: JSON.stringify(this.criteria),
       reportName: this.report.reportName,
@@ -320,11 +258,6 @@ export class CreateReportComponent implements OnInit{
       });
   }
 
-  /**
-   * Deletes a previously selected criteria
-   * @param criteria
-   * @returns void
-   */
   deleteCriteria(criteria: Criteria): void {
     const index = this.criteria.indexOf(criteria);
     if (index > -1) {
@@ -342,19 +275,20 @@ export class CreateReportComponent implements OnInit{
 
   }
 
-  /**
-   * Toggles dropdown to show list of available chart visualizations
-   * @returns void
-   */
+  updateFilter(filterSort) {
+    this.criteria.forEach((criterion) => {
+      if (criterion == filterSort.queryObject) {
+        criterion.filter = filterSort.queryObject.filter
+        this.filters.push(filterSort?.filter)
+      }
+    });
+    this.loadChart();
+  }
+
   showVisualizationList(): void {
     this.shouldShowVisualization = !this.shouldShowVisualization;
   }
 
-  /**
-   * Selects a chart type for the list of available visualizations
-   * @param chartType
-   * @returns void
-   */
   selectChartType(chartType: { iconClass: string; name: ChartType | string }): void {
     this.chartType = chartType.name;
     // @ts-ignore
@@ -367,21 +301,11 @@ export class CreateReportComponent implements OnInit{
     this.loadChart();
   }
 
-  /**
-   * Searches for a report for the list of reports
-   * status: pending implementation (yet to be developed)
-   * @returns void
-   */
   searchReport(): void {
     const searchTerm = this.saveReportForm.getRawValue().reportSearch;
     log.info(`search report using >>>`, searchTerm);
   }
 
-  /**
-   * Selects folder to view or save a report to
-   * @param folder
-   * @returns void
-   */
   selectFolder(folder: Folder): void {
     this.folders.forEach(item => {
       item.active = item.id === folder.id ? true: false
@@ -392,10 +316,6 @@ export class CreateReportComponent implements OnInit{
     this.getReports();
   }
 
-  /**
-   * Gets a list of available reports
-   * @returns void
-   */
   getReports(): void {
     // log.info(`user id >>>`, this.userId, typeof this.userId);
     this.reports$ = this.reportService.getReports()
@@ -407,10 +327,6 @@ export class CreateReportComponent implements OnInit{
       );
   }
 
-  /**
-   * Gets a specific report by id
-   * @returns void
-   */
   getReport(): void {
     this.reportService.getReport(this.reportId)
       .pipe(take(1))
@@ -426,10 +342,6 @@ export class CreateReportComponent implements OnInit{
       });
   }
 
-  /**
-   * Initializes the list of available folders
-   * @returns void
-   */
   getFolders(): void {
     this.folders = [
       {id: 0, name: 'My Reports', desc: 'Logged in user folder', userId: 1, active: true},
@@ -437,12 +349,6 @@ export class CreateReportComponent implements OnInit{
     ]
   }
 
-  /**
-   * 1. Saves a report to the databse
-   * 2. Gets the list of reports after saving
-   * 3. Gets the return value of the saved report
-   * @returns void
-   */
   saveReport(): void {
     const rawValue = this.saveReportForm.getRawValue();
     this.reportTitle = rawValue.reportName;

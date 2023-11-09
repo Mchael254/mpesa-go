@@ -7,14 +7,16 @@
     "tickets": "Boletos",
     "team": "equipo",
     "administration": "administración",
-    "new_chart": "nuevo gráfico",
+    "new_report": "nuevo gráfico",
     "analytics": "analítica",
     "reinsurance": "reaseguro",
     "no_of_tickets": "Número de entradas",
     "view_all": "VER TODO",
     "summary": "resumen",
     "my_policies": "Mis Pólizas",
-    "my_quotations": "Mis Cotizaciones"
+    "my_quotations": "Mis Cotizaciones",
+    "quotation": "Cotización"
+
 
 }
 }

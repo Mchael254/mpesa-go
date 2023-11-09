@@ -1,0 +1,22 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+    <a routerLink="/home/lms/grp/quotation/quick">
+      <div class="circle" [ngClass]="{'active': isStepActive('quick')}">1</div>
+      <div class="text">Product Details</div>
+    </a>
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+    <a routerLink="/home/lms/grp/quotation/coverage">
+      <div class="circle" [ngClass]="{'active': isStepActive('coverage')}">2</div>
+      <div class="text">Coverage Details</div>
+    </a>
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 text-center">
+    <a routerLink="/home/lms/grp/quotation/summary">
+      <div class="circle" [ngClass]="{'active': isStepActive('summary')}">3</div>
+      <div class="text">Summary Details</div>
+    </a>
+  </div>
+</div>

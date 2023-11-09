@@ -22,7 +22,7 @@ export class MyReportsComponent implements OnInit{
   public reports: Report[] = [];
   public reports$: Observable<Report[]> = new Observable<Report[]>();
 
-  public user: any = null;
+  public user: any;
   private userId: number = 0;
   private folderId: number = FolderId.MY_REPORTS;
   public selectedReport: Report;
@@ -58,10 +58,14 @@ export class MyReportsComponent implements OnInit{
     this.getReports(folderId);
     this.selectFolder(this.folders[folderId])
 
-    this.authService.currentUser$.subscribe((user) => {
+    /*this.authService.getCurrentUser().subscribe((user) => {
       this.user = user;
       this.userId = this.user.id;
-    });
+      log.info(`current user >>>`, this.user)
+    });*/
+    this.user = this.authService.getCurrentUser()
+    this.userId = this.user.id
+    log.info(`current user >>>`, this.user)
 
     this.searchForm = this.fb.group({
       searchTerm: [''],
@@ -108,7 +112,7 @@ export class MyReportsComponent implements OnInit{
       item.active = item.id === folder.id
     });
 
-    this.userId = folder.id === 0 ? this.user.id : 0;
+    this.userId = folder.id === 0 ? this.user?.id : 0;
     this.folderId = folder.id;
     this.getReports(this.folderId);
   }
