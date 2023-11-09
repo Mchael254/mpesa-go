@@ -161,7 +161,8 @@ export class ReportManagementComponent implements OnInit{
   }
 
   gotoEditReport(report: ReportV2): void {
-    this.router.navigate([`home/reportsv2/edit-report/${report.id}`])
+    // this.router.navigate([`home/reportsv2/edit-report/${report.id}`])
+    this.router.navigate([`home/reportsv2/preview/${report.id}`])
   }
 
 }

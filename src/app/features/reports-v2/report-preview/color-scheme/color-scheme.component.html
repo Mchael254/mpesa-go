@@ -1,21 +1,26 @@
 <ng-container *ngFor="let scheme of colourSchemes">
   <table class="table table-borderless mb-2">
     <tbody>
-    <tr id="select-color-scheme" (click)="selectColorScheme(scheme)">
-      <td class="colors">
-        <ng-container *ngFor="let color of scheme.colors">
-        <div
-          class="color-box"
-          [style.background]="color"
-          [style.border]="color"
-        ></div>
+    <tr id="select-color-scheme">
+      <ng-container (click)="selectColorScheme(scheme)">
+        <td class="colors">
+          <ng-container *ngFor="let color of scheme.colors">
+          <div
+            class="color-box"
+            [style.background]="color"
+            [style.border]="color"
+          ></div>
+        </ng-container>
+        </td>
+        <td class="color-name">
+          {{ scheme.name }}
+        </td>
       </ng-container>
-      </td>
-      <td class="color-name">
-        {{ scheme.name }}
-      </td>
-      <td class="color-selected">
+      <!-- <td class="color-selected">
         <i *ngIf="scheme.selected" class="pi pi-check" style="font-weight: bold; font-size: 0.9rem"></i>
+      </td> -->
+      <td (click)="deleteColorScheme(scheme?.id)">
+        <i class="pi pi-times" style="font-weight: bold; font-size: 0.9rem; color: red"></i>
       </td>
     </tr>
     </tbody>
