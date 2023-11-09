@@ -1,0 +1,193 @@
+<div></div>
+
+<div class="base-content-section lms">
+  <div class="row">
+    <!-- BEGINS QUOTATION LIST (LMS/GIS) -->
+    <div class="col-sm-12">
+      <p class="transactions" style="padding-bottom: 1rem; font-size: 1rem;">{{'Quotations' | translate | uppercase}}</p>
+
+      <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link " id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="true">LMS</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="gis2-tab" data-bs-toggle="tab" href="#gis2" role="tab" aria-controls="gis2" aria-selected="false">GIS</a>
+        </li>
+
+
+      </ul>
+
+
+
+      <div class="tab-content" id="myTabsContent">
+        <div class="tab-pane fade show active" id="lms" role="tabpanel" aria-labelledby="lms-tab">
+          <div class="d-flex justify-content-end  action-buttons-container">
+            <button
+            routerLink="/home/lms/ind/quotation/quick"
+              type="button"
+              class="btn btn-primary btn-sm" style="padding: 0.6em;"
+            >
+            Quick Quote
+            </button>
+
+            <button
+            routerLink="/home/lms/ind/quotation/quick"
+              type="button"
+              class="btn btn-primary btn-sm" style="padding: 0.6em;"
+            >
+            Normal Quotation
+            </button>
+
+          </div>
+
+          <!-- Content for LMS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+
+                  <!-- BEGINS INDIVIDUAL LIST (LMS/GIS) -->
+                  <div>
+
+                    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="ind-tab" data-bs-toggle="tab" href="#ind" role="tab" aria-controls="ind" aria-selected="true">INDIVIDUAL</a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="grp-tab" data-bs-toggle="tab" href="#grp" role="tab" aria-controls="grp" aria-selected="false">GROUP</a>
+                      </li>
+                    </ul>
+
+                    <div class="tab-content fadeIn" id="myTabsContentInner">
+                      <div class="tab-pane fade show active" id="ind" role="tabpanel" aria-labelledby="ind-tab">
+                        <div class="card">
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-sm-12" style=" position: relative;">
+
+                                <div >
+                                  <ngx-spinner
+                              name="lms_ind_view"
+                                type="ball-clip-rotate-multiple"
+
+                                [fullScreen]="false"
+                                color="#00529B"
+                                size="medium"
+                                bdColor="rgba(255, 255, 255, 0.95)"
+                              ></ngx-spinner>
+                                <!-- IND -->
+                                  <!-- <app-dynamic-table [tableDetails]="quotationListInd"></app-dynamic-table> -->
+
+                                  <ng-container>
+                                    <p-table
+                                      #dt1
+                                      [lazy]="true"
+                                      responsiveLayout="stack"
+                                      scrollHeight="flex"
+                                      [columns]="quotationListInd?.cols"
+                                      [value]="quotationListInd?.rows"
+                                      [paginator]="quotationListInd?.paginator"
+                                      [rows]="quotationListInd.rowsPerPage || 5"
+                                      [showCurrentPageReport]="true"
+                                      [totalRecords]="webQuoteTotalLength"
+                                      [globalFilterFields]="quotationListInd?.globalFilterFields"
+                                      (onPage)="paginate($event)"
+
+                                    >
+
+                                      <ng-template pTemplate="header" let-columns>
+                                        <tr>
+                                          <th pSortableColumn="{{ 'SN' }}" style="width: 2%;">
+                                            {{ 'SN' }}
+                                            <span *ngIf="quotationListInd.showSorting">
+                                            <p-sortIcon field="{{ 'SN'}}"></p-sortIcon>
+                                          </span>
+                                            <span *ngIf="quotationListInd.showFilter">
+                                            <p-columnFilter type="text" field="{{ 'SN' }}" display="menu"></p-columnFilter>
+                                          </span>
+                                          </th>
+                                          <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+                                            {{ col.header }}
+                                            <span *ngIf="quotationListInd.showSorting">
+                                            <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+                                          </span>
+                                            <span *ngIf="quotationListInd.showFilter">
+                                            <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
+                                          </span>
+                                          </th>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData let-columns="columns">
+                                        <tr class="change_Color"  style="font-size: 14px;" (click)="selectRow(rowData)">
+                                          <ng-container >
+                                            <td >{{rowIndex+1}}</td>
+                                            <td *ngFor="let col of columns">
+                                              {{ rowData[col.field] }}
+                                            </td>
+                                          </ng-container>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                  </ng-container>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+
+                      <div class="tab-content" id="myTabsContentInner">
+                        <div class="tab-pane fade" id="grp" role="tabpanel" aria-labelledby="grp-tab">
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="row">
+                                <div class="col-sm-12">
+                                  <!-- GRRRR -->
+                                    <!-- <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table> -->
+
+
+
+
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- BEGINS GROUP LIST (LMS/GIS) -->
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade " id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
+          <div class="d-flex justify-content-between mt-3 action-buttons-container">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm" style="padding: 0.6em;"
+            >
+            <i class="fa-solid fa-plus"></i> New Quotation
+            </button>
+
+          </div>
+          <!-- Content for GIS tab goes here -->
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+

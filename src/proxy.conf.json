@@ -1,0 +1,50 @@
+{
+  "/crm": {
+     "target": "http://10.176.18.211:1025/",
+     "secure": false,
+     "changeOrigin": true,
+     "logLevel": "debug"
+  },
+
+  "/oauth": {
+     "target": "http://10.176.18.211:1025/",
+     "secure": false,
+     "changeOrigin": true,
+     "logLevel": "debug"
+  },
+
+  "/user": {
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+
+  "/charts": {
+    "target": "http://localhost:1036/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+
+  "*/lms": {
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+
+  "/gis": {
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+ },
+  "/turnquest": {
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+
+}

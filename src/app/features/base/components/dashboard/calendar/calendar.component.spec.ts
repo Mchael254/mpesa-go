@@ -54,18 +54,6 @@ describe('CalendarComponent', () => {
   const calendarServiceStub = createSpyObj('CalendarService',[
     'getCalendarEvent', 'saveCalendarEvent']);
 
-  /*jest.mock('moment', () => {
-    const oMoment = jest.requireActual('moment');
-    const mm = {
-      format: jest.fn(),
-    };
-    const mMoment = jest.fn(() => mm);
-    for (let prop in oMoment) {
-      mMoment[prop] = oMoment[prop];
-    }
-    return mMoment;
-  });*/
-
   const calendarEvent: CalendarEventReqDTO = {
     code: 0,
     createdDate: "",
@@ -93,13 +81,10 @@ describe('CalendarComponent', () => {
 
   let component: CalendarComponent;
   let fixture: ComponentFixture<CalendarComponent>;
-  let authService: AuthService;
-  let appConfigService: AppConfigService;
 
   beforeEach(() => {
     jest.spyOn(calendarServiceStub, 'getCalendarEvent' ).mockReturnValue(of([calendarEvent]))
     jest.spyOn(calendarServiceStub, 'saveCalendarEvent' ).mockReturnValue(of(createdEVent))
-
 
     TestBed.configureTestingModule({
       declarations: [CalendarComponent],
@@ -149,7 +134,7 @@ describe('CalendarComponent', () => {
     const daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const calendarLayout = findComponent(fixture,'app-calendar-layout');
 
-    calendarLayout.triggerEventHandler('selectDate', day)
+    calendarLayout.triggerEventHandler('selectDate', day);
 
     expect(component.deselectDays.call).toBeTruthy();
     expect(component.selectedDate).toBe(18)

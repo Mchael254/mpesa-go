@@ -11,6 +11,7 @@ import {AppConfigService} from "../../../../core/config/app-config-service";
 export class ClientService {
 
   baseUrl = this.appConfig.config.contextPath.accounts_services;
+  headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json'});
 
   constructor(private http: HttpClient,
     private appConfig: AppConfigService) { }
@@ -32,7 +33,7 @@ export class ClientService {
         .set('sortListFields', `${sortField}`)
         .set('order', `${order}`);
 
-      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`,
+      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`,
         {
           headers: headers,
           params: params,
@@ -54,7 +55,7 @@ export class ClientService {
         .set('name', `${name}`)
         .set('organizationId', 2);
 
-      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/accounts/clients`, {
+      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`, {
         headers: header,
         params: params,
       });
@@ -66,7 +67,7 @@ export class ClientService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<any[]>(`/${this.baseUrl}/accounts/identity-modes`,
+    return this.http.get<any[]>(`/${this.baseUrl}/identity-modes`,
       {
         headers:headers,
         params:params
@@ -79,7 +80,7 @@ export class ClientService {
     });
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`);
-    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/accounts/client-types`,
+    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/client-types`,
       {
         headers:headers,
         params:params
@@ -92,12 +93,24 @@ export class ClientService {
       Accept: 'application/json',
     });
 
-    return this.http.post<ClientDTO[]>(`/${this.baseUrl}/accounts/accounts`, JSON.stringify(clientData), {headers:headers})
+    return this.http.post<ClientDTO[]>(`/${this.baseUrl}/accounts`, JSON.stringify(clientData), {headers:headers})
 
   }
 
+   saveClient(client: {}): Observable<ClientDTO> {
+    console.log('CREATE CLIENT:'+client);
+    return ;
+
+    // return this.http.post<ClientDTO>(`/${this.baseUrl}/clients`, JSON.stringify(client), {headers:this.headers});
+  }
+
+  updateClient(client_id: number, client: {}): Observable<ClientDTO> {
+    console.log('UPDATE CLIENT:'+client);
+    return this.http.put<ClientDTO>(`/${this.baseUrl}/clients/${client_id}`, JSON.stringify(client), {headers:this.headers});
+  }
+
   getClientById(id: number): Observable<ClientDTO> {
-    return this.http.get<ClientDTO>(`/${this.baseUrl}/accounts/clients/` + id);
+    return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id);
   }
 
   getCLientBranches(): Observable<ClientBranchesDto[]> {
@@ -106,11 +119,26 @@ export class ClientService {
       'Accept': 'application/json'
     });
     const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/organization-branches`,
+      .set('organizationId', 2)
+      .set('regionId', 28);
+    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/branches`,
       {
         headers:headers,
         params:params
       });
   }
+
+
+  getClientTitles(organizationId: number): Observable<any[]> {
+
+    const params = new HttpParams()
+      .set('organizationId', `${organizationId}`);
+    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/client-titles`,
+      {
+        headers:this.headers,
+        params:params
+      });
+  }
+
+
 }

@@ -1,0 +1,1217 @@
+<div class="mx-4 mt-3">
+    <p class="screenTitle">Quotations:Risk Section Details </p>
+    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+     <!-- Risk detail card -->
+     <div class="card mb-3">
+      <div class="card-body">
+        <div>
+          <div class="row">
+            <div class="col-4 ms-3">
+              <strong class="ps-3">Risk Details</strong>
+            </div>
+            <!-- <div class="col-8 d-flex justify-content-end">
+              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            </div> -->
+          </div>
+          
+        </div>
+        <div  id="collapseExample">
+          <!-- <div class="card card-body">
+            Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+          </div> -->
+          <!-- <p class="title2 ps-2">Quotation no: <strong>3454684</strong></p> -->
+          <form [formGroup]="riskDetailsForm" >
+            <div class="row mt-2 mx-4">
+              <div class="col-4">
+                  <label for="minmax-buttons" id="quote-label">Product</label>
+                  <select class="form-select form-control-sm " id="quote-dropdown" formControlName="productCode">
+                    <option value="">{{description}}</option>
+                    <option></option>
+                </select>                
+              </div>
+              <div class="col-4">
+                  <label for="minmax-buttons" id="quote-label">Insured</label>
+                  <select class="form-select form-control-sm " id="quote-dropdown" formControlName="insuredCode" >
+                    <option value="">{{clientName}}</option>
+                </select>                
+              </div>
+              
+
+          </div>
+              <div class="row mt-2 mx-4">
+                  <div class="col-4">
+                      <label for="minmax-buttons" id="quote-label">Risk ID</label>
+                      <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId">  
+                       
+                  </div>
+                  <div class="col-4">
+                      <label for="minmax-buttons" id="quote-label" class="required">Risk description</label>
+                      <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="itemDescription"> 
+                     
+                  </div>
+                  
+                  <div class="col-4">
+                      <label for="minmax-buttons" id="quote-label" class="required">Subclass</label>
+                      <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event)" formControlName="subClassCode" >
+                        <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">{{subclass.description}}</option>
+                      </select>
+                  </div>
+
+              </div>
+              <div class="row mt-2 mx-4 mb-4">
+                  <div class="col-4">
+                      <label for="minmax-buttons" id="quote-label" class="required">Cover type</label>
+                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription" >
+                          <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.coverTypeShortDescription}}</option>
+                      </select>    
+                  </div>
+                  <div class="col-4">
+                      <label for="minmax-buttons" id="quote-label"  class="required">Premium band</label>
+                      <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"  >
+                          <option *ngFor="let binder of binderListDetails" [value]="binder.code">
+                            {{binder.binder_name}}
+                          </option>
+                      </select>    
+                  </div>
+                  <div class="col-4">
+                    <label for="minmax-buttons" id="quote-label">Cover Date</label>
+                    <p-calendar
+                            selectionMode="range"
+                            [readonlyInput]="true"
+                            formControlName="dateRange"
+                            dateFormat="dd.mm.yy"
+                            (click)="showSelectFromDateMessage()"
+                            (onSelect)="showSelectToDateMessage()"
+                          ></p-calendar> 
+                  <!-- <p-calendar selectionMode="range" [readonlyInput]="true" dateFormat="dd.mm.yy" formControlName="dateRange"></p-calendar> -->
+                  
+                  </div>
+              </div>
+              <button type="button" class="btn btn-primary float-end " (click)="createRiskDetail()">Save Details</button>
+
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- schedule card -->
+    <div class="card  mb-3">
+      <div class="card-body">
+        
+          <div class="row">
+            <div class="col-4">
+              <strong>Schedule Details</strong>
+            </div>
+            <div class="col-8 d-flex justify-content-end">
+              <div class="row">
+                <div class="col-4" *ngIf="isCollapsibleOpen">
+                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSchedule" title="Edit">
+                    <i class="fa-solid fa-pencil"></i>
+                  </button>
+                </div>
+                <div class="col-4" *ngIf="isCollapsibleOpen">
+                  <button type="button" id="icon" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteSchedule" title="Delete">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+                <div class="col-4">
+                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#scheduleDetails" [attr.aria-expanded]="!isCollapsibleOpen" (click)="toggleSchedule()">
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        <div class="collapse" id="scheduleDetails" > 
+         
+          <!-- Edit Schedule Modal -->
+          <div class="modal fade" id="editSchedule" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <h5 class="modal-title mt-2" id="editScheduleLabel">Edit Motor Private Details</h5>                      
+                  <form>
+                           
+                        <!-- **ROW 1** -->
+                        <div class="row" id="scheduleRows">
+                            <div class="col-xl-6">
+                                <div class="mb-3 row">
+                                    <label for="minmax-buttons" class="col-5 col-form-label required" id="scheduleLabel">Chasis no:</label>
+                                    <div class="col-7">
+                                      <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                    </div>
+                                  </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="mb-3 row">
+                                    <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Age:</label>
+                                    <div class="col-7">
+                                        <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <!-- **ROW 2** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Reg no:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Vehicle make:</label>
+                                  <div class="col-7">
+                                      <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >                             
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                        <!-- **ROW 3** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Cubic capacity:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>    
+                                                              
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Year of manufacture:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                      
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                        <!-- **ROW 4** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Seating capacity:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1">                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Value:</label>
+                                  <div class="col-7">
+                                      <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                        <!-- **ROW 5** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Body type:</label>
+                                  <div class="col-7">
+                                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Cover type:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                  </select>                          
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                         <!-- **ROW 6** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Item no:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1">                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Colour:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                    <option ></option>
+                                    <option ></option>
+                                  </select>                                       
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                         <!-- **ROW 7** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Engine no:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Terrorism applicable:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option >Yes</option>
+                                      <option >No</option>
+                                    </select>                               
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                         <!-- **ROW 8** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Logbook no.:</label>
+                                  <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1">                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Security device 1:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>                                  
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                        <!-- **ROW 9** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Motor accessories.:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>                              
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Model:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>                                  
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                         <!-- **ROW 10** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Security device:</label>
+                                  <div class="col-7">
+                                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>                              
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Regular driver name:</label>
+                                  <div class="col-7">
+                                    <select class="form-control form-control-sm mb-1" id="scheduleInput" >
+                                      <option ></option>
+                                      <option ></option>
+                                    </select>                                  
+                                    </div>
+                                  </div>
+                              </div>
+                        </div>
+                        <!-- **ROW 11** -->
+                        <div class="row" id="scheduleRows">
+                            <div class="col-xl-6">
+                                <div class="mb-3 row">
+                                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">SCH active:</label>
+                                    <div class="col-7">
+                                      <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                    </div>
+                                  </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="mb-3 row">
+                                    <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Licence no.:</label>
+                                    <div class="col-7">
+                                        <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             
+                                      </div>
+                                    </div>
+                                </div>
+                        </div>
+                         <!-- **ROW 12** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Driver licence date:</label>
+                                  <div class="col-7">
+                                    <input type="datetime" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Driver SMS no.:</label>
+                                  <div class="col-7">
+                                      <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >                             
+                                    </div>
+                                  </div>
+                              </div>
+                         </div>
+                         <!-- **ROW 13** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Driver relation insured:</label>
+                                  <div class="col-7">
+                                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >                            
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-xl-6">
+                              <div class="mb-3 row">
+                                  <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Driver email address:</label>
+                                  <div class="col-7">
+                                      <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >                             
+                                    </div>
+                                  </div>
+                              </div>
+                         </div>
+                            
+               
+                <div class="row mt-3 mb-2">
+                  <div class="col-6 ">
+                  </div>
+                  <div class="col-6 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" id="save" >Save Details</button>
+                  </div>
+                </div>
+              </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Delete Schedule Modal -->
+          <div class="modal fade" id="deleteSchedule" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered ">
+              <div class="modal-content">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                <div class="modal-body">
+                  <p class="d-flex justify-content-center" id="deleteLabel">Are you sure you want to delete this schedule?</p>
+                  <div class="row d-flex justify-content-center">                    
+                    <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">Yes, delete</button>
+                  </div><br>
+                  <div class="row d-flex justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">No, I’m not</button>
+                  </div><br>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+            <p-table [tableStyle]="{ 'min-width': '300px' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Reg no.</th>
+                        <th>Vehicle make</th>
+                        <th>Cubic capacity</th>
+                        <th>Year of manufacture</th>
+                        <th>Seating capacity</th>
+                        <th>Value</th>
+                        <th>Body type</th>
+                        <th>Cover type</th>
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" >
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="1"></td>
+    
+                      <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
+                    </tr>
+    
+                  </ng-template>
+            </p-table>
+        </div>
+      </div>
+    </div>
+      <!-- Other detail card -->
+      <div class="card  mb-3">
+        <div class="card-body">
+          <div>
+            <div class="row">
+              <div class="col-3">
+                <strong>Other Details</strong>
+              </div>
+              <div class="col-9 d-flex justify-content-end">
+                <div class="row">
+                  <!-- <div class="col-1" *ngIf="isOtherDetailsOpen"></div> -->
+                  <div class="col-2" *ngIf="isOtherDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOtherDetails" title="Edit">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="col-2" *ngIf="isOtherDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editOtherDetails" title="Edit">
+                      <i class="fa-solid fa-pencil"></i>
+                    </button>
+                  </div>
+                  <div class="col-2" *ngIf="isOtherDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteOtherDetails" title="Edit">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                  <div class="col-4 d-flex justify-content-center" *ngIf="isOtherDetailsOpen">
+                    <button type="button" class="btn btn-primary" id="importButton" data-bs-dismiss="modal">Import Files</button>
+
+                  </div>
+                  <div class="col-2" >
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#otherDetails" aria-expanded="false" aria-controls="otherDetails" [attr.aria-expanded]="!isOtherDetailsOpen" (click)="toggleOtherDetails()">
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                  </div>
+                </div>
+               
+              </div>
+            </div>
+            
+          </div>
+          <div class="collapse mt-2" id="otherDetails">
+              <!-- Add Schedule-other details Modal -->
+          <div class="modal fade" id="addOtherDetails" tabindex="-1" role="dialog" aria-labelledby="addOtherDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Add Other Details</h5> 
+                  <form >
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Code</label>
+                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Geographical limits</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >  
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Deductible desc</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >    
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Limitation use</label>
+                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                      <option ></option>
+                      <option ></option>
+                    </select>                       
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Authorized Driver</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >          
+                  </form> 
+                  <div class="mt-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal">Save Details</button>
+
+                  </div>                    
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+           
+             <!-- Edit Schedule-other details Modal -->
+          <div class="modal fade" id="editOtherDetails" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Edit Other Details</h5> 
+                  <form >
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Code</label>
+                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" >
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Geographical limits</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >  
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Deductible desc</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >    
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Limitation use</label>
+                    <select class="form-select form-control-sm mb-1" id="scheduleInput" >
+                      <option ></option>
+                      <option ></option>
+                    </select>                       
+                    <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Authorized Driver</label>
+                    <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" >          
+                  </form> 
+                  <div class="mt-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal">Save Details</button>
+
+                  </div>                    
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Delete Schedule-other details Modal -->
+          <div class="modal fade" id="deleteOtherDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered ">
+              <div class="modal-content">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                <div class="modal-body">
+                  <p class="d-flex justify-content-center" id="deleteLabel">Are you sure you want to delete this?</p>
+                  <div class="row d-flex justify-content-center">                    
+                    <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">Yes, delete</button>
+                  </div><br>
+                  <div class="row d-flex justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">No, I’m not</button>
+                  </div><br>
+                </div>
+              </div>
+            </div>
+          </div>
+            <p-table [value]="" [tableStyle]="{ 'min-width': '300px' }">
+              <ng-template pTemplate="header">
+                  <tr>
+                      <th>Code</th>
+                      <th>Limitation use</th>
+                      <th>Geographical limits</th>
+                      <th>Authorised driver</th>
+                      <th>Deductible description</th>
+  
+  
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="body" >
+                  <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+  
+                  </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="1"></td>
+  
+                    <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
+                  </tr>
+  
+                </ng-template>
+          </p-table>
+          </div>
+        </div>
+      </div>
+      <!--Third card -->
+      <div class="card mb-3" >
+        <div class="card-body">
+          <div>
+            <div class="row">
+              <div class="col-3">
+                <strong>Third</strong>
+              </div>
+              <div class="col-9 d-flex justify-content-end">
+                <div class="row">
+                  <!-- <div class="col-1" *ngIf="isOtherDetailsOpen"></div> -->
+                  <div class="col-3"></div>
+                  <div class="col-2" *ngIf="isThirdDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addThirdDetails" title="Edit">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="col-2" *ngIf="isThirdDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editThirdDetails" title="Edit">
+                      <i class="fa-solid fa-pencil"></i>
+                    </button>
+                  </div>
+                  <div class="col-2" *ngIf="isThirdDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteThirdDetails" title="Edit">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                  
+                  <div class="col-2" >
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#thirdDetails" aria-expanded="false" aria-controls="otherDetails" [attr.aria-expanded]="!isThirdDetailsOpen" (click)="toggleThirdDetails()">
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                  </div>
+                </div>
+               
+              </div>
+            </div>
+            <div class="collapse " id="thirdDetails">
+              <!-- Add Third details Modal -->
+          <div class="modal fade" id="addThirdDetails" tabindex="-1" role="dialog" aria-labelledby="addOtherDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+              <div class="modal-content">
+                <div class="modal-body">          
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+           
+             <!-- Edit Third details Modal -->
+          <div class="modal fade" id="editThirdDetails" tabindex="-1" role="dialog" aria-labelledby="editScheduleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                 
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Delete Third details Modal -->
+          <div class="modal fade" id="deleteThirdDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered ">
+              <div class="modal-content">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                <div class="modal-body">
+                  <p class="d-flex justify-content-center" id="deleteLabel">Are you sure you want to delete this?</p>
+                  <div class="row d-flex justify-content-center">                    
+                    <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">Yes, delete</button>
+                  </div><br>
+                  <div class="row d-flex justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">No, I’m not</button>
+                  </div><br>
+                </div>
+              </div>
+            </div>
+          </div>
+         
+          </div>
+          </div>
+        </div>
+      </div>
+       <!-- Section card -->
+       <div class="card mb-3">
+        <div class="card-body">
+          <div>
+            <div class="row">
+              <div class="col-4">
+                <strong> Section Details</strong>
+              </div>
+              <div class="col-8 d-flex justify-content-end">
+                <div class="row">
+                  <div class="col-3" *ngIf="isSectionDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSection" title="Edit">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="col-3" *ngIf="isSectionDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editSection" title="Edit">
+                      <i class="fa-solid fa-pencil"></i>
+                    </button>
+                  </div>
+                  <div class="col-3" *ngIf="isSectionDetailsOpen">
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteSection" title="Edit">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                  <div class="col-3" >
+                    <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#sectionDetails" aria-expanded="false" aria-controls="sectionDetails" [attr.aria-expanded]="!isSectionDetailsOpen" (click)="toggleSectionDetails()">
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                  </div>
+                </div>
+               
+              </div>
+            </div>
+            
+          </div>
+          <div class="collapse mt-2" id="sectionDetails">
+
+            <!-- Add Risk Section Modal -->
+            <div class="modal fade" id="addSection" tabindex="-1" role="dialog" aria-labelledby="addSectionLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered "  role="document">
+                <div class="modal-content" id="addSectionModal">
+                  <div class="modal-body">
+                    <h5 class="modal-title mt-2" id="editOtherDetailsLabel">Risk Sections</h5> 
+                    <div class="search-container mb-3">
+                      <span class="search-icon"><i class="fa fa-search"></i></span>
+                      <input type="text" placeholder="Search" id="search-input-Rsection">
+                    </div>
+                    <div>
+                      <!-- <div *ngFor="let section of selectedSectionList">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code" />
+                          <label class="form-check-label" [for]="'checkbox-' + section.code">
+                            {{ section.sectionShortDescription }}
+                          </label>
+                        </div>
+                      </div> -->
+                      <div *ngFor="let section of selectedSectionList">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" [id]="'checkbox-' + section.code" (change)="onCheckboxChange(section)" />
+                          <label class="form-check-label" [for]="'checkbox-' + section.code">
+                            {{ section.sectionShortDescription }}
+                          </label>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    
+                    
+                    
+                    
+                    <!-- <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Sum assured
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Sum assured
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        Sum assured
+                      </label>
+                    </div> -->
+
+                   
+                    
+                    <div class="mt-4 d-flex justify-content-end">
+                      <button type="button" class="btn btn-primary " id="saveDetails" data-bs-dismiss="modal" (click)="createRiskSection()">Save Details</button>
+  
+                    </div>                    
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+           
+             <!-- Edit Risk Section Modal -->
+          <div class="modal fade" id="editSection" tabindex="-1" role="dialog" aria-labelledby="editSectionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <h5 class="modal-title mt-2" id="editScheduleLabel">Edit Risk Section Details</h5>                      
+                  <form [formGroup]="sectionDetailsForm">
+                      <!-- **ROW 1** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">ID :</label>
+                                <div class="col-7">
+                                  <input type="text" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="code">                            
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Description:</label>
+                                <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="sectionShortDescription">                             </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 2** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Rate Type :</label>
+                                <div class="col-7">
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="rateType">
+                                    <option ></option>
+                                    <option ></option>
+                                  </select>                                          
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Type:</label>
+                                <div class="col-7">
+                                  <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
+                                    <option ></option>
+                                    <option ></option>
+                                  </select>                              
+                                  </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 3** -->
+                      <div class="row" id="scheduleRows">
+                      <div class="col-xl-6">
+                          <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Free Limit :</label>
+                              <div class="col-7">
+                                <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="freeLimit" >                            
+                              </div>
+                            </div>
+                      </div>
+                      <div class="col-xl-6">
+                          <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Limit Amount:</label>
+                              <div class="col-7">
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="limitAmount">                             </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- **ROW 4** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Group:</label>
+                                <div class="col-7">
+                                  <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="calcGroup" >                            
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3 row">
+                                <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Rate:</label>
+                                <div class="col-7">
+                                    <input type="number" id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumRate">                            
+                                  </div>
+                                </div>
+                            </div>
+                      </div>
+                      <!-- **ROW 5** -->
+                      <div class="row" id="scheduleRows">
+                        <div class="col-xl-6">
+                          <div class="mb-3 row">
+                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div By:</label>
+                            <div class="col-7">
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="rateDivisionFactor">
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-xl-6">
+                          <div class="mb-3 row">
+                            <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Multi Rate :</label>
+                            <div class="col-7">
+                              <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierRate">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                        <!-- **ROW 6** -->
+                        <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Div Multi By:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="multiplierDivisionFactor">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="premiumAmount" >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 7** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Minimum Premium:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Accumulation:</label>
+                              <div class="col-7">
+                                <input type="number"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description" >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 8** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Remarks:</label>
+                              <div class="col-7">
+                                <input type="text"  id="scheduleInput" class="form-control form-control-sm mb-1" formControlName="description">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Declaration:</label>
+                              <div class="col-7">
+                                <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
+                                  <option ></option>
+                                  <option >Yes</option>
+                                  <option >No</option>
+                                </select>    
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                         <!-- **ROW 9** -->
+                         <div class="row" id="scheduleRows">
+                          <div class="col-xl-6">
+                            <div class="mb-3 row">
+                              <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Compute:</label>
+                              <div class="col-7">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="compute">  
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-6">
+                           
+                          </div>
+                        </div>
+                      
+                     
+                  </form>
+                  <div class="row mt-3 mb-2">
+                    <div class="col-6 ">
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                      <button type="button" class="btn btn-primary"  data-bs-dismiss="modal" (click)="updateRiskSection()" >Save Details</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Delete Section Modal -->
+          <div class="modal fade" id="deleteSection" tabindex="-1" aria-labelledby="deleteSectionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered ">
+              <div class="modal-content">
+                <!-- <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div> -->
+                <div class="modal-body">
+                  <p class="d-flex justify-content-center" id="deleteLabel">Are you sure you want to delete this section?</p>
+                  <div class="row d-flex justify-content-center">                    
+                    <button type="button" class="btn btn-primary " id="delete" data-bs-dismiss="modal">Yes, delete</button>
+                  </div><br>
+                  <div class="row d-flex justify-content-center">
+                    <button type="button" class="btn btn-outline-primary" id="delete" data-bs-dismiss="modal">No, I’m not</button>
+                  </div><br>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <p-table  [value]="sectionArray" [tableStyle]="{ 'min-width': '300px' }" selectionMode="single" [(selection)]="selectedSection" dataKey="code" >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Group</th>
+                    <th>Row Num</th>
+                    <th>Code</th>
+                    <th>Short Description</th>
+                    <th>Description</th>
+                    <th>Limit Amount</th>
+                    <th>Premium Rate</th>
+                    <th>Rate Type</th>
+
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body"  let-sectionArray >
+                <tr  (click)="onSelectSection(sectionArray)" [pSelectableRow]="sectionArray" >
+                    <td>{{sectionArray.calcGroup}}</td>
+                    <td>{{sectionArray.rowNumber}}</td>
+                    <td>{{sectionArray.code}}</td>
+                    <td>{{sectionArray.sectionShortDescription}}</td>
+                    <td>{{sectionArray.description}}</td>
+                    <td>{{sectionArray.limitAmount}}</td>
+                    <td>{{sectionArray.premiumRate}}</td>
+                    <td>{{sectionArray.rateType}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="1"></td>
+
+                  <td colspan="10" style="padding:20px;padding-left: 300px;" id="empty">No data to display.</td>
+                </tr>
+
+              </ng-template>
+        </p-table> -->
+        <!-- <p-table [value]="sectionArray" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row"> -->
+          <p-table [value]="sectionArray" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row"   styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Group</th>
+                    <th>Row Num</th>
+                    <th>Code</th>
+                    <th>Short Description</th>
+                    <th>Description</th>
+                    <th>Limit Amount</th>
+                    <th>Premium Rate</th>
+                    <th>Rate Type</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
+                <tr [pEditableRow]="sectionArray">
+                    <td>
+                        {{sectionArray.calcGroup}}
+                    </td>
+                    <td>
+                        {{sectionArray.rowNumber}}
+                    </td>
+                    <td>
+                        {{sectionArray.code}}
+                    </td>
+                    <td>
+                        {{sectionArray.sectionShortDescription}}
+                    </td>
+                    <td>
+                        {{sectionArray.description}}
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.limitAmount">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.limitAmount}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.premiumRate">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.premiumRate}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText type="text" [(ngModel)]="sectionArray.rateType">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{sectionArray.rateType}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td>
+                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"  class="p-button-rounded p-button-text"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="updateRiskSection()" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+        
+          
+      </div>
+        </div>
+      </div>
+       <!-- Risk Clauses card -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div>
+          <div class="row">
+            <div class="col-4">
+              <strong>Risk clauses</strong>
+            </div>
+            <div class="col-8 d-flex justify-content-end">
+              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskClauses" aria-expanded="false" aria-controls="riskClauses">
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            </div>
+          </div>
+          
+        </div>
+        <div class="collapse" id="riskClauses">
+ 
+        <p-table [value]="selectedClauseList" [(selection)]="selectedClauses" dataKey="code" [tableStyle]="{'min-width': '50rem'}">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 4rem">
+                    Select
+                </th>
+                <th>Heading</th>
+                <th>Wording</th>
+                <th>Editable</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-selectedClauseList>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
+                </td>
+                <td style=" white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width:200px;
+                overflow-y: auto;">{{selectedClauseList.heading}}</td>
+                <td style=" white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width:300px;
+                overflow-y: auto;">{{selectedClauseList.wording}}</td>
+                <td>{{selectedClauseList.is_editable}}</td>
+            </tr>
+        </ng-template>
+        </p-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4" >
+      <div class="col-6">
+        <button type="button" class="btn btn-link" (click)="backLink()">Back</button>
+      </div>
+      <div class="col-6 d-flex justify-content-end">
+        <div class="row">
+          <div class="col-8 d-flex justify-content-end">
+            <button type="button" id="nextButton" class="btn btn-primary">Assign task</button>
+          </div>
+          <div class="col-4 d-flex justify-content-end">
+            <button type="button" id="nextButton" class="btn btn-primary" (click)="finish()">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
