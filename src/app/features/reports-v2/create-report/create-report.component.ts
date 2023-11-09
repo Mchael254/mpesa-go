@@ -284,7 +284,7 @@ export class CreateReportComponent implements OnInit {
   // }
 
   viewPreview(): void {
-    const reportNameRec = this.reportName === '' ? this.selectedReport.name : ''
+    const reportNameRec = this.reportName === '' ? this.selectedReport?.name : ''
 
     const reportParams = {
       criteria: this.criteria,
