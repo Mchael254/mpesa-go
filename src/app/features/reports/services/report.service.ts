@@ -29,16 +29,29 @@ export class ReportService {
   });
 
 
+  /**
+   * Fetches a list of subject areas
+   * @returns Observable(SubjectArea[])
+   */
   getSubjectAreas(): Observable<SubjectArea[]> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<SubjectArea[]>(`/${baseUrl}/chart/charts/subject-areas`);
   }
 
+  /**
+   * Fetches a list of categories by subject area id
+   * @param id
+   * @returns Observable(SubjectAreaCategory[])
+   */
   getCategoriesBySubjectAreaId(id: number): Observable<SubjectAreaCategory[]> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<SubjectAreaCategory[]>(`/${baseUrl}/chart/charts/categories/${id}`);
   }
 
+  /**
+   * Fetches a list of reports
+   * @returns Observable(Report[])
+   */
   getReports(): Observable<Report[]> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<Report[]>(`/${baseUrl}/chart/charts`);
@@ -48,17 +61,33 @@ export class ReportService {
     return null;
   }*/
 
+  /**
+   * Gets a specific report by id
+   * @param id
+   * @returns Observable(Report)
+   */
   getReport(id: number): Observable<Report> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.get<Report>(`/${baseUrl}/chart/charts/${id}`);
   }
 
+  /**
+   * Saves a report and returns the saved report as response
+   * @param report
+   * @returns Observable(Report)
+   */
   saveReport(report: Report): Observable<Report> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.post<Report>(
       `/${baseUrl}/chart/charts`, JSON.stringify(report), {headers: this.headers});
   }
 
+  /**
+   * Edits a report and returns the edited report as response
+   * @param id
+   * @param report
+   * @returns Observable(Report)
+   */
   editReport(id: number, report: Report): Observable<Report> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.put<Report>(
@@ -66,12 +95,26 @@ export class ReportService {
     );
   }
 
+  /**
+   * Deletes a specific report by id
+   * @param reportId
+   * @returns Observable(string)
+   */
   deleteReport(reportId: number): Observable<string> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     return this.http.delete<string>(`/${baseUrl}/chart/charts/${reportId}`, {headers: this.headers});
   }
 
   // utils
+  /**
+   * Prepares data that can be displayed in a table format
+   * @param reportLabels
+   * @param reportData
+   * @param dimensions
+   * @param measures
+   * @param criteria
+   * @returns TableDetail
+   */
   prepareTableData(reportLabels, reportData, dimensions, measures, criteria): TableDetail {
     // log.info(`--------------------------------`)
     // log.info(`report labels >>>`, reportLabels);
@@ -147,6 +190,13 @@ export class ReportService {
     return tableDetails;
   }
 
+  /**
+   * Generates data can be present as charts/visualizations
+   * @param reportLabels
+   * @param reportData
+   * @param measures
+   * @returns datasets
+   */
   generateReportDatasets(reportLabels, reportData, measures) {
     let datasets = [];
     for (let i = 0; i < reportData.length; i++) {

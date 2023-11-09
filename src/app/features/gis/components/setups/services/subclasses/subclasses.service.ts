@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular
 import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
-import { Subclasses } from '../../data/gisDTO';
+import { Clause, Clauses, Subclasses, subclassClauses } from '../../data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +42,7 @@ return throwError(errorMessage);
 
 getAllSubclasses(): Observable<Subclasses[]>{
   let page = 0;
-  let size = 100;
+  let size = 1000;
 const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -94,4 +94,40 @@ createSubClass(data:Subclasses[]) {
       catchError(this.errorHandl)
     )
   }
+  getSubclassClauses():Observable<subclassClauses[]>{
+    let page = 0;
+    let size = 1000;
+   const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    
+    })
+    const params = new HttpParams()
+    .set('page', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`, {
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )  }
+    getAllClauses():Observable<Clauses>{
+      let page = 0;
+      let size = 1000;
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      
+      })
+      const params = new HttpParams()
+      .set('page', `${page}`)
+        .set('pageSize', `${size}`)
+      return this.http.get<Clauses>(`/${this.baseurl}/${this.setupsbaseurl}/clauses`, {
+        headers:headers,
+        params:params
+      }).pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )  }
 }
