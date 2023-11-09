@@ -28,11 +28,13 @@ country data, including form validation and fetching data from services. */
 export class CountryComponent implements OnInit, AfterViewInit {
 
   @ViewChild('countyModal') countyModal: ElementRef;
+  @ViewChild('districtModal') districtModal: ElementRef;
   @ViewChild('townModal') townModal: ElementRef;
   @ViewChild('holidayModal') holidayModal: ElementRef;
 
   public createCountryForm: FormGroup;
   public createCountyForm: FormGroup;
+  public createSubcountyForm: FormGroup;
   public createTownForm: FormGroup;
   public createHolidayForm: FormGroup;
 
@@ -57,6 +59,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
   public selectedHoliday: CountryHolidayDTO;
   public countrySelected: CountryDTO;
   public selectedCountry: number;
+  public selectedCurrency = '';
   public filteredState: any;
   public submitted = false;
   countryBreadCrumbItems: BreadCrumbItem[] = [
@@ -135,6 +138,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.CountryCreateForm();
     this.CountyCreateForm();
+    this.CountySubcountyCreateForm(); 
     this.TownCreateForm();
     this.CountryHolidayForm();
     this.fetchCountries();
@@ -217,6 +221,13 @@ export class CountryComponent implements OnInit, AfterViewInit {
     });
   }
 
+  CountySubcountyCreateForm() {
+    this.createSubcountyForm = this.fb.group({
+      shortDescription: [''],
+      name: ['']
+    });
+  }
+
   TownCreateForm() {
     this.createTownForm = this.fb.group({
       shortDescription: [''],
@@ -242,6 +253,16 @@ export class CountryComponent implements OnInit, AfterViewInit {
   closeCountyModal() {
     this.renderer.removeClass(this.countyModal.nativeElement, 'show');
     this.renderer.setStyle(this.countyModal.nativeElement, 'display', 'none');
+  }
+
+  openSubcountyModal() {
+    this.renderer.addClass(this.districtModal.nativeElement, 'show');
+    this.renderer.setStyle(this.districtModal.nativeElement, 'display', 'block');
+  }
+
+  closeSubcountyModal() {
+    this.renderer.removeClass(this.districtModal.nativeElement, 'show');
+    this.renderer.setStyle(this.districtModal.nativeElement, 'display', 'none');
   }
 
   openTownModal() {
@@ -526,9 +547,8 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.createCountry(saveCountry)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country');
+          this.fetchCountries();
         });
-
-      this.createCountryForm.reset();
     }
     else {
       const countryFormValues = this.createCountryForm.getRawValue();
@@ -561,14 +581,17 @@ export class CountryComponent implements OnInit, AfterViewInit {
       // Update an existing country
       this.countryService.updateCountry(countryId, saveCountry)
         .subscribe(data => {
-            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country');
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country');
+          this.fetchCountries();
         });
     }
-    this.fetchCountries();
+
+    this.createCountryForm.reset();
   }
 
   saveState() {
-    
+
+    this.closeCountyModal();
     if (!this.selectedState) {
       const countyFormValues = this.createCountyForm.getRawValue();
 
@@ -581,6 +604,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.createState(saveState)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a State');
+          this.fetchMainCityStates(this.countrySelected.id);
         });
     }
     else {
@@ -596,13 +620,51 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.updateState(stateId, saveState)
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a State');
-          this.closeCountyModal();
+          this.fetchMainCityStates(this.countrySelected.id);
+        });
+    }
+  }
+
+  saveDistrict() {
+    this.closeSubcountyModal();
+    if (!this.selectedDistrict) {
+      const subCountyFormValues = this.createSubcountyForm.getRawValue();
+
+      const saveDistrict: SubCountyDTO = {
+        countryCode: this.countrySelected.id,
+        id: null,
+        name: subCountyFormValues.name,
+        shortDescription: subCountyFormValues.shortDescription,
+        stateCode: this.selectedState.id
+      };
+      this.countryService.createDistrict(saveDistrict)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Sub-County');
+          this.fetchDistricts(this.selectedStateId);
+        });
+    }
+    else {
+      const subCountyFormValues = this.createSubcountyForm.getRawValue();
+      const districtId = this.selectedDistrict.id;
+
+      const saveDistrict: SubCountyDTO = {
+        countryCode: this.countrySelected.id,
+        id: districtId,
+        name: subCountyFormValues.name,
+        shortDescription: subCountyFormValues.shortDescription,
+        stateCode: this.selectedState.id
+      };
+      this.countryService.updateDistrict(districtId, saveDistrict)
+        .subscribe(data => { 
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Sub-County');
+          this.fetchDistricts(this.selectedStateId);
         });
     }
   }
 
   saveTown() {
 
+    this.closeTownModal();
     if (!this.selectedTown) {
       const townFormValues = this.createTownForm.getRawValue();
 
@@ -616,6 +678,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.createTown(saveTown)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Town');
+          this.fetchTowns(this.selectedStateId);
         });
     }
     else {
@@ -632,13 +695,14 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.updateTown(townId, saveTown)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Town');
-          this.closeTownModal();
+          this.fetchTowns(this.selectedStateId);
         })
     }
   }
 
   saveCountryHoliday() {
 
+    this.closeHolidayModal();
     if (!this.selectedHoliday) {
       const countryHolidayFormValues = this.createHolidayForm.getRawValue();
 
@@ -656,10 +720,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.createCountryHoliday(saveCountryHoliday)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Country Holiday');
+          this.fetchCountryHoliday(this.countrySelected.id);
         })
     }
     else {
-      this.closeHolidayModal();
       const countryHolidayFormValues = this.createHolidayForm.getRawValue();
       const holidayId = this.selectedHoliday.id;
 
@@ -677,13 +741,13 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.countryService.updateCountryHoliday(holidayId, saveCountryHoliday)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Country Holiday');
+          this.fetchCountryHoliday(this.countrySelected.id);
         })
     }
   }
 
   editState() {
     if (this.selectedState) {
-      log.info('Editing State:', this.selectedState);
       this.openCountyModal();
       this.createCountyForm.patchValue({
         shortDescription: this.selectedState.shortDescription,
@@ -706,6 +770,33 @@ export class CountryComponent implements OnInit, AfterViewInit {
     }
     else {
       log.info('No state is selected.');
+    }
+  }
+
+  editDistrict() {
+    if (this.selectedDistrict) {
+      this.openSubcountyModal();
+      this.createSubcountyForm.patchValue({
+        shortDescription: this.selectedDistrict.shortDescription,
+        name: this.selectedDistrict.name
+      });
+
+    }
+    else {
+      log.info('No Sub-County is selected!.')
+    }
+   }
+  
+  deleteDistrict() {
+    if (this.selectedDistrict) {
+      const districtId = this.selectedDistrict.id;
+      this.countryService.deleteDistrict(districtId)
+        .subscribe(data => {
+          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Sub-county');
+        })
+    }
+    else {
+      log.info('No sub-county is selected.');
     }
   }
 

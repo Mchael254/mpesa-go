@@ -13,35 +13,21 @@
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.country === 'Y'">
                             <div class="col-sm-4">
-                                <div class="form-group mb-3">
-                                    <label for="country" class="form-label">Select a Country</label>
-                                    <p-dropdown 
-                                        [options]="countriesData" 
-                                        [(ngModel)]="selectedCountry"
-                                        (onChange)="onCountryChange()" 
-                                        optionLabel="name" 
-                                        optionValue="id"
-                                        formControlName="country"
-                                        id="country" 
-                                        [filter]="true" 
-                                        filterBy="name" 
-                                        [showClear]="true"
-                                        [style]="{ width: '100%', height: '30%'}"
-                                        placeholder="Select Country">
-                                    </p-dropdown>
-                                    <!-- <select id="country" class="form-select mb-1" formControlName="country" 
-                                        (change)="onCountryChange($event)"
-                                        [ngClass]="{ 'is-invalid': f['country']?.invalid && (f['country']?.dirty || f['country']?.touched) }">
-                                        <option value="" selected>Select Country</option>
-                                        <option *ngFor="let country of countriesData" [value]="country.id">{{ country.name | titlecase }}
-                                        </option>
-                                    </select>
-                                    <div *ngIf="f['country']?.invalid && (f['country']?.dirty || f['country']?.touched)"
-                                        class="form-text text-danger"
-                                        [ngClass]="{ 'is-invalid': ['submitted'] && f['country']?.errors }">
-                                        <div *ngIf="f['country']?.errors['required']">Country is required</div>
-                                    </div> -->
-                                </div>
+                                <label for="country" class="form-label">Select a Country</label>
+                                <p-dropdown 
+                                    [options]="countriesData" 
+                                    [(ngModel)]="selectedCountry" 
+                                    (onChange)="onCountryChange()" 
+                                    optionLabel="name"
+                                    optionValue="id" 
+                                    formControlName="country" 
+                                    id="country" 
+                                    [filter]="true" 
+                                    filterBy="name" 
+                                    [showClear]="true"
+                                    [style]="{ width: '100%', height: '45%'}" 
+                                    placeholder="Select Country">
+                                </p-dropdown>
                             </div>
                         </ng-container>
                     </div>
@@ -73,14 +59,19 @@
                             </div>
                         </div>
                         <div class="col-sm-4 mb-4">
-                            <div class="form-group mb-4">
-                                <label for="baseCurrency" class="form-label">Base Currency</label>
-                                <select id="baseCurrency" class="form-select mb-1" formControlName="baseCurrency" required>
-                                    <option value="" selected>Select Currency</option>
-                                    <option *ngFor="let currency of currenciesData" [value]="currency.id">{{ currency.name }}
-                                    </option>
-                                </select>
-                            </div>
+                            <label for="baseCurrency" class="form-label">Base Currency</label>
+                            <p-dropdown 
+                                [options]="currenciesData" 
+                                [(ngModel)]="selectedCurrency" 
+                                optionLabel="name" optionValue="id"
+                                formControlName="baseCurrency" 
+                                id="baseCurrency" 
+                                [filter]="true" 
+                                filterBy="name" 
+                                [showClear]="true"
+                                [style]="{ width: '100%', height: '35%'}" 
+                                placeholder="Select Currency">
+                            </p-dropdown>
                         </div>
                         <div class="col-sm-4 mb-4">
                             <div class="form-group mb-4">
@@ -251,13 +242,13 @@
                                         </ng-template> -->
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th class="head">ID</th>
+                                                <th class="head">Short Description</th>
                                                 <th class="head">Name</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-state>
                                             <tr class="custom-table" (click)="onRowClick(state)">
-                                                <td class="body">{{ state.id }}</td>
+                                                <td class="body">{{ state.shortDescription }}</td>
                                                 <td class="body">{{ state.name }}</td>
                                             </tr>
                                         </ng-template>
@@ -290,9 +281,9 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="float-end">
-                                        <span class="icon-circle"><i class="fa-solid fa-plus"></i></span>
-                                        <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                                        <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                                        <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#district"></i></span>
+                                        <span class="icon-circle"><i class="pi pi-pencil" (click)="editDistrict()"></i></span>
+                                        <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteDistrict()"></i></span>
                                     </div>
                                 </div>
                             </div>
@@ -307,13 +298,13 @@
                                         class="ui-datatable">
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th class="head">ID</th>
+                                                <th class="head">Short Description</th>
                                                 <th class="head">Name</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-district>
                                             <tr class="custom-table" (click)="onDistrictRowSelect(district)">
-                                                <td class="body">{{ district.id }}</td>
+                                                <td class="body">{{ district.shortDescription }}</td>
                                                 <td class="body">{{ district.name }}</td>
                                             </tr>
                                         </ng-template>
@@ -363,13 +354,13 @@
                                 class="ui-datatable">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th class="head">ID</th>
+                                        <th class="head">Short Description</th>
                                         <th class="head">Name</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-town>
                                     <tr class="custom-table" (click)="onTownRowSelect(town)">
-                                        <td class="body">{{ town.id }}</td>
+                                        <td class="body">{{ town.shortDescription }}</td>
                                         <td class="body">{{ town.name }}</td>
                                     </tr>
                                 </ng-template>
@@ -446,7 +437,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modals -->
 <div class="modal fade" #countyModal id="county" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog align-items-center">
         <div class="modal-content">
@@ -468,6 +459,33 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" (click)="saveState()">Save Details</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" #districtModal id="district" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog align-items-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Sub-County</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createSubcountyForm">
+                    <div class="mb-3">
+                        <label for="shortDescription" class="form-label">Short Description</label>
+                        <input type="text" class="form-control" id="shortDescription" placeholder="Short Description"
+                            formControlName="shortDescription">
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="name" formControlName="name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="saveDistrict()">Save Details</button>
             </div>
         </div>
     </div>
