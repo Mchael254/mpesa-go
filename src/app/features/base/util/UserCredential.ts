@@ -9,4 +9,5 @@ export interface AuthenticationResponse {
   sent?: boolean;
   locked?: boolean;
   accountStatus: boolean;
+  allowMultifactor?: string;
 }

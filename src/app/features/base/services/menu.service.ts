@@ -249,6 +249,14 @@ export class MenuService{
     menuItems: [],
     collapsed:true,
   },
+  {
+    name: 'Quick Quote',
+    nameSlug: 'ShortPeriod',
+    icon: 'fa-solid fa-dumbbell',
+    link:'/home/gis/quotation/quick-quote',
+    menuItems: [],
+    collapsed:true,
+  },
 
   ],
     "ANALYTICS":[
