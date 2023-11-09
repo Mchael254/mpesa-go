@@ -64,55 +64,6 @@
     </div>
   </div>
 
-
-  <div cdkDropList cdkDropListOrientation="horizontal" class="example-list" (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let timePeriod of dashboards; let i = index" cdkDrag>
-      <div class="card">
-        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-        <div class="row card-header border-0 text-sm-start bg-transparent">
-
-          <div class="col-md-10">
-                  <span *ngIf="!isEditable"
-                        style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
-                        (click)="moveToListReport(timePeriod.id)">{{timePeriod?.name | titlecase }}</span>
-            <div class="mb-3" *ngIf="isEditable">
-              <input type="text" class="form-control" id="id" [value]="timePeriod?.name"
-                     [disabled]="selectedItem !== dashboards[i].id" (keyup)="handleEnter($event)">
-            </div>
-
-          </div>
-          <div class="col-md-2">
-                  <span class="icon-container float-end" (click)="selectedItem = timePeriod.id;menu.toggle($event)">
-                  <i class="fa fa-ellipsis-v clickable"></i>
-                </span>
-            <p-menu #menu [model]="items" [popup]="true"></p-menu>
-          </div>
-
-        </div>
-        <ng-container *ngIf="chartData">
-          <div class="card-body">
-            <div
-              *ngIf="timePeriod.reports[0]?.charts[0]?.type==='table';
-               else showChart"
-            >
-              <app-dynamic-table
-                [tableDetails]="tableDetails"
-              ></app-dynamic-table>
-            </div>
-
-            <ng-template #showChart>
-              <app-dynamic-chart
-                [basicData]="chartData"
-                [chartType]="timePeriod?.reports[0]?.charts[0]?.type"
-              ></app-dynamic-chart>
-            </ng-template>
-
-          </div>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-
   <!-- Create Dashboard Modal -->
   <div class="modal fade" id="createDashboardModal" tabindex="-1" aria-labelledby="createDashboardLabel" aria-hidden="true">
     <div class="modal-dialog">

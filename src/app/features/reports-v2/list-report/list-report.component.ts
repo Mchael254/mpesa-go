@@ -464,6 +464,7 @@ export class ListReportComponent implements OnInit {
       dashboardId: this.dashboard[0].id,
       dashboardReports: report
     }
+
     log.info('ordered details', saveOrderedReports);
 
     this.reportService.addReportToDashboard(this.dashboard[0].id, saveOrderedReports)
