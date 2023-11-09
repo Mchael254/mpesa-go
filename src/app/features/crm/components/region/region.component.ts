@@ -179,9 +179,9 @@ export class RegionComponent implements OnInit {
   }
 
   saveRegion() {
-    
+
+    this.closeRegionModal();
     if (!this.selectedRegion) {
-      this.closeRegionModal();
       const regionFormValues = this.createRegionForm.getRawValue();
       const organizationId = this.selectedOrg.id;
 
@@ -206,10 +206,10 @@ export class RegionComponent implements OnInit {
       this.organizationService.createOrganizationRegion(saveOrganizationRegion)
       .subscribe(data => { 
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Region');
+        this.fetchOrganizationRegion(this.selectedOrg.id);
       });
     }
     else {
-      this.closeRegionModal();
       const regionFormValues = this.createRegionForm.getRawValue();
       const organizationId = this.selectedOrg.id;
       const regionCode = this.selectedRegion.code
@@ -235,12 +235,15 @@ export class RegionComponent implements OnInit {
       this.organizationService.updateOrganizationRegion(regionCode, saveOrganizationRegion)
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Region');
+          this.fetchOrganizationRegion(this.selectedOrg.id);
         });
     }
+    this.createRegionForm.reset();
   }
 
   saveRegionBank() {
 
+    this.closeBankModal();
     if (!this.selectedRegionBank) {
       const regionBankFormValues = this.createRegionBankForm.getRawValue();
       const organizationId = this.selectedOrg.id;
@@ -259,10 +262,10 @@ export class RegionComponent implements OnInit {
       this.bankService.createBankRegion(saveRegionBank)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a RegionBank');
+          this.fetchBankRegions(this.selectedRegion.code);
         })
     }
     else {
-      this.closeBankModal();
       const regionBankFormValues = this.createRegionBankForm.getRawValue();
       const organizationId = this.selectedOrg.id;
       const regionCode = this.selectedRegion.code;
@@ -281,8 +284,10 @@ export class RegionComponent implements OnInit {
       this.bankService.updateBankRegion(regionBankId, saveRegionBank)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a RegionBank');
+          this.fetchBankRegions(this.selectedRegion.code);
         })
     }
+    this.createRegionForm.reset();
   }
 
   editRegion() {
@@ -310,6 +315,7 @@ export class RegionComponent implements OnInit {
       this.organizationService.deleteOrganizationRegion(regionCode)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region');
+          this.fetchOrganizationRegion(this.selectedOrg.id);
         })
     }
     else {
@@ -339,6 +345,7 @@ export class RegionComponent implements OnInit {
       this.bankService.deleteBankRegion(regionBankId)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region Bank');
+          this.fetchBankRegions(this.selectedRegion.code);
         })
     }
     else {

@@ -187,6 +187,8 @@ export class DivisionComponent implements OnInit {
       this.organizationService.createOrganizationDivision(saveOrganizationDivision)
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Division');
+          this.createDivisionForm.reset();
+          this.fetchOrganizationDivision(this.selectedOrg.id);
         });
     }
     else {
@@ -204,6 +206,8 @@ export class DivisionComponent implements OnInit {
       this.organizationService.updateOrganizationDivision(divisionId, saveOrganizationDivision)
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Division');
+          this.createDivisionForm.reset();
+          this.fetchOrganizationDivision(this.selectedOrg.id);
         });
     }
   }
@@ -230,6 +234,7 @@ export class DivisionComponent implements OnInit {
       this.organizationService.deleteOrganizationDivision(divisionId)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Division');
+          this.fetchOrganizationDivision(this.selectedOrg.id);
         })
     }
     else {

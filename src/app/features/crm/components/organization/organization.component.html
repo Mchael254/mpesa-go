@@ -16,7 +16,22 @@
         <div class="card-body">
           <div class="row">
             <div class="col-sm-4">
-              <div class="form-group mb-4">
+              <label for="organization" class="form-label">Select an Organization</label>
+              <p-dropdown 
+                [options]="organizationsData" 
+                [(ngModel)]="selectedOrganization" 
+                (onChange)="onOrganizationChange()" 
+                optionLabel="name"
+                optionValue="id" 
+                formControlName="organization" 
+                id="organization" 
+                [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '40%'}" 
+                placeholder="Select organization">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="organization" class="form-label">Select an Organization</label>
                 <select id="organization" class="form-select  mb-1" formControlName="organization" (change)="onOrganizationChange($event)"
                   [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
@@ -27,7 +42,7 @@
                   [ngClass]="{ 'is-invalid': ['submitted'] && f['organization']?.errors }">
                   <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -63,7 +78,21 @@
               </div>
             </div>
             <div class="col-4">
-              <div class="form-group mb-4">
+              <label for="country" class="form-label">Country</label>
+              <p-dropdown 
+                [options]="countriesData" 
+                [(ngModel)]="selectedCountry"
+                (onChange)="onCountryChange()"  
+                optionLabel="name" 
+                optionValue="id"
+                formControlName="country" 
+                id="country" [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '30%'}" 
+                placeholder="Select Country">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="country" class="form-label">Country</label>
                 <select id="country" class="form-select  mb-1" formControlName="country" (change)="onCountryChange($event)"
                   [ngClass]="{ 'is-invalid': f['country']?.invalid && (f['country']?.dirty || f['country']?.touched) }">
@@ -76,10 +105,25 @@
                   class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['country']?.errors }">
                   <div *ngIf="f['country']?.errors['required']">Country is required</div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4 mb-4">
-              <div class="form-group mb-4">
+              <label for="stateName" class="form-label">State Name</label>
+              <p-dropdown 
+                [options]="stateData" 
+                [(ngModel)]="selectedState" 
+                (onChange)="onCityChange()" 
+                optionLabel="name"
+                optionValue="id" 
+                formControlName="stateName" 
+                id="stateName" 
+                [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%'}" 
+                placeholder="Select State">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="stateName" class="form-label">State Name</label>
                 <select id="stateName" class="form-select  mb-1" formControlName="stateName" (change)="onCityChange($event)"
                   [ngClass]="{ 'is-invalid': f['stateName']?.invalid && (f['stateName']?.dirty || f['stateName']?.touched) }">
@@ -92,7 +136,7 @@
                   [ngClass]="{ 'is-invalid': ['submitted'] && f['stateName']?.errors }">
                   <div *ngIf="f['stateName']?.errors['required']">State Name is required</div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
@@ -116,7 +160,21 @@
               </div>
             </div>
             <div class="col-sm-4">
-              <div class="form-group mb-4">
+              <label for="town" class="form-label">Local Government Area</label>
+              <p-dropdown 
+                [options]="townData" 
+                [(ngModel)]="selectedTown" 
+                optionLabel="name" 
+                optionValue="id"
+                formControlName="town" 
+                id="town" 
+                [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '30%'}" 
+                placeholder="Local Government Area">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="town" class="form-label">Local Government Area</label>
                 <select id="town" class="form-select  mb-1" formControlName="town" required>
                   <option value="" selected>Local Government Area</option>
@@ -124,10 +182,23 @@
                     {{ town.name | titlecase }}
                   </option>
                 </select>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4">
-              <div class="form-group mb-4">
+              <label for="baseCurrency" class="form-label">Base Currency</label>
+              <p-dropdown 
+                [options]="currenciesData" 
+                [(ngModel)]="selectedCurrency" 
+                optionLabel="name" 
+                optionValue="id"
+                formControlName="baseCurrency" 
+                id="baseCurrency" 
+                [filter]="true" filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '30%'}"
+                 placeholder="Select Currency">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="baseCurrency" class="form-label">Base Currency</label>
                 <select id="baseCurrency" class="form-select  mb-1" formControlName="baseCurrency"
                   [ngClass]="{ 'is-invalid': f['baseCurrency']?.invalid && (f['baseCurrency']?.dirty || f['baseCurrency']?.touched) }">
@@ -139,7 +210,7 @@
                   [ngClass]="{ 'is-invalid': ['submitted'] && f['baseCurrency']?.errors }">
                   <div *ngIf="f['baseCurrency']?.errors['required']">Base Currency is required</div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
@@ -210,18 +281,6 @@
                   placeholder="Pin Number" formControlName="pinNumber">
               </div>
             </div>
-            <!-- <div class="col-sm-4">
-              <div class="form-group mb-4">
-                <label for="manager" class="form-label">National Sales Manager</label>
-                <input type="text" class="form-control" placeholder="Search Manager" (keyup)="filterManagers($event)"/>
-                <select id="manager" class="form-select  mb-1" formControlName="manager">
-                  <option value="" selected>Manager</option>
-                  <option *ngFor="let manager of managersData" [value]="manager.id">
-                    {{ manager.name | titlecase }}
-                  </option>
-                </select>
-              </div>
-            </div> -->
             <div class="col-sm-4">
               <label for="manager" class="form-label">National Sales Manager</label>
               <p-dropdown 
@@ -309,22 +368,51 @@
               </div>
             </div>
             <div class="col-sm-4 mb-4">
-              <div class="form-group mb-4">
+              <label for="bankName" class="form-label">Bank Name</label>
+              <p-dropdown 
+                [options]="banksData" 
+                [(ngModel)]="selectedBank" 
+                (onChange)="onBankSelection()" 
+                optionLabel="name" 
+                optionValue="id"
+                formControlName="bankName" 
+                id="bankName" 
+                [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%'}" 
+                placeholder="Select Bank">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="bankName" class="form-label">Bank Name</label>
                 <select id="bankName" class="form-select  mb-1" formControlName="bankName" (change)="onBankSelection($event)">
                   <option value="" selected>Select Bank</option>
                   <option *ngFor="let bank of banksData" [value]="bank.id">{{ bank.name }}</option>
                 </select>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4">
-              <div class="form-group mb-4">
+              <label for="bankBranch" class="form-label">Bank Branch</label>
+              <p-dropdown 
+                [options]="bankBranchData" 
+                [(ngModel)]="selectedBankBranch" 
+                optionLabel="name"
+                optionValue="id" 
+                formControlName="bankBranch" 
+                id="bankBranch" 
+                [filter]="true" 
+                filterBy="name" 
+                [showClear]="true"
+                [style]="{ width: '100%', height: '35%'}" 
+                placeholder="Select Bank Branch">
+              </p-dropdown>
+              <!-- <div class="form-group mb-4">
                 <label for="bankBranch" class="form-label">Bank Branch</label>
                 <select id="bankBranch" class="form-select  mb-1" formControlName="bankBranch">
                   <option value="" selected>Select Bank Branch</option>
                   <option *ngFor="let branch of bankBranchData" [value]="branch.id">{{ branch.name }}</option>
                 </select>
-              </div>
+              </div> -->
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
