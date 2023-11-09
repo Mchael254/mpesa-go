@@ -14,10 +14,10 @@
   cursor: pointer;
 }
 
-.table tr:hover {
+/* .table tr:hover {
   border: solid 1px #eee;
   border-radius: 15px;
-}
+} */
 
 .table tr td:hover {
   padding: 2px;
@@ -54,4 +54,10 @@
   margin-right: 3px;
   width: 30px;
   height: 30px;
+}
+
+.pi-times:hover {
+  background: #eee;
+  border-radius: 20px;
+  padding: 5px;
 }
