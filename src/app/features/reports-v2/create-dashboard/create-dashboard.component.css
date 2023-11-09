@@ -68,22 +68,6 @@
   display:none;
 }
 
-
-.bound-box{
-  border: dotted;
-  background-image: url('https://placeimg.com/200/200/animals');
-  border-color: red;
-  height: 200px;
-  width: 200px;
-  max-height: 200px;
-  max-width: 200px;
-}
-
-.resizable-widget{
-  background-color: blue;
-  opacity: 0.5;
-  border: none;
-}
 .ng-draggable {
   cursor: grab;
 }
