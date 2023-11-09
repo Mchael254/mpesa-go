@@ -16,6 +16,7 @@ import { ReplaySubject, takeUntil } from 'rxjs';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { StaffService } from '../../../../features/entities/services/staff/staff.service';
 import { StaffDto } from '../../../../features/entities/data/StaffDto';
+import { Router } from '@angular/router';
 
 const log = new Logger( 'OrganizationComponent');
 
@@ -36,20 +37,27 @@ export class OrganizationComponent implements OnInit {
   public countriesData: CountryDto[];
   public stateData: StateDto[] = [];
   public townData: TownDto[] = [];
-  public selectedCountry: number;
-  public selectedCityState: number;
-  public currenciesData: CurrencyDTO[];
-  public banksData: BankDTO[];
-  public bankBranchData: BankBranchDTO[];
+  public currenciesData: CurrencyDTO[] = [];
+  public banksData: BankDTO[] = [];
+  public bankBranchData: BankBranchDTO[] = [];
   public managersData: StaffDto[] = [];
+  public selectedOrg: OrganizationDTO;
+  public countrySelected: CountryDto;
+  public stateSelected: StateDto;
+  public bankSelected: BankDTO;
+  public selectedOrganization: number;
+  public selectedCountry: number;
+  public selectedState: number;
+  public selectedBank: number;
   public groupId: string = 'organizationTab';
   public response: any;
-  public selectedBank: number;
   public selectedFile: File;
   public url = "";
   public filteredManager: any;
   public selectedManager = '';
-  public selectedOrg: OrganizationDTO;
+  public selectedTown = '';
+  public selectedCurrency = '';
+  public selectedBankBranch = '';
   public isOrganizationSelected: boolean = false;
   public selectedOrganizationId: number | null = null;
   public selectedStateName: string | null = null;
@@ -159,6 +167,7 @@ export class OrganizationComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private router: Router, 
     private organizationService: OrganizationService,
     private mandatoryFieldsService: MandatoryFieldsService,
     private countryService: CountryService,
@@ -172,8 +181,6 @@ export class OrganizationComponent implements OnInit {
     this.organizationCreateForm();
     this.fetchOrganization();
     this.fetchCountries();
-    // this.fetchMainCityStates(this.selectedOrg.country.id);
-    // this.fetchTowns(this.selectedOrg.state.id);
     this.fetchCurrencies();
     this.fetchStaffData();
   }
@@ -244,10 +251,13 @@ export class OrganizationComponent implements OnInit {
 
   get f() { return this.createOrganizationForm.controls; }
 
-  onOrganizationChange(event: Event) {
-    const selectedOrgId = (event.target as HTMLSelectElement).value;
-    const selectedOrgIdAsNumber = parseInt(selectedOrgId, 10);
-    this.selectedOrg = this.organizationsData.find(organization => organization.id === selectedOrgIdAsNumber);
+  onOrganizationChange() {
+    // const selectedOrgId = (event.target as HTMLSelectElement).value;
+    // const selectedOrgIdAsNumber = parseInt(selectedOrgId, 10);
+
+    const selectedOrganizationId = this.selectedOrganization;
+    console.log(selectedOrganizationId);
+    this.selectedOrg = this.organizationsData.find(organization => organization.id === selectedOrganizationId);
     
     if (this.selectedOrg) {
       this.isOrganizationSelected = true;
@@ -352,13 +362,16 @@ export class OrganizationComponent implements OnInit {
       });
   }
 
-  onCountryChange(event: Event) {
+  onCountryChange() {
     this.createOrganizationForm.patchValue({
       county: null,
       town: null
     });
-    const selectCountry = (event.target as HTMLSelectElement).value;
-    this.selectedCountry = parseInt(selectCountry, 10);
+    // const selectCountry = (event.target as HTMLSelectElement).value;
+    // this.selectedCountry = parseInt(selectCountry, 10);
+
+    const selectedCountryId = this.selectedCountry;
+    this.countrySelected = this.countriesData.find(country => country.id === selectedCountryId)
 
     this.getBanks(this.selectedCountry);
     this.countryService.getMainCityStatesByCountry(this.selectedCountry)
@@ -375,10 +388,13 @@ export class OrganizationComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onCityChange(event: Event) {
-    const selectedState = (event.target as HTMLSelectElement).value;
-    this.selectedCityState = parseInt(selectedState, 10);
-    this.countryService.getTownsByMainCityState(this.selectedCityState)
+  onCityChange() {
+    // const selectedState = (event.target as HTMLSelectElement).value;
+    // this.selectedCityState = parseInt(selectedState, 10);
+
+    const selectedStateId = this.selectedState;
+    this.stateSelected = this.stateData.find(state => state.id === selectedStateId)
+    this.countryService.getTownsByMainCityState(this.selectedState)
       .pipe(untilDestroyed(this))
       .subscribe( (data) => {
         this.townData = data;
@@ -393,12 +409,15 @@ export class OrganizationComponent implements OnInit {
       })
   }
 
-  onBankSelection(event: Event) {
+  onBankSelection() {
     this.createOrganizationForm.patchValue({
       bankBranch: null
     });
-    const selectBank = (event.target as HTMLSelectElement).value;
-    this.selectedBank = parseInt(selectBank, 10);
+    // const selectBank = (event.target as HTMLSelectElement).value;
+    // this.selectedBank = parseInt(selectBank, 10);
+
+    const selectedBankId = this.selectedBank;
+    this.bankSelected = this.banksData.find(bank => bank.id === selectedBankId)
 
     this.getBankBranches(this.selectedBank);
     this.cdr.detectChanges();
@@ -452,13 +471,12 @@ export class OrganizationComponent implements OnInit {
       this.organizationService.deleteOrganization(organizationId)
         .subscribe(() => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully Deleted an Organization');
+          this.fetchOrganization();
         });
     }
     else {
       log.info('No organization is selected.');
     }
-    this.fetchOrganization();
-    this.createOrganizationForm.reset();
   }
 
   onSave() {
@@ -511,8 +529,8 @@ export class OrganizationComponent implements OnInit {
         customer_care_name: organizationFormValues.customerCareEmail,
         customer_care_primary_phone_number: organizationFormValues.customerCarePriNumber,
         customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber,
-        organizationGroupLogo: organizationFormValues.groupLogo,
-        organizationLogo: organizationFormValues.logo
+        organizationGroupLogo: null,
+        organizationLogo: null
       };
       // Create a new organization
       this.organizationService.createOrganization(saveOrganization)
@@ -523,6 +541,7 @@ export class OrganizationComponent implements OnInit {
           //   this.uploadLogo(this.savedOrganization.id);
           // } else {
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Organization');
+            this.fetchOrganization();
           // }
         });
     }
@@ -575,8 +594,8 @@ export class OrganizationComponent implements OnInit {
         customer_care_name: organizationFormValues.customerCareEmail,
         customer_care_primary_phone_number: organizationFormValues.customerCarePriNumber,
         customer_care_secondary_phone_number: organizationFormValues.customerCareSecNumber,
-        organizationGroupLogo: organizationFormValues.groupLogo,
-        organizationLogo: organizationFormValues.logo
+        organizationGroupLogo: null,
+        organizationLogo: null
       };
       // Update an existing organization
       this.organizationService.updateOrganization(organizationId, saveOrganization)
@@ -587,12 +606,12 @@ export class OrganizationComponent implements OnInit {
           //   this.uploadLogo(this.savedOrganization.id);
           // } else {
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated the Organization');
+            this.fetchOrganization();
           // }
         });
     }
-
-    this.fetchOrganization();
     this.createOrganizationForm.reset();
+    this.onNext();
   }
 
   uploadLogo(organizationId: number){
@@ -605,6 +624,10 @@ export class OrganizationComponent implements OnInit {
         this.fetchOrganization();
         this.createOrganizationForm.reset();
       });
+  }
+
+  onNext() {
+    this.router.navigate(['/home/crm/disivion'])
   }
 
 }
