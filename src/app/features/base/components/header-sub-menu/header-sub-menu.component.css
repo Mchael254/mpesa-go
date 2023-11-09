@@ -25,12 +25,14 @@
   font-size: 12px;
   border: 0;
   z-index: 100000;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   background-color: #0000000c;
   font-weight: 600;
   border-right: var(--primary-color) solid 2px;
+  cursor: pointer;
 }
 
 .label-text {

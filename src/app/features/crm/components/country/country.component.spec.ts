@@ -9,15 +9,45 @@ import { CountryService } from '../../../../shared/services/setups/country/count
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
-import { CountryDto } from '../../../../shared/data/common/countryDto';
+import { CountryDTO, CountryDto } from '../../../../shared/data/common/countryDto';
 import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { MandatoryFieldsDTO } from '../../../../shared/data/common/mandatory-fields-dto';
 import { SharedModule } from '../../../../shared/shared.module';
 
-const mockCountryData: CountryDto[] = [{
+const mockCountryData: CountryDTO[] = [{
+  adminRegMandatory: '',
+  adminRegType: '',
+  currSerial: 0,
+  currency: {
+    createdBy: '',
+    createdDate: '',
+    decimalWord: '',
+    id: 0,
+    modifiedBy: '',
+    modifiedDate: '',
+    name: '',
+    numberWord: '',
+    roundingOff: 0,
+    symbol: ''
+  },
+  drugTraffickingStatus: '',
+  drugWefDate: '',
+  drugWetDate: '',
+  highRiskWefDate: '',
+  highRiskWetDate: '',
   id: 0,
+  isShengen: '',
+  mobilePrefix: 0,
+  name: '',
+  nationality: '',
+  risklevel: '',
   short_description: '',
-  name: ''
+  telephoneMaximumLength: 0,
+  telephoneMinimumLength: 0,
+  unSanctionWefDate: '',
+  unSanctionWetDate: '',
+  unSanctioned: '',
+  zipCode: 0
 }]
 
 const mockCurrencyData: CurrencyDTO[] =[{

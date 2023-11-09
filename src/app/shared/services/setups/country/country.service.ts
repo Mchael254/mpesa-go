@@ -199,6 +199,32 @@ export class CountryService {
     return this.http.get<SubCountyDTO[]>(`/${this.baseUrl}/setups/states/${stateId}/districts`, { headers: headers })
   }
 
+  createDistrict(data: SubCountyDTO): Observable<SubCountyDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<SubCountyDTO>(`/${this.baseUrl}/setups/districts`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateDistrict(districtId: number, data: SubCountyDTO): Observable<SubCountyDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<SubCountyDTO>(`/${this.baseUrl}/setups/districts/${districtId}`,
+      data, { headers: headers })
+  }
+
+  deleteDistrict(districtId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<SubCountyDTO>(`/${this.baseUrl}/setups/districts/${districtId}`,
+      { headers: headers });
+  }
+
   getCountryHoliday(countryCode: number): Observable<CountryHolidayDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
