@@ -6,8 +6,7 @@ import {ActivatedRoute} from "@angular/router";
 import {
   ListDashboardsDTO,
   AddReportToDashDTO,
-  DashboardReports,
-  CreateUpdateDashboardDTO
+  DashboardReports
 } from "../../../shared/data/reports/dashboard";
 import cubejs, {Query} from "@cubejs-client/core";
 import {AppConfigService} from "../../../core/config/app-config-service";
@@ -461,16 +460,13 @@ export class ListReportComponent implements OnInit {
       };
     });
 
-    const saveOrderedReports: CreateUpdateDashboardDTO = {
-      organizationId: 2,
-      createdBy: this.dashboard[0].createdBy,
-      dashboardReports: report,
-      id: this.dashboard[0].id,
-      name: this.dashboard[0].name
+    const saveOrderedReports: AddReportToDashDTO = {
+      dashboardId: this.dashboard[0].id,
+      dashboardReports: report
     }
     log.info('ordered details', saveOrderedReports);
 
-    this.reportService.saveDashboard(saveOrderedReports)
+    this.reportService.addReportToDashboard(this.dashboard[0].id, saveOrderedReports)
       .subscribe(res => {
         log.info(`save response  >>>`, res);
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated records');
