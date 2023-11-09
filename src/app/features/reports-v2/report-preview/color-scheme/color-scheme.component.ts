@@ -4,6 +4,7 @@ import { ColorScheme } from 'src/app/shared/data/reports/color-scheme';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ColorSchemeService } from '../../services/color-scheme.service';
 import { take } from 'rxjs';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 const log = new Logger(`ColorSchemeComponent`);
 
@@ -12,7 +13,7 @@ const log = new Logger(`ColorSchemeComponent`);
   templateUrl: './color-scheme.component.html',
   styleUrls: ['./color-scheme.component.css']
 })
-export class ColorSchemeComponent implements OnInit{
+export class ColorSchemeComponent implements OnInit {
 
   @Output() selectedColorScheme: EventEmitter<any> = new EventEmitter<any>();
 
@@ -40,7 +41,8 @@ export class ColorSchemeComponent implements OnInit{
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private colorSchemeService: ColorSchemeService
+    private colorSchemeService: ColorSchemeService,
+    private globalMessagingService: GlobalMessagingService
   ) {}
 
   ngOnInit(): void {
@@ -118,10 +120,13 @@ export class ColorSchemeComponent implements OnInit{
       colors
     };
     const name = this.colorSchemeName;
+
     this.colorSchemeService.createColorScheme(newColorScheme)
     .pipe(take(1))
     .subscribe(colorScheme => {
       // log.info(`color scheme created `, colorScheme);
+      this.globalMessagingService.displaySuccessMessage('success', 'Color Scheme successfully created');
+      this.fetchAllColorSchemes();
     })
   }
 
@@ -130,6 +135,8 @@ export class ColorSchemeComponent implements OnInit{
    * @param void
    */
   fetchAllColorSchemes(): void {
+    this.colourSchemes = [];
+
     this.colorSchemeService.fetchAllColorSchemes()
     .pipe(take(1))
     .subscribe((colorSchemes) => {
@@ -148,12 +155,14 @@ export class ColorSchemeComponent implements OnInit{
    * delete color scheme
    * @param id :type number
    */
-  // deleteColorScheme(id: number) {
-  //   this.colorSchemeService.deleteColorScheme(id)
-  //   .pipe(take(1))
-  //   .subscribe(res => {
-  //     log.info(`successful delete `, res)
-  //   })
-  // }
+  deleteColorScheme(id: number) {
+    this.colorSchemeService.deleteColorScheme(id)
+    .pipe(take(1))
+    .subscribe(res => {
+      this.globalMessagingService.displaySuccessMessage('success', 'Color scheme successfully deleted');
+      log.info(`successful delete `, res);
+      this.fetchAllColorSchemes();
+    })
+  }
 
 }
