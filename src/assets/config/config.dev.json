@@ -1,6 +1,6 @@
 {
   "contextPath": {
-    "accounts_services": "crm/accounts",
+    "accounts_services": "crm",
     "users_services": "user",
     "auth_services": "oauth",
     "setup_services":  "crm",
