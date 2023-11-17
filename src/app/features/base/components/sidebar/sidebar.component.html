@@ -1,4 +1,4 @@
-<div class="base-side-nav" style="margin: 0; padding: 2.4rem 0 0 0">
+<!--<div class="base-side-nav" style="margin: 0; padding: 2.4rem 0 0 0">
   <ul style="list-style: none; margin: 0px; padding-left: 0px">
     <li>
       <button
@@ -60,4 +60,56 @@
       </li>
     </ng-container>
   </ul>
+</div>-->
+<div class="base-side-nav" style="margin: 0;">
+  <a class="btn btn-link" type="button">
+    <span class="menu-title">
+          <i
+            class="fa-solid fa-house"
+            style="font-size: 15px; padding-right: 9px"
+          ></i>
+      {{'lang.home' | translate}}
+        </span>
+  </a>
+  <ng-container *ngFor="let item of sidebarMainMenuList; let i = index">
+  <div class="dropdown" [id]="item.nameSlug">
+
+
+      <ul class="m-0 list-unstyled">
+        <li (click)="clickURL(item?.link)">
+          <a class="btn btn-link dropdown-toggle" type="button"
+             data-bs-toggle="dropdown" aria-expanded="false"
+             [attr.data-bs-target]="'#' + item.nameSlug"
+          >
+        <span class="menu-title">
+          <i
+            class="{{ item.icon }}"
+            style="font-size: 15px; padding-right: 9px"
+          ></i>
+          {{ item.name | translate}}
+        </span>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="dropdown-menu ms-3" *ngIf="item.menuItems?.length > 0">
+        <li *ngFor="let menuItem of item.menuItems">
+          <a  *ngIf="!menuItem?.isModal"
+              class="dropdown-item border-0"
+              (click)="clickURL(menuItem.link)">
+            {{ menuItem.name | translate }}
+          </a>
+        </li>
+        <li *ngFor="let menuItem of item.menuItems">
+          <a *ngIf="menuItem.isModal"
+             class="dropdown-item border-0"
+             [attr.data-bs-target]="menuItem.target"
+             (click)="clickURL(menuItem.link)">
+            {{ menuItem.name | translate }}
+          </a>
+        </li>
+      </ul>
+
+  </div>
+  </ng-container>
 </div>
