@@ -37,7 +37,6 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "@popperjs/core": "^2.11.8",
     "@types/jest": "^29.5.3",
-    "angular2-draggable": "^16.0.0",
     "bootstrap": "^5.3.0",
     "chart.js": "^4.3.0",
     "crypto-js": "^4.1.1",

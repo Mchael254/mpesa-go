@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Logger } from '../../logger/logger.service';
+import { isObservable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 
@@ -26,7 +27,7 @@ export class ClientTypeService {
   }
   getIdentifierTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
-    return this.http.get<any[]>(`/${this.baseUrl}/identity-modes?organizationId=2`);
+    return this.http.get<any[]>(`/${this.baseUrl}//identity-modes?organizationId=2`);
   }
 
 

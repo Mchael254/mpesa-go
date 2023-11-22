@@ -194,7 +194,6 @@ const SERVICES = [
         ShareModalComponent,
         DownloadModalComponent
 
-
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

@@ -76,17 +76,7 @@
                           </div>
                         </div>
                         <ng-container>
-                          <div class="table-responsive" style="position: relative; color: black; ">
-                            <ngx-spinner
-                              name="ins_table_one_view"
-                              type="ball-clip-rotate-multiple"
-                              [fullScreen]="false"
-                              color="#00529B"
-                              size="medium"
-                              bdColor="rgba(255, 255, 255, 0.0)"
-                            ></ngx-spinner>
-
-
+                          <div class="table-responsive">
                             <table
                               formArrayName="responseOne"
                               class="table table-bordered"
@@ -115,7 +105,7 @@
                                     <td>
                                       <input
                                         formControlName="policy_no"
-                                        type="text"
+                                        type="number"
                                         class="form-control"
                                         required
                                       />
@@ -178,7 +168,7 @@
                                         ></i>
                                       </div>
                                       <div
-                                        (click)="cancelPolicyListOne(i)"
+                                        (click)="cancelpolicyListOne(i)"
                                         class="mx-2"
                                       >
                                         <i
@@ -211,7 +201,7 @@
                                         <!-- Edit Icon -->
                                       </div>
                                       <div
-                                        (click)="deletePolicyListOne(i)"
+                                        (click)="deletepolicyListOne(i)"
                                         class="mx-2"
                                       >
                                         <i
@@ -304,15 +294,7 @@
                         </div>
                       </div>
                       <ng-container>
-                        <div class="table-responsive" style="position: relative; color: black; ">
-                          <ngx-spinner
-                            name="ins_table_two_view"
-                            type="ball-clip-rotate-multiple"
-                            [fullScreen]="false"
-                            color="#00529B"
-                            size="medium"
-                            bdColor="rgba(255, 255, 255, 0.0)"
-                          ></ngx-spinner>
+                        <div class="table-responsive">
                           <table
                             formArrayName="responseOne"
                             class="table table-bordered"
@@ -338,7 +320,7 @@
                                   <td>
                                     <input
                                       formControlName="policy_no"
-                                      type="text"
+                                      type="number"
                                       class="form-control"
                                       required
                                     />
@@ -399,7 +381,7 @@
                                       ></i>
                                     </div>
                                     <div
-                                      (click)="cancelPolicyListTwo(i)"
+                                      (click)="cancelpolicyListTwo(i)"
                                       class="mx-2"
                                     >
                                       <i class="fa-solid fa-x text-danger"></i>
@@ -427,7 +409,7 @@
                                       <!-- Edit Icon -->
                                     </div>
                                     <div
-                                      (click)="deletePolicyListTwo(i)"
+                                      (click)="deletepolicyListTwo(i)"
                                       class="mx-2"
                                     >
                                       <i

@@ -22,7 +22,7 @@ export class SystemParameterComponent implements OnInit {
   public filteredParams: Params[];
   public selectedParam: Params;
   public parameterForm: FormGroup;
-  public isUpdateParam: boolean = false;
+  private isUpdateParam: boolean = false;
 
   public breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -47,23 +47,12 @@ export class SystemParameterComponent implements OnInit {
     private messageService: GlobalMessagingService
   ) {}
 
-
-  /**
-   * Initializes component by:
-   * 1. Getting all params from the DB
-   * 2. Create parameter form
-   * @return void
-   */
   ngOnInit(): void {
     this.getAllParams();
     this.createParameterForm();
     this.spinner.show();
   }
 
-  /**
-   * Creates a parameter form
-   * @return void
-   */
   createParameterForm(): void {
     this.parameterForm = this.fb.group({
       name: [''],
@@ -75,10 +64,6 @@ export class SystemParameterComponent implements OnInit {
     })
   }
 
-  /**
-   * Gets a list of all parameters from the DB
-   * @return void
-   */
   getAllParams(): void {
     this.paramsService.getAllParams()
       .pipe(take(1))
@@ -86,29 +71,19 @@ export class SystemParameterComponent implements OnInit {
         next: (params) => {
           this.allParams = params;
           this.filteredParams = params;
-          // log.info(`filteredParams >>> `, this.filteredParams);
+          log.info(`filteredParams >>> `, this.filteredParams);
           this.spinner.hide();
         },
         error: (e) => { log.info(e)}
       });
   }
 
-  /**
-   * Search for a parameter by filtering using name
-   * @param event - HTML event from search value
-   * @return void
-   */
   filterParams(event: any): void {
     const searchValue = (event.target.value).toUpperCase();
     this.filteredParams = this.allParams.filter((el) => el.name.includes(searchValue));
     this.cdr.detectChanges();
   }
 
-  /**
-   * Selects a parameter and patches the values to the parameter form
-   * @param param:Params
-   * @return void
-   */
   selectParam(param: Params): void {
     this.selectedParam = param;
     this.parameterForm.patchValue(this.selectedParam);
@@ -116,11 +91,6 @@ export class SystemParameterComponent implements OnInit {
     log.info(`param >>>`, param);
   }
 
-  /**
-   * Prepares the parameter object for saving/updating
-   * Checks if the isUpdate has a value or true/false and update/save
-   * @return void
-   */
   saveParameter(): void {
     const formValues = this.parameterForm.getRawValue();
     const param: Params = {
@@ -139,11 +109,6 @@ export class SystemParameterComponent implements OnInit {
     }
   }
 
-  /**
-   * Saves a parameter to the DB and displays error/success message afterwards
-   * @param param:Params
-   * @return void
-   */
   createParameter(param: Params): void {
     this.paramsService.createParam(param)
       .pipe(take(1))
@@ -158,14 +123,10 @@ export class SystemParameterComponent implements OnInit {
       })
   }
 
-  /**
-   * Updates a specific parameter to the DB and displays error/success message afterwards
-   * @param param:Params
-   * @return void
-   */
   updateParameter(param: Params): void {
     param.code = null;
     param.version = this.selectedParam.version;
+    log.info(`code type >>> `, typeof param.code, param);
 
     this.paramsService.updateParam(param, this.selectedParam.code)
       .pipe(take(1))
@@ -180,20 +141,12 @@ export class SystemParameterComponent implements OnInit {
       });
   }
 
-  /**
-   * Resets form fields of the parameterForm
-   * @return void
-   */
   resetForm(): void {
     this.parameterForm.reset();
     this.isUpdateParam = false;
   }
 
-  /**
-   * Deletes a specific parameter to the DB and displays error/success message afterwards
-   * @return void
-   */
-  deleteParameter(): void {
+  deleteParameter() {
     this.paramsService.deleteParameter(this.selectedParam.code)
       .pipe(take(1))
       .subscribe({

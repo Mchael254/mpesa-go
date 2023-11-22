@@ -117,7 +117,7 @@ export class ViewEntityComponent implements OnInit {
   * Fetch roles not assigned to this entity
    */
   setAccountCode() {
-    log.info('entityAccountIdDetails: ' +this.entityAccountIdDetails);
+    console.log('entityAccountIdDetails: ' +this.entityAccountIdDetails);
 
     this.accountCode = this.entityAccountIdDetails?.[0]?.accountCode;
     // this.accountId = this.entityAccountIdDetails?.[0]?.id;
@@ -154,7 +154,7 @@ export class ViewEntityComponent implements OnInit {
         )
         .subscribe((data: PartyAccountsDetails) => {
           this.partyAccountDetails = data
-          log.info('This is the selected account data >>>>>', this.partyAccountDetails);
+          console.log('This is the selected account data >>>>>', this.partyAccountDetails);
           // this.accountService.setCurrentAccounts(accountType);
           this.accountService.setCurrentAccounts(this.partyAccountDetails);
           this.cdr.detectChanges();
@@ -218,7 +218,7 @@ export class ViewEntityComponent implements OnInit {
         this.getUnAssignedRoles();
         this.entityService.setCurrentEntityAccounts(data);
 
-        log.info('>>>>>>>>>>> Fetch entity accounts details by entity id', this.entityAccountIdDetails)
+        console.log('>>>>>>>>>>> Fetch entity accounts details by entity id', this.entityAccountIdDetails)
         this.fetchAllPartyAccountsDetails();
       }
     )
@@ -473,7 +473,7 @@ export class ViewEntityComponent implements OnInit {
   }
 
   editEntities(id: number) {
-    this.router.navigate([`/home/entity/edit/${id}`]);
+    this.router.navigate([ `/home/entity/edit/${id}`]);
   }
 
   private fetchAllPartyAccountsDetails() {

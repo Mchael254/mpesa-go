@@ -13,17 +13,6 @@ export interface BankBranchDTO {
     short_description: string
 }
 
-export interface BankRegionDTO {
-    bankRegionName: string,
-    id: number,
-    managerId: number,
-    organizationId: number,
-    regionCode: number,
-    shortDescription: string,
-    wef: string,
-    wet: string
-}
-
 export interface FundSourceDTO {
     code: number,
     name: string

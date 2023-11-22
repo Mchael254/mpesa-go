@@ -79,7 +79,7 @@ return throwError(errorMessage);
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/accounts/clients`,{
+    return this.http.get<any>(`/${this.crmurl}/clients`,{
       headers:headers,
       params:params
     }).pipe(
@@ -90,7 +90,7 @@ return throwError(errorMessage);
 
   getClient(code: any): Observable<Clients[]>{
 
-    return this.http.get<Clients[]>(`/${this.crmurl}/accounts/clients/${code}`).pipe(
+    return this.http.get<Clients[]>(`/${this.crmurl}/clients/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -110,7 +110,7 @@ return throwError(errorMessage);
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/accounts/agents`,{
+    return this.http.get<any>(`/${this.crmurl}/agents`,{
       headers:headers,
       params:params
     }).pipe(
@@ -120,7 +120,7 @@ return throwError(errorMessage);
   }
   getAgent(code: any): Observable<Agents[]>{
 
-    return this.http.get<Agents[]>(`/${this.crmurl}/accounts/clients/${code}`).pipe(
+    return this.http.get<Agents[]>(`/${this.crmurl}/clients/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -152,43 +152,24 @@ return throwError(errorMessage);
       )
     }
      /*******All Claims ******/
-    //  getAllClaims(): Observable<any>{
-    //   let page = 0;
-    //   let size = 10;
-    //  const headers = new HttpHeaders({
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json',
+     getAllClaims(): Observable<any>{
+      let page = 0;
+      let size = 10;
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
 
-    //   })
-    //   const params = new HttpParams()
-    //   .set('page', `${page}`)
-    //     .set('pageSize', `${size}`)
-    //   return this.http.get<any>(`/${this.crmurl}/accounts/agents`,{
-    //     headers:headers,
-    //     params:params
-    //   }).pipe(
-    //     retry(1),
-    //     catchError(this.errorHandl)
-    //   )
-    // }
- /*******All Policies ******/
- getAllPolicies(): Observable<any>{
-  let page = 0;
-  let size = 10;
- const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+      })
+      const params = new HttpParams()
+      .set('page', `${page}`)
+        .set('pageSize', `${size}`)
+      return this.http.get<any>(`/${this.crmurl}/agents`,{
+        headers:headers,
+        params:params
+      }).pipe(
+        retry(1),
+        catchError(this.errorHandl)
+      )
+    }
 
-  })
-  const params = new HttpParams()
-  .set('page', `${page}`)
-    .set('pageSize', `${size}`)
-  return this.http.get<any>(`/${this.baseurl}/underwriting/api/v1/policies`,{
-    headers:headers,
-    params:params
-  }).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  )
-}
 }

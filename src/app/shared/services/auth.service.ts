@@ -546,7 +546,6 @@ export class AuthService implements OnDestroy {
     return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${baseUrl}/api/me`).pipe()
       .subscribe((data) => {
         this.setAuth(data);
-        
       });
   }
 

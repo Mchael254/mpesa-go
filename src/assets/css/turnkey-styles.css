@@ -27,7 +27,7 @@ html,body {
 .btn-primary {
   background: var(--primary-color);
   border-color: var(--primary-color);
-  border-radius: 4px;
+  /*border-radius: 0;*/
   color: #fff;
   margin-right: 5px;
 }
@@ -38,14 +38,12 @@ html,body {
 }
 
 .btn-outline-primary {
-  border-radius: 4px;
   background: #fff;
   border: solid 1px #00529b;
   color: #00529b;
 }
 
 .btn-outline-primary:hover {
-  border-radius: 4px;
   background: #00529b;
   border: solid 1px #00529b;
   color: #fff;
@@ -63,10 +61,10 @@ html,body {
   width: 120px
 }
 
-/* .form-select {
+.form-select {
     border-radius: 2px;
     border: 1px solid #07070761;
-} */
+}
 
 .setups .card {
   padding: 20px;
@@ -334,12 +332,7 @@ h5.htxt {
   color: #000000;
 }
 
-.form-control {
-  border-radius: 4px;
-}
-.form-select{
-  border-radius: 4px;
-}
+
 /*Login ends*/
 
 /*Common*/
@@ -394,13 +387,13 @@ h5.htxt {
 
 
 .help{
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 17px;
-  text-decoration: underline;
-  color: #00529B;
+font-family: 'Lato';
+font-style: normal;
+font-weight: 700;
+font-size: 14px;
+line-height: 17px;
+text-decoration: underline;
+color: #00529B;
 }
 .text-plain:hover {
   border: 1px solid var(--primary-color);
@@ -516,7 +509,7 @@ h5.htxt {
 }
 
 .card-header {
-  text-align: left;
+  text-align: center;
   margin-bottom: 10px;
 }
 
