@@ -8,14 +8,18 @@ import {Observable} from "rxjs";
   providedIn: 'root'
 })
 export class CalendarService {
-
-  baseUrl = this.appConfig.config.contextPath.users_services;
+  private baseUrl = this.appConfig.config.contextPath.users_services;
 
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService
   ) { }
 
+  /**
+   * Gets the list of calendar events for the loggedIn user
+   * @param username - username for the loggedIn user
+   * @return CalendarEventReqDTO[]
+   */
   getCalendarEvent(username:string): Observable<CalendarEventReqDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -30,14 +34,19 @@ export class CalendarService {
     })
   }
 
+  /**
+   * Saves a calendar events for the loggedIn user
+   * @param createEventData
+   * @return SaveCalendarEventDTO[]
+   */
   saveCalendarEvent(createEventData: SaveCalendarEventDTO): Observable<SaveCalendarEventDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
 
-    return this.http.post<SaveCalendarEventDTO[]>(`/${this.baseUrl}/administration/calendar-activities`, JSON.stringify(createEventData), {headers:headers})
-
+    return this.http.post<SaveCalendarEventDTO[]>(`/${this.baseUrl}/administration/calendar-activities`,
+      JSON.stringify(createEventData), {headers:headers})
   }
 
 }

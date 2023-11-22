@@ -13,7 +13,7 @@
             <button  class="btn btn-link text-dark fw-bold">Screen Codes</button>
           </div>
           <div class="col-sm-4">
-            <button style="float:right;" class="btn btn-link text-primary" (click)="resetForm()">New</button>
+            <button style="float:right;" id="resetForm" class="btn btn-link text-primary" (click)="resetForm()">New</button>
           </div>
 
           <div class="col-sm-12 mt-3">
@@ -25,6 +25,7 @@
                 aria-label="search"
                 aria-describedby="search"
                 (keyup)="filterScreenCodes($event)"
+                id="filterScreenCodes"
               >
               <span class="input-group-text" id="search">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -38,6 +39,7 @@
                 <li
                   *ngFor="let screenCode of filteredScreenCodes"
                   (click)="selectScreenCode(screenCode)"
+                  id="selectScreenCode"
                 >
                   {{screenCode.code}}
                 </li>
@@ -279,7 +281,11 @@
                     <button class="btn btn-outline-primary btn-standard-width">Cancel</button>
                   </div>
                   <div class="col-sm-6" style="text-align: right">
-                    <button class="btn btn-primary btn-standard-width" (click)="createUpdateScreenCode()">Save</button>
+                    <button
+                      class="btn btn-primary btn-standard-width"
+                      (click)="createUpdateScreenCode()"
+                      id="createUpdateScreenCode"
+                    >Save</button>
                   </div>
                 </div>
 

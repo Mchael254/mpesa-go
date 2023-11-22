@@ -68,6 +68,7 @@
                       aria-label="search"
                       aria-describedby="search"
                       (keyup)="filterParams($event)"
+                      id="filterParams"
                     >
                     <span class="input-group-text" id="search">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -81,6 +82,7 @@
                       <li
                         *ngFor="let param of filteredParams"
                         (click)="selectParam(param)"
+                        class="selectParam"
                       >
                         {{ param.name }}
                       </li>
@@ -156,10 +158,10 @@
               </div>
               <div class="row mt-1">
                 <div class="col-sm-6">
-                  <button class="btn btn-outline-primary btn-sm" (click)="resetForm()">Cancel</button>
+                  <button class="btn btn-outline-primary btn-sm"  id="resetForm" (click)="resetForm()">Cancel</button>
                 </div>
                 <div class="col-sm-6" style="text-align: right">
-                  <button class="btn btn-primary btn-sm" (click)="saveParameter()">Save</button>
+                  <button class="btn btn-primary btn-sm" id="saveParameter" (click)="saveParameter()">Save</button>
                 </div>
               </div>
 
@@ -185,7 +187,7 @@
             <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
           </div>
           <div class="col-sm-4 offset-sm-5">
-            <button type="button" class="btn btn-danger" (click)="deleteParameter()">Confirm Delete</button>
+            <button type="button" class="btn btn-danger" id="deleteParam" (click)="deleteParameter()">Confirm Delete</button>
           </div>
         </div>
       </div>
