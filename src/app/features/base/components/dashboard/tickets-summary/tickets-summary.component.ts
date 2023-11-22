@@ -5,7 +5,6 @@ import {Logger} from "../../../../../shared/services";
 import {takeUntil, tap} from "rxjs/operators";
 import {TicketCountDTO} from "../../../../administration/data/ticketsDTO";
 import {ReplaySubject} from "rxjs";
-import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('TicketsSummaryComponent');
 @Component({
@@ -24,7 +23,6 @@ export class TicketsSummaryComponent implements OnInit {
     private router: Router,
     private ticketsService: TicketsService,
     private cdr: ChangeDetectorRef,
-    private globalMessagingService: GlobalMessagingService,
   ) {}
 
   /**
@@ -51,16 +49,10 @@ export class TicketsSummaryComponent implements OnInit {
         takeUntil(this.destroyed$),
         tap((data) => log.info('Fetch Ticket per module>> ', data))
       )
-      .subscribe({
-        next: (data) => {
-          this.ticketCount = data;
-          this.ticketCountTotal = this.addTicketCounts();
-          this.cdr.detectChanges();
-        },
-        error: (e) => {
-          console.log(`error >>>`, e.error);
-          this.globalMessagingService.displayErrorMessage('Error', e.error.error );
-        }
+      .subscribe((data) => {
+        this.ticketCount = data;
+        this.ticketCountTotal = this.addTicketCounts();
+        this.cdr.detectChanges();
       })
   }
 

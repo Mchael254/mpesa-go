@@ -19,10 +19,10 @@ const log = new Logger('ScreenCodesComponent');
 export class ScreenCodesComponent implements OnInit{
   private allScreenCodes: ScreenCode[];
   public filteredScreenCodes: ScreenCode[];
-  selectedScreenCode: ScreenCode;
+  private selectedScreenCode: ScreenCode;
   public isDetailsViewActive: boolean = true;
   public screenForm: FormGroup;
-  isUpdateScreenCode: boolean = false;
+  private isUpdateScreenCode: boolean = false;
 
   public breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -48,36 +48,23 @@ export class ScreenCodesComponent implements OnInit{
   ) {
   }
 
-  /**
-   * Initializes component by:
-   * 1. Getting all screenCodes from the DB
-   * 2. Create screenCode form
-   * @return void
-   */
   ngOnInit(): void {
     this.loadAllScreenCodes();
     this.createScreenForm();
     this.spinner.show();
   }
 
-  /**
-   * Gets a list of all screenCodes from the DB
-   * @return void
-   */
    loadAllScreenCodes(): void {
     this.scheduleService.getAllScreenCodes()
       .pipe(take(1))
       .subscribe((screenCodes) => {
         this.allScreenCodes = screenCodes._embedded.screen_dto_list;
         this.filteredScreenCodes = screenCodes._embedded.screen_dto_list;
+        log.info(`allScreenCodes >>>`, screenCodes?._embedded.screen_dto_list);
         this.spinner.hide();
       });
   }
 
-  /**
-   * Creates a screenCode form
-   * @return void
-   */
   createScreenForm() {
     this.screenForm = this.fb.group({
       code: new FormControl(''),
@@ -109,51 +96,28 @@ export class ScreenCodesComponent implements OnInit{
     })
   }
 
-  /**
-   * Search for a screenCode by filtering using name
-   * @param event - HTML event from search value
-   * @return void
-   */
   filterScreenCodes(event: any): void {
     const searchValue = (event.target.value).toUpperCase();
     this.filteredScreenCodes = this.allScreenCodes.filter((el) => el.code.includes(searchValue));
     this.cdr.detectChanges();
   }
 
-  /**
-   * Selects a screenCode and patches the values to the parameter form
-   * @param screenCode:ScreenCode
-   * @return void
-   */
   selectScreenCode(screenCode: ScreenCode): void {
+    log.info(`selected Screen code >>>`, screenCode)
     this.selectedScreenCode = screenCode;
     this.isUpdateScreenCode = true;
     this.screenForm.patchValue(screenCode);
   }
 
-  /**
-   * Toggles between the 'details' and 'schedules' tab
-   * @param selected:string - either 'details' or 'schedule'
-   * @return void
-   */
   toggleDetails(selected: string): void {
     this.isDetailsViewActive = selected === 'details';
   }
 
-  /**
-   * Resets form fields of the screenForm
-   * @return void
-   */
   resetForm(): void {
     this.screenForm.reset()
     this.isUpdateScreenCode = false;
   }
 
-  /**
-   * Prepares the screenCode object for saving/updating
-   * Checks if the isUpdate has a value or true/false and update/save
-   * @return void
-   */
   createUpdateScreenCode(): void {
     const formValues = this.screenForm.getRawValue();
 
@@ -186,6 +150,7 @@ export class ScreenCodesComponent implements OnInit{
       screenName: formValues.screen_name,
       screenType: formValues.screenType,
     }
+    log.info(`screenCode >>> `, screenCode);
 
     if (this.isUpdateScreenCode) {
       screenCode.code = this.selectedScreenCode.code;
@@ -195,11 +160,6 @@ export class ScreenCodesComponent implements OnInit{
     }
   }
 
-  /**
-   * Saves a screenCode to the DB and displays error/success message afterwards
-   * @param screenCode:ScreenCode
-   * @return void
-   */
   createScreenCode(screenCode: ScreenCode): void {
     this.scheduleService.createScreenCode(screenCode)
       .pipe(take(1))
@@ -213,12 +173,8 @@ export class ScreenCodesComponent implements OnInit{
       });
   }
 
-  /**
-   * Updates a specific screenCode to the DB and displays error/success message afterwards
-   * @param screenCode:ScreenCode
-   * @return void
-   */
   updateScreenCode(screenCode: ScreenCode): void {
+    log.info(`screencode to update >>>`, screenCode)
     this.scheduleService.updateScreenCode(screenCode)
       .pipe(take(1))
       .subscribe({

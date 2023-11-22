@@ -13,7 +13,53 @@ import { Classes, Subclasses,Peril, } from '../../../data/gisDTO';
   styleUrls: ['./class-setup-wizard.component.css']
 })
 export class ClassSetupWizardComponent {
- 
+  // wizardConfig: setupWizard[] = [
+  //   {
+  //     tabTitle: 'Classes and Subclasses',
+  //     url: '/home/gis/setup/class-subclass/classes'
+  //   }
+  
+  // ];
+  // classesListItem: setupListItem[]=[
+  //   {
+  //     listLabel:'Classes Setup',
+  //     listPosition:'1',
+
+  //   },
+  //   {
+  //     listLabel:'Subclass Setup',
+  //     listPosition:'2'
+  //   },
+  //   {
+  //     listLabel:'Class Perils',
+  //     listPosition:'3'
+  //   },
+  //   {
+  //     listLabel:'Class Excesses',
+  //     listPosition:'4'
+  //   }
+  // ]
+  // formContent: DynamicFormFields[]=[
+  //   {
+  //     name:'firstName',
+  //     label:'First Name',
+  //     type:'text',
+  //     required: true,
+  //     disabled:false,
+  //     placeholder:'Enter your first name',
+  //     value: ""
+
+  //   },
+  //   {
+  //     name: 'date_of_birth_file',
+  //     label: 'Date of Birth File',
+  //     type: 'file',
+  //     required: true,
+  //     disabled:false,
+  //     placeholder: 'Date of Birth File'
+  //   },
+  // ]
+
   saveClass:boolean;
   show:boolean = true;
   active:boolean = true;
@@ -63,7 +109,12 @@ export class ClassSetupWizardComponent {
       this.createTestForm();
     }
   });
- 
+    // const state = window.history.state;
+    // if (state && state.subclassDetails) {
+    //   const subclassDetails = state.subclassDetails;
+    //   console.log('Subclass Details:', subclassDetails);
+    //   // Now you can use subclassDetails in your component
+    // }
   }
   selectedCard: number = 1; 
 

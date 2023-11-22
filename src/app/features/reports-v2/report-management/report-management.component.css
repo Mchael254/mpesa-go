@@ -1,9 +1,5 @@
-a.btn-link:hover {
-    background:#eee;
-}
-
 ul.dropdown-menu {
-    border: solid 1px #868E96;
+    border: solid 1px #eee;
     border-radius: 5px;
     padding: 0.5rem;
 }

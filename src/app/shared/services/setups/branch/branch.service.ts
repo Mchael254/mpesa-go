@@ -28,10 +28,9 @@ export class BranchService {
       'Accept': 'application/json',
     })
     const params = new HttpParams()
-      .set('organizationId', organizationId)
-      .set('regionId', 28);
+      .set('organizationId', organizationId);
 
-    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/branches`, {
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organization-branches`, {
       headers: headers,
       params: params,
     });
@@ -46,30 +45,10 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2)
-      .set('regionId', 28);
-
-    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/branches/${branchId}`, {
-      headers: headers,
-      params:params
-    });
-  }
-
-
-  //This method is for testing purposes only
-
-  getBranch():Observable<OrganizationBranchDto[]>{
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
     })
-   
 
-    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organizations/2/branches`, {
+    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/organization-branches/${branchId}`, {
       headers: headers,
-    
     });
   }
 

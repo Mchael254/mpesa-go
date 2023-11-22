@@ -83,7 +83,7 @@ export class VerificationComponent implements OnInit {
             channel: verificationType,
             value: username
           };
-          this.localStorageService.setItem('otp-channel', channel);
+          localStorage.setItem('otp-channel', JSON.stringify(channel));
           this.router.navigate(['/auth/otp']);
         }
         this.isLoading = false;

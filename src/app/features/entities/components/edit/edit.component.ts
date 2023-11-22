@@ -13,12 +13,12 @@ import {OccupationService} from "../../../../shared/services/setups/occupation/o
 import { AccountService } from '../../services/account/account.service';
 import { AccountReqPartyId, IdentityModeDTO } from '../../data/entityDto';
 import { AmlWealthDetailsUpdateDTO, BankDetailsUpdateDTO, NextKinDetailsUpdateDTO, PartyAccountsDetails, PersonalDetailsUpdateDTO, WealthDetailsUpdateDTO } from '../../data/accountDTO';
-import { untilDestroyed } from '../../../../shared/services/until-destroyed';
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { ReplaySubject } from 'rxjs';
-import { Pagination } from '../../../../shared/data/common/pagination';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 import { StaffDto } from '../../data/StaffDto';
 import { StaffService } from '../../services/staff/staff.service';
-import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { LazyLoadEvent } from 'primeng/api';
@@ -63,8 +63,6 @@ export class EditComponent implements OnInit{
   viewUsers: Pagination<StaffDto> = <Pagination<StaffDto>>{};
   selectedUser: StaffDto;
   selectedTitle: ClientTitleDTO;
-  selectedModeIdentity: IdentityModeDTO;
-  idNumberValue: string;
 
   public titlesData : ClientTitleDTO[];
   public occupationData: OccupationDTO[];
@@ -75,6 +73,11 @@ export class EditComponent implements OnInit{
   public branchesData: BankBranchDTO[];
   public fundSource: FundSourceDTO[];
   public modeIdentityType: IdentityModeDTO[];
+
+  // ================//
+  public fieldsets: DynamicFormFields[];
+  public stepsData: DynamicFormFields[];
+  public buttonConfig: DynamicFormButtons;
 
   private _nameFilter: string;
   private _usernameFilter: string;
@@ -108,17 +111,17 @@ export class EditComponent implements OnInit{
     private accountService: AccountService,
     private staffService: StaffService,
     private globalMessagingService: GlobalMessagingService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private router: Router,
     private datePipe: DatePipe,
-    // private translate: TranslateService
+    private translate: TranslateService
   ) {
   }
 
   ngOnInit(): void {
     this.createAccountDetailsForm();
-    this.entityId = this.route.snapshot.params['id'];
+    this.entityId = this.activatedRoute.snapshot.params['id'];
     this.getAccountDetailsByAccountCode();
     this.fetchCountries();
     this.fetchBanks(1100);
@@ -129,12 +132,24 @@ export class EditComponent implements OnInit{
     this.fetchFundSource();
     this.fetchModeOfIdentity(2);
     this.fetchDepartments();
-}
+
+    this.fieldsets = this.entityDetails.entityDetails();
+    this.buttonConfig = this.entityDetails.actionButtonConfig();
+  }
+  submitForm(data:any){
+    console.log(data);
+  }
+  goBack(data?:any){
+    if(data!=null){
+
+    }
+  }
+
 
   createAccountDetailsForm() {
     this.entityDetailsForm = this.fb.group({
       name: ['', Validators.required],
-      primaryType: ['', Validators.required],
+      passportNumber: ['', Validators.required],
       partyType: ['', Validators.required],
       mobileNumber: ['', Validators.required],
       clientTitle: ['', Validators.required],
@@ -204,19 +219,6 @@ export class EditComponent implements OnInit{
       );
   }
 
-  onModeIdentityChange(event: Event) {
-    const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedMode = this.modeIdentityType.find(mode => mode.id === +selectedId);
-    this.selectedModeIdentity = selectedMode;
-    const idNumberControl = this.entityDetailsForm.get('idNumber');
-    idNumberControl.setValue('');
-  }
-
-  onIdNumberChange(value: string) {
-    this.idNumberValue = value;
-  }
-
-
   fetchCountries(){
     this.countryService.getCountries()
       .pipe(takeUntil(this.destroyed$))
@@ -246,6 +248,7 @@ export class EditComponent implements OnInit{
       .pipe(take(1))
       .subscribe( (data) => {
         this.titlesData = data;
+        log.info(`All Clients Title`, this.titlesData);
         // this.selectedTitle = this.titlesData[0];
       });
   }
@@ -335,24 +338,23 @@ export class EditComponent implements OnInit{
   }
   agentDetails() {
     this.entityDetailsForm.patchValue({
-      physicalAddress: this.partyAccountDetails.address?.physical_address,
-      mobileNumber: this.partyAccountDetails.contactDetails?.phoneNumber,
+      physicalAddress: this.partyAccountDetails.agentDto?.physicalAddress,
+      mobileNumber: this.partyAccountDetails.agentDto?.phoneNumber,
       emailAddress: this.partyAccountDetails.agentDto?.emailAddress,
-      clientTitle: this.partyAccountDetails.contactDetails?.title.id,
+      clientTitle: this.partyAccountDetails.contactDetails?.title,
       name: this.partyAccountDetails.agentDto?.name,
       partyType: this.partyAccountDetails.agentDto?.category?.toLowerCase() === 'corporate' ? 'C' : 'I',
       pinNumber: this.partyAccountDetails.agentDto?.pinNo,
       idNumber: this.partyAccountDetails.modeOfIdentityNumber,
-      primaryType: this.partyAccountDetails.modeOfIdentity.id,
+      passportNumber: this.partyAccountDetails.modeOfIdentityNumber,
       dateOfBirth: this.datePipe.transform(this.partyAccountDetails.agentDto?.dateOfBirth, 'dd-MM-yyy'),
-      // occupation: this.partyAccountDetails.wealthAmlDetails.occupation_id,
     })
   }
   serviceProviderDetails() {
     this.entityDetailsForm.patchValue({
-      physicalAddress: this.partyAccountDetails.address?.physical_address,
-      mobileNumber: this.partyAccountDetails.contactDetails?.phoneNumber,
-      emailAddress: this.partyAccountDetails.contactDetails?.emailAddress,
+      physicalAddress: this.partyAccountDetails.serviceProviderDto?.physicalAddress,
+      mobileNumber: this.partyAccountDetails.serviceProviderDto?.phoneNumber,
+      emailAddress: this.partyAccountDetails.serviceProviderDto?.emailAddress,
       // clientTitle: this.partyAccountDetails.serviceProviderDto?.title,
       clientTitle: this.partyAccountDetails.contactDetails.title,
       name: this.partyAccountDetails.serviceProviderDto?.name,
@@ -360,24 +362,22 @@ export class EditComponent implements OnInit{
       // partyType: this.partyAccountDetails.partyType.partyTypeName,
       pinNumber: this.partyAccountDetails.serviceProviderDto?.pinNumber,
       idNumber: this.partyAccountDetails.modeOfIdentityNumber,
-      primaryType: this.partyAccountDetails.modeOfIdentity.id,
-      // occupation: this.partyAccountDetails.wealthAmlDetails.occupation_id,
+      passportNumber: this.partyAccountDetails.modeOfIdentityNumber,
       // dateOfBirth: this.datePipe.transform(this.partyAccountDetails.dateOfBirth, 'dd-MM-yyy'),
     })
   }
   clientDetails() {
     this.entityDetailsForm.patchValue({
-      physicalAddress: this.partyAccountDetails.address?.physical_address,
-      mobileNumber: this.partyAccountDetails.contactDetails?.phoneNumber,
-      emailAddress: this.partyAccountDetails.contactDetails?.emailAddress,
-      clientTitle: this.partyAccountDetails.contactDetails?.title?.id,
+      physicalAddress: this.partyAccountDetails.clientDto?.physicalAddress,
+      mobileNumber: this.partyAccountDetails.clientDto?.phoneNumber,
+      emailAddress: this.partyAccountDetails.clientDto?.emailAddress,
+      clientTitle: this.partyAccountDetails.clientDto?.clientTitle,
       name: this.partyAccountDetails.clientDto?.firstName,
       partyType: this.partyAccountDetails.clientDto?.category?.toLowerCase() === 'corporate' ? 'C' : 'I',
       pinNumber: this.partyAccountDetails.clientDto?.pinNumber,
       idNumber: this.partyAccountDetails.modeOfIdentityNumber,
-      primaryType: this.partyAccountDetails.modeOfIdentity.id,
-      occupation: this.partyAccountDetails.clientDto?.occupation?.id,
-      // occupation: this.partyAccountDetails.wealthAmlDetails.occupation_id,
+      passportNumber: this.partyAccountDetails.modeOfIdentityNumber,
+      occupation: this.partyAccountDetails.clientDto?.occupation?.name,
       dateOfBirth: this.datePipe.transform(this.partyAccountDetails.clientDto?.dateOfBirth, 'dd-MM-yyy'),
     })
   }
@@ -391,10 +391,9 @@ export class EditComponent implements OnInit{
       partyType: this.partyAccountDetails.category?.toLowerCase() === 'corporate' ? 'C' : 'I',
       pinNumber: this.partyAccountDetails.pinNumber,
       idNumber: this.partyAccountDetails.modeOfIdentityNumber,
-      primaryType: this.partyAccountDetails.modeOfIdentity.id,
+      passportNumber: this.partyAccountDetails.modeOfIdentityNumber,
       staffDepartment: this.partyAccountDetails?.userDto?.departmentCode,
-      dateOfBirth: this.datePipe.transform(this.partyAccountDetails?.dateOfBirth, 'dd-MM-yyy'),
-      // occupation: this.partyAccountDetails.wealthAmlDetails.occupation_id,
+      dateOfBirth: this.datePipe.transform(this.partyAccountDetails?.dateOfBirth, 'dd-MM-yyy')
       // dateOfBirth: this.datePipe.transform(this.partyAccountDetails.userDto?.dateOfBirth, 'dd-MM-yyy'),
     });
   }
@@ -402,28 +401,19 @@ export class EditComponent implements OnInit{
   updatePersonalInfo() {
     const personalInfoValue = this.entityDetailsForm.getRawValue();
     const clntTitle = this.titlesData.filter(res => personalInfoValue.clientTitle == res.id)[0]
-    let selectAccountType;
-    if (this.partyAccountDetails.clientDto) {
-      selectAccountType = this.partyAccountDetails.clientDto.clientType.code;
-    } else if (this.partyAccountDetails.serviceProviderDto) {
-      selectAccountType = this.partyAccountDetails.serviceProviderDto.providerType.code;
-    } else {
-      selectAccountType = this.partyAccountDetails.accountType;
-    }
+    log.info(`form data`, clntTitle, this.titlesData, personalInfoValue.clientTitle);
 
     //Preparing Personal Information DTO
     const personalInfo: PersonalDetailsUpdateDTO = {
       accountId: this.partyAccountDetails.id,
-      accountType: selectAccountType,
       dob: personalInfoValue.dateOfBirth,
       emailAddress: personalInfoValue.emailAddress,
-      identityNumber: this.idNumberValue,
-      // primaryType: this.selectedModeIdentity,
-      // modeOfIdentityId: this.selectedModeIdentity.id,
-      modeOfIdentityId: personalInfoValue.primaryType,
+      identityNumber: personalInfoValue.idNumber,
+      modeOfIdentityId: this.partyAccountDetails.modeOfIdentity.id,
       name: personalInfoValue.name,
-      occupationId: +personalInfoValue.occupation,
+      occupationId: personalInfoValue.occupation,
       organizationId: this.partyAccountDetails.organizationId,
+      // passportNo: personalInfoValue.passportNumber,
       phoneNumber: personalInfoValue.mobileNumber,
       physicalAddress: personalInfoValue.physicalAddress,
       pinNumber: personalInfoValue.pinNumber,
@@ -432,6 +422,9 @@ export class EditComponent implements OnInit{
       departmentId: personalInfoValue?.staffDepartment,
       supervisorId: this.selectedUser?.id
     }
+
+    log.info(`Personal Infor`, personalInfo.title);
+
     //calling updating service
     this.accountService.updatePersonalDetails(personalInfo, this.partyAccountDetails.id)
     .subscribe(data => {
@@ -511,7 +504,7 @@ export class EditComponent implements OnInit{
     // calling updating service
     this.accountService.updateWealthDetails(wealthDetails, this.partyAccountDetails.id)
       .subscribe(data => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Wealth Details' );
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Update Wealth Aml Details' );
           // route to 360 view component after successful Updating
         this.router.navigate([ `/home/entity/edit/${this.entityId}`]);
         })

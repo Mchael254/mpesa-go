@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, retry, catchError, Observable } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
-import { Binder, Binders } from '../../data/gisDTO';
+import { Binders } from '../../data/gisDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -39,54 +39,12 @@ if(error.error instanceof ErrorEvent) {
 console.log(errorMessage);
 return throwError(errorMessage);
 }
-
 getAllBinders(){
   return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/binders`).pipe(
     retry(1),
     catchError(this.errorHandl)
   )
 }
- 
-getAllBindersQuotation():Observable<Binder>{
-  let page = 0;
-  let size = 1000;
- const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  
-  })
-  const params = new HttpParams()
-  .set('page', `${page}`)
-    .set('pageSize', `${size}`)
-  return this.http.get<Binder>(`/${this.baseurl}/${this.setupsbaseurl}/binders}`,{
-    headers:headers,
-    params:params
-  }).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  )
-} 
-getAllBindersQuick(subclassCode):Observable<Binder>{
-  let page = 0;
-  let size = 1000;
- const headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  
-  })
-  const params = new HttpParams()
-  .set('page', `${page}`)
-    .set('pageSize', `${size}`)
-  return this.http.get<Binder>(`/${this.baseurl}/${this.setupsbaseurl}/binders?subclassCode=${subclassCode}`,{
-    headers:headers,
-    params:params
-  }).pipe(
-    retry(1),
-    catchError(this.errorHandl)
-  )
-} 
-
-
 getBinders(code:any):Observable<Binders[]>{
   return this.http.get<Binders[]>(`/${this.baseurl}/${this.setupsbaseurl}/binders/${code}`).pipe(
     retry(1),

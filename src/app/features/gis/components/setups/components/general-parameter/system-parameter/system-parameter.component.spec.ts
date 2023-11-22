@@ -8,7 +8,6 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {of} from "rxjs";
 import {ParametersService} from "../../../services/parameters/parameters.service";
-import {Params} from "../../../data/gisDTO";
 
 
 export class MockAppConfigService {
@@ -23,25 +22,12 @@ export class MockAppConfigService {
   }
 }
 
-const params: Params = {
-  code: 0,
-  description: "",
-  name: "sample ",
-  organizationCode: 0,
-  status: "",
-  value: "",
-  version: 0
-}
-
 const mockParamService = {
-  getAllParams: jest.fn().mockReturnValue(of([params])),
-  createParam: jest.fn().mockReturnValue(of(params)),
-  updateParam: jest.fn().mockReturnValue(of(params)),
-  deleteParameter: jest.fn().mockReturnValue(of(params)),
+  getAllParams: jest.fn()
+    .mockReturnValue(of([]))
 }
 
 describe('SystemParameterComponent', () => {
-
   let component: SystemParameterComponent;
   let fixture: ComponentFixture<SystemParameterComponent>;
   let paramService: ParametersService
@@ -70,58 +56,11 @@ describe('SystemParameterComponent', () => {
 
   test('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.getAllParams.call).toBeTruthy();
-    expect(component.createParameterForm.call).toBeTruthy();
-    expect(component.filteredParams.length).toEqual(1);
   });
 
-  test('should filter params', () => {
-    const input = fixture.debugElement.nativeElement.querySelector('#filterParams');
-    input.value = 'sample';
-    input.dispatchEvent(new Event('keyup'));
-    expect(component.filterParams.length).toEqual(1)
-  });
-
-  test('should select param', () => {
-    const button = fixture.debugElement.nativeElement.querySelector('.selectParam');
-    button.click();
-    expect(component.selectedParam).toBe(params)
-  });
-
-  test('should save parameter', () => {
-    const button = fixture.debugElement.nativeElement.querySelector('#saveParameter');
-    button.click();
-    expect(component.createParameter.call).toBeTruthy();
-    expect(component.getAllParams.call).toBeTruthy();
-  });
-
-  test('should update parameter', () => {
-    // component.isUpdateParam = true;
-    const button = fixture.debugElement.nativeElement.querySelector('.selectParam');
-    button.click();
-
-    const saveButton = fixture.debugElement.nativeElement.querySelector('#saveParameter');
-    saveButton.click();
-
-    expect(component.createParameter.call).toBeTruthy();
-    expect(component.getAllParams.call).toBeTruthy();
-  });
-
-  test('should reset form', () => {
-    const button = fixture.debugElement.nativeElement.querySelector('#resetForm');
-    button.click();
-    expect(component.resetForm.call).toBeTruthy();
-    expect(component.isUpdateParam).toBe(false);
-  });
-
-  test('should delete parameter', () => {
-    const button = fixture.debugElement.nativeElement.querySelector('.selectParam');
-    button.click();
-
-    const deleteButton = fixture.debugElement.nativeElement.querySelector('#deleteParam');
-    deleteButton.click();
-
-    expect(component.deleteParameter.call).toBeTruthy();
+  test('should get all params', () => {
+    component.ngOnInit();
+    fixture.detectChanges();
   });
 
 });

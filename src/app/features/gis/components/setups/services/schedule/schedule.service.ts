@@ -19,31 +19,16 @@ export class ScheduleService {
     private appConfig: AppConfigService
   ) { }
 
-  /**
-   * Gets a list of screenCodes from the DB
-   * @return ScreenCodes - an observable
-   */
   getAllScreenCodes(): Observable<ScreenCodes> {
     return this.http.get<ScreenCodes>(`/${this.baseUrl}/setups/api/v1/screens?pageNo=0&pageSize=1000`)
   }
 
-  /**
-   * Updates a specific screenCode in the DB
-   * @param screenCode:ScreenCode
-   * @return ScreenCode - an observable
-   */
   updateScreenCode(screenCode: ScreenCode): Observable<ScreenCode>{
     return this.http.put<ScreenCode>(
       `/${this.baseUrl}/setups/api/v1/screens/${screenCode.code}`, JSON.stringify(screenCode),
       {headers: this.headers}
     )
   }
-
-  /**
-   * Saves a screenCode to the DB
-   * @param screenCode:ScreenCode
-   * @return Params - an observable
-   */
   createScreenCode(screenCode: ScreenCode) : Observable<ScreenCode> {
     return this.http.post<ScreenCode>(
       `/${this.baseUrl}/setups/api/v1/screens`,

@@ -63,7 +63,7 @@
               <div class="content">
                 <input type="search" class="form-control m-2" placeholder="Search"
                        style="width: 94%; border-radius: 8px;">
-                <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropdown">
+                <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
                   <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
                     {{ subCategory.name }}
                   </button>
@@ -94,7 +94,7 @@
                   {{ filterName?.name }}
                   <i class="fa fa-caret-right" style="font-size: 13px;"></i>
                 </p>
-                <div class="collapse dropdown" [attr.id]="filterName.description">
+                <div class="collapse dropend" [attr.id]="filterName.description">
                   <ng-container *ngFor="let subCategory of filterName.subCategory">
                     <ul
                       class="sub-category"
@@ -110,7 +110,7 @@
                         <i class="fa fa-angle-double-right" style="font-size: 13px;"></i>
                       </li>
                     </ul>
-                    <div class="collapse dropdown subject-area" [attr.id]="filterName.description">
+                    <div class="collapse dropend subject-area" [attr.id]="filterName.description">
                       <ul class="dropdown-menu">
                         <ng-container *ngFor="let query of subCategoryCategoryAreas">
                           <li

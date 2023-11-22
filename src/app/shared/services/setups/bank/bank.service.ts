@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AppConfigService } from "../../../../core/config/app-config-service";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs/internal/Observable";
-import { BankBranchDTO, BankDTO, BankRegionDTO, CurrencyDTO, FundSourceDTO} from '../../../data/common/bank-dto';
+import { BankBranchDTO, BankDTO, CurrencyDTO, FundSourceDTO} from '../../../data/common/bank-dto';
 import { Logger } from "../../logger/logger.service";
 
 const log = new Logger('BankService');
@@ -87,47 +87,6 @@ export class BankService {
     });
 
     return this.http.get<FundSourceDTO[]>(`/${this.baseUrl}/setups/source-of-funds`, {headers:header})
-  }
-
-  getBankRegion(regionCode: number): Observable<BankRegionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    const params = new HttpParams()
-      .set('regionCode', `${regionCode}`);
-    return this.http.get<BankRegionDTO[]>(`/${this.baseUrl}/setups/bank-regions`
-      , {
-        headers: headers,
-        params: params
-      });
-  }
-
-  createBankRegion(data: BankRegionDTO): Observable<BankRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BankRegionDTO>(`/${this.baseUrl}/setups/bank-regions`, JSON.stringify(data),
-      { headers: headers })
-  }
-
-  updateBankRegion(id: number, data: BankRegionDTO): Observable<BankRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<BankRegionDTO>(`/${this.baseUrl}/setups/bank-regions/${id}`,
-      data, { headers: headers })
-  }
-
-  deleteBankRegion(id: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BankRegionDTO>(`/${this.baseUrl}/setups/bank-regions/${id}`,
-      { headers: headers });
   }
 
 }

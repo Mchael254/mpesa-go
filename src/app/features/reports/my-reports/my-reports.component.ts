@@ -38,15 +38,6 @@ export class MyReportsComponent implements OnInit{
     private spinner: NgxSpinnerService,
   ) {
   }
-
-  /**
-   * Initializes the component by:
-   * 1. getting the list of folders
-   * 2. getting the current url to determine which folder content to display
-   * 3. getting the list of reports for display in the correct folder
-   * 3. selecting the correct folder based on the url
-   * @returns void
-   */
   ngOnInit(): void {
     this.getFolders();
 
@@ -72,11 +63,6 @@ export class MyReportsComponent implements OnInit{
     });
   }
 
-  /**
-   * gets a list of reports
-   * @param folderId
-   * @returns void
-   */
   getReports(folderId: number) {
     this.spinner.show();
     this.reports$ =  this.reportService.getReports()
@@ -89,10 +75,6 @@ export class MyReportsComponent implements OnInit{
       )
   }
 
-  /**
-   * Initializes the list of folders
-   * @returns void
-   */
   getFolders(): void {
     this.folders = [
       {id: FolderId.MY_REPORTS, name: 'My Reports', desc: 'Logged in user folder', userId: 1 },
@@ -100,11 +82,6 @@ export class MyReportsComponent implements OnInit{
     ]
   }
 
-  /**
-   * Selects a specific folder and fetches reports for that folder
-   * @param folder
-   * @returns void
-   */
   selectFolder(folder: Folder): void {
     this.reports = [];
 
@@ -117,21 +94,12 @@ export class MyReportsComponent implements OnInit{
     this.getReports(this.folderId);
   }
 
-  /**
-   * Routes to edit report page for view and editing
-   * @returns void
-   */
-  viewReport(): void {
+  viewReport() {
     this.router.navigate([`home/reports/edit-report`],
       {queryParams: {reportId: this.selectedReport.id }})
   }
 
-  /**
-   * Selects a report
-   * @param report
-   * @returns void
-   */
-  selectReport(report: Report): void {
+  selectReport(report: Report) {
     this.reports.forEach((item) => {
       item.active = item.id === report.id;
     });

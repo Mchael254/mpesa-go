@@ -72,16 +72,6 @@ export class CalendarComponent implements OnInit {
   ) {
     for (let i=0; i < 10; i++) this.years.push(this.currYear + i)
   }
-
-  /**
-   * Initializes component by:
-   * 1. Generating a date-string to be used to fetch events
-   * 2. Get all events the user has created for the generated date in #above
-   * 3. Creates date selection form
-   * 4. Creates event form
-   * 5. Slice the time into hours/mins for selection on the new event form
-   * @return void
-   */
   ngOnInit(): void {
     const todayDateString = this.createDateString(this.selectedDate, this.currMonth, this.currYear);
     this.getEvents(todayDateString);
@@ -90,13 +80,6 @@ export class CalendarComponent implements OnInit {
     this.sliceTime();
   }
 
-  /**
-   * Generates a date string to be used for fetching events
-   * @param selectedDate - the selected date from the calendar
-   * @param currMonth - the current month for the selected date
-   * @param currYear - the current year for selected date
-   * @return string
-   */
   createDateString(selectedDate, currMonth, currYear): string {
     const adjustedMonth = currMonth + 1;
     return (`${selectedDate < 10 ? '0'
@@ -104,11 +87,6 @@ export class CalendarComponent implements OnInit {
       + adjustedMonth : adjustedMonth}/${currYear}`);
   }
 
-  /**
-   * Creates a date selection form
-   * patches form values for dateRange, month & year with pre-defined/pre-selected values
-   * @return void
-   */
   createDateSelectionForm(): void {
     this.dateSelectionForm = this.fb.group({
       dateRange: [''],
@@ -123,12 +101,6 @@ export class CalendarComponent implements OnInit {
     })
   }
 
-  /**
-   * Creates an event form
-   * patches form value for username using the logged in user
-   * patches form value for eventDate using current date
-   * @return void
-   */
   createEventForm(): void {
     this.newEventForm = this.fb.group({
       userName: [''],
@@ -147,10 +119,6 @@ export class CalendarComponent implements OnInit {
     });
   }
 
-  /**
-   * Generate the values required to render the calendar on screen
-   * @return void
-   */
   renderCalendar(): void {
     let firstDayOfMonth = new Date(this.currYear, this.currMonth, 1).getDay();
     let lastDateOfMonth = new Date(this.currYear, this.currMonth + 1, 0).getDate();
@@ -206,11 +174,6 @@ export class CalendarComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  /**
-   * Selects a day from the calendar
-   * @param day - a CalendarDay object
-   * @return void
-   */
   selectDate(day: CalendarDay): void {
     this.deselectDays();
 
@@ -225,10 +188,6 @@ export class CalendarComponent implements OnInit {
     this.fetchFilteredEvents();
   }
 
-  /**
-   * Fetch filtered events based on selected date value
-   * @return void
-   */
   fetchFilteredEvents(): void {
     const formValues = this.dateSelectionForm.getRawValue();
 
@@ -288,13 +247,7 @@ export class CalendarComponent implements OnInit {
     this.mapEventsToDate(this.daysToDisplay, this.events);
   }
 
-  /**
-   * Maps fetched events to their respective dates
-   * @param daysToDisplay - list of days of type CalendarDay to be displayed on calendar
-   * @param events - list of fetched events of type CalendarEventReqDTO
-   * @return void
-   */
-  mapEventsToDate(daysToDisplay: CalendarDay[], events: CalendarEventReqDTO[]): void {
+  mapEventsToDate(daysToDisplay, events) {
     this.daysToDisplay.forEach((day) => day.event = []);
 
     let currentDate;
@@ -314,21 +267,12 @@ export class CalendarComponent implements OnInit {
     })
   }
 
-  /**
-   * Filter events based on date string
-   * @param dateString -
-   * @return void
-   */
   filterEvents(dateString: string): CalendarEventReqDTO[] {
     return this.eventsData.filter((event) => {
       return moment(new Date(event.startDate)).format("DD/MM/YYYY") === dateString;
     });
   }
 
-  /**
-   * Goes to previous or next month when selected
-   * @return void
-   */
   gotoPrevNext(): void {
     const formValues = this.dateSelectionForm.getRawValue();
     const month = this.months.indexOf(formValues.month);
@@ -347,11 +291,6 @@ export class CalendarComponent implements OnInit {
     this.fetchFilteredEvents()
   }
 
-  /**
-   * Gets a list of events the currently logged in user has for the selected day
-   * @param dateString - string
-   * @return void
-   */
   getEvents(dateString: string): void {
     const userName= this.loggedInUser;
     // log.info(`logged In User >>>`, this.loggedInUser);
@@ -371,10 +310,6 @@ export class CalendarComponent implements OnInit {
       )
   }
 
-  /**
-   * Toggles on/off day selection on calendar
-   * @return void
-   */
   deselectDays(): void {
     this.daysToDisplay.forEach((d,i) => {
       this.daysToDisplay[i].isSelected = false;
@@ -382,19 +317,10 @@ export class CalendarComponent implements OnInit {
     });
   }
 
-  /**
-   * Displays create event form for new event
-   * @param calendarView - type DURATION (DAY | WEEK | MONTH)
-   * @return void
-   */
-  activateCreateEvent(calendarView: string): void {
+  activateCreateEvent(calendarView): void {
     this.calendarView = calendarView;
   }
 
-  /**
-   * Creates a new event and saves to the DB
-   * @return void
-   */
   createEvent(): void {
     const eventFormValues = this.newEventForm.getRawValue();
 
@@ -439,10 +365,6 @@ export class CalendarComponent implements OnInit {
       })
   }
 
-  /**
-   * Divide the hours of the day into slices that a user can select
-   * @return void
-   */
   sliceTime(): void {
     const eventDate = this.newEventForm.getRawValue().eventDate;
     let start = new Date(eventDate); // format: new Date("2016-05-04T00:00:00.000Z");
