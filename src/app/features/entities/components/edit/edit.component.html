@@ -33,21 +33,6 @@
               <div class="col-md-4">
                 <input type="text" class="form-control" id="inputName" placeholder="Full Names" formControlName="name">
               </div>
-              <label for="inputPassportNumber" class="col-sm-2 col-form-label">Passport Number</label>
-              <div class="col-md-4">
-                <input type="text" class="form-control" id="inputPassportNumber" placeholder="Passport Number"
-                  formControlName="passportNumber">
-              </div>
-            </div>
-            <div class="row mb-2">
-              <label for="inputPartyType" class="col-sm-2 col-form-label">Type</label>
-              <div class="col-md-4">
-                <select id="inputPartyType" class="form-select" formControlName="partyType">
-                  <option value="" selected>Party Type</option>
-                  <option value="I">Individual</option>
-                  <option value="C">Corporate</option>
-                </select>
-              </div>
               <label for="inputMobileNumber" class="col-sm-2 col-form-label">Mobile Number</label>
               <div class="col-md-4">
                 <input type="text" class="form-control" id="inputMobileNumber" placeholder="Mobile Number"
@@ -55,14 +40,12 @@
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+              <label for="inputPartyType" class="col-sm-2 col-form-label">Type</label>
               <div class="col-md-4">
-                <select id="inputTitle" class="form-select" formControlName="clientTitle">
-                  <option value="" selected>Title</option>
-                  <option *ngFor="let titles of titlesData" [value]="titles.id">
-                  <!-- <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles"> -->
-                    {{ titles.description }}
-                  </option>
+                <select id="inputPartyType" class="form-select" formControlName="partyType">
+                  <option selected>Party Type</option>
+                  <option value="I">Individual</option>
+                  <option value="C">Corporate</option>
                 </select>
               </div>
               <label for="inputDOB" class="col-sm-2 col-form-label">Date of Birth</label>
@@ -72,10 +55,15 @@
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputEmailAddress" class="col-sm-2 col-form-label">Email Address</label>
+              <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
-                  formControlName="emailAddress">
+                <select id="inputTitle" class="form-select" formControlName="clientTitle">
+                  <option selected>Title</option>
+                  <option *ngFor="let titles of titlesData" [value]="titles?.id">
+                  <!-- <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles"> -->
+                    {{ titles?.description }}
+                  </option>
+                </select>
               </div>
               <label for="inputPhysicalAddress" class="col-sm-2 col-form-label">Physical Address</label>
               <div class="col-md-4">
@@ -84,28 +72,45 @@
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputIdNumber" class="col-sm-2 col-form-label">ID Number</label>
+              <label for="inputEmailAddress" class="col-sm-2 col-form-label">Email Address</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputIdNumber" placeholder="ID Number"
-                  formControlName="idNumber">
+                <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
+                  formControlName="emailAddress">
               </div>
               <label for="inputOccupation" class="col-sm-2 col-form-label">Occupation</label>
               <div class="col-md-4">
                 <select id="inputOccupation" class="form-select" formControlName="occupation">
-                  <option value="" selected>Occupation</option>
-                  <option *ngFor="let occupation of occupationData" [value]="occupation.id">
-                    {{ occupation.name }}
+                  <option selected>Occupation</option>
+                  <option *ngFor="let occupation of occupationData" [value]="occupation?.id">
+                    {{ occupation?.name }}
                   </option>
                 </select>
               </div>
             </div>
-  
+            <div class="row mb-2">
+              <label for="inputPrimaryType" class="col-sm-2 col-form-label">Primary ID Type</label>
+              <div class="col-md-4">
+                <select id="inputPrimaryType" class="form-select" formControlName="primaryType"
+                  (change)="onModeIdentityChange($event)" [(ngModel)]="selectedModeIdentity">
+                  <option selected>Primary Type</option>
+                  <option *ngFor="let idMode of modeIdentityType" [value]="idMode?.id">
+                    {{ idMode?.name }}
+                  </option>
+                </select>
+              </div>
+              <label for="inputIdNumber" class="col-sm-2 col-form-label">ID Number</label>
+              <div class="col-md-4">
+                <input type="text" class="form-control" id="inputIdNumber" placeholder="ID Number" formControlName="idNumber"
+                  [(ngModel)]="idNumberValue" #idNumberInput (input)="onIdNumberChange(idNumberInput.value)">
+              </div>
+            </div>
+
             <div *ngIf="showExtraStaffDetails" class="row mb-2">
               <label for="inputStaffDepartments" class="col-sm-2 col-form-label">Department</label>
               <div class="col-md-4">
                 <select id="inputStaffDepartments" class="form-select" formControlName="staffDepartment">
-                  <option value="" selected>Department</option>
-                  <option *ngFor="let department of staffDepartments" value="{{ department?.id }}">
+                  <option selected>Department</option>
+                  <option *ngFor="let department of staffDepartments" [value]="department?.id">
                     {{ department?.departmentName }}
                   </option>
                 </select>
@@ -133,9 +138,9 @@
         </div>
         <div class="mx-2 mb-2">
           <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
-          <button type="button" class="btn btn-light btn-md" id="completeInforButton">
+          <!-- <button type="button" class="btn btn-light btn-md" id="completeInforButton">
             COMPLETE {{ partyAccountDetails?.partyType?.partyTypeName | uppercase }} INFORMATION
-          </button>
+          </button> -->
           <span class="float-end">
             <button type="button" class="btn btn-primary btn-md" id="updateUserButton" (click)="updatePersonalInfo()">
               SAVE

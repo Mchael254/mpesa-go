@@ -1,0 +1,281 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+  <div class="row">
+    <form [formGroup]="createRegionForm" class="gap-3">
+      <div class="card mb-3">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3">Organization Definition</span>
+          <span class="float-end mt-3">
+            <button type="button" class="btn btn-primary">Create New</button>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group mb-4">
+                <label for="organization" class="form-label">Select an Organization</label>
+                <select id="organization" class="form-select  mb-1" formControlName="organization" (change)="onOrganizationChange($event)"
+                  [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
+                  <option value="" selected>Select organization</option>
+                  <option *ngFor="let organization of organizationsData" [value]="organization.id">{{ organization.name }}
+                  </option>
+                </select>
+                <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)"
+                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['organization']?.errors }">
+                  <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Organization Region</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="form-group col-4">
+              <input type="text" class="form-control" placeholder="Search name, post level or manager allowed" aria-label="search"
+                aria-describedby="search">
+            </div>
+            <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+            <div class="form-group col-3">
+              <input type="text" class="form-control" name="filterByDay" placeholder="Date" onfocus="(this.type='date')"
+                onblur="(this.type='text')">
+            </div>
+            <div class="col-4">
+              <div class="float-end">
+                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal" data-bs-target="#region"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editRegion()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteRegion()"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="regionData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Name</th>
+                    <th class="head">Override Eommission Earned</th>
+                    <th class="head">Manager</th>
+                    <th class="head">Manager Allowed</th>
+                    <th class="head">WEF</th>
+                    <th class="head">WET</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-region>
+                  <tr class="custom-table" (click)="onRegionRowClick(region)">
+                    <td class="body">{{ region.name }}</td>
+                    <td class="body">{{ region.overrideCommissionEarned }}</td>
+                    <td class="body">{{ region.managerId }}</td>
+                    <td class="body">{{ region.managerAllowed }}</td>
+                    <td class="body">{{ region.dateFrom }}</td>
+                    <td class="body">{{ region.dateTo }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No region's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Bank Region</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="form-group col-4">
+              <input type="text" class="form-control" placeholder="Search by name"
+                aria-label="search" aria-describedby="search">
+            </div>
+            <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+            <div class="form-group col-3">
+              <input type="text" class="form-control" name="filterByDay" placeholder="Date" onfocus="(this.type='date')"
+                onblur="(this.type='text')">
+            </div>
+            <div class="col-4">
+              <div class="float-end">
+                <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
+                    data-bs-target="#bank"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editRegionBank()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteRegionBank()"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="bankRegionData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Short Description</th>
+                    <th class="head">Name</th>
+                    <th class="head">WEF</th>
+                    <th class="head">WET</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-bank>
+                  <tr class="custom-table" (click)="onRegionBankRowClick(bank)">
+                    <td class="body">{{ bank.shortDescription }}</td>
+                    <td class="body">{{ bank.bankRegionName }}</td>
+                    <td class="body">{{ bank.wef }}</td>
+                    <td class="body">{{ bank.wet }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No bank's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="row mt-1">
+      <div class="col-12">
+        <div class="row float-end">
+          <button class="btn btn-primary mt-auto align-self-end" (click)="onNext()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Region Modal -->
+<div class="modal fade" #regionModal id="region" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define a Division</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createRegionForm">
+          <div class="row">
+            <div class="form-group col-6 mb-3">
+              <label for="shortDescription" class="form-label">Short Description</label>
+              <input type="text" class="form-control" id="shortDescription" placeholder="Short Description"
+                formControlName="shortDescription">
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" placeholder="name" formControlName="name">
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="divisionOrder" class="form-label">Manager</label>
+              <select id="manager" class="form-select  mb-1" formControlName="manager">
+                <option value="" selected>Select Manager</option>
+                <option *ngFor="let manager of regionManagersData" [value]="manager.id">
+                  {{ manager.name | titlecase }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="managerAllowed" class="form-label">Manager Allowed</label>
+              <select id="managerAllowed" class="form-select  mb-1" formControlName="managerAllowed">
+                <option value="" selected>Select Manager Allowed</option>
+                <option *ngFor="let option of optionData" [value]="option.value">
+                  {{ option.name | titlecase }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="wef" class="form-label">WEF</label>
+              <input type="text" class="form-control" name="wef" placeholder="WEF" onfocus="(this.type='date')"
+                onblur="(this.type='text')" formControlName="wef">
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="wet" class="form-label">WET</label>
+              <input type="text" class="form-control" name="wet" placeholder="WET" onfocus="(this.type='date')"
+                onblur="(this.type='text')" formControlName="wet">
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="commissionEarned" class="form-label">Override Comm earned</label>
+              <select id="commissionEarned" class="form-select  mb-1" formControlName="commissionEarned">
+                <option value="" selected>Select Commission</option>
+              </select>
+              <!-- <input type="text" class="form-control" id="commEarned" placeholder="commEarned" formControlName="commEarned"> -->
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveRegion()">Save Details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bank Modal -->
+<div class="modal fade" #bankModal id="bank" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add a Bank Region</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createRegionBankForm">
+          <div class="row">
+            <div class="form-group mb-3">
+              <label for="shortDescription" class="form-label">Short Description</label>
+              <input type="text" class="form-control" id="shortDescription" placeholder="Short Description"
+                formControlName="shortDescription">
+            </div>
+            <div class="form-group mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" placeholder="name" formControlName="name">
+            </div>
+            <div class="form-group mb-3">
+              <label for="wef" class="form-label">WEF</label>
+              <input type="text" class="form-control" name="wef" placeholder="WEF" onfocus="(this.type='date')"
+                onblur="(this.type='text')" formControlName="wef">
+            </div>
+            <div class="form-group mb-3">
+              <label for="wet" class="form-label">WET</label>
+              <input type="text" class="form-control" name="wet" placeholder="WET" onfocus="(this.type='date')"
+                onblur="(this.type='text')" formControlName="wet">
+            </div>
+            <div class="form-group mb-3">
+              <label for="manager" class="form-label">Manager</label>
+              <select id="manager" class="form-select  mb-1" formControlName="manager">
+                <option value="" selected>Select Manager</option>
+                <option *ngFor="let manager of regionManagersData" [value]="manager.id">
+                  {{ manager.name | titlecase }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveRegionBank()">Save Details</button>
+      </div>
+    </div>
+  </div>
+</div>

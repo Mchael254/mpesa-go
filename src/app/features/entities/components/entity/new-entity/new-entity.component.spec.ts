@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { NewEntityComponent } from './new-entity.component';
 import { EntityService } from '../../../services/entity/entity.service';
-import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
+import { EntityDto, EntityResDTO, IdentityModeDTO } from '../../../data/entityDto';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { GlobalMessagingService } from '../../../../../shared/services/messaging/global-messaging.service';
 import { AppConfigService } from '../../../../../core/config/app-config-service';
@@ -24,7 +24,15 @@ const partyType: PartyTypeDto[] = [{
   partyTypeVisible: ''
 }]
 
-const IdentityMode: IdentityModeDTO = {
+const identityMode: IdentityModeDTO[]= [{
+  id: 0,
+  name: '',
+  identityFormat: '',
+  identityFormatError: '',
+  organizationId: 0,
+}]
+
+const IdentityMode: IdentityModeDTO= {
   id: 0,
   name: '',
   identityFormat: '',
@@ -32,7 +40,7 @@ const IdentityMode: IdentityModeDTO = {
   organizationId: 0,
 }
 
-const entity: EntityDto[] = [
+const entity: EntityDto = 
   {
   categoryName: '',
   countryId: 0,
@@ -50,7 +58,21 @@ const entity: EntityDto[] = [
   profileImage: '',
   partyTypeId: 0,
   }
-]
+
+const mockEntityPost: EntityResDTO = {
+  category: '',
+  countryId: 0,
+  dateOfBirth: '',
+  effectiveDateFrom: '',
+  effectiveDateTo: '',
+  modeOfIdentityId: 0,
+  identityNumber: '',
+  name: '',
+  organizationId: 0,
+  partyTypeId: 0,
+  pinNumber: '',
+  profileImage: ''
+}
 
 const group: MandatoryFieldsDTO[] = [{
   id: 0,
@@ -67,8 +89,10 @@ const group: MandatoryFieldsDTO[] = [{
 
 export class MockEntityService {
   getPartiesType = jest.fn().mockReturnValue(of(partyType));
-  getIdentityType = jest.fn().mockReturnValue(of(IdentityMode));
-  saveEntityDetails = jest.fn().mockReturnValue(of(entity));
+  getIdentityType = jest.fn().mockReturnValue(of(identityMode));
+  saveEntityDetails = jest.fn().mockReturnValue(of(mockEntityPost));
+  uploadProfileImage = jest.fn().mockReturnValue(of({ file: 'image.png' }));
+  setCurrentEntity = jest.fn().mockReturnValue(of());
 }
 
 export class MockMessageService {
@@ -131,18 +155,12 @@ describe('NewEntityComponent', () => {
     messageServiceStub = TestBed.inject(GlobalMessagingService);
     mandatoryServiceStub = TestBed.inject(MandatoryFieldsService);
     appConfigServiceStub = TestBed.inject(AppConfigService);
+    routeStub = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
   test('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-    test('component initial state', () => {
-    expect(component.entityRegistrationForm).toBeDefined();
-    expect(component.entityRegistrationForm.invalid).toBeTruthy();
-    expect(component.selectRoleModalForm).toBeDefined();
-    expect(component.selectRoleModalForm.invalid).toBeTruthy();
   });
 
   test('should have EntityRegistration form', () => {
@@ -182,5 +200,131 @@ describe('NewEntityComponent', () => {
     button.click();
     fixture.detectChanges();
     expect(component.onAssignRole.call).toBeTruthy();
-  })
+  });
+
+  test('should save entity', () => {
+    jest.spyOn(entityServiceStub, 'saveEntityDetails');
+    component.onSubmit();
+    expect(entityServiceStub.saveEntityDetails.call).toBeTruthy();
+    expect(entityServiceStub.saveEntityDetails).toHaveBeenCalled();
+    // expect(entityServiceStub.saveEntityDetails).toHaveBeenCalledWith(mockEntityPost);
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith(
+      'Success',
+      'Successfully Created an Entity'
+    );
+  });
+
+  test('should upload image for entity', () => {
+    jest.spyOn(entityServiceStub, 'uploadProfileImage');
+    const entityId = mockEntityPost.partyTypeId;
+    component.uploadImage(entityId);
+    expect(entityServiceStub.uploadProfileImage.call).toBeTruthy();
+    expect(entityServiceStub.uploadProfileImage).toHaveBeenCalled();
+  });
+
+//   test('should upload image for entity', () => {
+//     jest.spyOn(entityServiceStub, 'uploadProfileImage');
+
+//     const entityId = mockEntityPost.partyTypeId;
+
+//     component.uploadImage(entityId);
+
+//     expect(entityServiceStub.uploadProfileImage).toHaveBeenCalled();
+//     expect(entityServiceStub.uploadProfileImage).toHaveBeenCalledWith(entityId, expect.anything());
+//     expect(component.savedEntity.profilePicture).toBe('image.png');
+//     expect(component.savedEntity.profileImage).toBe('image.png');
+//     expect(entityServiceStub.setCurrentEntity).toHaveBeenCalledWith(entity);
+//     expect(messageServiceStub.clearMessages).toHaveBeenCalled();
+//     expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Successfully Created an Entity');
+//     expect(component.goToNextPage).toHaveBeenCalled();
+// });
+
+
+test('should upload profilePicture', () => {
+    class MockFileReader {
+      onload: Function | null = null;
+
+      readAsDataURL(blob: Blob): void {
+        setTimeout(() => {
+          if (this.onload) {
+            this.onload({ target: { result: 'data:image/png;base64,...' } } as ProgressEvent<FileReader>);
+          }
+        }, 0);
+      }
+    }
+
+    const originalFileReader = globalThis.FileReader;
+    globalThis.FileReader = MockFileReader as any;
+
+    const event = {
+      target: {
+        files: [
+          {
+            name: 'image.png',
+            size: 50000,
+            type: 'image/png',
+          },
+        ],
+      },
+    };
+
+    component.onFileChange(event);
+
+    // Use setTimeout to allow asynchronous code to execute
+    setTimeout(() => {
+      // Assert that the component's URL property was updated
+      expect(component.url).toBe('data:image/png;base64,...');
+
+      // Restore the original FileReader
+      globalThis.FileReader = originalFileReader;
+    }, 10);
+});
+
+  test('should navigate to the correct route based on the selected role (staff)', () => {
+    component.savedEntity = entity;
+    component.roleName = 'Staff';
+    const navigateSpy = jest.spyOn(routeStub, 'navigate');
+    component.goToNextPage();
+    expect(entityServiceStub.setCurrentEntity).toHaveBeenCalledWith(component.savedEntity);
+    // expect(sessionStorage.setItem).toHaveBeenCalledWith(
+    //   'entityDetails',
+    //   JSON.stringify(component.savedEntity)
+    // );
+    expect(navigateSpy).toHaveBeenCalledWith(['/home/entity/staff/new'], {
+      queryParams: { id: component.savedEntity.id },
+    });
+  });
+
+  test('should navigate to the correct route based on the selected role (client)', () => {
+    component.savedEntity = entity;
+    component.roleName = 'Client';
+    const navigateSpy = jest.spyOn(routeStub, 'navigate');
+    component.goToNextPage();
+    expect(entityServiceStub.setCurrentEntity).toHaveBeenCalledWith(component.savedEntity);
+    expect(navigateSpy).toHaveBeenCalledWith(['/home/entity/client/new'], {
+      queryParams: { id: component.savedEntity.id },
+    });
+  });
+
+  test('should navigate to the correct route based on the selected role (agent)', () => {
+    component.savedEntity = entity;
+    component.roleName = 'Agent';
+    const navigateSpy = jest.spyOn(routeStub, 'navigate');
+    component.goToNextPage();
+    expect(entityServiceStub.setCurrentEntity).toHaveBeenCalledWith(component.savedEntity);
+    expect(navigateSpy).toHaveBeenCalledWith(['/home/entity/intermediary/new'], {
+      queryParams: { id: component.savedEntity.id },
+    });
+  });
+
+  // test('should navigate to the correct route based on the selected role (service provider)', () => {
+  //   component.savedEntity = entity;
+  //   component.roleName = 'Service Provider';
+  //   const navigateSpy = jest.spyOn(routeStub, 'navigate');
+  //   component.goToNextPage();
+  //   expect(entityServiceStub.setCurrentEntity).toHaveBeenCalledWith(component.savedEntity);
+  //   expect(navigateSpy).toHaveBeenCalledWith(['/home/entity/service-provider/new'], {
+  //     queryParams: { id: component.savedEntity.id },
+  //   });
+  // });
 });

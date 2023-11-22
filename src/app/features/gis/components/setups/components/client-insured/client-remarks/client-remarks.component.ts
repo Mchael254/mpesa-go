@@ -33,6 +33,8 @@ export class ClientRemarksComponent {
   filterBy: any;
   claimList:any;
   claimListData:any;
+  policyList:any;
+  policyDetail:any;
 
   new: boolean = true;
   dropdownOptions: { id: string, name: string }[] = [];
@@ -60,6 +62,7 @@ export class ClientRemarksComponent {
     this.selectedLabel = 'Client:';
 
     this.loadAllClaims();
+    this.loadAllPolicies();
   }
 
   /**
@@ -269,6 +272,20 @@ loadAllClaims() {
     this.cdr.detectChanges();
   });
 }
+loadAllPolicies() {
+  this.remarkService.getAllPolicies().subscribe(data => {
+    this.policyList = data;
+    // this.policyDetail=this.policyList.content
+    this.policyDetail = this.policyList.content.map(policy => ({
+      policy_no: policy.policy_no,
+      name: policy.policy_no,
+    }));
+    this.dropdownOptions = this.policyDetail;
+    console.log(this.policyDetail, "List of Policies");
+
+    this.cdr.detectChanges();
+  });
+}
 // loadAllClaims(){
 //   this.ticketService.getAllClaims().subscribe(data =>{
 //     this.claimList=data;
@@ -305,7 +322,8 @@ loadAgentList(id: any) {
       this.loadAllAgents();
       this.selectedLabel = 'Agent:';
     } else if (commentType === '3') {
-     
+     this.loadAllPolicies();
+     this.selectedLabel = 'Policies:';
     } else if (commentType === '4') {
       this.loadAllClaims();
       this.selectedLabel = 'Claims:';

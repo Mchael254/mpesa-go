@@ -59,7 +59,7 @@
 .subject-area ul {
   line-height: 25px;
   padding: 5px;
-  /*margin-left: -120px!important;*/
+  margin-left: 120px!important;
   border: solid 1px #eee;
   border-radius: 5px;
   font-size: 0.9rem;

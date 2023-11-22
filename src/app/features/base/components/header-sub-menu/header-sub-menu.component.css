@@ -25,12 +25,14 @@
   font-size: 0.9em;
   border: 0;
   z-index: 100000;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   background-color: #0000000c;
   font-weight: 600;
   border-right: var(--primary-color) solid 2px;
+  cursor: pointer;
 }
 
 .label-text {
@@ -40,7 +42,7 @@
 }
 
 .label-text:hover {
-  border-bottom: 0.5px solid var(--primary-color);
+  /*border-bottom: 0.5px solid var(--primary-color);*/
 }
 
 
@@ -104,4 +106,8 @@
 
 .modal {
   z-index: 999999 !important;
+}
+
+.d-flex >label {
+  font-size: 11px
 }

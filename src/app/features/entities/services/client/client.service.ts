@@ -97,7 +97,7 @@ export class ClientService {
 
   }
 
-   createClient(client: {}): Observable<ClientDTO> {
+   saveClient(client: {}): Observable<ClientDTO> {
     console.log('CREATE CLIENT:'+client);
     return ;
 
@@ -119,8 +119,9 @@ export class ClientService {
       'Accept': 'application/json'
     });
     const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/organization-branches`,
+      .set('organizationId', 2)
+      .set('regionId', 28);
+    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/branches`,
       {
         headers:headers,
         params:params
