@@ -169,5 +169,5 @@ export interface NewTicketDto {
   endorsementNumber?: string;
   endorsementRemarks?: string;
   quotationNumber?: string;
-  ticketType?: string;
+
 }

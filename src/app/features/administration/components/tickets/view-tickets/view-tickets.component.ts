@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild, ViewChildren} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {NewTicketDto, TicketModuleDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/internal/operators/catchError";
@@ -13,7 +13,7 @@ import {AppConfigService} from "../../../../../core/config/app-config-service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -32,22 +32,7 @@ export class ViewTicketsComponent implements OnInit {
   showReassignTicketsModal: boolean;
 
   public sortingForm: FormGroup;
-  ticketTypesData : TicketTypesDTO[]
-
-  form: FormGroup;
-  otpValue = '';
-  title = 'otp';
-  verifySuccess = false;
-  submitted = false;
-  otpProcess:string = '';
-  formInput = ['input1', 'input2', 'input3', 'input4'];
-  @ViewChildren('formRow') rows: any;
-
-  showDefaultUser: boolean = false;
-  generateOtp: boolean = true;
-  showDetailsCard = false;
-  showAdditionalColumns = true;
-  showSpinner: boolean = false;
+  ticketTypesData : TicketTypesDTO[];
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -85,7 +70,7 @@ export class ViewTicketsComponent implements OnInit {
     private fb: FormBuilder,
   )
   {
-    this.form = this.toFormGroup(this.formInput)
+
   }
   ngOnInit(): void {
     this.getAllTicketsFromCubeJs();
@@ -263,7 +248,7 @@ export class ViewTicketsComponent implements OnInit {
               log.info('Username:', username);
 
               this.sendVerificationOtp(username, channel);
-              this.openModal(); // Open the modal programmatically
+              // this.openModal(); // Open the modal programmatically
             }
           } else {
             log.info('No compareMethod results found');
@@ -534,88 +519,5 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-  }
-
-  //open modal on ticket authorize with otp
-  openModal() {
-    const modal = document.getElementById('exampleModalCenter');
-    if (modal) {
-      modal.classList.add('show');
-      modal.style.display = 'block';
-      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (modalBackdrop) {
-        modalBackdrop.classList.add('show');
-      }
-    }
-  }
-  //closes modal after inputing otp values
-  closeModal() {
-    const modal = document.getElementById('exampleModalCenter');
-    if (modal) {
-      modal.classList.remove('show');
-      modal.style.display = 'none';
-      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (modalBackdrop) {
-        modalBackdrop.classList.remove('show');
-      }
-    }
-  }
-
-  toFormGroup(elements) {
-    const group: any = {};
-
-    elements.forEach(key => {
-      group[key] = new FormControl('', Validators.required);
-    });
-    return new FormGroup(group);
-  }
-
-  keyUpEvent(event, index) {
-    let pos = index;
-    if (event.keyCode === 8 && event.which === 8) {
-      pos = index - 1 ;
-    } else {
-      pos = index + 1 ;
-    }
-    if (pos > -1 && pos < this.formInput.length ) {
-      this.rows._results[pos].nativeElement.focus();
-    }
-
-  }
-
-  verifyAuthorizeOtp() {
-    let extras = JSON.parse(this.localStorageService.getItem("extras"));
-    this.otpValue = '';
-    if (!this.form.valid) {
-      return;
-    }
-    const otpValues = Object.values(this.form.controls).map(control => control.value);
-    this.otpValue = otpValues.join('');
-    const username = extras.username;
-    const parsedOtpValue = parseInt(this.otpValue, 10);
-    if (isNaN(parsedOtpValue)) {
-      log.error('Error parsing OTP value', this.otpValue);
-      return;
-    }
-    this.authService.verifyResetOtp(username, parsedOtpValue).subscribe({
-      next: () => {
-        this.verifySuccess = true;
-        this.otpValue = null;
-        // this.globalMessagingService.displaySuccessMessage(
-        //   'Success',
-        //   'OTP Successfully Authorized'
-        // );
-        this.closeModal();
-        if (!this.showDetailsCard) {
-          this.showDetailsCard = this.showDetailsCard;
-          this.showAdditionalColumns = this.showDetailsCard;
-        }
-        this.authorizeTickets();
-      },
-      error: err => {
-        log.error('Error verifying OTP', err);
-      },
-    });
-    this.form.reset();
   }
 }

@@ -27,7 +27,7 @@
   <div class="col-md-12 col-lg-12 col-xxxl-12">
     <div class="card">
       <div class="card-body">
-        <p-table #managerReportTable
+        <p-table #employeeTable
 
                  [paginator]="true"
                  [rowHover]="true"
@@ -39,7 +39,6 @@
                  (sortFunction)="customSortEmployees($event)"
                  [customSort]="true"
                  [globalFilterFields]="['staffs?.name','department?.departmentName','transaction?.module','staffs?.emailAddress']"
-                 [sortField]="'name'" [sortOrder]="1"
                  selectionMode="single"
                  dataKey="ticketID"
                  styleClass="p-datatable-sm"
@@ -84,14 +83,14 @@
           </ng-template>
           <ng-template pTemplate="body" let-aggregatedEmployee>
             <tr>
-              <td class="body" style="cursor:pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username, aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name, aggregatedEmployee?.transaction?.totalCount)">{{aggregatedEmployee?.staffs?.name | titlecase}}</td>
+              <td class="body" style="cursor:pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username, aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name)">{{aggregatedEmployee?.staffs?.name | titlecase}}</td>
               <td class="body">{{aggregatedEmployee?.department?.departmentName | titlecase}}</td>
               <td class="body">
                 {{ aggregatedEmployee?.transaction?.module === 'U' ? 'Underwrite Policy' :
                 aggregatedEmployee?.transaction?.module === 'Q' ? 'Quotation' :
                   aggregatedEmployee?.transaction?.module === 'C' ? 'Claims' : '' }}
               </td>
-              <td class="body">{{aggregatedEmployee?.staffs?.emailAddress | lowercase }}</td>
+              <td class="body">{{aggregatedEmployee?.staffs?.emailAddress}}</td>
               <td class="body">{{aggregatedEmployee?.transaction?.totalCount}}</td>
               <td class="body" style="text-align: right">{{aggregatedEmployee?.transaction?.totalAmount | number:'1.2-2'}}</td>
 
