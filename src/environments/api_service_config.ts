@@ -14,4 +14,5 @@ export enum API_TENANT_ID {
   FBNI = 'fbni',
   DONEWELL = 'donewell',
   TURNQUEST = 'turnquest',
+  STARDISCOVER = 'stardiscover',
 }
