@@ -135,7 +135,7 @@
                                 <label for="inputProfileImg">Profile Photo</label>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
-                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" accept="image/jpeg, image/png" hidden />
+                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" hidden />
                                     <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
                                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload image</label>
                                     <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">Edit</label>

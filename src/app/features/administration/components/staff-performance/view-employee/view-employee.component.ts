@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Logger} from "../../../../../shared/services";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {LazyLoadEvent, SortEvent} from "primeng/api";
@@ -9,7 +9,6 @@ import {Router} from "@angular/router";
 import {takeUntil, tap} from "rxjs/operators";
 import {AggregatedEmployeeData} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
-import {Table} from "primeng/table";
 
 const log = new Logger('ViewEmployeeComponent');
 
@@ -19,7 +18,7 @@ const log = new Logger('ViewEmployeeComponent');
   styleUrls: ['./view-employee.component.css']
 })
 export class ViewEmployeeComponent  implements OnInit {
-  @ViewChild('managerReportTable') managerReportTable: Table;
+
   // viewEmployees: Pagination<StaffDto> = <Pagination<StaffDto>>{};
   aggregatedEmployeeData : Pagination<AggregatedEmployeeData> = <Pagination<AggregatedEmployeeData>>{};
   selectedEmployee: any[] = [];
@@ -116,7 +115,7 @@ export class ViewEmployeeComponent  implements OnInit {
    * The function `getGrpEmployeeData()` retrieves data for staff, transactions, and departments, aggregates the data based
    * on certain conditions, and updates the `aggregatedEmployeeData` property.
    */
-  /*getGrpEmployeeData() {
+  getGrpEmployeeData() {
     forkJoin(([
       this.staffService.getStaffWithSupervisor(0, null, null, 'dateCreated', 'desc'),
       this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
@@ -135,6 +134,7 @@ export class ViewEmployeeComponent  implements OnInit {
               department: department
             })
           }
+
         }
         console.log('aggregated data', result);
         this.aggregatedEmployeeData.content = result;
@@ -142,34 +142,6 @@ export class ViewEmployeeComponent  implements OnInit {
         this.cdr.detectChanges();
       }
     })
-  }*/
-
-  getGrpEmployeeData() {
-    forkJoin([
-      this.staffService.getStaffWithSupervisor(0, null, null, 'dateCreated', 'desc'),
-      this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
-      this.ticketsService.getAllDepartments(2)
-    ]).subscribe(([staff, transactions, departments]) => {
-      if (transactions.length > 0) {
-        const result: AggregatedEmployeeData[] = [];
-        for (const transactionData of transactions) {
-          const staffData = staff.content.find(staffItem => staffItem.username === transactionData.authorizedBy);
-          const department = departments.find(departmentItem => departmentItem.id === staffData.departmentCode);
-
-          if (staffData) {
-            result.push({
-              staffs: staffData,
-              transaction: transactionData,
-              department: department
-            });
-          }
-        }
-        console.log('aggregated data', result);
-        this.aggregatedEmployeeData.content = result;
-        this.aggregatedEmployeeData.totalElements = staff?.totalElements;
-        this.cdr.detectChanges();
-      }
-    });
   }
 
   /**
@@ -188,14 +160,14 @@ export class ViewEmployeeComponent  implements OnInit {
    * that the user is currently in. It could be something like "sales", "inventory", or "finance".
    * @param {string} name - The "name" parameter is a string that represents the name of the employee.
    */
-  goToViewEmployeeTransactions(username: string, module: string, name:string, size: number) {
+  goToViewEmployeeTransactions(username: string, module: string, name:string) {
     // this.ticketsService.transactionRouting = {username: username, module: module, name: name};
 
     // this.ticketsService.setTransactionsRoutingData({username: username, module: module, name: name})
     // this.router.navigate([ `/home/view-employee/transactions/${username}`]);
 
     this.router.navigate(['/home/administration/employee/transactions'],
-      {queryParams: {username, module, name, size }}).then(r => {
+      {queryParams: {username, module, name }}).then(r => {
     })
   }
 
@@ -204,7 +176,6 @@ export class ViewEmployeeComponent  implements OnInit {
    * employee data.
    */
   dateSortEmployees() {
-    this.managerReportTable.reset();
     const sortValues = this.sortingForm.getRawValue();
     log.info('form value', sortValues);
     const payload: any = {

@@ -1,4 +1,3 @@
-<!-- reverting to working commit  -->
 <div class="p-3">
     <div class="card p-3">
         
@@ -43,7 +42,7 @@
                             {{ report.createdBy }}
                         </td>
                         <td>
-                            <div class="btn-group dropdown">
+                            <div class="btn-group dropend">
                                 <a class="btn btn-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ getFolderCategoryName(report.folder) }}
                                 </a>
@@ -55,7 +54,7 @@
                         </td>
                         <td>{{ report.createdDate | date }}</td>
                         <td>
-                            <div class="btn-group dropdown">
+                            <div class="btn-group dropend">
                                 <a class="btn btn-link text-dark text-start" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ getDashboardName(report.dashboardId) }}
                                 </a>
@@ -70,16 +69,12 @@
                                 </ul>
                             </div>
                         </td>
-                        <td class="text-center">                              
-
-                            <div class="btn-group dropdown">
+                        <td class="text-center">
+                            <div class="btn-group dropend">
                                 <a class="btn btn-link text-dark" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="pi pi-ellipsis-v"></i>
                                 </a>
-                                <!-- <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="test">
-                                    Dropend
-                                  </button> -->
-                                <ul class="dropdown-menu" aria-labelledby="test">
+                                <ul class="dropdown-menu">
                                     <li (click)="gotoEditReport(report)">Edit</li>
                                     <li
                                     data-bs-toggle="modal"
