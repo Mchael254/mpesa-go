@@ -5,19 +5,18 @@
     <div id="container">
         <div class="col-md-12 text-center">
             <h4>Group quote summary</h4>
-            <h6 class="mt-4" style="color: gray;">Here is the quote summary for the <b style="color: black;">Whole life
-                    product</b></h6>
+            <h6 class="mt-4" style="color: gray;">Here is the quote summary for the <b style="color: black;">{{ productSelected }} product</b></h6>
            </div>
 
            <div style="display: flex; justify-content: center;">
             <table>
               <tr>
                 <td><span class="s3Label">Premium</span></td>
-                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{premiumForScreen3}}</span></td>
+                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.currency_symbol }} {{quoteSummary?.total_premium | number}}</span></td>
               </tr>
               <tr>
                 <td><span class="s3Label">Sum assured</span></td>
-                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{sumAssuredForScreen3}}</span></td>
+                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.currency_symbol }} {{quoteSummary?.sum_assured | number}}</span></td>
               </tr>
             </table>
           </div>
@@ -31,19 +30,19 @@
                 <table style="width: 100%; min-height: 133px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.quotation_number }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Product: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.product_code }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Currency: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.currency_symbol }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Commission amount: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.commission_amount }}</td>
                     </tr>
                 </table>
             </div>
@@ -51,15 +50,15 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Quotation status: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.status }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Frequency of Payment: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.frequency_of_payment }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.duration_type }}</td>
                     </tr>
                 </table>
             </div>
@@ -67,15 +66,15 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.effective_date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Inception date: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Intermediary: </td>
-                        <td style="width: 50%; align-items: right;">{{ premiumForScreen3 }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.agent_code }}</td>
                     </tr>
                 </table>
             </div>
@@ -86,38 +85,38 @@
                 <h5 class="summary-label">Cover summary</h5>
                 <div class="summary" style="width: 100%; height: 100%;">
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
-                        <h6 style="color: black;">Cover 1</h6>
+                        <h6 style="color: black;">{{ coverTypes?.[0]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Main Cover: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                                <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.sum_assured }}</td>
                             </tr>
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Cover types: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                                <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.premium }}</td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td style="width: 50%; align-items: left; color: grey;">Select rates: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                            </tr>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ getUseCvrRateDescription(coverTypes?.[0]?.use_cvr_rate) }}</td>
+                            </tr> -->
                         </table>
                     </div>
 
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
-                        <h6 style="color: black;">Cover 2</h6>
+                        <h6 style="color: black;">{{ coverTypes?.[1]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Main Cover: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                                <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[1]?.sum_assured }}</td>
                             </tr>
                             <tr>
-                                <td style="width: 50%; align-items: left; color: grey;">Cover types: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                                <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[1]?.premium  }}</td>
                             </tr>
-                            <tr>
+                            <!-- <tr>
                                 <td style="width: 50%; align-items: left; color: grey;">Select rates: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                            </tr>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ getUseCvrRateDescription(coverTypes?.[1]?.use_cvr_rate) }}</td>
+                            </tr> -->
                         </table>
                     </div>
                     <div class="col-12 text-center">
@@ -132,29 +131,29 @@
                 <h5 class="summary-label">Category summary</h5>
                 <div class="summary" style="width: 100%; height: 100%; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
-                    <h6 style="color: black;">Category 1</h6>
+                    <h6 style="color: black;">{{ categorySummary?.[0]?.category_category | titlecase }}</h6>
                     <table style="width: 100%;">
-                        <tr>
+                        <!-- <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                        </tr>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary[0].category_category | titlecase }}</td>
+                        </tr> -->
                         <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary?.[0]?.period }}</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="col-md-12 col-sm-12 col-xs-12 mt-4" style="padding-left: 20px;">
-                    <h6 style="color: black;">Category 2</h6>
+                    <h6 style="color: black;">{{ categorySummary?.[1]?.category_category | titlecase }}</h6>
                     <table style="width: 100%;">
-                        <tr>
+                        <!-- <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                        </tr>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary[1]?.category_category | titlecase }}</td>
+                        </tr> -->
                         <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary?.[1]?.period }}</td>
                         </tr>
                     </table>
                 </div>
@@ -170,27 +169,29 @@
                 <h5 class="summary-label">Members summary</h5>
                 <div class="summary" style="width: 100%; height: 100%; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
-                    <table style="width: 100%;">
+                    <table style="width: 100%;" *ngIf="memberSummary">
                         <tr>
                             <td style="width: 70%; align-items: left; color: grey;">Members Covered: </td>
-                            <td style="width: 30%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                        </tr>
-                        <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Members above override FCL: </td>
-                            <td style="width: 30%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
-                        </tr>
-                        <tr>
-                            <td style="width: 70%; align-items: left; color: grey;">Members to reinsurance: </td>
-                            <td style="width: 30%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                            <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.members }}</td>
                         </tr>
                         <tr>
                             <td style="width: 70%; align-items: left; color: grey;">Computed FCL: </td>
-                            <td style="width: 30%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                            <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.fcl_amount }}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Members above Computed FCL: </td>
+                            <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.mem_above_fcl }}</td>
                         </tr>
                         <tr>
                             <td style="width: 70%; align-items: left; color: grey;">FCL override: </td>
-                            <td style="width: 30%; align-items: right; color: #000;">{{ premiumForScreen3 }}</td>
+                            <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.quotation_override_fcl_amt }}</td>
                         </tr>
+                        <tr>
+                            <td style="width: 70%; align-items: left; color: grey;">Members above Override FCL: </td>
+                            <td style="width: 30%; align-items: right; color: #000;">{{ memberSummary[0]?.mem_above_override_fcl }}</td>
+                        </tr>
+                        
+                        
                     </table>
                 </div>
                 <div class="col-12 text-center view-more">
@@ -274,7 +275,7 @@
                           </form>                          
                           
                         <div class="card">
-                            <p-table [value]="" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                            <!-- <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
                                 [tableStyle]="{'min-width': '50rem'}"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                                 [rowsPerPageOptions]="[10,25,50]">
@@ -282,7 +283,6 @@
                                     <tr>
                                         <th style="width:11.11%">Surname</th>
                                         <th style="width:11.11%">Other names</th>
-                                        <th style="width:11.11%">Premium</th>
                                         <th style="width:11.11%">Sum Assured</th>
                                         <th style="width:11.11%">Date of birth</th>
                                         <th style="width:11.11%">Gender</th>
@@ -291,35 +291,71 @@
                                         <th style="width:11.11%">Dependant type</th>
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body" let>
+                                <ng-template pTemplate="body" let-membersDetails>
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
+                                        <td id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
+                                        <td id="tdStyle">{{ membersDetails.total_sum_assured }}</td>
+                                        <td id="tdStyle">{{ membersDetails.date_of_birth }}</td>
+                                        <td id="tdStyle">{{ membersDetails.gender }}</td>
+                                        <td id="tdStyle">{{ membersDetails.member_number }}</td>
+                                        <td id="tdStyle">{{ membersDetails.description | titlecase }}</td>
+                                        <td id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
                                     </tr>
                                 </ng-template>
-                            </p-table>
+                            </p-table> -->
+                            <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+    [tableStyle]="{'min-width': '50rem'}"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[10,25,50]">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="width:11.11%">Surname</th>
+            <th style="width:11.11%">Other names</th>
+            <th style="width:11.11%">Sum Assured</th>
+            <th style="width:11.11%">Date of birth</th>
+            <th style="width:11.11%">Gender</th>
+            <th style="width:11.11%">Payroll/Member no.</th>
+            <th style="width:11.11%">Category</th>
+            <th style="width:11.11%">Dependant type</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
+        <tr (click)="onMemberTableRowClick(membersDetails, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+            <td id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
+            <td id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
+            <td id="tdStyle">{{ membersDetails.total_sum_assured }}</td>
+            <td id="tdStyle">{{ membersDetails.date_of_birth }}</td>
+            <td id="tdStyle">{{ membersDetails.gender }}</td>
+            <td id="tdStyle">{{ membersDetails.member_number }}</td>
+            <td id="tdStyle">{{ membersDetails.description | titlecase }}</td>
+            <td id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
+        </tr>
+    </ng-template>
+</p-table>
+
                         </div>
 
                         <div class="mt-5">
-                            <h6 style="color: black;">Member summary</h6>
-                            <p-table [value]="" [tableStyle]="{'max-width': '30rem'}">
+                            <h6 style="color: black;">Member Cover types summary</h6>
+                            <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Surname</th>
-                                        <th>Other name</th>
                                         <th>Cover type</th>
-                                        <th>Sum assured</th>
+                                        <th>Cover effect from</th>
+                                        <th>Cover effect to</th>
+                                        <th style="text-align: right;">Sum assured</th>
+                                        <th style="text-align: right;">Premium</th>
     
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body" let-product>
+                                <ng-template pTemplate="body" let-memberCoverTypeSummaryDto>
                                     <tr>
-                                        <td>{{product.code}}</td>
-                                        <td>{{product.name}}</td>
-                                        <td>{{product.category}}</td>
-                                        <td>{{product.quantity}}</td>
+                                        <td id="tdStyle">{{ memberCoverTypeSummaryDto.cvt_desc | titlecase }}</td>
+                                        <td id="tdStyle">{{ memberCoverTypeSummaryDto.wef }}</td>
+                                        <td id="tdStyle">{{ memberCoverTypeSummaryDto.wet }}</td>
+                                        <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                                        <td style="text-align: right;"> {{memberCoverTypeSummaryDto.premium | number }}</td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -342,36 +378,72 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
-                        <button type="button" class="btn-close custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                             (click)="closeCategorySummary()"></button>
                     </div>
                     <div class="modal-body">
                         <div class="card">
-                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                            <p-table [value]="categoryDetailsSummary" [scrollable]="true" scrollHeight="400px"
                                 [tableStyle]="{'min-width': '50rem'}">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Short descripton</th>
-                                        <th>Description</th>
-                                        <th>Multiple of earnings</th>
+                                        <th>Category description</th>
+                                        <th>Multiple of earning</th>
+                                        <!-- <th>Access group</th> -->
+                                        <th>Select rate</th>
                                         <th>Premium mask</th>
-                                        <th>Description</th>
-                                        <th>Cover</th>
-                                        <th>Max type allowed</th>
-                                        <th>Minimum amount</th>
-                                        <th>Limit amount</th>
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body" let-customer>
+                                <ng-template pTemplate="body" let-categoryDetailsSummary>
                                     <tr>
-                                        <td>{{customer.name}}</td>
-                                        <td>{{customer.country.name}}</td>
-                                        <td>{{customer.company}}</td>
-                                        <td>{{customer.representative.name}}</td>
+                                        <td id="tdStyle">{{ categoryDetailsSummary.category_category | titlecase}}</td>
+                                        <td id="tdStyle">{{ categoryDetailsSummary.period}}</td>
+                                        <!-- <td id="tdStyle">{{categorySummary.category_category}}</td> -->
+                                        <td id="tdStyle">{{ categoryDetailsSummary.use_cvr_rate}}</td>
+                                        <td id="tdStyle">{{ categoryDetailsSummary.premium_mask_desc | titlecase}}</td>
                                     </tr>
                                 </ng-template>
                             </p-table>
                         </div>
+                        <!-- brginning of dependant limits table -->
+                        <h5 class="modal-title mt-5" id="categorySummaryModalLabel">Dependant limit</h5>
+                        <div class="card">
+                            <p-table [value]="categorySummary" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Cover Type</th>
+                                        <th>Dependant type</th>
+                                        <th>Lives covered</th>
+                                        <th>Minimum amount</th>
+                                        <th>Maximum limit amount</th>
+                                        <th>Rate</th>
+                                        <th>Division factor</th>
+                                        <th>% of main/yr SA</th>
+                                        <th>Inbuilt</th>
+                                        <th>Accelerated</th>
+                                        <th>Main cover rider</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-categorySummary>
+                                    <tr>
+                                        <td id="tdStyle">{{categorySummary.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{categorySummary.dty_sht_desc | titlecase}}</td>
+                                        <td style="text-align: center;" id="tdStyle">{{categorySummary.maximum_type_allowed}}</td>
+                                        <td id="tdStyle">{{categorySummary.minimum_amt}}</td>
+                                        <td id="tdStyle">{{categorySummary.limit_amount}}</td>
+                                        <td id="tdStyle">{{categorySummary.rate}}</td>
+                                        <td id="tdStyle">{{categorySummary.category_rate_division_factor}}</td>
+                                        <td id="tdStyle">{{categorySummary.sum_assured_percentage}}</td>
+                                        <td id="tdStyle">{{categorySummary.cover_inbuilt}}</td>
+                                        <td id="tdStyle">{{categorySummary.accelerator}}</td>
+                                        <td id="tdStyle">{{categorySummary.main_cover}}</td>
+
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                         <!-- end of dependant limits table-->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
@@ -389,31 +461,39 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="coverSummaryModalLabel">Cover details</h5>
-                        <button type="button" class="btn-close custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
                             (click)="closeCoverSummary()"></button>
                     </div>
                     <div class="modal-body">
                         <div class="card">
-                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                            <p-table [value]="coverTypes" [scrollable]="true" scrollHeight="400px"
                                 [tableStyle]="{'min-width': '50rem'}">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Main cover</th>
                                         <th>Cover types</th>
+                                        <th>Sum assured</th>
+                                        <th>Premium</th>
                                         <th>Select rate</th>
                                         <th>Override premiums</th>
                                         <th>Premium mask</th>
                                         <th>Rate</th>
                                         <th>Rate division factor</th>
                                         <th>% of main/yr SA</th>
+                                        <th>Main cover</th>
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body" let-customer>
+                                <ng-template pTemplate="body" let-coverTypes>
                                     <tr>
-                                        <td>{{customer.name}}</td>
-                                        <td>{{customer.country.name}}</td>
-                                        <td>{{customer.company}}</td>
-                                        <td>{{customer.representative.name}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td id="tdStyle">{{getUseCvrRateDescription(coverTypes.use_cvr_rate)}}</td>
+                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -431,8 +511,16 @@
         <!-- end of modals for groupe quote summary -->
 
     </div>
-    <div class="button-container">
-        <button type="button" class="btn btn-info buttonS" onclick="onProceed()">Share</button>
-        <button type="button" class="btn btn-primary buttonP" onclick="onProceed()">Proceed</button>
+    <div>
+        <button
+        type="button"
+        class="btn btn-primary back-button"
+        (click)="onBack()"
+      >Back
+      </button>
+      <div class="button-container">
+        <button type="button" class="btn btn-info buttonS" (click)="onProceed()">Share</button>
+        <button type="button" class="btn btn-primary buttonP" (click)="onProceed()">Proceed</button>
     </div>
+</div>
 </div>

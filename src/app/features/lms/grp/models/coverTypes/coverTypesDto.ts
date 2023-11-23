@@ -17,7 +17,6 @@ export class CoverTypesDto {
     cvt_desc: string;
     cvt_main_cover: string;
     cvt_rate_type: string;
-    dependant_type_code: string | null;
     discount: string | null;
     discount_division_factor: string | null;
     discount_loading_division_factor: string | null;
@@ -50,8 +49,8 @@ export class CoverTypesDto {
     premium: number;
     premium_but_charge_amount: string | null;
     premium_computation_formula: string | null;
-    premium_mask_code: string | null;
-    premium_mask_short_description: string | null;
+    premium_mask_code: number;
+    premium_mask_short_description: string;
     premium_rate: string | null;
     product_code: string | null;
     quotation_code: string | null;
@@ -64,6 +63,7 @@ export class CoverTypesDto {
     staff_description: string | null;
     sum_assured: number;
     sum_assured_per_member: string | null;
+    sum_assured_limit: number;
     total_loan_amount: string | null;
     total_member_earnings: string | null;
     total_members: string | null;
@@ -104,7 +104,7 @@ export class CoverTypesDto {
     if_use_unit_rate: string | null;
     use_rate: string | null;
     discount_loading_division_factor: number | null;
-    dependant_type_code: number | null;
+    dependant_type_code: number;
     average_earning_per_member: number | null;
     staff_description: string | null;
     multiple_earnings_period: string | null;
@@ -150,6 +150,31 @@ export class CoverTypesDto {
     lnty_code: string | null;
     percentage_payable: number | null;
     cover_term: string | null;
+  }
+
+  export interface PremiumMaskDTO {
+    pmas_cla_code: null | string;
+    pmas_code: number;
+    pmas_comment: null | string;
+    pmas_cur_code: null | string;
+    pmas_cur_desc: null | string;
+    pmas_default: string;
+    pmas_dependent_anb: null | string;
+    pmas_desc: string;
+    pmas_hiv_loading: null | string;
+    pmas_rate_type: null | string;
+    pmas_sht_desc: string;
+    pmas_smoker_loading: null | string;
+    pmas_with_bonus: string;
+    product_code: null | string;
+  }
+  
+  export interface OccupationDTO {
+    occupation_code: number;
+    occupation_desc: string;
+    occupation_hazardous: string;
+    occupation_life_class_code: number;
+    occupation_short_desc: string;
   }
   
   

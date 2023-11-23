@@ -10,6 +10,8 @@ import { CoverageDetailsComponent } from './components/coverage-details/coverage
 import { TableModule } from 'primeng/table';
 import { SummaryComponent } from './components/summary/summary.component';
 import { StepperComponent } from './components/stepper/stepper.component';
+import { CheckboxModule } from 'primeng/checkbox';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { StepperComponent } from './components/stepper/stepper.component';
     ReactiveFormsModule,
     DropdownModule,
     CalendarModule,
-    TableModule
+    TableModule,
+    CheckboxModule,
+    NgxSpinnerModule
   ]
 })
 export class QuotationModule { }

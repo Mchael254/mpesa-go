@@ -7,7 +7,7 @@ export interface CategoryDetailsDto {
     category_rate_division_factor: null
     category_unique_code: number
     fee_amount: null
-    multiple_earnings_period: null
+    multiple_earnings_period: number
     period: number;
     premium: null
     premium_mask_code: number;
@@ -15,7 +15,7 @@ export interface CategoryDetailsDto {
     quotation_code: number
     rate: null
     school_code: null
-    short_description: number
+    short_description: string
     sum_assured: null
     sum_assured_per_member: null
     total_member_earnings: null
@@ -24,4 +24,5 @@ export interface CategoryDetailsDto {
     total_students: null
     use_cvr_rate: string
     premium_mask_desc: string
+    pmas_sht_desc: string;
 }
