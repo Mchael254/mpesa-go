@@ -50,13 +50,32 @@ export class CoverageService {
     return this.api.DELETE(`quotations/${quotationCode}/cover-types/${coverTypeUniqueCode}`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 
-  downloadMemberUploadTemplate() {
-    return this.api.GET('template/generate/EARN/2021675', API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  downloadMemberUploadTemplate(productType, productCode) {
+    return this.api.FILEDOWNLOAD(`template/generate/${productType}/${productCode}`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
   
   getMembers(quotationCode) {
     return this.api.GET(`quotations/${quotationCode}/members`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
+
+  getPremiumMask(productCode) {
+    return this.api.GET(`quotations/premium-mask/${productCode}`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  }
+
+  addMember(quotationCode, memberDetailsFormValues) {
+    return this.api.POST(`quotations/${quotationCode}/add-member`, memberDetailsFormValues, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  }
+
+  deleteMember(quotationCode, quoteDto) {
+    return this.api.DELETE(`quotations/${quotationCode}/members`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, quoteDto);
+  }
   
+  computePremium(quotationCode) {
+    return this.api.POST(`quotations/${quotationCode}/compute-premium`, null, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  }
+  
+  getOccupation() {
+    return this.api.GET(`occupations`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  }
 
 }

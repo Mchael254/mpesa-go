@@ -99,9 +99,18 @@
 }
 
 .custom-red-button {
-    color: red;
-    background-color: red;
-    border-color: red;
+  color: transparent;
+  background-color: transparent;
+  border: none;
+}
+
+.custom-red-button::before {
+  content: "X";
+  color: #EE3945;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  
 }
 
 .box {
@@ -157,6 +166,29 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
+  }
+
+  .back-button {
+    display: inline-flex;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #00529B;
+    float: left;
+    margin-top: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  #tdStyle {
+    padding-left: 0.55rem;
+  }
+
+  .selected-row {
+    background-color: #cce5ff !important;
   }
 
   @media screen and (max-width:1088px) and (min-width:992px) {
