@@ -74,6 +74,15 @@
   margin-top: 10px;
 }
 
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
 @media screen and (max-width:1400px) and (min-width:280px),
 (max-width:280px) {
   .container {

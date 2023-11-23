@@ -64,6 +64,22 @@ export class ApiService {
     return this.http.post<T>(url, data, { headers });
   }
 
+  FILEDOWNLOAD<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<Blob> {
+    this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    const url = `${this.baseURL}/${endpoint}`;
+    const headers = new HttpHeaders()
+      .set('X-TenantId', environment.TENANT_ID)
+      .set('Accept', 'text/csv')
+      .set("Content-Type", "text/csv")
+    // const options = { headers, params };
+    // this.http.get('http://localhost:8080/downloadCsv', { responseType: 'blob' }).subscribe(csvData => {
+    //   this.saveBlobAsFile(csvData, 'sampleCsv.csv');
+    // });
+       return this.http.get(url, { responseType: 'blob', headers}).pipe(
+      // tap(data => console.log(data))
+      );
+  }
+
   FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
@@ -83,12 +99,20 @@ export class ApiService {
     return this.http.put<T>(url, data, { headers });
   }
 
-  DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+  // DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+  //   this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+  //   const url = `${this.baseURL}/${endpoint}`;
+  //   const headers = this.getHeaders();
+
+  //   return this.http.delete<T>(url, { headers });
+  // }
+  DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, data?: any): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-
-    return this.http.delete<T>(url, { headers });
+  
+    return this.http.delete<T>(url, { headers, body: data });
   }
+  
 
 }
