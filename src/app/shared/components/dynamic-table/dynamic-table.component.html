@@ -114,7 +114,7 @@
           <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
         </span>
           </th>
-          <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView">
+          <th *ngIf="tableDetails?.url || tableDetails?.showCustomModalOnView || tableDetails?.viewDetailsOnView">
             Actions
           </th>
         </tr>
