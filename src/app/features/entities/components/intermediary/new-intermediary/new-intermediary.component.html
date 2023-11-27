@@ -182,7 +182,7 @@
             <ng-container *ngIf="visibleStatus?.smsNumber === 'Y'">
               <div class="form-group col-md-4">
                 <label for="smsNumber">SMS Number</label>
-                <input type="text" class="form-control" id="smsNumber" placeholder="+254 711 234 567" formControlName="smsNumber"
+                <input type="tel" class="form-control" id="smsNumber" placeholder="+254 711 234 567" formControlName="smsNumber"
                        [ngClass]="{ 'is-invalid': f['contactDetails']['controls']['smsNumber']['invalid'] && (f['contactDetails']['controls']['smsNumber']['dirty'] || f['contactDetails']['controls']['smsNumber']['touched']) }">
                 <div *ngIf="f?.['contactDetails']['controls']['smsNumber']['invalid'] && (f['contactDetails']['controls']['smsNumber']['dirty'] || f['contactDetails']['controls']['smsNumber']['touched'])" class="form-text text-danger">
                   <div *ngIf="f?.['contactDetails']['controls']['smsNumber']['errors']['required']">SMS number is required</div>
@@ -192,7 +192,7 @@
             <ng-container *ngIf="visibleStatus?.telNumber === 'Y'">
               <div class="form-group col-md-4">
                 <label for="telNumber">Telephone Number</label>
-                <input type="text" class="form-control" id="telNumber" placeholder="+254 711 234 567" formControlName="telNumber"
+                <input type="tel" class="form-control" id="telNumber" placeholder="+254 711 234 567" formControlName="telNumber"
                        [ngClass]="{ 'is-invalid': f['contactDetails']['controls']['telNumber']['invalid'] && (f['contactDetails']['controls']['telNumber']['dirty'] || f['contactDetails']['controls']['telNumber']['touched']) }">
                 <div *ngIf="f['contactDetails']['controls']['telNumber']['invalid'] && (f['contactDetails']['controls']['telNumber']['dirty'] || f['contactDetails']['controls']['telNumber']['touched'])" class="form-text text-danger">
                   <div *ngIf="f['contactDetails']['controls']['telNumber']['errors']['required']">SMS number is required</div>
