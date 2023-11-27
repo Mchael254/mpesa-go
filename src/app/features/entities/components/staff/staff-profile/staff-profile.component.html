@@ -165,7 +165,7 @@
             <ng-container *ngIf="visibleStatus.phoneNumber === 'Y'">
               <div class="col-sm-4">
                 <label for="phoneNumber" class="label col-form-label">Primary Phone number</label>
-                <input type="text"  nbInput fullWidth id="phoneNumber" name="phoneNumber" placeholder="Primary phone" class="form-control" formControlName="phoneNumber"
+                <input type="tel"  nbInput fullWidth id="phoneNumber" name="phoneNumber" placeholder="Primary phone" class="form-control" formControlName="phoneNumber"
                        [ngClass]="{ 'is-invalid': f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched) }">
                 <div *ngIf="f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched)" class="form-text text-danger">
                   <div *ngIf="f['contact_details'].get('phoneNumber')?.errors['required']">Phone number is required</div>
@@ -175,7 +175,7 @@
             <ng-container *ngIf="visibleStatus.otherPhone === 'Y'">
               <div class="col-sm-4">
                 <label for="otherPhone" class="label col-form-label">Secondary phone number</label>
-                <input type="text"  nbInput fullWidth id="otherPhone" name="otherPhone" placeholder="Secondary phone number" class="form-control" formControlName="otherPhone"
+                <input type="tel"  nbInput fullWidth id="otherPhone" name="otherPhone" placeholder="Secondary phone number" class="form-control" formControlName="otherPhone"
                        [ngClass]="{ 'is-invalid': f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched) }">
                 <div *ngIf="f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched)" class="form-text text-danger">
                   <div *ngIf="f['contact_details'].get('otherPhone')?.errors['required']">Secondary phone number is required</div>
@@ -218,7 +218,7 @@
               <div class="col-sm-4">
                 <label for="manager" class="label col-form-label">Supervisor</label>
                 <div class="dropdown-wrapper">
-                  <input type="text" id="manager" name="manager" placeholder="Supervisor" class="w-100 box-sizing-border-box  staff-supervisor-input" formControlName="manager"
+                  <input type="text" id="manager" name="manager" placeholder="Supervisor" class="form-control staff-supervisor-input" formControlName="manager"
                          [ngClass]="{ 'is-invalid': f['employment_details'].get('manager')?.invalid && (f['employment_details'].get('manager')?.dirty || f['employment_details'].get('manager')?.touched) }">
                   <i class="pi pi-angle-down position-absolute top-50 translate-middle-y staff-manager-dropdown-icon" data-bs-toggle="modal" data-bs-target="#supervisorsModal"></i>
                 </div>
@@ -231,7 +231,7 @@
             <ng-container *ngIf="visibleStatus.branch === 'Y'">
               <div class="col-sm-4">
                 <label for="branch" class="label col-form-label">Branch</label>
-                <select id="branch" class="form-control" formControlName="branch" name="branch"
+                <select id="branch" class="form-select" formControlName="branch" name="branch"
                         [ngClass]="{ 'is-invalid': f['employment_details'].get('branch')?.invalid && (f['employment_details'].get('branch')?.dirty || f['employment_details'].get('branch')?.touched) }">
                   <option value="" selected disabled>Branch</option>
                   <option *ngFor="let branch of branches " [ngValue]="branch.id">{{ branch.name }}</option>
