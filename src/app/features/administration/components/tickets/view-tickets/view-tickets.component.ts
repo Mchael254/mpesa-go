@@ -393,8 +393,7 @@ export class ViewTicketsComponent implements OnInit {
       .subscribe(response => {
         log.info("my otp >>>", response);
         if(response){
-          // this.globalMessagingService.displaySuccessMessage('Success', 'OTP successfully sent to your Email');
-          // this.messageService.add({severity: 'success', summary:'Success', detail:'OTP successfully sent to your Email'});
+          this.globalMessagingService.displaySuccessMessage('Success', 'OTP successfully sent');
         }
       })
   }
