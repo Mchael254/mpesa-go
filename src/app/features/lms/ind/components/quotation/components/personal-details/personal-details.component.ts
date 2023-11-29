@@ -35,6 +35,7 @@ import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AgentPostDTO } from 'src/app/features/entities/data/AgentDTO';
 
 @Component({
   selector: 'app-personal-details',
@@ -198,9 +199,8 @@ export class PersonalDetailsComponent {
       client: [''],
       IdetifierType: [''],
       citizenship: [''],
-      dateOfBirth: [],
+      date_of_birth: [],
 
-      with_effect_to: [],
       emailAddress: [
         '',
         [
@@ -217,12 +217,12 @@ export class PersonalDetailsComponent {
       pinNumber: ['', [Validators.required]],
       clientType: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required]],
-      withEffectFromDate: ['', [Validators.required]],
       occupation: ['', [Validators.required]],
       country: ['', [Validators.required]],
       branch: ['', [Validators.required]],
       idNumber: ['', [Validators.required]],
-      with_effect_from: ['', [Validators.required]],
+      with_effect_from: [, [Validators.required]],
+      with_effect_to: [],
       beneficiaries: this.fb.array([]),
     });
   }
@@ -419,37 +419,66 @@ export class PersonalDetailsComponent {
   }
 
   async nextPage() {
-    let client_code = +this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
     let formValue = this.clientDetailsForm.value;
-    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country))
-    console.log(formValue);
-    let postValue = {
+    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
+    const contactsDetails = {
+      emailAddress: StringManipulation.returnNullIfEmpty(formValue.emailAddress),
+      id: 0,
+      phoneNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
+      receivedDocuments: "N",
+      smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
+      titleShortDescription: StringManipulation.returnNullIfEmpty(formValue?.title)
+    }
+    let partyData = {
       category: "C",
       country: countryData,
-      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-      dateOfBirth: null,
-      effectiveDateFrom: formValue?.with_effect_from,
-      effectiveDateTo: formValue?.with_effect_to,
+      country_id: StringManipulation.returnNullIfEmpty(formValue?.country),
+      date_of_birth: formValue?.date_of_birth,
+      effective_date_from: formValue?.with_effect_from,
+      effective_date_to: formValue?.with_effect_to,
       id: 0,
-      identityNumber: formValue?.idNumber,
-      modeOfIdentityId: null,
-      name: `${formValue?.firstName} ${formValue?.lastName}` ,
-      organizationId: 2,
-      partyTypeId: 100,
-      pinNumber: formValue?.pinNumber,
-      profileImage: null,
-      profilePicture: null,
-
+      identity_number: formValue?.idNumber,
+      mode_of_identity_id: null,
+      name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
+      organization_id: 2,
+      party_type_id: 2,
+      pin_number: formValue?.pinNumber,
+      profile_image: null,
+      profile_picture: null,
+    }
+    let accountData: any = {
+      address: StringManipulation.returnNullIfEmpty(formValue?.p_address),
+      agent_request_dto: null,
+      contact_details: contactsDetails,
+      party_id: null,
+      party_type_short_desc: 'CLIENT',
+      created_by: null,
+      effective_date_from: formValue?.with_effect_from,
+      effective_date_to: formValue?.with_effect_to,
+      mode_of_identity_id: null,
+      category: StringManipulation.returnNullIfEmpty(formValue?.clientType),
+      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+      gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
+      status: 'A',
+      dateCreated: new Date(),
+      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
+      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
+      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
+      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
+      date_of_birth: formValue?.date_of_birth,
+      organization_id: 2
 
     }
+    let clientData = {...partyData, ...accountData}
 
-    console.log(postValue)
+    console.log(clientData);
+    console.log(client_code);
+    this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
+        console.log(data);
+        this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
 
-    // this.lms_client_service
-    //   .saveClient({})
-    //   .subscribe((data: any) => {
-    //     console.log(data);
-    //   })
+      })
 
     // if(this.clientDetailsForm.valid){
     // if(true){
@@ -509,7 +538,7 @@ export class PersonalDetailsComponent {
     //     this.client_service.createClient(client).subscribe((data) => {
     //       console.log(data);
     // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+    // await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
     //     });
     //   }
     // }else{
@@ -536,8 +565,6 @@ export class PersonalDetailsComponent {
     beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(
       beneficiary['percentage_benefit']
     );
-    // let be_relation_code = beneficiary['beneficiary_info']['relation_code'];
-    // let ap_relation_code = beneficiary['appointee_info']['relation_code'];
     beneficiary['appointee_info']['relation_code'] =
       StringManipulation.returnNullIfEmpty(
         beneficiary['appointee_info']['relation_code']
@@ -549,10 +576,13 @@ export class PersonalDetailsComponent {
     beneficiary['code'] = StringManipulation.returnNullIfEmpty(
       beneficiary['code']
     );
-    // console.log(beneficiary);
+    let percentage_benefit = this.beneficiaryList?.map(d =>  d?.percentage_benefit)?.reduce((sum, current) => sum + current, 0);
+
+    console.log(percentage_benefit);
     if (!this.checkIfGuardianIsNeeded()) {
       beneficiary['appointee_info'] = null;
     }
+    if(percentage_benefit<=100){
     return this.party_service
       .createBeneficiary(beneficiary)
       .pipe(finalize(()=>{
@@ -566,6 +596,11 @@ export class PersonalDetailsComponent {
         this.spinner_Service.hide('beneficiary_modal_screen');
         this.isBeneficiaryLoading = false;
       });
+    }else{
+      console.log("Greater than 100%");
+      this.toast.danger(`Percentage Benefit is greater by  ${percentage_benefit -100}`, 'Percentage Benefit')
+
+    }
   }
   addEmptyBeneficiary() {
     this.addEntity(this.beneficiaryList);

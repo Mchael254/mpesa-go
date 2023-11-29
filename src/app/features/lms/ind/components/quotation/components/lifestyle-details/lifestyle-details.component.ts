@@ -15,6 +15,7 @@ import { StringManipulation } from 'src/app/features/lms/util/string_manipulatio
 import {NgxSpinnerService} from "ngx-spinner";
 import {finalize} from "rxjs/internal/operators/finalize";
 import { Observable } from 'rxjs';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
 
 
 @Component({
@@ -49,7 +50,8 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
 
   constructor(private fb: FormBuilder, private spinner_service: NgxSpinnerService, private router: Router, private session_service: SessionStorageService,
-              private country_service: CountryService, private payFrequenciesService: PayFrequencyService, private lifestyle_service: LifestyleService) {
+              private country_service: CountryService, private payFrequenciesService: PayFrequencyService, private lifestyle_service: LifestyleService,
+              private toast: ToastService) {
     this.clientLifestyleForm = this.fb.group({
       code: [],
       isClientHazardous: ['N'],
@@ -137,6 +139,10 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
         ...data
       })
       this.spinner_service.hide("lifestyle_screen");
+    },
+    err=>{
+      this.toast.danger('We are unable to complete your request, try again later', 'INFO');
+
     })
   }
 
@@ -164,6 +170,10 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
         this.router.navigate(['/home/lms/ind/quotation/medical-history']);
         this.spinner_service.hide("lifestyle_screen");
 
+      },
+      err=>{
+        this.toast.danger("Unable to Save Client Lifestyle's Record, try again later!!", 'DANGER');
+  
       })
 
 

@@ -24,6 +24,7 @@ import { ReportManagementComponent } from './report-management/report-management
 import { TableModule } from 'primeng/table';
 import { SaveReportModalComponent } from './save-report-modal/save-report-modal.component';
 import {AngularDraggableModule} from "angular2-draggable";
+import { BaseComponent } from './base/base.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import {AngularDraggableModule} from "angular2-draggable";
     ColorSchemeComponent,
     ReportManagementComponent,
     SaveReportModalComponent,
+    BaseComponent,
 
   ],
     imports: [
