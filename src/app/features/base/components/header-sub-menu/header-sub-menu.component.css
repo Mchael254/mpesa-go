@@ -25,6 +25,7 @@
   font-size: 0.9em;
   border: 0;
   z-index: 100000;
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
