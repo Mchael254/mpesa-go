@@ -452,7 +452,7 @@ export class CreateDashboardComponent implements OnInit {
     log.info('dashboard id', dashboardId);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<ListDashboardsDTO[]>) {
     moveItemInArray(this.dashboards, event.previousIndex, event.currentIndex);
   }
 
@@ -481,17 +481,5 @@ export class CreateDashboardComponent implements OnInit {
           }, 3000);
         })
     }
-  }
-
-  newPosition(event){
-    const boundingRect = event.currentTarget.getBoundingClientRect();
-    const element = event.currentTarget;
-
-    // const x = event.pageX - boundingRect.left;
-    const x = element.offsetLeft;
-    const y = element.offsetTop;
-
-    this.position = "(" + x+", " + y +")";
-    console.log('yeah');
   }
 }

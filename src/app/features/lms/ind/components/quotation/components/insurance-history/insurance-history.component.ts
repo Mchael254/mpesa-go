@@ -41,6 +41,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   policyListOne: any[] = [];
   editEntity: boolean;
   coverStatusTypeList: any[] = [];
+  // insuranceHistoryForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -61,6 +62,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.getAllCoverStatusTypes();
     this.getLmsInsHistList();
   }
+
   createInsuranceHistoryFormFormGroup() {
     return this.fb.group({
       code: [],
@@ -71,17 +73,21 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       cover_status: [''],
     });
   }
-  addResponseOne(x: any) {
-    this.spinner_service.show('ins_table_one_view');
+
+  get responseOneControls() {
+    return this.insuranceHistoryForm.get('responseOne') as FormArray;
+  }
+
+  addResponseOne(x) {
     let pol_data = this.policyListOne.filter((data, i) => {
       return i === x;
     })[0];
+    // console.log();
+
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormOne.value,
-    })
-      .pipe(finalize(() => {this.spinner_service.hide('ins_table_one_view')}))
-      .subscribe((pol_sub_data) => {
+    }).subscribe((pol_sub_data) => {
       this.policyListOne = this.policyListOne.map((data, i) => {
         if (i === x) {
           let temp = this.insuranceHistoryFormOne.value;
@@ -92,11 +98,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       });
 
       this.insuranceHistoryFormOne.reset();
-      this.spinner_service.hide('ins_table_one_view');
     });
   }
-  addResponseTwo(x: any) {
-    this.spinner_service.show('ins_table_two_view');
+  addResponseTwo(x) {
     let pol_data = this.policyListTwo.filter((data, i) => {
       return i === x;
     })[0];
@@ -105,10 +109,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormTwo.value,
-    })
-      .pipe(finalize(() => {this.spinner_service.hide('ins_table_two_view')}))
-
-      .subscribe((pol_sub_data) => {
+    }).subscribe((pol_sub_data) => {
       this.policyListTwo = this.policyListTwo.map((data, i) => {
         if (i === x) {
           let temp = this.insuranceHistoryFormTwo.value;
@@ -119,10 +120,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       });
 
       this.insuranceHistoryFormTwo.reset();
-        this.spinner_service.hide('ins_table_two_view');
     });
   }
-  editPolicyOne(x: any) {
+  editPolicyOne(x) {
     let pol = this.policyListOne
       .filter((data, i) => {
         return i === x;
@@ -148,57 +148,51 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   addEmptyPolicyList(policyListOne: any[]) {
-    this.insuranceHistoryFormOne.reset()
     policyListOne.push({ isEdit: true });
   }
+
   getValue(name: string = 'question1') {
     return this.insuranceHistoryForm.get(name).value;
   }
-  deletePolicyListOne(i: number) {
-    this.spinner_service.show('ins_table_one_view');
+
+  deletepolicyListOne(i: number) {
     let deleted_pol = this.policyListOne.find((data, x) => {
       return i === x;
     });
-    this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
-      .pipe(finalize(() => {this.spinner_service.hide('ins_table_one_view')}))
-
-      .subscribe(data =>{
+    this.client_history_service.deleteInsuranceHistory(deleted_pol['code']).subscribe(data =>{
       this.policyListOne = this.policyListOne.filter((data, x) => {
         return i !== x;
       });
-        this.spinner_service.hide('ins_table_one_view');
     })
   }
 
-  cancelPolicyListOne(i: number) {
+  cancelpolicyListOne(i: number) {
     this.policyListOne = this.policyListOne.map((data, x) => {
-      data['isEdit'] = false;
+      data['isEdit'] = false
+
       return data;
     });
   }
-  deletePolicyListTwo(i: number) {
-    this.spinner_service.show('ins_table_two_view')
+
+
+  deletepolicyListTwo(i: number) {
     let deleted_pol = this.policyListTwo.find((data, x) => {
       return i === x;
     });
-    this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
-      .pipe(finalize(() => {this.spinner_service.hide('ins_table_two_view')}))
-
-      .subscribe(data =>{
+    this.client_history_service.deleteInsuranceHistory(deleted_pol['code']).subscribe(data =>{
       this.policyListTwo = this.policyListTwo.filter((data, x) => {
         return i !== x;
       });
-        this.spinner_service.hide('ins_table_two_view')
     })
   }
-  cancelPolicyListTwo(i: number) {
+  cancelpolicyListTwo(i: number) {
     this.policyListTwo = this.policyListTwo.map((data, x) => {
-      data['isEdit'] = false;
+      data['isEdit'] = false
+
       return data;
     });
-    this.insuranceHistoryFormTwo.reset();
   }
-  editPolicyTwo(x: any) {
+  editPolicyTwo(x) {
     let pol = this.policyListTwo
       .filter((data, i) => {
         return i === x;
@@ -212,6 +206,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.policyListTwo.indexOf(pol, x);
     this.insuranceHistoryFormTwo.patchValue(pol.length > 0 ? pol[0] : {});
   }
+
   getLmsInsHistList() {
     this.spinner_service.show('ins_view');
     let clientCode = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
@@ -243,29 +238,67 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
         this.spinner_service.hide('ins_view');
       });
   }
+
   getAllCoverStatusTypes() {
     this.client_history_service
       .getAllCoverStatusTypes()
       .subscribe((data: any[]) => {
-        // console.log(data);
+        console.log(data);
         this.coverStatusTypeList = [...data];
       });
   }
+
   filterCoverStatusType(s: string) {
     return this.coverStatusTypeList
       .filter((data) => data['name'] === s)
       .map((data) => data['value']);
   }
+
   saveInsuranceHistory(data: any) {
     let client_code = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.CLIENT_CODE)
     );
+
     let ins = { ...data };
     ins['clnt_code'] = client_code;
     ins['prp_code'] = client_code;
     ins['prp_code'] = null;
+    console.log(ins);
+
+    // return of(ins);
     return this.client_history_service.saveInsuranceHistory(ins);
   }
+
+  deleteInsuranceHistory() {
+    let insCode = 0;
+    this.client_history_service
+      .deleteInsuranceHistory(insCode)
+      .subscribe((data) => {
+        console.log(insCode);
+      });
+  }
+
+  // private addEntity(d: FormGroup) {
+  //   this.editEntity = true;
+  //   this.responseOneControls.push({ isEdit: true });
+  //   this.editEntity = false;
+  //   return this.responseOneControls;
+  // };
+  // private deleteEntity(d: any[], i) {
+  //   this.editEntity = true;
+  //      d = d.filter((data, x) => {
+  //       return i !== x;
+  //     });
+  //     this.editEntity = false
+  //     return d;
+  // };
+  // private returnLowerCase(data: any) {
+  //   let mapData = data.map((da) => {
+  //     da['name'] = da['name'].toLowerCase();
+  //     return da;
+  //   });
+  //   return mapData;
+  // }
   ngOnDestroy(): void {
     console.log('InsuranceHistoryComponent UNSUBSCRIBE');
   }

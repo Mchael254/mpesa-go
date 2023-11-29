@@ -129,13 +129,13 @@ export class ReportPreviewComponent implements OnInit{
   ngOnInit(): void {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
     this.reportParams = this.sessionStorageService.getItem(`reportParams`);
-    // log.info(`report params >>> `, this.reportParams, this.reportId);
-    this.criteria = this.reportParams.criteria;
-    this.sort = this.reportParams.sort;
-    this.reportNameRec = this.reportParams.reportNameRec;
+    log.info(`report params >>> `, this.reportParams, this.reportId);
+    this.criteria = this.reportParams?.criteria;
+    this.sort = this.reportParams?.sort;
+    this.reportNameRec = this.reportParams?.reportNameRec;
 
     this.fetchFilterConditions();
-    this.populateSelectedFilters(this.reportParams.filters);
+    this.populateSelectedFilters(this.reportParams?.filters);
     this.createFilterForm();
     this.createSaveReportForm();
     this.createChartTypeForm();
@@ -197,27 +197,32 @@ export class ReportPreviewComponent implements OnInit{
    * @param reportParamFilters
    */
   populateSelectedFilters(reportParamFilters) {
-    reportParamFilters.forEach(reportParamFilter => {
-      const category = reportParamFilter.queryObject.category;
-      let operator;
 
-      if (category === 'metrics') {
-        operator = this.metricConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
-      } else if (category !== 'metrics' && category !== 'whenFilters') {
-        operator = this.dimensionConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
-      } else if (category !== 'metrics' && category === 'whenFilters') {
-        operator = this.dateConditions.filter((item) => item.value === reportParamFilter.filter.operator)[0];
-      }
+    // reportParamFilters.forEach(reportParamFilter => {
+    //   const category = reportParamFilter?.queryObject?.category;
+    //   log.info(`filters >>>`, this.filters, reportParamFilters);
+    //   let operator;
 
-      const selectedFilter = {
-        column: reportParamFilter.queryObject.query,
-        operator: operator,
-        value: reportParamFilter.filter.values[0]
-      };
+    //   if (category === 'metrics') {
+    //     operator = this.metricConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
+    //   } else if (category !== 'metrics' && category !== 'whenFilters') {
+    //     operator = this.dimensionConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
+    //   } else if (category !== 'metrics' && category === 'whenFilters') {
+    //     operator = this.dateConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
+    //   }
 
-      this.selectedFilters.push(selectedFilter);
-      this.filters.push(reportParamFilter.filter);
-    })
+    //   const selectedFilter = {
+    //     column: reportParamFilter?.queryObject?.query,
+    //     operator: operator,
+    //     value: reportParamFilter?.filter?.values[0]
+    //   };
+
+    //   this.selectedFilters.push(selectedFilter);
+    //   this.filters.push(reportParamFilter.filter);
+    //   log.info(`filters >>>`, this.filters);
+    // });
+
+    this.filters = [...reportParamFilters]
   }
 
   /**
@@ -415,11 +420,11 @@ export class ReportPreviewComponent implements OnInit{
     const query = {
       measures: this.measures,
       dimensions: this.dimensions,
-      filters: this.filters,
+      filters: this.filters || [],
       order: this.sort,
       limit: 20
     }
-    // log.info(`query for cube >>> `, query);
+    log.info(`query for cube >>> `, query);
 
     this.cubejsApi.load(query).then(resultSet => {
       // this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);

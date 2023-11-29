@@ -40,7 +40,7 @@
 }
 
 .label-text:hover {
-  /*border-bottom: 0.5px solid var(--primary-color);*/
+  border-bottom: 0.5px solid var(--primary-color);
 }
 
 
@@ -104,8 +104,4 @@
 
 .modal {
   z-index: 999999 !important;
-}
-
-.d-flex >label {
-  font-size: 11px
 }

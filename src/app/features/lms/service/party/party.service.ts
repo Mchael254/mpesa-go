@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
 import { map } from 'rxjs/internal/operators/map';
-import {Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +25,8 @@ export class PartyService {
   }
 
 
-  createBeneficiary(beneficiary: any){
-    let save_beneficiary_api: Observable<any>;
-    save_beneficiary_api =  beneficiary?.code ===null?this.api.POST(`parties/beneficiaries`, beneficiary, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL):
-      this.api.PUT(`parties/beneficiaries/${beneficiary?.code}`, beneficiary, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
-    return save_beneficiary_api;
+  createBeneficary(beneficiary: any){
+    return this.api.POST(`parties/beneficiaries`, beneficiary, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
   deleteBeneficiary(code: number){
     // return of(code)
