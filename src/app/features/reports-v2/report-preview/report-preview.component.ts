@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
 import {ChartType} from "chart.js";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -28,6 +28,8 @@ const log = new Logger('ReportPreviewComponent')
   styleUrls: ['./report-preview.component.css']
 })
 export class ReportPreviewComponent implements OnInit{
+
+  @ViewChild('closebutton') closebutton;
 
   public createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -74,7 +76,7 @@ export class ReportPreviewComponent implements OnInit{
     labels: [],
     datasets: [],
   };
-  public filters =  [];
+  public filters: any[] | any  =  [];
   private sort =  [];
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
@@ -103,6 +105,7 @@ export class ReportPreviewComponent implements OnInit{
 
   private reportId: number;
   public reportParams: any;
+  public report: ReportV2;
 
   constructor(
     private fb: FormBuilder,
@@ -128,49 +131,95 @@ export class ReportPreviewComponent implements OnInit{
    */
   ngOnInit(): void {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
-    this.reportParams = this.sessionStorageService.getItem(`reportParams`);
-    log.info(`report params >>> `, this.reportParams, this.reportId);
-    this.criteria = this.reportParams?.criteria;
-    this.sort = this.reportParams?.sort;
-    this.reportNameRec = this.reportParams?.reportNameRec;
-
-    this.fetchFilterConditions();
-    this.populateSelectedFilters(this.reportParams?.filters);
-    this.createFilterForm();
-    this.createSaveReportForm();
-    this.createChartTypeForm();
-    this.loadChart();
-    this.fetchDashboards();
+    const isEditing = this.activatedRoute.snapshot.queryParams['isEditing'];
+    log.info(`params id & isEditing >>> `, this.reportId,);
+    this.fetchReportDetails(this.reportId);
 
     this.currentUser = this.authService.getCurrentUser();
 
-    if(isNaN(this.reportId)) {
-      const chart: Chart = {
-        backgroundColor: '',
-        borderColor: '',
-        chartReportId: 0,
-        colorScheme: 0,
-        evenColor: '',
-        evenOddAppliesTo: '',
-        length: 0,
-        name: '',
-        oddColor: '',
-        order: 0,
-        type: 'table',
-        width: 0
+    // if(!isEditing) {
+    //   const chart: Chart = {
+    //     backgroundColor: '',
+    //     borderColor: '',
+    //     chartReportId: 0,
+    //     colorScheme: 0,
+    //     evenColor: '',
+    //     evenOddAppliesTo: '',
+    //     length: 0,
+    //     name: '',
+    //     oddColor: '',
+    //     order: 0,
+    //     type: 'table',
+    //     width: 0
+    //   }
+    //   this.displayChartTypes.push(chart);
+    // } else {
+    //   this.fetchReportDetails(this.reportId);
+    // }
+
+  }
+
+  fetchReportDetails(id: number) {
+    this.reportServiceV2.getReportById(id)
+    .pipe(take(1))
+    .subscribe({
+      next: (report) => {
+        this.report = report;
+        log.info(`report from backend >>> `, report);
+
+        this.reportNameRec = report.name;
+        this.sort = JSON.parse(report.sort);
+        const measures = JSON.parse(report.measures);
+        const dimensions = JSON.parse(report.dimensions);
+        this.criteria = [...measures, ...dimensions];
+        this.filters = report.filter;
+
+        const isEditing = this.activatedRoute.snapshot.queryParams['isEditing'];
+        if(isEditing === 'false') {
+          const chart: Chart = {
+            backgroundColor: '',
+            borderColor: '',
+            chartReportId: 0,
+            colorScheme: 0,
+            evenColor: '',
+            evenOddAppliesTo: '',
+            length: 0,
+            name: report.name,
+            oddColor: '',
+            order: 0,
+            type: 'table',
+            width: 0
+          }
+          this.report.charts = [chart]
+        }
+
+        report.charts.forEach((chart) => {
+          const index = this.chartTypes.indexOf(
+            this.chartTypes.filter((item) => item.name === chart.type)[0]
+          );
+          this.colorScheme[chart.type] = '';
+          this.chartTypes[index].isSelected = true;
+          this.displayChartTypes.push(chart);
+        });
+        log.info(`display chart types `, this.displayChartTypes, report.charts, isEditing)
+        
+        this.fetchFilterConditions();
+        this.populateSelectedFilters(this.filters);
+        this.loadChart();
+        this.createFilterForm();
+        this.createSaveReportForm();
+        this.createChartTypeForm();
+        this.fetchDashboards();
+        
+      },
+      error: (e) => {
+
       }
-      this.displayChartTypes.push(chart);
-    } else {
-      this.reportParams.charts.forEach((chart) => {
+    })
+  }
 
-        const index = this.chartTypes.indexOf(
-          this.chartTypes.filter((item) => item.name === chart.type)[0]);
-
-        this.chartTypes[index].isSelected = true;
-        this.displayChartTypes.push(chart);
-      })
-    }
-
+  isEmpty(value: any) {
+    return (value == null || (typeof value === "string" && value.trim().length === 0));
   }
 
   /**
@@ -196,33 +245,43 @@ export class ReportPreviewComponent implements OnInit{
    *
    * @param reportParamFilters
    */
-  populateSelectedFilters(reportParamFilters) {
+  populateSelectedFilters(reportFilters) {
+    // log.info(`report filters >>>`, JSON.parse(reportFilters));
+    if (!this.isEmpty(reportFilters)) {
+      this.filters = JSON.parse(reportFilters);
+    } else {
+      this.filters = [];
+    }
 
-    // reportParamFilters.forEach(reportParamFilter => {
-    //   const category = reportParamFilter?.queryObject?.category;
-    //   log.info(`filters >>>`, this.filters, reportParamFilters);
-    //   let operator;
+    (this.filters).forEach(reportFilter => {
+      // const category = reportFilter?.queryObject?.category;
+      const column = reportFilter.member.split('.')[1];
+      const criteria = (this.criteria.filter(el => el.query === column)[0]);
+      const category = criteria.category;
+      // log.info(`filters >>>`, reportFilter, reportFilter.member.split('.'));
+      // log.info(`criteria >>>`, (this.criteria), category, criteria);
+      let operator;
 
-    //   if (category === 'metrics') {
-    //     operator = this.metricConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
-    //   } else if (category !== 'metrics' && category !== 'whenFilters') {
-    //     operator = this.dimensionConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
-    //   } else if (category !== 'metrics' && category === 'whenFilters') {
-    //     operator = this.dateConditions.filter((item) => item.value === reportParamFilter?.filter?.operator)[0];
-    //   }
+      if (category === 'metrics') {
+        operator = this.metricConditions.filter((item) => item.value === reportFilter?.operator)[0];
+      } else if (category !== 'metrics' && category !== 'whenFilters') {
+        operator = this.dimensionConditions.filter((item) => item.value === reportFilter?.operator)[0];
+      } else if (category !== 'metrics' && category === 'whenFilters') {
+        operator = this.dateConditions.filter((item) => item.value === reportFilter?.operator)[0];
+      }
 
-    //   const selectedFilter = {
-    //     column: reportParamFilter?.queryObject?.query,
-    //     operator: operator,
-    //     value: reportParamFilter?.filter?.values[0]
-    //   };
+      log.info(`operator >>>`, operator);
 
-    //   this.selectedFilters.push(selectedFilter);
-    //   this.filters.push(reportParamFilter.filter);
-    //   log.info(`filters >>>`, this.filters);
-    // });
+      const selectedFilter = {
+        column,
+        operator: operator,
+        value: reportFilter?.values[0]
+      };
 
-    this.filters = [...reportParamFilters]
+      this.selectedFilters.push(selectedFilter);
+      // this.filters.push(reportFilter.filter);
+      log.info(`filters >>>`, this.filters);
+    });
   }
 
   /**
@@ -241,7 +300,7 @@ export class ReportPreviewComponent implements OnInit{
    * 2. patches reportName and destination folder to saveReportForm
    */
   createSaveReportForm(): void {
-    const folder = !isNaN(this.reportId) ? this.reportParams.folder : 'M';
+    // const folder = !isNaN(this.reportId) ? this.report.folder : 'M';
     this.saveReportForm = this.fb.group({
       reportName: [''],
       dashboard: [''],
@@ -249,8 +308,8 @@ export class ReportPreviewComponent implements OnInit{
     });
     this.saveReportForm.patchValue({
       reportName: this.reportNameRec,
-      dashboard: this.reportParams.dashboardId,
-      destination: folder,
+      dashboard: this.report.dashboardId,
+      destination: this.report.folder,
     });
   }
 
@@ -358,6 +417,11 @@ export class ReportPreviewComponent implements OnInit{
    */
   addFilter(): void {
     const formValues = this.filterForm.getRawValue();
+    log.info(`before added filter >>>`, this.filters)
+    if (this.isEmpty(this.filters)) {
+      log.info(`filter is currently empty...adding values`)
+      this.filters = [];
+    }
 
     const operator = (this.conditionsOptionsValue.filter(item => item.value === formValues.operator))[0];
     const selectedFilter = {
@@ -374,6 +438,7 @@ export class ReportPreviewComponent implements OnInit{
       values: [formValues.value]
     };
     this.filters.push(filter);
+    log.info(`added filter >>>`, this.filters)
 
     this.cdr.detectChanges();
     this.filterForm.reset()
@@ -405,6 +470,7 @@ export class ReportPreviewComponent implements OnInit{
    * 3. constructs table details from report data
    */
   loadChart(): void {
+    if(this.closebutton) this.closebutton.nativeElement.click(); // close modal if open
 
     // todo: refactor - remove splitDimensionsAndMeasures
     // if (this.reportId) {
@@ -416,12 +482,15 @@ export class ReportPreviewComponent implements OnInit{
       });
     // }
 
+    log.info(`filters from load >>>`, this.filters);
+      
     this.isPreviewResultAvailable = false;
+    const filters = this.isEmpty(this.filters) ? [] : this.filters;
     const query = {
       measures: this.measures,
       dimensions: this.dimensions,
-      filters: this.filters || [],
-      order: this.sort,
+      filters,
+      order: [],
       limit: 20
     }
     log.info(`query for cube >>> `, query);
@@ -519,30 +588,16 @@ export class ReportPreviewComponent implements OnInit{
     const formValues = this.saveReportForm.getRawValue();
     const measuresToSave = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensionsToSave = this.criteria.filter(measure => measure.category !== 'metrics');
-    // log.info(`formValues >>> `, formValues)
 
     let charts: Chart[] = [];
 
     this.displayChartTypes.forEach((chart) => {
       const colorSchemeId = this.colorScheme[chart?.type]?.id || 0;
       chart.colorScheme = colorSchemeId;
-      // const chart: Chart = {
-      //   backgroundColor: "",
-      //   borderColor: "",
-      //   chartReportId: 0,
-      //   colorScheme: colorSchemeId,
-      //   evenColor: "",
-      //   evenOddAppliesTo: "",
-      //   // id: 0, // 16685487
-      //   length: 0,
-      //   name: "",
-      //   oddColor: "",
-      //   order: 0,
-      //   type: chartType,
-      //   width: 0
-      // };
+      log.info(`color scheme `, colorSchemeId, this.colorScheme, chart)
       charts.push(chart)
-    })
+    });
+    log.info(`display chart types`, this.displayChartTypes)
 
 
     const report: ReportV2 = {
@@ -561,15 +616,9 @@ export class ReportPreviewComponent implements OnInit{
       width: 0
     }
 
-    // log.info(`report to save >>> `, report, this.reportId);
-
-    if(isNaN(this.reportId)) {
-      this.createReport(report);
-    } else {
-      report.id = this.reportId;
-      this.updateReport(report);
-    }
-
+    report.id = this.reportId;
+    // this.updateReport(report);
+    log.info(`report to save >>> `, report, this.reportId);
   }
 
   createReport(report: ReportV2): void {

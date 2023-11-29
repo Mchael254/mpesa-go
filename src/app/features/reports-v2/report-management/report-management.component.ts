@@ -18,6 +18,7 @@ const log = new Logger('ReportManagementComponent');
 export class ReportManagementComponent implements OnInit{
 
   @ViewChild(SaveReportModalComponent) child:SaveReportModalComponent;
+  @ViewChild('closebutton') closebutton;
 
   public reports;
   public selectedReport: ReportV2;
@@ -131,6 +132,8 @@ export class ReportManagementComponent implements OnInit{
       .subscribe({
         next: (res) => {
           // log.info(`report udpate successfully`, res);
+          this.shouldShowTable = false;
+          this.closebutton.nativeElement.click();
           this.getReports();
         },
         error: (e) => {
@@ -146,6 +149,7 @@ export class ReportManagementComponent implements OnInit{
       next: (res) => {
         log.info(`report successfully deleted`);
         this.globalMessagingService.displaySuccessMessage('success', 'Report successfully deleted')
+        this.shouldShowTable = false;
         this.ngOnInit();
       },
       error: (e) => {
@@ -161,8 +165,8 @@ export class ReportManagementComponent implements OnInit{
   }
 
   gotoEditReport(report: ReportV2): void {
-    // this.router.navigate([`home/reportsv2/edit-report/${report.id}`])
-    this.router.navigate([`home/reportsv2/preview/${report.id}`])
+    this.router.navigate([`/home/reportsv2/preview/${report.id}`],
+            { queryParams: { isEditing: true }});
   }
 
 }

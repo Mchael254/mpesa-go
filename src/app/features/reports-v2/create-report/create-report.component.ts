@@ -12,6 +12,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {ReportServiceV2} from "../services/report.service";
 import { ReportV2 } from 'src/app/shared/data/reports/report';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { Chart } from 'chart.js';
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -51,15 +53,17 @@ export class CreateReportComponent implements OnInit {
   public selectedReport: ReportV2;
   public reportId: number;
 
+  private currentUser;
+
   constructor(
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef,
     private reportService: ReportService,
     private reportServiceV2: ReportServiceV2,
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private sessionStorageService: SessionStorageService
+    private sessionStorageService: SessionStorageService,
+    private authService: AuthService,
   ) {}
 
   /**
@@ -84,6 +88,7 @@ export class CreateReportComponent implements OnInit {
     }
     this.getSubjectAreas();
     this.createSearchForm();
+    this.currentUser = this.authService.getCurrentUser();
   }
 
   /**
@@ -297,13 +302,81 @@ export class CreateReportComponent implements OnInit {
       createdBy: this.selectedReport?.createdBy,
     }
     this.sessionStorageService.setItem(`reportParams`, reportParams);
+    log.info(`report params >>>`, reportParams)
 
-    if(isNaN(this.reportId)) {
-      this.router.navigate(['/home/reportsv2/preview']);
-    } else {
-      this.router.navigate([`/home/reportsv2/preview/${this.reportId}`]);
+    const measures = this.criteria.filter(measure => measure.category === 'metrics');
+    const dimensions = this.criteria.filter(measure => measure.category !== 'metrics');
+
+    let charts = [{
+      backgroundColor: "",
+      borderColor: "",
+      chartReportId: 0,
+      colorScheme: 0,
+      evenColor: "",
+      evenOddAppliesTo: "",
+      //id: 0, // 16685487
+      length: 0,
+      name: "",
+      oddColor: "",
+      order: 0,
+      type: 'table',
+      width: 0
+    }]
+
+    const filter = this.filters.length > 0 ? JSON.stringify(this.filters) : '';
+
+    const report: ReportV2 = {
+      charts: [],
+      createdBy: this.currentUser.id,
+      createdDate: '',
+      dashboardId: null,
+      dimensions: JSON.stringify(dimensions),
+      filter,
+      folder: 'M',
+      // id: null,
+      length: 0,
+      measures: JSON.stringify(measures),
+      name: this.reportNameRec,
+      order: 0,
+      width: 0
     }
+
+    this.createReport(report);
+
+    // if(isNaN(this.reportId)) {
+    //   this.router.navigate(['/home/reportsv2/preview']);
+    // } else {
+    //   this.router.navigate([`/home/reportsv2/preview/${this.reportId}`]);
+    // }
     
+  }
+
+
+  createReport(report: ReportV2): void {
+    this.reportServiceV2.createReport(report)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          // this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+          this.reportId = res.id;
+          this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
+            { queryParams: { isEditing: false }});
+
+          // if ((report.dashboardId)?.toString() === '' || report.dashboardId === undefined) {
+          //   this.router.navigate([`/home/reportsv2/report-management`])
+          // } else {
+          //   this.router.navigate([`/home/reportsv2/list-report`],
+          //     { queryParams: { dashboardId: report.dashboardId }})
+          // }
+
+          log.info(`created report >>> `, res);
+
+        },
+        error: (e) => {
+          this.globalMessagingService
+          .displayErrorMessage('error', `${e?.error?.status}: ${e?.error?.developerMessage}`);
+        }
+      });
   }
 
   /**
