@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../../../environments/environment';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 import { AppConfigService } from '../../../core/config/app-config-service';
+import { SessionStorageService } from '../session-storage/session-storage.service';
 
 
 @Injectable({
@@ -13,14 +14,15 @@ export class ApiService {
   private baseURL = environment.API_URLS.get(API_CONFIG.SETUPS_SERVICE_BASE_URL);
 
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService ) {}
+  constructor(private http: HttpClient, private appConfig: AppConfigService, private session_storage: SessionStorageService ) {}
 
   private getHeaders(): HttpHeaders {
 
     let headers = new HttpHeaders()
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json')
-    .set('X-TenantId', environment.TENANT_ID);
+    .set('X-TenantId', environment.TENANT_ID)
+    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN'));
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -110,7 +112,7 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-  
+
     return this.http.delete<T>(url, { headers, body: data });
   }
 

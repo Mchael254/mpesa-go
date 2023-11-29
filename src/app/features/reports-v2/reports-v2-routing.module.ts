@@ -6,10 +6,20 @@ import {CreateDashboardComponent} from "./create-dashboard/create-dashboard.comp
 import {ReportPreviewComponent} from "./report-preview/report-preview.component";
 import {ListReportComponent} from "./list-report/list-report.component";
 import { ReportManagementComponent } from './report-management/report-management.component';
+import { BaseComponent } from './base/base.component';
 
 const routes: Routes = [
   {
     path: '',
+    component: BaseComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'main',
+        pathMatch: 'full',
+      },
+  {
+    path: 'main',
     component: ReportsComponent
   },
   {
@@ -47,7 +57,7 @@ const routes: Routes = [
   {
     path: 'report-management',
     component: ReportManagementComponent
-  },
+  },]}
 ];
 
 @NgModule({
