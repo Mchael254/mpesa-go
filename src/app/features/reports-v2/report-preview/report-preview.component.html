@@ -160,11 +160,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Advanced filter</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button #closebutton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
 
-        <form [formGroup]="filterForm" class="mb-3">
+        <form *ngIf="filterForm" [formGroup]="filterForm" class="mb-3">
           <div class="row g-3">
             <div class="col">
               <label for="column" class="form-label">Column</label>
@@ -236,7 +236,7 @@
     <div class="modal-content">
       <div class="modal-body">
 
-        <form [formGroup]="saveReportForm">
+        <form *ngIf="saveReportForm" [formGroup]="saveReportForm">
           <div class="row g-3">
             <div class="col">
               <label for="report" class="form-label">Report</label>

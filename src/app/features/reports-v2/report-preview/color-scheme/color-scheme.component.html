@@ -2,8 +2,8 @@
   <table class="table table-borderless mb-2">
     <tbody>
     <tr id="select-color-scheme">
-      <ng-container (click)="selectColorScheme(scheme)">
-        <td class="colors">
+      <ng-container>
+        <td class="colors" (click)="selectColorScheme(scheme)">
           <ng-container *ngFor="let color of scheme.colors">
           <div
             class="color-box"
