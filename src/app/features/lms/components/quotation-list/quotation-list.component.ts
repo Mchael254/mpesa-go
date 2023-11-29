@@ -52,6 +52,7 @@ export class QuotationListComponent implements OnInit {
             .getLmsIndividualQuotationWebQuoteList(page, size)
             .pipe(
               map((data) => {
+                console.log(data)
                 if (data['content'].length > 0) {
                   let content = [...data['content']];
                   content = content.map((cont) => {
