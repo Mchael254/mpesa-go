@@ -28,7 +28,7 @@
       <form>
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'clientType'" class="required">Client Type</label>
+            <label for="clientType" class="required">Client Type</label>
             <select
               class="form-select"
               formControlName="clientType"
@@ -44,7 +44,7 @@
             </select>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'surname'" class="required">Last Name</label>
+            <label for="surname" class="required">Last Name</label>
             <input
               type="text"
               class="form-control"
@@ -53,7 +53,7 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'first_name'" class="required">First Name</label>
+            <label for="first_name" class="required">First Name</label>
             <input
               type="text"
               class="form-control"
@@ -62,7 +62,7 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'citizenship'">Citizenship</label>
+            <label for="citizenship">Citizenship</label>
             <select
               class="form-select"
               formControlName="citizenship"
@@ -79,7 +79,7 @@
           </div>
 
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'idNumber'" class="required">ID No.</label>
+            <label for="idNumber" class="required">ID No.</label>
             <input
               type="text"
               class="form-control"
@@ -88,7 +88,7 @@
             />
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
-            <label [for]="'pinNo'" class="required">Pin No.</label>
+            <label for="pinNo" class="required">Pin No.</label>
             <input
               type="text"
               class="form-control"
@@ -116,13 +116,13 @@
           </div>
           <div class="col-lg-4 col-md-6 col-sm-12">
             <div class="w-75">
-              <label [for]="'male'" class="required" class="required">Gender</label>
+              <label class="required" class="required">Gender</label>
               <div></div>
               <span class="form-check form-check-inline">
                 <input
                   class="form-check-input"
                   type="radio"
-                  [id]="'male'"
+                  id="male"
                   formControlName="gender"
                   value="M"
                 />
@@ -132,7 +132,7 @@
                 <input
                   class="form-check-input"
                   type="radio"
-                  [id]="'female'"
+                  id="female"
                   formControlName="gender"
                   value="F"
                 />
@@ -170,7 +170,7 @@
           <div class="accordion-body">
             <div class="row">
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'branch'" class="required">Branch</label>
+                <label for="branch" class="required">Branch</label>
                 <select
                   class="form-select"
                   formControlName="branch"
@@ -186,7 +186,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'title'" class="required">Title</label>
+                <label for="title" class="required">Title</label>
                 <select
                   class="form-select"
                   formControlName="title"
@@ -202,7 +202,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'countryCode'">Country Code</label>
+                <label for="countryCode">Country Code</label>
                 <select
                   class="form-select"
                   formControlName="countryCode"
@@ -225,7 +225,7 @@
                 </select>
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'phoneNumber'" class="required">Telephone</label>
+                <label for="phoneNumber" class="required">Telephone</label>
                 <input
                   type="text"
                   class="form-control"
@@ -234,7 +234,7 @@
                 />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'email'" class="required">Email Address</label>
+                <label for="email" class="required">Email Address</label>
                 <input
                   type="text"
                   class="form-control"
@@ -243,14 +243,14 @@
                 />
               </div>
               <div class="col-lg-4 col-md-6 col-sm-12">
-                <label [for]="'p_contact_channel'">Preferred Contact Channel</label>
+                <label for="p_contact_channel">Prefered Contact Channel</label>
                 <select
                   class="form-select"
                   formControlName="p_contact_channel"
                   [id]="'p_contact_channel'"
                 >
                   <option value="" disabled selected>
-                    Select Preferred Contact Channel
+                    Select Prefered Contact Channel
                   </option>
                   <ng-container
                     *ngFor="
@@ -914,7 +914,7 @@
               <option value="" disabled selected>Select Item</option>
               <ng-container *ngFor="let item of identifierTypeList">
                 <!-- <optgroup label="Upload List"> -->
-                  <option [value]="item['name']">{{item['name'].replaceAll('_', ' ') | titlecase }}</option>
+                  <option [value]="item['name']">{{item['name'].replaceAll('_', ' ') | lowercase }}</option>
                 <!-- </optgroup> -->
 
               </ng-container>
@@ -1665,16 +1665,7 @@
   <div class="modal-dialog">
     <div class="modal-content p-4 w-75" style="font-size: 12px;">
       <div class="modal-body">
-        <div [formGroup]="beneficiaryForm" style="position: relative">
-          <ngx-spinner
-            name="beneficiary_modal_screen"
-            type="ball-clip-rotate-multiple"
-            [fullScreen]="false"
-            color="#00529B"
-            size="medium"
-            bdColor="rgba(255, 255, 255, 0.966)"
-          ></ngx-spinner>
-
+        <div [formGroup]="beneficiaryForm">
           <div class="modal-title fw-bold py-2" id="categoryDetsModal">
             Beneficiary Details
           </div>
@@ -1682,7 +1673,7 @@
             <div class="row">
               <ng-container formGroupName="beneficiary_info">
                 <div class="col-md-6 col-sm-12">
-                  <label class="label" [for]="'description'"
+                  <label class="label" for="description"
                     >Last Name<span class="required"></span
                   ></label>
                   <div class="form-group">
@@ -1697,7 +1688,7 @@
                 </div>
 
                 <div class="col-md-6 col-sm-12">
-                  <label class="label" [for]="'description'"
+                  <label class="label" for="description"
                     >Other Name<span class="required"></span
                   ></label>
                   <div class="form-group">
@@ -1727,32 +1718,32 @@
                   </div>
                 </div>
 
-<!--                <div class="col-md-6 col-sm-12 fadeIn">-->
-<!--                  <div class="w-75">-->
-<!--                    <label class="required">Gender</label>-->
-<!--                    <div></div>-->
-<!--                    <div class="form-check form-check-inline">-->
-<!--                      <input-->
-<!--                        class="form-check-input"-->
-<!--                        type="radio"-->
-<!--                        [id]="'gender'"-->
-<!--                        formControlName="gender"-->
-<!--                        value="M"-->
-<!--                      />-->
-<!--                      <span class="form-check-label" for="male">Male</span>-->
-<!--                    </div>-->
-<!--                    <div class="form-check form-check-inline">-->
-<!--                      <input-->
-<!--                        class="form-check-input"-->
-<!--                        type="radio"-->
-<!--                        [id]="'female'"-->
-<!--                        formControlName="gender"-->
-<!--                        value="F"-->
-<!--                      />-->
-<!--                      <span class="form-check-label" for="female">Female</span>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
+                <div class="col-md-6 col-sm-12 fadeIn">
+                  <div class="w-75">
+                    <label class="required">Gender</label>
+                    <div></div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="male"
+                        formControlName="gender"
+                        value="M"
+                      />
+                      <span class="form-check-label" for="male">Male</span>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="female"
+                        formControlName="gender"
+                        value="F"
+                      />
+                      <span class="form-check-label" for="female">Female</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div class="col-md-6 col-sm-12">
                   <div>
@@ -1760,7 +1751,7 @@
                     <select formControlName="relation_code" class="form-select">
                       <ng-container *ngFor="let product of relationTypeList">
                         <option [value]="product['id']">
-                          {{ product?.description | titlecase }}
+                          {{ product?.description | lowercase }}
                         </option>
                       </ng-container>
                     </select>
@@ -1768,7 +1759,7 @@
                 </div>
 
                 <div class="col-md-6 col-sm-12">
-                  <label class="label" [for]="'description'"
+                  <label class="label" for="description"
                     >Contact<span class="required"></span
                   ></label>
                   <div class="form-group">
@@ -1786,7 +1777,7 @@
               </ng-container>
 
               <div class="col-md-6 col-sm-12">
-                <label class="label" [for]="'description'"
+                <label class="label" for="description"
                   >Benefit Proportion<span class="required"></span
                 ></label>
                 <div class="form-group">
@@ -1806,7 +1797,7 @@
                   <select formControlName="type" class="form-select">
                     <ng-container *ngFor="let type of beneficiaryTypeList">
                       <option [value]="type['name']">
-                        {{type['value'] | titlecase }}
+                        {{type['value'] | lowercase }}
                       </option>
                     </ng-container>
                   </select>
@@ -1821,7 +1812,7 @@
           <div formGroupName="appointee_info">
             <div class="row" >
               <div class="col-md-6 col-sm-12">
-                <label class="label" for="'description'"
+                <label class="label" for="description"
                   >Last Name<span class="required"></span
                 ></label>
                 <div class="form-group">
@@ -1836,7 +1827,7 @@
               </div>
 
               <div class="col-md-6 col-sm-12">
-                <label class="label" for="'description'"
+                <label class="label" for="description"
                   >Other Name<span class="required"></span
                 ></label>
                 <div class="form-group">
@@ -1866,32 +1857,32 @@
                 </div>
               </div>
 
-<!--              <div class="col-md-6 col-sm-12 fadeIn">-->
-<!--                <div class="w-75">-->
-<!--                  <label class="required">Gender</label>-->
-<!--                  <div></div>-->
-<!--                  <div class="form-check form-check-inline">-->
-<!--                    <input-->
-<!--                      class="form-check-input"-->
-<!--                      type="radio"-->
-<!--                      id="male"-->
-<!--                      formControlName="gender"-->
-<!--                      value="M"-->
-<!--                    />-->
-<!--                    <span class="form-check-label" for="male">Male</span>-->
-<!--                  </div>-->
-<!--                  <div class="form-check form-check-inline">-->
-<!--                    <input-->
-<!--                      class="form-check-input"-->
-<!--                      type="radio"-->
-<!--                      id="female"-->
-<!--                      formControlName="gender"-->
-<!--                      value="F"-->
-<!--                    />-->
-<!--                    <span class="form-check-label" for="female">Female</span>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
+              <div class="col-md-6 col-sm-12 fadeIn">
+                <div class="w-75">
+                  <label class="required">Gender</label>
+                  <div></div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="male"
+                      formControlName="gender"
+                      value="M"
+                    />
+                    <span class="form-check-label" for="male">Male</span>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="gender"
+                      value="F"
+                    />
+                    <span class="form-check-label" for="female">Female</span>
+                  </div>
+                </div>
+              </div>
 
               <div class="col-md-6 col-sm-12">
                 <div>
@@ -1899,7 +1890,7 @@
                   <select formControlName="relation_code" class="form-select">
                     <ng-container *ngFor="let product of relationTypeList">
                       <option [value]="product['id']">
-                        {{ product?.description | titlecase }}
+                        {{ product?.description | lowercase }}
                       </option>
                     </ng-container>
                   </select>
@@ -1928,7 +1919,7 @@
         </div>
       </div>
         <div class="d-flex justify-content-between">
-          <button type="button" class="btn btn-danger" (click)="cancelBeneficiary()">Cancel</button>
-          <button type="button" class="btn btn-primary" [disabled]="isBeneficiaryLoading"  (click)="saveBeneficiary()" >Save</button>
+          <button type="button" class="btn btn-danger" (click)="closeCategoryDetstModal()">Cancel</button>
+          <button type="button" class="btn btn-primary"(click)="saveBeneficiary()" >Save</button>
   </div>
 </div>

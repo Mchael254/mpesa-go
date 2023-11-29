@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ReportsV2RoutingModule } from './reports-v2-routing.module';
 import { CreateReportComponent } from './create-report/create-report.component';
 import {SharedModule} from "../../shared/shared.module";
@@ -18,6 +19,7 @@ import {CriteriaComponent} from "./criteria/criteria.component";
 import { ListReportComponent } from './list-report/list-report.component';
 import {MultiSelectModule} from "primeng/multiselect";
 import { ColorSchemeComponent } from './report-preview/color-scheme/color-scheme.component';
+
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { CalendarModule } from 'primeng/calendar';
 import { ReportManagementComponent } from './report-management/report-management.component';
@@ -57,7 +59,6 @@ import { BaseComponent } from './base/base.component';
         CalendarModule,
         MultiSelectModule,
         TableModule,
-        AngularDraggableModule,
     ]
 })
 export class ReportsV2Module { }
