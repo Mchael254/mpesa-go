@@ -17,13 +17,15 @@ import {
   SubclassClausesComponent
 } from "./components/setups/components/clause/subclass-clauses/subclass-clauses.component";
 import {PickListModule} from "primeng/picklist";
+import { BaseComponent } from './base/base.component';
 
 
 @NgModule({
   declarations: [
     TaxRatesComponent,
     ClausesComponent,
-    SubclassClausesComponent
+    SubclassClausesComponent,
+    BaseComponent
   ],
     imports: [
         CommonModule,
