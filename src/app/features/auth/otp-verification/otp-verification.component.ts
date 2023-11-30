@@ -43,6 +43,8 @@ export class OtpVerificationComponent implements OnInit, OnDestroy {
    * @return void
    */
   verifyOtp(event: any) {
+
+    log.info(`OTP has been clicked`, event)
     if(event === true){
 
       if(this.otpProcess == 'password-reset'){

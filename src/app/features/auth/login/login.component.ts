@@ -6,8 +6,10 @@ import { Observable } from 'rxjs';
 import { UserCredential } from '../../base/util';
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
-import {UtilService} from "../../../shared/services";
+import {Logger, UtilService} from "../../../shared/services";
 import {AuthService} from "../../../shared/services/auth.service";
+
+const log = new Logger('LoginComponent');
 
 @Component({
   selector: 'app-login',
@@ -100,6 +102,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.authenticateUser(authenticationData, (data) => {
       if(data != null){
+        // data.allowMultifactor = 'Y';
+        if (data.allowMultifactor === 'N') {
+          log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
+          return this.authService.attemptAuth(authenticationData);
+        }
+
         let message: string = data.message;
         this.expiryMessage = message;
         if (data.accountStatus ===true && data.emailAddress != null) {
