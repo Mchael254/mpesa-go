@@ -133,6 +133,10 @@
                         <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
                             <div class="col-md-4 pad-1">
                                 <label for="inputProfileImg">Profile Photo</label>
+                              <p style="padding:7px; border-left: solid 3px #00529b; color: #00529b">
+                                <i class="fa-solid fa-info-circle"></i>
+                                <strong> Note:</strong> png,jpeg,jpg file formats allowed.
+                              </p>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
                                     <input type="file" id="inputProfileImg" formControlName="profilePiture" hidden />

@@ -18,7 +18,7 @@
   font-size: 8px !important;
 }
 ::ng-deep .p-datatable-tbody tr td{
-  font-size: 8px !important;
+  /* font-size: 8px !important; */
   padding: 0px!important;
   line-height: 25px !important;
 }
