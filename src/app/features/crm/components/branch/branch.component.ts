@@ -34,6 +34,7 @@ export class BranchComponent implements OnInit {
   @ViewChild('branchContactTable') branchContactTable : Table;
 
   public createBranchForm: FormGroup;
+  public createBranchDivisionForm: FormGroup;
   public createBranchContactForm: FormGroup;
   public createBranchTransferForm: FormGroup;
 
@@ -174,9 +175,6 @@ export class BranchComponent implements OnInit {
   }
 
   openBranchModal() {
-    // const modalElement = this.branchModal.nativeElement;
-    // const modal = new bootstrap.Modal(modalElement, { backdrop: 'static', keyboard: false });
-    // modal.show();
     const modal = document.getElementById('branchModal');
     if (modal) {
       modal.classList.add('show');
@@ -192,18 +190,7 @@ export class BranchComponent implements OnInit {
     }
   }
 
-  // closeBranchModal() {
-  //   // const modalElement = this.branchModal.nativeElement;
-  //   // const modal = bootstrap.Modal.getInstance(modalElement);
-  //   // if (modal) {
-  //   //   modal.hide();
-  //   // }
-  // }
-
   openBranchTransferModal() {
-    // const modalElement = this.branchTransferModal.nativeElement;
-    // const modal = new bootstrap.Modal(modalElement, { backdrop: 'static', keyboard: false });
-    // modal.show();
     const modal = document.getElementById('branchTransferModal');
     if (modal) {
       modal.classList.add('show');
@@ -212,11 +199,6 @@ export class BranchComponent implements OnInit {
   }
 
   closeBranchTransferModal() {
-    // const modalElement = this.branchTransferModal.nativeElement;
-    // const modal = bootstrap.Modal.getInstance(modalElement);
-    // if (modal) {
-    //   modal.hide();
-    // }
     const modal = document.getElementById('branchTransferModal');
     if (modal) {
       modal.classList.remove('show');
@@ -430,6 +412,7 @@ export class BranchComponent implements OnInit {
       this.organizationService.updateOrganizationBranch(branchId, saveBranch)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Organization Branch');
+          this.selectedBranch = null;
           this.fetchOrganizationBranch(regionId);
         });
      }
@@ -470,8 +453,8 @@ export class BranchComponent implements OnInit {
       this.organizationService.deleteOrganizationBranch(branchId)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted an Organizatio Branch');
-          this.fetchOrganizationRegion(this.selectedOrg.id);
           this.selectedBranch = null;
+          this.fetchOrganizationRegion(this.selectedOrg.id);
         })
     }
     else {
@@ -480,6 +463,8 @@ export class BranchComponent implements OnInit {
   }
 
   transferBranch() { }
+
+  saveBranchDivision() {}
   
   saveBranchContact() {}
 
