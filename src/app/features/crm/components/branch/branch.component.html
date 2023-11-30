@@ -144,7 +144,7 @@
           <div class="col-12">
             <div class="float-end">
               <span class="icon-circle"><i class="fa-solid fa-plus" data-bs-toggle="modal"
-                  data-bs-target="#branchContact"></i></span>
+                  data-bs-target="#branchDivisionModal"></i></span>
               <span class="icon-circle"><i class="pi pi-pencil"></i></span>
               <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
             </div>
@@ -189,8 +189,6 @@
       <div class="card-body">
         <div class="row mb-3">
           <div class="form-group col-4">
-            <!-- <input type="text" class="form-control" placeholder="Search by name, home or email address" aria-label="search"
-              aria-describedby="search"> -->
             <input type="text" class="form-control" placeholder="Search by name, home or email address" aria-label="search" aria-describedby="search"
               (input)="filterBranchContact($event)">
           </div>
@@ -422,6 +420,36 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="transferBranch()">Authorize Transfer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Branch Division Modal -->
+<div class="modal fade" #branchDivisionModal id="branchDivisionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add a Division</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createBranchDivisionForm">
+          <div class="row">
+            <div class="form-group mb-3">
+              <label for="division" class="form-label">Select a Division</label>
+              <select id="division" class="form-select  mb-1" formControlName="division">
+                <option value="" selected>Select Division</option>
+                <!-- <option *ngFor="let manager of regionManagersData" [value]="manager.id">
+                  {{ manager.name | titlecase }}
+                </option> -->
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveBranchDivision()">Save Details</button>
       </div>
     </div>
   </div>

@@ -17,7 +17,7 @@
           <div class="col-8">
             <div class="float-end">
               <span class="icon-circle"><i class="pi pi-pencil" (click)="editParameter()"></i></span>
-              <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteParameter()"></i></span>
+              <!-- <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteParameter()"></i></span> -->
             </div>
           </div>
         </div>
@@ -33,7 +33,7 @@
               [scrollable]="true"
               scrollHeight="400px" 
               class="ui-datatable"
-              [globalFilterFields]="['name', 'description']">
+              [globalFilterFields]="['name']">
               <ng-template pTemplate="header">
                 <tr>
                   <th class="head">Name</th>
