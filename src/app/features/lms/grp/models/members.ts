@@ -1,0 +1,56 @@
+export interface MembersDTO {
+        anb: null | number;
+        blood_pressure_loading: null | number;
+        category_code: null | number;
+        cover_wef: null | string;
+        date_joined: null | string;
+        date_of_birth: string;
+        dependant_type_code: null | number;
+        dependant_type_short_description: null | string;
+        dependent_type: null | string;
+        description: string;
+        diastolic_pressure: null | number;
+        dty_description: null | string;
+        employee_contribution: null | number;
+        employee_voluntary_contribution: null | number;
+        employee_voluntary_type: null | number;
+        employer_contribution: null | number;
+        gender: string;
+        group_occupation_code: null | number;
+        height: null | number;
+        identity_number: null | number;
+        if_sumassured_exceeds_fcl: null | string;
+        joint_member: null | string;
+        life_class_code: null | number;
+        loading_division_factor: null | number;
+        loading_rate: null | number;
+        loading_type: null | number;
+        loan_issue_date: null | string;
+        medical_requirements_group_code: null | number;
+        medical_total_sum_assured: null | number;
+        member_code: null | number;
+        member_number: null | string;
+        member_schedule_number: null | number;
+        member_unique_code: null | number;
+        monthly_earnings: null | number;
+        monthly_multiple_earnings_period: null | number;
+        number_of_joint_members: null | number;
+        original_loan_amount: null | number;
+        original_loan_amount_repayment_period: null | number;
+        other_names: string;
+        principal: null | number;
+        principal_member_code: null | number;
+        quotation_code: null | number;
+        remarks: null | string;
+        savings_amount: null | number;
+        sex: null | string;
+        status: null | string;
+        surname: string;
+        systolic_pressure: null | number;
+        total_contribution: null | number;
+        total_sum_assured: null | number;
+        weight: null | number;
+        weight_loading: null | number;
+      }
+      
+      

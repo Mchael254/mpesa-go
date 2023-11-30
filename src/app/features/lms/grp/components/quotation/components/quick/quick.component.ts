@@ -22,9 +22,10 @@ import { CurrencyService } from 'src/app/shared/services/setups/currency/currenc
 import { GrpQuoteDetails } from '../../../../models/quoteDetails';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { formatDate } from '@angular/common';
+import { NgxSpinnerService } from 'ngx-spinner';
+import {MessageService} from "primeng/api";
 
 
-const log = new Logger ('QuickComponent');
 @AutoUnsubscribe
 @Component({
   selector: 'app-quick',
@@ -45,7 +46,11 @@ export class QuickComponent implements OnInit, OnDestroy {
   facultativeType: FacultativeType [] = [];
   intermediaries: AgentDTO[] = [];
   branch: OrganizationBranchDto[];
-  quoteDetails: GrpQuoteDetails
+  quoteDetails: GrpQuoteDetails;
+  maxDate: Date;
+  showStateSpinner: boolean;
+  showTownSpinner: boolean;
+  quotationCode: number;
 
 
   constructor (
@@ -59,7 +64,11 @@ export class QuickComponent implements OnInit, OnDestroy {
     private branchService: BranchService,
     private currencyService: CurrencyService,
     private session_storage: SessionStorageService,
-    ) {}
+    private spinner_Service: NgxSpinnerService,
+    private messageService: MessageService
+    ) {
+      this.maxDate = new Date();
+    }
 
   ngOnInit(): void {
     this.quickQuoteForm();
@@ -75,7 +84,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.searchClient();
     this.searchAgent();
     this.getBranch();
-    // this.retrievQuoteDets();
+    this.retrievQuoteDets();
   }
 
   ngOnDestroy(): void {
@@ -134,6 +143,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   getClientList() {
     this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+      console.log("clients", data)
       this.clientList = data.content.map(client => ({
         label: `${client.firstName} ${client.lastName}`,
         value: client.id
@@ -157,17 +167,22 @@ export class QuickComponent implements OnInit, OnDestroy {
   getIntermediaries() {
     this.intermediaryService.getAgents().subscribe((data) => {
       this.intermediaries = data.content
+      const agentBranchIds = this.intermediaries.map((agentIds) => agentIds.branchId)
+      console.log("AgentsBranchId", agentBranchIds)
     })
   }
 
   getProducts() {
-    this.product_service.getListOfProduct().subscribe((products) => {
+    this.product_service.getListOfGroupProduct().subscribe((products) => {
+      console.log("products", products)
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
-        value: product.code
+        value: product.code,
+        type: product.type
       }));
     });
   }
+
   getAllCurrencies() {
     this.currencyService.getAllCurrencies().subscribe((currencies) => {
       this.currencyList = currencies.map((currency) => ({
@@ -215,11 +230,16 @@ export class QuickComponent implements OnInit, OnDestroy {
   getBranch() {
     this.branchService.getBranches(2).subscribe((branch: OrganizationBranchDto[]) => {
       this.branch = branch;
+      console.log("this.branch", this.branch)
+      const id = this.branch.map((branchId) => branchId.id)
+      console.log("BranchesId", id)
     });
 
   }
 
   onContinue () {
+    console.log("quickForm", this.quickForm.value)
+    
     if(this.quickForm.valid) {
       const quickFormQuotationCalcType = this.quickForm.get("quotationCalcType").value;
       const commissionRatePattern = /^[0-9]*(\.[0-9]+)?$/;
@@ -229,59 +249,83 @@ export class QuickComponent implements OnInit, OnDestroy {
 
       const apiRequest = {
         "effective_date": formatDate(formData.effectiveDate, 'yyyy-MM-dd', 'en-US'),
-        // "product_code": formData.products.value,
-        "product_code": 2021675,
-        // "client_code": formData.clients.value,
-        "client_code": 212120912884,
+        "product_code": formData.products.value,
+        "client_code": formData.clients.value,
         "facultative_type": formData.facultativeType.name,
         "cover_type_dependant": formData.quotationCovers.name,
         "calculation_type": formData.quotationCalcType,
         "duration_type": formData.durationType.name,
         "frequency_of_payment": formData.frequencyOfPayment.value,
         "unit_rate": formData.unitRateOption.value,
-        // "agent_code": formData.intermediary.id,
-        "agent_code": 2020201235490,
-        "branch_code": formData.branch.id,
+        "agent_code": formData.intermediary.id,
+        // "branch_code": formData.branch.id,
         "currency_code": formData.currency.value,
-        "commission_rate": formData.commissionRate
+        "commission_rate": formData.commissionRate,
+        "product_type": formData.products.type,
       };
+      console.log("apiRequest", apiRequest)
 
         if (!commissionRatePattern.test(commissionRateValue || (commissionRateValue === '' || null))) {
           console.log("Enter a valid commission rate value!")
-          alert("Enter a valid commission rate value!");
+          this.messageService.add({severity: 'error', summary: 'summary', detail: 'Enter a valid commission rate value!'});
           return;
         }
 
         const quoteData = {
           formData
         };
-
-      this.quickService.postQuoteDetails(apiRequest).subscribe((details: GrpQuoteDetails) => {
-        this.quoteDetails = details;
-        console.log(this.quoteDetails, this.quoteDetails.quotation_code, this.quoteDetails.quotation_code.toString())
-        // Store quotation_code in session storage
-        this.session_storage.set('quotation_code', this.quoteDetails.quotation_code.toString());
-        //Store the obj quoteData in sessionStorage
-        this.session_storage.set('quotation_code', JSON.stringify(quoteData));
-      });
-
-      // const quotation_code = 20237347;
-      
-      // this.quickService.updateQuoteDetails(quotation_code, apiRequest).subscribe((details) => {
-      // });
-      this.router.navigate(['/home/lms/grp/quotation/coverage'], {
-        queryParams: {
-          quotationCalcType: quickFormQuotationCalcType,
-          quotationCode: this.quoteDetails.quotation_code
-        },
-      });
-
-      
-
-      } else {
-        alert("Fill all fields");
-      }
+        
+        if(this.quotationCode === null || this.quotationCode === undefined) {
+          this.spinner_Service.show('download_view');
+          this.quickService.postQuoteDetails(apiRequest).subscribe((details: GrpQuoteDetails) => {
+            this.quoteDetails = details;
+            // Store quotation_code in session storage
+            // this.session_storage.set('quotationResponse', this.quoteDetails.quotation_code.toString());
+            sessionStorage.setItem('quotationResponse', JSON.stringify(this.quoteDetails));
+            //Store the obj quoteData in sessionStorage
+            this.session_storage.set('quotation_code', JSON.stringify(quoteData));
     
+            // this.router.navigate(['/home/lms/grp/quotation/coverage'], {
+            //   queryParams: {
+            //     quotationCalcType: quickFormQuotationCalcType,
+            //     quotationCode: this.quoteDetails.quotation_code
+            //   },
+            // });
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation generated successfully'});
+            this.router.navigate(['/home/lms/grp/quotation/coverage']);
+            
+          },
+          (error) => {
+            console.log(error)
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({severity: 'error', summary: 'summary', detail: 'Error processing the quote. Please try again'});
+        
+          }
+          );
+        } else {
+          console.log("updating existing quote", this.quotationCode)
+          this.spinner_Service.show('download_view');
+          this.quickService.updateQuoteDetails(this.quotationCode, apiRequest).subscribe((details: GrpQuoteDetails) => {
+            this.quoteDetails = details;
+            this.session_storage.set('quotation_code', JSON.stringify(quoteData));
+    
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation updated successfully'});
+            this.router.navigate(['/home/lms/grp/quotation/coverage']);
+            
+          },
+          (error) => {
+            console.log(error)
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({severity: 'error', summary: 'summary', detail: 'Error processing the quote update. Please try again'});
+        
+          }
+          );
+        }
+      } else {
+        this.messageService.add({severity: 'warning', summary: 'summary', detail: 'Fill all the fields!'});
+      }
   }
 
   retrievQuoteDets() {
@@ -290,10 +334,19 @@ export class QuickComponent implements OnInit, OnDestroy {
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
       const formData = quoteData.formData;
-      console.log("effectiveDate", formData)
       this.quickForm.patchValue(formData);
-      // formData.effective_date = this.datePipe.transform(new Date(formData.effective_date), 'dd/MM/yy');
-      // this.quickForm.patchValue(formData);
+      console.log("quickFormFormData", formData);
+
+      const storedQuoteDetails = sessionStorage.getItem('quotationResponse');
+      const parsedQuoteDetails = JSON.parse(storedQuoteDetails);
+
+      this.quotationCode = parsedQuoteDetails.quotation_code;
+      console.log("quotation code Quick", this.quotationCode)
+      this.quickForm.patchValue({
+        clients: formData.clients.label,
+        intermediary: formData.intermediary.name,
+        // effectiveDate: formatDate(formData.effectiveDate, 'dd/MM/yyyy', 'en-US')
+      })
     }
   }
 

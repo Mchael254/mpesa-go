@@ -1,6 +1,4 @@
 <div class="container-fluid">
-
-
   <div style="display: flex; padding-top: 1rem; justify-content: end">
     <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
     </app-dynamic-breadcrumb>
@@ -41,12 +39,6 @@
           <div class="row">
             <div class="col-md-6">
               <div class="m-4">
-                <div class="d-flex justify-content-between">
-                  <span class="font-grey__font-eight__700"
-                    >Proposal Number:
-                  </span>
-                  <span class="fw-light">{{ "-" }}</span>
-                </div>
                 <div class="d-flex justify-content-between">
                   <span class="font-grey__font-eight__700">Intermediary: </span>
                   <span class="fw-light">{{ "Ayomi cherop" }}</span>
@@ -205,43 +197,6 @@
                         </div>
                       </div>
                     </div>
-
-                    <!-- <div class="col-md-6">
-                      <div class="m-4">
-                        <div>Mutual Education Endowement Plan</div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Premium:
-                          </span>
-                          <span class="fw-light">{{ "1000" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Sum assured:
-                          </span>
-                          <span class="fw-light">{{ "300000" }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div class="m-4">
-                        <div>Child Accidental Medical Expenses</div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Premium:
-                          </span>
-                          <span class="fw-light">{{ "1000" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Sum assured:
-                          </span>
-                          <span class="fw-light">{{ "300000" }}</span>
-                        </div>
-                      </div>
-                    </div> -->
-
                   </ng-container>
                   </div>
                   <div class="col-12">
@@ -302,119 +257,13 @@
                           </span>
                           <span class="fw-light">{{ relationTypeList | relationType : beneficiary?.beneficiary_info?.relation_code }}</span>
                         </div>
-                        <!-- <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Contact:
-                          </span>
-                          <span class="fw-light">{{ beneficiary['percentage_benefit'] }}</span>
-                        </div> -->
+                        
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700">Type: </span>
                           <span class="fw-light">{{ beneficiary["type"] === "B" ? "Beneficairy" : "Trustee"  |uppercase}}</span>
                         </div>
                       </div>
                     </div>
-
-                    <!-- <div class="col-md-6">
-                      <div class="m-4">
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{ "AKA" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Benefit proportion:
-                          </span>
-                          <span class="fw-light">{{ "50%" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Date of Birth:
-                          </span>
-                          <span class="fw-light">{{ "10/10/1980" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Relation:
-                          </span>
-                          <span class="fw-light">{{ "niece" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Contact:
-                          </span>
-                          <span class="fw-light">{{ "N/A" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Type: </span>
-                          <span class="fw-light">{{ "Beneficiary" }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div>Dependants</div>
-                      <div class="m-4">
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{ "BUI" }}</span>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Date of Birth:
-                          </span>
-                          <span class="fw-light">{{ "10/10/1980" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Relation:
-                          </span>
-                          <span class="fw-light">{{ "child" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Contact:
-                          </span>
-                          <span class="fw-light">{{ "070xxxxxxxxxx" }}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div class="m-4">
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{ "AKA" }}</span>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Date of Birth:
-                          </span>
-                          <span class="fw-light">{{ "10/10/1980" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Relation:
-                          </span>
-                          <span class="fw-light">{{ "niece" }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Contact:
-                          </span>
-                          <span class="fw-light">{{ "N/A" }}</span>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                          <span class="font-grey__font-eight__700"
-                            >Trustee:
-                          </span>
-                          <span class="fw-light">{{ "Adongo" }}</span>
-                        </div>
-                      </div>
-                    </div> -->
                   </ng-container>
                   </div>
                   <div class="col-12">

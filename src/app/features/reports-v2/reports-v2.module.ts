@@ -25,6 +25,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { ReportManagementComponent } from './report-management/report-management.component';
 import { TableModule } from 'primeng/table';
 import { SaveReportModalComponent } from './save-report-modal/save-report-modal.component';
+import {AngularDraggableModule} from "angular2-draggable";
+import { BaseComponent } from './base/base.component';
 
 
 @NgModule({
@@ -38,7 +40,9 @@ import { SaveReportModalComponent } from './save-report-modal/save-report-modal.
     ListReportComponent,
     ColorSchemeComponent,
     ReportManagementComponent,
-    SaveReportModalComponent
+    SaveReportModalComponent,
+    BaseComponent,
+
   ],
     imports: [
       CommonModule,

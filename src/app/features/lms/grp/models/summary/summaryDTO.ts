@@ -1,0 +1,145 @@
+export interface QuoteSummaryDTO {
+    agent_code?: string;
+    average_age_next_birthday?: null;
+    branch_code?: number;
+    calculation_type?: string;
+    check_date?: null;
+    client_code?: number;
+    commission_amount?: null;
+    cover_conditions?: null;
+    cover_dependants?: null;
+    cover_to_date?: string;
+    currency_code?: number;
+    currency_rate?: number;
+    currency_rate_type?: string;
+    currency_symbol?: string;
+    date?: string;
+    dependant_covered?: string;
+    duration_term_type?: string;
+    duration_type?: string;
+    effective_date?: string;
+    female_retirement_age?: null;
+    frequency_of_payment?: string;
+    investment_duration_type?: string;
+    investment_rider_allowed?: string;
+    investment_term?: null;
+    life_rider?: string;
+    male_retirement_age?: null;
+    marketer_agent_code?: string;
+    marketer_agent_short_description?: string;
+    number_of_members?: null;
+    occupation_code?: number;
+    ok?: string;
+    payment_method?: string;
+    premium_mask_code?: number;
+    premium_mask_short_description?: string;
+    product_code?: number;
+    product_dependant_covered?: null;
+    product_short_description?: string;
+    product_type?: string;
+    proposer_code?: number;
+    proposer_short_description?: string;
+    quotation_number?: string;
+    quotation_unique_code?: number;
+    retirement_age?: null;
+    savings_or_rider?: string;
+    status?: string;
+    sum_assured?: number;
+    total_premium?: number;
+    type?: string;
+    umbrella?: string;
+    umbrella_quotation?: string;
+}
+
+export interface MemberSummaryDTO {
+    fcl_amount: number;
+    mem_above_existing_fcl: number;
+    mem_above_fcl: number;
+    mem_above_override_fcl: number;
+    members?: number;
+    quotation_override_fcl_amt: number;
+}
+
+export interface CategoryDTO {
+        accelerator?: null;
+        average_anb?: null;
+        average_earnings_per_member?: null;
+        base_premium?: null;
+        base_sum_assured?: null;
+        category_category?: string;
+        category_rate_division_factor?: null;
+        category_unique_code?: null;
+        cover_inbuilt?: null;
+        cvt_desc: string;
+        dty_sht_desc: string;
+        fee_amount?: null;
+        limit_amount: number;
+        main_cover?: null;
+        maximum_type_allowed?: null;
+        minimum_amt: number;
+        multiple_earnings_period?: null;
+        period: number;
+        pmas_sht_desc?: null;
+        premium?: null;
+        premium_mask_code?: null;
+        premium_mask_desc: string;
+        previous_category_code?: null;
+        quotation_code?: null;
+        rate?: null;
+        school_code?: null;
+        short_description?: null;
+        sum_assured?: null;
+        sum_assured_per_member?: null;
+        sum_assured_percentage?: null;
+        total_member_earnings?: null;
+        total_members?: null;
+        total_original_loan_amount?: null;
+        total_students?: null;
+        use_cvr_rate?: null;
+}
+
+export interface MemberCoverTypeSummaryDto {
+    basicSalary?: null;
+    bloodPressureLoading?: null;
+    coverTypeCode?: null;
+    cvtDesc: string;
+    cvtShtDesc?: string;
+    dateOfBirth?: null;
+    dependantTypeCode?: null;
+    dependantTypeShortDescription?: null;
+    dependentType?: null;
+    description?: null;
+    dtyDescription?: null;
+    gender?: null;
+    houseAllowance?: null;
+    ifJointMembers?: null;
+    ifMainRider?: null;
+    loadDiscountPremium?: null;
+    loanInterest?: null;
+    loanIssueDate?: null;
+    memberCode?: null;
+    memberCoverCode?: null;
+    memberNumber?: null;
+    multipleEarningsPeriod?: null;
+    numberOfMembers?: null;
+    originalLoanAmount?: null;
+    originalLoanAmountRepaymentPeriod?: null;
+    otherAllowances?: null;
+    otherNames?: null;
+    premium: number;
+    previousPolicyCoverMemberCode?: null;
+    principalMemberCode?: null;
+    quotationCode?: null;
+    quotationCoverTypeCvtCode?: null;
+    quotationMemberCode?: null;
+    rate?: null;
+    savingAmount?: null;
+    status?: null;
+    sumAssured: number;
+    surname?: null;
+    transportAllowance?: null;
+    wef: string;
+    wet: string;
+  }
+  
+
