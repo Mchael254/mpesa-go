@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
@@ -66,7 +66,7 @@ export class UserParametersComponent implements OnInit {
 
   ParametersForm() {
     this.createParameterForm = this.fb.group({
-      name: [''],
+      name: [{ value: '', disabled: true }],
       value: [''],
       status: [''],
       description: [''],
@@ -132,19 +132,20 @@ export class UserParametersComponent implements OnInit {
     }
   }
 
-  deleteParameter() {
-    if (this.selectedParameter) {
-      const paramId = this.selectedParameter.id;
-      this.parameterService.deleteParameter(paramId)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a User-Parameter');
-          this.fetchParameters();
-        })
-    }
-    else {
-      log.error('Error', 'No Region is Selected!');
-    }
-  }
+  // deleteParameter() {
+  //   if (this.selectedParameter) {
+  //     const paramId = this.selectedParameter.id;
+  //     this.parameterService.deleteParameter(paramId)
+  //       .subscribe(data => {
+  //         this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a User-Parameter');
+  //         this.fetchParameters();
+  //         this.selectedParameter = null;
+  //       })
+  //   }
+  //   else {
+  //     log.error('Error', 'No Region is Selected!');
+  //   }
+  // }
   
   updateParameters() {
     this.closeParameterModal();
@@ -167,6 +168,7 @@ export class UserParametersComponent implements OnInit {
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a User Parameter');
           this.fetchParameters();
+          this.selectedParameter = null;
         });
 
     }
