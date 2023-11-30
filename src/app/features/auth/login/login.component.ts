@@ -102,7 +102,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.authenticateUser(authenticationData, (data) => {
       if(data != null){
-        // data.allowMultifactor = 'Y';
+        
         if (data.allowMultifactor === 'N') {
           log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
           return this.authService.attemptAuth(authenticationData);
