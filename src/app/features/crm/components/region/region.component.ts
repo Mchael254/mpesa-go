@@ -248,6 +248,7 @@ export class RegionComponent implements OnInit {
       this.organizationService.updateOrganizationRegion(regionCode, saveOrganizationRegion)
         .subscribe(data => { 
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Region');
+          this.selectedRegion = null;
           this.fetchOrganizationRegion(this.selectedOrg.id);
         });
     }
@@ -297,6 +298,7 @@ export class RegionComponent implements OnInit {
       this.bankService.updateBankRegion(regionBankId, saveRegionBank)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a RegionBank');
+          this.selectedRegionBank = null;
           this.fetchBankRegions(this.selectedRegion.code);
         })
     }
@@ -328,6 +330,7 @@ export class RegionComponent implements OnInit {
       this.organizationService.deleteOrganizationRegion(regionCode)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region');
+          this.selectedRegion = null;
           this.fetchOrganizationRegion(this.selectedOrg.id);
         })
     }
@@ -358,6 +361,7 @@ export class RegionComponent implements OnInit {
       this.bankService.deleteBankRegion(regionBankId)
         .subscribe(data => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region Bank');
+          this.selectedRegionBank = null;
           this.fetchBankRegions(this.selectedRegion.code);
         })
     }
