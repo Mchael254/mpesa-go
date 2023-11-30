@@ -81,6 +81,7 @@ export class ColorSchemeComponent implements OnInit {
    * @returns void
    */
   selectColorScheme(selectedScheme): void {
+    log.info(`selected scheme >>>`, selectedScheme);
     this.selectedColorScheme.emit(selectedScheme);
   }
 
@@ -136,7 +137,6 @@ export class ColorSchemeComponent implements OnInit {
    */
   fetchAllColorSchemes(): void {
     this.colourSchemes = [];
-
     this.colorSchemeService.fetchAllColorSchemes()
     .pipe(take(1))
     .subscribe((colorSchemes) => {

@@ -44,7 +44,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   entityBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
-      url: '/home/dahsboard'
+      url: '/home/dashboard'
     },
     {
       label: 'CRM',

@@ -254,7 +254,7 @@
                     <ng-container *ngIf="visibleStatus?.['email'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="email" class="label col-form-label">Email</label>
-                        <input type="text" id="email" name="email" placeholder="Email Address" class="form-control" formControlName="email"
+                        <input type="email" id="email" name="email" placeholder="Email Address" class="form-control" formControlName="email"
                                [ngClass]="{ 'is-invalid': f['contact_details']?.['email']?.invalid && (f['contact_details']?.['email']?.dirty || f['contact_details']?.['email']?.touched) }">
                         <div *ngIf="f['contact_details']?.['email']?.invalid && (f['contact_details']?.['email']?.dirty || f['contact_details']?.['email']?.touched)" class="form-text text-danger">
                           <div *ngIf="f['contact_details']?.['email']?.errors['required']">Email is required</div>

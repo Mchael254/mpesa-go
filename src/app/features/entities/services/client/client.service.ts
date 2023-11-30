@@ -16,8 +16,8 @@ export class ClientService {
   constructor(private http: HttpClient,
     private appConfig: AppConfigService) { }
     getClients(
-      page: number = 0,
-      size: number = 5,
+      page: number | null = 0,
+      size: number | null = 5,
       sortField: string = 'createdDate',
       order: string = 'desc'
     ): Observable<Pagination<ClientDTO>> {
@@ -40,7 +40,7 @@ export class ClientService {
         });
     }
     searchClients(
-      page: number = 0,
+      page: number,
       size: number = 5,
       name: string,
     ): Observable<Pagination<ClientDTO>> {

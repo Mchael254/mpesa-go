@@ -21,6 +21,10 @@
         <label >To</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="dateSortEmployees()">
       </div>
+      <div class="col-lg-3 col-sm-6 mx-2">
+        <label >Employees</label><br>
+        <input type="text" class="form-control" [value]="aggregatedEmployeeData.totalElements" disabled>
+      </div>
     </form>
 
   </div>
@@ -39,6 +43,10 @@
                  (sortFunction)="customSortEmployees($event)"
                  [customSort]="true"
                  [globalFilterFields]="['staffs?.name','department?.departmentName','transaction?.module','staffs?.emailAddress']"
+                 [sortField]="'name'" [sortOrder]="1"
+                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                 [scrollable]="true"
+                 scrollHeight="400px"
                  selectionMode="single"
                  dataKey="ticketID"
                  styleClass="p-datatable-sm"
