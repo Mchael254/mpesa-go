@@ -6,18 +6,24 @@ import { API_CONFIG } from 'src/environments/api_service_config';
   providedIn: 'root'
 })
 export class QuotationService {
+  private QUOTATION_BASE_URL: string = 'quotations'
 
   constructor(private api: ApiService) { }
 
   getLmsIndividualQuotationWebQuoteList(page:number, size:number){
-    return this.api.GET(`quotations/web-quote?page=${page}&size=${size}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+    return this.api.GET(`${this.QUOTATION_BASE_URL}/web-quote?page=${page}&size=${size}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
   getLmsIndividualQuotationWebQuoteByCode(code:number){
-    return this.api.GET(`quotations/web-quote/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+    return this.api.GET(`${this.QUOTATION_BASE_URL}/web-quote/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
   getLmsIndividualQuotationTelQuoteByCode(code:number){
-    return this.api.GET(`quotations/tel-quote/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+    return this.api.GET(`${this.QUOTATION_BASE_URL}/tel-quote/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
+
+  convert_quotation_to_proposal(code: number){
+    return this.api.POST(`${this.QUOTATION_BASE_URL}/generate-proposal-no/${code}`, null, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+  }
+
 }

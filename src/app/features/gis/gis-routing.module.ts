@@ -10,8 +10,18 @@ import {
   SubclassClausesComponent
 } from "./components/setups/components/clause/subclass-clauses/subclass-clauses.component";
 import { StandardShortPeriodRatesComponent } from './components/setups/components/short-period/standard-short-period-rates/standard-short-period-rates.component';
+import { BaseComponent } from './base/base.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: BaseComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'quotation',
+        pathMatch: 'full',
+      },
   {
     path: 'quotation',
     loadChildren: () => import('./components/quotation/quotation.module').then(m => m.QuotationModule),
@@ -71,7 +81,7 @@ const routes: Routes = [
    {
     path:'premium-rate',
     loadChildren:() => import('./components/setups/components/premium-rate/premium-rate.module').then(m => m.PremiumRateModule),
-   },
+   }]}
 
 
 ];
