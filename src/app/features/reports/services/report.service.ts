@@ -160,47 +160,47 @@ export class ReportService {
   }
 
   getChartReports(): Observable<Pagination<ChartReports[]>> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<Pagination<ChartReports[]>>(`/${baseUrl}/chart/chart-reports`);
   }
 
   renameChartReports(id:number, chartReportRename: RenameDTO): Observable<RenameDTO> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.put<RenameDTO>(`/${baseUrl}/chart/chart-reports/${id}/name`
       , JSON.stringify(chartReportRename), {headers: this.headers});
   }
 
   /*Create a new dashboard*/
   saveDashboard(dashboard: CreateUpdateDashboardDTO): Observable<CreateUpdateDashboardDTO> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.post<CreateUpdateDashboardDTO>(
       `/${baseUrl}/chart/dashboards`, JSON.stringify(dashboard), {headers: this.headers});
   }
 
   getDashboards(): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<any>(`/${baseUrl}/chart/dashboards`);
   }
 
 
   getDashboardsById(id:number): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<any>(`/${baseUrl}/chart/dashboards/${id}`);
   }
 
   deleteDashboard(dashboardId: number): Observable<string> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.delete<string>(`/${baseUrl}/chart/dashboards/${dashboardId}`, {headers: this.headers});
   }
 
   addReportToDashboard(dashboardId: number, dashboardReport: AddReportToDashDTO): Observable<DashboardReports> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.post<DashboardReports>(
       `/${baseUrl}/chart/dashboards/${dashboardId}/reports`, JSON.stringify(dashboardReport), {headers: this.headers});
   }
 
   deleteReportFromDashboard(dashboardId: number, reportId: number): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     const params = new HttpParams()
       .set('reportId', `${reportId}`);
 
@@ -211,7 +211,7 @@ export class ReportService {
   }
 
   renameDashboard(id:number, dashboardRename: RenameDTO): Observable<RenameDTO> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.put<RenameDTO>(`/${baseUrl}/chart/dashboards/${id}/name`
       , JSON.stringify(dashboardRename), {headers: this.headers});
   }
