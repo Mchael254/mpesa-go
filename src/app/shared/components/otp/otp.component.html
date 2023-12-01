@@ -8,7 +8,7 @@
   <div class="otp-form">
     <form [formGroup]="otpForm">
       <div class="row justify-content-center">
-        <div style="align-items: center;" class="form-group col-sm-2" *ngFor="let input of formInput;  index as i">
+        <div style="align-items: center;" class="form-group col-sm-2 col-3" *ngFor="let input of formInput;  index as i">
           <input id="keyUpEvent" #formRow type="text" formControlName="{{input}}" class="form-control text-center"
                  maxlength="1" (keyup)="keyUpEvent($event, input)">
         </div>
