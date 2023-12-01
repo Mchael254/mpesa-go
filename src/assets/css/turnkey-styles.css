@@ -653,3 +653,34 @@ p-table tr > th {
   align-items: center;
   margin-bottom: 1rem;
 }
+
+
+
+/* responsive design */
+
+@media (max-width: 1400px) {
+  /* CSS rules */
+}
+
+@media (max-width: 1200px) {
+  /* CSS rules */
+}
+
+@media (max-width: 992px) {
+  /* CSS rules */
+}
+
+@media (max-width: 768px) {
+  /* CSS rules */
+}
+
+@media (max-width: 576px) {
+  .auth-container .right {
+    display: none;
+  }
+
+  .auth-container .left  {
+    width: 100%;
+    padding: 2rem;
+  }
+}
