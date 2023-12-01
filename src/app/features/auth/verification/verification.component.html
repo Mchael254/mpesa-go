@@ -16,10 +16,10 @@
                   class="verify-button row" [class.selected]="account === selectedAccount"
                   (click)="onSelectAccount(account)"
                 >
-                    <div class="col-sm-2 text-start">
+                    <div class="col-sm-2 col-2 text-start">
                         <i class="fa-solid {{account.icon}}"></i>
                     </div>
-                    <div class="col-sm-10 text-start account-info">
+                    <div class="col-sm-10 col-9 text-start account-info">
                         <span>Via {{ account.type }}: </span> <br>
                         <span>{{ account.name | lowercase}}</span>
                     </div>
