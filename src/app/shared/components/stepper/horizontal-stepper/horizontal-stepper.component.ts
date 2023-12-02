@@ -47,7 +47,7 @@ export class HorizontalStepperComponent {
 
   getStepClasses(index: number) {
     return {
-      'done': index < this.currentStep,
+      'done': index <= this.currentStep,
       'step-active': index === this.currentStep
     };
   }

@@ -1,0 +1,12 @@
+[
+  {
+    "number": 1,
+    "title": "Tests",
+    "link": "/home/lms/medicals/test"
+  },
+  {
+    "number": 2,
+    "title": "Result Processing",
+    "link": "/home/lms/medicals/result-processing"
+  }
+]

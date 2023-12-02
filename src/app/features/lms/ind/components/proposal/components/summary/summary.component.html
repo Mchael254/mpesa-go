@@ -1,5 +1,15 @@
 <div class="container-fluid">
-  <div class="full-border">
+  <div class="full-border" style=" position: relative;">
+    <ngx-spinner
+name="summary_view"
+  type="ball-clip-rotate-multiple"
+
+  [fullScreen]="false"
+  color="#00529B"
+  size="medium"
+  bdColor="rgba(255, 255, 255, 0.9)"
+></ngx-spinner>
+
     <div class="d-flex justify-content-center text-black fs-5 fw-medium">
       Proposal
     </div>
@@ -19,31 +29,36 @@
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Product</div>
-              <div class="col-lg-6 col-sm-12">{{ "Whole Life Policy" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ proposalSummaryData?.product?.description || '-' | titlecase }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Product Option</div>
-              <div class="col-lg-6 col-sm-12">{{ "Product A" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ proposalSummaryData?.product_option?.desc || '-' | titlecase}}</div>
             </div>
-            <div class="row e">
+            <!-- <div class="row e">
               <div class="col-lg-6 col-sm-12">Proposal Number</div>
               <div class="col-lg-6 col-sm-12">{{ "AK2569000" }}</div>
-            </div>
+            </div> -->
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Cover Types</div>
-              <div class="col-lg-6 col-sm-12">{{ "Cover Types" }}</div>
+              <div class="col-lg-6 col-sm-12">
+                <div>{{ "Cover Types 1" }}</div>
+                <div>{{ "Cover Types 2" }}</div>
+                <div>{{ "Cover Types 3" }}</div>
+              </div>
+              
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Term</div>
-              <div class="col-lg-6 col-sm-12">{{ "10" }}</div>
+              <div class="col-lg-6 col-sm-12">{{proposalSummaryData?.policy_term || 0 | number }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Sum Assured</div>
-              <div class="col-lg-6 col-sm-12">{{ "Sum Assured" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ proposalSummaryData?.sum_insured || 0 | number }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Premium</div>
-              <div class="col-lg-6 col-sm-12">{{ "Premium" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ proposalSummaryData?.premium || 0 | number }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Premium Escalation Rate</div>
@@ -53,11 +68,16 @@
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Beneficiaries</div>
-              <div class="col-lg-6 col-sm-12">{{ "N/A" }}</div>
+              <div class="col-lg-6 col-sm-12">
+                
+                <div>{{ "Beneficiaries Types 1" }}</div>
+                <div>{{ "Beneficiaries Types 2" }}</div>
+                <div>{{ "Beneficiaries Types 3" }}</div>
+              </div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Frequency of payment</div>
-              <div class="col-lg-6 col-sm-12">{{ "Semi-Annual" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ returnFreqOfPayment(proposalSummaryData?.payment_frequency)}}</div>
             </div>
           </div>
         </div>
@@ -70,8 +90,8 @@
     <div style="margin-bottom: 6rem"></div>
   </div>
 
-  <div class="row justify-content-end">
-    <div routerLink="/home/lms/ind/policy/underwriting" class=" col-lg-1 col-sm-4 btn btn-primary btn-sm w-10" style="transform: translateX(-0.5rem) ;">
+  <div class="row justify-content-end" style="padding-bottom: 2rem;">
+    <div (click)="nextPage()" class=" col-lg-1 col-sm-4 btn btn-primary btn-sm w-10" style="transform: translateX(-0.5rem) ;">
       Proceed
     </div>
   </div>
