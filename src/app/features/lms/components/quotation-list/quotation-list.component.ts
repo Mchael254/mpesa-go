@@ -7,6 +7,7 @@ import { QuotationService } from 'src/app/features/lms/service/quotation/quotati
 import { TableDetail } from 'src/app/shared/data/table-detail';
 import { Logger } from 'src/app/shared/services';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from '../../util/session_storage_enum';
 
 const logger = new Logger('QuotationComponent');
 @Component({
@@ -170,10 +171,10 @@ export class QuotationListComponent implements OnInit {
   }
 
   selectRow(i: any) {
-    this.session_service.set('quote_code', i['quote_no']);
-    this.session_service.set('client_code', i['client_code']);
-    this.session_service.set('quick_code', i['code']);
-    this.session_service.set('proposal_code', i['proposal_no']);
+    this.session_service.set(SESSION_KEY.QUOTE_CODE, i['quote_no']);
+    this.session_service.set(SESSION_KEY.CLIENT_CODE, i['client_code']);
+    this.session_service.set(SESSION_KEY.QUICK_CODE, i['code']);
+    this.session_service.set(SESSION_KEY.PROPOSAL_CODE, i['proposal_no']);
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
   }
 

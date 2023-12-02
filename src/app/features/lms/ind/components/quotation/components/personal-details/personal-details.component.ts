@@ -381,8 +381,8 @@ export class PersonalDetailsComponent {
   // NO UNIT TESTED
   getBeneficiariesByQuotationCode() {
     this.editEntity = true;
-    let quote_code = +this.session_storage.get(SESSION_KEY.QUOTE_CODE);
-    let proposal_code = +this.session_storage.get(SESSION_KEY.PROPOSAL_CODE);
+    let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_CODE));
+    let proposal_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
     this.party_service
       // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
