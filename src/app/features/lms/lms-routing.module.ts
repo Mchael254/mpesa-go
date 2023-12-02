@@ -77,6 +77,13 @@ const routes: Routes = [
             (m) => m.NeedAnalysisModule
           ),
       },
+      {
+        path: 'medicals',
+        loadChildren: () =>
+          import('./ind/components/medicals/medicals.module').then(
+            (m) => m.MedicalsModule
+          ),
+      },
     ],
   },
 ];
