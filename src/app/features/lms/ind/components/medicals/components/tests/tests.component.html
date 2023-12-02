@@ -1,0 +1,178 @@
+<div class="container-fluid">
+  <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
+
+  <div class="full-border p-3 px-4">
+    <div class="d-flex justify-content-start fw-bold fs-6 pt-4">Medical</div>
+    <div>
+      <div>
+        <div class="d-flex justify-content-start pt-3 fs-6">Policy Details</div>
+        <div class="row px-4 py-2">
+          <div class="col-md-4 col-sm-12">
+            <div class="row">
+              <span class="text-gray col-md-4 col-sm-6">Life Assured:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium"
+                >Agnes Njoronge</span
+              >
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <div class="row">
+              <span class="text-gray col-md-3 col-sm-6">Client ID:</span>
+              <span class="text-black col-md-9 col-sm-6 fw-medium">123131</span>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <div class="row">
+              <span class="text-gray col-md-2 col-sm-6">Age:</span>
+              <span class="text-black col-md-10 col-sm-6 fw-medium">36</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row px-4">
+          <div class="d-flex justify-content-start fs-7 fw-medium text-black">
+            Products
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <div class="d-flex justify-content-start fs-7 fw-medium text-black">
+              Term Life Policy
+            </div>
+
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Status:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium">Active</span>
+            </div>
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Sum Assured:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium"
+                >Ksh 12300</span
+              >
+            </div>
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Policy No.:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium"
+                >POL/AC36356627</span
+              >
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12">
+            <div class="d-flex justify-content-start fs-7 fw-medium text-black">
+              Whole Life Policy
+            </div>
+
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Status:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium">Active</span>
+            </div>
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Sum Assured:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium"
+                >Ksh 12300</span
+              >
+            </div>
+            <div class="row p-0">
+              <span class="text-gray col-md-4 col-sm-6">Policy No.:</span>
+              <span class="text-black col-md-8 col-sm-6 fw-medium"
+                >POL/AC36356627</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="row px-4">
+          <div class="d-flex justify-content-start fs-7 fw-medium text-black pt-2">
+            Lien Option
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <div class="row p-0">
+
+              <div class="w-75">
+                <span class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="yes"
+                    value="Y"
+                  />
+                  <label class="form-check-label text-black" for="yes">Yes</label>
+                </span>
+                <span class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="no"
+                    value="N"
+                  />
+                  <label class="form-check-label text-black" for="no">No</label>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="d-flex justify-content-start pt-3 fs-6">Medical Tests</div>
+        <div class="row px-4 py-2">
+          <div class="col-md-4 col-sm-12">
+            <div class="row">
+              <ol class="text-black">
+                <li>Malaria</li>
+                <li>Lung</li>
+                <li>Tuberculosis</li>
+                <li class="py-0 text-primary fw-medium" style="cursor: pointer;">Add List <i class="fa-regular fa-plus"></i></li>
+
+              </ol>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div>
+        <div class="d-flex justify-content-start pt-3 fs-6">Medical Reports</div>
+        <div class="row px-4 pt-2">
+          <div class="col-md-4 col-sm-12">
+            <div class="row py-0">
+              <span class="col-md-6 col-sm-12">Medical Test Questionaire</span>
+              <span class="text-black col-md-3 col-sm-12 fw-medium"
+                >Share <i class="fa-solid fa-share-nodes"></i></span
+              >
+              <span class="text-black col-md-3 col-sm-12 fw-medium"
+                >Preview <i class="fa-regular fa-eye"></i></span
+              >
+            </div>
+            <div class="row py-0">
+              <span class="col-md-6 col-sm-12">Medical Letter</span>
+              <span class="text-black col-md-3 col-sm-12 fw-medium"
+                >Share <i class="fa-solid fa-share-nodes"></i></span
+              >
+              <span class="text-black col-md-3 col-sm-12 fw-medium"
+                >Preview <i class="fa-regular fa-eye"></i></span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end pb-4">
+    <button (click)="nextPage()" type="button" class="btn btn-primary " style="font-size: 12px;">Proceed</button>
+</div>
+</div>
