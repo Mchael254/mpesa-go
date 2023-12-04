@@ -29,7 +29,8 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
   tableDetails: TableDetail;
 
   pageSize = 5;
-
+  isSearching = false;
+  searchTerm = '';
   cols = [
     { field: 'name', header: 'Name' },
     { field: 'modeOfIdentity', header: 'Primary ID Type' },
@@ -130,10 +131,11 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
    */
 
   getAgents(pageIndex: number,
+            pageSize: number,
             sortField: any = 'createdDate',
             sortOrder: string = 'desc'): Observable<Pagination<AgentDTO>> {
     return this.intermediaryService
-      .getAgents(pageIndex, this.pageSize, sortField, sortOrder)
+      .getAgents(pageIndex, pageSize, sortField, sortOrder)
       .pipe(untilDestroyed(this));
   }
 
@@ -147,25 +149,35 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
 
-    this.getAgents(pageIndex, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-        tap((data) => log.info(`Fetching Agents>>>`, data))
-      )
-      .subscribe(
-        (data: Pagination<AgentDTO>) => {
-          data.content.forEach( intermediary => {
-            intermediary.primaryType = 'I' ? 'Individual' : 'Corporate';
-          });
-          this.intermediaries = data;
-          this.tableDetails.rows = this.intermediaries?.content;
-          this.tableDetails.totalElements = this.intermediaries?.totalElements;
-          this.cdr.detectChanges();
-          this.spinner.hide();
-        },
-        error => { this.spinner.hide(); }
-      );
+    if (this.isSearching) {
+      const searchEvent = {
+        target: {value: this.searchTerm}
+      };
+      this.filter(searchEvent, pageIndex, pageSize);
+    }
+    else {
+      this.getAgents(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Agents>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<AgentDTO>) => {
+            data.content.forEach( intermediary => {
+              intermediary.primaryType = 'I' ? 'Individual' : 'Corporate';
+            });
+            this.intermediaries = data;
+            this.tableDetails.rows = this.intermediaries?.content;
+            this.tableDetails.totalElements = this.intermediaries?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => { this.spinner.hide(); }
+        );
+    }
+
   }
 
   /**
@@ -234,4 +246,21 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
         this.router.navigate([ `/home/view-entity/${partyId}`]);
       });
   }*/
+
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.intermediaries = null; // Initialize with an empty array or appropriate structure
+
+    const value = (event.target as HTMLInputElement).value;
+
+    log.info('myvalue>>>', value)
+
+    this.searchTerm = value;
+    this.isSearching = true;
+    this.spinner.show();
+    this.intermediaryService.searchAgent(pageIndex, pageSize, this.searchTerm)
+      .subscribe((data) => {
+        this.intermediaries = data;
+        this.spinner.hide();
+      });
+  }
 }
