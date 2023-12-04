@@ -32,7 +32,8 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   activeTab2: string = 'Individual';
   userType: 'user' | 'group' = 'user';
   staffPageSize = 5;
-
+  isSearching = false;
+  searchTerm = '';
   cols = [
     { field: 'name', header: 'User' },
     { field: 'userType', header: 'User type' },
@@ -124,7 +125,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
 
     this.spinner.show();
 
-    this.getStaffData(0)
+    this.getStaffData(0, this.staffPageSize)
       .pipe(
         untilDestroyed(this),
       )
@@ -163,8 +164,9 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
 
-    this.getStaffData(pageIndex, sortField, sortOrder)
+    this.getStaffData(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
         untilDestroyed(this),
       )
@@ -190,12 +192,13 @@ export class ListStaffComponent implements OnInit, OnDestroy {
    * @param [sortList=dateCreated] - the field to sort the data by
    * @param [order=desc] -  the order to sort the data by
    */
-  getStaffData(pageIndex: number = 0,
+  getStaffData(pageIndex: number,
+               pageSize: number,
                sortList: any = 'dateCreated',
                order: string = 'desc'){
     return this.staffService
       .getStaff(pageIndex,
-                this.staffPageSize,
+                pageSize,
                  this.activeTab2 ===  'Group' ? 'G':  'U',
                  sortList,
                 order, null);
@@ -225,7 +228,7 @@ export class ListStaffComponent implements OnInit, OnDestroy {
     this.userType = (this.activeTab2 === 'Individual') ? 'user' : 'group';
 
     this.spinner.show();
-    this.getStaffData(0)
+    this.getStaffData(0, this.staffPageSize)
       .pipe(
         untilDestroyed(this),
       )
@@ -249,6 +252,20 @@ export class ListStaffComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
   }
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.indivData = null; // Initialize with an empty array or appropriate structure
 
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+
+    this.searchTerm = value;
+    this.isSearching = true;
+    this.spinner.show();
+    this.staffService
+      .searchStaff(pageIndex, pageSize, this.activeTab2 ===  'Group' ? 'G':  'U', this.searchTerm, null, null)
+      .subscribe((data) => {
+        this.indivData = data;
+        this.spinner.hide();
+      });
+  }
 }
 

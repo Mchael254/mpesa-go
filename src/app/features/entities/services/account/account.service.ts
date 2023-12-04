@@ -423,7 +423,7 @@ export class AccountService {
     const params = new HttpParams()
     .set('accountCode', `${accountCode}`
     );
-    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/details`, {
+    return this.http.get<PartyAccountsDetails>(`/${baseUrl}/accounts/details`, {
       headers:headers,
       params:params
     });
