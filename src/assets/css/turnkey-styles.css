@@ -675,6 +675,10 @@ p-table tr > th {
 }
 
 @media (max-width: 576px) {
+  .base-content {
+    width: 100%;
+}
+
   .auth-container .right {
     display: none;
   }
@@ -683,4 +687,34 @@ p-table tr > th {
     width: 100%;
     padding: 2rem;
   }
+
+  .base-side-nav {
+    margin-left: -230px;
+  }
+
+  .base-content-section .col-12 {
+    margin-bottom: 15px;
+  }
+
+  .base-content .base-content-section .calendar {
+    font-size: 0.7rem;
+  }
+
+  .base-content .base-content-section .calendar ul {
+    padding: 0;
+  }
+
+  .base-content .base-content-section .calendar ul li {
+    padding: 0;
+  }
+
+  .base-content .base-content-section table tr th, 
+  .base-content .base-content-section table tr td {
+    font-size: 0.8rem;
+  }
+
+  #lms-gis-policy-list {
+    margin-bottom: 200px;
+  }
+  
 }
