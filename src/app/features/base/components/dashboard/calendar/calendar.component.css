@@ -48,7 +48,6 @@
 }
 
 .form-select {
-  border-radius: 0;
   font-size: 1rem;
 }
 
@@ -72,4 +71,24 @@
   color: white;
   padding: 0.6rem 1.3rem;
   font-size: 12px;
+}
+
+
+/* resoponsiveness */
+@media (max-width: 576px) {
+  .col-12 {
+    margin-bottom: 5px;
+  }
+
+  .create-event-button {
+    padding: 5px 10px;
+    margin: 5px 0;
+    float: none;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  .event-button {
+    margin-top: 10px;
+  }
 }

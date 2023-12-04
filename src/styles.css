@@ -101,10 +101,10 @@ tr.ng-star-inserted {
   border: 0;
 }
 
-.base-content .base-content-section table tr th {
+/* .base-content .base-content-section table tr th {
   font-size: 13px;
   font-weight: 700;
-}
+} */
 
 .p-tabview-nav {
   font-size: 12px;
@@ -160,4 +160,5 @@ tr.ng-star-inserted {
 
   font-size: 7px;
 }
+
 
