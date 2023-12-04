@@ -1,0 +1,54 @@
+
+  <div class="row p-2">
+    <div class="col-xl-4 col-lg-4 col-sm-12">
+
+        <div class="container-fluid">
+            <div class="full-border">
+              <div class="d-flex justify-content-between">
+                  <div class="fw-medium text-black pb-2">Module(s)</div>
+              </div>
+              <div class="row">
+
+                <ng-container *ngFor="let item of ['Quotation','Underwriting','Medicals','Medicals','Reinsurance','Accounts','Proposal']; let i = index">
+                    <div > <div class="text-module fw-medium" (click)="selectModule(item)"> {{i+1}}. {{item | titlecase}}</div></div>
+
+                </ng-container>
+                    
+              </div>
+            </div>
+          </div>
+
+
+    </div>
+    <div class="col-xl-8 col-lg-8 col-sm-12">
+        <div class="container-fluid">
+            <div class="full-border">
+              <div class="d-flex justify-content-between">
+                  <div class="fw-medium text-black">{{'Quotation '}} Web Pages</div>
+              </div>
+              <div class="row pb-2">
+
+                <ng-container *ngFor="let item of ['Client data capture ','Underwriting','Medicals','Medicals','Reinsurance','Accounts','Proposal']; let i = index">
+                    <div > <div class="text-module fw-medium" (click)="selectPage(item)"> {{item | titlecase}}</div></div>
+
+                </ng-container>
+                    
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class=" col-xl-12 col-sm-12">
+        <div class="container-fluid">
+            <div class="full-border">
+              <div class="d-flex justify-content-between">
+                  <div class="fw-medium text-black">{{'Client Details '}} Form Setup(s)</div>
+              </div>
+              <div class="row">
+          
+              </div>
+            </div>
+          </div>
+    </div>
+
+  </div>
+  
