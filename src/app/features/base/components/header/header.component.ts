@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
@@ -19,6 +19,9 @@ const log = new Logger("HeaderComponent");
 export class HeaderComponent implements OnInit {
   defaultLanguage: string = 'fi fi-gb fis';
   user: any;
+
+  public showSideBar: boolean = false;
+  @Output('toggleSideNav') toggleSideNav: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private translate: TranslateService,
@@ -82,6 +85,11 @@ export class HeaderComponent implements OnInit {
 
   navigateAccount() {
     this.router.navigate(['/home/administration'], { relativeTo: this.route, queryParams: { showTabs: 'false' } })
+  }
+
+  toggleSideBar() {
+    this.showSideBar = !this.showSideBar;
+    this.toggleSideNav.emit(this.showSideBar);
   }
 
 

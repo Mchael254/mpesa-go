@@ -1,4 +1,13 @@
 
 
+@media (max-width: 576px) {
+    .hideSideNav {
+        margin-left: -230px;
+        transition: margin-left 1s;
+    }
 
-
+    .showSideNav {
+        margin-left: 1px;
+        transition: margin-left 1s;
+    }
+}

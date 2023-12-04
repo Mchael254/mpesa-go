@@ -1,9 +1,9 @@
 <div class="base">
-  <app-header></app-header>
+  <app-header (toggleSideNav)="toggleSideBar($event)"></app-header>
 
   <div class="base-container">
 
-    <div class="base-side-nav">
+    <div class="base-side-nav" [ngClass]="shouldShowSideBar ? 'showSideNav' : 'hideSideNav' ">
       <app-sidebar></app-sidebar>
     </div>
 
