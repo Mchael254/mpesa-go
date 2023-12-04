@@ -76,3 +76,20 @@
 .days li span.view-more:hover {
   text-decoration: underline;
 }
+
+
+/* resoponsiveness */
+@media (max-width: 576px) {
+  .calendar .days li {
+    padding: 10px 0;
+  }
+
+  .calendar .weeks li{
+    font-weight: bold;
+    padding: 0;
+  }
+
+  .calendar .days li {
+    font-size: 0.8rem;
+  }
+}

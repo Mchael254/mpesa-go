@@ -1,12 +1,12 @@
 <div class="base-content-section home">
   <h5 class="section-title">{{'lang.home' | translate}}</h5>
   <div class="row">
-      <div class="col-sm-4">
+      <div class="col-sm-4 col-12">
         <app-tickets-summary></app-tickets-summary>
       </div>
 
       <!--calendar-->
-      <div class="col-sm-8">
+      <div class="col-sm-8 col-12">
         <app-calendar></app-calendar>
       </div>
   </div>
@@ -15,7 +15,7 @@
 <div class="base-content-section dashboard">
   <h5 class="section-title" routerLink="/home/reportsv2/create-dashboard">{{'lang.my_dashbaord' | translate}}</h5>
   <div class="row">
-      <div class="col-sm-6">
+      <div class="col-sm-6 col-12">
         <div class="card">
           <div class="card-body">
             <app-dynamic-chart
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="col-sm-6">
+      <div class="col-sm-6 col-12">
         <div class="card">
           <div class="card-body">
             <app-dynamic-chart
@@ -136,7 +136,7 @@
     <!-- END QUOTATION LIST (LMS/GIS) -->
 
     <!-- BEGINS POLICY LIST (LMS/GIS) -->
-    <div class="col-sm-6">
+    <div class="col-sm-6" id="lms-gis-policy-list">
       <p class="transactions">{{'lang.my_quotations' | translate}}</p>
       <ul class="nav nav-tabs" id="myTabs2" role="tablist2">
         <li class="nav-item" role="presentation">
