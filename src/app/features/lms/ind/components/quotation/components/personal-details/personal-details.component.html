@@ -36,7 +36,7 @@
             >
               <option value="" disabled selected>Select Client Type</option>
 
-              <ng-container *ngFor="let clienType of clientTypeList">
+              <ng-container *ngFor="let clienType of clientTypeList; trackBy: trackByCode">
                 <option [value]="clienType['code']">
                   {{ clienType["clientTypeName"] | titlecase }}
                 </option>
@@ -70,7 +70,7 @@
             >
               <option value="" disabled selected>Select Citizenship</option>
 
-              <ng-container *ngFor="let country of countryList">
+              <ng-container *ngFor="let country of countryList; trackBy: trackById">
                 <option [value]="country?.id">
                   {{ country["nationality"] | titlecase }}
                 </option>
@@ -178,7 +178,7 @@
                 >
                   <option value="" disabled selected>Select Branch</option>
 
-                  <ng-container *ngFor="let branch of branchList">
+                  <ng-container *ngFor="let branch of branchList; trackBy: trackById">
                     <option [value]="branch?.id">
                       {{ branch["name"] | titlecase }}
                     </option>
@@ -194,7 +194,7 @@
                 >
                   <option value="" disabled selected>Select Title</option>
 
-                  <ng-container *ngFor="let title of clientTitleList$ | async">
+                  <ng-container *ngFor="let title of clientTitleList$ | async; trackBy: trackById">
                     <option [value]="title['id']">
                       {{ title["shortDescription"] | titlecase }}
                     </option>
@@ -212,7 +212,7 @@
                     Select Country Code
                   </option>
 
-                  <ng-container *ngFor="let country of countryList">
+                  <ng-container *ngFor="let country of countryList; trackBy: trackById">
                     <option
                       [value]="country['id']"
                       *ngIf="country['zipCode'] !== null"
@@ -311,7 +311,7 @@
                 >
                   <option value="" disabled selected>Select Country</option>
 
-                  <ng-container *ngFor="let country of countryList">
+                  <ng-container *ngFor="let country of countryList; trackBy: trackById">
                     <option [value]="country?.id">
                       {{ country["name"] | titlecase }}
                     </option>
@@ -335,7 +335,7 @@
                 >
                   <option value="" disabled selected>Select County</option>
 
-                  <ng-container *ngFor="let state of stateList">
+                  <ng-container *ngFor="let state of stateList; trackBy: trackById">
                     <option [value]="state['id']">
                       {{ state["name"] | titlecase }}
                     </option>
@@ -358,7 +358,7 @@
                 >
                   <option value="" disabled selected>Select Town</option>
 
-                  <ng-container *ngFor="let town of townList">
+                  <ng-container *ngFor="let town of townList; trackBy: trackById">
                     <option [value]="town['id']">
                       {{ town["name"] | titlecase }}
                     </option>
@@ -416,7 +416,7 @@
                 >
                   <option value="" disabled selected>Select County</option>
 
-                  <ng-container *ngFor="let state of stateList">
+                  <ng-container *ngFor="let state of stateList; trackBy: trackById">
                     <option [value]="state['id']">
                       {{ state["name"] | titlecase }}
                     </option>
@@ -433,7 +433,7 @@
                 >
                   <option value="" disabled selected>Select Town</option>
 
-                  <ng-container *ngFor="let town of townList">
+                  <ng-container *ngFor="let town of townList; trackBy: trackById">
                     <option [value]="town['id']">
                       {{ town["name"] | titlecase }}
                     </option>
@@ -522,7 +522,7 @@
                   [id]="'bank'"
                 >
                   <option value="" disabled selected>Select Bank</option>
-                  <ng-container *ngFor="let bank of bankList">
+                  <ng-container *ngFor="let bank of bankList; trackBy: trackById">
                     <option [value]="bank['id']">
                       {{ bank["name"] | titlecase }}
                     </option>
@@ -538,7 +538,7 @@
                   [id]="'branch'"
                 >
                   <option value="" disabled selected>Select Branch</option>
-                  <ng-container *ngFor="let bankBranch of bankBranchList">
+                  <ng-container *ngFor="let bankBranch of bankBranchList; trackBy: trackById">
                     <option [value]="bankBranch['id']">
                       {{ bankBranch["name"] | titlecase }}
                     </option>
@@ -564,7 +564,7 @@
                 >
                   <option value="" disabled selected>Select Currency</option>
 
-                  <ng-container *ngFor="let currency of currencyList">
+                  <ng-container *ngFor="let currency of currencyList; trackBy: trackById">
                     <option [value]="currency['id']">
                       {{ currency["name"] | titlecase }} ({{
                         currency["symbol"]
@@ -705,7 +705,7 @@
                 >
                   <option value="" disabled selected>Select Occupation</option>
 
-                  <ng-container *ngFor="let occupation of occupationList">
+                  <ng-container *ngFor="let occupation of occupationList; trackBy: trackById">
                     <option [value]="occupation['id']">
                       {{ occupation["name"] | titlecase }}
                     </option>
@@ -724,7 +724,7 @@
                     Select Economic Sector
                   </option>
 
-                  <ng-container *ngFor="let sector of sectorList">
+                  <ng-container *ngFor="let sector of sectorList; trackBy: trackById">
                     <option [value]="sector['id']">
                       {{ sector["name"] | titlecase }}
                     </option>
@@ -826,7 +826,7 @@
                 </tr>
               </thead>
               <tbody>
-                <ng-container *ngFor="let row of beneficiaryList; let i = index">
+                <ng-container *ngFor="let row of beneficiaryList; let i = index; trackBy: trackById">
                   <tr>
                     <td>{{ row?.beneficiary_info?.first_name }}</td>
                     <td>{{ row?.beneficiary_info?.other_name }}</td>
@@ -912,7 +912,7 @@
               (click)="getFileChange($event)"
             >
               <option value="" disabled selected>Select Item</option>
-              <ng-container *ngFor="let item of identifierTypeList">
+              <ng-container *ngFor="let item of identifierTypeList ">
                 <!-- <optgroup label="Upload List"> -->
                   <option [value]="item['name']">{{item['name'].replaceAll('_', ' ') | lowercase }}</option>
                 <!-- </optgroup> -->
@@ -1888,9 +1888,9 @@
                 <div>
                   <label class="required">Relationship</label>
                   <select formControlName="relation_code" class="form-select">
-                    <ng-container *ngFor="let product of relationTypeList">
-                      <option [value]="product['id']">
-                        {{ product?.description | lowercase }}
+                    <ng-container *ngFor="let relationType of relationTypeList; trackBy: trackById">
+                      <option [value]="relationType['id']">
+                        {{ relationType?.description | lowercase }}
                       </option>
                     </ng-container>
                   </select>

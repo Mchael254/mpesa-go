@@ -1,0 +1,13 @@
+.text-module {
+    color: gray;
+
+    padding: 0.5rem 0 !important;
+    font-size: 12px;
+
+}
+.text-module:hover {
+    color: black;
+
+    font-weight: 200;
+    cursor:pointer;
+}

@@ -32,10 +32,9 @@ import { ToastService } from '../../../../../../../shared/services/toast/toast.s
 import { PartyService } from '../../../../../service/party/party.service';
 import { RelationTypesService } from '../../../../../service/relation-types/relation-types.service';
 import { StringManipulation } from '../../../../../util/string_manipulation';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
+import { SESSION_KEY } from '../../../../../../lms/util/session_storage_enum';
+import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { AgentPostDTO } from 'src/app/features/entities/data/AgentDTO';
 
 @Component({
   selector: 'app-personal-details',
@@ -46,27 +45,10 @@ import { AgentPostDTO } from 'src/app/features/entities/data/AgentDTO';
 export class PersonalDetailsComponent {
   @ViewChild('NewQuoteModal') modalElement: ElementRef;
   steps = stepData;
-  personalDetailFormfields: any[];
-  buttonConfig: any;
   clientDetailsForm: FormGroup;
   uploadForm: FormGroup;
-  selectedUploadItem: string;
   clientTypeList: any[] = [];
-  breadCrumbItems: BreadCrumbItem[] = [
-    {
-      label: 'Home',
-      url: '/home/dashboard',
-    },
-    {
-      label: 'Quotation',
-      url: '/home/lms/quotation/list',
-    },
-    {
-      label: 'Client Details(Data Entry)',
-      url: '/home/lms/ind/quotation/client-details',
-    },
-  ];
-
+  breadCrumbItems: BreadCrumbItem[] = [ { label: 'Home', url: '/home/dashboard'}, { label: 'Quotation', url: '/home/lms/quotation/list'}, { label: 'Client Details(Data Entry)', url: '/home/lms/ind/quotation/client-details'} ];
   isTableOpen: boolean = false;
   countryList: CountryDto[] = [];
   branchList: OrganizationBranchDto[] = [];
@@ -84,9 +66,7 @@ export class PersonalDetailsComponent {
   _openModal: boolean = true;
   beneficiaryList: any[] = [];
   guardianList: any[] = [];
-  trusteeList$: Observable<any[]>;
   editEntity: boolean;
-  editEntityTwo: boolean;
   currencyList: any[];
   occupationList: OccupationDTO[] = [];
   sectorList: SectorDTO[] = [];
@@ -114,7 +94,6 @@ export class PersonalDetailsComponent {
     private spinner_Service: NgxSpinnerService,
     private lms_client_service: LMSClientService
   ) {}
-
   ngOnInit() {
     this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
     this.clientDetailsForm = this.getClientDetailsForm();
@@ -148,13 +127,11 @@ export class PersonalDetailsComponent {
       this.relationTypeList = data;
     });
   }
-
   getAllBeneficiaryTypes() {
     this.party_service.getAllBeneficiaryTypes().subscribe((data: any[]) => {
       this.beneficiaryTypeList = [...data];
     });
   }
-
   getBeneficiaryForm(): FormGroup<any> {
     return this.fb.group({
       code: [],
@@ -164,13 +141,11 @@ export class PersonalDetailsComponent {
       percentage_benefit: [''],
     });
   }
-
   getUploadForm(): FormGroup<any> {
     return this.fb.group({
       selectedUploadItem: [''],
     });
   }
-
   getClientDetailsForm(): FormGroup<any> {
     return this.fb.group({
       beneficiary: this.generateBeneficiaryForm(),
@@ -246,7 +221,7 @@ export class PersonalDetailsComponent {
   closeTable() {
     this.isTableOpen = false;
   }
-  saveButton(value) {
+  saveButton(value: any) {
     value['webClntType'] = 'I';
     value['webClntIdRegDoc'] = 'I';
     // console.log(value);
@@ -278,7 +253,7 @@ export class PersonalDetailsComponent {
       relation_code: [''],
     });
   }
-  selectCountry(_event) {
+  selectCountry(_event: any) {
     this.showStateSpinner = true;
     let e = +_event.target.value;
     of(e)
@@ -295,7 +270,7 @@ export class PersonalDetailsComponent {
         this.townList = [];
       });
   }
-  selectState(_event) {
+  selectState(_event: any) {
     this.showTownSpinner = true;
     let e = +_event.target.value;
     of(e)
@@ -391,7 +366,6 @@ export class PersonalDetailsComponent {
         this.beneficiaryList = data;
       });
   }
-
   getBankList() {
     this.bank_service.getBanks(1100).subscribe((data) => {
       this.bankList = data;
@@ -417,135 +391,6 @@ export class PersonalDetailsComponent {
       this.sectorList = data;
     });
   }
-
-  async nextPage() {
-    let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-    let formValue = this.clientDetailsForm.value;
-    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
-    const contactsDetails = {
-      emailAddress: StringManipulation.returnNullIfEmpty(formValue.emailAddress),
-      id: 0,
-      phoneNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
-      receivedDocuments: "N",
-      smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
-      titleShortDescription: StringManipulation.returnNullIfEmpty(formValue?.title)
-    }
-    let partyData = {
-      category: "C",
-      country: countryData,
-      country_id: StringManipulation.returnNullIfEmpty(formValue?.country),
-      date_of_birth: formValue?.date_of_birth,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
-      id: 0,
-      identity_number: formValue?.idNumber,
-      mode_of_identity_id: null,
-      name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
-      organization_id: 2,
-      party_type_id: 2,
-      pin_number: formValue?.pinNumber,
-      profile_image: null,
-      profile_picture: null,
-    }
-    let accountData: any = {
-      address: StringManipulation.returnNullIfEmpty(formValue?.p_address),
-      agent_request_dto: null,
-      contact_details: contactsDetails,
-      party_id: null,
-      party_type_short_desc: 'CLIENT',
-      created_by: null,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
-      mode_of_identity_id: null,
-      category: StringManipulation.returnNullIfEmpty(formValue?.clientType),
-      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-      gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
-      status: 'A',
-      dateCreated: new Date(),
-      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
-      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
-      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
-      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
-      date_of_birth: formValue?.date_of_birth,
-      organization_id: 2
-
-    }
-    let clientData = {...partyData, ...accountData}
-
-    console.log(clientData);
-    console.log(client_code);
-    this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
-        console.log(data);
-        this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-
-      })
-
-    // if(this.clientDetailsForm.valid){
-    // if(true){
-    //   let clientTitle: {} = {};
-    //   if (formValue['title'] !== '') {
-    //     clientTitle = await lastValueFrom(
-    //       this.clientTitleList$.pipe(
-    //         map((ou: any) =>
-    //           ou.filter((val) => val['id'] === +formValue['title'])
-    //         ),
-    //         filter((filteredValues) => filteredValues.length > 0)
-    //       )
-    //     )[0];
-    //   }
-    //   const categoryDetails = this.clientTypeList.filter(
-    //     (data) => data['code'] === +formValue['clientType']
-    //   )[0];
-
-    //   let client = {
-    //     // "accountId": 0,
-    //     branchCode: formValue['branch'],
-    //     category: categoryDetails['clientTypeName'].charAt(0),
-    //     clientTitle: clientTitle['description'],
-    //     clientTitleId: +formValue['title'],
-    //     clientTypeId: formValue['clientType'],
-    //     country: Number(formValue['country']),
-    //     // "createdBy": formValue["string"],
-    //     dateOfBirth: new Date(formValue['dateOfBirth']),
-    //     emailAddress: formValue['emailAddress'],
-    //     firstName: formValue['firstName'],
-    //     gender: formValue['gender'],
-    //     idNumber: formValue['idNumber'],
-    //     lastName: formValue['lastName'],
-    //     //   "modeOfIdentity": formValue["ALIEN_NUMBER"],
-    //     occupationId: formValue['occupation'],
-    //     //   "passportNumber": formValue["string"],
-    //     phoneNumber: formValue['phoneNumber'],
-    //     physicalAddress: formValue['p_address'],
-    //     pinNumber: formValue['pinNumber'],
-    //     //   "shortDescription": formValue["string"],
-    //     status: 'A',
-    //     withEffectFromDate: formValue['withEffectFromDate'],
-    //   };
-    //   // return;
-
-    //   if (client_code > 0) {
-    //     client['id'] = client_code;
-    //     this.client_service
-    //       .updateClient(client_code, client)
-    //       .subscribe((data) => {
-    //         console.log(data);
-    //         this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    //         this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //       });
-    //   } else {
-    //     client['id'] = 0;
-    //     this.client_service.createClient(client).subscribe((data) => {
-    //       console.log(data);
-    // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    // await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //     });
-    //   }
-    // }else{
-    //   this.toast.danger('Fill all required Form', 'INCOMPLETE DATA')
-    // }
-  }
-
   saveBeneficiary() {
     this.spinner_Service.show('beneficiary_modal_screen');
     this.isBeneficiaryLoading = true;
@@ -631,7 +476,6 @@ export class PersonalDetailsComponent {
       // });
     }
   }
-
   editBeneficiary(i: number) {
     this.showCategoryDetstModal();
     this.beneficiaryList = this.beneficiaryList.map((data, x) => {
@@ -653,7 +497,6 @@ export class PersonalDetailsComponent {
       return data;
     });
   }
-
   editGuardian(i: number) {
     this.guardianList = this.guardianList.map((data, x) => {
       if (i === x) {
@@ -671,21 +514,6 @@ export class PersonalDetailsComponent {
       return data;
     });
   }
-  private addEntity(d: any[]) {
-    this.editEntity = true;
-    d.push({ isEdit: true });
-    this.editEntity = false;
-    return d;
-  }
-  private deleteEntity(d: any[], i) {
-    this.editEntity = true;
-    d = d.filter((data, x) => {
-      return i !== x;
-    });
-    this.editEntity = false;
-    return d;
-  }
-
   cancelEntity(d: any[], i, isButton) {
     isButton = true;
 
@@ -699,40 +527,9 @@ export class PersonalDetailsComponent {
     this.editEntity = false;
     return d;
   }
-
-  // cancelBeneficiary(i) {
-  //   this.editEntity = true;
-  //   this.beneficiaryList = [
-  //     ...this.beneficiaryList.map((data, x) => {
-  //       if (x === i) {
-  //         data['isEdit'] = false;
-  //         return data;
-  //       }
-  //       return data;
-  //     }),
-  //   ];
-  //
-  //   if (this.beneficiaryList[i]['code'] === undefined) {
-  //     this.beneficiaryList = this.beneficiaryList.filter((data, x) => x !== i);
-  //   }
-  //   this.editEntity = false;
-  //   this.clientDetailsForm.get('beneficiary').reset();
-  //
-  //   return this.beneficiaryList;
-  // }
-
-  private returnLowerCase(data: any) {
-    let mapData = data.map((da) => {
-      da['name'] = da['name'].toLowerCase();
-      return da;
-    });
-    return mapData;
-  }
-
   getValueBeneficiaryValue(name: string = 'question1') {
     return this.beneficiaryForm.get(name).value;
   }
-
   checkIfGuardianIsNeeded() {
     let date_ = this.calculateAgeWithMonth(
       this.getValueBeneficiaryValue('beneficiary_info.date_of_birth')
@@ -740,30 +537,12 @@ export class PersonalDetailsComponent {
     let type = this.getValueBeneficiaryValue('type');
     return type === 'B' && date_ < 18;
   }
-
-  private calculateAgeWithMonth(dateOfBirth) {
-    const currentDate = new Date();
-    const birthDate = new Date(dateOfBirth);
-    let age = currentDate.getFullYear() - birthDate.getFullYear();
-    // Check if the birthdate has occurred this year already.
-    if (
-      currentDate.getMonth() < birthDate.getMonth() ||
-      (currentDate.getMonth() === birthDate.getMonth() &&
-        currentDate.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  }
-
-  getFileChange(event) {
+  getFileChange(event: any) {
     this.clientDetailsForm
       .get('selectedUploadItem')
       .setValue(event.target.value);
   }
-
-  uploadFile(event) {
+  uploadFile(event: any) {
     this.spinner_Service.show('download_view');
     let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
     let fileName = StringManipulation.returnNullIfEmpty(
@@ -793,8 +572,7 @@ export class PersonalDetailsComponent {
         });
     }
   }
-
-  deleteDocumentFileById(code:string, x){
+  deleteDocumentFileById(code:string, x: any){
     this.spinner_Service.show('download_view');
 
     this.dms_service.deleteDocumentById(code)
@@ -812,11 +590,9 @@ export class PersonalDetailsComponent {
     })
 
   }
-
-  isImage(name){
+  isImage(name: any){
     return ['jpeg', 'png', 'jpg'].includes(name)
   }
-
   getDocumentsByClientId() {
     this.spinner_Service.show('download_view');
     let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
@@ -832,7 +608,6 @@ export class PersonalDetailsComponent {
         this.documentList = data['content'];
       });
   }
-
   downloadBase64File(url: string) {
     this.spinner_Service.show('download_view');
     this.dms_service
@@ -846,7 +621,6 @@ export class PersonalDetailsComponent {
         this.spinner_Service.hide('download_view');
       });
   }
-
   closeModal() {
     this._openModal = true;
     const modal = document.getElementById('newClientModal');
@@ -855,7 +629,6 @@ export class PersonalDetailsComponent {
       modal.style.display = 'none';
     }
   }
-
   showCategoryDetstModal() {
     const modal = document.getElementById('categoryDetsModal');
     if (modal) {
@@ -863,17 +636,181 @@ export class PersonalDetailsComponent {
       modal.style.display = 'block';
     }
   }
-
   cancelBeneficiary(){
     this.beneficiaryForm.reset();
     this.closeCategoryDetstModal();
   }
-
   closeCategoryDetstModal() {
     const modal = document.getElementById('categoryDetsModal');
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+  }
+  trackByCode(index, item){ return item?.code; }
+  trackById(index, item){ return item?.id; }
+  async nextPage() {
+    let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
+    let formValue = this.clientDetailsForm.value;
+    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
+    const contactsDetails = {
+      emailAddress: StringManipulation.returnNullIfEmpty(formValue.emailAddress),
+      id: 0,
+      phoneNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
+      receivedDocuments: "N",
+      smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
+      titleShortDescription: StringManipulation.returnNullIfEmpty(formValue?.title)
+    }
+    let partyData = {
+      category: "C",
+      country: countryData,
+      country_id: StringManipulation.returnNullIfEmpty(formValue?.country),
+      date_of_birth: formValue?.date_of_birth,
+      effective_date_from: formValue?.with_effect_from,
+      effective_date_to: formValue?.with_effect_to,
+      id: 0,
+      identity_number: formValue?.idNumber,
+      mode_of_identity_id: null,
+      name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
+      organization_id: 2,
+      party_type_id: 2,
+      pin_number: formValue?.pinNumber,
+      profile_image: null,
+      profile_picture: null,
+    }
+    let accountData: any = {
+      address: null,
+      // StringManipulation.returnNullIfEmpty(formValue?.p_address),
+      agent_request_dto: null,
+      contact_details: contactsDetails,
+      party_id: null,
+      party_type_short_desc: 'CLIENT',
+      created_by: null,
+      effective_date_from: formValue?.with_effect_from,
+      effective_date_to: formValue?.with_effect_to,
+      mode_of_identity_id: null,
+      category: "C",
+      // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
+      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+      gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
+      status: 'A',
+      dateCreated: new Date(),
+      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
+      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
+      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
+      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
+      date_of_birth: formValue?.date_of_birth,
+      organization_id: 2
+
+    }
+    let clientData = {...partyData, ...accountData}
+
+    console.log(clientData);
+    console.log(client_code);
+    this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
+        console.log(data);
+        this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+      })
+
+    // if(this.clientDetailsForm.valid){
+    // if(true){
+    //   let clientTitle: {} = {};
+    //   if (formValue['title'] !== '') {
+    //     clientTitle = await lastValueFrom(
+    //       this.clientTitleList$.pipe(
+    //         map((ou: any) =>
+    //           ou.filter((val) => val['id'] === +formValue['title'])
+    //         ),
+    //         filter((filteredValues) => filteredValues.length > 0)
+    //       )
+    //     )[0];
+    //   }
+    //   const categoryDetails = this.clientTypeList.filter(
+    //     (data) => data['code'] === +formValue['clientType']
+    //   )[0];
+
+    //   let client = {
+    //     // "accountId": 0,
+    //     branchCode: formValue['branch'],
+    //     category: categoryDetails['clientTypeName'].charAt(0),
+    //     clientTitle: clientTitle['description'],
+    //     clientTitleId: +formValue['title'],
+    //     clientTypeId: formValue['clientType'],
+    //     country: Number(formValue['country']),
+    //     // "createdBy": formValue["string"],
+    //     dateOfBirth: new Date(formValue['dateOfBirth']),
+    //     emailAddress: formValue['emailAddress'],
+    //     firstName: formValue['firstName'],
+    //     gender: formValue['gender'],
+    //     idNumber: formValue['idNumber'],
+    //     lastName: formValue['lastName'],
+    //     //   "modeOfIdentity": formValue["ALIEN_NUMBER"],
+    //     occupationId: formValue['occupation'],
+    //     //   "passportNumber": formValue["string"],
+    //     phoneNumber: formValue['phoneNumber'],
+    //     physicalAddress: formValue['p_address'],
+    //     pinNumber: formValue['pinNumber'],
+    //     //   "shortDescription": formValue["string"],
+    //     status: 'A',
+    //     withEffectFromDate: formValue['withEffectFromDate'],
+    //   };
+    //   // return;
+
+    //   if (client_code > 0) {
+    //     client['id'] = client_code;
+    //     this.client_service
+    //       .updateClient(client_code, client)
+    //       .subscribe((data) => {
+    //         console.log(data);
+    //         this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
+    //         this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+    //       });
+    //   } else {
+    //     client['id'] = 0;
+    //     this.client_service.createClient(client).subscribe((data) => {
+    //       console.log(data);
+    // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
+    // await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+    //     });
+    //   }
+    // }else{
+    //   this.toast.danger('Fill all required Form', 'INCOMPLETE DATA')
+    // }
+  }
+  private addEntity(d: any[]) {
+    this.editEntity = true;
+    d.push({ isEdit: true });
+    this.editEntity = false;
+    return d;
+  }
+  private deleteEntity(d: any[], i: any) {
+    this.editEntity = true;
+    d = d.filter((data, x) => {
+      return i !== x;
+    });
+    this.editEntity = false;
+    return d;
+  }
+  private calculateAgeWithMonth(dateOfBirth: any) {
+    const currentDate = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    // Check if the birthdate has occurred this year already.
+    if (
+      currentDate.getMonth() < birthDate.getMonth() ||
+      (currentDate.getMonth() === birthDate.getMonth() &&
+        currentDate.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+  private returnLowerCase(data: any) {
+    let mapData = data.map((da) => {
+      da['name'] = da['name'].toLowerCase();
+      return da;
+    });
+    return mapData;
   }
 }
