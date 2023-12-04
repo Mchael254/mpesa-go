@@ -54,9 +54,7 @@ export class ApiService {
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
     // const options = { headers, params };
-    return this.http.get<T>(url, {headers}).pipe(
-      // tap(data => console.log(data))
-      );
+    return this.http.get<T>(url, {headers});
   }
 
   POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
@@ -82,6 +80,29 @@ export class ApiService {
       );
   }
 
+  public DOWNLOADFROMBASE64(base64String: string, fileName='file.pdf', fileType='application/pdf'): void {
+    const byteCharacters = atob(base64String);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type:  fileType});
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
@@ -101,18 +122,10 @@ export class ApiService {
     return this.http.put<T>(url, data, { headers });
   }
 
-  // DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
-  //   this.baseURL = environment.API_URLS.get(BASE_SERVICE);
-  //   const url = `${this.baseURL}/${endpoint}`;
-  //   const headers = this.getHeaders();
-
-  //   return this.http.delete<T>(url, { headers });
-  // }
   DELETE<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, data?: any): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-
     return this.http.delete<T>(url, { headers, body: data });
   }
 
