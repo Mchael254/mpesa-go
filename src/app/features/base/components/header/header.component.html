@@ -1,7 +1,14 @@
 <nav class="navbar navbar-dark bg-primary base-navbar">
   <div class="container-fluid">
       <a class="navbar-brand fadeInDown" routerLink="./dashboard">
-          <button class="navbar-toggler" type="button" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button 
+            class="navbar-toggler" 
+            type="button" 
+            aria-controls="navbarToggleExternalContent" 
+            aria-expanded="false" 
+            aria-label="Toggle navigation"
+            (click)="toggleSideBar()"
+          >
               <span class="navbar-toggler-icon"></span>
           </button>
           <span class="brand-name" style="font-size: 13px; font-weight: 900;">TURNQUEST</span>
