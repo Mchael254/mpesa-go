@@ -44,6 +44,22 @@
                   <div class="fw-medium text-black">{{'Client Details '}} Form Setup(s)</div>
               </div>
               <div class="row">
+
+
+                <div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th *ngFor="let header of headers">{{ header }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let row of rows">
+                        <td *ngFor="let cell of row">{{ cell }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
           
               </div>
             </div>
