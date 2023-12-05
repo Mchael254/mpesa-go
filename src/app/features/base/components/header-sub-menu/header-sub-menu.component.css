@@ -105,3 +105,20 @@
 .modal {
   z-index: 999999 !important;
 }
+
+.base-content .content-nav #mobile-nav {
+  display: none;
+}
+
+
+/* responsiveness */
+@media (max-width: 576px) {
+  .base-content .content-nav #desktop-nav {
+    display: none;
+  }
+
+  .base-content .content-nav #mobile-nav {
+    display: block;
+    font-size: 0.8rem;
+  }
+}
