@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDTO';
 import {Pagination} from '../../../../shared/data/common/pagination'
 import {AppConfigService} from "../../../../core/config/app-config-service";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'

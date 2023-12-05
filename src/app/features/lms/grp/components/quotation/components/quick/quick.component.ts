@@ -130,7 +130,9 @@ export class QuickComponent implements OnInit, OnDestroy {
       if(clientTyped.length > 0) {
         this.client_service.searchClients(0, 5, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
           this.clientList = data.content.map(client =>({
-            label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}-${client.id}`),
+            // label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}-${client.id}`),
+            label: this.capitalizeFirstLetterOfEachWord(
+              `${client.firstName} ${client.lastName ? client.lastName : ''}-${client.id}`),
             value: client.id
           }));
         })
@@ -145,7 +147,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
       console.log("clients", data)
       this.clientList = data.content.map(client => ({
-        label: `${client.firstName} ${client.lastName}`,
+        label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
         value: client.id
       }));
     });
@@ -154,6 +156,11 @@ export class QuickComponent implements OnInit, OnDestroy {
   searchAgent() {
     this.quickForm.get('intermediary').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
     .subscribe((agentTyped) => {
+        const agentBranchId = agentTyped.branchId;
+        const matchingBranch = this.branch.find(branch => branch.id === agentBranchId);
+        if (matchingBranch) {
+          this.quickForm.get('branch').setValue(matchingBranch);
+        }
         if(agentTyped.length > 0) {
         this.intermediaryService.searchAgent(0, 5, agentTyped).subscribe((data) => {
           this.intermediaries = data.content
@@ -168,7 +175,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.intermediaryService.getAgents().subscribe((data) => {
       this.intermediaries = data.content
       const agentBranchIds = this.intermediaries.map((agentIds) => agentIds.branchId)
-      console.log("AgentsBranchId", agentBranchIds)
+      console.log("AgentsBranchId", agentBranchIds, this.intermediaries)
     })
   }
 
@@ -258,7 +265,7 @@ export class QuickComponent implements OnInit, OnDestroy {
         "frequency_of_payment": formData.frequencyOfPayment.value,
         "unit_rate": formData.unitRateOption.value,
         "agent_code": formData.intermediary.id,
-        // "branch_code": formData.branch.id,
+        "branch_code": formData.branch.id,
         "currency_code": formData.currency.value,
         "commission_rate": formData.commissionRate,
         "product_type": formData.products.type,
