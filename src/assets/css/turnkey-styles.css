@@ -688,6 +688,10 @@ p-table tr > th {
     padding: 2rem;
   }
 
+  .base-side-nav {
+    margin-left: -230px;
+  }
+
   .base-content-section .col-12 {
     margin-bottom: 15px;
   }
@@ -710,7 +714,7 @@ p-table tr > th {
   }
 
   #lms-gis-policy-list {
-    margin-bottom: 20px;
+    margin-bottom: 200px;
   }
   
 }
