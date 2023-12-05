@@ -84,6 +84,13 @@ const routes: Routes = [
             (m) => m.MedicalsModule
           ),
       },
+      {
+        path: 'policy',
+        loadChildren: () =>
+          import('./grp/components/policy/policy.module').then(
+            (m) => m.PolicyModule
+          ),
+      },
     ],
   },
 ];
