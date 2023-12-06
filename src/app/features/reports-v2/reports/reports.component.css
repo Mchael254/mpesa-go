@@ -75,3 +75,26 @@ li {
     color: #00529B;
     text-decoration: underline;
 }
+
+
+/* responsive */
+@media (max-width: 576px) {
+    .fixed-height-card {
+        height: fit-content;
+        overflow: none;
+    }
+
+    .card-btn {
+        text-align: right;
+    }
+
+    .card-image img {
+        max-width: 120px;
+    }
+
+    .head-top, .head-bottom {
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #000;
+    }
+}

@@ -1,8 +1,167 @@
 <div class="base-content-section dashboard">
+    <div class="row">
+        <div class="col-sm-6 col-12 mb-3">
+            <div class="card fixed-height-card">
+                <div class="card-header bg-transparent">
+                    <span class="float-start mt-3 head-top">Reports
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 col-4 card-image">
+                            <img src="assets/images/report-files.png" alt="reports">
+                        </div>
+                        <div class="col-md-8 col-8 float-start d-flex flex-column">
+                            <p class="testimony-txt">
+                                Explore key performance metrics and trends to make informed decisions and optimize your
+                                data-driven
+                                strategy.
+                            </p>
+                            <div class="mt-auto card-btn">
+                                <button type="button" id="create-report-btn"
+                                    class="btn btn-outline-primary mt-auto align-self-end" (click)="createReports()">
+                                    Explore Reports
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-12 mb-3">
+            <div class="card fixed-height-card">
+                <div class="card-header bg-transparent">
+                    <span class="float-start mt-3 head-top">Dashboards
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 col-4 card-image">
+                            <img src="assets/images/dashboard-pie.png" alt="dashboard-reports">
+                        </div>
+                        <div class="col-md-8 col-8 d-flex flex-column">
+                            <p class="testimony-txt">
+                                Discover insights and make data-driven decisions effortlessly with our interactive
+                                dashboard.
+                            </p>
+                            <div class="mt-auto card-btn">
+                                <button type="button" class="btn btn-outline-primary" (click)="createDashboards()">
+                                    Explore Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-12 mb-3">
+            <div class="card fixed-height-card">
+                <div class="card-header bg-transparent">
+                    <span class="float-start mt-3 head-bottom">A glance into reports</span>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'myReports'}"
+                        (click)="myReports()">
+                        My Reports
+                    </button>
+                    <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'sharedReports'}"
+                        (click)="sharedReports()">
+                        Shared Reports
+                    </button>
+    
+                    <div class="tab-content mt-3 mb-3">
+                        <div *ngIf="activeTab === 'myReports'">
+                            <div class="row">
+                                <div class="col-md-3 col-4">
+                                    <h5>ID</h5>
+                                    <ul>
+                                        <li *ngFor="let item of myReportsList">{{ item.id }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-9 col-8">
+                                    <h5>Name</h5>
+                                    <ul>
+                                        <li *ngFor="let item of myReportsList">{{ item.name }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="activeTab === 'sharedReports'">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <h5>ID</h5>
+                                    <ul>
+                                        <li *ngFor="let item of anotherTabList">{{ item.id }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5>Name</h5>
+                                    <ul>
+                                        <li *ngFor="let item of anotherTabList">{{ item.name }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
+                        (click)="viewReports()">
+                        View All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-12 mb-3">
+            <div class="card fixed-height-card">
+                <div class="card-header bg-transparent">
+                    <span class="float-start mt-3 head-bottom">A glance into dashboards</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header bg-transparent head-sm">Finance</div>
+                                <div class="card-body">
+                                    <img src="assets/images/finance.png" alt="dashboard-reports">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header bg-transparent head-sm">Operations</div>
+                                <div class="card-body">
+                                    <img src="assets/images/operations.png" alt="dashboard-reports">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header bg-transparent head-sm">Other</div>
+                                <div class="card-body">
+                                    <img src="assets/images/other.png" alt="dashboard-reports">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
+                        (click)="viewReports()">
+                        View All
+                    </button>
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+
+<!-- <div class="base-content-section dashboard">
     <div class="card">
         <div class="card-body">
             <div class="row my-3 mx-3">
-                <div class="col-6 mb-3">
+                <div class="col-sm-6 col-12 mb-3">
                     <div class="card fixed-height-card">
                         <div class="card-header bg-transparent">
                             <span class="float-start mt-3 head-top">Reports
@@ -31,7 +190,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-3">
+                <div class="col-sm-6 col-12 mb-3">
                     <div class="card fixed-height-card">
                         <div class="card-header bg-transparent">
                             <span class="float-start mt-3 head-top">Dashboards
@@ -58,7 +217,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-3">
+                <div class="col-sm-6 col-12 mb-3">
                     <div class="card fixed-height-card">
                         <div class="card-header bg-transparent">
                             <span class="float-start mt-3 head-bottom">A glance into reports</span>
@@ -114,7 +273,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-3">
+                <div class="col-sm-6 col-12 mb-3">
                     <div class="card fixed-height-card">
                         <div class="card-header bg-transparent">
                             <span class="float-start mt-3 head-bottom">A glance into dashboards</span>
@@ -156,4 +315,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+
+<!-- applies bottom spacing on mobile devices -->
+<div class="mobile-bottom"></div>

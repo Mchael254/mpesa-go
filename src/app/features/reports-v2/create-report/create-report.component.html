@@ -129,14 +129,7 @@
 
           </div>
 
-          <div class="text-center">
-            <button
-              (click)="viewPreview()"
-              class="btn btn-primary mt-3 continueBtn"
-            >
-              Continue
-            </button>
-          </div>
+          
 
 
         </div>
@@ -152,19 +145,19 @@
             >
           </div>
 
-          <!--<ng-container *ngIf="isCriteriaButtonActive">
-            <div class="row" style="padding: 0 2rem 2rem 1rem">
-              <ng-container *ngFor="let criteriaItem of criteria">
-                <div class="col-sm-4 fadeInDown">
-                  <app-criteria-pill
-                    [queryObject]="criteriaItem"
-                    (deleteCriteriaDetails)="deleteCriteria($event)"
-                  ></app-criteria-pill>
-                </div>
-              </ng-container>
-            </div>
-          </ng-container>
-        </div>-->
+            <!--<ng-container *ngIf="isCriteriaButtonActive">
+              <div class="row" style="padding: 0 2rem 2rem 1rem">
+                <ng-container *ngFor="let criteriaItem of criteria">
+                  <div class="col-sm-4 fadeInDown">
+                    <app-criteria-pill
+                      [queryObject]="criteriaItem"
+                      (deleteCriteriaDetails)="deleteCriteria($event)"
+                    ></app-criteria-pill>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>-->
 
           <ng-container *ngIf="isCriteriaButtonActive">
             <app-criteria
@@ -175,6 +168,17 @@
             ></app-criteria>
           </ng-container>
 
+      </div>
+
+      <div class="col-sm-3">
+        <div class="text-center">
+          <button
+            (click)="viewPreview()"
+            class="btn btn-primary mt-3 continueBtn"
+          >
+            Continue
+          </button>
+        </div>
       </div>
 
       </div>
