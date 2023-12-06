@@ -1,7 +1,91 @@
 <div class="content-nav">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mobile-nav">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <span class="d-none">Navbar</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <li class="nav-item">
+            <a 
+              class="nav-link active" 
+              aria-current="page" href="javascript:void(0)"
+              (click)="dynamicSideBarMenu(defaultSidebar)"
+            >
+              {{ "lang.dashboard" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a 
+              class="nav-link" href="javascript:void(0)"
+              (click)="dynamicSideBarMenu(accountSubMenuList[0]);navLink('/home/entity/list')"
+            >
+              {{ "lang.accounts" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:void(0)"
+              (click)="dynamicSideBarMenu(quotationSubMenuList[0]);navLink('/home/lms/quotation/list')"
+            >
+              {{ "lang.quotation" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">
+              {{ "lang.policy" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">
+              {{ "lang.tickets" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">
+              {{ "lang.team" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">
+              {{ "lang.administration" | translate | uppercase }}
+            </a>
+          </li>
+        </ul>
+
+        <div class="d-flex" id="chart">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2/create-report"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[0])"
+                ><i
+                  class="fa-solid fa-chart-simple"
+                  style="padding-right: 6px"
+                ></i
+                >{{ "lang.new_report" | translate | uppercase }}</a
+              >
+            </li>
+            <li class="nav-item" style="font-size: 15px">
+              <a class="nav-link" routerLink="./reportsv2"
+                 (click)="dynamicSideBarMenu(analyticsSubMenuList[2])"
+                ><i class="fa-solid fa-chart-pie" style="padding-right: 6px"></i
+                >{{ "lang.analytics" | translate | uppercase }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<div class="content-nav">
   <nav
     class="navbar navbar-expand-lg bg-body-tertiary fadeIn"
     style="border-bottom: 1px solid #00539b14"
+    id="desktop-nav"
   >
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
