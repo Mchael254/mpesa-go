@@ -48,6 +48,10 @@ const routes: Routes = [
       path: 'administration',
       loadChildren: () => import('../administration/administration.module').then(m => m.AdministrationModule)
     },
+    {
+      path: 'setups',
+      loadChildren: () => import('../setups/setups.module').then(m => m.SetupsModule)
+    },
   ],
 }];
 

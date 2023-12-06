@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 import { map } from 'rxjs/internal/operators/map';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
@@ -9,21 +11,45 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 })
 export class ProductService {
 
+  getListOfOrdProduct = toSignal(this.getListOfProduct());
+  getListOfGroupProduct = toSignal(this.getListOfProduct('G'));
 
   constructor(private api:ApiService) {   }
 
-  getListOfGroupProduct(){
-    return this.api.GET('products?page=0&size=22&class_type=G')
+  getProductByCode(code: number){
+    return this.api.GET(`products/${code}`)
     .pipe(
       map((_prod: any) => {
-        return _prod['content'];
+        return _prod;
     }),
     // catchError((_err) =>  {})
     );
   }
 
-  getListOfProduct(){
-    return this.api.GET('products?page=0&size=22&class_type=O')
+  // getListOfGroupProduct(){
+  //   return this.api.GET(`products?page=0&size=22&class_type=G`)
+  //   .pipe(
+  //     map((_prod: any) => {
+  //       return _prod['content'];
+  //   }),
+  //   // catchError((_err) =>  {})
+  //   );
+  // }
+
+
+
+  // getListOfOrdProduct(){
+  //   return this.api.GET(`products?page=0&size=22&class_type=O`)
+  //   .pipe(
+  //     map((_prod: any) => {
+  //       return _prod['content'];
+  //   }),
+  //   // catchError((_err) =>  {})
+  //   );
+  // }
+
+  getListOfProduct(type='O'){
+    return this.api.GET(`products?page=0&size=22&class_type=${type}`)
     .pipe(
       map((_prod: any) => {
         return _prod['content'];
@@ -70,3 +96,4 @@ export class ProductService {
 
 
 }
+

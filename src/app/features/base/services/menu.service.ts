@@ -281,7 +281,26 @@ export class MenuService{
       ],
 
       collapsed:true,
-    }],}
+    }],
+    "SCREEN_SETUP":[
+      {
+        name: 'Actions',
+        nameSlug: 'actions',
+        icon: 'fa-solid fa-gears',
+        menuItems: [
+          {
+            name: 'Create Report',
+            link: "/home/reportsv2/create-report"
+          },
+          {
+            name: 'Create Dashboard',
+            link: "/home/reportsv2/create-dashboard"
+          },
+        ],
+
+        collapsed:true,
+      },
+      ],}
 
 public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
     {
@@ -323,6 +342,12 @@ administationSubMenuList() : SidebarMenu[]{
       name:"GIS Setup",
       link:"",
       value: "GIS_SETUP",
+      isActive: true
+    },
+    {
+      name:"Screen Setup",
+      link:"/home/setups/system",
+      value: "SCREEN_SETUP",
       isActive: true
     }
   ];

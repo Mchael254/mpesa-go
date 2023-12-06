@@ -6,16 +6,16 @@
     </div>
     <div class="d-flex justify-content-between text-black pt-4">
       <div class="d-flex">
-        <div>Filter By</div>
+        <!-- <div>Filter By</div>
         <div>b</div>
         <div>c</div>
-        <div>d</div>
+        <div>d</div> -->
 
       </div>
-      <div>2</div>
+      <!-- <div>2</div> -->
     </div>
     <div class="pt-2">
-      <ng-container>
+      <ng-container *ngIf="quotationListInd?.rows.length>0; else nolength ">
         <p-table
           #dt1
           [lazy]="true"
@@ -93,6 +93,13 @@
           </ng-template>
         </p-table>
       </ng-container>
+
+      <ng-template #nolength >
+        <div class="text-danger fw-medium">
+          No Policy Data Available!
+        </div>
+      </ng-template>
+
     </div>
 
   </div>

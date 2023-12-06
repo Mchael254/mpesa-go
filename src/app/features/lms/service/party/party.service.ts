@@ -36,7 +36,4 @@ export class PartyService {
     // return of(code)
     return this.api.DELETE(`parties/beneficiaries/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
-
-
-
 }
