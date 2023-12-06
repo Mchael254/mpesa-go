@@ -1,3 +1,4 @@
+<!-- mobile nav -->
 <div class="content-nav">
   <nav class="navbar navbar-expand-lg bg-body-tertiary" id="mobile-nav">
     <div class="container-fluid">
@@ -8,50 +9,106 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <li class="nav-item">
+        <ul class="navbar-nav">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a 
               class="nav-link active" 
               aria-current="page" href="javascript:void(0)"
               (click)="dynamicSideBarMenu(defaultSidebar)"
             >
+            <i
+              class="fa-solid fa-house-chimney"
+              style="padding-right: 6px"
+            ></i>
               {{ "lang.dashboard" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a 
               class="nav-link" href="javascript:void(0)"
               (click)="dynamicSideBarMenu(accountSubMenuList[0]);navLink('/home/entity/list')"
             >
+            <i
+              class="fa-solid fa-file-invoice-dollar"
+              style="padding-right: 6px"
+            ></i>
               {{ "lang.accounts" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link" href="javascript:void(0)"
               (click)="dynamicSideBarMenu(quotationSubMenuList[0]);navLink('/home/lms/quotation/list')"
             >
+            <i
+              class="fa-solid fa-quote-right"
+              style="padding-right: 6px"
+            ></i>
               {{ "lang.quotation" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link">
+              <i
+                class="fa-solid fa-building-shield"
+                style="padding-right: 6px"
+              ></i>
               {{ "lang.policy" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link">
+              <i
+                class="fa-solid fa-handshake-angle"
+                style="padding-right: 6px"
+              ></i>
               {{ "lang.tickets" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link">
+              <i
+                class="fa-solid fa-people-group"
+                style="padding-right: 6px"
+              ></i>
               {{ "lang.team" | translate | uppercase }}
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link">
+              <i
+                class="fa-solid fa-toolbox"
+                style="padding-right: 6px"
+              ></i>
               {{ "lang.administration" | translate | uppercase }}
             </a>
+          </li> -->
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="font-size: 12px"
+            >
+              <i
+                class="fa-solid fa-toolbox"
+                style="padding-right: 6px; font-size: 16px"
+              ></i
+              >{{ "lang.administration" | translate | uppercase }}
+            </a>
+            <ul class="dropdown-menu" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <ng-container *ngFor="let admin of administationSubMenuList">
+                <li *ngIf="admin?.isActive">
+                  <a
+                    class="dropdown-item"
+                    (click)="dynamicSideBarMenu(admin)"
+                    >{{ admin["name"] }}</a
+                  >
+                </li>
+              </ng-container>
+            </ul>
           </li>
         </ul>
 
@@ -81,6 +138,7 @@
   </nav>
 </div>
 
+<!-- desktop nav -->
 <div class="content-nav">
   <nav
     class="navbar navbar-expand-lg bg-body-tertiary fadeIn"
