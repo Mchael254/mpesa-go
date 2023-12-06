@@ -654,6 +654,10 @@ p-table tr > th {
   margin-bottom: 1rem;
 }
 
+.mobile-bottom {
+  display: none;
+}
+
 
 
 /* responsive design */
@@ -677,7 +681,7 @@ p-table tr > th {
 @media (max-width: 576px) {
   .base-content {
     width: 100%;
-}
+  }
 
   .auth-container .right {
     display: none;
@@ -715,6 +719,11 @@ p-table tr > th {
 
   #lms-gis-policy-list {
     margin-bottom: 200px;
+  }
+
+  .mobile-bottom {
+    display: block;
+    margin-top: 250px;
   }
   
 }
