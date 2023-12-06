@@ -114,21 +114,61 @@ export class MenuService{
     icon: 'fa-solid fa-suitcase',
 
   },],
-    "CRM_SETUP":[{
-    name: 'CRM',
-    nameSlug: 'crm',
-    icon: 'fa-solid fa-keyboard',
+  "CRM_SETUP": [
+    {
+      name: 'Organization Setups',
+      nameSlug: 'org',
+      icon: 'fa-solid fa-keyboard',
       menuItems: [
-        { name: 'My Tasks', link: "" },
-        { name: 'My Dashboard', link: "" },
-        { name: 'My Transactions', link: "" },
-        { name: 'My Policies', link: "" },
-        { name: 'My Quotations', link: "" },
-        { name: 'My Renewals', link: "" }
+        {
+          name: 'Organization',
+          link: "/home/crm/organization"
+        },
+        {
+          name: 'Countries',
+          link: "/home/crm/country"
+        },
+        {
+          name: 'Org Parameters',
+          link: "/home/crm/user-parameters"
+        },
+        {
+          name: 'Hierarchy',
+          link: ""
+        },
+        {
+          name: 'Post Levels',
+          link: ""
+        },
+        {
+          name: 'Division',
+          link: ""
+        }
       ],
-
-    collapsed:true,
-  }],
+      collapsed:true,
+    },
+    {
+      name: 'Service Desk',
+      nameSlug: 'desk',
+      icon: 'fa-solid fa-gears',
+      menuItems: [],
+      collapsed:true,
+    },
+    {
+      name: 'Campaign Management',
+      nameSlug: 'campaign',
+      icon: 'fa-solid fa-align-center',
+      menuItems: [],
+      collapsed:true,
+    },
+    {
+      name: 'Portal Setups',
+      nameSlug: 'portal',
+      icon: 'fa-solid fa-magnifying-glass-chart',
+      menuItems: [],
+      collapsed:true,
+    },
+  ],
     "GIS_SETUP":[
     {
     name: 'Actions',
@@ -334,7 +374,7 @@ administationSubMenuList() : SidebarMenu[]{
     },
     {
       name:"CRM Setup",
-      link:"",
+      link:"/home/crm",
       value: "CRM_SETUP",
       isActive: true
     },
