@@ -1,0 +1,49 @@
+.main {}
+
+.container {
+    width: 1216px;
+    min-height: 288px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    background: #FFF;
+}
+
+.policy-button {
+    display: inline-flex;
+    height: 40px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #00529B;
+    float: right;
+}
+
+.text {
+    color: #FFF;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.policy-button-container {
+    padding-right: 38px;
+    padding-top: 8px;
+}
+
+.quote-text {
+    color: #000;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
