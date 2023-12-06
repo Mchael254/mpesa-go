@@ -11,7 +11,7 @@
             class="fa-solid fa-house"
             style="font-size: 15px; padding-right: 9px"
           ></i>
-          {{'lang.home' | translate}}
+          {{ "lang.home" | translate }}
         </span>
       </button>
     </li>
@@ -29,7 +29,7 @@
               class="{{ item.icon }}"
               style="font-size: 15px; padding-right: 9px"
             ></i>
-            {{ item.name | translate}}
+            {{ item.name | translate }}
           </span>
         </button>
         <div class="collapse sub-title" [id]="item.nameSlug">
@@ -37,23 +37,35 @@
             *ngIf="item.menuItems?.length > 0"
             class="btn-toggle-nav list-unstyled pb-1"
           >
-          <li *ngFor="let menuItem of item.menuItems">
-            <a *ngIf="!menuItem?.isModal"
+            <li *ngFor="let menuItem of item.menuItems">
+              <a
+                *ngIf="!menuItem?.isModal"
+                (click)="clickURL(menuItem.link)"
+                class="link-dark rounded"
+                style="font-size: 12px"
+                >{{ menuItem.name | translate }}
+
+                <!-- <div class="collapse sub-title" >
+                  <ul class="btn-toggle-nav list-unstyled pb-1">
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                  </ul>
+                </div> -->
+                </a>
+              
+
+            </li>
+            <li *ngFor="let menuItem of item.menuItems" >
+              <a
+              *ngIf="menuItem.isModal"
+              data-bs-toggle="modal"
+              [attr.data-bs-target]="menuItem.target"
               (click)="clickURL(menuItem.link)"
               class="link-dark rounded"
               style="font-size: 12px"
               >{{ menuItem.name | translate }}</a
             >
-          </li>
-            <li *ngFor="let menuItem of item.menuItems">
-              <a *ngIf="menuItem.isModal"
-                data-bs-toggle="modal"
-              [attr.data-bs-target]="menuItem.target"
-                (click)="clickURL(menuItem.link)"
-                class="link-dark rounded"
-                style="font-size: 12px"
-                >{{ menuItem.name | translate }}</a
-              >
             </li>
           </ul>
         </div>

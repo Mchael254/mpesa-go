@@ -43,7 +43,8 @@
               "src/styles.css",
               "src/assets/css/lms-base.scss",
               "src/assets/css/gis-base.scss",
-              "src/assets/css/report-base.scss"
+              "src/assets/css/report-base.scss",
+              "src/assets/css/setups-base.scss"
             ],
             "scripts": [
               "./node_modules/@popperjs/core/dist/umd/popper.min.js",
@@ -128,7 +129,8 @@
               "src/styles.css",
               "src/assets/css/lms-base.scss",
               "src/assets/css/gis-base.scss",
-              "src/assets/css/report-base.scss"
+              "src/assets/css/report-base.scss",
+              "src/assets/css/setups-base.scss"
             ],
             "scripts": []
           }

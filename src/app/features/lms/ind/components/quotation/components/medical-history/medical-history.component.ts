@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
@@ -6,6 +6,8 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 
 @Component({
@@ -14,7 +16,7 @@ import { SessionStorageService } from 'src/app/shared/services/session-storage/s
   styleUrls: ['./medical-history.component.css']
 })
 @AutoUnsubscribe
-export class MedicalHistoryComponent implements OnDestroy {
+export class MedicalHistoryComponent implements OnDestroy, OnInit {
 
   steps = stepData
   personalDetailFormfields: any[];
@@ -43,7 +45,11 @@ export class MedicalHistoryComponent implements OnDestroy {
   medicalHistoryForm: FormGroup;
   clonedProducts: any;
   products: any;
-  constructor(private fb: FormBuilder,  private lifestyle_service: LifestyleService, private session_service: SessionStorageService){
+  constructor(private fb: FormBuilder,  
+    private lifestyle_service: LifestyleService, 
+    private session_service: SessionStorageService,
+    private spinner_service: NgxSpinnerService,
+    ){
     this.medicalHistoryForm = this.fb.group({
       question1: ['N'],
       question2: ['N'],
@@ -51,6 +57,8 @@ export class MedicalHistoryComponent implements OnDestroy {
       question4: ['N'],
     });
 
+  }
+  ngOnInit(): void {
     this.getMedicalHistoryByClientId();
   }
 
@@ -59,12 +67,19 @@ export class MedicalHistoryComponent implements OnDestroy {
   }
 
   getMedicalHistoryByClientId(){
+    this.spinner_service.show('medical_history_screen')
     let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
     this.lifestyle_service.getClientMedicalHistoryById(client_code)
+    .pipe(finalize(() => this.spinner_service.hide('medical_history_screen')
+    ))
     .subscribe(data => {
-
       console.log(data);
+      this.spinner_service.hide('medical_history_screen')
 
+
+    },
+    err => {
+      this.spinner_service.hide('medical_history_screen')
     })
   }
 

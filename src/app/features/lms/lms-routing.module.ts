@@ -77,6 +77,20 @@ const routes: Routes = [
             (m) => m.NeedAnalysisModule
           ),
       },
+      {
+        path: 'medicals',
+        loadChildren: () =>
+          import('./ind/components/medicals/medicals.module').then(
+            (m) => m.MedicalsModule
+          ),
+      },
+      {
+        path: 'policy',
+        loadChildren: () =>
+          import('./grp/components/policy/policy.module').then(
+            (m) => m.PolicyModule
+          ),
+      },
     ],
   },
 ];

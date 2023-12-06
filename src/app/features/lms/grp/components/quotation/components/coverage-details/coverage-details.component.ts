@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { CoverageService } from '../../../../service/coverage/coverage.service';
 import { CategoryDetailsDto } from '../../../../models/categoryDetails';
@@ -10,7 +9,7 @@ import { MembersDTO } from '../../../../models/members';
 import { formatDate } from '@angular/common';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {MessageService} from "primeng/api";
+import { MessageService } from "primeng/api";
 
 
 @AutoUnsubscribe
@@ -241,7 +240,7 @@ memberDetsForm() {
     if (coverTypes) {
       this.coverTypeUniqueCode = coverTypes.cover_type_unique_code;
       this.coverTypeCodeToEdit = coverTypes.cover_type_code;
-     console.log("patched", coverTypes, this.coverTypeUniqueCode, this.coverTypeCodeToEdit)
+     console.log("patched", this.productCode, this.coverTypeUniqueCode, this.coverTypeCodeToEdit, this.selectedPmasCode)
      console.log("Before patchValue:", this.detailedCovDetsForm.value);
       this.detailedCovDetsForm.patchValue({
       detailedCoverType: coverTypes.cvt_desc.toLowerCase(),
@@ -275,9 +274,9 @@ memberDetsForm() {
     if (coverTypes) {
       this.coverTypeUniqueCode = coverTypes.cover_type_unique_code
       this.coverTypeCodeToEdit = coverTypes.cover_type_code;
-      this.selectedPmasCode = coverTypes.premium_mask_code;
+      // this.selectedPmasCode = coverTypes.premium_mask_code;
       console.log("this.selectedPmasCodeToEdit", this.selectedPmasCode)
-      console.log("this.coverTypeCodeToEdit", this.coverTypeCodeToEdit, coverTypes.cover_type_unique_code)
+      console.log("this.coverTypeCodeToEdit", this.coverTypeCodeToEdit, coverTypes.cover_type_unique_code, this.selectedPmasCode)
       this.aggregateForm.patchValue({
         aggregateCoverType: coverTypes.cvt_desc.toLowerCase(),
         rate: coverTypes.premium_rate,
@@ -675,20 +674,35 @@ memberDetsForm() {
   }
 
   getPmasCodeToEdit() {
-    this.aggregateForm.get('aggrgatePremiumMask')?.valueChanges.subscribe((selectedPmasShtDesc: string) => {
-      if (selectedPmasShtDesc) {
-        const selectedMask = this.premiumMask.find(mask => mask['pmas_sht_desc'] === selectedPmasShtDesc);
-    
-        if (selectedMask) {
-          this.selectedPmasCode = selectedMask.pmas_code;
-          console.log("this.selectedPmasCodeRest", this.selectedPmasCode);
+    if(this.quatationCalType === 'A') {
+      this.aggregateForm.get('aggrgatePremiumMask')?.valueChanges.subscribe((selectedPmasShtDesc: string) => {
+        if (selectedPmasShtDesc) {
+          const selectedMask = this.premiumMask.find(mask => mask['pmas_sht_desc'] === selectedPmasShtDesc);
+      
+          if (selectedMask) {
+            this.selectedPmasCode = selectedMask.pmas_code;
+            console.log("this.selectedPmasCodeRest", this.selectedPmasCode);
+          }
         }
-      }
-    });
+      });
+    } else  if(this.quatationCalType === 'D') {
+      this.detailedCovDetsForm.get('premiumMask')?.valueChanges.subscribe((selectedPmasShtDesc: string) => {
+        if (selectedPmasShtDesc) {
+          const selectedMask = this.premiumMask.find(mask => mask['pmas_sht_desc'] === selectedPmasShtDesc);
+      
+          if (selectedMask) {
+            this.selectedPmasCode = selectedMask.pmas_code;
+            console.log("this.selectedPmasCodeRest", this.selectedPmasCode);
+          }
+        }
+      });
+    }
+    
   }
 
   getSelectedPmasCode(event: any) {
     const selectedPmasShtDesc = event.target.selectedIndex;
+    console.log("selectedPmasShtDesc", selectedPmasShtDesc)
     if (selectedPmasShtDesc >= 0) {
       this.selectedPmasCode = this.premiumMask[selectedPmasShtDesc].pmas_code;
       console.log("this.selectedPmasCode", this.selectedPmasCode)
@@ -696,9 +710,10 @@ memberDetsForm() {
   }
 
   saveCoverDetails() {
-    this.closeDetailedModal();
+    console.log("Saving new Cover which is")
     this.spinner_Service.show('download_view');
     if(this.quatationCalType === 'D') {
+      console.log("Saving new Cover which is DETAILED")
       const cover = this.detailedCovDetsForm.value
     const coverRaw = this.detailedCovDetsForm.getRawValue();
     console.log("cover",cover, coverRaw)
@@ -733,7 +748,8 @@ memberDetsForm() {
     });
     }
     else  if(this.quatationCalType === 'A') {
-      this.closeAggregateCoverDetailsModal();
+      // this.closeAggregateCoverDetailsModal();
+      console.log("Saving new Cover which is AGGREGATE")
       this.spinner_Service.show('download_view');
       const cover = this.aggregateForm.value
       const noOfMembers = parseInt(cover.noOfMembers, 10);
@@ -782,9 +798,8 @@ memberDetsForm() {
   
     }
     const coverToPostArray = [coverToPost];
-    const coverToPostArray2 = [jsonToTry];
     
-    this.coverageService.postCoverType(coverToPostArray2).subscribe((coverDets) => {
+    this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
       this.cdr.detectChanges();
       this.aggregateForm.reset();
@@ -800,25 +815,30 @@ memberDetsForm() {
   }
 
   saveEditedCoverDetails() {
+    console.log("Saving EDITED Cover which is")
     if(this.quatationCalType === 'D') {
-      this.closeDetailedModal();
+      console.log("Saving EDITED Cover which is Detailed")
       this.spinner_Service.show('download_view');
       const cover = this.detailedCovDetsForm.value
     const coverRaw = this.detailedCovDetsForm.getRawValue();
     console.log("cover",cover, coverRaw)
     const coverToPost = {
       "cvt_desc": cover.detailedCoverType,
+      // "cover_type_unique_code": this.coverTypeUniqueCode,
       "cover_type_unique_code": this.coverTypeUniqueCode,
       "cover_type_code": this.coverTypeCodeToEdit,
-      "dty_description": cover.premiumMask,
       "main_sumassured_percentage": cover.detailedPercentageMainYr,
       "premium_mask_short_description": cover.premiumMask,
+      // "premium_mask_code": this.selectedPmasCode,
+      "premium_mask_code": this.selectedPmasCode,
       "use_cvr_rate": this.detailedCovDetsForm.get('selectRate').value,
       "premium_rate": cover.rate,
       "rate_division_factor": cover.rateDivFactor,
       "quotation_code": this.quotationCode,
+      "product_code": this.productCode,
       "loading_discount": "N",
       "multiple_earnings_period": 4,
+      "dty_description": "TEST",
     };
     const coverToPostArray = [coverToPost];
     console.log("coverToPost edit", coverToPost)
@@ -837,7 +857,7 @@ memberDetsForm() {
     });
     }
     else  if(this.quatationCalType === 'A') {
-      this.closeAggregateCoverDetailsModal();
+      console.log("Saving EDITED Cover which is Aggregate")
       this.spinner_Service.show('download_view');
       const cover = this.aggregateForm.value
       const noOfMembers = parseInt(cover.noOfMembers, 10);
@@ -880,6 +900,7 @@ memberDetsForm() {
       this.getCoverTypes();
       this.cdr.detectChanges();
       this.aggregateForm.reset();
+      this.closeAggregateCoverDetailsModal();
       this.spinner_Service.hide('download_view');
       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover Updated'});
     },
