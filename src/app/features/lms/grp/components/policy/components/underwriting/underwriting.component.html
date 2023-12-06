@@ -1,0 +1,77 @@
+<div class="main">
+    <div class="container">
+        <div style="text-align: center;"><span class="quote-text">Quotation Summary</span></div>
+        <div class="row col-12 mt-3" style="color: black; padding-left: 25px;">
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%; min-height: 133px;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Branch: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Cover to date: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%; min-height: 100px;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Client: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Intermediary: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Currency: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%; min-height: 100px;">
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Product: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Status: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Cover from date: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-12 policy-button-container">
+        <button class="policy-button" (click)="onConvert()">
+            <span class="text">Convert to policy</span>
+        </button>
+    </div>
+</div>

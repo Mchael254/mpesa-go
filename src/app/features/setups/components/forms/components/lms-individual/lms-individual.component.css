@@ -1,0 +1,31 @@
+.text-module {
+    color: gray;
+
+    padding: 0.5rem 0 !important;
+    font-size: 12px;
+
+}
+.text-module:hover {
+    color: black;
+
+    font-weight: 200;
+    cursor:pointer;
+}
+
+/* dynamic-table.component.css */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  

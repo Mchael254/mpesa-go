@@ -14,14 +14,12 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 @AutoUnsubscribe
 export class SidebarComponent {
   sidebarMainMenuList: SidebarMenu[];
+
   constructor(private menuService:MenuService, private router: Router){
-    this.menuService.sidebarMainMenuRead.subscribe(data => {this.sidebarMainMenuList = data;}
-    );
+    this.menuService.sidebarMainMenuRead.subscribe(data => {this.sidebarMainMenuList = data;});
   }
-
-
-clickURL(url:string){
+  
+  clickURL(url:string){
   if(url?.length > 0 ) this.router.navigate([url]);
 }
-
 }

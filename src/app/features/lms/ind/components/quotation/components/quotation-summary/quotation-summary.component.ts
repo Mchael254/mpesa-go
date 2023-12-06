@@ -195,21 +195,21 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.spinner.show('summary_screen');
 
     let quick_quote_code = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.QUICK_CODE));
-    this.quotation_service.convert_quotation_to_proposal(quick_quote_code).subscribe(data =>{
-      this.toast.success('Next To Proposal Page', 'PROPOSAL');
+    // this.quotation_service.convert_quotation_to_proposal(quick_quote_code).subscribe(data =>{
+    //   this.toast.success('Next To Proposal Page', 'PROPOSAL');
       this.route.navigate(['/home/lms/ind/proposal/summary']);
-      console.log(data);
-      this.spinner.hide('summary_screen');
-      // timer(1300).subscribe(() => {
-      //   this.route.navigate(['/home/lms/ind/proposal/summary']);
-      // });
-    },
-    err=> {
-      this.toast.danger('Unable to Proceed to Proposal', 'WARNING');
-      this.spinner.hide('summary_screen');
-      // console.error(err);
+    //   console.log(data);
+    //   this.spinner.hide('summary_screen');
+    //   // timer(1300).subscribe(() => {
+    //   //   this.route.navigate(['/home/lms/ind/proposal/summary']);
+    //   // });
+    // },
+    // err=> {
+    //   this.toast.danger('Unable to Proceed to Proposal', 'WARNING');
+    //   this.spinner.hide('summary_screen');
+    //   // console.error(err);
       
-    })
+    // })
     
   }
 }
