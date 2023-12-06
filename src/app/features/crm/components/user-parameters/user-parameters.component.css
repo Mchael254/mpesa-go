@@ -1,0 +1,31 @@
+.card-header {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0em;
+  color: #000000;
+  border-bottom: none;
+}
+
+.icon-circle {
+  display: inline-block;
+  background-color: #E4E7EB;
+  color: #00529B;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+}
+
+.custom-table {
+  cursor: pointer;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody td:nth-child(2) {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

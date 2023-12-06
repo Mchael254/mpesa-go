@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import {AppConfigService} from "../../../../core/config/app-config-service";
-import {HttpClient} from "@angular/common/http";
-import {CountryDto, StateDto, TownDto} from "../../../data/common/countryDto";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {
+  AdminstrativeUnitDTO, CountryDTO, CountryHolidayDTO, PostCountryDTO,
+  PostCountryHolidayDTO, PostStateDTO, PostTownDTO, StateDTO, SubCountyDTO,
+  SubadminstrativeUnitDTO, TownDto
+} from "../../../data/common/countryDto";
 import {Observable} from "rxjs/internal/Observable";
 import {Logger} from "../../logger/logger.service";
 
@@ -22,50 +26,50 @@ export class CountryService {
 
   /**
    * Fetch all countries
-   * @returns Observable<CountryDto[]> list of countries
+   * @returns Observable<CountryDTO[]> list of countries
    */
-  getCountries(): Observable<CountryDto[]> {
+  getCountries(): Observable<CountryDTO[]> {
     log.info('Fetching countries');
-    return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
+    return this.http.get<CountryDTO[]>(`/${this.baseUrl}/setups/countries`);
   }
 
   /**
    * Fetch a country by id
    * @param countryId Country Id
-   * @returns Observable<CountryDto> Country
+   * @returns Observable<CountryDTO> Country
    */
-  getCountryById(countryId: number): Observable<CountryDto>{
+  getCountryById(countryId: number): Observable<CountryDTO>{
     log.info('Fetching county of id: '+ countryId);
-    return this.http.get<CountryDto>(`/${this.baseUrl}/setups/countries/${countryId}`);
+    return this.http.get<CountryDTO>(`/${this.baseUrl}/setups/countries/${countryId}`);
   }
 
   /**
    * Fetch all states
-   * @returns Observable<StateDto[]> list of states
+   * @returns Observable<StateDTO []> list of states
    */
-  getMainCityStates(): Observable<StateDto[]>{
+  getMainCityStates(): Observable<StateDTO[]>{
     log.info('Fetching city states');
-    return this.http.get<StateDto[]>(`/${this.baseUrl}/setups/states`);
+    return this.http.get<StateDTO[]>(`/${this.baseUrl}/setups/states`);
   }
 
   /**
    * Fetch all states by country
    * @param id Country Id
-   * @returns Observable<StateDto[]> list of states
+   * @returns Observable<StateDTO []> list of states
    */
-  getMainCityStatesByCountry(id: number): Observable<StateDto[]>{
+  getMainCityStatesByCountry(id: number): Observable<StateDTO[]>{
     log.info('Fetching city states');
-    return this.http.get<StateDto[]>(`/${this.baseUrl}/setups/countries/${id}/states`);
+    return this.http.get<StateDTO[]>(`/${this.baseUrl}/setups/countries/${id}/states`);
   }
 
   /**
    * Fetch a state by id
    * @param stateId State Id
-   * @returns Observable<StateDto> State
+   * @returns Observable<StateDTO > State
    */
-  getMainCityStateById(stateId: number): Observable<StateDto>{
+  getMainCityStateById(stateId: number): Observable<StateDTO>{
     log.info('Fetching city state of id: '+ stateId);
-    return this.http.get<StateDto>(`/${this.baseUrl}/setups/states/${stateId}`);
+    return this.http.get<StateDTO>(`/${this.baseUrl}/setups/states/${stateId}`);
   }
 
   /**
@@ -95,5 +99,173 @@ export class CountryService {
    */
   getTownsByMainCityState(id: number): Observable<TownDto[]>{
     return this.http.get<TownDto[]>(`/${this.baseUrl}/setups/states/${id}/towns`);
+  }
+
+  createCountry(data: PostCountryDTO): Observable<PostCountryDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostCountryDTO>(`/${this.baseUrl}/setups/countries`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateCountry(countryId: number, data: PostCountryDTO): Observable<PostCountryDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostCountryDTO>(`/${this.baseUrl}/setups/countries/${countryId}`,
+      data, { headers: headers })
+  }
+
+  deleteCountry(countryId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<CountryDTO>(`/${this.baseUrl}/setups/countries/${countryId}`,
+      { headers: headers });
+  }
+
+  createState(data: PostStateDTO ): Observable<PostStateDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostStateDTO>(`/${this.baseUrl}/setups/states`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateState(stateId: number, data: PostStateDTO): Observable<PostStateDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostStateDTO>(`/${this.baseUrl}/setups/states/${stateId}`,
+      data, { headers: headers })
+  }
+
+  deleteState(stateId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<PostStateDTO>(`/${this.baseUrl}/setups/states/${stateId}`,
+      { headers: headers });
+  }
+
+  createTown(data: PostTownDTO): Observable<PostTownDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostTownDTO>(`/${this.baseUrl}/setups/towns`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateTown(townId: number, data: PostTownDTO): Observable<PostTownDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostTownDTO>(`/${this.baseUrl}/setups/towns/${townId}`,
+      data, { headers: headers })
+  }
+
+  deleteTown(townId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<PostTownDTO>(`/${this.baseUrl}/setups/towns/${townId}`,
+      { headers: headers });
+  }
+
+  getAdminstrativeUnit(): Observable<AdminstrativeUnitDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<AdminstrativeUnitDTO[]>(`/${this.baseUrl}/setups/administrative-units`);
+  } 
+
+  getSubadminstrativeUnit(): Observable<SubadminstrativeUnitDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<SubadminstrativeUnitDTO[]>(`/${this.baseUrl}/setups/sub-administrative-units`);
+  }
+
+  getSubCountyByStateId(stateId: number): Observable<SubCountyDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<SubCountyDTO[]>(`/${this.baseUrl}/setups/states/${stateId}/districts`, { headers: headers })
+  }
+
+  createDistrict(data: SubCountyDTO): Observable<SubCountyDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<SubCountyDTO>(`/${this.baseUrl}/setups/districts`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateDistrict(districtId: number, data: SubCountyDTO): Observable<SubCountyDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<SubCountyDTO>(`/${this.baseUrl}/setups/districts/${districtId}`,
+      data, { headers: headers })
+  }
+
+  deleteDistrict(districtId: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<SubCountyDTO>(`/${this.baseUrl}/setups/districts/${districtId}`,
+      { headers: headers });
+  }
+
+  getCountryHoliday(countryCode: number): Observable<CountryHolidayDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    const params = new HttpParams()
+      .set('countryCode', `${countryCode}`);
+    return this.http.get<CountryHolidayDTO[]>(`/${this.baseUrl}/setups/country-holidays`
+      , {
+        headers: headers,
+        params: params
+      });
+  }
+
+  createCountryHoliday(data: PostCountryHolidayDTO ): Observable<PostCountryHolidayDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<PostCountryHolidayDTO>(`/${this.baseUrl}/setups/country-holidays`, JSON.stringify(data), {headers:headers})
+  }
+
+  updateCountryHoliday(id: number, data: PostCountryHolidayDTO ): Observable<PostCountryHolidayDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<PostCountryHolidayDTO>(`/${this.baseUrl}/setups/country-holidays/${id}`,
+      data, { headers: headers })
+  }
+
+  deleteCountryHoliday(id: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<PostCountryHolidayDTO>(`/${this.baseUrl}/setups/country-holidays/${id}`,
+      { headers: headers });
   }
 }

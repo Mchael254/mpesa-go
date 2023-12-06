@@ -1,0 +1,228 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+  <div class="me-4">
+      <div class="card mb-3">
+        <div class="card-header bg-transparent">
+          <span class="float-start mt-3">Organization Definition</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="form-group mb-4">
+                <label for="organization" class="form-label">Select an Organization</label>
+                <select id="organization" class="form-select  mb-1" (change)="onOrganizationChange($event)"
+                  [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
+                  <option value="" selected>Select organization</option>
+                  <option *ngFor="let organization of organizationsData" [value]="organization.id">{{ organization.name }}
+                  </option>
+                </select>
+                <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)"
+                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['organization']?.errors }">
+                  <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Organization Divisions</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="float-end">
+                <span class="icon-circle"><i class="fa-solid fa-plus" (click)="openDivisionModal()"></i></span>
+                <span class="icon-circle"><i class="pi pi-pencil" (click)="editDivision()"></i></span>
+                <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteDivision()"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="divisionData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Division Name</th>
+                    <th class="head">Short Decription</th>
+                    <th class="head">Division Order</th>
+                    <th class="head">Division Status</th>
+                    <th class="head">Default</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-division>
+                  <tr class="custom-table" (click)="onDivisionRowSelect(division)">
+                    <td class="body">{{ division.name }}</td>
+                    <td class="body">{{ division.short_description }}</td>
+                    <td class="body">{{ division.order }}</td>
+                    <td class="body">{{ division.status }}</td>
+                    <td class="body">{{ division.is_default_division }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No organization division found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Division Branches</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="form-group col-4">
+              <input type="text" class="form-control" placeholder="Search by branch or division name" aria-label="search" aria-describedby="search">
+            </div>
+            <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+            <div class="form-group col-3">
+              <input type="text" class="form-control" name="filterByDay" placeholder="Date"
+                onfocus="(this.type='date')" onblur="(this.type='text')">
+            </div>
+            <div class="col-4">
+              <div class="float-end">
+                <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-12">
+              <p-table 
+                  [value]="divisionBranchData" 
+                  styleClass="p-datatable-sm" 
+                  responsiveLayout="scroll" 
+                  [scrollable]="true"
+                  scrollHeight="400px" 
+                  class="ui-datatable">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Division Name</th>
+                    <th class="head">Branch Name</th>
+                    <th class="head">WEF</th>
+                    <th class="head">WET</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-branch>
+                  <tr>
+                    <td class="body">{{ branch.name }}</td>
+                    <td class="body">{{ branch.branchName }}</td>
+                    <td class="body">{{ branch.wef }}</td>
+                    <td class="body">{{ branch.wet }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No division branche's found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="row mt-1">
+      <div class="col-12">
+        <div class="float-end">
+          <button class="btn btn-primary mt-auto align-self-end" (click)="onNext()">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" #divisionModal id="division" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define a Division</h5>
+        <button type="button" class="btn-close" (click)="closeDivisionModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createDivisionForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="shortDescription" class="form-label">Short Description</label>
+              <input type="text" class="form-control" id="shortDescription" placeholder="Short Description"
+                formControlName="shortDescription">
+            </div>
+            <div class="col-6 mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" placeholder="name" formControlName="name">
+            </div>
+            <div class="col-6 mb-3">
+              <label for="divisionOrder" class="form-label">Division Order</label>
+              <input type="text" class="form-control" id="divisionOrder" placeholder="divisionOrder" formControlName="divisionOrder">
+            </div>
+            <div class="col-6 mb-3">
+              <label for="divisionStatus" class="form-label">Division Status</label>
+              <select class="form-select" id="divisionStatus" formControlName="divisionStatus">
+                <option value="">Select Status</option>
+                <option *ngFor="let status of statuses" [value]="status.value">{{ status.name }}</option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <fieldset>
+                <legend for="divisionStatus" class="form-label">Default</legend>
+                <div class="form-check form-check-inline">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="inlineRadio1" 
+                    value="YES"
+                    formControlName="default">
+                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="inlineRadio2" 
+                    value="NO"
+                    formControlName="default">
+                  <label class="form-check-label" for="inlineRadio2">No</label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveDivision()">Save Details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" #confirmationModal id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p class="d-flex justify-content-center align-items-center">Are you sure you want to change this default division?</p>
+        <div class="row mt-3">
+          <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+            <button type="button" class="btn btn-primary rounded mb-2" (click)="confirmDefaultDivision('YES')" style="width: 150px;" >Yes, Change</button>
+            <button type="button" class="btn btn-outline-primary rounded" (click)="confirmDefaultDivision('NO')" style="width: 150px;">No, I'm not</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

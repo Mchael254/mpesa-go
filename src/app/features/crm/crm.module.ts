@@ -1,14 +1,38 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
+import { TableModule } from 'primeng/table';
 
 import { CrmRoutingModule } from './crm-routing.module';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CountryComponent } from './components/country/country.component';
+import { BaseCrmComponent } from './components/base-crm/base-crm.component';
+import { OrganizationComponent } from './components/organization/organization.component';
+import { DivisionComponent } from './components/division/division.component';
+import { RegionComponent } from './components/region/region.component';
+import { BranchComponent } from './components/branch/branch.component';
+import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    CountryComponent,
+    BaseCrmComponent,
+    OrganizationComponent,
+    DivisionComponent,
+    RegionComponent,
+    BranchComponent,
+    UserParametersComponent
+  ],
   imports: [
     CommonModule,
-    CrmRoutingModule
+    CrmRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TableModule,
+    DropdownModule,
+    SharedModule
   ]
 })
 export class CrmModule { }
