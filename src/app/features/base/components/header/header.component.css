@@ -135,3 +135,10 @@
   background-color: rgba(255, 255, 255, 0);
   border: 0;
 }
+
+/* responsive */
+@media (max-width: 576px) {
+  .dropdown-item {
+    font-size: 0.8em;
+  }
+}
