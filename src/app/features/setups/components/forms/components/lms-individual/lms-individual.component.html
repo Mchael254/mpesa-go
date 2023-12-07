@@ -1,70 +1,361 @@
 
-  <div class="row p-2">
-    <div class="col-xl-4 col-lg-4 col-sm-12">
 
-        <div class="container-fluid">
-            <div class="full-border">
-              <div class="d-flex justify-content-between">
-                  <div class="fw-medium text-black pb-2">Module(s)</div>
-              </div>
-              <div class="row">
-
-                <ng-container *ngFor="let item of ['Quotation','Underwriting','Medicals','Medicals','Reinsurance','Accounts','Proposal']; let i = index">
-                    <div > <div class="text-module fw-medium" (click)="selectModule(item)"> {{i+1}}. {{item | titlecase}}</div></div>
-
-                </ng-container>
-                    
-              </div>
-            </div>
-          </div>
-
-
-    </div>
-    <div class="col-xl-8 col-lg-8 col-sm-12">
-        <div class="container-fluid">
-            <div class="full-border">
-              <div class="d-flex justify-content-between">
-                  <div class="fw-medium text-black">{{'Quotation '}} Web Pages</div>
-              </div>
-              <div class="row pb-2">
-
-                <ng-container *ngFor="let item of ['Client data capture ','Underwriting','Medicals','Medicals','Reinsurance','Accounts','Proposal']; let i = index">
-                    <div > <div class="text-module fw-medium" (click)="selectPage(item)"> {{item | titlecase}}</div></div>
-
-                </ng-container>
-                    
+<div class="row p-2">
+  <div class="col-xl-4 col-lg-4 col-sm-12">
+    <div class="container-fluid">
+      <div class="full-border">
+        <div class="d-flex justify-content-between">
+          <div class="fw-medium text-black pb-2">Module(s)</div>
+        </div>
+        <div class="row">
+          <ng-container *ngFor="let item of systemList; let i = index">
+            <div>
+              <div class="text-module fw-medium" (click)="selectModule(item)">
+                {{ i + 1 }}.
+                {{ item?.replaceAll("_", " ") || "NULL" | uppercase }}
               </div>
             </div>
-          </div>
+          </ng-container>
+        </div>
+      </div>
     </div>
-    <div class=" col-xl-12 col-sm-12">
-        <div class="container-fluid">
-            <div class="full-border">
-              <div class="d-flex justify-content-between">
-                  <div class="fw-medium text-black">{{'Client Details '}} Form Setup(s)</div>
-              </div>
-              <div class="row">
-
-
-                <div>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th *ngFor="let header of headers">{{ header }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let row of rows">
-                        <td *ngFor="let cell of row">{{ cell }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-          
-              </div>
-            </div>
-          </div>
-    </div>
-
   </div>
-  
+  <div class="col-xl-8 col-lg-8 col-sm-12" *ngIf="moduleList.size > 0">
+    <div class="container-fluid">
+      <div class="full-border">
+        <div class="d-flex justify-content-between">
+          <div class="fw-medium text-black">
+            {{ screenData["system"]?.replaceAll("_", " ") | titlecase }} Web
+            Pages
+          </div>
+        </div>
+        <div class="row pb-2">
+          <ng-container *ngFor="let item of moduleList; let i = index">
+            <div>
+              <div class="text-module fw-medium" (click)="selectPage(item)">
+                {{ item | titlecase }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-12 col-sm-12" *ngIf="pagesList.length > 0">
+    <div class="container-fluid">
+      <div class="full-border">
+        <div class="d-flex justify-content-between">
+          <div class="fw-medium text-black">
+            {{ screenData["module"]?.replaceAll("_", " ") | titlecase }} Form
+            Setup(s) <span class="mx-2 link" (click)="addForm()"><i class="fa-regular fa-square-plus"></i></span>
+          </div>
+
+          <div class="d-flex justify-content-end align-content-end">
+            <div>
+              <div style="padding: 0 0.4rem; height: 0.2rem">
+                <input
+                  type="text"
+                  placeholder="search..."
+                  class="form-control"
+                  id="exampleInputPassword1"
+                />
+              </div>
+            </div>
+            <div class="dropdown">
+              <div
+                class="dropdown-toggle"
+                type="button"
+                id="form"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa-regular fa-square-caret-down"></i>
+              </div>
+              <ul class="dropdown-menu" aria-labelledby="form">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <!-- <th>{{'SN'}}</th> -->
+                  <th *ngIf="readerHeaderstatus('label')">
+                    {{ "label" | titlecase }}
+                  </th>
+                  <th *ngIf="readerHeaderstatus('visible')">
+                    {{ "visible" | titlecase }}
+                  </th>
+                  <th *ngIf="readerHeaderstatus('value')">
+                    {{ "value" | titlecase }}
+                  </th>
+                  <th *ngIf="readerHeaderstatus('required')">
+                    {{ "required" | titlecase }}
+                  </th>
+                  <th *ngIf="readerHeaderstatus('min')">
+                    {{ "min" | titlecase }}
+                  </th>
+                  <th *ngIf="readerHeaderstatus('max')">
+                    {{ "max" | titlecase }}
+                  </th>
+                  <!-- <th>
+                      </th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let row of pagesList; let i = index"
+                  (click)="selectForm(row)"
+                >
+                  <!-- <td>{{ i+1}}</td> -->
+                  <td *ngIf="readerHeaderstatus('label')">
+                    {{ row["label"] }}
+                  </td>
+                  <td *ngIf="readerHeaderstatus('visible')">
+                    {{ row["visible"] }}
+                  </td>
+                  <td *ngIf="readerHeaderstatus('value')">
+                    {{ row["value"] }}
+                  </td>
+                  <td *ngIf="readerHeaderstatus('required')">
+                    {{ row["required"] }}
+                  </td>
+                  <td *ngIf="readerHeaderstatus('min')">{{ row["min"] }}</td>
+                  <td *ngIf="readerHeaderstatus('max')">{{ row["max"] }}</td>
+                  <!-- <td>
+                          <div class="d-flex justify-content-end">
+                            <div class="dropdown">
+                              <div class=" dropdown-toggle" type="button" id="form" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                              </div>
+                              <ul class="dropdown-menu" aria-labelledby="form">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                              </ul>
+                            </div>
+                          </div>
+                        </td> -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="position: relative" class="mt-1">
+  <ngx-spinner
+    name="form_modal_view"
+    type="ball-clip-rotate-multiple"
+    [fullScreen]="false"
+    color="#00529B"
+    size="medium"
+    bdColor="rgba(255, 255, 255, 0.0)"
+  ></ngx-spinner>
+</div>
+
+<div
+  class="modal fade"
+  tabindex="-1"
+  #formsFormId
+  id="formsFormId"
+  aria-labelledby="formsFormId"
+  aria-hidden="true"
+  style="color: #333"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formsFormId">Edit form Fields</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="closeModal()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formsForm">
+          <div class="container">
+            <form>
+              <div class="row mb-3">
+                <!-- First Row -->
+                <div class="col-md-4">
+                  <label for="label" class="form-label sm">Label</label>
+                  <input
+                    formControlName="label"
+                    type="text"
+                    class="form-control"
+                    id="label"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label for="place_holder" class="form-label sm"
+                    >Place holder</label
+                  >
+                  <input
+                    formControlName="place_holder"
+                    type="text"
+                    class="form-control"
+                    id="field2"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label for="value" class="form-label sm">Value</label>
+                  <input
+                    formControlName="value"
+                    type="text"
+                    class="form-control"
+                    id="value"
+                  />
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <!-- Second Row -->
+                <div class="col-md-4">
+                  <label for="min" class="form-label sm">Min</label>
+                  <input
+                    formControlName="min"
+                    type="number"
+                    class="form-control"
+                    id="min"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label for="max" class="form-label sm">Max</label>
+                  <input
+                    formControlName="max"
+                    type="number"
+                    class="form-control"
+                    id="max"
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label for="type" class="form-label sm">Type</label>
+                  <input
+                    formControlName="type"
+                    type="text"
+                    class="form-control"
+                    id="type"
+                    [disabled]
+                  />
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <!-- Third Row with Radio Buttons -->
+                <div class="col-md-4">
+                  <div class="sm">Visible</div>
+                  <span class="px-2">
+                    <input
+                      formControlName="visible"
+                      class="form-check-input"
+                      type="radio"
+                      id="visible"
+                      value="true"
+                    />
+                    <label class="form-check-label sm" for="visible">Yes</label>
+                  </span>
+                  <span>
+                    <input
+                      formControlName="visible"
+                      class="form-check-input"
+                      type="radio"
+                      id="radioOption1"
+                      value="false"
+                    />
+                    <label class="form-check-label sm" for="radioOption1"
+                      >No</label
+                    >
+                  </span>
+                </div>
+                <div class="col-md-4">
+                  <div class="sm">Required</div>
+                  <span class="px-2">
+                    <input
+                      formControlName="required"
+                      class="form-check-input"
+                      type="radio"
+                      id="required"
+                      value="true"
+                    />
+                    <label class="form-check-label sm" for="required"
+                      >Yes</label
+                    >
+                  </span>
+                  <span>
+                    <input
+                      formControlName="required"
+                      class="form-check-input"
+                      type="radio"
+                      id="radioOption1"
+                      value="false"
+                    />
+                    <label class="form-check-label sm" for="radioOption1"
+                      >No</label
+                    >
+                  </span>
+                </div>
+                <div class="col-md-4">
+                  <div class="sm">Disabled</div>
+                  <span class="px-2">
+                    <input
+                      formControlName="is_disabled"
+                      class="form-check-input"
+                      type="radio"
+                      id="disabled"
+                      value="true"
+                    />
+                    <label class="form-check-label sm" for="disabled"
+                      >Yes</label
+                    >
+                  </span>
+                  <span>
+                    <input
+                      formControlName="is_disabled"
+                      class="form-check-input"
+                      type="radio"
+                      id="radioOption1"
+                      value="false"
+                    />
+                    <label class="form-check-label sm" for="radioOption1"
+                      >No</label
+                    >
+                  </span>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <!-- Fourth Row with Textarea -->
+                <div class="col-12">
+                  <label for="hint" class="form-label sm">Hints</label>
+                  <textarea
+                    formControlName="hint"
+                    class="form-control"
+                    id="hint"
+                    rows="1"
+                  ></textarea>
+                </div>
+              </div>
+            </form>
+            <div class="d-flex justify-content-end">
+              <button
+                (click)="saveForm()"
+                type="button"
+                class="btn btn-primary"
+                style="font-size: 12px"
+              >
+                save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
