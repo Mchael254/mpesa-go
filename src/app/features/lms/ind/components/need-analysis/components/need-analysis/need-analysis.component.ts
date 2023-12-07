@@ -26,12 +26,8 @@ export class NeedAnalysisComponent implements OnInit {
     this.new_business_service.getNeedAnalysis().pipe(finalize(() => {
       this.spinner_service.hide('analysis_view')
     })).subscribe(data =>{
-      // console.log(data['question']);
-      this.questionData = data['question'];
-      // this.questionData['isSelected'] = true;
-
+      this.questionData = data['data']['question'];
       this.questionSelected.push(this.questionData);
-      // this.optionSelected.push(0);
       this.spinner_service.hide('analysis_view')
 
     })
