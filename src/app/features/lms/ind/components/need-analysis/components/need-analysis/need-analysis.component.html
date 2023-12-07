@@ -22,7 +22,7 @@ name="analysis_view"
       <div >
         <div *ngFor="let item of questionSelected; let i = index;">
           <div>
-            <div *ngIf="!(questionData['products'] && questionData['products'].length>0)">
+            <div *ngIf="!(questionData?.products && questionData?.products.length>0)">
               <app-questions *ngIf="questionSelected[i]?.options && questionSelected[i]?.options.length>0 " [questions]=item [optionPosition]=optionSelected[i] [index]=i+1 (selectOption)="selectOption($event)"></app-questions>
             </div>
 
