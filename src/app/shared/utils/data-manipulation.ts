@@ -66,6 +66,19 @@ public static getKeysFromObjectsList(objectsList: any[]) {
   
     return Object.keys(objectsList[0]);
   }
+
+    /**
+ * Get the keys from the first object in the list.
+ * @param {Array} objectsList - The list of objects.
+ * @returns {Array} - The list of keys.
+ */
+public static getKeysFromObjects(object: any) {
+  if (object === null) {
+    return [];
+  }
+
+  return Object.keys(object);
+}
   
 //   // Example usage:
 //   const listOfObjects = [
