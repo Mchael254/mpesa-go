@@ -3,7 +3,7 @@
     <div class="card-header bg-transparent">
       <span class="float-start text-primary fw-bold">
         <i class="pi pi-chevron-left"></i>
-        Reports
+        <a class="text-primary" routerLink="/home/reportsv2/main">Reports</a> 
       </span>
     </div>
     <div class="card-body">
@@ -65,22 +65,6 @@
               </div>
             </div>
           </div>
-
-          <div class="text-center">
-            <button
-              class="btn btn-outline-primary mt-3 continueBtn float-start"
-              (click)="backToCreateReport()"
-              id="backBtn"
-            >Go Back
-            </button>
-            <button
-              class="btn btn-primary mt-3 continueBtn float-end"
-              data-bs-toggle="modal"
-              data-bs-target="#saveReportModal"
-            >Save
-            </button>
-          </div>
-
         </div>
 
         <div class="col-sm-9 text-center">
@@ -145,6 +129,23 @@
 
         </div>
 
+        <div class="col-sm-3 border-end">
+          <div class="text-center">
+            <button
+              class="btn btn-outline-primary mt-3 continueBtn float-start"
+              (click)="backToCreateReport()"
+              id="backBtn"
+            >Go Back
+            </button>
+            <button
+              class="btn btn-primary mt-3 continueBtn float-end"
+              data-bs-toggle="modal"
+              data-bs-target="#saveReportModal"
+            >Save
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -152,6 +153,8 @@
   </div>
 
 </div>
+
+<div class="mobile-bottom"></div>
 
 
 <!-- Advanced filter Modal -->

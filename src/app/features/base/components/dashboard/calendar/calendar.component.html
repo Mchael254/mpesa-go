@@ -70,11 +70,11 @@
               <ng-container *ngFor="let event of events">
                 <div class="event">
                   <div class="row">
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 col-10">
                       <span class="fw-medium">{{event?.title | titlecase}}</span> <br>
                       <span>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</span>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-2 col-2">
                   <span class="inactive mr-2" style="font-size: 0.9em">
                     {{ event?.startDate | date: 'EE '}}
                   </span>
