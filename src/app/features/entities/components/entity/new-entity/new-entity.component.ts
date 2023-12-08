@@ -152,6 +152,7 @@ export class NewEntityComponent implements OnInit {
       profilePiture: [''],
     });
 
+
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       untilDestroyed(this)
     )
