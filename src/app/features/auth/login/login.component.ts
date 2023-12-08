@@ -133,6 +133,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             username: authenticationData.username
           };
           this.localStorageService.setItem('details', JSON.stringify(loginDetails));
+          this.localStorageService.setItem('detailsM', loginDetails.password);
           this.localStorageService.setItem('extras', JSON.stringify(extras));
           //
           // localStorage.setItem('details', JSON.stringify(loginDetails));
