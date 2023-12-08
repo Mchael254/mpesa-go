@@ -145,7 +145,7 @@ export class NewEntityComponent implements OnInit {
       date_of_birth: [''],
       mode_of_identity: [''],
       entity_name: [''],
-      identity_number: [''],
+      identity_number: ['', Validators.pattern(this.nationalIDRegex)],
       pin_number: ['', Validators.pattern(this.pinNumberRegex)],
       // assign_role: [''],
       assign_role: [{ value: '', disabled: true }],
@@ -311,7 +311,7 @@ export class NewEntityComponent implements OnInit {
          }
        }
 
-       this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
+       // this.globalMessagingService.displayErrorMessage('Failed', 'Form is Invalid, Fill all required fields');
        return; // Exit the method if the form is invalid
      }
      sessionStorage.removeItem('entityDetails');
@@ -344,7 +344,10 @@ export class NewEntityComponent implements OnInit {
            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Entity');
            this.goToNextPage();
          }
-       });
+       },
+         error => {
+           this.globalMessagingService.displayErrorMessage('Error', 'Please try again');
+         });
   }
 
   /**

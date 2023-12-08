@@ -50,6 +50,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
   queryColumn: string;
   public name: string;
   username: string;
+  size: number;
   constructor(
     private ticketsService: TicketsService,
     private cdr: ChangeDetectorRef,
@@ -69,7 +70,8 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       this.name = params['name'];
       this.module = params['module'];
       this.username = params['username'];
-      this.getAllTransactions(this.page, this.queryColumn, params['username'], params['module']);
+      this.size = params['size'];
+      this.getAllTransactions(this.page, this.size, this.queryColumn, params['username'], params['module']);
     });
 
     // this.getTransactionsData();
@@ -144,9 +146,9 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
    * @param {string} module - The "module" parameter is a string that represents the module or category of the
    * transactions. It is used to filter the transactions based on the specified module.
    */
-  getAllTransactions(pageIndex: number, queryColumn: string, username: string, module: string ) {
+  getAllTransactions(pageIndex: number, size: number, queryColumn: string, username: string, module: string ) {
     if(module) { // checks if the module is not empty
-      this.ticketsService.getAllTransactions(pageIndex, null, this.dateFrom, this.dateToday, username, module, queryColumn)
+      this.ticketsService.getAllTransactions(pageIndex, size, this.dateFrom, this.dateToday, username, module, queryColumn)
         .pipe(
           take(1),
           tap((data) => log.info('Fetch transactions data>> ', data))
