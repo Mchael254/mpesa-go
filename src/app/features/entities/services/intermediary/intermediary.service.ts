@@ -18,8 +18,8 @@ export class IntermediaryService {
   ) { }
 
   getAgents(
-    page: number = 0,
-    size: number = 5,
+    page: number | null = 0,
+    size: number | null = 5,
     sortList: string = 'createdDate',
     order: string = 'desc'
   ): Observable<Pagination<AgentDTO>> {
