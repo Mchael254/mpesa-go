@@ -37,7 +37,8 @@ export class ListServiceProviderComponent {
   public ServiceProviderDetails: Pagination<ServiceProviderDTO> = <Pagination<ServiceProviderDTO>>{};
   tableDetails: TableDetail;
   pageSize: 5;
-
+  isSearching = false;
+  searchTerm = '';
   cols = [
     { field: 'name', header: 'Name' },
     { field: 'category', header: 'Category' },
@@ -103,7 +104,7 @@ export class ListServiceProviderComponent {
 
   /**
  * Retrieves a list of service providers with pagination and sorting options.
- * 
+ *
  * @param {number} pageIndex - The index of the page to retrieve.
  * @param {string} sortField - The field by which to sort the results (default: 'createdDate').
  * @param {string} sortOrder - The sorting order, either 'asc' or 'desc' (default: 'desc').
@@ -111,53 +112,64 @@ export class ListServiceProviderComponent {
  * @remarks
  * This method makes an HTTP request to fetch a list of service providers with pagination and sorting options.
  * The retrieved data is encapsulated in a Pagination object and emitted as an observable.
- * 
+ *
  */
 
 
   getServiceProviders(pageIndex: number,
+                      pageSize: number,
     sortField: any = 'createdDate',
     sortOrder: string = 'desc') {
     return this.service
-    .getServiceProviders(pageIndex, this.pageSize, sortField, sortOrder)
+    .getServiceProviders(pageIndex, pageSize, sortField, sortOrder)
     .pipe(
     untilDestroyed(this),
     );
   }
 /**
  * Handles lazy loading of service providers based on table events.
- * 
+ *
  * @param {LazyLoadEvent | TableLazyLoadEvent} event - The event containing table loading information.
  * @remarks
  * This method is triggered when a table component requests lazy loading of service provider data.
  * It extracts pagination and sorting information from the event and calls the 'getServiceProviders' method.
  * The retrieved data is processed and updated in the component.
- * 
+ *
 
  */
 lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
   const pageIndex = event.first / event.rows;
   const sortField = event.sortField;
   const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+  const pageSize = event.rows;
 
-  this.getServiceProviders(pageIndex, sortField, sortOrder)
-    .pipe(
-    untilDestroyed(this),
-    tap((data) => console.log(`Service Providers`, data))
-    )
-    .subscribe(
-      (data: Pagination<ServiceProviderDTO>) => {
-        data.content.forEach(entity => {
-          entity.spEntityType = entity.providerType.name
-        });
-      this.ServiceProviderDetails = data;
-      this.tableDetails.rows = this.ServiceProviderDetails?.content;
-      this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
-      this.cdr.detectChanges();
-      this.spinner.hide();
-      },
-      error => {this.spinner.hide();}
-    );
+  if (this.isSearching) {
+    const searchEvent = {
+      target: {value: this.searchTerm}
+    };
+    this.filter(searchEvent, pageIndex, pageSize);
+  }
+  else {
+    this.getServiceProviders(pageIndex, pageSize, sortField, sortOrder)
+      .pipe(
+        untilDestroyed(this),
+        tap((data) => console.log(`Service Providers`, data))
+      )
+      .subscribe(
+        (data: Pagination<ServiceProviderDTO>) => {
+          data.content.forEach(entity => {
+            entity.spEntityType = entity.providerType.name
+          });
+          this.ServiceProviderDetails = data;
+          this.tableDetails.rows = this.ServiceProviderDetails?.content;
+          this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
+          this.cdr.detectChanges();
+          this.spinner.hide();
+        },
+        error => {this.spinner.hide();}
+      );
+  }
+
   }
 /**
  * Navigates to the entity creation page for a new service provider.
@@ -172,5 +184,21 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
   }
 
   ngOnDestroy(): void {
+  }
+
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.ServiceProviderDetails = null; // Initialize with an empty array or appropriate structure
+
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+
+
+    this.searchTerm = value;
+    this.isSearching = true;
+    this.spinner.show();
+    this.service.searchServiceProviders(pageIndex, pageSize, this.searchTerm)
+      .subscribe((data) => {
+        this.ServiceProviderDetails = data;
+        this.spinner.hide();
+      });
   }
 }

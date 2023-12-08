@@ -32,6 +32,7 @@ export class UserProfileComponent {
   formDisabled: boolean = true;
   // showTabs: boolean;
   showTabs = true;
+  storedOldPass: string;
 
     constructor(
       private fb: FormBuilder,
@@ -56,6 +57,8 @@ export class UserProfileComponent {
   ngOnInit(): void {
     this.createUserDetailsForm();
     this.getUserDetails();
+    this.storedOldPass = this.localStorageService.getItem("detailsM");
+
 
     this.changePassForm = this.fb.group({
       oldPassword: ['', [Validators.required, Validators.minLength(6)]],
@@ -161,7 +164,7 @@ export class UserProfileComponent {
   */
   onNewPassSave() {
     const extras = this.localStorageService.getItem("extras");
-    const loginDetails = this.localStorageService.getItem("details");
+    // const loginDetails = this.localStorageService.getItem("detailsM");
     const username = extras.email;
     this.submitted = true;
 
@@ -169,9 +172,9 @@ export class UserProfileComponent {
       this.formDisabled = false;
       let enteredOldPass = this.changePassForm.controls['oldPassword'].value;
       let newPass = this.changePassForm.controls['newPassword'].value;
-      let storedOldPass = loginDetails.password;
+      // let storedOldPass = loginDetails.password;
 
-      if (enteredOldPass === storedOldPass) {
+      if (enteredOldPass === this.storedOldPass) {
         // The entered old password matches the stored old password
         if (enteredOldPass !== newPass) {
           // The new password is not the same as the old password, proceed with changing the password

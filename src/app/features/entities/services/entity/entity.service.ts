@@ -106,8 +106,8 @@ export class EntityService {
   }
 
   getEntities(
-    page: number = 0,
-    size: number = 5,
+    page: number | null = 0,
+    size: number | null = 5,
     sortList: string = 'effectiveDateFrom',
     order: string = 'desc'
   ): Observable<Pagination<EntityDto>> {
@@ -124,6 +124,33 @@ export class EntityService {
       .set('organizationId', 2) /*TODO: Find proper way to fetch organizationId*/
 
       // Call the removeNullValuesFromQueryParams method from the UtilsService
+    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
+
+    return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/parties/all-parties`,
+      {
+        headers:headers,
+        params: params
+      });
+
+  }
+
+  searchEntities(
+    page: number,
+    size: number = 5,
+    name: string
+  ): Observable<Pagination<EntityDto>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
+    let params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('organizationId', 2)
+
+    // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
     return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/parties/all-parties`,
