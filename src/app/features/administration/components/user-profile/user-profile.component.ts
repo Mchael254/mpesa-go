@@ -11,6 +11,9 @@ import { LocalStorageService } from '../../../../shared/services/local-storage/l
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
+import {SetupsParametersService} from "../../../../shared/services/setups-parameters.service";
+import {CountryService} from "../../../../shared/services/setups/country/country.service";
+import {CountryDto} from "../../../../shared/data/common/countryDto";
 
 
 
@@ -33,6 +36,8 @@ export class UserProfileComponent {
   // showTabs: boolean;
   showTabs = true;
   storedOldPass: string;
+  phoneNumberRegex:string;
+  public countriesCode : CountryDto[];
 
     constructor(
       private fb: FormBuilder,
@@ -41,7 +46,9 @@ export class UserProfileComponent {
       private router: Router,
       private route: ActivatedRoute,
       private localStorageService: LocalStorageService,
-      private messageService: GlobalMessagingService
+      private messageService: GlobalMessagingService,
+      private setupsParameterService: SetupsParametersService,
+      private countryService: CountryService,
     ) {
       this.route.queryParams.subscribe((params) => {
         if (params['showTabs'] === 'false') {
@@ -55,6 +62,7 @@ export class UserProfileComponent {
   * details, and creating a change password form with validation.
   */
   ngOnInit(): void {
+   this.fetchCountries();
     this.createUserDetailsForm();
     this.getUserDetails();
     this.storedOldPass = this.localStorageService.getItem("detailsM");
@@ -82,6 +90,7 @@ export class UserProfileComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       phoneNumber: ['', Validators.required],
+      countryCode: ['', Validators.required],
       // id: ['', Validators.required],
       id: [{ value: '', disabled: true }, Validators.required],
       // pinNumber: ['', Validators.required],
@@ -91,6 +100,20 @@ export class UserProfileComponent {
       // status: ['', Validators.required]
       status: [{ value: '', disabled: true }, Validators.required],
     });
+
+    let name = 'SMS_NO_FORMAT';
+    this.setupsParameterService.getParameters(name)
+      .subscribe((data) => {
+        data.forEach((field) => {
+          if (field.name === 'SMS_NO_FORMAT') {
+            this.phoneNumberRegex = field.value;
+            this.userDetailsForm.get('phoneNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+            this.userDetailsForm.get('phoneNumber')?.updateValueAndValidity();
+
+          }
+          log.info('parameters>>>', this.phoneNumberRegex)
+        });
+      });
   }
 
  /**
@@ -100,7 +123,7 @@ export class UserProfileComponent {
   getUserDetails() {
     this.user = this.authService.getCurrentUser();
     // this.user = this.localStorageService.getItem("loginUserProfile")
-
+   log.info('user>>', this.user)
 
     if(this.utilService.isUserAdmin(this.user)) {
       const names = this.user.name.split(' ');
@@ -110,11 +133,12 @@ export class UserProfileComponent {
         id: this.user.id,
         firstName: firstName,
         lastName: otherNames,
-        phoneNumber: this.user.phoneNumber,
+        // phoneNumber: this.user.phoneNumber,
         pinNumber: this.user.pinNumber,
         email: this.user.emailAddress,
         status: this.user.status
       })
+      this.patchPhoneNumber(this.user.phoneNumber, 'countryCode', 'phoneNumber');
     } else if (this.utilService.isUserAgent(this.user)) {
 
     } else if(this.utilService.isUserClient(this.user)) {
@@ -127,14 +151,28 @@ export class UserProfileComponent {
  * user details DTO, and calling the `updateUserProfile` method of the `authService`.
  */
   updateUserDetails() {
+  this.submitted = true;
+  this.userDetailsForm.get('phoneNumber').markAsTouched();
+  if (this.userDetailsForm.invalid) {
+    // this.messageService.displayInfoMessage('Failed', 'phone number format: 0712345678');
+    log.info('update user form invalid')
+    return;
+  }
+
     const userDetailsFormValues = this.userDetailsForm.getRawValue();
-    log.debug("User details->", userDetailsFormValues)
+
+    const primaryCountryCode = userDetailsFormValues.countryCode;
+    const primaryPhoneNumber = userDetailsFormValues.phoneNumber;
+
+
+    const primaryCombinedPhoneNumber = this.extractPhoneNumber(primaryCountryCode, primaryPhoneNumber);
+    log.debug("User details->", userDetailsFormValues, userDetailsFormValues.countryCode)
     //preparing user details dto
     const userDetails: UserDetailsDTO = {
       firstName: userDetailsFormValues.firstName,
       idNumber: userDetailsFormValues.idNumber,
       lastName: userDetailsFormValues.lastName,
-      phoneNo: userDetailsFormValues.phoneNumber,
+      phoneNo: primaryCombinedPhoneNumber,
       pinNumber: userDetailsFormValues.pinNumber,
       status: userDetailsFormValues.accountStatus
     }
@@ -144,8 +182,10 @@ export class UserProfileComponent {
           this.changeSuccess = true;
           this.messageService.clearMessages();
           this.messageService.displaySuccessMessage('Success', 'Successfully Updated User Details!');
+          this.localStorageService.setItem('loginUserProfile', userDetails);
           setTimeout(() => {
             // this.router.navigate(['/home/dashboard']);
+            this.getUserDetails();
           }, 3000);
         },
       })
@@ -157,6 +197,8 @@ export class UserProfileComponent {
   */
   get f() { return this.changePassForm.controls; }
 
+  get u() { return this.userDetailsForm.controls; }
+
  /**
   * The function `onNewPassSave()` is used to change the password for a user and performs validation
   * checks to ensure the entered old password matches the stored old password and that the new password
@@ -165,7 +207,7 @@ export class UserProfileComponent {
   onNewPassSave() {
     const extras = this.localStorageService.getItem("extras");
     // const loginDetails = this.localStorageService.getItem("detailsM");
-    const username = extras.email;
+    const username = this.user.emailAddress;
     this.submitted = true;
 
     if (!this.changePassForm.invalid) {
@@ -200,4 +242,52 @@ export class UserProfileComponent {
     }
   }
 
+  fetchCountries(){
+    this.countryService.getCountries()
+      .subscribe( (data) => {
+        this.countriesCode = data;
+      });
+  }
+
+  private patchPhoneNumber(phoneNumber: string, countryCodeControlName: string, phoneControlName: string) {
+    if (phoneNumber) {
+      // Check if the phone number starts with '+'
+      const isInternational = phoneNumber.startsWith('+');
+
+      let countryCode, number;
+
+      if (isInternational) {
+        // International format: +254 20 278 2000
+        countryCode = phoneNumber.substring(0, 4);
+        number = phoneNumber.substring(4).replace(/\D/g, ''); // Remove non-numeric characters
+      } else {
+        // Local format: 020 278 2000
+        countryCode = ''; // Set an empty string for local format
+        number = phoneNumber.replace(/\D/g, ''); // Remove non-numeric characters
+      }
+
+      this.userDetailsForm.get(countryCodeControlName).setValue(countryCode);
+      this.userDetailsForm.get(phoneControlName).setValue(number);
+    } else {
+      this.userDetailsForm.get(countryCodeControlName).setValue('');
+      this.userDetailsForm.get(phoneControlName).setValue('');
+    }
+  }
+  private extractPhoneNumber(countryCode: string, phoneNumber: string): string {
+    if (!countryCode.startsWith('+')) {
+      countryCode = '+' + countryCode;
+    }
+
+    // Add logic to check if the phone number is in international or local format
+    const isInternational = phoneNumber.startsWith('+');
+
+    if (isInternational) {
+      // If it's already in international format, just return it
+      return countryCode + phoneNumber.replace(/\D/g, ''); // Remove non-numeric characters
+    } else {
+      // If it's in local format, assume a default country code or handle it as needed
+      const defaultCountryCode = '+254'; // You may adjust this based on your requirements
+      return defaultCountryCode + phoneNumber.replace(/\D/g, ''); // Remove non-numeric characters
+    }
+  }
 }
