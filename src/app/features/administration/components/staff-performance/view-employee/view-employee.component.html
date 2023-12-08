@@ -23,7 +23,7 @@
       </div>
       <div class="col-lg-3 col-sm-6 mx-2">
         <label >Employees</label><br>
-        <input type="text" class="form-control" [value]="aggregatedEmployeeData.totalElements" disabled>
+        <input type="text" class="form-control" [value]="aggregatedEmployeeData.numberOfElements" disabled>
       </div>
     </form>
 
@@ -37,12 +37,12 @@
                  [rowHover]="true"
                  [showCurrentPageReport]="true"
                  [rows]="pageSize"
-                 [totalRecords]="aggregatedEmployeeData?.totalElements"
+                 [totalRecords]="aggregatedEmployeeData?.numberOfElements"
                  [value]="aggregatedEmployeeData.content"
                  [(selection)]="selectedEmployee"
                  (sortFunction)="customSortEmployees($event)"
                  [customSort]="true"
-                 [globalFilterFields]="['staffs?.name','department?.departmentName','transaction?.module','staffs?.emailAddress']"
+                 [globalFilterFields]="['staffs.name','department.departmentName', 'transaction.module', 'staffs.emailAddress', 'transaction.totalCount','transaction.totalAmount']"
                  [sortField]="'name'" [sortOrder]="1"
                  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                  [scrollable]="true"
@@ -70,37 +70,38 @@
                 </span>
               </th>&ndash;&gt;-->
               <th>
-                <p-columnFilter type="text" field="aggregatedEmployee.staffs.name" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="staffs.name" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
               <th>
-                <p-columnFilter type="text" field="department?.departmentName" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="department.departmentName" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
               <th>
-                <p-columnFilter type="text" field="transaction?.module" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="transaction.module" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
               <th>
-                <p-columnFilter type="text" field="staffs?.emailAddress" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="staffs.emailAddress" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
               <th>
-                <p-columnFilter type="text" field="staffs?.transaction?" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="transaction.totalCount" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
               <th>
-                <p-columnFilter type="text" field="staffs?.totalAmount" matchMode="contains" [showMenu]="false"></p-columnFilter>
+                <p-columnFilter type="text" field="transaction.totalAmount" matchMode="contains" [showMenu]="false"></p-columnFilter>
               </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-aggregatedEmployee>
             <tr>
-              <td class="body" style="cursor:pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username, aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name)">{{aggregatedEmployee?.staffs?.name | titlecase}}</td>
+              <td class="body" style="cursor:pointer;" (click)="goToViewEmployeeTransactions(aggregatedEmployee?.staffs?.username, aggregatedEmployee?.transaction?.module, aggregatedEmployee?.staffs?.name, aggregatedEmployee?.transaction?.totalCount)">{{aggregatedEmployee?.staffs?.name | titlecase}}</td>
               <td class="body">{{aggregatedEmployee?.department?.departmentName | titlecase}}</td>
               <td class="body">
                 {{ aggregatedEmployee?.transaction?.module === 'U' ? 'Underwrite Policy' :
                 aggregatedEmployee?.transaction?.module === 'Q' ? 'Quotation' :
-                  aggregatedEmployee?.transaction?.module === 'C' ? 'Claims' : '' }}
+                  aggregatedEmployee?.transaction?.module === 'C' ? 'Claims' : ''
+                  === '' ? 'N/A' : 'N/A' }}
               </td>
-              <td class="body">{{aggregatedEmployee?.staffs?.emailAddress}}</td>
-              <td class="body">{{aggregatedEmployee?.transaction?.totalCount}}</td>
-              <td class="body" style="text-align: right">{{aggregatedEmployee?.transaction?.totalAmount | number:'1.2-2'}}</td>
+              <td class="body">{{aggregatedEmployee?.staffs?.emailAddress | lowercase }}</td>
+              <td class="body">{{aggregatedEmployee?.transaction?.totalCount === null ? 0 : aggregatedEmployee?.transaction?.totalCount }}</td>
+              <td class="body" style="text-align: right">{{aggregatedEmployee?.transaction?.totalAmount === null ? 0 : aggregatedEmployee?.transaction?.totalAmount | number:'1.2-2'}}</td>
 
             </tr>
           </ng-template>
