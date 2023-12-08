@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {Logger} from "../../../shared/services";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -11,6 +11,8 @@ const log = new Logger('CriteriaComponent')
   styleUrls: ['./criteria.component.css']
 })
 export class CriteriaComponent implements OnInit{
+
+  @ViewChild('closebutton') closebutton;
 
   @Input() criteria: Criteria[]
   public shouldShowSortOption: boolean = false;
@@ -113,6 +115,7 @@ export class CriteriaComponent implements OnInit{
       queryObject: this.selectedCriterion
     }
     this.filter.emit(reportOptions);
+    this.closebutton.nativeElement.click();
   }
 
   /**
