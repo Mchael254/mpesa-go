@@ -138,7 +138,7 @@
 
 /* responsive */
 @media (max-width: 576px) {
-  .dropdown-item {
+  /* .dropdown-item {
     font-size: 0.8em;
-  }
+  } */
 }
