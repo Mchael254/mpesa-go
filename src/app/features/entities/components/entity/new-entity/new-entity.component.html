@@ -90,6 +90,7 @@
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['identity_number']?.errors }">
                                     <div *ngIf="f['identity_number']?.errors['required']">Identity number is required</div>
+                                    <div *ngIf="f['identity_number'].errors['pattern']">ID Number format 12345678</div>
                                 </div>
                             </div>
                         </ng-container>
@@ -103,6 +104,7 @@
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['pin_number']?.errors }">
                                     <div *ngIf="f['pin_number']?.errors['required']">PIN Number is required</div>
+                                    <div *ngIf="f['pin_number'].errors['pattern']">PIN Number format A123456789R</div>
                                 </div>
                             </div>
                         </ng-container>
@@ -139,7 +141,7 @@
                               </p>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
-                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" hidden />
+                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" accept="image/jpeg, image/png" hidden />
                                     <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
                                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload image</label>
                                     <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">Edit</label>
