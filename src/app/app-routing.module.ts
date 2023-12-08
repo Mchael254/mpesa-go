@@ -7,7 +7,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 
 export const routes: Routes = [
   {
-    path: '', component: HomeComponent
+    // path: '', component: HomeComponent
+    path: '', loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
   },
   {
     path: 'auth', loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
