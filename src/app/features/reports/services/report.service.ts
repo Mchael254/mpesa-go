@@ -30,17 +30,17 @@ export class ReportService {
 
 
   getSubjectAreas(): Observable<SubjectArea[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<SubjectArea[]>(`/${baseUrl}/chart/charts/subject-areas`);
   }
 
   getCategoriesBySubjectAreaId(id: number): Observable<SubjectAreaCategory[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<SubjectAreaCategory[]>(`/${baseUrl}/chart/charts/categories/${id}`);
   }
 
   getReports(): Observable<Report[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<Report[]>(`/${baseUrl}/chart/charts`);
   }
 
@@ -49,25 +49,25 @@ export class ReportService {
   }*/
 
   getReport(id: number): Observable<Report> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<Report>(`/${baseUrl}/chart/charts/${id}`);
   }
 
   saveReport(report: Report): Observable<Report> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.post<Report>(
       `/${baseUrl}/chart/charts`, JSON.stringify(report), {headers: this.headers});
   }
 
   editReport(id: number, report: Report): Observable<Report> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.put<Report>(
       `/${baseUrl}/chart/charts/${id}`, JSON.stringify(report), { headers: this.headers }
     );
   }
 
   deleteReport(reportId: number): Observable<string> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.delete<string>(`/${baseUrl}/chart/charts/${reportId}`, {headers: this.headers});
   }
 
