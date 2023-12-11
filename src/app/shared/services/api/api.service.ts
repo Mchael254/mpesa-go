@@ -22,7 +22,7 @@ export class ApiService {
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json')
     .set('X-TenantId', environment.TENANT_ID)
-    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN'));
+    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '');
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');

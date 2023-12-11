@@ -25,7 +25,7 @@
       <div class="full-border">
         <div class="d-flex justify-content-between">
           <div class="fw-medium text-black">
-            {{ screenData["system"]?.replaceAll("_", " ") | titlecase }} Web
+            {{ screenData["module"]?.replaceAll("_", " ") | titlecase }} Web
             Pages
           </div>
         </div>
@@ -33,7 +33,7 @@
           <ng-container *ngFor="let item of moduleList; let i = index">
             <div>
               <div class="text-module fw-medium" (click)="selectPage(item)">
-                {{ item | titlecase }}
+                {{ item?.replaceAll("_", " ") | titlecase }}
               </div>
             </div>
           </ng-container>
