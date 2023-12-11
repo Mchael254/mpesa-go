@@ -25,7 +25,7 @@
             size="medium"
             bdColor="rgba(255, 255, 255, 0.966)"
           ></ngx-spinner>
-  
+
 
           <div [formGroup]="medicalHistoryForm" class="w-100">
             <div class="my-lg-5">
@@ -54,40 +54,44 @@
                     <label class="form-check-label" for="female">No</label>
                   </span>
                 </div>
-                <div *ngIf="getValue('question1') === 'Y'">
-                  <div class="row">
+                <div *ngIf="getValue('question1') === 'Y'" formGroupName="medical_personnel">
+                  <div class="row" >
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
-                      <label for="surname">Name</label>
+                      <label for="name">Name</label>
                       <input
                         type="text"
                         class="form-control"
-                        [id]="'surname'"
+                        formControlName="name"
+                        [id]="'name'"
                       />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
-                      <label for="other_name">Location</label>
+                      <label for="address">Address</label>
                       <input
                         type="text"
                         class="form-control"
-                        [id]="'other_name'"
+                        formControlName="address"
+                        [id]="'address'"
                       />
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
-                      <label for="surname">Phone No.</label>
+                      <label for="phone_no">Phone No.</label>
                       <input
                         type="text"
                         class="form-control"
-                        [id]="'surname'"
+                        formControlName="phone_no"
+                        [id]="'phone_no'"
                       />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
-                      <label for="other_name">Email Address</label>
+                      <label for="email_address">Email Address</label>
                       <input
                         type="text"
                         class="form-control"
-                        [id]="'other_name'"
+                        formControlName="email_address"
+                        [id]="'email_address'"
                       />
                     </div>
                   </div>
@@ -125,10 +129,11 @@
 
               <div class="row" *ngIf="getValue('question2') === 'Y'">
                 <div class="col-lg-4 col-md-6 col-sm-12 py-3">
-                  <label for="expected_date">Expected delivery date</label>
+                  <label for="pregnancy_due_date">Expected delivery date</label>
                   <p-calendar
                     appendTo="body"
                     dateFormat="dd/mm/yy"
+                    formControlName="pregnancy_due_date"
                     [showIcon]="true"
                     [showButtonBar]="true"
                   >
@@ -190,7 +195,7 @@
                   class="form-check-input"
                   type="radio"
                   id="male"
-                  formControlName="question4"
+                  formControlName="physical_challenge"
                   value="Y"
                 />
                 <label class="form-check-label" for="male">Yes</label>
@@ -200,7 +205,7 @@
                   class="form-check-input"
                   type="radio"
                   id="female"
-                  formControlName="question4"
+                  formControlName="physical_challenge"
                   value="N"
                 />
                 <label class="form-check-label" for="female">No</label>
@@ -354,7 +359,7 @@
                     </div>
                   </div>
                   <div
-                    *ngIf="medicalListOne.length === 0"
+                    *ngIf="medicalListOne?.length === 0"
                     class="d-flex justify-content-center text-danger"
                   >
                     No Available Data!
@@ -532,7 +537,7 @@
                       </div>
                     </div>
                     <div
-                      *ngIf="medicalListOne.length === 0"
+                      *ngIf="medicalListOne?.length === 0"
                       class="d-flex justify-content-center text-danger"
                     >
                       No Available Data!
@@ -557,10 +562,10 @@
       <i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp; Back
     </button>
     <button
-      routerLink="/home/lms/ind/quotation/summary"
       style="padding: 0.6em"
       type="button"
       class="btn btn-primary btn-sm"
+      (click)="nextPage()"
     >
       Continue &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>

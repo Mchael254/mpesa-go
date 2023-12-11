@@ -46,12 +46,15 @@ export class LmsIndividualComponent implements OnInit {
   }
 
   private getlmsIndForms(){
-    this.form_service.getAllForms().subscribe((data: any) =>{
-      this.formList = data['data']
+    return this.form_service.getAllForms().subscribe((data: any) =>{
+      this.formList = data['data'];
+      
       let temp = this.formList.map((data: any) =>{
         return data['system_name'];
       })
       this.systemList = new Set<string>(temp);
+      this.selectSystem("LMS_INDIVIDUAL")
+      
       
     })
   }
@@ -64,25 +67,36 @@ export class LmsIndividualComponent implements OnInit {
   // Generate rows with dynamic content
   rows: any[] = []
 
-  selectModule(module: string){
+  selectSystem(module: string){
     this.screenData['system'] = module;    
     let temp_module = this.formList.filter((data: any) =>     
       {return data['system_name']===module}).map(data=>data['module']);
-    this.moduleList = new Set<string>(temp_module);
-    this.pagesList = [];
+    this.systemList = new Set<string>(temp_module);
     }
+
+  selectModule(module: string){    
+    this.screenData['module'] = module;    
+    let temp_pages = this.formList.filter((data: any) =>  
+    {return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'])}   
+      ).map(data=>data['screen_name']);
+    this.moduleList = new Set<string>(temp_pages);
+    this.pagesList = [];
+
+    
+    }
+
+
 
   addForm(){
 
-    this.selectForm(null)
+    this.selectForm(null, true)
 
   }
 
   selectPage(page: any){
-    
-    this.screenData['module'] = page;
+    this.screenData['screen_name'] = page;
      this.pagesList = this.formList.filter((data: any) => {
-       return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'])
+       return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'] && data['screen_name']===this.screenData['screen_name'])
     }).map(data =>{
       let tr =  data['inputs']['en'];
       tr['code'] = data['code'];
@@ -130,7 +144,16 @@ export class LmsIndividualComponent implements OnInit {
     let val = {...this.formsForm.value};
 
     this.form_service.saveForm(val).subscribe(data =>{
-      console.log(data);
+      this.formList = this.formList.map(da => {
+        if(da['code']=== data['data']['code']){
+          return data['data']
+        }
+        return da
+      })
+      this.selectSystem(this.screenData['system']);
+      this.selectModule(this.screenData['module']);
+      this.selectPage(this.screenData['screen_name'])
+      
       this.closeModal()
       this.spinner_Service.hide('form_modal_view');
       this.toast_service.success('Save Succesfully!!', 'FORM UPDATE')
