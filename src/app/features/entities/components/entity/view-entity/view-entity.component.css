@@ -232,3 +232,11 @@
   border: 0;
   border-radius: 2px;
 }
+
+
+/* responsive */
+@media (max-width: 576px) {
+    .account_role_actions {
+        padding: 10px;
+    }
+}
