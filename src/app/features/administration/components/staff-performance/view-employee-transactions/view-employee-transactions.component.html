@@ -15,21 +15,21 @@
     <div class="col-lg-12 pb-2">
       <div class="row col-lg-12 col-sm-6">
         <label class="transactionLabel w-auto">Employee Name: </label>
-        <p class="col-lg-6 px-lg-0" style="color: #000">{{name}}</p>
+        <p class="col-lg-6 col-6 px-lg-0" style="color: #000">{{name}}</p>
       </div>
 
     </div>
-    <div class="row col-lg-12 pb-2">
-      <div class="col-lg-2 col-sm-4">
+    <div class="row pb-2">
+      <div class="col-lg-2 col-sm-4 col-6">
         <label class="transactionLabel">From:</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="sortEmployeeTransactions()">
       </div>
-      <div class="col-lg-2 col-sm-4">
+      <div class="col-lg-2 col-sm-4 col-6">
         <label class="transactionLabel">To:</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="sortEmployeeTransactions()">
       </div>
 
-      <div class="col-lg-2 col-sm-4">
+      <div class="col-lg-2 col-sm-4 col-6">
         <label class="transactionLabel">Module:</label><br>
         <select class="form-control form-select" formControlName="module" id="module" [(ngModel)]="selectedModule" (change)="sortEmployeeTransactions()">
           <option value="" selected>All</option>
@@ -38,7 +38,7 @@
       </div>
 
 
-      <div class="col-lg-2 col-sm-6">
+      <div class="col-lg-2 col-sm-6 col-6">
           <label class="transactionLabel">System: </label>
           <select formControlName="system" id="system" class="employeeSelect form-select">
             <!--<option value="" disabled selected>Select option</option>
@@ -46,14 +46,14 @@
             <option value="gis">GIS</option>
           </select>
       </div>
-      <div class="col-lg-2 col-sm-6">
+      <div class="col-lg-2 col-sm-6 col-6">
           <label class="transactionLabel">Transaction Type: </label>
           <select formControlName="transactionType" id="transactionType" class="employeeSelect form-select" (change)="sortEmployeeTransactions()">
             <option value="">All</option>
             <option *ngFor="let businessTransaction of businessTransactions" value="{{businessTransaction.code}}">{{businessTransaction.transactionType | titlecase}}</option>
           </select>
       </div>
-      <div class="col-lg-2 col-sm-6">
+      <div class="col-lg-2 col-sm-6 col-6">
           <label class="transactionLabel">Amount: </label>
           <select class="employeeSelect form-select" formControlName="amount" (change)="sortEmployeeTransactions()">
             <option value="all">All</option>
@@ -159,3 +159,5 @@
     </div>
   </div>
 </div>
+
+<div class="mobile-bottom"></div>
