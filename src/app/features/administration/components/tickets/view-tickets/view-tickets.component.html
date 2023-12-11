@@ -45,16 +45,16 @@
 
 <div class="d-flex my-4 mx-4">
   <form [formGroup]="sortingForm" style="background: none; display: contents">
-    <div class="row col-lg-6">
-      <div class="col-lg-3 col-sm-6">
+    <div class="row">
+      <div class="col-lg-3 col-sm-6 col-6">
         <label>From</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="sortTickets()">
       </div>
-      <div class="col-lg-3 col-sm-6">
+      <div class="col-lg-3 col-sm-6 col-6">
         <label>To</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="sortTickets()">
       </div>
-      <div class="col-lg-3 col-sm-6">
+      <div class="col-lg-3 col-sm-6 col-6">
         <label>Type</label><br>
         <select class="form-control form-select" formControlName="ticketTypes" id="type" (change)="sortTickets()">
           <option value="" disabled selected>Select option</option>
@@ -63,7 +63,7 @@
           </option>
         </select>
       </div>
-      <div class="col-lg-3 col-sm-6">
+      <div class="col-lg-3 col-sm-6 col-6">
         <label>Module</label><br>
         <!--          <select formControlName="ticketModules" id="module" [(ngModel)]="selectedModule" (change)="searchModule($event)">-->
         <select class="form-control form-select" formControlName="ticketModules" id="module" (change)="sortTickets()">
@@ -286,3 +286,6 @@
   (actionReassignEmitter)="handleAction($event)"
   (reassignedTickets)="reassignSubmitted($event)">
 </app-reassign-ticket-modal>
+
+<div class="mobile-bottom"></div>
+
