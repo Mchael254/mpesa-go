@@ -3,31 +3,33 @@
 
 <div class="mx-4 my-4">
 
-  <div>
-
-    <button type="button" class="btn float-end" id="btn-help">
-      <i class="fa fa-question-circle" style="color:#00529B;"></i>
-    </button>
-    <label class="btn float-end" style="color: var(--primary-color);">Help</label>
-
+  
+  <div class="row">
+    <div>
+      <button type="button" class="btn float-end" id="btn-help">
+        <i class="fa fa-question-circle" style="color:#00529B;"></i>
+      </button>
+      <label class="btn float-end" style="color: var(--primary-color);">Help</label>
+    </div>
   </div>
-  <div class="row col-lg-6 pb-2">
-    <form [formGroup]="sortingForm" style="background: none; display: contents">
-      <div class="col-lg-3 col-sm-6">
+
+  <form [formGroup]="sortingForm" id="filter-form" style="background: none; display: contents">
+    <div class="row  pb-2">
+      <div class="col-lg-3 col-sm-6 col-4">
         <label >From</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="dateSortEmployees()">
       </div>
-      <div class="col-lg-3 col-sm-6 mx-2">
+      <div class="col-lg-3 col-sm-6 col-4">
         <label >To</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="dateSortEmployees()">
       </div>
-      <div class="col-lg-3 col-sm-6 mx-2">
+      <div class="col-lg-3 col-sm-6 col-4">
         <label >Employees</label><br>
         <input type="text" class="form-control" [value]="aggregatedEmployeeData.numberOfElements" disabled>
       </div>
-    </form>
+    </div>
+  </form>
 
-  </div>
   <div class="col-md-12 col-lg-12 col-xxxl-12">
     <div class="card">
       <div class="card-body">
@@ -115,3 +117,6 @@
     </div>
   </div>
 </div>
+
+<div class="mobile-bottom"></div>
+
