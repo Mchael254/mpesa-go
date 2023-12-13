@@ -1,13 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { UnderwritingComponent } from './components/underwriting/underwriting.component';
-import { EndorsementComponent } from './components/endorsement/endorsement.component';
-import { SummaryComponent } from './components/summary/summary.component';
+import { PolicySummaryComponent } from './components/policy-summary/policy-summary.component';
 
 const routes: Routes = [
-  {path: 'underwriting', component: UnderwritingComponent},
-  {path: 'endorsement', component: EndorsementComponent},
-  {path: 'summary', component: SummaryComponent}
+  {path: 'policySummary', component: PolicySummaryComponent}
 ];
 
 @NgModule({

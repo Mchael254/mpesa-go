@@ -137,10 +137,10 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   onProceed() {
-    this.router.navigate(['/home/lms/grp/policy/summary']);
+    this.router.navigate(['/home/lms/grp/underwriting/summary']);
   }
 
   onBack() {
-    this.router.navigate(['/home/lms/grp/policy/endorsement']);
+    this.router.navigate(['/home/lms/grp/underwriting/endorsement']);
   }
 }
