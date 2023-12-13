@@ -1,4 +1,4 @@
-.main {}
+
 
 .container {
   width: 1216px;
@@ -19,6 +19,10 @@
   border-radius: 4px;
   background: #00529B;
   float: right;
+}
+
+.policy-button:hover {
+  background-color: #459fee;
 }
 
 .text {
@@ -62,6 +66,10 @@
   padding-left: 35px;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.back-button:hover {
+  color: #007bff;
 }
 
 :host ::ng-deep {}
@@ -217,5 +225,9 @@
   border-radius: 10px;
   overflow: hidden;
 }
+
+/* @media screen and (max-width: 800px) {
+    
+} */
 
 

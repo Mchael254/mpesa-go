@@ -1,9 +1,9 @@
-<div class="main">
-    <div class="container">
+<div class="main col-12">
+    <div class="container col-12">
         <div style="text-align: center;"><span class="quote-text">Quotation Summary</span></div>
         <div class="row col-12 mt-3" style="color: black; padding-left: 25px;">
-            <div class="col-md-4 col-xs-12">
-                <table style="width: 100%; min-height: 133px;">
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
@@ -26,8 +26,8 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-md-4 col-xs-12">
-                <table style="width: 100%; min-height: 100px;">
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Client: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
@@ -46,8 +46,8 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-md-4 col-xs-12">
-                <table style="width: 100%; min-height: 100px;">
+            <div class="col-md-4 col-xs-12 col-sm-12">
+                <table style="width: 100%;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Product: </td>
                         <td style="width: 50%; align-items: right;">{{ quoteSummary }}</td>
@@ -69,7 +69,7 @@
         </div>
 
     </div>
-    <div class="col-12 policy-button-container">
+    <div class="col-xs-12 policy-button-container">
         <button class="policy-button" (click)="onConvert()">
             <span class="text">Convert to policy</span>
         </button>
