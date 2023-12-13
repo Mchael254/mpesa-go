@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { CoverageService } from '../../../../service/coverage/coverage.service';
-import { CategoryDetailsDto } from '../../../../models/categoryDetails';
-import { CoverTypePerProdDTO, CoverTypesDto, OccupationDTO, PremiumMaskDTO, SelectRateTypeDTO } from '../../../../models/coverTypes/coverTypesDto';
-import { MembersDTO } from '../../../../models/members';
 import { formatDate } from '@angular/common';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MessageService } from "primeng/api";
+import { CategoryDetailsDto } from '../../models/categoryDetails';
+import { MembersDTO } from '../../models/members';
+import { CoverageService } from '../../service/coverage/coverage.service';
+import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
 
 
 @AutoUnsubscribe

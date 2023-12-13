@@ -403,13 +403,13 @@
 
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <label for="surname">Surname</label>
-                                        <select class="form-select" [id]="'surname'"
-                                            formControlName="surname">
-                                            <ng-container *ngFor="let cover">
-                                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}
-                                                </option>
-                                            </ng-container>
-                                        </select>
+                                        <div class="form-group">
+                                            <div>
+                                                <input type="text" pInputText class="form-control"
+                                                    id="surname" [style]="{ width: '100%' }"
+                                                    formControlName="surname">
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mt-3">
                                         <div>
@@ -437,23 +437,25 @@
 
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <label for="otherNames">Other name</label>
-                                        <select class="form-select" [id]="'otherNames'" formControlName="otherNames">
-                                            <ng-container *ngFor="let cover">
-                                                <option [value]="cover['name']">{{ cover['value'] | titlecase }}
-                                                </option>
-                                            </ng-container>
-                                        </select>
+                                        <div class="form-group">
+                                            <div>
+                                                <input type="text" pInputText class="form-control"
+                                                    id="otherNames" [style]="{ width: '100%' }"
+                                                    formControlName="otherNames">
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="mt-3">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <label for="payrollNumber">Payroll/member no</label>
-                                            <select class="form-select" [id]="'payrollNumber'"
-                                                formControlName="payrollNumber">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <div class="form-group">
+                                                <div>
+                                                    <input type="text" pInputText class="form-control"
+                                                        id="payrollNumber" [style]="{ width: '100%' }"
+                                                        formControlName="payrollNumber">
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -461,12 +463,13 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <label for="monthlyEarning">Monthly earning</label>
-                                            <select class="form-select" [id]="'monthlyEarning'"
-                                                formControlName="monthlyEarning">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <div class="form-group">
+                                                <div>
+                                                    <input type="text" pInputText class="form-control"
+                                                        id="monthlyEarning" [style]="{ width: '100%' }"
+                                                        formControlName="monthlyEarning">
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -480,11 +483,13 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <label for="category">Category</label>
-                                            <select class="form-select" [id]="'category'" formControlName="category">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <div class="form-group">
+                                                <div>
+                                                    <input type="text" pInputText class="form-control"
+                                                        id="category" [style]="{ width: '100%' }"
+                                                        formControlName="category">
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -492,12 +497,7 @@
                                     <div class="mt-3">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <label for="joiningDate">Joining date</label>
-                                            <select class="form-select" [id]="'joiningDate'"
-                                                formControlName="joiningDate">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <p-calendar formControlName="joiningDate"></p-calendar>
                                         </div>
 
                                     </div>
@@ -520,13 +520,13 @@
 
                                                     <div class="col-md-4 col-sm-12">
                                                         <label for="coverType">Cover type</label>
-                                                        <select class="form-select" [id]="'coverType'"
-                                                            formControlName="coverType">
-                                                            <ng-container *ngFor="let cover">
-                                                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc']
-                                                                    | titlecase }}</option>
-                                                            </ng-container>
-                                                        </select>
+                                                        <div class="form-group">
+                                                            <div>
+                                                                <input type="text" pInputText class="form-control"
+                                                                    id="coverType" [style]="{ width: '100%' }"
+                                                                    formControlName="coverType">
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                     <div class="col-md-4">
@@ -579,8 +579,7 @@
         </div>
         <!-- end of modal to capture member details -->
 
-        <!-- cover details modal -->
-        <!-- detailed modal -->
+        <!-- cover types -->
         <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel"
             aria-hidden="true" style="color: #333;">
             <div class="modal-dialog modal-xl">
@@ -591,64 +590,60 @@
                             (click)="closeDetailedModal()"></button>
                     </div>
                     <div class="modal-body">
-                        <form [formGroup]="detailedCovDetsForm">
+                        <form [formGroup]="coverDetsForm">
                             <div class="row">
                                 <div class="col-md-4">
 
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <label for="clientType">Cover type</label>
-                                        <select class="form-select" [id]="'detailedCoverType'"
-                                            formControlName="detailedCoverType">
-                                            <ng-container *ngFor="let cover">
-                                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}
-                                                </option>
-                                            </ng-container>
-                                        </select>
+                                        <label for="coverType">Cover type</label>
+                                        <div>
+                                            <input type="text" pInputText class="form-control"
+                                                id="coverType" [style]="{ width: '100%' }"
+                                                formControlName="coverType">
+                                        </div>
                                     </div>
                                     <div class="mt-3">
                                         <div>
-                                            <label for="premiumMask">No of members</label>
+                                            <label for="noOfMembers">No of members</label>
                                         </div>
                                         <div class="form-group">
                                             <div>
                                                 <input type="number" pInputText class="form-control"
-                                                    id="detailedPercentageMainYr" [style]="{ width: '100%' }"
-                                                    formControlName="detailedPercentageMainYr">
+                                                    id="noOfMembers" [style]="{ width: '100%' }"
+                                                    formControlName="noOfMembers">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="mt-3">
                                         <div>
-                                            <label for="rateDivFactor">Dependant type</label>
+                                            <label for="dependantType">Dependant type</label>
                                         </div>
                                         <div>
-                                            <input type="text" pInputText class="form-control" id="sumAssured"
-                                                [style]="{ width: '100%' }" formControlName="rate">
+                                            <input type="text" pInputText class="form-control" id="dependantType"
+                                                [style]="{ width: '100%' }" formControlName="dependantType">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
 
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <label for="clientType">Override premiums</label>
-                                        <select class="form-select" [id]="'selectRate'" formControlName="selectRate">
-                                            <ng-container *ngFor="let cover">
-                                                <option [value]="cover['name']">{{ cover['value'] | titlecase }}
-                                                </option>
-                                            </ng-container>
-                                        </select>
+                                        <label for="overridePremiums">Override premiums</label>
+                                        <div>
+                                            <input type="text" pInputText class="form-control"
+                                                id="overridePremiums" [style]="{ width: '100%' }"
+                                                formControlName="overridePremiums">
+                                        </div>
                                     </div>
 
                                     <div class="mt-3">
 
                                         <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <label for="overridePremiums">Average earning per member</label>
-                                            <select class="form-select" [id]="'premiumMask'"
-                                                formControlName="premiumMask">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <label for="averageEarning">Average earning per member</label>
+                                            <div>
+                                                <input type="text" pInputText class="form-control"
+                                                    id="averageEarning" [style]="{ width: '100%' }"
+                                                    formControlName="averageEarning">
+                                            </div>
                                         </div>
 
                                     </div>
@@ -656,25 +651,23 @@
                                 <div class="col-md-4">
 
                                     <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <label for="clientType">Average ANB</label>
-                                        <select class="form-select" [id]="'selectRate'" formControlName="selectRate">
-                                            <ng-container *ngFor="let cover">
-                                                <option [value]="cover['name']">{{ cover['value'] | titlecase }}
-                                                </option>
-                                            </ng-container>
-                                        </select>
+                                        <label for="averageAnb">Average ANB</label>
+                                        <div>
+                                            <input type="text" pInputText class="form-control"
+                                                id="averageAnb" [style]="{ width: '100%' }"
+                                                formControlName="averageAnb">
+                                        </div>
                                     </div>
 
                                     <div class="mt-3">
 
                                         <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <label for="overridePremiums">Sum assured</label>
-                                            <select class="form-select" [id]="'premiumMask'"
-                                                formControlName="premiumMask">
-                                                <ng-container>
-                                                    <!-- <option [value]="mask['pmas_sht_desc']">{{ mask['pmas_sht_desc'] | titlecase }}</option> -->
-                                                </ng-container>
-                                            </select>
+                                            <label for="sumAssured">Sum assured</label>
+                                            <div>
+                                                <input type="text" pInputText class="form-control"
+                                                    id="sumAssured" [style]="{ width: '100%' }"
+                                                    formControlName="sumAssured">
+                                            </div>
                                         </div>
 
                                     </div>
@@ -696,9 +689,9 @@
                                                 <div class="row col-md-12">
 
                                                     <div class="col-md-4 col-sm-12">
-                                                        <label for="clientType">Loading</label>
-                                                        <select class="form-select" [id]="'detailedCoverType'"
-                                                            formControlName="detailedCoverType">
+                                                        <label for="loading">Loading</label>
+                                                        <select class="form-select" [id]="'loading'"
+                                                            formControlName="loading">
                                                             <ng-container *ngFor="let cover">
                                                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc']
                                                                     | titlecase }}</option>
@@ -708,14 +701,14 @@
 
                                                     <div class="col-md-4">
                                                         <div>
-                                                            <label for="premiumMask">Rate</label>
+                                                            <label for="rate">Rate</label>
                                                         </div>
                                                         <div class="form-group">
                                                             <div>
                                                                 <input type="number" pInputText class="form-control"
-                                                                    id="detailedPercentageMainYr"
+                                                                    id="rate"
                                                                     [style]="{ width: '100%' }"
-                                                                    formControlName="detailedPercentageMainYr">
+                                                                    formControlName="rate">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -726,8 +719,8 @@
                                                         </div>
                                                         <div>
                                                             <input type="text" pInputText class="form-control"
-                                                                id="sumAssured" [style]="{ width: '100%' }"
-                                                                formControlName="rate">
+                                                                id="rateDivFactor" [style]="{ width: '100%' }"
+                                                                formControlName="rateDivFactor">
                                                         </div>
                                                     </div>
 
@@ -747,13 +740,7 @@
                 </div>
             </div>
         </div>
-        <!-- end of detailed modal -->
-
-        <!-- aggregate modal -->
-        <!-- end of aggregate modal -->
-
-
-        <!-- end of cover details modal -->
+        <!-- end of cover types modal -->
 
 
         <!-- category modal -->
@@ -773,7 +760,7 @@
                                     <!-- Content A (left side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="description">Short description<span
+                                            <label class="label" for="shortDescription">Short description<span
                                                     class="required"></span></label>
                                         </div>
                                         <div class="form-group">
@@ -785,13 +772,10 @@
                                         <div class="col-lg-12 col-md-12 col-sm-12">
                                             <label class="label" for="premiumMask">Premium mask<span
                                                     class="required"></span></label>
-                                            <select class="form-select" id="premium_mask_short_description"
-                                                formControlName="premiumMask">
-                                                <ng-container *ngFor="let mask">
-                                                    <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
-                                                        titlecase }}</option>
-                                                </ng-container>
-                                            </select>
+                                                    <div class="form-group">
+                                                        <input type="text" pInputText class="form-control"
+                                                            formControlName="premiumMask" />
+                                                    </div>
                                         </div>
                                     </div>
 
@@ -800,7 +784,7 @@
                                     <!-- Content B (right side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="shortDescription">Description<span
+                                            <label class="label" for="description">Description<span
                                                     class="required"></span></label>
                                         </div>
                                         <div class="form-group">
@@ -848,31 +832,31 @@
                             (click)="closeCoInsurerModal()"></button>
                     </div>
                     <div class="modal-body">
-                        <form [formGroup]="categoryDetailForm">
+                        <form [formGroup]="coInsuranceForm">
                             <div class="row">
                                 <div class="col-md-6">
                                     <!-- Content A (left side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="description">Select co
+                                            <label class="label" for="conInsurer">Select co
                                                 insurer<span></span></label>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="text" pInputText class="form-control"
-                                                formControlName="shortDescription" />
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <label class="label" for="premiumMask">Co-insurance
-                                                share<span></span></label>
-                                            <select class="form-select" id="premium_mask_short_description"
-                                                formControlName="premiumMask">
+                                        <select class="form-select" id="conInsurer"
+                                                formControlName="conInsurer">
                                                 <ng-container *ngFor="let mask">
                                                     <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
                                                         titlecase }}</option>
                                                 </ng-container>
                                             </select>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <label class="label" for="coInsuranceShare">Co-insurance
+                                                share<span></span></label>
+                                                <div class="form-group">
+                                                    <input type="text" pInputText class="form-control"
+                                                        formControlName="coInsuranceShare" />
+                                                </div>
                                         </div>
                                     </div>
 
@@ -886,14 +870,14 @@
                                         </div>
                                         <div class="mt-2" style="padding-top: 5px;">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                                    id="inlineRadio1" value="option1">
-                                                <label class="form-check-label" for="inlineRadio1">Leader</label>
+                                                <input class="form-check-input" type="radio" name="leaderFollower"
+                                                    id="leader" value="leader" formControlName="leaderFollower">
+                                                <label class="form-check-label" for="leader">Leader</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="inlineRadioOptions"
-                                                    id="inlineRadio2" value="option2">
-                                                <label class="form-check-label" for="inlineRadio2">Follower</label>
+                                                <input class="form-check-input" type="radio" name="leaderFollower"
+                                                    id="follower" value="follower" formControlName="leaderFollower">
+                                                <label class="form-check-label" for="follower">Follower</label>
                                             </div>
                                         </div>
 
@@ -901,12 +885,12 @@
                                     </div>
                                     <div class="mt-3">
                                         <div>
-                                            <label class="label" for="multiplesOfEarnings">Service
+                                            <label class="label" for="serviceCharge">Service
                                                 charge<span></span></label>
                                         </div>
                                         <div class="form-group">
                                             <input type="text" pInputText class="form-control"
-                                                formControlName="multiplesOfEarnings" />
+                                                formControlName="serviceCharge" />
                                         </div>
                                     </div>
                                 </div>
@@ -927,7 +911,7 @@
         <!-- edit endorsement -->
         <div class="modal fade" tabindex="-1" #endorsementDetsModal id="endorsementDetsModal"
             aria-labelledby="endorsementDetsModal" aria-hidden="true" style="color: #333;">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="endorsementDetsModal">Edit endorsement details</h5>
@@ -935,37 +919,34 @@
                             (click)="closeEndorsementDetsModalModal()"></button>
                     </div>
                     <div class="modal-body">
-                        <form [formGroup]="categoryDetailForm">
+                        <form [formGroup]="endorsementDetailForm">
                             <div class="row">
                                 <div class="col-md-6">
                                     <!-- Content A (left side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="description">Intermediary<span></span></label>
+                                            <label class="label" for="intermediary">Intermediary<span></span></label>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="text" pInputText class="form-control"
-                                                formControlName="shortDescription" />
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <label class="label" for="premiumMask">Effective date<span></span></label>
-                                            <select class="form-select" id="premium_mask_short_description"
-                                                formControlName="premiumMask">
+                                        <select class="form-select" id="intermediary"
+                                                formControlName="intermediary">
                                                 <ng-container *ngFor="let mask">
                                                     <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
                                                         titlecase }}</option>
                                                 </ng-container>
                                             </select>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <label class="label" for="effctiveDate">Effective date<span></span></label>
+                                            <p-calendar formControlName="effctiveDate"></p-calendar>
                                         </div>
                                     </div>
                                     <div class="mt-3">
                                         <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <label class="label" for="premiumMask">Payment
+                                            <label class="label" for="paymentFrequency">Payment
                                                 ferquency<span></span></label>
                                             <select class="form-select" id="premium_mask_short_description"
-                                                formControlName="premiumMask">
+                                                formControlName="paymentFrequency">
                                                 <ng-container *ngFor="let mask">
                                                     <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
                                                         titlecase }}</option>
@@ -979,35 +960,42 @@
                                     <!-- Content B (right side) -->
                                     <div>
                                         <div>
-                                            <label class="label" for="shortDescription">Mask<span></span></label>
+                                            <label class="label" for="mask">Mask<span></span></label>
                                         </div>
-                                        <div class="form-group">
-                                            <div class="form-group">
-                                                <input type="text" pInputText class="form-control"
-                                                    formControlName="description" />
-                                            </div>
-                                        </div>
+                                        <select class="form-select" id="mask"
+                                                formControlName="mask">
+                                                <ng-container *ngFor="let mask">
+                                                    <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
+                                                        titlecase }}</option>
+                                                </ng-container>
+                                            </select>
 
                                     </div>
                                     <div class="mt-3">
                                         <div>
-                                            <label class="label" for="multiplesOfEarnings">Duration
+                                            <label class="label" for="durationType">Duration
                                                 type<span></span></label>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="number" pInputText class="form-control"
-                                                formControlName="multiplesOfEarnings" />
-                                        </div>
+                                        <select class="form-select" id="durationType"
+                                                formControlName="durationType">
+                                                <ng-container *ngFor="let mask">
+                                                    <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
+                                                        titlecase }}</option>
+                                                </ng-container>
+                                            </select>
                                     </div>
                                     <div class="mt-3">
                                         <div>
-                                            <label class="label" for="multiplesOfEarnings">Facultative
+                                            <label class="label" for="facultativeType">Facultative
                                                 type<span></span></label>
                                         </div>
-                                        <div class="form-group">
-                                            <input type="number" pInputText class="form-control"
-                                                formControlName="multiplesOfEarnings" />
-                                        </div>
+                                        <select class="form-select" id="facultativeType"
+                                                formControlName="facultativeType">
+                                                <ng-container *ngFor="let mask">
+                                                    <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] |
+                                                        titlecase }}</option>
+                                                </ng-container>
+                                            </select>
                                     </div>
                                 </div>
                             </div>

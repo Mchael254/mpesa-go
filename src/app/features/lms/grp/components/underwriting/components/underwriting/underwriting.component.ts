@@ -22,7 +22,7 @@ export class UnderwritingComponent implements OnInit, OnDestroy {
   }
 
   onConvert() {
-    this.router.navigate(['/home/lms/grp/policy/endorsement']);
+    this.router.navigate(['/home/lms/grp/underwriting/endorsement']);
   }
 
 }
