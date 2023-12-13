@@ -48,7 +48,7 @@ export class SubClassCoverTypesSectionsService {
   }
 
   getSubclassCovertypeSections(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=100000000000`).pipe(
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=10000`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

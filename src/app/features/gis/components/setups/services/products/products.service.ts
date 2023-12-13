@@ -120,4 +120,10 @@ export class ProductsService {
     )
   
   }
+  getCoverToDate(coverFromDate:string,productCode :Number):Observable<any>{
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/products/coverToDate?coverFromDate=${coverFromDate}&productCode=${productCode}`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
 }
