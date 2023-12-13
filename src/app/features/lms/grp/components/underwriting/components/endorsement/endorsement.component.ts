@@ -11,8 +11,10 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   quoteSummary = 'endorsement';
   searchFormMemberDets: FormGroup;
   memberDetailsForm: FormGroup;
-  detailedCovDetsForm: FormGroup;
+  coverDetsForm: FormGroup;
   categoryDetailForm: FormGroup;
+  endorsementDetailForm: FormGroup;
+  coInsuranceForm: FormGroup;
   quotationCalcType = 'D';
 
   constructor(
@@ -23,8 +25,10 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.memberDetsForm();
     this.searchFormMember();
-    this.detailedCoverDetails();
+    this.coverDetailsForm();
     this.categoryDetailsForm();
+    this.endorsementDetailsForm();
+    this.CoInsuranceDetailsForm();
 
   }
 
@@ -42,13 +46,17 @@ export class EndorsementComponent implements OnInit, OnDestroy {
     })
   }
 
-  detailedCoverDetails() {
-    this.detailedCovDetsForm = this.fb.group({
-      detailedCoverType: [""],
-      detailedPercentageMainYr: [""],
+  coverDetailsForm() {
+    this.coverDetsForm = this.fb.group({
+      coverType: [""],
+      noOfMembers: [""],
+      dependantType: [""],
+      overridePremiums: [""],
+      averageEarning: [""],
+      averageAnb: [""],
+      sumAssured: [""],
+      loading: [""],
       rate: [""],
-      selectRate: [""],
-      premiumMask: [""],
       rateDivFactor: [""],
     });
   }
@@ -59,6 +67,17 @@ export class EndorsementComponent implements OnInit, OnDestroy {
       premiumMask: ["", [Validators.required]],
       shortDescription: ["", [Validators.required]],
       multiplesOfEarnings: ["", [Validators.required]],
+    });
+  }
+
+  endorsementDetailsForm() {
+    this.endorsementDetailForm = this.fb.group({
+      intermediary: ["", [Validators.required]],
+      effctiveDate: ["", [Validators.required]],
+      paymentFrequency: ["", [Validators.required]],
+      mask: ["", [Validators.required]],
+      durationType: ["", [Validators.required]],
+      facultativeType: ["", [Validators.required]],
     });
   }
 
@@ -80,6 +99,15 @@ export class EndorsementComponent implements OnInit, OnDestroy {
       rateDivFactor: ["", Validators.required],
       loadingReason: ["", Validators.required],
     });
+  }
+
+  CoInsuranceDetailsForm() {
+    this.coInsuranceForm = this.fb.group({
+      conInsurer: [''],
+      coInsuranceShare: [''],
+      serviceCharge: [''],
+      leaderFollower: ['']
+    })
   }
 
   addMemberDetailsModal() {
@@ -199,10 +227,10 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   }
 
   onProceed() {
-    this.router.navigate(['/home/lms/grp/policy/summary']);
+    this.router.navigate(['/home/lms/grp/underwriting/summary']);
   }
 
   onBack() {
-    this.router.navigate(['/home/lms/grp/policy/underwriting']);
+    this.router.navigate(['/home/lms/grp/underwriting/underwriting']);
   }
 }

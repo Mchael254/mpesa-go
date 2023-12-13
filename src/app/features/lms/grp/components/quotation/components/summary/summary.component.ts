@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { SummaryService } from '../../../../service/summary/summary.service';
-import { CategoryDTO, MemberCoverTypeSummaryDto, MemberSummaryDTO, QuoteSummaryDTO } from '../../../../models/summary/summaryDTO';
 import { Router } from '@angular/router';
-import { CoverTypesDto } from '../../../../models/coverTypes/coverTypesDto';
-import { CoverageService } from '../../../../service/coverage/coverage.service';
-import { MembersDTO } from '../../../../models/members';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { distinct } from 'rxjs';
-import { CategoryDetailsDto } from '../../../../models/categoryDetails';
+import { CategoryDetailsDto } from '../../models/categoryDetails';
+import { CoverTypesDto } from '../../models/coverTypes/coverTypesDto';
+import { MembersDTO } from '../../models/members';
+import { QuoteSummaryDTO, MemberSummaryDTO, CategoryDTO, MemberCoverTypeSummaryDto } from '../../models/summary/summaryDTO';
+import { CoverageService } from '../../service/coverage/coverage.service';
+import { SummaryService } from '../../service/summary/summary.service';
 
 
 

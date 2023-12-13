@@ -1,0 +1,47 @@
+.view-more-link {
+  cursor: pointer;
+  color: #00529B;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-decoration-line: underline;
+}
+
+.custom-red-button {
+  color: transparent;
+  background-color: transparent;
+  border: none;
+}
+
+.custom-red-button::before {
+  content: "X";
+  color: #EE3945;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+
+}
+
+.td-label {
+  color: rgba(0, 0, 0, 0.50);
+  leading-trim: both;
+  text-edge: cap;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.td-label-data {
+  color: #000;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}

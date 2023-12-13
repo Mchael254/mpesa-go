@@ -67,6 +67,20 @@ const routes: Routes = [
                 (m) => m.QuotationModule
               ),
           },
+          {
+            path: 'underwriting',
+            loadChildren: () =>
+              import('./grp/components/underwriting/underwriting.module').then(
+                (m) => m.UnderwritingModule
+              ),
+          },
+          {
+            path: 'policy',
+            loadChildren: () =>
+              import('./grp/components/policy/policy.module').then(
+                (m) => m.PolicyModule
+              ),
+          },
         ],
       },
 
