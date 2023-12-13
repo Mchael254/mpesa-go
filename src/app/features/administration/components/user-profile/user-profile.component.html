@@ -63,8 +63,35 @@
                             <div class="col-sm-6">
                                 <div class="mb-3">
                                     <label for="phoneNumber" class="form-label">Phone Number</label>
-                                    <input type="tel" id="phoneNumber" placeholder="Phone Number" class="form-control"
-                                        formControlName="phoneNumber">
+                                    <!--<input type="tel" id="phoneNumber" placeholder="Phone Number" class="form-control"
+                                        formControlName="phoneNumber"
+                                           [ngClass]="{ 'is-invalid': u['phoneNumber']?.invalid && (u['phoneNumber']?.dirty || u['phoneNumber']?.touched) }">
+                                  <div *ngIf="u['phoneNumber']?.invalid && (u['phoneNumber']?.dirty || u['phoneNumber']?.touched)"
+                                       class="form-text text-danger"
+                                       [ngClass]="{ 'is-invalid': ['submitted'] && u['phoneNumber']?.errors }">
+                                    <div *ngIf="u['phoneNumber']?.errors['required']">Phone Number is required</div>
+                                  </div>-->
+
+                                 <div class="input-group">
+                                    <select class="form-select" id="countryCode" formControlName="countryCode" style="max-width:25%"
+                                            [ngClass]="{ 'is-invalid': u['countryCode']?.invalid && (u['countryCode']?.dirty || u['countryCode']?.touched) }">
+                                      <option *ngFor="let value of countriesCode" [value]="value?.zipCode">
+                                       {{ value.zipCode }}
+                                      </option>
+                                    </select>
+                                    <input type="tel" class="form-control" id="phoneNumber" placeholder="Enter Telephone number"
+                                           formControlName="phoneNumber"
+                                           [ngClass]="{ 'is-invalid': u['phoneNumber']?.invalid && (u['phoneNumber']?.dirty || u['phoneNumber']?.touched) }">
+                                  </div>
+                                  <div *ngIf="u['countryCode']?.invalid && (u['countryCode']?.dirty || u['countryCode']?.touched)"
+                                       class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && u['countryCode']?.errors }">
+                                    <div *ngIf="u['countryCode']?.errors['required']">Country code is required</div>
+                                  </div>
+                                  <div *ngIf="u['phoneNumber']?.invalid && (u['phoneNumber']?.dirty || u['phoneNumber']?.touched)"
+                                       class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && u['phoneNumber']?.errors }">
+                                    <div *ngIf="u['phoneNumber']?.errors['required']">Phone number is required</div>
+                                    <div *ngIf="u['phoneNumber']?.errors['pattern']">Phone number pattern 078458</div>
+                                  </div>
                                 </div>
                             </div>
                             <div class="col-sm-6">

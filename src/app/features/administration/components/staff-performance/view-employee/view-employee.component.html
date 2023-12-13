@@ -25,7 +25,8 @@
       </div>
       <div class="col-lg-3 col-sm-6 col-4">
         <label >Employees</label><br>
-        <input type="text" class="form-control" [value]="aggregatedEmployeeData.numberOfElements" disabled>
+        <input type="text" class="form-control"
+               [value]="aggregatedEmployeeData.numberOfElements === undefined ? 0 : aggregatedEmployeeData.numberOfElements" disabled>
       </div>
     </div>
   </form>
