@@ -18,6 +18,7 @@ export const environment = {
     [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
     [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
     [API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, 'http://localhost:5002'],
+    [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, 'http://localhost:5003'],
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
     // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020'],
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020'],
