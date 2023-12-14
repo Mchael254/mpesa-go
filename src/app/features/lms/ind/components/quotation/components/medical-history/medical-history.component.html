@@ -28,7 +28,7 @@
 
 
           <div [formGroup]="medicalHistoryForm" class="w-100">
-            <div class="my-lg-5">
+            <div class="my-2">
               <label class="required">1. Do you have a personal doctor?</label>
               <div></div>
               <div class="row">
@@ -56,7 +56,7 @@
                 </div>
                 <div *ngIf="getValue('question1') === 'Y'" formGroupName="medical_personnel">
                   <div class="row" >
-                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4">
                       <label for="name">Name</label>
                       <input
                         type="text"
@@ -65,7 +65,7 @@
                         [id]="'name'"
                       />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4">
                       <label for="address">Address</label>
                       <input
                         type="text"
@@ -76,7 +76,7 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4">
                       <label for="phone_no">Phone No.</label>
                       <input
                         type="text"
@@ -85,7 +85,7 @@
                         [id]="'phone_no'"
                       />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-12 px-4 py-2">
+                    <div class="col-lg-6 col-md-6 col-sm-12 px-4">
                       <label for="email_address">Email Address</label>
                       <input
                         type="text"
@@ -99,7 +99,7 @@
               </div>
             </div>
 
-            <div class="my-lg-5">
+            <div class="my-2">
               <label class="required"
                 >2. Pregnant? Please provide your status</label
               >
@@ -142,7 +142,7 @@
               </div>
             </div>
 
-            <div class="my-lg-5">
+            <div class="my-2">
               <label class="required"
                 >3. Are you currently taking any medication?</label
               >
@@ -172,11 +172,12 @@
 
               <div class="row" *ngIf="getValue('question3') === 'Y'">
                 <div class="col-lg-6 col-md-6 col-sm-12">
-                  <label for="expected_date" class="my-1">Description</label>
+                  <label for="medication_intake" class="my-1">Description</label>
                   <textarea
                     type="text"
                     class="form-control"
-                    [id]="'expected_date'"
+                    formControlName="medication_intake"
+                    [id]="'medication_intake'"
                     cols="70"
                     rows="5"
                   ></textarea>
@@ -184,7 +185,7 @@
               </div>
             </div>
 
-            <div class="my-lg-5">
+            <div class="my-2">
               <label class="required"
                 >4. Do you have any congenital defect/ abnormality/ Physical
                 deformity/ Handicap?</label
@@ -212,7 +213,7 @@
               </span>
             </div>
 
-            <div class="my-lg-5">
+            <div class="my-5">
               <label class="required"
                 >5. Have you or any of you dependents ever suffered or do you
                 suffer from or diagnosed with any of the following? Yes/No
@@ -221,7 +222,7 @@
               >
               <div></div>
 
-              <div class="row col-lg-10 col-sm-12">
+              <div class="row col-lg-12 col-sm-12">
                 <div
                   class="d-flex justify-content-between "
                   style="padding: 0 0 0 0rem"
@@ -242,9 +243,9 @@
                       <thead>
                         <tr style="font-weight: 400; font-size: 12px; height:3rem; background-color: var(--grey-color);">
                           <th>Person</th>
-                          <th>Diagnosis</th>
+                          <th>Disease</th>
                           <th>Diagnosis Date</th>
-                          <th>Description</th>
+                          <th>Diagnosis</th>
                           <th style="width: 2rem"></th>
                         </tr>
                       </thead>
@@ -252,83 +253,61 @@
                         <ng-container
                           *ngFor="let row of medicalListOne; let i = index"
                         >
-                          <tr *ngIf="row['isEdit'] == true">
-                            <td>
-                              <select class="form-select" [id]="'clientType'">
-                                <option
-                                  style="font-size: 11px"
-                                  value=""
-                                  disabled
-                                  selected
-                                >
-                                  Type
-                                </option>
-
-                                <!-- <option [value]="'B'">
-                                  {{ "Beneficiary" | titlecase }}
-                                </option>
-                                <option [value]="'T'">
-                                  {{ "Trustee" | titlecase }}
-                                </option> -->
+                          <tr *ngIf="row['isEdit'] == true" [formGroup]="medicalHistoryTableOne">
+                            <td style="width:20%">
+                              <select class="form-select" [id]="'clientType'" formControlName="relation_type_code">
+                                <ng-container *ngFor="let product of relationTypeList">
+                                  <option [value]="product['id']">
+                                    {{ product?.description | lowercase }}
+                                  </option>
+                                </ng-container>
                               </select>
                             </td>
-                            <td>
-                              <select class="form-select" [id]="'clientType'">
-                                <option
-                                  style="font-size: 11px"
-                                  value=""
-                                  disabled
-                                  selected
-                                >
-                                  Type
-                                </option>
+                            <td style="width:20%">
+                              <select class="form-select" [id]="'clientType'" formControlName="disease">
 
-                                <!-- <option [value]="'B'">
-                                  {{ "Beneficiary" | titlecase }}
-                                </option>
-                                <option [value]="'T'">
-                                  {{ "Trustee" | titlecase }}
-                                </option> -->
+                                <ng-container *ngFor="let disease of diseaseList;">
+                                  <option [value]="disease?.id">
+                                    {{ disease["name"] | titlecase }}
+                                  </option>
+                                </ng-container>
+
                               </select>
                             </td>
-                            <td>
+                            <td style="width:20%">
                               <p-calendar
                                 appendTo="body"
                                 dateFormat="dd/mm/yy"
                                 [showIcon]="true"
                                 [showButtonBar]="true"
+                                formControlName="diagnosis_date"
                               >
                               </p-calendar>
                             </td>
-                            <td>
+                            <td style="width:35%">
                               <input
                                 type="text"
                                 class="form-control"
                                 required
+                                formControlName="diagnosis"
                               />
                             </td>
-                            <td class="d-flex justify-content-between py-2">
-                              <div (click)="updateBeneficiary(i)" class="mx-2">
+                            <td style="width:5%" class="d-flex justify-content-between py-2">
+                              <div (click)="addResponseOne(i)" class="mx-2">
                                 <i class="fa-solid fa-check text-success"></i>
                               </div>
-                              <div (click)="deleteMedicalListOne(i)" class="mx-2">
+                              <div (click)="cancelMedicalListOne(i)" class="mx-2">
                                 <i class="fa-solid fa-x text-danger"></i>
                               </div>
                             </td>
                           </tr>
                           <tr *ngIf="row['isEdit'] == false">
-                            <td>{{ row["first_name"] }}</td>
-                            <td>{{ row["other_name"] }}</td>
-                            <td>{{ row["date_of_birth"] | date : "short" }}</td>
-                            <td>{{ row["percentage_benefit"] }}</td>
-                            <td>{{ row["age"] }}</td>
-                            <td>
-                              {{
-                                row["type"] === "B" ? "Beneficairy" : "Trustee"
-                              }}
-                            </td>
+                            <td>{{ row["relation_type_list"] }}</td>
+                            <td>{{ row["disease"] }}</td>
+                            <td>{{ row["diagnosis_date"] | date : "short" }}</td>
+                            <td>{{ row["diagnosis"] }}</td>
                             <td class="d-flex justify-content-between py-2">
-                              <div (click)="editBeneficiary(i)" class="mx-2">
+                              <div (click)="editPolicyOne(i)" class="mx-2">
                                 <i class="fas fa-edit text-success"></i>
                                 <!-- Edit Icon -->
                               </div>
@@ -368,7 +347,7 @@
               </div>
             </div>
 
-            <div class="my-lg-5">
+            <div class="my-5">
               <label class="required"
                 >6. Are any of your family members (Parents, Siblings, Children)
                 suffering from or have suffered from or have died of heart
@@ -377,172 +356,79 @@
                 years of age ?</label
               >
               <div></div>
-              <!-- <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="male"
-                  formControlName="question"
-                  value="Y"
-                />
-                <label class="form-check-label" for="male">Yes</label>
-              </span>
-              <span class="form-check form-check-inline">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  id="female"
-                  formControlName="question"
-                  value="N"
-                />
-                <label class="form-check-label" for="female">No</label>
-              </span> -->
 
               <div>
-                <div class="row col-lg-10 col-sm-12">
+                <div class="row col-lg-12 col-sm-12">
                   <div
                     class="d-flex justify-content-between "
                     style="padding: 0 0 0 0rem"
                   >
-                    <div></div>
-                    <div>
-                      <div
-                        (click)="addEmptyMedicalList(medicalListTwo)"
-                        class="b-r d-flex justify-content-center align-content-center"
-                      >
-                        <i class="fa-solid fa-plus"></i>
+
+
+                    <div class="row">
+                      <div class="col-12">
+                  <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="male"
+                      formControlName="question5"
+                      value="Y"
+                    />
+                    <label class="form-check-label" for="male">Yes</label>
+                  </span>
+                        <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="question5"
+                      value="N"
+                    />
+                    <label class="form-check-label" for="female">No</label>
+                  </span>
+                      </div>
+                      <div class="px-4" *ngIf="getValue('question5') === 'Y'">
+                          <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="hereditary_disease"
+                      value="CANCER"
+                    />
+                    <label class="form-check-label" for="female">Cancer</label>
+                  </span>
+                      </div>
+
+                      <div class="px-4" *ngIf="getValue('question5') === 'Y'">
+                          <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="hereditary_disease"
+                      value="DIABETES"
+                    />
+                    <label class="form-check-label" for="female">diabetes or high sugar levels in blood</label>
+                  </span>
+                      </div>
+
+
+                      <div class="px-4" *ngIf="getValue('question5') === 'Y'">
+                          <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="hereditary_disease"
+                      value="HEART_DISEASE"
+                    />
+                    <label class="form-check-label" for="female">heart disease</label>
+                  </span>
                       </div>
                     </div>
                   </div>
-                  <ng-container>
-                    <div class="table-responsive">
-                      <table class="table table-bordered">
-                        <thead>
-                          <tr style="font-weight: 400; font-size: 12px; height:3rem; background-color: var(--grey-color);">
-                            <th>Person</th>
-                            <th>Diagnosis</th>
-                            <th>Diagnosis Date</th>
-                            <th>Description</th>
-                            <th style="width: 2rem"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <ng-container
-                            *ngFor="let row of medicalListTwo; let i = index"
-                          >
-                            <tr *ngIf="row['isEdit'] == true">
-                              <td>
-                                <select class="form-select" [id]="'clientType'">
-                                  <option
-                                    style="font-size: 11px"
-                                    value=""
-                                    disabled
-                                    selected
-                                  >
-                                    Type
-                                  </option>
-
-                                  <!-- <option [value]="'B'">
-                                    {{ "Beneficiary" | titlecase }}
-                                  </option>
-                                  <option [value]="'T'">
-                                    {{ "Trustee" | titlecase }}
-                                  </option> -->
-                                </select>
-                              </td>
-                              <td>
-                                <select class="form-select" [id]="'clientType'">
-                                  <option
-                                    style="font-size: 11px"
-                                    value=""
-                                    disabled
-                                    selected
-                                  >
-                                    Type
-                                  </option>
-
-                                  <!-- <option [value]="'B'">
-                                    {{ "Beneficiary" | titlecase }}
-                                  </option>
-                                  <option [value]="'T'">
-                                    {{ "Trustee" | titlecase }}
-                                  </option> -->
-                                </select>
-                              </td>
-                              <td>
-                                <p-calendar
-                                  appendTo="body"
-                                  dateFormat="dd/mm/yy"
-                                  [showIcon]="true"
-                                  [showButtonBar]="true"
-                                >
-                                </p-calendar>
-                              </td>
-                              <td>
-                                <input
-                                  type="text"
-                                  class="form-control"
-                                  required
-                                />
-                              </td>
-                              <td class="d-flex justify-content-between py-2">
-                                <div (click)="updateBeneficiary(i)" class="mx-2">
-                                  <i class="fa-solid fa-check text-success"></i>
-                                </div>
-                                <div (click)="deleteMedicalListTwo(i)" class="mx-2">
-                                  <i class="fa-solid fa-x text-danger"></i>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr *ngIf="row['isEdit'] == false">
-                              <td>{{ row["first_name"] }}</td>
-                              <td>{{ row["other_name"] }}</td>
-                              <td>{{ row["date_of_birth"] | date : "short" }}</td>
-                              <td>{{ row["percentage_benefit"] }}</td>
-                              <td>{{ row["age"] }}</td>
-                              <td>
-                                {{
-                                  row["type"] === "B" ? "Beneficairy" : "Trustee"
-                                }}
-                              </td>
-                              <td class="d-flex justify-content-between py-2">
-                                <div (click)="editBeneficiary(i)" class="mx-2">
-                                  <i class="fas fa-edit text-success"></i>
-                                  <!-- Edit Icon -->
-                                </div>
-                                <div (click)="deleteMedicalListTwo(i)" class="mx-2">
-                                  <i class="fas fa-trash-alt text-danger"></i>
-                                  <!-- Remove Icon -->
-                                </div>
-                              </td>
-                            </tr>
-                          </ng-container>
-                        </tbody>
-                      </table>
-
-                      <div *ngIf="editEntity">
-                        <div
-                          style="
-                            left: 50%;
-                            right: 50%;
-                            width: 3rem;
-                            height: 3rem;
-                            position: relative;
-                          "
-                          class="spinner-border text-primary spinner-border"
-                          role="status"
-                        >
-                          <span class="visually-hidden">Loading...</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      *ngIf="medicalListOne?.length === 0"
-                      class="d-flex justify-content-center text-danger"
-                    >
-                      No Available Data!
-                    </div>
-                  </ng-container>
                 </div>
               </div>
             </div>

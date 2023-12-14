@@ -520,6 +520,7 @@
                   class="form-select"
                   formControlName="bank"
                   [id]="'bank'"
+                  (click)="selectBank($event)"
                 >
                   <option value="" disabled selected>Select Bank</option>
                   <ng-container *ngFor="let bank of bankList; trackBy: trackById">
@@ -822,7 +823,6 @@
                   <th>Name (Trustee)</th>
                   <th>Relationship (Trustee)</th>
                   <th>Type</th>
-                  <!-- <th style="width: 2rem"></th> -->
                 </tr>
               </thead>
               <tbody>

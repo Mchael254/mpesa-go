@@ -25,6 +25,9 @@ export class LmsIndividualComponent implements OnInit {
 
   ngOnInit(): void {
     this.getlmsIndForms();
+    // this.selectSystem('LMS_INDIVIDUAL');
+    // this.selectModule(this.screenData['QUOTAION']);
+    // this.selectPage(this.screenData['screen_name'])
     this.getFormsForm();
   }
 
@@ -40,27 +43,32 @@ export class LmsIndividualComponent implements OnInit {
       type: [],
       required: [],
       is_disabled: [],
-      hint: [] 
+      hint: []
     })
-  
+
   }
 
   private getlmsIndForms(){
+
+    this.spinner_Service.show('form_modal_view')
     return this.form_service.getAllForms().subscribe((data: any) =>{
       this.formList = data['data'];
-      
+
       let temp = this.formList.map((data: any) =>{
         return data['system_name'];
       })
       this.systemList = new Set<string>(temp);
       this.selectSystem("LMS_INDIVIDUAL")
-      
-      
+      this.spinner_Service.hide('form_modal_view')
+
+
+    }, err =>{
+      this.spinner_Service.hide('form_modal_view')
     })
   }
 
   headers: string[] = ['Column 1', 'Column 2', 'Column 3', 'Column 4'];
-  
+
   // Define the number of rows
   numRows: number = 6;
 
@@ -68,21 +76,21 @@ export class LmsIndividualComponent implements OnInit {
   rows: any[] = []
 
   selectSystem(module: string){
-    this.screenData['system'] = module;    
-    let temp_module = this.formList.filter((data: any) =>     
+    this.screenData['system'] = module;
+    let temp_module = this.formList.filter((data: any) =>
       {return data['system_name']===module}).map(data=>data['module']);
     this.systemList = new Set<string>(temp_module);
     }
 
-  selectModule(module: string){    
-    this.screenData['module'] = module;    
-    let temp_pages = this.formList.filter((data: any) =>  
-    {return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'])}   
+  selectModule(module: string){
+    this.screenData['module'] = module;
+    let temp_pages = this.formList.filter((data: any) =>
+    {return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'])}
       ).map(data=>data['screen_name']);
     this.moduleList = new Set<string>(temp_pages);
     this.pagesList = [];
 
-    
+
     }
 
 
@@ -102,13 +110,13 @@ export class LmsIndividualComponent implements OnInit {
       tr['code'] = data['code'];
       return tr;
     });
-    let temp_set = new Set<any>();    
+    let temp_set = new Set<any>();
     this.pagesList.filter(data => { DataManipulation.getKeysFromObjects(data).forEach(se => { temp_set.add(se); }) });
     this.selectedHeader = Array.from(temp_set.values()).map(data => {return {"name":data, 'visible': true}});
-    
-    
-    
-    
+
+
+
+
   }
 
   public readerHeaderstatus(header:string){
@@ -153,11 +161,11 @@ export class LmsIndividualComponent implements OnInit {
       this.selectSystem(this.screenData['system']);
       this.selectModule(this.screenData['module']);
       this.selectPage(this.screenData['screen_name'])
-      
+
       this.closeModal()
       this.spinner_Service.hide('form_modal_view');
       this.toast_service.success('Save Succesfully!!', 'FORM UPDATE')
-      
+
     },
     err =>{
       this.spinner_Service.hide('form_modal_view');
@@ -169,7 +177,7 @@ export class LmsIndividualComponent implements OnInit {
 
   // selectForm(form: any){
   //   this.screenData['form_name'] = form['form_name'];
-    
+
   // }
 
 }
