@@ -11,6 +11,12 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
+import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
+import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
@@ -23,9 +29,12 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     QuickQuoteFormComponent,
     CoverTypesDetailsComponent,
     QuoteSummaryComponent,
-    
-     
-    
+    QuotationsClientDetailsComponent,
+    QuotationDetailsComponent,
+    ImportRisksComponent,
+    QuoteAssigningComponent,
+    RiskSectionDetailsComponent,
+    QuotationSummaryComponent
   ],
   imports: [
     CommonModule,

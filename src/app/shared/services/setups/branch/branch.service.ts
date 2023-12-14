@@ -58,8 +58,11 @@ export class BranchService {
   }
 
 
-  //This method is for testing purposes only
-
+  /**
+   * Retrieves the branches of an organization using an HTTP GET request.
+   * @method getBranch
+   * @return {Observable<OrganizationBranchDto[]>} - An observable of the response containing organization branches.
+   */
   getBranch():Observable<OrganizationBranchDto[]>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
