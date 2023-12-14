@@ -114,13 +114,14 @@ export class PersonalDetailsComponent {
     this.getRelationTypes();
     this.getDocumentsByClientId();
 
-    if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
-      let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-      this.crm_client_service.getClientById(clientId).subscribe((data) => {
+    // if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
+      // let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
+      let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
+      this.crm_client_service.getAccountByCode(accountCode).subscribe((data) => {
         // To work on Later
         console.log(data);
       });
-    }
+    // }
   }
   getRelationTypes() {
     this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
@@ -371,10 +372,20 @@ export class PersonalDetailsComponent {
       this.bankList = data;
     });
   }
+  selectBank(d:any){
+    this.getBankBranchList2(d?.target?.value)
+  }
   getBankBranchList() {
+    let id =
     this.bank_service.getBankBranch().subscribe((data) => {
       this.bankBranchList = data;
     });
+  }
+
+  getBankBranchList2(id) {
+      this.bank_service.getBankBranchById(id).subscribe((data) => {
+        this.bankBranchList = data;
+      });
   }
   getCurrencyList() {
     this.currency_service.getAllCurrencies().subscribe((data) => {
@@ -424,6 +435,10 @@ export class PersonalDetailsComponent {
     let percentage_benefit = this.beneficiaryList?.map(d =>  d?.percentage_benefit)?.reduce((sum, current) => sum + current, 0);
 
     console.log(percentage_benefit);
+    if(percentage_benefit >100){
+      this.toast.danger('Percentage Benefits', `More than the expected amount by ${percentage_benefit-100}`)
+      return;
+    }
     if (!this.checkIfGuardianIsNeeded()) {
       beneficiary['appointee_info'] = null;
     }
@@ -440,18 +455,18 @@ export class PersonalDetailsComponent {
         this.beneficiaryForm.reset();
         this.spinner_Service.hide('beneficiary_modal_screen');
         this.isBeneficiaryLoading = false;
-      });
+          this.toast.success('Beneficiary Details Added Successfully', 'Beneficiary/Trustee/Guardian')
+      },
+        err => {
+          this.toast.danger(err?.error?.errors[0], 'Percentage Benefit')
+
+        }
+      );
     }else{
       console.log("Greater than 100%");
       this.toast.danger(`Percentage Benefit is greater by  ${percentage_benefit -100}`, 'Percentage Benefit')
 
     }
-  }
-  addEmptyBeneficiary() {
-    this.addEntity(this.beneficiaryList);
-  }
-  addEmptyGuardian() {
-    this.addEntity(this.guardianList);
   }
   deleteBeneficiary(i: number) {
     this.editEntity = true;
@@ -462,19 +477,6 @@ export class PersonalDetailsComponent {
         this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
         this.editEntity = false;
       });
-  }
-  deleteGuardian(i: number) {
-    let data: any[] = [];
-    data = this.guardianList.filter((data, x) => i === x);
-    if (data.length > 0) {
-      let beneficiary = this.beneficiaryList.filter((data_) => {
-        return data_['code'] === data[0]['code'];
-      });
-      // this.party_service.createBeneficary({}).subscribe(data =>{
-      this.guardianList = this.deleteEntity(this.guardianList, i);
-
-      // });
-    }
   }
   editBeneficiary(i: number) {
     this.showCategoryDetstModal();
@@ -496,36 +498,6 @@ export class PersonalDetailsComponent {
       }
       return data;
     });
-  }
-  editGuardian(i: number) {
-    this.guardianList = this.guardianList.map((data, x) => {
-      if (i === x) {
-        let data_ = {};
-
-        data_['isEdit'] = true;
-        data['isEdit'] = true;
-        data_['party_first_name'] = data['first_name'];
-        data_['party_last_name'] = data['other_name'];
-        data_['party_dob'] = new Date(data['date_of_birth']);
-        data_['party_percentage'] = data['percentage_benefit'];
-        data_['party_type'] = data['type'];
-        this.clientDetailsForm.patchValue(data_);
-      }
-      return data;
-    });
-  }
-  cancelEntity(d: any[], i, isButton) {
-    isButton = true;
-
-    this.editEntity = true;
-    d = d.map((data, x) => {
-      if (x === i) {
-        data = data['isEdit'] = false;
-      }
-      return data;
-    });
-    this.editEntity = false;
-    return d;
   }
   getValueBeneficiaryValue(name: string = 'question1') {
     return this.beneficiaryForm.get(name).value;
@@ -664,43 +636,43 @@ export class PersonalDetailsComponent {
     let partyData = {
       category: "C",
       country: countryData,
-      country_id: StringManipulation.returnNullIfEmpty(formValue?.country),
-      date_of_birth: formValue?.date_of_birth,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
+      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+      dateOfBirth: formValue?.date_of_birth,
+      effectiveDateFrom: formValue?.with_effect_from,
+      effectiveDateTo: formValue?.with_effect_to,
       id: 0,
-      identity_number: formValue?.idNumber,
-      mode_of_identity_id: null,
+      identityNumber: formValue?.idNumber,
+      modeOfIdentityId: 12,
       name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
-      organization_id: 2,
-      party_type_id: 2,
-      pin_number: formValue?.pinNumber,
-      profile_image: null,
-      profile_picture: null,
+      organizationId: 2,
+      partyTypeId: 2,
+      pinNumber: formValue?.pinNumber,
+      profileImage: null,
+      profilePicture: null,
     }
     let accountData: any = {
       address: null,
       // StringManipulation.returnNullIfEmpty(formValue?.p_address),
-      agent_request_dto: null,
-      contact_details: contactsDetails,
-      party_id: null,
-      party_type_short_desc: 'CLIENT',
-      created_by: null,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
-      mode_of_identity_id: null,
+      agentRequestDto: null,
+      contactDetails: contactsDetails,
+      partyId: null,
+      partyTypeShortDesc: 'CLIENT',
+      createdBy: null,
+      effectiveDateFrom: formValue?.with_effect_from,
+      effectiveDateTo: formValue?.with_effect_to,
+      modeOfIdentityId: 12,
       category: "C",
       // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
       countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
       gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
       status: 'A',
       dateCreated: new Date(),
-      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
-      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
-      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
-      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
-      date_of_birth: formValue?.date_of_birth,
-      organization_id: 2
+      pinNumber: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
+      accountType: StringManipulation.returnNullIfEmpty(formValue?.clientType),
+      firstName: StringManipulation.returnNullIfEmpty(formValue?.firstName),
+      lastName: StringManipulation.returnNullIfEmpty(formValue?.lastName),
+      dateOfBirth: formValue?.date_of_birth,
+      organizationId: 2
 
     }
     let clientData = {...partyData, ...accountData}
@@ -708,7 +680,8 @@ export class PersonalDetailsComponent {
     console.log(clientData);
     console.log(client_code);
     this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
-        console.log(data);
+        this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode'])
+        this.session_storage.set(SESSION_KEY.ACCOUNT_ID, data['accountId'])
         this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
       })
 
