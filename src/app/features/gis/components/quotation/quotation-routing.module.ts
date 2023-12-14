@@ -5,12 +5,12 @@ import { QuickQuoteDetailsComponent } from './components/quick-quote-details/qui
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component';
-// import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
-// import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
-// import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
-// import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
-// import { ImportRisksComponent } from './components/import-risks/import-risks.component';
-// import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
+import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
+import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
+import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 
 const routes: Routes = [
   {
@@ -28,24 +28,24 @@ const routes: Routes = [
   {
     path: 'quote-summary', component:QuoteSummaryComponent
   },
-  // {
-  //   path:'quotations-client-details',component:QuotationsClientDetailsComponent
-  // },
-  // {
-  //   path:'risk-section-details',component:RiskSectionDetailsComponent
-  // },
-  // {
-  //   path:'quotation-details',component:QuotationDetailsComponent
-  // },
-  // {
-  //   path:'quote-assigning',component:QuoteAssigningComponent
-  // },
-  // {
-  //   path:'import-risks',component:ImportRisksComponent
-  // },
-  // {
-  //   path:'quotation-summary',component:QuotationSummaryComponent
-  // }
+{
+    path:'quotations-client-details',component:QuotationsClientDetailsComponent
+  },
+  {
+    path:'risk-section-details',component:RiskSectionDetailsComponent
+  },
+  {
+    path:'quotation-details',component:QuotationDetailsComponent
+  },
+  {
+    path:'quote-assigning',component:QuoteAssigningComponent
+  },
+  {
+    path:'import-risks',component:ImportRisksComponent
+  },
+  {
+    path:'quotation-summary/:num',component:QuotationSummaryComponent
+  }
 ];
 
 @NgModule({
