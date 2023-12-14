@@ -233,6 +233,10 @@
   border-radius: 2px;
 }
 
+.btnTransactions {
+    margin-right: 5px;
+}
+
 
 /* responsive */
 @media (max-width: 576px) {
