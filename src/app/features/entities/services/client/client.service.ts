@@ -114,6 +114,12 @@ export class ClientService {
     return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id);
   }
 
+  getAccountByCode(code: number): Observable<ClientDTO> {
+    let params = new HttpParams().set('accountCode', code)
+    // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
+    return this.http.get<ClientDTO>(`/${this.baseUrl}/details`, {params: params});
+  }
+
   getCLientBranches(): Observable<ClientBranchesDto[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
