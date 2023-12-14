@@ -9,6 +9,7 @@ import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
 
 @Component({
   selector: 'app-insurance-history',
@@ -47,7 +48,8 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private client_history_service: ClientHistoryService,
     private session_storage: SessionStorageService,
-    private spinner_service: NgxSpinnerService
+    private spinner_service: NgxSpinnerService,
+    private toast: ToastService
   ) {
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
@@ -82,8 +84,6 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     let pol_data = this.policyListOne.filter((data, i) => {
       return i === x;
     })[0];
-    // console.log();
-
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormOne.value,
@@ -104,8 +104,6 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     let pol_data = this.policyListTwo.filter((data, i) => {
       return i === x;
     })[0];
-    // console.log();
-
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormTwo.value,
@@ -155,7 +153,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     return this.insuranceHistoryForm.get(name).value;
   }
 
-  deletepolicyListOne(i: number) {
+  deletePolicyListOne(i: number) {
     let deleted_pol = this.policyListOne.find((data, x) => {
       return i === x;
     });
@@ -166,12 +164,12 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     })
   }
 
-  cancelpolicyListOne(i: number) {
+  cancelPolicyListOne(i: number) {
     this.policyListOne = this.policyListOne.map((data, x) => {
       data['isEdit'] = false
 
       return data;
-    });
+    }).filter((data, x) => x!==i);
   }
 
 
@@ -185,12 +183,12 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       });
     })
   }
-  cancelpolicyListTwo(i: number) {
+  cancelPolicyListTwo(i: number) {
     this.policyListTwo = this.policyListTwo.map((data, x) => {
       data['isEdit'] = false
 
       return data;
-    });
+    }).filter((data, x) => x!==i);
   }
   editPolicyTwo(x) {
     let pol = this.policyListTwo
@@ -213,28 +211,31 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.client_history_service
       .getLmsInsHistList(clientCode)
       .pipe(finalize(() => this.spinner_service.hide('ins_view')))
-      .subscribe((data: any[]) => {
-        this.policyListOne = data
-          .map((data) => {
-            data['isEdit'] = false;
-            return data;
-          })
-          .filter((data) => {
-            return ['A', 'S', 'PU', 'L'].includes(data['cover_status']);
-          });
-        if (this.policyListOne.length > 0)
-          this.insuranceHistoryForm.get('question1').setValue('Y');
+      .subscribe((data: any) => {
+        if(data['data']!==null){
+          this.policyListOne = data['data']
+            .map((data_one: any) => {
+              data_one['isEdit'] = false;
+              return data_one;
+            })
+            .filter((data_filter: any) => {
+              return ['A', 'S', 'PU', 'L'].includes(data_filter['cover_status']);
+            });
+          if (this.policyListOne.length > 0)
+            this.insuranceHistoryForm.get('question1').setValue('Y');
 
-        this.policyListTwo = data
-          .map((data) => {
-            data['isEdit'] = false;
-            return data;
-          })
-          .filter((data) => {
-            return ['w', 'D', 'W', 'V', 'J'].includes(data['cover_status']);
-          });
-        if (this.policyListTwo.length > 0)
-          this.insuranceHistoryForm.get('question2').setValue('Y');
+          this.policyListTwo = data['data']
+            .map((data_two) => {
+              data_two['isEdit'] = false;
+              return data_two;
+            })
+            .filter((data_two_filter) => {
+              return ['w', 'D', 'W', 'V', 'J'].includes(data_two_filter['cover_status']);
+            });
+          if (this.policyListTwo.length > 0)
+            this.insuranceHistoryForm.get('question2').setValue('Y');
+          this.toast.success(data['message'], 'Insurance History')
+        }
         this.spinner_service.hide('ins_view');
       });
   }
@@ -243,7 +244,6 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.client_history_service
       .getAllCoverStatusTypes()
       .subscribe((data: any[]) => {
-        console.log(data);
         this.coverStatusTypeList = [...data];
       });
   }
@@ -264,8 +264,6 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     ins['prp_code'] = client_code;
     ins['prp_code'] = null;
     console.log(ins);
-
-    // return of(ins);
     return this.client_history_service.saveInsuranceHistory(ins);
   }
 
