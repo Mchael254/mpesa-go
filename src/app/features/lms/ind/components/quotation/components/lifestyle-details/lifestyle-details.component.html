@@ -14,7 +14,15 @@
       <div class="d-flex justify-content-between">
         <div class="fw-bold text-black">Lifestyle details</div>
       </div>
-      <div class="text-black">
+      <div class="text-black" style="position: relative; color: black; ">
+        <ngx-spinner
+          name="lifestyle_screen"
+          type="ball-clip-rotate-multiple"
+          [fullScreen]="false"
+          color="#00529B"
+          size="medium"
+          bdColor="rgba(255, 255, 255, 0.9)"
+        ></ngx-spinner>
         <div class="col fadeIn">
           <div class="row">
             <ng-container [formGroup] = bmiForm>

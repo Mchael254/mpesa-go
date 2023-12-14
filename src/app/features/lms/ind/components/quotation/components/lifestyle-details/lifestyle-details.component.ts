@@ -138,6 +138,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       this.clientLifestyleForm.patchValue({
         ...data
       })
+        this.toast.success('Client lifestyle details retrieved successfully', 'Lifestyle Details');
       this.spinner_service.hide("lifestyle_screen");
     },
     err=>{
@@ -173,7 +174,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       },
       err=>{
         this.toast.danger("Unable to Save Client Lifestyle's Record, try again later!!", 'DANGER');
-  
+
       })
 
 
