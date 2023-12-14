@@ -59,6 +59,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { CountryService } from './services/setups/country/country.service';
 import { TabMenuModule } from 'primeng/tabmenu';
+import { SentenceCasePipe } from './pipes/sentence-case/sentence-case.pipe';
+import { CommaformatDirective } from './directives/comma-format.directive';
 
 
 
@@ -141,7 +143,10 @@ const SERVICES = [
     CustomFilterPipe,
     SafeResourceUrlPipe,
     ShareModalComponent,
-    DownloadModalComponent
+    DownloadModalComponent,
+    CommaformatDirective,
+    SentenceCasePipe,
+    CommaformatDirective  
 
 
   ],
@@ -192,7 +197,10 @@ const SERVICES = [
         DropdownModule,
         TabMenuModule,
         ShareModalComponent,
-        DownloadModalComponent
+        DownloadModalComponent,
+        CommaformatDirective,
+        SentenceCasePipe
+
 
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

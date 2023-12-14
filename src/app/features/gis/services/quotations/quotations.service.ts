@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from '../../../../core/config/app-config-service'
-import {Observable} from "rxjs";
+import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
+import { quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,33 @@ import { QuotationsDTO } from '../../data/quotations-dto';
 export class QuotationsService {
 
   baseUrl = this.appConfig.config.contextPath.gis_services;
+  setupsbaseurl = "setups/api/v1";
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+
+    })
+  }
+
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService
   ) { }
 
+ // Error handling
+ errorHandl(error: HttpErrorResponse) {
+  let errorMessage = '';
+  if(error.error instanceof ErrorEvent) {
+    // Get client-side error
+    errorMessage = error.error.message;
+  } else {
+    // Get server-side error
+    errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+  }
+  console.log(errorMessage);
+  return throwError(errorMessage);
+  }
   getQuotations(
     pageNo: number = 0,
     dateFrom: string,
@@ -38,4 +61,70 @@ export class QuotationsService {
         params: params,
       });
   }
+  getAllQuotationSources(): Observable<any>{
+    let page = 0;
+    let size = 10;
+   const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    
+    })
+    const params = new HttpParams()
+    .set('pageNo', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<any>(`/${this.baseUrl}/quotation/api/v2/quotation-sources`,{
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    ) 
+  }
+  getFormFields(shortDescription:any): Observable<any>{
+   
+   const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    
+    })
+    const params = new HttpParams()
+    return this.http.get<any>(`/${this.baseUrl}/${this.setupsbaseurl}/forms/${shortDescription}`,{
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    ) 
+  }
+   createQuotation(data:quotationDTO,user){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation?user=${user}`, JSON.stringify(data),this.httpOptions)
+      
+  }
+  createQuotationRisk(quotationCode ,data:quotationRisk[]){
+    console.log(JSON.stringify(data),"Data from the service")
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),this.httpOptions)
+  }
+  getRiskSection(quotationRiskCode):Observable<riskSection[]>{
+    return this.http.get<riskSection[]>(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`)
+
+  }
+  createRiskSection(quotationRiskCode ,data:riskSection[]){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+
+  }
+  updateRiskSection(quotationRiskCode ,data:riskSection[]){
+    return this.http.put(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+
+  }
+  getClientQuotations(quotationNo){
+    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation/view?quotationNo=${quotationNo}`)
+  }
+  // computePremium(quotationCode) {
+  //   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium?quotationCode=${quotationCode}`, {});
+  // }
+  computePremium(quotationCode) {
+    const params = new HttpParams().set('quotationCode', quotationCode);
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`, null);
+  }
+  
 }

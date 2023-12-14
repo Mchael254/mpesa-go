@@ -3,7 +3,6 @@ import {AppConfigService} from "../../../../core/config/app-config-service";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {OrganizationBranchDto} from "../../../data/common/organization-branch-dto";
-import { environment } from 'src/environments/environment';
 
 /**
  * This service is used to manage branches
@@ -32,7 +31,7 @@ export class BranchService {
       .set('organizationId', organizationId)
       .set('regionId', 28);
 
-    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organization-branches`, {
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/branches`, {
       headers: headers,
       params: params,
     });
@@ -52,8 +51,25 @@ export class BranchService {
       .set('organizationId', 2)
       .set('regionId', 28);
 
-    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/organization-branches/${branchId}`, {
+    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/branches/${branchId}`, {
       headers: headers,
+      params:params
+    });
+  }
+
+
+  //This method is for testing purposes only
+
+  getBranch():Observable<OrganizationBranchDto[]>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+   
+
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organizations/2/branches`, {
+      headers: headers,
+    
     });
   }
 
