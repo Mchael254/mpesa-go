@@ -1,4 +1,4 @@
-<div class="mx-5">
+<div class="mx-3">
   <!-- Top Header Text and Breadcrumb !-->
   <div class="d-flex justify-content-between my-4 ">
     <div class="mr-auto p-2">
@@ -95,7 +95,7 @@
               <td>{{ individualUser.status | titlecase }}</td>
               <td>
                 <div class="actions">
-                  <button type="button" class="btn btn-link" (click)="viewDetailsWithId(individualUser.id)">
+                  <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(individualUser.id)">
                     <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
                   </button>
                 </div>
@@ -170,7 +170,7 @@
               <td>{{ grpUser.status | titlecase }}</td>
               <td>
                 <div class="actions">
-                  <button type="button" class="btn btn-link" (click)="viewDetailsWithId(grpUser.id)">
+                  <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(grpUser.id)">
                     <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
                   </button>
                 </div>
@@ -187,3 +187,5 @@
     </div>
   </div>
 </div>
+
+<div class="mobile-bottom"></div>
