@@ -16,13 +16,13 @@ import { CurrencyService } from 'src/app/shared/services/setups/currency/currenc
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { formatDate } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {MessageService} from "primeng/api";
+import { MessageService } from "primeng/api";
 import { Currency } from '../../models/currency';
 import { PayFrequency } from '../../models/payFrequency';
 import { QuotationCovers, DurationTypes, UnitRate, FacultativeType } from '../../models/quotationCovers';
 import { GrpQuoteDetails } from '../../models/quoteDetails';
 import { PayFrequencyService } from '../../service/pay-frequency/pay-frequency.service';
-import { QuickService } from '../../service/quick.service';
+import { QuickService } from '../../service/quick/quick.service';
 
 
 @AutoUnsubscribe
@@ -179,7 +179,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.product_service.getListOfGroupProduct().subscribe((products) => {
+    this.product_service.getListOfProduct('G').subscribe((products) => {
       console.log("products", products)
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),
