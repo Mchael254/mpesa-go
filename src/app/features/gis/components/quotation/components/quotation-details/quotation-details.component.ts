@@ -85,6 +85,13 @@ export class QuotationDetailsComponent {
     this.getIntroducers();
     const storedData = sessionStorage.getItem('clientFormData');
     log.debug(storedData)
+
+    const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
+    if (quotationFormDetails) {
+      const parsedData = JSON.parse(storedData);
+      this.quotationForm.setValue(parsedData);
+      
+    }
   }
 
   /**
@@ -242,6 +249,9 @@ export class QuotationDetailsComponent {
     console.log(this.quotationNo,'quotation number output');
     this.quotationCode=this.quotationNo._embedded[0].quotationCode;
     this.quotationNum = this.quotationNo._embedded[0].quotationNumber
+    sessionStorage.setItem('quotationNum',this.quotationNum );
+    sessionStorage.setItem('quotationCode',this.quotationCode );
+    sessionStorage.setItem('clientFormData', JSON.stringify(this.quotationForm.value));
     this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
 
     this.router.navigate(['/home/gis/quotation/risk-section-details']);
