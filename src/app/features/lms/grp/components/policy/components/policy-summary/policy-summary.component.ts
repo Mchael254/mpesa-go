@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PolicySummaryService } from '../../service/policy-summary.service';
-import { AnnualValuationsDTO, MembersDTO, PartialWithdrawalsDTO, PolicyDetailsDTO } from '../../models/policy-summary';
+import { AnnualValuationsDTO, MemberClaimsDTO, MembersDTO, PartialWithdrawalsDTO, PolicyClaimsDTO, PolicyDetailsDTO, ReceiptsAllocatedDTO } from '../../models/policy-summary';
 
 @Component({
   selector: 'app-policy-summary',
@@ -12,6 +12,9 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   policyDetails: PolicyDetailsDTO[];
   partiwalWithdrawal: PartialWithdrawalsDTO[];
   annualValuations: AnnualValuationsDTO[];
+  policyClaims: PolicyClaimsDTO[];
+  memberClaims: MemberClaimsDTO[];
+  receiptsAllocated: ReceiptsAllocatedDTO[];
   quoteSummary = 'summary';
   // policyCode = 20221453490; 20231454304 20231453504
   policyCode = 20231453504;
@@ -31,6 +34,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
     this.getPartialWithdrawals();
     this.getPolicyClaims();
     this.getMembersClaims();
+    this.getReceiptsAllocated();
     
   }
 
@@ -65,7 +69,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getMembers() {
-    this.policySummaryService.getMembers(this.policyCode).subscribe((members: MembersDTO[]) => {
+    this.policySummaryService.getMembers(20231454304).subscribe((members: MembersDTO[]) => {
       console.log('members', members)
       this.members = members
     }, 
@@ -96,14 +100,23 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getPolicyClaims() {
-    this.policySummaryService.getPolicyClaims(this.policyCode).subscribe((policyClaims) => {
+    this.policySummaryService.getPolicyClaims(this.policyCode).subscribe((policyClaims: PolicyClaimsDTO[]) => {
       console.log('policyClaims', policyClaims)
+      this.policyClaims = policyClaims
     });
   }
 
   getMembersClaims() {
-    this.policySummaryService.getMembersClaims(this.clmNo, this.memberCode).subscribe((memberClaims) => {
+    this.policySummaryService.getMembersClaims(this.clmNo, this.memberCode).subscribe((memberClaims: MemberClaimsDTO[]) => {
       console.log('memberClaims', memberClaims)
+      this.memberClaims = memberClaims
+    });
+  }
+
+  getReceiptsAllocated() {
+    this.policySummaryService.getReceiptsAllocated(20211453247).subscribe((receiptsAllocated: ReceiptsAllocatedDTO[]) => {
+      console.log('receiptsAllocated', receiptsAllocated)
+      this.receiptsAllocated = receiptsAllocated;
     });
   }
 }

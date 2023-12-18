@@ -91,7 +91,8 @@
                                     </div>
                                     <div>&nbsp;</div>
                                 <div>
-                                    <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                    <p-table [value]="receiptsAllocated" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                                    styleClass="p-datatable-striped">
                                         <ng-template pTemplate="header">
                                             <tr>
                                                 <th>Receipt No</th>
@@ -102,13 +103,14 @@
                                                 <th>Narration</th>
                                             </tr>
                                         </ng-template>
-                                        <ng-template pTemplate="body">
+                                        <ng-template pTemplate="body" let-receiptsAllocated>
                                             <tr>
-                                                <td>row1</td>
-                                                <td>row1</td>
-                                                <td>row1</td>
-                                                <td>row1</td>
-                                                <td><i class="fas fa-ellipsis-v"></i></td>
+                                                <td id="table-alignment">{{ receiptsAllocated.receipt_no }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.receipt_date }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.amount | number }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
                                             </tr>
                                         </ng-template>
                                     </p-table>
@@ -133,13 +135,13 @@
                                 </ng-template>
                                 <ng-template pTemplate="body" let-annualValuations>
                                     <tr>
-                                      <td>{{ annualValuations.wef }}</td>
-                                      <td>{{ annualValuations.wet }}</td>
-                                      <td>{{ annualValuations.valuation_date }}</td>
-                                      <td>{{ annualValuations.total_bal_bf }}</td>
-                                      <td>{{ annualValuations.total_amount }}</td>
-                                      <td>{{ annualValuations.withdrawal_total }}</td>
-                                      <td><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
+                                      <td id="table-alignment">{{ annualValuations.wef }}</td>
+                                      <td id="table-alignment">{{ annualValuations.wet }}</td>
+                                      <td id="table-alignment">{{ annualValuations.valuation_date }}</td>
+                                      <td id="table-alignment">{{ annualValuations.total_bal_bf | number }}</td>
+                                      <td id="table-alignment">{{ annualValuations.total_amount | number }}</td>
+                                      <td id="table-alignment">{{ annualValuations.withdrawal_total | number }}</td>
+                                      <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
                                     </tr>
                                   </ng-template>
                             </p-table>
@@ -160,12 +162,12 @@
                                 </ng-template>
                                 <ng-template pTemplate="body" let-partiwalWithdrawal>
                                     <tr>
-                                        <td>{{partiwalWithdrawal.pay_method}}</td>
-                                        <td>{{partiwalWithdrawal.bank_name}}</td>
-                                        <td>{{partiwalWithdrawal.bank_account_no}}</td>
-                                        <td>{{partiwalWithdrawal.notification_date}}</td>
-                                        <td>{{partiwalWithdrawal.payee}}</td>
-                                        <td>{{partiwalWithdrawal.amount}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.pay_method}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.bank_name}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.bank_account_no}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.notification_date}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.payee}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.amount}}</td>
                                         <td><i class="fas fa-ellipsis-v"></i></td>
                                     </tr>
                                 </ng-template>
@@ -173,26 +175,32 @@
                         </p-tabPanel>
                         <p-tabPanel header="Claim details">
                             <div style="color: #00529B;">Claim details</div>
-                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                            <p-table [value]="policyClaims" [scrollable]="false" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                            styleClass="p-datatable-striped" [paginator]="true"
+                            [rows]="5"
+                            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th>Member number</th>
-                                        <th>Claim number</th>
+                                        <th style="width: 12%;">Claim number</th>
                                         <th>Report date</th>
                                         <th>Admitted</th>
                                         <th>Claim type</th>
                                         <th>Status</th>
-                                        <th>Member name</th>
+                                        <th style="width: 12%;">Member name</th>
                                         <th>Action</th>
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body">
+                                <ng-template pTemplate="body" let-policyClaims>
                                     <tr>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                        <td id="table-alignment">{{ policyClaims.member_number }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_no }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_date_claim_reported }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_date_admitted }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ policyClaims.member_display | titlecase }}</td>
+                                        <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -271,12 +279,12 @@
     </ng-template>
     <ng-template pTemplate="body" let-members>
         <tr>
-            <td>{{ members.other_names }}</td>
-            <td>{{ members.surname }}</td>
-            <td>{{ members.date_of_birth }}</td>
-            <td>{{ members.sex }}</td>
-            <td>{{ members.telephone_number }}</td>
-            <td>{{ members.email }}</td>
+            <td id="table-alignment">{{ members.other_names }}</td>
+            <td id="table-alignment">{{ members.surname }}</td>
+            <td id="table-alignment">{{ members.date_of_birth }}</td>
+            <td id="table-alignment">{{ members.sex }}</td>
+            <td id="table-alignment">{{ members.telephone_number }}</td>
+            <td id="table-alignment">{{ members.email }}</td>
             
         </tr>
     </ng-template>
@@ -360,7 +368,12 @@
                             </p-table>
                         </p-tabPanel>
                         <p-tabPanel header="Claim details">
-                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                            <p-table [value]="memberClaims" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                            [paginator]="true"
+                            [rows]="5"
+                            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]"
+                            styleClass="p-datatable-striped">
+                                
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th>Claim number</th>
@@ -368,17 +381,19 @@
                                         <th>Admitted</th>
                                         <th>Claim type</th>
                                         <th>Status</th>
-                                        <th>Policy No</th>
+                                        <th>Payee</th>
                                         <th>Action</th>
                                     </tr>
                                 </ng-template>
-                                <ng-template pTemplate="body">
+                                <ng-template pTemplate="body" let-memberClaims>
                                     <tr>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td>row1</td>
-                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                        <td id="table-alignment">{{ memberClaims.clm_no }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_date_claim_reported }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_date_admitted }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ memberClaims.member_display | titlecase }}</td>
+                                        <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
                                     </tr>
                                 </ng-template>
                             </p-table>
