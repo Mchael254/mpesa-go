@@ -27,6 +27,7 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
     })
     const params = new HttpParams()
       .set('organizationId', organizationId)
