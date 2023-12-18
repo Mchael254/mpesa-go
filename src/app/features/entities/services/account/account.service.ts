@@ -394,6 +394,7 @@ export class AccountService {
 
 
   baseUrl = this.appConfig.config.contextPath.setup_services;
+  baseUrlAcc = this.appConfig.config.contextPath.accounts_services;
   constructor(private appConfig: AppConfigService,
               private http: HttpClient,
               private entityService: EntityService) { }
@@ -489,7 +490,7 @@ export class AccountService {
     const params = new HttpParams()
     .set('organizationId', `${organizationId}`);
 
-    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/client-titles`, {headers:header, params:params})
+    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrlAcc}/client-titles`, {headers:header, params:params})
   }
 
   getIdentityMode(organizationId: number): Observable<IdentityModeDTO[]> {

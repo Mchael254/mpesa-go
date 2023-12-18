@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from "../../../../core/config/app-config-service";
@@ -74,6 +74,8 @@ export class EntityService {
 
   private entitiesSource = new Subject<Pagination<EntityDto>>();
   entities$ = this.entitiesSource.asObservable();
+
+  public searchTermObject = signal({});
 
   constructor(
     private http: HttpClient,
