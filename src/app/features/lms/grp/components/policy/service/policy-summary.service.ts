@@ -34,4 +34,8 @@ export class PolicySummaryService {
   getMembersClaims(claimNo: string, memberCode: number) {
     return this.api.GET(`group/policies/claims/details?clmNo=${claimNo}&memberCode=${memberCode}`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+  getReceiptsAllocated(policyCode: number) {
+    return this.api.GET(`group/receipts/${policyCode}?allocated=Y`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
 }

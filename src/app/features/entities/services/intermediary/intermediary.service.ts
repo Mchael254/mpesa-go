@@ -27,6 +27,7 @@ export class IntermediaryService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
     });
     const params = new HttpParams()
       .set('page', `${page}`)
@@ -62,6 +63,7 @@ export class IntermediaryService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'X-TenantId': environment.TENANT_ID,
     });
 
     const params = new HttpParams()
