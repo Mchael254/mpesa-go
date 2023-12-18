@@ -52,7 +52,7 @@ export class BranchService {
       .set('organizationId', 2)
       .set('regionId', 28);
 
-    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/organization-branches/${branchId}`, {
+    return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/branches/${branchId}`, {
       headers: headers,
     });
   }

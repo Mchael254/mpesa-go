@@ -49,6 +49,7 @@ export class QuotationListComponent implements OnInit {
       .getListOfProduct()
       .pipe(
         switchMap((x: any[]) => {
+          console.log(x);
           return this.quotation_service
             .getLmsIndividualQuotationWebQuoteList(page, size)
             .pipe(
@@ -171,6 +172,8 @@ export class QuotationListComponent implements OnInit {
   }
 
   selectRow(i: any) {
+    console.log(i);
+    
     this.session_service.set(SESSION_KEY.QUOTE_CODE, i['quote_no']);
     this.session_service.set(SESSION_KEY.CLIENT_CODE, i['client_code']);
     this.session_service.set(SESSION_KEY.QUICK_CODE, i['code']);
