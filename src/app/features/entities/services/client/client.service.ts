@@ -127,7 +127,7 @@ export class ClientService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/organization-branches`,
+    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/branches`,
       {
         headers:headers,
         params:params
