@@ -1,0 +1,67 @@
+.title{
+    color: #000;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px; 
+}
+.title1{
+    color: #000;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.required{
+    color:red
+}
+.more{
+color: #00529B;
+font-family: Roboto;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+text-decoration-line: underline;
+}
+.quote-label{
+color: #000;
+font-size: 16px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+.quote-btn{
+    padding-left: 16px;
+    padding-right: 13px;
+    white-space: nowrap;
+}
+
+::ng-deep .p-calendar{
+    height: 30px;
+    width: 350px;
+    border-radius: 4px;
+    
+  }
+
+::ng-deep .p-dropdown{
+    height: 35px;
+    width: 330px;
+}
+::ng-deep .p-dropdown .p-dropdown-label.p-placeholder{
+padding:3px;
+
+
+}
+
+::ng-deep
+.p-dropdown .p-dropdown-label {
+    padding: 3px;
+}
+
+::ng-deep
+.p-dropdown-filter {
+    width: 100%;
+    height: 30px;
+    border-radius: 4px;
+}

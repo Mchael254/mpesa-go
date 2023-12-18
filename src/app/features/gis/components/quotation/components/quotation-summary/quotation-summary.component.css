@@ -1,0 +1,63 @@
+.sub-title{    
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px;
+    border-right: 0px
+    }
+    .card-title{
+    color: #000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px
+    
+    }
+    .title{
+    color: #000;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px; 
+    }
+    #icon{
+        background-color: #E4E7EB;
+        border-radius: 100px;
+        border: none;
+    }
+    #icon i{
+        color: #00529B;
+    }
+    .label{
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    }
+    .content{
+    color: #000;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    }
+    .cancel{
+    color: #00529B;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
+    }
+    
+    li{
+        cursor:pointer
+    }
+    #report-checks{
+        margin-right: 100px;
+    }
+    .nav-item > .active{
+        color:var(--primary-color);;
+    
+    }
