@@ -88,6 +88,10 @@
     width: 100%;
   }
 
+  .events {
+    height: fit-content;
+  }
+
   .event-button {
     margin-top: 10px;
   }

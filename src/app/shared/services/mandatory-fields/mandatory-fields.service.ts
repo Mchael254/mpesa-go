@@ -14,6 +14,7 @@ import {MandatoryFieldsDTO} from "../../data/common/mandatory-fields-dto";
 export class MandatoryFieldsService {
 
   baseUrl = this.appConfig.config.contextPath.accounts_services;
+  baseUrlSetup = this.appConfig.config.contextPath.setup_services;
   constructor(
     private appConfig: AppConfigService,
     private http: HttpClient
@@ -30,6 +31,6 @@ export class MandatoryFieldsService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
-    return this.http.get<MandatoryFieldsDTO[]>(`/${this.baseUrl}/setups/form-fields/group/${groupId}` ,{headers:headers});
+    return this.http.get<MandatoryFieldsDTO[]>(`/${this.baseUrlSetup}/setups/form-fields/group/${groupId}` ,{headers:headers});
   }
 }

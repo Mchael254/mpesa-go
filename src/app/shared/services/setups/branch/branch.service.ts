@@ -3,7 +3,6 @@ import {AppConfigService} from "../../../../core/config/app-config-service";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {OrganizationBranchDto} from "../../../data/common/organization-branch-dto";
-import { environment } from 'src/environments/environment';
 
 /**
  * This service is used to manage branches
@@ -55,6 +54,26 @@ export class BranchService {
 
     return this.http.get<OrganizationBranchDto>(`/${this.baseUrl}/setups/branches/${branchId}`, {
       headers: headers,
+      params:params
+    });
+  }
+
+
+  /**
+   * Retrieves the branches of an organization using an HTTP GET request.
+   * @method getBranch
+   * @return {Observable<OrganizationBranchDto[]>} - An observable of the response containing organization branches.
+   */
+  getBranch():Observable<OrganizationBranchDto[]>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+   
+
+    return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/organizations/2/branches`, {
+      headers: headers,
+    
     });
   }
 

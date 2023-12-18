@@ -8,11 +8,12 @@
 
       <ul class="nav nav-tabs" id="myTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link " id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="true">LMS</a>
-        </li>
-        <li class="nav-item" role="presentation">
           <a class="nav-link active" id="gis2-tab" data-bs-toggle="tab" href="#gis2" role="tab" aria-controls="gis2" aria-selected="false">GIS</a>
         </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link " id="lms-tab" data-bs-toggle="tab" href="#lms" role="tab" aria-controls="lms" aria-selected="true">LMS</a>
+        </li>
+       
 
 
       </ul>
@@ -20,7 +21,7 @@
 
 
       <div class="tab-content" id="myTabsContent">
-        <div class="tab-pane fade show active" id="lms" role="tabpanel" aria-labelledby="lms-tab">
+        <div class="tab-pane fade" id="lms" role="tabpanel" aria-labelledby="lms-tab">
           <div class="d-flex justify-content-end  action-buttons-container">
             <button
             routerLink="/home/lms/ind/quotation/quick"
@@ -164,30 +165,36 @@
           </div>
         </div>
 
-        <div class="tab-pane fade " id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
-          <div class="d-flex justify-content-between mt-3 action-buttons-container">
-            <button
-              type="button"
-              class="btn btn-primary btn-sm" style="padding: 0.6em;"
-            >
-            <i class="fa-solid fa-plus"></i> New Quotation
-            </button>
+   
 
-          </div>
-          <!-- Content for GIS tab goes here -->
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
-                </div>
+
+      </div>
+
+      <div class="tab-pane fade show active" id="gis2" role="tabpanel" aria-labelledby="gis2-tab">
+        <div class="d-flex justify-content-between mt-3 action-buttons-container">
+          <button
+          routerLink="/home/gis/quotation/quotations-client-details"
+            type="button"
+            class="btn btn-primary btn-sm float-end" style="padding: 0.6em;"
+          >
+          <i class="fa-solid fa-plus"></i> New Quotation
+          </button>
+
+        </div>
+        <!-- Content for GIS tab goes here -->
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12">
+                
+                <app-dynamic-table [tableDetails]="policyDataTable"></app-dynamic-table>
+             
               </div>
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
 </div>
+

@@ -12,7 +12,6 @@
     "json":"json"
 
   },
-
   "organization": {
     "passport_regex": "^[A-Z]{1,2}[0-9]{6,8}[A-Z]{0,1}$",
     "pin_regex": "^[A][0-9]{9}[A-Z]{1}",

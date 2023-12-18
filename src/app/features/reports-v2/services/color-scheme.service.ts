@@ -26,7 +26,7 @@ export class ColorSchemeService {
    * @returns an observable of the above type
    */
   createColorScheme(colorScheme: any): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.post<any>(
       `/${baseUrl}/chart/color-schemes`, JSON.stringify(colorScheme), {headers: this.headers});
   }
@@ -36,7 +36,7 @@ export class ColorSchemeService {
    * @returns an observable array of type {id: number, name: string, colors: string, }
    */
   fetchAllColorSchemes(): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.get<any>(
       `/${baseUrl}/chart/color-schemes`, {headers: this.headers});
   }

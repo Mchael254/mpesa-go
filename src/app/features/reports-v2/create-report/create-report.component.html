@@ -3,7 +3,7 @@
     <div class="card-header bg-transparent my-2">
       <span class="float-start text-primary fw-bold">
         <i class="pi pi-chevron-left"></i>
-        Reports
+        <a class="text-primary" routerLink="/home/reportsv2/main">Reports</a> 
       </span>
     </div>
     <div class="card-body">
@@ -126,12 +126,7 @@
                 </div>
               </ng-container>
             </div>
-
           </div>
-
-          
-
-
         </div>
 
         <div class="col-sm-9">
@@ -144,20 +139,6 @@
               disabled
             >
           </div>
-
-            <!--<ng-container *ngIf="isCriteriaButtonActive">
-              <div class="row" style="padding: 0 2rem 2rem 1rem">
-                <ng-container *ngFor="let criteriaItem of criteria">
-                  <div class="col-sm-4 fadeInDown">
-                    <app-criteria-pill
-                      [queryObject]="criteriaItem"
-                      (deleteCriteriaDetails)="deleteCriteria($event)"
-                    ></app-criteria-pill>
-                  </div>
-                </ng-container>
-              </div>
-            </ng-container>
-          </div>-->
 
           <ng-container *ngIf="isCriteriaButtonActive">
             <app-criteria
@@ -187,3 +168,5 @@
 
 </div>
 </div>
+
+<div class="mobile-bottom"></div>
