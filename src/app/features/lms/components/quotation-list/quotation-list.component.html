@@ -118,6 +118,7 @@
                                         </tr>
                                       </ng-template>
                                       <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData let-columns="columns">
+                                        <!-- {{columns | json}} -->
                                         <tr class="change_Color"  style="font-size: 14px;" (click)="selectRow(rowData)">
                                           <ng-container >
                                             <td >{{rowIndex+1}}</td>
