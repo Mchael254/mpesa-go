@@ -72,9 +72,13 @@ export class BankService {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     });
-
-
-    return this.http.get<BankBranchDTO[]>(`/${this.baseUrl}/setups/bank-branches/${bankId}/bank-branches`, { headers: header });
+    const params = new HttpParams()
+      .set('bankId', `${bankId}`);
+    return this.http.get<BankBranchDTO[]>(`/${this.baseUrl}/setups/bank-branches`,
+      {
+        headers: header,
+        params: params
+      });
   }
 
 

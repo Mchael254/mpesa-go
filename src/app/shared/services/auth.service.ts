@@ -158,9 +158,10 @@ export class AuthService implements OnDestroy {
             if (expiredSession) {
               this.sessionExpiredSubject.next(true);
               this.router.navigate(['/auth'],
-                { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
-              });
-              location.reload();
+              //   { queryParams: { 'userType': this.browserStorage.getObj('activeUser') } }).then(r => {
+              // }
+              );
+              // location.reload();
             }
             // else {
             //   this.router

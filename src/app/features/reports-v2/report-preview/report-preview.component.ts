@@ -617,30 +617,30 @@ export class ReportPreviewComponent implements OnInit{
     }
 
     report.id = this.reportId;
-    // this.updateReport(report);
+    this.updateReport(report);
     log.info(`report to save >>> `, report, this.reportId);
   }
 
-  createReport(report: ReportV2): void {
-    this.reportServiceV2.createReport(report)
-      .pipe(take(1))
-      .subscribe({
-        next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+  // createReport(report: ReportV2): void {
+  //   this.reportServiceV2.createReport(report)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: (res) => {
+  //         this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
 
-          if ((report.dashboardId)?.toString() === '' || report.dashboardId === undefined) {
-            this.router.navigate([`/home/reportsv2/report-management`])
-          } else {
-            this.router.navigate([`/home/reportsv2/list-report`],
-              { queryParams: { dashboardId: report.dashboardId }})
-          }
+  //         if ((report.dashboardId)?.toString() === '' || report.dashboardId === undefined) {
+  //           this.router.navigate([`/home/reportsv2/report-management`])
+  //         } else {
+  //           this.router.navigate([`/home/reportsv2/list-report`],
+  //             { queryParams: { dashboardId: report.dashboardId }})
+  //         }
 
-        },
-        error: (e) => {
-          this.globalMessagingService.displayErrorMessage('error', 'Report not saved')
-        }
-      });
-  }
+  //       },
+  //       error: (e) => {
+  //         this.globalMessagingService.displayErrorMessage('error', 'Report not saved')
+  //       }
+  //     });
+  // }
 
 
   updateReport(report: ReportV2): void {
@@ -648,9 +648,10 @@ export class ReportPreviewComponent implements OnInit{
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
+          this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved');
+          log.info(`updated report >>>`, report);
 
-          if ((report.dashboardId).toString() === '') {
+          if (report.dashboardId === null || (report.dashboardId).toString() === '') {
             this.router.navigate([`/home/reportsv2/report-management`])
           } else {
             this.router.navigate([`/home/reportsv2/list-report`],

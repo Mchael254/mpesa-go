@@ -32,7 +32,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-4 entityTitle">
+                                <div class="col-sm-4 col-4 entityTitle">
                                     <h2>{{ entityPartyIdDetails?.name | titlecase }}</h2>
                                     <select id="rolesDropDown" (change)="selectAccount($event)">
                                         <option *ngFor="let role of entityAccountIdDetails" [value]="role.id"
@@ -41,7 +41,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div class="col-6 account_role_actions float-end">
+                                <div class="col-sm-6 col-6 account_role_actions float-end">
                                     <button class="img_up" id="btn-assign-roles" data-bs-toggle="modal" data-bs-target="#selectRoleModal">
                                         <i class="pi pi-user-plus" aria-hidden="true"></i>
                                         Assign Role
@@ -416,7 +416,7 @@
                             </div>
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
                           </div>
                         </div>
                       </div>
@@ -489,8 +489,8 @@
                             </div>
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="btnTransactions">Add new</button>
-                            <button class="float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary btnTransactions">Add new</button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
                           </div>
                         </div>
                       </div>
@@ -515,7 +515,7 @@
                             </canvas> -->
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
                           </div>
                         </div>
                       </div>
@@ -565,7 +565,7 @@
                                   <td class="body">{{policy?.wet_dt}}</td>
                                   <td class="body">{{policy?.premium}}</td>
                                   <td>
-                                    <button type="button" class="btn" id="btn_view_policy" >View</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="btn_view_policy" >View</button>
                                   </td>
                                 </tr>
                               </ng-template>
@@ -703,9 +703,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"></h5>
-                    <button type="button" #closebutton class="close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeBtn">
-                        <span aria-hidden="true">&times;</span>
+                    <button type="button" #closebutton class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeBtn">
                     </button>
                 </div>
                 <div class="modal-body">
@@ -733,4 +731,6 @@
         </div>
     </div>
 </form>
+
+<div class="mobile-bottom"></div>
 

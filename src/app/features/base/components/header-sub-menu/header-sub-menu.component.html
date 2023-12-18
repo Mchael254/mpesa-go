@@ -11,8 +11,8 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <a 
-              class="nav-link active" 
+            <a
+              class="nav-link active"
               aria-current="page" href="javascript:void(0)"
               (click)="dynamicSideBarMenu(defaultSidebar)"
             >
@@ -24,7 +24,7 @@
             </a>
           </li>
           <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <a 
+            <a
               class="nav-link" href="javascript:void(0)"
               (click)="dynamicSideBarMenu(accountSubMenuList[0]);navLink('/home/entity/list')"
             >
@@ -202,45 +202,50 @@
                 ></label>
               </div>
               <div class="my-2"></div>
-              <div class="row">
-                <div
-                  class="col-3 d-flex justify-content-end align-items-center"
-                >
-                  <label for="input1" class="form-label label-text"
+              <form [formGroup]="searchAccountForm">
+                <div class="row">
+                  <div
+                    class="col-3 d-flex justify-content-end align-items-center"
+                  >
+                    <label for="input1" class="form-label label-text"
                     >Name:
-                  </label>
+                    </label>
+                  </div>
+                  <div class="col-9" style="padding: 0.5rem 0">
+                    <input
+                      [(ngModel)]="nameSearchTerm"
+                      (keyup.enter)="displaySearchValues()"
+                      style="border-radius: 0.3rem; font-size: 10px"
+                      type="text"
+                      class="form-control"
+                      id="input1"
+                      placeholder="Search Name"
+                      formControlName="searchNameInput"
+                    />
+                  </div>
                 </div>
-                <div class="col-9" style="padding: 0.5rem 0">
-                  <input
-                    [(ngModel)]="nameSearchTerm"
-                    (keyup.enter)="onSearch()"
-                    style="border-radius: 0.3rem; font-size: 10px"
-                    type="text"
-                    class="form-control"
-                    id="input1"
-                    placeholder="Search Name"
-                  />
-                </div>
-              </div>
 
-              <div class="row">
-                <div
-                  class="col-3 d-flex justify-content-end align-items-center"
-                >
-                  <label for="input2" class="form-label label-text">ID: </label>
+                <div class="row">
+                  <div
+                    class="col-3 d-flex justify-content-end align-items-center"
+                  >
+                    <label for="input2" class="form-label label-text">ID: </label>
+                  </div>
+                  <div class="col-9" style="padding: 0.5rem 0">
+                    <input
+                      [(ngModel)]="idSearchTerm"
+                      (keyup.enter)="displaySearchValues()"
+                      style="border-radius: 0.3rem; font-size: 10px"
+                      type="text"
+                      class="form-control"
+                      id="input2"
+                      placeholder="Search ID"
+                      formControlName="searchIdInput"
+                    />
+                  </div>
                 </div>
-                <div class="col-9" style="padding: 0.5rem 0">
-                  <input
-                    [(ngModel)]="idSearchTerm"
-                    (keyup.enter)="onSearch()"
-                    style="border-radius: 0.3rem; font-size: 10px"
-                    type="text"
-                    class="form-control"
-                    id="input2"
-                    placeholder="Search ID"
-                  />
-                </div>
-              </div>
+              </form>
+
               <div class="my-4"></div>
 
               <div class="d-flex justify-content-end">

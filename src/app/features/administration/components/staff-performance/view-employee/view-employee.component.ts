@@ -117,7 +117,7 @@ export class ViewEmployeeComponent  implements OnInit {
    */
   getGrpEmployeeData() {
     forkJoin(([
-      this.staffService.getStaffWithSupervisor(0, null, null, 'dateCreated', 'desc'),
+      this.staffService.getStaffWithSupervisor(0, 10, null, 'dateCreated', 'desc'),
       this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
       this.ticketsService.getAllDepartments(2)
     ])).subscribe(([staff,transactions,departments])=>{
@@ -127,18 +127,17 @@ export class ViewEmployeeComponent  implements OnInit {
           const transaction = transactions.find(value => value.authorizedBy === staffData.username);
           const department = departments.find(value => value.id === staffData.departmentCode)
 
-          if (transactions.length != 0 ) {
+          // if (transactions.length != 0 ) {
             result.push({
               staffs: staffData,
               transaction: transaction,
               department: department
             })
-          }
-
+          // }
         }
         console.log('aggregated data', result);
         this.aggregatedEmployeeData.content = result;
-        this.aggregatedEmployeeData.totalElements = staff?.totalElements;
+        this.aggregatedEmployeeData.numberOfElements = staff?.numberOfElements;
         this.cdr.detectChanges();
       }
     })
@@ -160,14 +159,14 @@ export class ViewEmployeeComponent  implements OnInit {
    * that the user is currently in. It could be something like "sales", "inventory", or "finance".
    * @param {string} name - The "name" parameter is a string that represents the name of the employee.
    */
-  goToViewEmployeeTransactions(username: string, module: string, name:string) {
+  goToViewEmployeeTransactions(username: string, module: string, name:string, size: number) {
     // this.ticketsService.transactionRouting = {username: username, module: module, name: name};
 
     // this.ticketsService.setTransactionsRoutingData({username: username, module: module, name: name})
     // this.router.navigate([ `/home/view-employee/transactions/${username}`]);
 
     this.router.navigate(['/home/administration/employee/transactions'],
-      {queryParams: {username, module, name }}).then(r => {
+      {queryParams: {username, module, name, size }}).then(r => {
     })
   }
 

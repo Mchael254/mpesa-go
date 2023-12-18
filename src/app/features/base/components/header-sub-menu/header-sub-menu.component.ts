@@ -1,9 +1,16 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  ElementRef, OnInit,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
 import { Logger } from 'src/app/shared/services';
 import { Router } from '@angular/router';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {EntityService} from "../../../entities/services/entity/entity.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 const log = new Logger("HeaderSubMenuComponent")
 @Component({
@@ -31,7 +38,10 @@ export class HeaderSubMenuComponent implements OnInit {
   close_modal: boolean = false;
   policySubMenuList: SidebarMenu[];
 
-  constructor(private menuService: MenuService, private router:Router){
+  searchAccountForm: FormGroup;
+
+  constructor(private menuService: MenuService, private router:Router,private entityService: EntityService,
+              private fb: FormBuilder,){
     this.defaultSidebar = {name: 'Summary', value: "DEFAULT", link: '/home/dashboard'}
   }
 
@@ -46,8 +56,23 @@ export class HeaderSubMenuComponent implements OnInit {
     this.accountSubMenuList = this.menuService.accountSubMenuList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.analyticsSubMenuList = this.menuService.analyticsSubMenuList();
+    this.createSearchAccountForm();
   }
 
+  createSearchAccountForm(): void {
+    this.searchAccountForm = this.fb.group({
+      searchIdInput: [''],
+      searchNameInput: ['']
+    });
+  }
+
+  displaySearchValues() {
+    const searchFormValue = this.searchAccountForm.getRawValue();
+    log.info('search value', searchFormValue);
+
+    this.entityService.searchTermObject.set({...searchFormValue, fromSearchScreen: true});
+    this.navLink('/home/entity/list');
+  }
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
     if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
     this.menuService.updateSidebarMainMenu(sidebarMenu.value)
