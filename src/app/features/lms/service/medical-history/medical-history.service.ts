@@ -8,8 +8,8 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class MedicalHistoryService {
-  MEDICAL_HISTORY_BASE_URL = 'json/medical-history';
-  DISEASE_BASE_URL = 'json/diseases';
+  MEDICAL_HISTORY_BASE_URL = 'medical-history';
+  DISEASE_BASE_URL = 'diseases';
 
   constructor(private api:ApiService, private http: HttpClient) {}
 
@@ -27,7 +27,6 @@ export class MedicalHistoryService {
 
   getMedicalHistoryByTenantIdAndClientCode(tenant_id:string, client_code:string): Observable<any>{
     return this.api.GET(`${this.MEDICAL_HISTORY_BASE_URL}/${tenant_id}/${client_code}`, API_CONFIG.JSON_SERVICE_BASE_URL);
-    // return this.http.get('http://localhost:1020/json/new-business/6565c3cc8692857e6e02e32e');
   }
 
   saveMedicalHistory(medical_data:any){
