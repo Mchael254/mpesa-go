@@ -3,6 +3,5 @@ export enum  SESSION_KEY {
   CLIENT_CODE = 'client_code',
   PROPOSAL_CODE = 'proposal_code',
   QUOTE_CODE = 'quote_code',
-  ACCOUNT_CODE= 'account_code',
-  ACCOUNT_ID= 'account_id'
+  ACCOUNT_CODE = 'account_code'
 }

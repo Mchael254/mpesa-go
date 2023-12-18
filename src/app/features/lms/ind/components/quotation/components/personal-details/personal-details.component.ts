@@ -74,6 +74,8 @@ export class PersonalDetailsComponent {
   relationTypeList: any[] = [];
   documentList: any;
   isBeneficiaryLoading: boolean = false;
+  loadBankBranch: boolean;
+  getFormControlsNameWithErrors: string[] = [];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -106,7 +108,7 @@ export class PersonalDetailsComponent {
     this.getClientList();
     this.getBeneficiariesByQuotationCode();
     this.getBankList();
-    this.getBankBranchList();
+    // this.getBankBranchList();
     this.getCurrencyList();
     this.getOccupationList();
     this.getSectorList();
@@ -185,21 +187,22 @@ export class PersonalDetailsComponent {
           Validators.pattern(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/),
         ],
       ],
-      gender: ['M', [Validators.required]],
-      title: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      p_address: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
+      gender: ['M'],
+      title: [],
+      lastName: [],
+      p_address: [],
+      firstName: [],
       pinNumber: ['', [Validators.required]],
       clientType: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required]],
-      occupation: ['', [Validators.required]],
+      phoneNumber: [],
+      occupation: [],
       country: ['', [Validators.required]],
       branch: ['', [Validators.required]],
       idNumber: ['', [Validators.required]],
-      with_effect_from: [, [Validators.required]],
+      with_effect_from: [],
       with_effect_to: [],
       beneficiaries: this.fb.array([]),
+      bank_branch: []
     });
   }
   calculateAge(dateOfBirth: string | number | Date): number {
@@ -621,7 +624,67 @@ export class PersonalDetailsComponent {
   }
   trackByCode(index, item){ return item?.code; }
   trackById(index, item){ return item?.id; }
+
+  selectBankBranch(event){
+    this.loadBankBranch = true
+    this.bank_service.getBankBranchListByBankId(event.target.value).subscribe(da => {
+      this.loadBankBranch = false
+      this.bankBranchList = da;
+    }, err => {
+      this.loadBankBranch = false
+    })
+    
+  }
+
+  isRequired(name: string){
+    let control = this.clientDetailsForm.get(name);    
+    return (control.hasError('required') || control.hasError('pattern')) && control.touched;
+  }
+
+  getFormControlsWithErrors(formGroup: FormGroup): string[] {
+    const controlsWithErrors: string[] = [];
+
+    Object.keys(formGroup.controls).forEach(controlName => {
+      const control = formGroup.get(controlName);
+
+      if (control && control.invalid) {
+        controlsWithErrors.push(controlName);
+      }
+
+      if (control instanceof FormGroup) {
+        // If the control is a nested FormGroup, recursively check its controls
+        controlsWithErrors.push(...this.getFormControlsWithErrors(control));
+      }
+    });
+
+    const convertedArray = controlsWithErrors.map(str => {
+      // Use regular expression to insert a space before each capital letter
+      return str.replace(/([A-Z])/g, ' $1').trim();
+    });
+
+    return convertedArray;
+  }
+  
+
+  enableControlsWithErrors(formGroup: FormGroup) {
+    Object.keys(formGroup.controls).forEach(controlName => {
+      const control = formGroup.get(controlName);
+
+      if (control && control.invalid) {
+        control.enable();
+      }
+
+      if (control instanceof FormGroup) {
+        this.enableControlsWithErrors(control);
+      }
+    });
+  }
   async nextPage() {
+    if (!this.clientDetailsForm.valid) {
+      this.enableControlsWithErrors(this.clientDetailsForm);
+      this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(this.clientDetailsForm);
+      this.toast.danger('Fill the required forms', 'Required forms')
+    } else {
     let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
     let formValue = this.clientDetailsForm.value;
     let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
@@ -667,89 +730,28 @@ export class PersonalDetailsComponent {
       gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
       status: 'A',
       dateCreated: new Date(),
-      pinNumber: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
-      accountType: StringManipulation.returnNullIfEmpty(formValue?.clientType),
-      firstName: StringManipulation.returnNullIfEmpty(formValue?.firstName),
-      lastName: StringManipulation.returnNullIfEmpty(formValue?.lastName),
-      dateOfBirth: formValue?.date_of_birth,
-      organizationId: 2
+      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
+      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
+      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
+      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
+      date_of_birth: formValue?.date_of_birth,
+      organization_id: 2,
+      branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch)
 
     }
     let clientData = {...partyData, ...accountData}
-
-    console.log(clientData);
-    console.log(client_code);
     this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
-        this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode'])
-        this.session_storage.set(SESSION_KEY.ACCOUNT_ID, data['accountId'])
-        this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-      })
+        // console.log(data);
+        // client_code
+        // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
+        this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
+        this.toast.success('Create Client Info Successfully!', 'Client Details')
+    });
 
-    // if(this.clientDetailsForm.valid){
-    // if(true){
-    //   let clientTitle: {} = {};
-    //   if (formValue['title'] !== '') {
-    //     clientTitle = await lastValueFrom(
-    //       this.clientTitleList$.pipe(
-    //         map((ou: any) =>
-    //           ou.filter((val) => val['id'] === +formValue['title'])
-    //         ),
-    //         filter((filteredValues) => filteredValues.length > 0)
-    //       )
-    //     )[0];
-    //   }
-    //   const categoryDetails = this.clientTypeList.filter(
-    //     (data) => data['code'] === +formValue['clientType']
-    //   )[0];
-
-    //   let client = {
-    //     // "accountId": 0,
-    //     branchCode: formValue['branch'],
-    //     category: categoryDetails['clientTypeName'].charAt(0),
-    //     clientTitle: clientTitle['description'],
-    //     clientTitleId: +formValue['title'],
-    //     clientTypeId: formValue['clientType'],
-    //     country: Number(formValue['country']),
-    //     // "createdBy": formValue["string"],
-    //     dateOfBirth: new Date(formValue['dateOfBirth']),
-    //     emailAddress: formValue['emailAddress'],
-    //     firstName: formValue['firstName'],
-    //     gender: formValue['gender'],
-    //     idNumber: formValue['idNumber'],
-    //     lastName: formValue['lastName'],
-    //     //   "modeOfIdentity": formValue["ALIEN_NUMBER"],
-    //     occupationId: formValue['occupation'],
-    //     //   "passportNumber": formValue["string"],
-    //     phoneNumber: formValue['phoneNumber'],
-    //     physicalAddress: formValue['p_address'],
-    //     pinNumber: formValue['pinNumber'],
-    //     //   "shortDescription": formValue["string"],
-    //     status: 'A',
-    //     withEffectFromDate: formValue['withEffectFromDate'],
-    //   };
-    //   // return;
-
-    //   if (client_code > 0) {
-    //     client['id'] = client_code;
-    //     this.client_service
-    //       .updateClient(client_code, client)
-    //       .subscribe((data) => {
-    //         console.log(data);
-    //         this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    //         this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //       });
-    //   } else {
-    //     client['id'] = 0;
-    //     this.client_service.createClient(client).subscribe((data) => {
-    //       console.log(data);
-    // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    // await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //     });
-    //   }
-    // }else{
-    //   this.toast.danger('Fill all required Form', 'INCOMPLETE DATA')
-    // }
   }
+}
+  
+
   private addEntity(d: any[]) {
     this.editEntity = true;
     d.push({ isEdit: true });
