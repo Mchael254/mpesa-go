@@ -8,7 +8,8 @@
     "gis_services": "gis",
     "ticket_services": "turnquest",
     "lms": "lms",
-    "api":"api"
+    "api":"api",
+    "json":"json"
 
   },
 

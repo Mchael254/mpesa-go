@@ -10,9 +10,9 @@ export class FormsService {
   constructor(private api: ApiService) { }
 
   getAllForms(){
-    return this.api.GET('json/web-form-data',API_CONFIG.JSON_SERVICE_BASE_URL);
+    return this.api.GET('web-form-data',API_CONFIG.JSON_SERVICE_BASE_URL);
   }
   saveForm(form: any){
-    return this.api.POST('json/web-form-data',form, API_CONFIG.JSON_SERVICE_BASE_URL);
+    return this.api.POST('web-form-data',form, API_CONFIG.JSON_SERVICE_BASE_URL);
   }
 }
