@@ -2,11 +2,11 @@
   <div class="card">
     <div class="card-body">
       <div class="row col-sm-12 mx-0">
-        <div class="text-center col-sm-4 mt-5"></div>
-        <div class="text-center col-sm-4 mt-5">
+        <div class="text-center col-sm-4"></div>
+        <div class="text-center col-sm-4 col-12">
           <input type="search" class="form-control" placeholder="Search">
         </div>
-        <div class="col-sm-4 mt-5">
+        <div class="col-sm-4 col-12">
           <button class="btn btn-outline-primary float-end createDashBtn"
                   data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
         </div>
@@ -16,7 +16,7 @@
               <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
               <div class="row card-header border-0 text-sm-start bg-transparent">
 
-                <div class="col-md-10">
+                <div class="col-md-10 col-10">
                   <span *ngIf="!isEditable"
                     style="color: rgba(0, 0, 0, 0.60); font-weight: 600; cursor:pointer"
                         (click)="moveToListReport(dashboard.id)">{{dashboard?.name | titlecase }}</span>
@@ -26,7 +26,7 @@
                   </div>
 
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 col-2">
                   <span class="icon-container float-end" (click)="selectedItem = dashboard.id;menu.toggle($event)">
                   <i class="fa fa-ellipsis-v clickable"></i>
                 </span>
@@ -180,3 +180,5 @@
   </div>
 
 </div>
+
+<div class="mobile-bottom"></div>

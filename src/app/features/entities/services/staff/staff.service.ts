@@ -42,8 +42,8 @@ export class StaffService {
    * @return {Observable<Pagination<StaffDto>>} - staff data
    */
   getStaff(
-    page: number = 0,
-    size: number = 10,
+    page: number | null = 0,
+    size: number | null = 10,
     userType: string,
     sortList: string = 'dateCreated',
     order: string = 'desc',
@@ -158,7 +158,7 @@ export class StaffService {
    */
   getStaffWithSupervisor(
     page: number = 0,
-    size: number,
+    size: number | null = 5,
     userType: string,
     sortList: string = 'dateCreated',
     order: string = 'desc',

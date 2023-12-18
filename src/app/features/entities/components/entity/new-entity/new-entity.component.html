@@ -15,7 +15,7 @@
                 <form [formGroup]="entityRegistrationForm">
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.category === 'Y'">
-                            <div class="col-md-4 pad-1" >
+                            <div class="col-md-4 col-6 pad-1" >
                                 <label for="category">Party Type</label>
                                 <select id="category" class="form-select" placeholder="Select Party Type"
                                     formControlName="category"
@@ -31,7 +31,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
-                            <div class="col-md-4 col-12 md-col-4 pad-1">
+                            <div class="col-md-4 col-6 md-col-4 pad-1">
                                 <label for="date_of_birth">Date of Birth</label>
                                 <input type="text"
                                     class="form-control"
@@ -51,7 +51,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="entity_name">Entity</label>
                                 <input type="text" class="form-control" id="entity_name" placeholder="Entity Name"
                                     formControlName="entity_name"
@@ -64,7 +64,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="mode_of_identity">Primary ID Type</label>
                                 <select id="mode_of_identity" class="form-select" placeholder="Primary ID Type"
                                     formControlName="mode_of_identity"
@@ -81,7 +81,7 @@
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="identity_number">ID Number</label>
                                 <input type="text" class="form-control" id="identity_number" placeholder="ID Number"
                                     formControlName="identity_number"
@@ -90,11 +90,12 @@
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['identity_number']?.errors }">
                                     <div *ngIf="f['identity_number']?.errors['required']">Identity number is required</div>
+                                    <div *ngIf="f['identity_number'].errors['pattern']">ID Number format 12345678</div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="pin_number">Pin Number</label>
                                 <input type="text" class="form-control" id="pin_number" placeholder="Pin Number"
                                     formControlName="pin_number"
@@ -103,6 +104,7 @@
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['pin_number']?.errors }">
                                     <div *ngIf="f['pin_number']?.errors['required']">PIN Number is required</div>
+                                    <div *ngIf="f['pin_number'].errors['pattern']">PIN Number format A123456789R</div>
                                 </div>
                             </div>
                         </ng-container>
@@ -114,13 +116,13 @@
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role"
                                     value="{{ selectedRole.partyTypeName }}" formControlName="assign_role" [disabled]="true">
                             </div> -->
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="assign_role">Assign Role (Optional)</label>
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
                                     [disabled]="true">
                             </div>
 
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-6 pad-1">
                                 <label for="rolesButton">Select Role</label>
                                 <button type="button" id="rolesButton" class="btn btn-outline-primary btn-md btn-block"
                                     data-bs-toggle="modal" data-bs-target="#selectRoleModal" [disabled]="disableRole">
@@ -131,7 +133,7 @@
                     </div>
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
-                            <div class="col-md-4 pad-1">
+                            <div class="col-md-4 col-12 pad-1">
                                 <label for="inputProfileImg">Profile Photo</label>
                               <p style="padding:7px; border-left: solid 3px #00529b; color: #00529b">
                                 <i class="fa-solid fa-info-circle"></i>
@@ -139,7 +141,7 @@
                               </p>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
-                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" hidden />
+                                    <input type="file" id="inputProfileImg" formControlName="profilePiture" accept="image/jpeg, image/png" hidden />
                                     <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
                                         <i class="fa-solid fa-cloud-arrow-up"></i> Upload image</label>
                                     <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">Edit</label>
@@ -213,6 +215,8 @@
         </div>
     </div>
 </form>
+
+<div class="mobile-bottom"></div>
 
 <!-- <app-dynamic-form
     [formFields]="fieldsets"

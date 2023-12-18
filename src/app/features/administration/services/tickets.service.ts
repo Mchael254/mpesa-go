@@ -48,6 +48,7 @@ export class TicketsService {
 
   baseUrl = this.appConfig.config.contextPath.ticket_services;
   baseUrlAcc = this.appConfig.config.contextPath.accounts_services;
+  baseUrlSetup = this.appConfig.config.contextPath.setup_services;
   baseUrlGis = this.appConfig.config.contextPath.gis_services;
   private transanctionsRouting$ = new BehaviorSubject<TransactionsRoutingDTO>({
     username: null,
@@ -286,7 +287,7 @@ export class TicketsService {
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`)
 
-    return this.http.get<DepartmentDto[]>(`/${this.baseUrlAcc}/setups/departments`,
+    return this.http.get<DepartmentDto[]>(`/${this.baseUrlSetup}/setups/departments`,
       {
         headers: headers,
         params: params,

@@ -5,7 +5,7 @@ import { TableDetail } from '../../../../../shared/data/table-detail';
 import { EntityDto } from '../../../data/entityDto';
 import { LazyLoadEvent } from 'primeng/api';
 import { untilDestroyed } from '../../../../../shared/services/until-destroyed';
-import { tap } from 'rxjs';
+import {Subscription, tap} from 'rxjs';
 import { EntityService } from '../../../services/entity/entity.service';
 import { Logger } from '../../../../../shared/services/logger/logger.service';
 import { TableLazyLoadEvent } from 'primeng/table';
@@ -31,6 +31,9 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   tableDetails: TableDetail;
   pageSize = 5;
 
+  isSearching = false;
+  searchTerm = '';
+  private subscription: Subscription;
   cols = [
     { field: 'name', header: 'Name' },
     { field: 'modeOfIdentityName', header: 'ID Type' },
@@ -82,6 +85,18 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       isLazyLoaded: true
     }
     this.spinner.show();
+    log.info(this.entityService.searchTermObject());
+    const nameSearch:any = this.entityService.searchTermObject();
+
+    if(nameSearch?.fromSearchScreen) {
+      this.entityService
+        .searchEntities(0, 5, nameSearch?.searchNameInput)
+        .subscribe((data) => {
+          this.entities = data;
+          this.spinner.hide();
+        });
+    }
+  this.spinner.hide();
   }
 
 /**
@@ -91,27 +106,37 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  * or `TableLazyLoadEvent`.
  */
   lazyLoadEntity(event: LazyLoadEvent | TableLazyLoadEvent) {
-    let sortField: string = '';
-    if ('sortField' in event) {
-      if (Array.isArray(event.sortField)) {
-        sortField = event.sortField[0];
-      } else {
-        sortField = event.sortField;
-      }
-    }
-
+    // let sortField: string = '';
+    // if ('sortField' in event) {
+    //   if (Array.isArray(event.sortField)) {
+    //     sortField = event.sortField[0];
+    //   } else {
+    //     sortField = event.sortField;
+    //   }
+    // }
+ const search:any = this.entityService.searchTermObject();
+  if(!search?.fromSearchScreen) {
     const pageIndex = event.first / event.rows;
+    const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const searchTerm = localStorage.getItem('searchTerm');
+    const pageSize = event.rows;
 
-    this.getEntities(pageIndex, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-        tap((data) => log.info(`Fetching entities>>>`, data))
-      )
-      .subscribe(
-        (data: Pagination<EntityDto>) => {
-          if (searchTerm === null) {
+    if (this.isSearching) {
+      const searchEvent = {
+        target: {value: this.searchTerm}
+      };
+      this.filter(searchEvent, pageIndex, pageSize);
+    }
+    else {
+      this.getEntities(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching entities>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<EntityDto>) => {
+            // if (searchTerm === null) {
             data.content.forEach(entity => {
               entity.modeOfIdentityName = entity.modeOfIdentity.name
             });
@@ -119,18 +144,22 @@ export class ListEntityComponent implements OnInit, OnDestroy {
             this.tableDetails.rows = this.entities?.content;
             this.tableDetails.totalElements = this.entities?.totalElements;
             this.cdr.detectChanges();
-          }
-          else {
+            // }
+            // else {
             // this.searchEntity(searchTerm);
+            // }
+            this.spinner.hide();
+
+          },
+          error => {
+            this.spinner.hide();
           }
-          this.spinner.hide();
 
-        },
-        error => {
-          this.spinner.hide();
-        }
+        );
+    }
+  }
 
-    );
+
   }
 
 /**
@@ -147,10 +176,11 @@ export class ListEntityComponent implements OnInit, OnDestroy {
  * @returns The `getEntities` function is returning an Observable.
  */
   getEntities(pageIndex: number,
-              sortField: string = 'effectiveDateFrom',
+              pageSize: number,
+              sortField: any = 'effectiveDateFrom',
               sortOrder: string = 'desc') {
     return this.entityService
-              .getEntities(pageIndex, this.pageSize, sortField, sortOrder)
+              .getEntities(pageIndex, pageSize, sortField, sortOrder)
               .pipe(untilDestroyed(this));
   }
 
@@ -165,4 +195,46 @@ export class ListEntityComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
+  viewDetailsWithId(rowId: number) {
+    // let partyId: number;
+
+    this.router.navigate([ `/home/entity/view/${rowId}`]);
+    // fetch account details to fetch party id before routing to 360 view
+    /*this.accountService
+      .getAccountDetailsByAccountCode(rowId)
+      .pipe(
+        map((data: PartyAccountsDetails) => {
+            this.accountService.setCurrentAccounts(data); // set this current as current account.
+            return data?.partyId;
+          },
+          untilDestroyed(this)
+        ))
+      .subscribe( (_x) => {
+        partyId = _x;
+        this.router.navigate([ `/home/entity/view/${partyId}`]);
+      });*/
+  }
+
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.entities = null; // Initialize with an empty array or appropriate structure
+
+    this.subscription = this.entityService.searchTerm$
+      .subscribe(searchTerm => {
+        this.searchTerm = searchTerm.toString();
+      })
+    // const searchTerm = localStorage.getItem('searchTerm');
+    const value = (event.target as HTMLInputElement).value.toLowerCase() || this.searchTerm;
+
+    log.info('myvalue>>>', value)
+
+    this.searchTerm = value;
+    this.isSearching = true;
+    this.spinner.show();
+    this.entityService
+      .searchEntities(pageIndex, pageSize, this.searchTerm)
+      .subscribe((data) => {
+        this.entities = data;
+        this.spinner.hide();
+      });
+  }
 }
