@@ -27,8 +27,9 @@ export class ListClientComponent implements OnInit {
 
   public clientsData: Pagination<ClientDTO> = <Pagination<ClientDTO>>{};
   tableDetails: TableDetail;
-  pageSize: 5;
-
+  public pageSize: 5;
+  isSearching = false;
+  searchTerm = '';
   cols = [
     { field: 'clientFullName', header: 'Name' },
     { field: 'modeOfIdentity', header: 'Primary ID Type' },
@@ -129,10 +130,11 @@ export class ListClientComponent implements OnInit {
    */
 
   getClients(pageIndex: number,
+             pageSize: number,
              sortField: any = 'createdDate',
              sortOrder: string = 'desc') {
     return this.clientService
-      .getClients(pageIndex, this.pageSize, sortField, sortOrder)
+      .getClients(pageIndex, pageSize, sortField, sortOrder)
       .pipe(
         untilDestroyed(this),
       );
@@ -147,29 +149,39 @@ export class ListClientComponent implements OnInit {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
+    const pageSize = event.rows;
 
-    this.getClients(pageIndex, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-        tap((data) => log.info(`Fetching Clients>>>`, data))
-      )
-      .subscribe(
-        (data: Pagination<ClientDTO>) => {
-          data.content.forEach( client => {
-            client.clientTypeName = client.clientType.clientTypeName;
-            client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
-            // as the null value for lastName is handled  using the logical OR (||) operator
-          });
-          this.clientsData = data;
-          this.tableDetails.rows = this.clientsData?.content;
-          this.tableDetails.totalElements = this.clientsData?.totalElements;
-          this.cdr.detectChanges();
-          this.spinner.hide();
-        },
-        error => {
-          this.spinner.hide();
-        }
-      );
+
+    if (this.isSearching) {
+      const searchEvent = {
+        target: {value: this.searchTerm}
+      };
+      this.filter(searchEvent, pageIndex, pageSize);
+    }
+    else {
+      this.getClients(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Clients>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<ClientDTO>) => {
+            data.content.forEach( client => {
+              client.clientTypeName = client.clientType.clientTypeName;
+              client.clientFullName = client.firstName + ' ' + (client.lastName || ''); //the client.clientFullName will be set to just firstName,
+              // as the null value for lastName is handled  using the logical OR (||) operator
+            });
+            this.clientsData = data;
+            this.tableDetails.rows = this.clientsData?.content;
+            this.tableDetails.totalElements = this.clientsData?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          }
+        );
+    }
   }
 
   /**
@@ -185,5 +197,50 @@ export class ListClientComponent implements OnInit {
     this.router.navigate(['/home/entity/new'],
       {queryParams: {entityType: 'Client'}}).then(r => {
     })
+  }
+  // Filter function triggered on input change
+  /*filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.clientsData = null;
+
+
+    let value = event.target.value.toLowerCase();
+
+    this.searchTerm = value;
+
+    log.info('value>>', value, pageIndex);
+
+    if (value) {
+      this.isSearching = true;
+      this.spinner.show();
+      this.clientService.searchClients(pageIndex, pageSize, value)
+        .subscribe((data)=> {
+          this.clientsData = data;
+          log.info('filtered data>>', data);
+          this.spinner.hide();
+
+        });
+    }
+    else {
+      this.searchTerm = '';
+      this.isSearching = false;
+      this.getClients(pageIndex, pageSize, 'createdDate', 'desc');
+    }
+
+  }*/
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+    this.clientsData = null; // Initialize with an empty array or appropriate structure
+
+    const value = (event.target as HTMLInputElement).value.toLowerCase();
+
+    log.info('myvalue>>>', value)
+
+      this.searchTerm = value;
+      this.isSearching = true;
+      this.spinner.show();
+      this.clientService.searchClients(pageIndex, pageSize, this.searchTerm)
+        .subscribe((data) => {
+          this.clientsData = data;
+          this.spinner.hide();
+        });
   }
 }

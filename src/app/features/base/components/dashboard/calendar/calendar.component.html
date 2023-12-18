@@ -70,11 +70,11 @@
               <ng-container *ngFor="let event of events">
                 <div class="event">
                   <div class="row">
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 col-10">
                       <span class="fw-medium">{{event?.title | titlecase}}</span> <br>
                       <span>{{event?.startDate | date:'shortTime'}} - {{ event?.endDate | date:'shortTime' }}</span>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-2 col-2">
                   <span class="inactive mr-2" style="font-size: 0.9em">
                     {{ event?.startDate | date: 'EE '}}
                   </span>
@@ -132,7 +132,8 @@
                     [showIcon]="true"
                     styleClass="calendar-input"
                     formControlName="eventDate"
-                    (onSelect)="sliceTime()">
+                    (onSelect)="sliceTime(startTime)"
+                    [minDate]="date">
                   </p-calendar>
                 </span>
               </div>
@@ -186,8 +187,8 @@
                 <div class="row mb-3">
                   <div class="col-sm-6 col-6">
                     <label for="timeFrom" class="form-label">Time From</label>
-                    <select class="form-select" id="timeFrom" formControlName="fromDate">
-                      <option *ngFor="let time of slicedTime" [value]="time">
+                    <select class="form-select" id="timeFrom" formControlName="fromDate" (click)="timeFromEvent($event)">
+                      <option *ngFor="let time of slicedTimeFrom" [value]="time">
                         <span>{{ time | date: 'shortTime' }}</span>
                       </option>
                     </select>
@@ -195,7 +196,7 @@
                   <div class="col-sm-6 col-6">
                     <label for="timeTo" class="form-label">Time To</label>
                     <select class="form-select" id="timeTo" formControlName="toDate">
-                      <option *ngFor="let time of slicedTime" [value]="time">
+                      <option *ngFor="let time of slicedTimeTo" [value]="time">
                         <span>{{ time | date: 'shortTime' }}</span>
                       </option>
                     </select>

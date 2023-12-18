@@ -8,13 +8,33 @@ import { TableModule } from 'primeng/table';
 import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
+import { CalendarModule } from 'primeng/calendar';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
+import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
+import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
+import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
 
+import { InputTextModule } from 'primeng/inputtext';
+import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
+import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
 
 @NgModule({
   declarations: [
     ListQuotationsComponent,
     QuickQuoteDetailsComponent,
-    QuickQuoteFormComponent
+    QuickQuoteFormComponent,
+    CoverTypesDetailsComponent,
+    QuoteSummaryComponent,
+    QuotationsClientDetailsComponent,
+    QuotationDetailsComponent,
+    ImportRisksComponent,
+    QuoteAssigningComponent,
+    RiskSectionDetailsComponent,
+    QuotationSummaryComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +42,13 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
     TableModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
-  ]
+    SharedModule,
+    CalendarModule,
+    DialogModule,
+    InputTextModule,
+    DropdownModule
+    
+  ],
+  
 })
 export class QuotationModule { }

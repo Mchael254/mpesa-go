@@ -36,7 +36,7 @@
         <div class="col-md-4 mt-3 move" *ngFor="let reportName of reportdata.reports;let i = index">
           <div class="card" cdkDragBoundary=".dragDropBoundary" cdkDrag>
             <div class="row card-header border-0 text-sm-start bg-transparent">
-              <div class="col-md-10">
+              <div class="col-md-10 col-10">
                 <span *ngIf="!isEditable"
                       style="color: rgba(0, 0, 0, 0.60); font-weight: 600;">{{reportName?.name | titlecase }}</span>
 
@@ -45,7 +45,7 @@
                          [disabled]="selectedReportId !== reportdata?.reports[i].id" (keyup)="handleEnter($event)">
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-2 col-2">
                 <span class="float-end"
                       (click)="selectedDashboard = reportdata.id;
                       selectedReportId = reportName.id;
@@ -127,5 +127,7 @@
       </div>
     </div>
   </div>
-
 </div>
+
+<div class="mobile-bottom"></div>
+

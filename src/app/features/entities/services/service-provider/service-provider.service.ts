@@ -26,8 +26,8 @@ export class ServiceProviderService {
   ) { }
 
   getServiceProviders(
-    page: number = 0,
-    size: number = 5,
+    page: number | null = 0,
+    size: number | null = 5,
     sortFields: string = 'createdDate',
     sortOrder: string = 'desc'
   ): Observable<Pagination<ServiceProviderDTO>> {
@@ -50,7 +50,28 @@ export class ServiceProviderService {
       });
   }
 
+  searchServiceProviders(
+    page: number,
+    size: number = 5,
+    name: string
+  ): Observable<Pagination<ServiceProviderDTO>> {
 
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    })
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('organizationId', 2)
+      .set('name', `${name}`)
+
+    return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/service-providers`,
+      {
+        headers: headers,
+        params: params,
+      });
+  }
 
   saveServiceProvider(serviceProviderData: ServiceProviderDTO): Observable<ServiceProviderDTO[]> {
     const headers = new HttpHeaders({

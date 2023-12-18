@@ -2,7 +2,8 @@ export interface CountryDto {
   id: number,
   short_description: string,
   name: string,
-  mobilePrefix:number
+  mobilePrefix:number,
+  zipCode: number
 }
 export interface StateDto {
   id: number,
@@ -101,7 +102,7 @@ export interface PostTownDTO {
   stateId: number
 }
 
-export interface AdminstrativeUnitDTO { 
+export interface AdminstrativeUnitDTO {
   id: string,
   name: string
 }
@@ -134,6 +135,6 @@ export interface PostCountryHolidayDTO {
   day: number,
   description: string,
   id: number,
-  month: number, 
+  month: number,
   status: string
 }

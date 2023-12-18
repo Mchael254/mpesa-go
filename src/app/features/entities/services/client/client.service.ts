@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 export class ClientService {
 
   baseUrl = this.appConfig.config.contextPath.accounts_services;
+  baseUrlSetups= this.appConfig.config.contextPath.setup_services;
   headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json'});
 
   constructor(private http: HttpClient,
@@ -129,13 +130,12 @@ export class ClientService {
     });
     const params = new HttpParams()
       .set('organizationId', 2);
-    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrl}/setups/branches`,
+    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrlSetups}/setups/branches`,
       {
         headers:headers,
         params:params
       });
   }
-
 
   getClientTitles(organizationId: number): Observable<any[]> {
 
