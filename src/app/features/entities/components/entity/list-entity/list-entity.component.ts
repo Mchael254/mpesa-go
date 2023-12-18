@@ -85,6 +85,18 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       isLazyLoaded: true
     }
     this.spinner.show();
+    log.info(this.entityService.searchTermObject());
+    const nameSearch:any = this.entityService.searchTermObject();
+
+    if(nameSearch?.fromSearchScreen) {
+      this.entityService
+        .searchEntities(0, 5, nameSearch?.searchNameInput)
+        .subscribe((data) => {
+          this.entities = data;
+          this.spinner.hide();
+        });
+    }
+  this.spinner.hide();
   }
 
 /**
@@ -102,48 +114,51 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     //     sortField = event.sortField;
     //   }
     // }
-
+ const search:any = this.entityService.searchTermObject();
+  if(!search?.fromSearchScreen) {
     const pageIndex = event.first / event.rows;
     const sortField = event.sortField;
     const sortOrder = event?.sortOrder == 1 ? 'desc' : 'asc';
     const searchTerm = localStorage.getItem('searchTerm');
     const pageSize = event.rows;
 
-  if (this.isSearching) {
-    const searchEvent = {
-      target: {value: this.searchTerm}
-    };
-    this.filter(searchEvent, pageIndex, pageSize);
-  }
-  else {
-    this.getEntities(pageIndex, pageSize, sortField, sortOrder)
-      .pipe(
-        untilDestroyed(this),
-        tap((data) => log.info(`Fetching entities>>>`, data))
-      )
-      .subscribe(
-        (data: Pagination<EntityDto>) => {
-          // if (searchTerm === null) {
-          data.content.forEach(entity => {
-            entity.modeOfIdentityName = entity.modeOfIdentity.name
-          });
-          this.entities = data;
-          this.tableDetails.rows = this.entities?.content;
-          this.tableDetails.totalElements = this.entities?.totalElements;
-          this.cdr.detectChanges();
-          // }
-          // else {
-          // this.searchEntity(searchTerm);
-          // }
-          this.spinner.hide();
+    if (this.isSearching) {
+      const searchEvent = {
+        target: {value: this.searchTerm}
+      };
+      this.filter(searchEvent, pageIndex, pageSize);
+    }
+    else {
+      this.getEntities(pageIndex, pageSize, sortField, sortOrder)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching entities>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<EntityDto>) => {
+            // if (searchTerm === null) {
+            data.content.forEach(entity => {
+              entity.modeOfIdentityName = entity.modeOfIdentity.name
+            });
+            this.entities = data;
+            this.tableDetails.rows = this.entities?.content;
+            this.tableDetails.totalElements = this.entities?.totalElements;
+            this.cdr.detectChanges();
+            // }
+            // else {
+            // this.searchEntity(searchTerm);
+            // }
+            this.spinner.hide();
 
-        },
-        error => {
-          this.spinner.hide();
-        }
+          },
+          error => {
+            this.spinner.hide();
+          }
 
-      );
+        );
+    }
   }
+
 
   }
 
