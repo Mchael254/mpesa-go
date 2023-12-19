@@ -5,12 +5,37 @@ export interface BankDTO {
     short_description: string
 }
 
+// export interface BankBranchDTO {
+//     bank_id: number,
+//     createdBy: string,
+//     id: number,
+//     name: string,
+//     short_description: string
+// }
+
 export interface BankBranchDTO {
-    bank_id: number,
+    bankId: number,
+    bankName: string,
+    branchCode: number,
+    branchName: string,
+    contactPersonEmail: string,
+    contactPersonName: string,
+    contactPersonPhone: string,
+    countryCode: number,
+    countryName: string,
     createdBy: string,
+    createdDate: string,
+    directDebitSupported: string,
+    eftSupported: string,
+    email: string,
     id: number,
     name: string,
-    short_description: string
+    physicalAddress: string,
+    postalAddress: string,
+    referenceCode: string,
+    short_description: string,
+    townCode: number,
+    townName: string
 }
 
 export interface BankRegionDTO {
