@@ -1008,3 +1008,20 @@ export interface subClassCoverTypeDto {
   sum_insured_exchange_rate: number,
   survey_evaluation_required: string
 }
+export interface vehicleMake{
+    code: number,
+    name: string,
+    makeIndustrialCode: number,
+    organizationCode: number
+}
+export interface vehicleModel{
+    
+    code: number,
+    name: string,
+    body_type: string,
+    year: number,
+    model_type: string,
+    vehicle_make_code: number,
+    organization_code: number,
+    version: number,
+}
