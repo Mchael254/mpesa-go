@@ -1,16 +1,29 @@
-import {CUSTOM_ELEMENTS_SCHEMA, ModuleWithProviders, NgModule} from '@angular/core';
-import {APP_BASE_HREF, CommonModule, NgOptimizedImage, PlatformLocation} from '@angular/common';
-import {MessageService} from "primeng/api";
-import {CookieService} from "ngx-cookie-service";
-import {BrowserStorage, LocalBrowserStorageService} from "./services/storage";
-import {JwtService} from "./services";
-import {ErrorComponent, HideMessageDirective} from "./custom-elements";
-import {LoaderComponent} from "./components/loader/loader.component";
-import {NotificationsComponent} from "./components/notifications/notifications.component";
-import {ToastModule} from "primeng/toast";
-import {ProgressBarModule} from "primeng/progressbar";
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
-import {LoaderService} from "./services/loader.service";
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  ModuleWithProviders,
+  NgModule,
+} from '@angular/core';
+import {
+  APP_BASE_HREF,
+  CommonModule,
+  NgOptimizedImage,
+  PlatformLocation,
+} from '@angular/common';
+import { MessageService } from 'primeng/api';
+import { CookieService } from 'ngx-cookie-service';
+import { BrowserStorage, LocalBrowserStorageService } from './services/storage';
+import { JwtService } from './services';
+import { ErrorComponent, HideMessageDirective } from './custom-elements';
+import { LoaderComponent } from './components/loader/loader.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { ToastModule } from 'primeng/toast';
+import { ProgressBarModule } from 'primeng/progressbar';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClient,
+  HttpClientModule,
+} from '@angular/common/http';
+import { LoaderService } from './services/loader.service';
 import { FileExtensionPipe } from './pipes/file-extension/file-extension.pipe';
 import { DocViewerComponent } from './components/doc-viewer/doc-viewer.component';
 import { AuthService } from './services/auth.service';
@@ -23,18 +36,18 @@ import { TokenInterceptor } from './services/http/token-interceptor';
 import { HttpCacheService } from './services/http/http-cache.service';
 import { IeCacheControlInterceptor } from './services/http/ie-cache-control-interceptor';
 import { OtpComponent } from './components/otp/otp.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import { ReactiveFormsModule } from '@angular/forms';
 import { DynamicTableComponent } from './components/dynamic-table/dynamic-table.component';
-import {TableModule} from "primeng/table";
-import {ButtonModule} from "primeng/button";
-import {ChipsModule} from "primeng/chips";
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { ChipsModule } from 'primeng/chips';
 import { CopyrightFooterComponent } from './components/copyright-footer/copyright-footer.component';
 import { DynamicChartComponent } from './components/dynamic-chart/dynamic-chart.component';
-import {ChartModule} from "primeng/chart";
+import { ChartModule } from 'primeng/chart';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { DynamicFormComponent } from './components/dynamic-form/dynamic-form.component';
 import { DynamicBreadcrumbComponent } from './components/dynamic-breadcrumb/dynamic-breadcrumb.component';
-import {RouterLink} from "@angular/router";
+import { RouterLink } from '@angular/router';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { VerticalStepperComponent } from './components/stepper/vertical-stepper/vertical-stepper.component';
 import { HorizontalStepperComponent } from './components/stepper/horizontal-stepper/horizontal-stepper.component';
@@ -47,10 +60,10 @@ import { DynamicSetupWizardWelcomeScreenComponent } from './components/dynamic-s
 import { NgxSpinnerModule } from 'ngx-spinner';
 export { Logger, LogLevel } from './services/logger/logger.service';
 export { untilDestroyed } from './services/until-destroyed';
-export { UtilService } from './services/util/util.service'
+export { UtilService } from './services/util/util.service';
 // export { JwtService } from './services/jwt.service';
 export { RoleGuard, AuthGuard } from './services/guard';
-import {TranslateModule} from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { CustomFilterPipe } from './pipes/custom-filter/custom-filter.pipe';
 import { SafeResourceUrlPipe } from './pipes/safe-resource-url/safe-resource-url.pipe';
 import { ShareModalComponent } from './components/share-modal/share-modal.component';
@@ -62,7 +75,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { SentenceCasePipe } from './pipes/sentence-case/sentence-case.pipe';
 import { CommaformatDirective } from './directives/comma-format.directive';
 
-
+import { ReusableInputComponent } from './components/reusable-input/reusable-input.component';
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
@@ -100,7 +113,7 @@ const SERVICES = [
   {
     provide: HTTP_INTERCEPTORS,
     useClass: IeCacheControlInterceptor,
-    multi: true
+    multi: true,
   },
   { provide: HTTP_INTERCEPTORS, useClass: AuthHeaderInterceptor, multi: true },
   ApiErrorInterceptor,
@@ -111,9 +124,8 @@ const SERVICES = [
   {
     provide: APP_BASE_HREF,
     useFactory: getBaseHref,
-    deps: [PlatformLocation]
+    deps: [PlatformLocation],
   },
-
 ];
 
 @NgModule({
@@ -146,70 +158,68 @@ const SERVICES = [
     DownloadModalComponent,
     CommaformatDirective,
     SentenceCasePipe,
-    CommaformatDirective  
-
-
+    CommaformatDirective,
+    ReusableInputComponent,
   ],
-    imports: [
-        CommonModule,
-        ToastModule,
-        ProgressBarModule,
-        NgOptimizedImage,
-        ReactiveFormsModule,
-        TableModule,
-        ButtonModule,
-        ChipsModule,
-        ChartModule,
-        RouterLink,
-        NgxSpinnerModule,
-        TranslateModule,
-        ReactiveFormsModule,
-        CalendarModule,
-        DropdownModule,
-        HttpClientModule
-    ],
-    exports: [
-        ErrorComponent,
-        HideMessageDirective,
-        NotificationsComponent,
-        LoaderComponent,
-        FileExtensionPipe,
-        DocViewerComponent,
-        OtpComponent,
-        DynamicTableComponent,
-        CopyrightFooterComponent,
-        DynamicChartComponent,
-        SpinnerComponent,
-        DynamicFormComponent,
-        DynamicBreadcrumbComponent,
-        StepperComponent,
-        DynamicSimpleModalComponent,
-        DynamicFormModalComponent,
-        NgxSpinnerModule,
-        DynamicSetupSearchListScreenComponent,
-        TranslateModule,
-        DynamicSetupWizardWelcomeScreenComponent,
-        ReactiveFormsModule,
-        CustomFilterPipe,
-        SafeResourceUrlPipe,
-        CalendarModule,
-        TableModule,
-        DropdownModule,
-        TabMenuModule,
-        ShareModalComponent,
-        DownloadModalComponent,
-        CommaformatDirective,
-        SentenceCasePipe
-
-
+  imports: [
+    CommonModule,
+    ToastModule,
+    ProgressBarModule,
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    TableModule,
+    ButtonModule,
+    ChipsModule,
+    ChartModule,
+    RouterLink,
+    NgxSpinnerModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    CalendarModule,
+    DropdownModule,
+    HttpClientModule,
+  ],
+  exports: [
+    ErrorComponent,
+    HideMessageDirective,
+    NotificationsComponent,
+    LoaderComponent,
+    FileExtensionPipe,
+    DocViewerComponent,
+    OtpComponent,
+    DynamicTableComponent,
+    CopyrightFooterComponent,
+    DynamicChartComponent,
+    SpinnerComponent,
+    DynamicFormComponent,
+    DynamicBreadcrumbComponent,
+    StepperComponent,
+    DynamicSimpleModalComponent,
+    DynamicFormModalComponent,
+    NgxSpinnerModule,
+    DynamicSetupSearchListScreenComponent,
+    TranslateModule,
+    DynamicSetupWizardWelcomeScreenComponent,
+    ReactiveFormsModule,
+    CustomFilterPipe,
+    SafeResourceUrlPipe,
+    CalendarModule,
+    TableModule,
+    DropdownModule,
+    TabMenuModule,
+    ShareModalComponent,
+    DownloadModalComponent,
+    CommaformatDirective,
+    SentenceCasePipe,
+    ReusableInputComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {
   public static forRoot(): ModuleWithProviders<SharedModule> {
-      return {
-        ngModule: SharedModule,
-        providers: [...SERVICES]
-      };
-    }
+    return {
+      ngModule: SharedModule,
+      providers: [...SERVICES],
+    };
+  }
 }

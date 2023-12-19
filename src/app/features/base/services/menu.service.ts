@@ -133,8 +133,8 @@ export class MenuService{
           link: "/home/crm/user-parameters"
         },
         {
-          name: 'Hierarchy',
-          link: ""
+          name: 'currencies',
+          link: "/home/crm/currencies"
         },
         {
           name: 'Post Levels',
