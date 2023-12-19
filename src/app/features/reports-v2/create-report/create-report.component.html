@@ -94,7 +94,7 @@
                   {{ filterName?.name }}
                   <i class="fa fa-caret-right" style="font-size: 13px;"></i>
                 </p>
-                <div class="collapse dropend" [attr.id]="filterName.description">
+                <div class="collapse dropend" [attr.id]="filterName.description" style="max-width: fit-content;">
                   <ng-container *ngFor="let subCategory of filterName.subCategory">
                     <ul
                       class="sub-category"
@@ -111,15 +111,14 @@
                       </li>
                     </ul>
                     <div class="collapse dropend subject-area" [attr.id]="filterName.description">
-                      <ul class="dropdown-menu">
-                        <ng-container *ngFor="let query of subCategoryCategoryAreas">
-                          <li
+                      <ul class="dropdown-menu" style="margin-left: -150px">
+                        <li
                             (click)="selectCriteria(filterName, subCategory, query)"
                             class="query"
+                            *ngFor="let query of subCategoryCategoryAreas"
                           >
                             {{ query.name }}
                           </li>
-                        </ng-container>
                       </ul>
                     </div>
                   </ng-container>
