@@ -1,16 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Logger } from 'src/app/shared/services';
-import { QuickService } from '../../../../service/quick.service';
-import { PayFrequencyService } from '../../../../service/pay-frequency/pay-frequency.service';
-import { PayFrequency } from '../../../../models/payFrequency';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Pagination } from 'src/app/shared/data/common/pagination';
-import { Currency } from '../../../../models/currency';
-import { DurationTypes, FacultativeType, QuotationCovers, UnitRate } from '../../../../models/quotationCovers';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
@@ -19,11 +13,16 @@ import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChang
 import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { GrpQuoteDetails } from '../../../../models/quoteDetails';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { formatDate } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
-import {MessageService} from "primeng/api";
+import { MessageService } from "primeng/api";
+import { Currency } from '../../models/currency';
+import { PayFrequency } from '../../models/payFrequency';
+import { QuotationCovers, DurationTypes, UnitRate, FacultativeType } from '../../models/quotationCovers';
+import { GrpQuoteDetails } from '../../models/quoteDetails';
+import { PayFrequencyService } from '../../service/pay-frequency/pay-frequency.service';
+import { QuickService } from '../../service/quick/quick.service';
 
 
 @AutoUnsubscribe
@@ -180,7 +179,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getProducts() {
-    this.product_service.getListOfGroupProduct().subscribe((products) => {
+    this.product_service.getListOfProduct('G').subscribe((products) => {
       console.log("products", products)
       this.productList = products.map((product) => ({
         label: this.capitalizeFirstLetterOfEachWord(product.description),

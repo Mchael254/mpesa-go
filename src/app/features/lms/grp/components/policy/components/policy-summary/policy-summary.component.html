@@ -1,0 +1,532 @@
+<div class="main">
+        <div class="container">
+            <div style="padding-top: 20px; text-align: center;"><span class="summary-text">Policy summary</span></div>
+            <div style="padding-left: 25px;">Policy details</div>
+            <div class="row col-12 mt-1" style="color: black; padding-left: 25px;"
+            *ngFor="let polDets of policyDetails">
+                <div class="col-md-4 col-xs-12">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Policy number: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.policy_number }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Product: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.product_name | titlecase }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Status: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.status }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Effective date: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.effective_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Sum assured: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.basic_sum_assured | number }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Total premium: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.total_premium | number }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Branch: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.branch_description | titlecase }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Client: </td>
+                            <td class="style-text" style="align-items: right;">{{ polDets.client | titlecase }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-4 col-xs-12">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Intermediary: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.agent | titlecase }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">UW year: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.underwriting_year }}</td>
+                        </tr>
+                        <tr>
+                            <td style=" align-items: left; color: grey;">Currency: </td>
+                            <td class="style-text" style=" align-items: right;">{{ polDets.currency_symbol }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+    
+    
+            <!-- tabView -->
+            <p-tabView>
+                <p-tabPanel header="Policy details">
+                    <p-tabView>
+                        <p-tabPanel header="Receipts allocated">
+                            <div style="color: #00529B;">Receipts allocated</div>
+                            <div>
+                                <div class="col-12">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" style="float: right;">
+                                        <g clip-path="url(#clip0_2316_4490)">
+                                          <rect width="20" height="20" rx="4" fill="white"/>
+                                          <mask id="mask0_2316_4490" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+                                            <rect width="20" height="20" fill="#D9D9D9"/>
+                                          </mask>
+                                          <g mask="url(#mask0_2316_4490)">
+                                            <path d="M9.99967 12.5L5.83301 8.33334H14.1663L9.99967 12.5Z" fill="#1C1B1F"/>
+                                          </g>
+                                        </g>
+                                        <rect x="0.25" y="0.25" width="19.5" height="19.5" rx="3.75" stroke="black" stroke-opacity="0.5" stroke-width="0.5"/>
+                                        <defs>
+                                          <clipPath id="clip0_2316_4490">
+                                            <rect width="20" height="20" rx="4" fill="white"/>
+                                          </clipPath>
+                                        </defs>
+                                      </svg>
+                                    </div>
+                                    <div>&nbsp;</div>
+                                <div>
+                                    <p-table [value]="receiptsAllocated" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                                    styleClass="p-datatable-striped">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Receipt No</th>
+                                                <th>Receipt date</th>
+                                                <th>Amount</th>
+                                                <th>Employee contribution</th>
+                                                <th>contribution month</th>
+                                                <th>Narration</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-receiptsAllocated>
+                                            <tr>
+                                                <td id="table-alignment">{{ receiptsAllocated.receipt_no }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.receipt_date }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.amount | number }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                               
+                            </div>
+                            
+                        </p-tabPanel>
+                        <p-tabPanel header="Annual valuations">
+                            <div style="color: #00529B;">Annual valuations</div>
+                            <p-table [value]="annualValuations" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Valuation WEF</th>
+                                        <th>Valuation WET</th>
+                                        <th>Valuation date</th>
+                                        <th>Balance B/F</th>
+                                        <th>contributions</th>
+                                        <th>Witdrawals</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-annualValuations>
+                                    <tr>
+                                      <td id="table-alignment">{{ annualValuations.wef }}</td>
+                                      <td id="table-alignment">{{ annualValuations.wet }}</td>
+                                      <td id="table-alignment">{{ annualValuations.valuation_date }}</td>
+                                      <td id="table-alignment">{{ annualValuations.total_bal_bf | number }}</td>
+                                      <td id="table-alignment">{{ annualValuations.total_amount | number }}</td>
+                                      <td id="table-alignment">{{ annualValuations.withdrawal_total | number }}</td>
+                                      <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
+                                    </tr>
+                                  </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Partial withdrawals">
+                            <div style="color: #00529B;">Partial withdrawals</div>
+                            <p-table [value]="partiwalWithdrawal" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Pay method</th>
+                                        <th>Bank name</th>
+                                        <th>Bank acc No</th>
+                                        <th>Notification date</th>
+                                        <th>Payee</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-partiwalWithdrawal>
+                                    <tr>
+                                        <td id="table-alignment">{{partiwalWithdrawal.pay_method}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.bank_name}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.bank_account_no}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.notification_date}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.payee}}</td>
+                                        <td id="table-alignment">{{partiwalWithdrawal.amount}}</td>
+                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Claim details">
+                            <div style="color: #00529B;">Claim details</div>
+                            <p-table [value]="policyClaims" [scrollable]="false" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                            styleClass="p-datatable-striped" [paginator]="true"
+                            [rows]="5"
+                            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Member number</th>
+                                        <th style="width: 12%;">Claim number</th>
+                                        <th>Report date</th>
+                                        <th>Admitted</th>
+                                        <th>Claim type</th>
+                                        <th>Status</th>
+                                        <th style="width: 12%;">Member name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-policyClaims>
+                                    <tr>
+                                        <td id="table-alignment">{{ policyClaims.member_number }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_no }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_date_claim_reported }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_date_admitted }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ policyClaims.member_display | titlecase }}</td>
+                                        <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Deductions">
+                            <div style="color: #00529B;">Deductions</div>
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Deduction type</th>
+                                        <th>Date</th>
+                                        <th>Scheme value</th>
+                                        <th>Rate</th>
+                                        <th>Payee</th>
+                                        <th>Deduction amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body">
+                                    <tr>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                    </p-tabView>
+                </p-tabPanel>
+                <p-tabPanel header="Members">
+                    <div style="color: #00529B;">Policy members</div>
+                    
+    <div class="col-12">
+        <div class="col-12">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" style="float: right;">
+            <g clip-path="url(#clip0_2316_4490)">
+              <rect width="20" height="20" rx="4" fill="white"/>
+              <mask id="mask0_2316_4490" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+                <rect width="20" height="20" fill="#D9D9D9"/>
+              </mask>
+              <g mask="url(#mask0_2316_4490)">
+                <path d="M9.99967 12.5L5.83301 8.33334H14.1663L9.99967 12.5Z" fill="#1C1B1F"/>
+              </g>
+            </g>
+            <rect x="0.25" y="0.25" width="19.5" height="19.5" rx="3.75" stroke="black" stroke-opacity="0.5" stroke-width="0.5"/>
+            <defs>
+              <clipPath id="clip0_2316_4490">
+                <rect width="20" height="20" rx="4" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <div>&nbsp;</div>
+        <div style="width: 100%;">
+        <p-table
+    [value]="members"
+    [paginator]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    styleClass="p-datatable-striped"
+>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>First name</th>
+            <th>Other names</th>
+            <th>Date of Birth</th>
+            <th>Gender</th>
+            <th>Contact</th>
+            <th>Email</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-members>
+        <tr>
+            <td id="table-alignment">{{ members.other_names }}</td>
+            <td id="table-alignment">{{ members.surname }}</td>
+            <td id="table-alignment">{{ members.date_of_birth }}</td>
+            <td id="table-alignment">{{ members.sex }}</td>
+            <td id="table-alignment">{{ members.telephone_number }}</td>
+            <td id="table-alignment">{{ members.email }}</td>
+            
+        </tr>
+    </ng-template>
+</p-table>
+
+    </div>
+    </div>
+    
+    
+                    <p-tabView>
+                        <p-tabPanel header="Receipt allocations">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Receipt No</th>
+                                        <th>Receipt date</th>
+                                        <th>Amount</th>
+                                        <th>Contribution type</th>
+                                        <th>Contribution month</th>
+                                        <th>Narration</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body">
+                                    <tr>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Fund value">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Valuation WEF</th>
+                                        <th>Valuation WET</th>
+                                        <th>Valuation rate</th>
+                                        <th>Balance B/F</th>
+                                        <th>Contributions</th>
+                                        <th>Withdrawals</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body">
+                                    <tr>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Withdrawal allocations">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Pay method</th>
+                                        <th>Bank name</th>
+                                        <th>Bank acc No</th>
+                                        <th>Notification date</th>
+                                        <th>Payee</th>
+                                        <th>Amount</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body">
+                                    <tr>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td>row1</td>
+                                        <td><i class="fas fa-ellipsis-v"></i></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Claim details">
+                            <p-table [value]="memberClaims" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}"
+                            [paginator]="true"
+                            [rows]="5"
+                            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]"
+                            styleClass="p-datatable-striped">
+                                
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Claim number</th>
+                                        <th>Report date</th>
+                                        <th>Admitted</th>
+                                        <th>Claim type</th>
+                                        <th>Status</th>
+                                        <th>Payee</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-memberClaims>
+                                    <tr>
+                                        <td id="table-alignment">{{ memberClaims.clm_no }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_date_claim_reported }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_date_admitted }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ memberClaims.member_display | titlecase }}</td>
+                                        <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                    </p-tabView>
+                </p-tabPanel>
+                <p-tabPanel header="Reports">
+                    <div class="row">
+                        <div class="col-4">
+                            <div style="color: #00529B;">Clients</div>
+                            <div style="color: #000;">Fund value statement</div>
+                            <div style="color: #000;">Fund value registers</div>
+                            <div style="color: #000;">Member statement</div>
+                            <div style="color: #000;">Receipt registers</div>
+                            <div style="color: #000;">Comission statement</div>
+    
+                        </div>
+                        <div class="col-4">
+                            <div style="color: #00529B;">User</div>
+                            <div style="color: #000;">Fund value statement</div>
+                            <div style="color: #000;">Fund value registers</div>
+                            <div style="color: #000;">Member statement</div>
+                        </div>
+                        <div class="col-4">
+                            <div style="color: #00529B;">Scheme facilitators</div>
+                            <div style="color: #000;">Fund value statement</div>
+                            <div style="color: #000;">Fund value registers</div>
+                            <div style="color: #000;">Member statement</div>
+                        </div>
+                    </div>
+    
+                    <div class="row">
+                        <div class="col-4">
+                            <div style="color: #00529B;">members</div>
+                            <div style="color: #000;">Fund value statement</div>
+                        </div>
+                        <div class="col-4">
+                            <div style="color: #00529B;">Intermediary</div>
+                            <div style="color: #000;">Fund value statement</div>
+                            <div style="color: #000;">Fund value registers</div>
+                        </div>
+                    </div>
+                </p-tabPanel>
+            </p-tabView>
+            <!-- tabView -->
+           
+    <!-- modals -->
+    <!-- view more modal -->
+    <div class="modal fade" tabindex="-1" #memberSummaryModal id="viewMoreModal"
+            aria-labelledby="viewMoreModalModal" aria-hidden="true">
+            <div class="modal-dialog modal-l">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal"
+                            aria-label="Close" (click)="closeViewMoreModal()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- <div class="card"> -->
+                        <div class="row">
+                            <div class="col-6">
+                                <table>
+                                    <tr>
+                                        <td class="td-label">Policy number:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">proposal number:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Status:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Effective date:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Sum assured:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total premium:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                            <div class="col-6">
+                                <table>
+                                    <tr>
+                                        <td class="td-label">Paying status:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Occupation:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Reference number:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Monthly income:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Ref premium:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total premium paid:</td>
+                                        <td class="td-label-data">{{ quoteSummary }}</td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                        <!-- </div> -->
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-primary bottom-button-share" data-bs-dismiss="modal"
+                            (click)="closeViewMoreModal()">
+                            <span>Close</span></button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- view more modal end -->
+    <!-- modals -->
+        </div>
+        <div></div>
+    </div>

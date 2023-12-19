@@ -21,6 +21,10 @@
     float: right;
 }
 
+.bottom-button-accept:hover {
+    background-color: #459fee;
+}
+
 .bottom-button-reject {
     display: inline-flex;
     height: 40px;
@@ -33,6 +37,10 @@
     float: right;
     background: #F00;
     border: 1px solid #F00;
+}
+
+.bottom-button-reject:hover {
+    background-color: rgb(240, 87, 87);
 }
 
 .bottom-button-share {
@@ -112,6 +120,10 @@
     cursor: pointer;
 }
 
+.back-button:hover {
+    color: #007bff;
+  }
+
 .centered-table {
     margin: 0 auto;
     text-align: center;
@@ -160,7 +172,7 @@
 }
 
 .style-text {
-    color: #000;
+    color: #3a3a3a;
     leading-trim: both;
     text-edge: cap;
     font-family: Roboto;
@@ -288,4 +300,8 @@
     color: #00529B !important;
     background-color: rgb(243, 237, 237) !important;
     border: 1px solid #00529B !important;
+}
+
+@media screen and (max-width: 800px) {
+    
 }

@@ -50,6 +50,18 @@ export class BankService {
     return this.http.get<BankBranchDTO[]>(`/${this.baseUrl}/setups/bank-branches`, {headers:header})
   }
 
+  getBankBranchById(id: any): Observable<BankBranchDTO[]> {
+    log.info('Fetching Bank Branches')
+    const header = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    });
+    const params = new HttpParams()
+      .set('bankId', `${id}`);
+
+    return this.http.get<BankBranchDTO[]>(`/${this.baseUrl}/setups/bank-branches`, {headers:header, params: params})
+  }
+
   /**
    * Get all bank branches by bank id
    * @param bankId Bank Id
@@ -69,6 +81,23 @@ export class BankService {
       });
   }
 
+
+   /**
+   * Get all bank branches by bank id
+   * @param bankId Bank Id
+   * @returns {Observable<BankBranchDTO[]>} all bank branches for a given bank id
+   */
+   getBankBranchListByBankId(bankId: number): Observable<BankBranchDTO[]> {
+    const header = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    });
+    const params = new HttpParams()
+      .set('bankId', `${bankId}`);
+
+
+    return this.http.get<BankBranchDTO[]>(`/${this.baseUrl}/setups/bank-branches`, { headers: header, params:params });
+  }
 
   getCurrencies(): Observable<CurrencyDTO[]> {
     log.info('Fetching Source of Funds')
