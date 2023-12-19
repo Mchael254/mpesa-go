@@ -27,7 +27,7 @@ export class ClientTypeService {
   }
   getIdentifierTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
-    return this.http.get<any[]>(`/${this.baseUrl}//identity-modes?organizationId=2`);
+    return this.http.get<any[]>(`/${this.baseUrl}/identity-modes?organizationId=2`);
   }
 
 

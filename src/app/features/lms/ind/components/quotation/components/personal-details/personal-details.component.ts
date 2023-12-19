@@ -74,6 +74,8 @@ export class PersonalDetailsComponent {
   relationTypeList: any[] = [];
   documentList: any;
   isBeneficiaryLoading: boolean = false;
+  loadBankBranch: boolean;
+  getFormControlsNameWithErrors: string[] = [];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -106,7 +108,7 @@ export class PersonalDetailsComponent {
     this.getClientList();
     this.getBeneficiariesByQuotationCode();
     this.getBankList();
-    this.getBankBranchList();
+    // this.getBankBranchList();
     this.getCurrencyList();
     this.getOccupationList();
     this.getSectorList();
@@ -114,13 +116,14 @@ export class PersonalDetailsComponent {
     this.getRelationTypes();
     this.getDocumentsByClientId();
 
-    if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
-      let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-      this.crm_client_service.getClientById(clientId).subscribe((data) => {
+    // if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
+      // let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
+      let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
+      this.crm_client_service.getAccountByCode(accountCode).subscribe((data) => {
         // To work on Later
         console.log(data);
       });
-    }
+    // }
   }
   getRelationTypes() {
     this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
@@ -184,21 +187,22 @@ export class PersonalDetailsComponent {
           Validators.pattern(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/),
         ],
       ],
-      gender: ['M', [Validators.required]],
-      title: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      p_address: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
+      gender: ['M'],
+      title: [],
+      lastName: [],
+      p_address: [],
+      firstName: [],
       pinNumber: ['', [Validators.required]],
       clientType: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required]],
-      occupation: ['', [Validators.required]],
+      phoneNumber: [],
+      occupation: [],
       country: ['', [Validators.required]],
       branch: ['', [Validators.required]],
       idNumber: ['', [Validators.required]],
-      with_effect_from: [, [Validators.required]],
+      with_effect_from: [],
       with_effect_to: [],
       beneficiaries: this.fb.array([]),
+      bank_branch: []
     });
   }
   calculateAge(dateOfBirth: string | number | Date): number {
@@ -371,10 +375,20 @@ export class PersonalDetailsComponent {
       this.bankList = data;
     });
   }
+  selectBank(d:any){
+    this.getBankBranchList2(d?.target?.value)
+  }
   getBankBranchList() {
+    let id =
     this.bank_service.getBankBranch().subscribe((data) => {
       this.bankBranchList = data;
     });
+  }
+
+  getBankBranchList2(id) {
+      this.bank_service.getBankBranchById(id).subscribe((data) => {
+        this.bankBranchList = data;
+      });
   }
   getCurrencyList() {
     this.currency_service.getAllCurrencies().subscribe((data) => {
@@ -424,6 +438,10 @@ export class PersonalDetailsComponent {
     let percentage_benefit = this.beneficiaryList?.map(d =>  d?.percentage_benefit)?.reduce((sum, current) => sum + current, 0);
 
     console.log(percentage_benefit);
+    if(percentage_benefit >100){
+      this.toast.danger('Percentage Benefits', `More than the expected amount by ${percentage_benefit-100}`)
+      return;
+    }
     if (!this.checkIfGuardianIsNeeded()) {
       beneficiary['appointee_info'] = null;
     }
@@ -440,18 +458,18 @@ export class PersonalDetailsComponent {
         this.beneficiaryForm.reset();
         this.spinner_Service.hide('beneficiary_modal_screen');
         this.isBeneficiaryLoading = false;
-      });
+          this.toast.success('Beneficiary Details Added Successfully', 'Beneficiary/Trustee/Guardian')
+      },
+        err => {
+          this.toast.danger(err?.error?.errors[0], 'Percentage Benefit')
+
+        }
+      );
     }else{
       console.log("Greater than 100%");
       this.toast.danger(`Percentage Benefit is greater by  ${percentage_benefit -100}`, 'Percentage Benefit')
 
     }
-  }
-  addEmptyBeneficiary() {
-    this.addEntity(this.beneficiaryList);
-  }
-  addEmptyGuardian() {
-    this.addEntity(this.guardianList);
   }
   deleteBeneficiary(i: number) {
     this.editEntity = true;
@@ -462,19 +480,6 @@ export class PersonalDetailsComponent {
         this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
         this.editEntity = false;
       });
-  }
-  deleteGuardian(i: number) {
-    let data: any[] = [];
-    data = this.guardianList.filter((data, x) => i === x);
-    if (data.length > 0) {
-      let beneficiary = this.beneficiaryList.filter((data_) => {
-        return data_['code'] === data[0]['code'];
-      });
-      // this.party_service.createBeneficary({}).subscribe(data =>{
-      this.guardianList = this.deleteEntity(this.guardianList, i);
-
-      // });
-    }
   }
   editBeneficiary(i: number) {
     this.showCategoryDetstModal();
@@ -496,36 +501,6 @@ export class PersonalDetailsComponent {
       }
       return data;
     });
-  }
-  editGuardian(i: number) {
-    this.guardianList = this.guardianList.map((data, x) => {
-      if (i === x) {
-        let data_ = {};
-
-        data_['isEdit'] = true;
-        data['isEdit'] = true;
-        data_['party_first_name'] = data['first_name'];
-        data_['party_last_name'] = data['other_name'];
-        data_['party_dob'] = new Date(data['date_of_birth']);
-        data_['party_percentage'] = data['percentage_benefit'];
-        data_['party_type'] = data['type'];
-        this.clientDetailsForm.patchValue(data_);
-      }
-      return data;
-    });
-  }
-  cancelEntity(d: any[], i, isButton) {
-    isButton = true;
-
-    this.editEntity = true;
-    d = d.map((data, x) => {
-      if (x === i) {
-        data = data['isEdit'] = false;
-      }
-      return data;
-    });
-    this.editEntity = false;
-    return d;
   }
   getValueBeneficiaryValue(name: string = 'question1') {
     return this.beneficiaryForm.get(name).value;
@@ -649,7 +624,67 @@ export class PersonalDetailsComponent {
   }
   trackByCode(index, item){ return item?.code; }
   trackById(index, item){ return item?.id; }
+
+  selectBankBranch(event){
+    this.loadBankBranch = true
+    this.bank_service.getBankBranchListByBankId(event.target.value).subscribe(da => {
+      this.loadBankBranch = false
+      this.bankBranchList = da;
+    }, err => {
+      this.loadBankBranch = false
+    })
+    
+  }
+
+  isRequired(name: string){
+    let control = this.clientDetailsForm.get(name);    
+    return (control.hasError('required') || control.hasError('pattern')) && control.touched;
+  }
+
+  getFormControlsWithErrors(formGroup: FormGroup): string[] {
+    const controlsWithErrors: string[] = [];
+
+    Object.keys(formGroup.controls).forEach(controlName => {
+      const control = formGroup.get(controlName);
+
+      if (control && control.invalid) {
+        controlsWithErrors.push(controlName);
+      }
+
+      if (control instanceof FormGroup) {
+        // If the control is a nested FormGroup, recursively check its controls
+        controlsWithErrors.push(...this.getFormControlsWithErrors(control));
+      }
+    });
+
+    const convertedArray = controlsWithErrors.map(str => {
+      // Use regular expression to insert a space before each capital letter
+      return str.replace(/([A-Z])/g, ' $1').trim();
+    });
+
+    return convertedArray;
+  }
+  
+
+  enableControlsWithErrors(formGroup: FormGroup) {
+    Object.keys(formGroup.controls).forEach(controlName => {
+      const control = formGroup.get(controlName);
+
+      if (control && control.invalid) {
+        control.enable();
+      }
+
+      if (control instanceof FormGroup) {
+        this.enableControlsWithErrors(control);
+      }
+    });
+  }
   async nextPage() {
+    if (!this.clientDetailsForm.valid) {
+      this.enableControlsWithErrors(this.clientDetailsForm);
+      this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(this.clientDetailsForm);
+      this.toast.danger('Fill the required forms', 'Required forms')
+    } else {
     let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
     let formValue = this.clientDetailsForm.value;
     let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
@@ -664,31 +699,31 @@ export class PersonalDetailsComponent {
     let partyData = {
       category: "C",
       country: countryData,
-      country_id: StringManipulation.returnNullIfEmpty(formValue?.country),
-      date_of_birth: formValue?.date_of_birth,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
+      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+      dateOfBirth: formValue?.date_of_birth,
+      effectiveDateFrom: formValue?.with_effect_from,
+      effectiveDateTo: formValue?.with_effect_to,
       id: 0,
-      identity_number: formValue?.idNumber,
-      mode_of_identity_id: null,
+      identityNumber: formValue?.idNumber,
+      modeOfIdentityId: 12,
       name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
-      organization_id: 2,
-      party_type_id: 2,
-      pin_number: formValue?.pinNumber,
-      profile_image: null,
-      profile_picture: null,
+      organizationId: 2,
+      partyTypeId: 2,
+      pinNumber: formValue?.pinNumber,
+      profileImage: null,
+      profilePicture: null,
     }
     let accountData: any = {
       address: null,
       // StringManipulation.returnNullIfEmpty(formValue?.p_address),
-      agent_request_dto: null,
-      contact_details: contactsDetails,
-      party_id: null,
-      party_type_short_desc: 'CLIENT',
-      created_by: null,
-      effective_date_from: formValue?.with_effect_from,
-      effective_date_to: formValue?.with_effect_to,
-      mode_of_identity_id: null,
+      agentRequestDto: null,
+      contactDetails: contactsDetails,
+      partyId: null,
+      partyTypeShortDesc: 'CLIENT',
+      createdBy: null,
+      effectiveDateFrom: formValue?.with_effect_from,
+      effectiveDateTo: formValue?.with_effect_to,
+      modeOfIdentityId: 12,
       category: "C",
       // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
       countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
@@ -700,83 +735,23 @@ export class PersonalDetailsComponent {
       first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
       last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
       date_of_birth: formValue?.date_of_birth,
-      organization_id: 2
+      organization_id: 2,
+      branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch)
 
     }
     let clientData = {...partyData, ...accountData}
-
-    console.log(clientData);
-    console.log(client_code);
     this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
-        console.log(data);
-        this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-      })
+        // console.log(data);
+        // client_code
+        // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
+        this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
+        this.toast.success('Create Client Info Successfully!', 'Client Details')
+    });
 
-    // if(this.clientDetailsForm.valid){
-    // if(true){
-    //   let clientTitle: {} = {};
-    //   if (formValue['title'] !== '') {
-    //     clientTitle = await lastValueFrom(
-    //       this.clientTitleList$.pipe(
-    //         map((ou: any) =>
-    //           ou.filter((val) => val['id'] === +formValue['title'])
-    //         ),
-    //         filter((filteredValues) => filteredValues.length > 0)
-    //       )
-    //     )[0];
-    //   }
-    //   const categoryDetails = this.clientTypeList.filter(
-    //     (data) => data['code'] === +formValue['clientType']
-    //   )[0];
-
-    //   let client = {
-    //     // "accountId": 0,
-    //     branchCode: formValue['branch'],
-    //     category: categoryDetails['clientTypeName'].charAt(0),
-    //     clientTitle: clientTitle['description'],
-    //     clientTitleId: +formValue['title'],
-    //     clientTypeId: formValue['clientType'],
-    //     country: Number(formValue['country']),
-    //     // "createdBy": formValue["string"],
-    //     dateOfBirth: new Date(formValue['dateOfBirth']),
-    //     emailAddress: formValue['emailAddress'],
-    //     firstName: formValue['firstName'],
-    //     gender: formValue['gender'],
-    //     idNumber: formValue['idNumber'],
-    //     lastName: formValue['lastName'],
-    //     //   "modeOfIdentity": formValue["ALIEN_NUMBER"],
-    //     occupationId: formValue['occupation'],
-    //     //   "passportNumber": formValue["string"],
-    //     phoneNumber: formValue['phoneNumber'],
-    //     physicalAddress: formValue['p_address'],
-    //     pinNumber: formValue['pinNumber'],
-    //     //   "shortDescription": formValue["string"],
-    //     status: 'A',
-    //     withEffectFromDate: formValue['withEffectFromDate'],
-    //   };
-    //   // return;
-
-    //   if (client_code > 0) {
-    //     client['id'] = client_code;
-    //     this.client_service
-    //       .updateClient(client_code, client)
-    //       .subscribe((data) => {
-    //         console.log(data);
-    //         this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    //         this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //       });
-    //   } else {
-    //     client['id'] = 0;
-    //     this.client_service.createClient(client).subscribe((data) => {
-    //       console.log(data);
-    // this.toast.success('NEXT TO INSURANCE HISTORY', 'Successfull');
-    // await this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
-    //     });
-    //   }
-    // }else{
-    //   this.toast.danger('Fill all required Form', 'INCOMPLETE DATA')
-    // }
   }
+}
+  
+
   private addEntity(d: any[]) {
     this.editEntity = true;
     d.push({ isEdit: true });

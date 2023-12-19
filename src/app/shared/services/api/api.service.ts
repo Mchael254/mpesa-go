@@ -22,7 +22,7 @@ export class ApiService {
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json')
     .set('X-TenantId', environment.TENANT_ID)
-    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN'));
+    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '');
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -42,9 +42,7 @@ export class ApiService {
     // let token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcGl1c2VyIiwic2NvcGVzIjpbXSwiaXNzIjoidHVybnF1ZXN0LWxtcy1hcGlzIiwiaWF0IjoxNjkzMzg0MzI2LCJleHAiOjE2OTM1NjQzMjZ9.v8eSQVRtYHWTknHyKJ9Cson2ZKCye2kwKCrqPI635kQ'
     // headers = headers.append('Authorization', token);
 
-    // if (!headers.has('Authorization')) {
-    //   headers = headers.append('Authorization', token);
-    // }
+    // if (!headers.has('Authorization')) { headers = headers.append('Authorization', token); }
 
     return headers;
   }

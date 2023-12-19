@@ -19,6 +19,7 @@ export class QuickService {
   }
 
   getDurationTypes() {
+    console.log('this.getDurationTypes')
     return this.api.GET(`quotations/duration-types`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 

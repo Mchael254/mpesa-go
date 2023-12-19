@@ -5,8 +5,6 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
-import { PayFrequencyService } from 'src/app/features/lms/grp/service/pay-frequency/pay-frequency.service';
-import { PayFrequency } from 'src/app/features/lms/grp/models/payFrequency';
 import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
@@ -16,6 +14,8 @@ import {NgxSpinnerService} from "ngx-spinner";
 import {finalize} from "rxjs/internal/operators/finalize";
 import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import { PayFrequency } from 'src/app/features/lms/grp/components/quotation/models/payFrequency';
+import { PayFrequencyService } from 'src/app/features/lms/grp/components/quotation/service/pay-frequency/pay-frequency.service';
 
 
 @Component({
@@ -138,6 +138,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       this.clientLifestyleForm.patchValue({
         ...data
       })
+        this.toast.success('Client lifestyle details retrieved successfully', 'Lifestyle Details');
       this.spinner_service.hide("lifestyle_screen");
     },
     err=>{
@@ -173,7 +174,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       },
       err=>{
         this.toast.danger("Unable to Save Client Lifestyle's Record, try again later!!", 'DANGER');
-  
+
       })
 
 
