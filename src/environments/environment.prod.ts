@@ -19,6 +19,6 @@ export const environment = {
 
 
   ]),
-  TENANT_ID: API_TENANT_ID.MUTUAL,
+  TENANT_ID: API_TENANT_ID.LIFECO,
 
 };
