@@ -7,6 +7,7 @@ import { DivisionComponent } from './components/division/division.component';
 import { RegionComponent } from './components/region/region.component';
 import { BranchComponent } from './components/branch/branch.component';
 import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
+import { CurrenciesComponent } from './components/currencies/currencies.component';
 
 const routes: Routes = [
   {
@@ -36,6 +37,10 @@ const routes: Routes = [
   {
     path: 'user-parameters',
     component: UserParametersComponent
+  },
+  {
+    path: 'currencies',
+    component: CurrenciesComponent
   },
 ];
 

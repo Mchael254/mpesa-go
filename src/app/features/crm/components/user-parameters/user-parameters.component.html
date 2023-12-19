@@ -11,12 +11,20 @@
       <div class="card-body">
         <div class="row mb-3">
           <div class="col-4">
-            <input type="text" class="form-control" placeholder="Search by name or description" aria-label="search" aria-describedby="search"
-              (input)="filterParameters($event)">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name or description"
+              aria-label="search"
+              aria-describedby="search"
+              (input)="filterParameters($event)"
+            />
           </div>
           <div class="col-8">
             <div class="float-end">
-              <span class="icon-circle"><i class="pi pi-pencil" (click)="editParameter()"></i></span>
+              <span class="icon-circle"
+                ><i class="pi pi-pencil" (click)="editParameter()"></i
+              ></span>
               <!-- <span class="icon-circle"><i class="fa-regular fa-trash-can" (click)="deleteParameter()"></i></span> -->
             </div>
           </div>
@@ -24,16 +32,17 @@
         <div class="row mb-5">
           <div class="col-12">
             <p-table
-              #parameterTable 
-              [value]="userParametersData" 
+              #parameterTable
+              [value]="userParametersData"
               [autoLayout]="true"
               [rowHover]="true"
-              responsiveLayout="scroll" 
+              responsiveLayout="scroll"
               styleClass="p-datatable-sm"
               [scrollable]="true"
-              scrollHeight="400px" 
+              scrollHeight="400px"
               class="ui-datatable"
-              [globalFilterFields]="['name']">
+              [globalFilterFields]="['name']"
+            >
               <ng-template pTemplate="header">
                 <tr>
                   <th class="head">Name</th>
@@ -43,9 +52,14 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-param>
-                <tr class="custom-table" (click)="onParamsRowClick(param)">
+                <tr
+                  class="custom-table"
+                  (click)="onParamsRowClick(param)"
+                  [class.selected]="selectedParameter === param"
+                >
                   <td class="body">{{ param.name }}</td>
-                  <td class="body">{{ param.value }}</td>
+                  <!-- <td class="body">{{ param.value }}</td> -->
+                  <td class="body">{{ sliceString(param.value) }}</td>
                   <td class="body">{{ param.description }}</td>
                   <td class="body">{{ param.status }}</td>
                 </tr>
@@ -64,42 +78,81 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" #parameterModal id="parameterModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
+<div
+  class="modal fade"
+  #parameterModal
+  id="parameterModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Edit Parameters</h5>
-        <button type="button" class="btn-close" (click)="closeParameterModal()" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeParameterModal()"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <form [formGroup]="createParameterForm">
           <div class="row">
             <div class="col-6 mb-3">
               <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" placeholder="name" formControlName="name">
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="name"
+                formControlName="name"
+              />
             </div>
             <div class="col-6 mb-3">
               <label for="value" class="form-label">Value</label>
-              <input type="text" class="form-control" id="value" placeholder="Value"
-                formControlName="value">
+              <input
+                type="text"
+                class="form-control"
+                id="value"
+                placeholder="Value"
+                formControlName="value"
+              />
             </div>
             <div class="col-6 mb-3">
               <label for="status" class="form-label">Status</label>
               <select class="form-select" id="status" formControlName="status">
                 <option value="">Select Status</option>
-                <option *ngFor="let status of statuses" [value]="status.value">{{ status.name }}</option>
+                <option
+                  *ngFor="let status of statusesData"
+                  [value]="status.value"
+                >
+                  {{ status.name }}
+                </option>
               </select>
             </div>
             <div class="col-6 mb-3">
               <label for="description" class="form-label">Description</label>
-              <input type="text" class="form-control" id="description" placeholder="Description" formControlName="description">
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                placeholder="Description"
+                formControlName="description"
+              />
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="updateParameters()">Update Details</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="updateParameters()"
+        >
+          Update Details
+        </button>
       </div>
     </div>
   </div>
