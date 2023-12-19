@@ -50,10 +50,18 @@
     <div class="modal-content">
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-9">
+
+          <div class="col-sm-9 col-9">
             <p class="fw-medium text-center text-primary" *ngIf="selectedCriterion">
               {{ selectedCriterion?.queryName }}
             </p>
+          </div>
+          <div class="col-sm-3 col-3 text-end">
+            <button #closebutton  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="col-sm-9 offset-sm-0 col-8 offset-1">
+            
             <form [formGroup]="filterForm">
               <div class="mb-3">
                 <label for="condition" class="form-label">Condition</label>
@@ -82,9 +90,6 @@
             <form>
 
             </form>
-          </div>
-          <div class="col-sm-3 text-end">
-            <button #closebutton  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
         </div>
       </div>
