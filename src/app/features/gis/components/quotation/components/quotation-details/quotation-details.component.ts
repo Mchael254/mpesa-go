@@ -12,7 +12,7 @@ import { FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
-import { Modal } from 'bootstrap';
+// import { Modal } from 'bootstrap';
 import { introducersDTO } from '../../data/introducersDTO';
 import { Logger } from 'src/app/shared/services/logger/logger.service';
 import { AccountContact } from 'src/app/shared/data/account-contact';
@@ -23,7 +23,7 @@ import { Table } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
-const log = new Logger('QuotationSummaryComponent');
+const log = new Logger('QuotationDetails');
 @Component({
   selector: 'app-quotation-details',
   templateUrl: './quotation-details.component.html',
@@ -54,7 +54,7 @@ export class QuotationDetailsComponent {
   productDetails:any
   userDetails: AccountContact | ClientAccountContact | WebAdmin;
   selected:any;
-
+  @ViewChild('openModal') openModal;
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -76,22 +76,22 @@ export class QuotationDetailsComponent {
     this.getCurrency();
     this.getProduct();
     this.getuser();
-    this.formData = this.sharedService.getFormData();
+    // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
     this.getAgents()
-    this.quotationForm.controls['clientCode'].setValue(this.formData.id);
-    this.quotationForm.controls['branchCode'].setValue(this.formData.branchCode);
-    this.quotationForm.controls['clientType'].setValue(this.formData.clientTypeId);
+    
     this.getIntroducers();
-    const storedData = sessionStorage.getItem('clientFormData');
-    log.debug(storedData)
+    this.formData = sessionStorage.getItem('clientFormData');
+    log.debug(JSON.parse(this.formData))
 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     if (quotationFormDetails) {
-      const parsedData = JSON.parse(storedData);
+      const parsedData = JSON.parse(this.formData);
       this.quotationForm.setValue(parsedData);
-      
     }
+    // this.quotationForm.controls['clientCode'].setValue(storedData.id);
+    // this.quotationForm.controls['branchCode'].setValue(storedData.branchCode);
+    // this.quotationForm.controls['clientType'].setValue(storedData.clientTypeId);
   }
 
   /**
@@ -128,28 +128,6 @@ export class QuotationDetailsComponent {
     this.productService.getAllProducts().subscribe(res=>{
       const ProdList = res
       this.products = ProdList
-      /**
-         * Iterates through each subclass in the subclasses list.
-         * @param {ProductSubclass} el - The current subclass in the iteration.
-         * @return {void}
-         */
-      this.products.forEach(element => {
-        this.productService.getASubclasses().subscribe(data=>{
-          const Product = data
-          this.productSubclassList = Product._embedded.product_subclass_dto_list
-          
-          this.productSubclassList.forEach(el => {
-            if(el.product_code == element.code){
-              // Additional processing if needed
-            }
-            
-          });
-       
-          
-        })
-        
-      });
-     
     })
   
   }
@@ -233,7 +211,10 @@ export class QuotationDetailsComponent {
        */
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data
-    console.log(this.quotationNo)
+    console.log(this.quotationForm.value)
+    sessionStorage.setItem('quotationNum',this.quotationNum );
+    sessionStorage.setItem('quotationCode',this.quotationCode );
+    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
     this.router.navigate(['/home/gis/quotation/import-risks'])
     })
     
@@ -251,7 +232,8 @@ export class QuotationDetailsComponent {
     this.quotationNum = this.quotationNo._embedded[0].quotationNumber
     sessionStorage.setItem('quotationNum',this.quotationNum );
     sessionStorage.setItem('quotationCode',this.quotationCode );
-    sessionStorage.setItem('clientFormData', JSON.stringify(this.quotationForm.value));
+    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+
     this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
 
     this.router.navigate(['/home/gis/quotation/risk-section-details']);
@@ -303,9 +285,11 @@ export class QuotationDetailsComponent {
       this.quotation = this.quotationsList.content
 
       if(this.quotation.length > 0){
-        const element = document.getElementById('exampleModal') as HTMLElement;
-        const myModal = new Modal(element);
-        myModal.show();
+        this.openModal.nativeElement.click();
+
+        // const element = document.getElementById('exampleModal') as HTMLElement;
+        // const myModal = new Modal(element);
+        // myModal.show();
       }else{
         this.saveQuotationDetails()
       }
