@@ -171,6 +171,10 @@ export class QuotationsService {
     return this.http.get(`/${this.baseUrl}/setups/api/v1/products/${productCode}/clauses`)
 
   }
+  deleteSchedule(level:any,riskCode:any,code:any){
+    return this.http.delete<scheduleDetails>(`/${this.baseUrl}/quotation/api/v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`)
+    
+  }
  
 }
 
