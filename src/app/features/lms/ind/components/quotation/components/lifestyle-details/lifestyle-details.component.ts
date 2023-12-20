@@ -126,6 +126,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
       this.spinner_service.hide("lifestyle_screen");
       this.isLoading = false;
     })).subscribe((data: any) => {
+      this.spinner_service.hide("lifestyle_screen");
       this.bmiForm.patchValue({
         height: data['height'],
         weight: data['weight'],
@@ -139,9 +140,9 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
         ...data
       })
         this.toast.success('Client lifestyle details retrieved successfully', 'Lifestyle Details');
-      this.spinner_service.hide("lifestyle_screen");
     },
     err=>{
+      this.spinner_service.hide("lifestyle_screen");
       this.toast.danger('We are unable to complete your request, try again later', 'INFO');
 
     })

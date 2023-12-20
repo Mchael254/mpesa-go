@@ -302,7 +302,8 @@
                             </td>
                           </tr>
                           <tr *ngIf="row['isEdit'] == false">
-                            <td>{{ row["relation_type_list"] }}</td>
+                           
+                            <td>{{ row["relation_type_code"] }}</td>
                             <td>{{ row["disease"] }}</td>
                             <td>{{ row["diagnosis_date"] | date : "short" }}</td>
                             <td>{{ row["diagnosis"] }}</td>

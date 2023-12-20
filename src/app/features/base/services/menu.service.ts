@@ -411,7 +411,8 @@ policySubMenuList() : SidebarMenu[]{
   return [
     {
       name:"Policies",
-      link: "/home/lms/policy/list",
+      // link: "/home/lms/policy/list",
+      link: "/home/lms/grp/policy/policyListing",
       value: "POLICY"
     }
   ];

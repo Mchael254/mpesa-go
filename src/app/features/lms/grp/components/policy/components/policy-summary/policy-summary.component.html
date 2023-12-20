@@ -99,7 +99,7 @@
                                                 <th>Receipt date</th>
                                                 <th>Amount</th>
                                                 <th>Employee contribution</th>
-                                                <th>contribution month</th>
+                                                <th>Contribution month</th>
                                                 <th>Narration</th>
                                             </tr>
                                         </ng-template>
@@ -110,7 +110,7 @@
                                                 <td id="table-alignment">{{ receiptsAllocated.amount | number }}</td>
                                                 <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
                                                 <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
-                                                <td id="table-alignment">{{ receiptsAllocated.pay_method }}</td>
+                                                <td id="table-alignment">{{ receiptsAllocated.receipt_narration }}</td>
                                             </tr>
                                         </ng-template>
                                     </p-table>
@@ -128,7 +128,7 @@
                                         <th>Valuation WET</th>
                                         <th>Valuation date</th>
                                         <th>Balance B/F</th>
-                                        <th>contributions</th>
+                                        <th>Contributions</th>
                                         <th>Witdrawals</th>
                                         <th>Action</th>
                                     </tr>
@@ -196,8 +196,8 @@
                                         <td id="table-alignment">{{ policyClaims.member_number }}</td>
                                         <td id="table-alignment">{{ policyClaims.clm_no }}</td>
                                         <td id="table-alignment">{{ policyClaims.clm_date_claim_reported }}</td>
-                                        <td id="table-alignment">{{ policyClaims.clm_date_admitted }}</td>
-                                        <td id="table-alignment">{{ policyClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ policyClaims.clm_admitted }}</td>
+                                        <td id="table-alignment">{{ policyClaims.caus_desc }}</td>
                                         <td id="table-alignment">{{ policyClaims.clm_status }}</td>
                                         <td id="table-alignment">{{ policyClaims.member_display | titlecase }}</td>
                                         <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
@@ -389,8 +389,8 @@
                                     <tr>
                                         <td id="table-alignment">{{ memberClaims.clm_no }}</td>
                                         <td id="table-alignment">{{ memberClaims.clm_date_claim_reported }}</td>
-                                        <td id="table-alignment">{{ memberClaims.clm_date_admitted }}</td>
-                                        <td id="table-alignment">{{ memberClaims.clm_status }}</td>
+                                        <td id="table-alignment">{{ memberClaims.clm_admitted }}</td>
+                                        <td id="table-alignment">{{ memberClaims.caus_desc }}</td>
                                         <td id="table-alignment">{{ memberClaims.clm_status }}</td>
                                         <td id="table-alignment">{{ memberClaims.member_display | titlecase }}</td>
                                         <td id="table-alignment"><a class="view-more-link" (click)="showViewMoreModal()">View more</a></td>
@@ -528,5 +528,6 @@
     <!-- view more modal end -->
     <!-- modals -->
         </div>
-        <div></div>
+        <div> <button class="back-button"
+            (click)="onBack()"><span class="back-text">Back</span></button></div>
     </div>

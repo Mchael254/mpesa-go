@@ -9,11 +9,13 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PolicyRoutingModule } from './policy-routing.module';
+import { PolicyListingComponent } from './components/policy-listing/policy-listing.component';
 
 
 @NgModule({
   declarations: [
-    PolicySummaryComponent
+    PolicySummaryComponent,
+    PolicyListingComponent
   ],
   imports: [
     CommonModule,
