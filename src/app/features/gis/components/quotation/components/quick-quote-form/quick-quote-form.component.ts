@@ -177,7 +177,6 @@ export class QuickQuoteFormComponent {
     console.log("Quotation Details:", this.xyz.quotationDetailsRisk);
     console.log("Client Details:", this.xyz.clientDetails);
 
-
   }
  
   
@@ -653,6 +652,8 @@ createQuotation() {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'All Quotations Created' });
 
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created successfully' });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
+
       } catch (error) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
       }
@@ -792,7 +793,7 @@ createSectionDetailsForm(){
     this.quotationService.createRiskSection(this.riskCode,this.sectionArray,).subscribe(data =>{
       
       try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+        // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset()
       } catch (error) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
@@ -826,7 +827,7 @@ createSectionDetailsForm(){
     forkJoin(premiumComputationObservables).subscribe(
       (data: any[]) => {
         try {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
+          // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
         } catch (error) {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, please try again later' });
         }
@@ -839,6 +840,7 @@ createSectionDetailsForm(){
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error computing premium' });
       }
     );
+
   }
   
   
@@ -852,16 +854,11 @@ applyFilterGlobal($event, stringVal) {
   this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
 }
 populateYears() {
-  const currentYear = new Date().getFullYear();
-  const startYear = 1973; // Adjust the starting year as needed
+  return this.productService.getYearOfManufacture().subscribe(data=>{
+    log.debug("Data YOM",data._embedded[0]["List of cover years"])
+    this.years=data._embedded[0]["List of cover years"];
 
-  for (let year = startYear; year <= currentYear; year++) {
-    this.years.push(year);
-  }
-
-  // Set the default selected year
-  this.selectedYear = currentYear;
-  log.debug("YEARS:",this.years)
+  })
 }
 
 
