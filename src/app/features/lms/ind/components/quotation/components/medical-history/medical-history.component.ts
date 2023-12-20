@@ -126,6 +126,8 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
             if(data_?.pregnancy_due_date!=null){
               data_['question2'] = 'Y'
               data_['pregnancy_due_date'] = new Date(data_?.pregnancy_due_date)
+            }else{
+              data_['question2'] = 'N'
             }
             if(data_?.medication_intake!=null){
               data_['question3'] = 'Y'
@@ -140,6 +142,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
             }else{
               data_['physical_challenge'] = 'N'
             }
+
 
             this.medicalHistoryForm.patchValue(data['data'])
             console.log(data?.data?.dependants_info)
@@ -230,10 +233,12 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let pol_data = this.medicalListOne.filter((data, i) => {
       return i === x;
     })[0];
+    
     let record  = {...pol_data, ...this.medicalHistoryTableOne.value};
     let medical_record = {...record, meh_code: {...this.medicalHistoryForm.value}['code']};
-    // console.log(medical_record);
     this.saveMedicalHistoryDependant(medical_record).subscribe((pol_sub_data) => {
+      console.log(pol_sub_data);
+      
       this.medicalListOne = this.medicalListOne.map((data, i) => {
         if (i === x) {
           let temp = this.medicalHistoryTableOne.value;
@@ -290,7 +295,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
       this.session_service.get(SESSION_KEY.CLIENT_CODE)
     );
     //
-    let ins = { ...data };
+    let ins = { ...data};    
     // ins['clnt_code'] = client_code;
     // ins['prp_code'] = client_code;
     // ins['prp_code'] = null;
@@ -306,11 +311,14 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let val = {...this.medicalHistoryForm.value};
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
     val['client_code'] = this.session_service.get(SESSION_KEY.CLIENT_CODE);
-    val['tenant_id'] = environment.TENANT_ID;
+    val['tenant_id'] = environment.TENANT_ID;    
+    if(this.medicalListOne.length>0){
+      val = {...val, dependants_info:[...this.medicalListOne]}
+    };
     this.medical_history_service.saveMedicalHistory(val).subscribe((data: any) => {
       this.toast.success(data?.message,"Medical History" );
       this.router.navigate(['/home/lms/ind/quotation/summary']);
-    })
+    });
   }
 
   ngOnDestroy(): void {
