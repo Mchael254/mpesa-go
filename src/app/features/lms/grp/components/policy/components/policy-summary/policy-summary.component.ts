@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PolicySummaryService } from '../../service/policy-summary.service';
 import { AnnualValuationsDTO, MemberClaimsDTO, MembersDTO, PartialWithdrawalsDTO, PolicyClaimsDTO, PolicyDetailsDTO, ReceiptsAllocatedDTO } from '../../models/policy-summary';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-policy-summary',
@@ -16,18 +17,24 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   memberClaims: MemberClaimsDTO[];
   receiptsAllocated: ReceiptsAllocatedDTO[];
   quoteSummary = 'summary';
-  // policyCode = 20221453490; 20231454304 20231453504
-  policyCode = 20231453504;
-  productCode=2021675;
-  endorsementCode=20231683286;
+  // policyCode = 20221453490; 20231454304 20231453504 20211453247
+  // policyCode = 20231453504;
+  policyCode: number;
+  // productCode=2021675;
+  productCode: number;
+  // endorsementCode=20231683286;
+  endorsementCode: number;
   clmNo='CLM/GLA-832/2023';
   memberCode=20221299132;
 
   constructor(
-    private policySummaryService: PolicySummaryService
+    private policySummaryService: PolicySummaryService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.getParams();
     this.getPolicyDetails();
     this.getMembers();
     this.getAnnualvaluations();
@@ -41,6 +48,15 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     
   }
+
+  getParams() {
+  this.activatedRoute.queryParams.subscribe((queryParams) => {
+    this.policyCode = queryParams['policyCode'];
+    this.endorsementCode = queryParams['endorsementCode'];
+    this.productCode = queryParams['productCode'];
+    console.log('policyFromRoute', this.policyCode, this.endorsementCode, this.productCode )
+  });
+}
 
   showViewMoreModal() {
     const modal = document.getElementById('viewMoreModal');
@@ -69,7 +85,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getMembers() {
-    this.policySummaryService.getMembers(20231454304).subscribe((members: MembersDTO[]) => {
+    this.policySummaryService.getMembers(this.policyCode).subscribe((members: MembersDTO[]) => {
       console.log('members', members)
       this.members = members
     }, 
@@ -79,8 +95,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getAnnualvaluations() {
-    // this.policySummaryService.getAnnualvaluations(this.policyCode).subscribe((valuations: AnnualValuationsDTO[]) => {
-      this.policySummaryService.getAnnualvaluations(20211453247).subscribe((valuations: AnnualValuationsDTO[]) => {
+    this.policySummaryService.getAnnualvaluations(this.policyCode).subscribe((valuations: AnnualValuationsDTO[]) => {
       console.log('valuations', valuations)
       this.annualValuations = valuations
     },
@@ -114,9 +129,14 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getReceiptsAllocated() {
-    this.policySummaryService.getReceiptsAllocated(20211453247).subscribe((receiptsAllocated: ReceiptsAllocatedDTO[]) => {
+    // 20211453247
+    this.policySummaryService.getReceiptsAllocated(this.policyCode).subscribe((receiptsAllocated: ReceiptsAllocatedDTO[]) => {
       console.log('receiptsAllocated', receiptsAllocated)
       this.receiptsAllocated = receiptsAllocated;
     });
+  }
+
+  onBack() {
+    this.router.navigate(['/home/lms/grp/policy/policyListing'])
   }
 }

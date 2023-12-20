@@ -31,7 +31,7 @@ export class BranchService {
     })
     const params = new HttpParams()
       .set('organizationId', organizationId)
-      .set('regionId', 28);
+      .set('regionId', 46);
 
     return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/branches`, {
       headers: headers,
