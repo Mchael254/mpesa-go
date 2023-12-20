@@ -71,6 +71,9 @@ export class CoverTypesDetailsComponent {
   selectedQuotationNo:any;
   SelectedQuotationCode:any;
 
+  typedWord: number | null = null; // Initialize as null or a default value
+  isChecked: boolean = false;
+
   emailData:any={
     "address": [
       "kevine.oyanda@turnkeyafrica.com"
@@ -161,6 +164,7 @@ export class CoverTypesDetailsComponent {
         log.debug("Filtered Section", this.filteredSection);
 
   }
+  
   passedRiskcode(data:any){
     log.debug("Risk Code;" ,data);
     this.riskCode=data;
@@ -246,6 +250,33 @@ export class CoverTypesDetailsComponent {
     //   log.debug("this method has been called")
     //   this.checked = this.limitAmount >0;
     // }
+    
+    onKeyUp(event: KeyboardEvent, section: any): void {
+      const inputElement = event.target as HTMLInputElement;
+      const inputValue = inputElement.value;
+    
+      // Assuming each row in the p-table has a 'code' property
+      section.typedWord = parseInt(inputValue, 10);
+      section.isChecked = !isNaN(section.typedWord);
+    
+      // Check if the section is checked and add it to the selectedSections array
+      if (section.isChecked && !this.selectedSections.includes(section)) {
+        this.selectedSections.push(section);
+        console.log('Selected Sections:', this.selectedSections);
+
+      }
+    }
+    
+  
+    // Function to determine the checkbox state for each row
+    isSectionChecked(section: any): boolean {
+      return section.isChecked || false;
+      
+    }
+    // onSelectionChange(event: any) {
+    //   console.log('Selected Sections:', this.selectedSections);
+    // }
+   
   
   createRiskSection(payload: any) {
     // Your implementation for createRiskSection
