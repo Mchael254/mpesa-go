@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsService } from '../../service/forms/forms.service';
 import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import { FormsService } from '../../service/forms/forms.service';
 
 @Component({
   selector: 'app-lms-individual',

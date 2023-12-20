@@ -64,3 +64,26 @@
 #table-alignment {
   padding-left: 10px;
 }
+
+.back-button {
+  display: inline-flex;
+  height: 40px;
+  padding: 12px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid #00529B;
+  margin-left: 37px;
+  margin-top: 8px;
+}
+
+.back-button:hover {
+  background-color: #e2eef8;
+  border: 1px solid #037de7;
+}
+
+.back-text {
+  color: #00529B;
+}

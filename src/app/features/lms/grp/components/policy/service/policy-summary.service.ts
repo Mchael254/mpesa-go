@@ -38,4 +38,8 @@ export class PolicySummaryService {
   getReceiptsAllocated(policyCode: number) {
     return this.api.GET(`group/receipts/${policyCode}?allocated=Y`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+  getPolicyListing(agentCode: number, clientProposerCode: number) {
+    return this.api.GET(`group/policies/user/list-policies?agentCode=${agentCode}&clientProposerCode=${clientProposerCode}`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
 }
