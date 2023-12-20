@@ -30,6 +30,7 @@ import {FormState} from "../../../../../shared/data/form-state";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {UtilService} from "../../../../../shared/services/util/util.service";
+import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
 
 const log = new Logger('StaffProfileComponent');
 
@@ -96,6 +97,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
   submitted = false;
   savedStaffDetails: boolean = false;
   staffSize: number = 5;
+  phoneNumberRegex:string;
 
   private savedStaff: CreateStaffDto;
   private currentStaff: number;
@@ -131,7 +133,8 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
               private utilService: UtilService,
               private branchService: BranchService,
               private formStateService: FormStateService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private setupsParameterService: SetupsParametersService,) {
   }
 
   ngOnInit(): void {
@@ -222,7 +225,9 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
           physicalAddress: [''],
           phoneNumber: [''],
           otherPhone: [''],
-          email: ['', Validators.email]
+          email: ['', Validators.email],
+          countryCodePrimary: [''],
+          countryCodeSecondary: ['']
         },
       ),
       employment_details: this.fb.group({
@@ -241,6 +246,22 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
     this.profileDetails = JSON.parse(sessionStorage.getItem('partyProfileDetails'));
 
     let staffProfileFormValue = this.formStateService.getFormState(this.staffProfileFormStateKey);
+
+    let name = 'SMS_NO_FORMAT';
+    this.setupsParameterService.getParameters(name)
+      .subscribe((data) => {
+        data.forEach((field) => {
+          if (field.name === 'SMS_NO_FORMAT') {
+            this.phoneNumberRegex = field.value;
+            this.staffRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+            this.staffRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+
+            this.staffRegistrationForm.controls['contact_details'].get('otherPhone')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+            this.staffRegistrationForm.controls['contact_details'].get('otherPhone')?.updateValueAndValidity();
+          }
+          log.info('parameters>>>', this.phoneNumberRegex)
+        });
+      });
 
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId)
       .pipe(untilDestroyed(this)
@@ -269,7 +290,7 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.staffRegistrationForm.get(`contact_details.${key}`).setValidators(Validators.required);
+                this.staffRegistrationForm.get(`contact_details.${key}`).addValidators(Validators.required);
                 this.staffRegistrationForm.get(`contact_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
                 if (label) {
@@ -468,11 +489,13 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
         contactDetails:{
           // accountId:  0,
           emailAddress: staff.emailAddress,
-          smsNumber: staffFormValues.contact_details?.phoneNumber,
-          phoneNumber: staffFormValues.contact_details?.phoneNumber,
+          // smsNumber: staffFormValues.contact_details?.phoneNumber,
+          // phoneNumber: staffFormValues.contact_details?.phoneNumber,
           id: 0,
           receivedDocuments: null,
-          titleShortDescription: "DR"
+          titleShortDescription: "DR",
+          phoneNumber: staffFormValues.contact_details.countryCodePrimary + staffFormValues.contact_details.phoneNumber,
+          smsNumber: staffFormValues.contact_details.countryCodeSecondary + staffFormValues.contact_details.otherPhone,
         },
         userRequest: staff,
         branchId: staffFormValues.employment_details?.branch,
