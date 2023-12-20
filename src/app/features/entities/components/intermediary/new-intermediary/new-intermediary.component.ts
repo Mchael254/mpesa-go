@@ -22,6 +22,8 @@ import {EntityDto, IdentityModeDTO} from "../../../data/entityDto";
 import {ClientTitleDTO} from "../../../data/accountDTO";
 import {EntityService} from "../../../services/entity/entity.service";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
+import {AccountService} from "../../../services/account/account.service";
+import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
 
 const log = new Logger( 'NewIntermediaryComponent');
 
@@ -68,6 +70,7 @@ export class NewIntermediaryComponent implements OnInit{
   ]
 
   isWithHoldingTaxApplcable: string = 'Y';
+  phoneNumberRegex:string;
   // visibleStatus: IntermediaryFormFieldsDTO = {};
   visibleStatus: any = {
     agentType: 'Y',
@@ -150,7 +153,9 @@ export class NewIntermediaryComponent implements OnInit{
     private datePipe: DatePipe,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private accountService: AccountService,
+    private setupsParameterService: SetupsParametersService
   ) { }
 
   /**
@@ -165,7 +170,7 @@ export class NewIntermediaryComponent implements OnInit{
       this.sectorService.getSectors(2),
       this.bankService.getCurrencies(),
       this.occupationService.getOccupations(2),
-      this.entityService.getClientTitles(2),
+      this.accountService.getClientTitles(2),
     ])
       .pipe(untilDestroyed(this))
       .subscribe(
@@ -226,6 +231,8 @@ export class NewIntermediaryComponent implements OnInit{
           emailAddress: [''],
           contactChannel: [''],
           eDocument: [''],
+          countryCodeSms: [''],
+          countryCodeTel: ['']
         },
       ),
 
@@ -292,6 +299,21 @@ export class NewIntermediaryComponent implements OnInit{
       .subscribe(
         currentEntity => this.entityDetails = currentEntity
       );
+    let name = 'SMS_NO_FORMAT';
+    this.setupsParameterService.getParameters(name)
+      .subscribe((data) => {
+        data.forEach((field) => {
+          if (field.name === 'SMS_NO_FORMAT') {
+            this.phoneNumberRegex = field.value;
+            this.createIntermediaryForm.controls['contactDetails'].get('smsNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+            this.createIntermediaryForm.controls['contactDetails'].get('smsNumber')?.updateValueAndValidity();
+
+            this.createIntermediaryForm.controls['contactDetails'].get('telNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+            this.createIntermediaryForm.controls['contactDetails'].get('telNumber')?.updateValueAndValidity();
+          }
+          log.info('parameters>>>', this.phoneNumberRegex)
+        });
+      });
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
     )
@@ -352,7 +374,7 @@ export class NewIntermediaryComponent implements OnInit{
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.createIntermediaryForm.get(`contactDetails.${key}`).setValidators(Validators.required);
+                this.createIntermediaryForm.get(`contactDetails.${key}`).addValidators(Validators.required);
                 this.createIntermediaryForm.get(`contactDetails.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
                 if (label) {
@@ -675,10 +697,12 @@ export class NewIntermediaryComponent implements OnInit{
       const contactsDetails: ContactDetailsDTO = {
         emailAddress: agentFormValues.contactDetails.emailAddress,
         id: 0,
-        phoneNumber: agentFormValues.contactDetails.telNumber,
+        // phoneNumber: agentFormValues.contactDetails.telNumber,
         receivedDocuments: "N",
-        smsNumber: agentFormValues.contactDetails.smsNumber,
-        titleShortDescription: "DR"
+        // smsNumber: agentFormValues.contactDetails.smsNumber,
+        titleShortDescription: "DR",
+        phoneNumber: agentFormValues.contactDetails.countryCodeTel + agentFormValues.contactDetails.telNumber,
+        smsNumber: agentFormValues.contactDetails.countryCodeSms + agentFormValues.contactDetails.smsNumber,
       }
 
       //preparing agentPostDTO
