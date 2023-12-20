@@ -5,7 +5,7 @@
           <div
             class="b-r d-flex justify-content-center align-content-center"
           >
-            <i class="fa-solid fa-plus"></i>
+                      <i class="fa-solid fa-plus"></i>
           </div>
         </div>
         <ng-container>
@@ -14,13 +14,12 @@
             [lazy]="true"
             responsiveLayout="stack"
             scrollHeight="flex"
-            [columns]="quotationListInd?.cols"
-            [value]="quotationListInd?.rows"
-            [paginator]="quotationListInd?.paginator"
-            [rows]="quotationListInd.rowsPerPage || 5"
+            [columns]="exceptionList?.cols"
+            [value]="exceptionList?.rows"
+            [paginator]="exceptionList?.paginator"
+            [rows]="exceptionList.rowsPerPage || 5"
             [showCurrentPageReport]="true"
-            [totalRecords]="webQuoteTotalLength"
-            [globalFilterFields]="quotationListInd?.globalFilterFields"
+            [totalRecords]="100"
             (onPage)="paginate($event)"
 
           >
@@ -29,19 +28,19 @@
               <tr>
                 <th pSortableColumn="{{ 'SN' }}" style="width: 4%;">
                   {{ 'SN' }}
-                  <span *ngIf="quotationListInd.showSorting">
+                  <span *ngIf="exceptionList.showSorting">
                   <p-sortIcon field="{{ 'SN'}}"></p-sortIcon>
                 </span>
-                  <span *ngIf="quotationListInd.showFilter">
+                  <span *ngIf="exceptionList.showFilter">
                   <p-columnFilter type="text" field="{{ 'SN' }}" display="menu"></p-columnFilter>
                 </span>
                 </th>
-                <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
+                <th style="width:20%;" pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
                   {{ col.header }}
-                  <span *ngIf="quotationListInd.showSorting">
+                  <span *ngIf="exceptionList.showSorting">
                   <p-sortIcon field="{{ col.field }}"></p-sortIcon>
                 </span>
-                  <span *ngIf="quotationListInd.showFilter">
+                  <span *ngIf="exceptionList.showFilter">
                   <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
                 </span>
                 </th>
@@ -58,7 +57,7 @@
                 <ng-container >
                   <td >{{rowIndex+1}}</td>
                   <td *ngFor="let col of columns">
-                    {{ rowData[col.field] }}
+                    {{ rowData[col.field].replaceAll('_', ' ') | titlecase}}
                   </td>
                   <td><div class="d-flex justify-content-end dropdown-toggle"
                     data-bs-toggle="dropdown"
@@ -72,7 +71,8 @@
                             >Edit</a
                           >
                         </li>
-                        <li>
+                        <li (click)="deleteException(rowData)">
+
                           <a
                             class="dropdown-item"
                             >Delete</a

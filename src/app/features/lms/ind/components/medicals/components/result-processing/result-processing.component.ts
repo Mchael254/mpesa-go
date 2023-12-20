@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-result-processing',
@@ -30,7 +31,10 @@ export class ResultProcessingComponent {
     { name: 'Malaria' },
   ];
 
+  constructor(private router:Router){}
+
   nextPage(){
+    this.router.navigate(['/home/lms/ind/policy/underwriting'])
     
   }
 }
