@@ -1,0 +1,36 @@
+
+<div class="container">
+    <div style="padding-top: 35px;">Policies</div>
+
+        <div class="form">
+            <i class="fa fa-search"></i>
+            <input type="text" class="form-control form-input" placeholder="Search"
+            [(ngModel)]="searchTerm" (input)="applyFilter()" (ngModelChange)="applyFilter()">
+          </div>
+
+<div class="card mt-1">
+    <p-table [value]="policyListing" selectionMode="single" [(selection)]="selectedPolicy" dataKey="code" 
+    [tableStyle]="{'min-width': '50rem'}" (onRowSelect)="onRowSelect($event)" styleClass="p-datatable-striped">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Policy number</th>
+                <th>Product</th>
+                <th>Status</th>
+                <th>Effective date</th>
+                <th>Premium</th>
+                <th>Sum assured</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-policy>
+            <tr [pSelectableRow]="policy" class="table-row-spacing">
+                <td>{{policy.policy_number}}</td>
+                <td>{{policy.description | titlecase}}</td>
+                <td>{{policy.status}}</td>
+                <td>{{policy.effective_date}}</td>
+                <td>{{policy.total_premium | number }}</td>
+                <td>{{policy.total_sum_assured | number}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+</div>

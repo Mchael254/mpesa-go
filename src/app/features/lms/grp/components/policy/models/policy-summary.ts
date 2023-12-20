@@ -272,4 +272,47 @@ export class ReceiptsAllocatedDTO {
         receipt_no: string;
         refunded_amount: number;
         status: string;
+        receipt_narration: string;
+}
+
+export class PolicyListingDTO {
+        policy_number: string;
+        policy_code: number;
+        inception_date: string | null;
+        frequency_of_payment: string;
+        underwriting_year: number;
+        authorization_date: string | null;
+        status: string | null;
+        prepared_by: string | null;
+        branch_description: string | null;
+        product_name: string | null;
+        product_short_description: string | null;
+        product_type: string | null;
+        authorised: string | null;
+        current_endorsement_code: number;
+        instalment_day: string | null;
+        instalment_loan_amount: number | null;
+        instalment_month: string | null;
+        instalment_premium: number | null;
+        total_loan_outstanding_amount: number | null;
+        medical_total_sum_assured: number | null;
+        calculation_type: string | null;
+        currency_rate_type: string | null;
+        currency_symbol: string | null;
+        occupation_of_holder: string | null;
+        mrl_sum_assured: number | null;
+        max_entry_age_limit: number | null;
+        master_policy_number: string | null;
+        pension_mode: string | null;
+        agent: string | null;
+        client: string | null;
+        effective_date: string;
+        paid_to_date: string | null;
+        quotation_number: string | null;
+        basic_sum_assured: number | null;
+        total_premium: number | null
+        product_code: number;
+        endorsement_code: number;
+        description: string;
+        type: string;
 }
