@@ -52,7 +52,11 @@ export class ListClientComponent implements OnInit {
       url: '/home/entity/client/list'
     }
   ];
-
+  filterObject: {
+    name:string, modeOfIdentity:string, idNumber:string, clientTypeName:string
+  } = {
+    name:'', modeOfIdentity:'', idNumber:'', clientTypeName:''
+  };
 
   constructor(
     private router: Router,
@@ -230,17 +234,50 @@ export class ListClientComponent implements OnInit {
   filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
     this.clientsData = null; // Initialize with an empty array or appropriate structure
 
-    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    /*const value = (event.target as HTMLInputElement).value.toLowerCase();
 
     log.info('myvalue>>>', value)
 
-      this.searchTerm = value;
+      this.searchTerm = value;*/
       this.isSearching = true;
       this.spinner.show();
-      this.clientService.searchClients(pageIndex, pageSize, this.searchTerm)
+      this.clientService
+        .searchClients(
+          pageIndex, pageSize,
+          this.filterObject?.name,
+          this.filterObject?.modeOfIdentity,
+          this.filterObject?.idNumber,
+          this.filterObject?.clientTypeName)
         .subscribe((data) => {
           this.clientsData = data;
           this.spinner.hide();
-        });
+        },
+          error => {
+            this.spinner.hide();
+          });
+  }
+
+  inputName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
+
+  inputModeOfIdentity(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['modeOfIdentity'] = value;
+  }
+
+  inputIdNumber(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['idNumber'] = value;
+  }
+
+  inputClientTypeName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['clientTypeName'] = value;
   }
 }

@@ -83,7 +83,14 @@
             </tr>
             <tr>
               <th>
-                <input type="text" class="form-control w-75" (keyup)="filter($event);">
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputName($event)">
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputUserType($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputEmail($event)">
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputStatus($event)">
               </th>
             </tr>
           </ng-template>
@@ -158,7 +165,14 @@
             </tr>
             <tr>
               <th>
-                <input type="text" class="form-control w-75" (keyup)="filter($event);">
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputName($event)">
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputUserType($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputEmail($event)">
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputStatus($event)">
               </th>
             </tr>
           </ng-template>
