@@ -1,0 +1,198 @@
+<div class="container-fluid">
+  <div class="full-border">
+    <div class="d-flex justify-content-between">
+      <div class="fw-bold fs-6 pb-3" style="color: var(--primary-color)">
+        Need Analysis Setup - New Bussiness
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <div *ngIf="isResponse">
+          <div class="text-black fw-medium" fpr="question">Question</div>
+          <div class="text-black fw-medium" >
+            <div class="row justify-content-start">
+              <div *ngIf="isEditable === false"  class="col-6">
+                <ul>
+                  <li>
+                    {{questionForm.get('question').value | titlecase}}
+                  </li>
+                </ul>
+              </div>
+
+              <div *ngIf="isEditable === true" class="col-6">
+                <div [formGroup]="questionForm" class="form-group row col-12" >
+                  <textarea id="question" formControlName="question" class="form-control" rows="2" cols="50"></textarea>
+
+                </div>
+              </div>
+
+              <div class="col-6">
+                <span style="cursor: pointer;" *ngIf="isEditable === false" (click)="editQuestionForm()" class="px-2 fs-6">
+                  <i class="fa-solid fa-pen-to-square"></i
+                ></span>
+                <span *ngIf="isEditable === true && questionForm.get('question').value?.length>0" (click)="saveQuestionForm()" class="text-success fs-4" style="cursor: pointer;"><i class="fa-regular fa-floppy-disk"></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="row">
+            <div class="col-xl-9 col-lg-9 col-md-8">
+              <div>
+                <div *ngIf="isResponse && savedResponseList.length > 0">
+                  <div class="fw-medium">Response</div>
+                  <div>
+                    <div class="px-2" *ngFor="let item of savedResponseList">
+                      <div class="d-flex justify-content-between w-50">
+                        <div class="text-black">{{ item["option"] }}</div>
+
+                        <div>
+                          <span
+                            style="
+                              padding: 0 1rem;
+                              color: var(--primary-color);
+                              cursor: pointer;
+                            "
+                            ><i class="fa-solid fa-pen-to-square"></i
+                          ></span>
+                          <span
+                            (click)="deletResponse(item)"
+                            class="text-danger"
+                            style="padding: 0 1rem; cursor: pointer"
+                            ><i class="fa-regular fa-trash-can"></i
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="isProduct && savedProductList.length > 0">
+                  <div class="fw-medium">Products</div>
+                  <div>
+                    <div class="px-2" *ngFor="let item of savedProductList">
+                      <div class="d-flex justify-content-between w-50">
+                        <div class="text-black">
+                          {{ item["description"] | titlecase }}
+                        </div>
+                        <div>
+                          <span
+                            (click)="deleteProduct(item)"
+                            class="text-danger"
+                            style="padding: 0 1rem; cursor: pointer"
+                            ><i class="fa-regular fa-trash-can"></i
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-4 py-2">
+              <div class="row">
+                <div class="col-6" *ngIf="isProduct">
+                  <button
+                    (click)="setProduct()"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    type="button"
+                    name="lms"
+                    id="lms"
+                    class="btn btn-primary"
+                    style="font-size: 12px"
+                  >
+                    Add Product
+                  </button>
+                </div>
+                <div class="col-6" *ngIf="isResponse">
+                  <button
+                    (click)="setResponse()"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    type="button"
+                    name="lms"
+                    id="lms"
+                    class="btn btn-primary"
+                    style="font-size: 12px"
+                  >
+                    Add Response
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <button
+      (click)="setProduct()"
+      data-bs-toggle="modal"
+      data-bs-target="#exampleModal"
+      type="button"
+      name="lms"
+      id="lms"
+      class="btn btn-danger"
+      style="font-size: 12px"
+    >
+      Go back to Previous Question
+    </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form [formGroup]="needAnalysisForm">
+          <div class="form-group" *ngIf="isResponse">
+            <label for="textInput" class="required">Response:</label>
+            <input type="text" formControlName="option" class="form-control" />
+          </div>
+
+          <div class="form-group" *ngIf="isResponse">
+            <label for="textInput" class="required">Next Question:</label>
+            <input
+              type="text"
+              formControlName="question"
+              class="form-control"
+            />
+          </div>
+          <div class="form-group" *ngIf="isProduct">
+            <label for="dropdown">Product:</label>
+            <select formControlName="products" class="form-control">
+              <ng-container *ngFor="let item of productList">
+                <option [value]="item['code']">
+                  {{ item["description"] | titlecase }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="d-flex justify-content-between p-2">
+        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+        <div></div>
+        <button
+          *ngIf="validateNeedForm()"
+          type="button"
+          class="btn btn-primary"
+          (click)="addData()"
+        >
+          {{ isProduct ? "add product" : "add response" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

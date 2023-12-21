@@ -11,13 +11,15 @@ import { FormsService } from '../../service/forms/forms.service';
   styleUrls: ['./lms-individual.component.css']
 })
 export class LmsIndividualComponent implements OnInit {
-  formsForm: FormGroup
+  formsForm: FormGroup;
+  screenForm: FormGroup;
   screenData: any = {}
   formList: any[] = [];
   systemList: Set<string> = new Set<string>();
   moduleList: Set<string> = new Set<string>();
   pagesList: any[] = [];
   selectedHeader: { name: any; visible: boolean; }[];
+  name: string;
 
   constructor(private form_service: FormsService, private fb: FormBuilder, private spinner_Service:NgxSpinnerService,
     private toast_service: ToastService){}
@@ -29,10 +31,14 @@ export class LmsIndividualComponent implements OnInit {
     // this.selectModule(this.screenData['QUOTAION']);
     // this.selectPage(this.screenData['screen_name'])
     this.getFormsForm();
+    this.screenForm = this.fb.group({
+      name: []
+    })
   }
 
   getFormsForm() {
     this.formsForm = this.fb.group({
+      name: [],
       code: [],
       label: [],
       place_holder: [],
@@ -96,9 +102,12 @@ export class LmsIndividualComponent implements OnInit {
 
 
   addForm(){
-
     this.selectForm(null, true)
+  }
 
+  addScreenFrom(data:string){
+    this.name = data;
+    this.addModal('formScreenId')
   }
 
   selectPage(page: any){
@@ -106,7 +115,10 @@ export class LmsIndividualComponent implements OnInit {
      this.pagesList = this.formList.filter((data: any) => {
        return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'] && data['screen_name']===this.screenData['screen_name'])
     }).map(data =>{
+      // console.log(data);
+      
       let tr =  data['inputs']['en'];
+      tr['name'] = data?.form_name
       tr['code'] = data['code'];
       return tr;
     });
@@ -124,10 +136,15 @@ export class LmsIndividualComponent implements OnInit {
   }
 
   selectForm(form: any, is_empty=false) {
+    console.log(form);
+    
     if(is_empty){
       this.formsForm.reset();
     }else{
-      this.formsForm.patchValue(form)
+      this.formsForm.patchValue(form);
+      this.formsForm.get('visible').setValue(form?.visible?'true':'false');
+      this.formsForm.get('is_disabled').setValue(form?.visible?'true':'false');
+      this.formsForm.get('required').setValue(form?.visible?'true':'false');
     }
 
     const modal = document.getElementById('formsFormId');
@@ -138,8 +155,17 @@ export class LmsIndividualComponent implements OnInit {
 
   }
 
-  closeModal() {
-    const modal = document.getElementById('formsFormId');
+  addModal(name='formsFormId'){
+    const modal = document.getElementById(name);
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+  }
+
+  closeModal(name='formsFormId') {
+    const modal = document.getElementById(name);
     if (modal) {
       modal.classList.remove('show')
       modal.style.display = 'none';
@@ -173,6 +199,11 @@ export class LmsIndividualComponent implements OnInit {
 
     });
 
+  }
+
+  saveScreenForm(){
+    console.log(this.screenData);
+      console.log(this.formList);
   }
 
   // selectForm(form: any){
