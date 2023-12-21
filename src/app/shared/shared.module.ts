@@ -61,6 +61,8 @@ import { CountryService } from './services/setups/country/country.service';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { SentenceCasePipe } from './pipes/sentence-case/sentence-case.pipe';
 import { CommaformatDirective } from './directives/comma-format.directive';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 
 
@@ -166,7 +168,9 @@ const SERVICES = [
         ReactiveFormsModule,
         CalendarModule,
         DropdownModule,
-        HttpClientModule
+        HttpClientModule,
+        NgbModule
+        
     ],
     exports: [
         ErrorComponent,
@@ -199,7 +203,8 @@ const SERVICES = [
         ShareModalComponent,
         DownloadModalComponent,
         CommaformatDirective,
-        SentenceCasePipe
+        SentenceCasePipe,
+        NgbModule
 
 
   ],
