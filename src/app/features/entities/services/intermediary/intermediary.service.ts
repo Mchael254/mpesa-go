@@ -6,6 +6,7 @@ import {Pagination} from "../../../../shared/data/common/pagination";
 import {AccountTypeDTO, AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../data/AgentDTO";
 import {IdentityModeDTO} from "../../data/entityDto";
 import { environment } from 'src/environments/environment';
+import {UtilService} from "../../../../shared/services";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class IntermediaryService {
 
   constructor(
     private http: HttpClient,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    private utilService: UtilService
   ) { }
 
   getAgents(
@@ -57,7 +59,8 @@ export class IntermediaryService {
   searchAgent(
     page: number = 0,
     size: number = 5,
-    name: string
+    columnName: string = null,
+    columnValue: string = null,
   ): Observable<Pagination<AgentDTO>> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     const header = new HttpHeaders({
@@ -69,12 +72,14 @@ export class IntermediaryService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('name', `${name}`)
-      .set('organizationId', 2);
+      .set('organizationId', 2)
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`);
 
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`, {
       headers: header,
-      params: params,
+      params: paramObject,
     });
   }
 

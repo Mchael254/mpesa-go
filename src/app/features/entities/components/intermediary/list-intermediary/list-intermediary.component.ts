@@ -54,6 +54,11 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       url: '/home/entity/intermediary/list'
     }
   ];
+  filterObject: {
+    name:string, agentIdNo:string, modeOfIdentity:string, primaryType:string, accountType:string
+  } = {
+    name:'', agentIdNo:'', modeOfIdentity:'', primaryType:'' , accountType:''
+  };
 
   constructor(
     private router: Router,
@@ -155,7 +160,7 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       const searchEvent = {
         target: {value: this.searchTerm}
       };
-      this.filter(searchEvent, pageIndex, pageSize);
+      this.filter(searchEvent,pageIndex, pageSize, null);
     }
     else {
       this.getAgents(pageIndex, pageSize, sortField, sortOrder)
@@ -247,20 +252,85 @@ export class ListIntermediaryComponent implements OnInit, OnDestroy {
       });
   }*/
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
-    this.intermediaries = null; // Initialize with an empty array or appropriate structure
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
 
-    const value = (event.target as HTMLInputElement).value;
+   this.intermediaries = null; // Initialize with an empty array or appropriate structure
 
-    log.info('myvalue>>>', value)
+   /* const value = (event.target as HTMLInputElement).value;
 
-    this.searchTerm = value;
+    log.info('myvalue>>>', value)*/
+
+    // this.searchTerm = value;
+    let data = this.filterObject[keyData];
+    console.log('datalog>>',data, keyData)
+
     this.isSearching = true;
     this.spinner.show();
-    this.intermediaryService.searchAgent(pageIndex, pageSize, this.searchTerm)
-      .subscribe((data) => {
-        this.intermediaries = data;
-        this.spinner.hide();
-      });
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.intermediaryService
+        .searchAgent(
+          pageIndex, pageSize,
+          keyData, data)
+        .subscribe((data) => {
+            this.intermediaries = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.getAgents(pageIndex, pageSize)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Agents>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<AgentDTO>) => {
+            data.content.forEach( intermediary => {
+              intermediary.primaryType = 'I' ? 'Individual' : 'Corporate';
+            });
+            this.intermediaries = data;
+            this.tableDetails.rows = this.intermediaries?.content;
+            this.tableDetails.totalElements = this.intermediaries?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => { this.spinner.hide(); }
+        );
+    }
+
   }
+
+  inputName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+      this.filterObject['name'] = value;
+  }
+
+  inputModeOfIdentity(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['modeOfIdentity'] = value;
+  }
+
+  inputIdNumber(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['agentIdNo'] = value;
+  }
+
+  inputPrimaryType(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['primaryType'] = value;
+  }
+
+  inputAccountType(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['accountType'] = value;
+  }
+
 }

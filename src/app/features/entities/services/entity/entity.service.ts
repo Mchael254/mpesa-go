@@ -110,7 +110,7 @@ export class EntityService {
   getEntities(
     page: number | null = 0,
     size: number | null = 5,
-    sortList: string = 'effectiveDateFrom',
+    sortList: string,
     order: string = 'desc'
   ): Observable<Pagination<EntityDto>> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
@@ -139,7 +139,8 @@ export class EntityService {
   searchEntities(
     page: number,
     size: number = 5,
-    name: string
+    columnName: string,
+    columnValue: string
   ): Observable<Pagination<EntityDto>> {
     const baseUrl = this.appConfig.config.contextPath.accounts_services;
     const headers = new HttpHeaders({
@@ -149,8 +150,8 @@ export class EntityService {
     let params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
-      .set('name', `${name}`)
-      .set('organizationId', 2)
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`)
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
@@ -235,14 +236,4 @@ export class EntityService {
     return this.http.get<AccountReqPartyId[]>(`/${baseUrl}/parties/`+ id +`/accounts`, {headers:headers});
   }
 
-  getClientTitles(organizationId: number): Observable<ClientTitleDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
-    const params = new HttpParams()
-      .set('organizationId', `${organizationId}`);
-
-    return this.http.get<ClientTitleDTO[]>(`/${this.baseUrl}/client-titles`, {headers:header, params:params})
-  }
 }
