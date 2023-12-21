@@ -24,6 +24,8 @@ import { SectorService } from '../../../../../shared/services/setups/sector/sect
 import { ClientService } from '../../../services/client/client.service';
 import { OccupationService } from '../../../../../shared/services/setups/occupation/occupation.service';
 import {EntityService} from "../../../services/entity/entity.service";
+import {AccountService} from "../../../services/account/account.service";
+import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
 @Component({
   selector: 'app-new-service-provider',
   templateUrl: './new-service-provider.component.html',
@@ -74,7 +76,7 @@ export class NewServiceProviderComponent {
   selectedBank: number;
   utilityBill: string = 'N';
   response: any;
-
+  phoneNumberRegex:string;
   // visibleStatus: ServiceProviderFormFieldsDTO = {}
   visibleStatus: any = {
     account_type: 'Y',
@@ -146,6 +148,8 @@ export class NewServiceProviderComponent {
     private clientService:ClientService,
     private occupationService:OccupationService,
     private entityService: EntityService,
+    private accountService: AccountService,
+    private setupsParameterService: SetupsParametersService
   ) { }
 
   ngOnInit(): void {
@@ -161,7 +165,7 @@ export class NewServiceProviderComponent {
 
   /**
  * Handles the selection of a user type.
- * 
+ *
  * @param {Event} e - The event triggered by the user's selection.
  * @remarks
  * This method is responsible for capturing the selected user type from an event and assigning it to the 'agentType' property.
@@ -169,7 +173,7 @@ export class NewServiceProviderComponent {
  */
   selectUserType(e) {
     this.agentType = e.target.value;
-  
+
   }
   /**
  * Getter function to access form controls within 'newServiceProviderForm'.
@@ -219,7 +223,9 @@ export class NewServiceProviderComponent {
           phone_number: [''],
           email: [''],
           channel: [''],
-          eDocuments: ['']
+          eDocuments: [''],
+          countryCodeSms: [''],
+          countryCodeTel: ['']
         },
       ),
 
@@ -288,6 +294,21 @@ export class NewServiceProviderComponent {
         currentEntity => this.entityDetails = currentEntity
       );
     console.log('Entities data to service provider', this.entityDetails);
+  let name = 'SMS_NO_FORMAT';
+  this.setupsParameterService.getParameters(name)
+    .subscribe((data) => {
+      data.forEach((field) => {
+        if (field.name === 'SMS_NO_FORMAT') {
+          this.phoneNumberRegex = field.value;
+          this.newServiceProviderForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+          this.newServiceProviderForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
+
+          this.newServiceProviderForm.controls['contact_details'].get('phone_number')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+          this.newServiceProviderForm.controls['contact_details'].get('phone_number')?.updateValueAndValidity();
+        }
+        console.log('parameters>>>', this.phoneNumberRegex)
+      });
+    });
     this.mandatoryService.getMandatoryFieldsByGroupId(this.groupId).pipe(
       takeUntil(this.destroyed$)
     )
@@ -339,7 +360,7 @@ export class NewServiceProviderComponent {
             this.visibleStatus[field.frontedId] = field.visibleStatus;
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.newServiceProviderForm.get(`contact_details.${key}`).setValidators(Validators.required);
+                this.newServiceProviderForm.get(`contact_details.${key}`).addValidators(Validators.required);
                 this.newServiceProviderForm.get(`contact_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
                 if (label) {
@@ -407,7 +428,7 @@ export class NewServiceProviderComponent {
 
   /**
  * Fetches a list of banks based on the selected country.
- * 
+ *
  * @param {number} countryId - The ID of the selected country.
  * @remarks
  * This method makes an HTTP request to retrieve a list of banks associated with the specified country.
@@ -455,7 +476,7 @@ export class NewServiceProviderComponent {
   }
   /**
  * Handles the selection of a utility bill type.
- * 
+ *
  * @param {Event} e - The event triggered by the user's selection.
  * @remarks
  * This method captures the selected utility bill type from an event and assigns it to the 'utilityBill' property.
@@ -466,7 +487,7 @@ export class NewServiceProviderComponent {
   }
   /**
  * Handles file upload events.
- * 
+ *
  * @param {Event} event - The file input change event.
  * @remarks
  * This method reads and processes a file selected by the user. It checks if files are present in the event,
@@ -491,7 +512,7 @@ export class NewServiceProviderComponent {
  * Additionally, it triggers change detection.
  */
   onBankSelection() {
-    
+
     this.newServiceProviderForm.patchValue({
       branch: null
     });
@@ -501,7 +522,7 @@ export class NewServiceProviderComponent {
   }
   /**
  * Fetches and updates bank branches based on the selected bank.
- * 
+ *
  * @param {number} bankId - The ID of the selected bank.
  * @remarks
  * This method makes an HTTP request to retrieve a list of bank branches associated with the specified bank.
@@ -602,11 +623,13 @@ export class NewServiceProviderComponent {
               received Document- Field to be provided*/
           emailAddress: serviceproviderFormValues.contact_details.email, /*Todo: To add field for Email*/
           id: 0,
-          phoneNumber: serviceproviderFormValues.contact_details.phone_number,
+          // phoneNumber: serviceproviderFormValues.contact_details.phone_number,
           receivedDocuments: "N", /*Todo: provide field to capture*/
-          smsNumber: serviceproviderFormValues.contact_details.smsNumber,
+          // smsNumber: serviceproviderFormValues.contact_details.smsNumber,
           titleShortDescription: "DR",
-          preferredChannel: null
+          preferredChannel: null,
+          phoneNumber: serviceproviderFormValues.contact_details.countryCodeTel + serviceproviderFormValues.contact_details.phone_number,
+          smsNumber: serviceproviderFormValues.contact_details.countryCodeSms + serviceproviderFormValues.contact_details.smsNumber,
         }
         //preparing payment dto
         const payment: PaymentDetailsDTO = {
@@ -719,7 +742,7 @@ export class NewServiceProviderComponent {
 
       });
     }
-  
+
     /**
      * Fetches a list of countries and populates the 'countryData' property.
      * @remarks
@@ -778,7 +801,7 @@ export class NewServiceProviderComponent {
  * Upon receiving the data, it assigns the result to the 'clientTitlesData' property for use in the component.
  */
   getClientTitles() {
-    this.serviceProviderService.getClientTitles()
+    this.accountService.getClientTitles(2)
       .pipe(
         takeUntil(this.destroyed$),
       )
@@ -788,7 +811,7 @@ export class NewServiceProviderComponent {
         },
       );
   }
-  
+
 /**
  * Fetches a list of identity types and populates the 'identityTypeData' property.
  * @remarks

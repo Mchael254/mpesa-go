@@ -244,7 +244,7 @@ export class EditComponent implements OnInit{
   }
 
   fetchClientTitles(organizationId: number){
-    this.entityService.getClientTitles(organizationId)
+    this.accountService.getClientTitles(organizationId)
       .pipe(take(1))
       .subscribe( (data) => {
         this.titlesData = data;
