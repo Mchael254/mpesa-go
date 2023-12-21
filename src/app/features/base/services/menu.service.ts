@@ -389,6 +389,12 @@ administationSubMenuList() : SidebarMenu[]{
       link:"/home/setups/system",
       value: "SCREEN_SETUP",
       isActive: true
+    },
+    {
+      name:"Need Analysis Setup",
+      link:"/home/setups/need-analysis",
+      value: "SCREEN_SETUP",
+      isActive: true
     }
   ];
 }

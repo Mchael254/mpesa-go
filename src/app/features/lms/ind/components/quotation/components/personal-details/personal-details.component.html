@@ -33,12 +33,13 @@
       </div>
       <form>
         <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="clientType" class="required">Client Type</label>
+          <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="getFormData('CLIENT_TYPE')">
+            <label [for]="getFormData('CLIENT_TYPE')['data']['label']" [class]="getFormData('CLIENT_TYPE')['data']['required']?'required' : ''">{{getFormData('CLIENT_TYPE')['data']['label']}}</label>
             <select
               class="form-select"
               formControlName="clientType"
-              [id]="'clientType'"
+              [id]="getFormData('CLIENT_TYPE')['data']['label']"
+              [disabled]="getFormData('CLIENT_TYPE')['data']['is_disabled']"
             >
               <option value="" disabled selected>Select Client Type</option>
 
@@ -51,30 +52,32 @@
             <div *ngIf="isRequired('clientType')" class="text-danger" style="font-size: 11px; font-weight: 500;">Client Type is required!</div>
 
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="surname" class="required">Last Name</label>
+          <div class="col-lg-4 col-md-6 col-sm-12"  *ngIf="getFormData('LAST_NAME')">
+            <label [for]="getFormData('LAST_NAME')['data']['label']" [class]="getFormData('LAST_NAME')['data']['required']?'required' : ''">{{ getFormData('LAST_NAME')['data']['label'] }}</label>
             <input
               type="text"
               class="form-control"
               formControlName="lastName"
-              [id]="'surname'"
+              [id]="getFormData('LAST_NAME')['data']['label']"
             />
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="first_name" class="required">First Name</label>
+          <div class="col-lg-4 col-md-6 col-sm-12"  *ngIf="getFormData('FIRST_NAME')">
+            <label [for]="getFormData('FIRST_NAME')['data']['label']" [class]="getFormData('FIRST_NAME')['data']['required']?'required' : ''">{{ getFormData('FIRST_NAME')['data']['label'] }}</label>
             <input
               type="text"
               class="form-control"
               formControlName="firstName"
-              [id]="'first_name'"
+              [id]="getFormData('FIRST_NAME')['data']['label']"
+              [disabled]="getFormData('FIRST_NAME')['data']['is_disabled']"
             />
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="citizenship">Citizenship</label>
+          <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="getFormData('CITIZENSHIP')">
+            <label [for]="getFormData('CITIZENSHIP')['data']['label']" [class]="getFormData('CITIZENSHIP')['data']['required']?'required' : ''">{{ getFormData('CITIZENSHIP')['data']['label'] }}</label>
             <select
               class="form-select"
               formControlName="citizenship"
-              [id]="'citizenship'"
+              [id]="getFormData('CITIZENSHIP')['data']['label']"
+              [disabled]="getFormData('CITIZENSHIP')['data']['is_disabled']"
             >
               <option value="" disabled selected>Select Citizenship</option>
 
@@ -85,25 +88,26 @@
               </ng-container>
             </select>
           </div>
-
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="idNumber" class="required">ID No.</label>
+          <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="getFormData('ID_NO')">
+            <label [for]="getFormData('ID_NO')['data']['label']" [class]="getFormData('ID_NO')['data']['required']?'required' : ''">{{ getFormData('ID_NO')['data']['label'] }}</label>
             <input
               type="text"
               class="form-control"
               formControlName="idNumber"
-              [id]="'idNumber'"
+              [id]="getFormData('ID_NO')['data']['label']"
+              [disabled]="getFormData('ID_NO')['data']['is_disabled']"
             />
             <div *ngIf="isRequired('idNumber')" class="text-danger" style="font-size: 11px; font-weight: 500;">ID No. is required!</div>
 
           </div>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <label for="pinNo" class="required">Pin No.</label>
+          <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="getFormData('PIN_NO')">
+            <label [for]="getFormData('PIN_NO')['data']['label']" [class]="getFormData('PIN_NO')['data']['required']?'required' : ''">{{ getFormData('PIN_NO')['data']['label'] }}</label>
             <input
               type="text"
               class="form-control"
               formControlName="pinNumber"
-              [id]="'pinNo'"
+              [id]="getFormData('PIN_NO')['data']['label']"
+              [attr.disabled]="getFormData('PIN_NO')['data']['is_disabled']"
             />
             <div *ngIf="isRequired('pinNumber')" class="text-danger" style="font-size: 11px; font-weight: 500;">Pin No. is required!</div>
 
