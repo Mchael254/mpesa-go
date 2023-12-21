@@ -19,6 +19,7 @@ import {HttpClient} from '@angular/common/http';
 import { HttpLoaderFactory } from './shared/utils/httpLoaderFactory';
 import { CommonModule } from '@angular/common';
 import { NgxAwesomePopupModule, ToastNotificationConfigModule, ToastPositionEnum, ToastProgressBarEnum, ToastUserViewTypeEnum } from '@costlydeveloper/ngx-awesome-popup';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 export function loadConfig(
   config: AppConfigService,
   configLoader: ConfigurationLoader,
@@ -35,7 +36,6 @@ const cubejsOptions = {
   declarations: [
     AppComponent,
     HomeComponent,
-
   ],
   imports: [
     CommonModule,
@@ -93,7 +93,8 @@ const cubejsOptions = {
           useFactory: HttpLoaderFactory,
           deps: [HttpClient]
       }
-  })
+  }),
+    NgbModule
   ],
   providers: [
     {

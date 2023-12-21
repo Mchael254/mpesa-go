@@ -18,7 +18,6 @@ export const environment = {
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
     [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, '/lms/underwriting'],
 
-
   ]),
   TENANT_ID: API_TENANT_ID.MUTUAL,
 

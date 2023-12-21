@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
@@ -35,6 +35,7 @@ import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from '../../../../../../lms/util/session_storage_enum';
 import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { FormsService } from 'src/app/features/setups/components/forms/service/forms/forms.service';
 
 @Component({
   selector: 'app-personal-details',
@@ -76,6 +77,7 @@ export class PersonalDetailsComponent {
   isBeneficiaryLoading: boolean = false;
   loadBankBranch: boolean;
   getFormControlsNameWithErrors: string[] = [];
+  validationData = [];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -94,9 +96,37 @@ export class PersonalDetailsComponent {
     private relation_type_service: RelationTypesService,
     private dms_service: DmsService,
     private spinner_Service: NgxSpinnerService,
-    private lms_client_service: LMSClientService
-  ) {}
+    private lms_client_service: LMSClientService,
+    private form_service: FormsService
+  ) {
+    
+  }
+
+  getFormData(name: string) {
+    const foundData = this.validationData.find(data => data['name'] === name);
+    return foundData !== undefined ? foundData : null;
+  }
+
   ngOnInit() {
+    
+    this.form_service.getBySystemAndModuleAndScreeName('LMS_INDIVIDUAL', 'QUOTATION', 'CLIENT_DETAILS').subscribe(data=> {
+      
+      this.validationData = data['data'].map((val: any) => {
+        
+        let temp = {};
+        temp['name'] = val?.form_name
+        // use english as defaults
+        temp['data'] = val?.inputs.en;
+        
+
+        return temp;
+
+      });
+
+      
+    });
+    
+
     this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
     this.clientDetailsForm = this.getClientDetailsForm();
     this.uploadForm = this.getUploadForm();
