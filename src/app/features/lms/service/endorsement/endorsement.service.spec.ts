@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { EndorsementService } from './endorsement.service';
 
-import { ExceptionsService } from './exceptions.service';
 
-describe('ExceptionsService', () => {
-  let service: ExceptionsService;
+describe('EndorsementService', () => {
+  let service: EndorsementService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ExceptionsService);
+    service = TestBed.inject(EndorsementService);
   });
 
   it('should be created', () => {

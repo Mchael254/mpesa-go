@@ -6,95 +6,96 @@
     >
       Policy Underwriting
     </div>
-    <div class="row pt-4 px-4 pb-4 fadeIn" style="font-size: 12px">
-      <div class="col-lg-4 col-md-6 col-sm-12 px-4">
-        <div class="row px-4">
-          <div class="col-6 text-black-50">Product:</div>
-          <div class="col-6 text-black">MADISON UNIPLAN</div>
+   <div class="spinner" style="position: relative;">
+    <ngx-spinner name="underwriting" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+  
+    <div class="row pt-4 px-2 pb-4 fadeIn " style="font-size: 11px" >
+        <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+          <div class="row px-4">
+            <div class="col-3 text-black-50">Product:</div>
+            <div class="col-9 text-black">{{ productList | product : policyUnderwritingSummary['product_code'] }}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-3 text-black-50">Payment option:</div>
+            <div class="col-9 text-black">Card*</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-3 text-black-50">Premium mask:</div>
+            <div class="col-9 text-black">{{ policyUnderwritingSummary['premium_mask']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-3 text-black-50">Agent:</div>
+            <div class="col-9 text-black"> {{policyUnderwritingSummary['agent']}} </div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-3 text-black-50">Assured:</div>
+            <div class="col-9 text-black"> {{policyUnderwritingSummary['assured']}} </div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Endorsement Type:</div>
+            <div class="col-6 text-black"> {{policyUnderwritingSummary['endorsement_desc']}} </div>
+          </div>
         </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Payment option:</div>
-          <div class="col-6 text-black">Card</div>
+        <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+          <div class="row px-4">
+            <div class="col-6 text-black-50">Proposal No. :</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Life assured:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['life_assured']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Term*:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Agent code*:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">ANB*:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Endorsement status:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['endr_status']}}</div>
+          </div>
         </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Premium mask:</div>
-          <div class="col-6 text-black">Mask</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Agent:</div>
-          <div class="col-6 text-black">Wachira</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Assured:</div>
-          <div class="col-6 text-black">MUNTET SHEILA</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Endorsement Type:</div>
-          <div class="col-6 text-black">Type</div>
+        <div class="col-lg-4 col-md-6 col-sm-12 px-4">
+          <div class="row px-4">
+            <div class="col-6 text-black-50">Effective date:</div>
+            <div class="col-6 text-black">{{ policyUnderwritingSummary['effective_date'] | date:'short'}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Product option:</div>
+            <div class="col-6 text-black"> {{policyUnderwritingSummary['product_option']}} </div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Maturity Date:</div>
+            <div class="col-6 text-black"> {{policyUnderwritingSummary['maturity_date'] | date:'short'}} </div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Status:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['status']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Endorsement No. :</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['endr_no']}}</div>
+          </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6 col-sm-12 px-4">
-        <div class="row px-4">
-          <div class="col-6 text-black-50">Product:</div>
-          <div class="col-6 text-black">MADISON UNIPLAN</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Payment option:</div>
-          <div class="col-6 text-black">Card</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Premium mask:</div>
-          <div class="col-6 text-black">Mask</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Agent:</div>
-          <div class="col-6 text-black">Wachira</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Assured:</div>
-          <div class="col-6 text-black">MUNTET SHEILA</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Endorsement Type:</div>
-          <div class="col-6 text-black">Type</div>
+      <div class="d-flex justify-content-end pt-4">
+        <div
+          data-bs-toggle="modal"
+          data-bs-target="#UnderWritingModal"
+          style="cursor: pointer; border-bottom: solid 2px var(--primary-color)"
+        >
+          view summary
         </div>
       </div>
-      <div class="col-lg-4 col-md-6 col-sm-12 px-4">
-        <div class="row px-4">
-          <div class="col-6 text-black-50">Product:</div>
-          <div class="col-6 text-black">MADISON UNIPLAN</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Payment option:</div>
-          <div class="col-6 text-black">Card</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Premium mask:</div>
-          <div class="col-6 text-black">Mask</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Agent:</div>
-          <div class="col-6 text-black">Wachira</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Assured:</div>
-          <div class="col-6 text-black">MUNTET SHEILA</div>
-        </div>
-        <div class="row px-4 pt-2">
-          <div class="col-6 text-black-50">Endorsement Type:</div>
-          <div class="col-6 text-black">Type</div>
-        </div>
-      </div>
-    </div>
-    <div class="d-flex justify-content-end pt-4">
-      <div
-        data-bs-toggle="modal"
-        data-bs-target="#UnderWritingModal"
-        style="cursor: pointer; border-bottom: solid 2px var(--primary-color)"
-      >
-        view summary
-      </div>
-    </div>
+   </div>
+
     <div class="fadeIn">
       <div>
         <p-tabMenu [model]="items" [activeItem]="activeItem">
@@ -115,7 +116,7 @@
       </div>
     </div>
   </div>
-  <div class="d-flex justify-content-end">
+  <div class="d-flex justify-content-end" style="font-size: 10px !important;">
     <button type="button" class="btn btn-danger m-1" data-bs-toggle="modal"
     data-bs-target="#UnderWritingRejectModal">Reject</button>
     <button type="button" class="btn btn-primary m-1">Authorize</button>
