@@ -1,6 +1,8 @@
 <div class="pt-2">
 
-  <div>
+  <div class="spinner" style="position: relative">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+  
     <ng-container>
       <p-table
         #dt1
@@ -38,12 +40,6 @@
               <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
             </span>
             </th>
-
-            <th style="width: 4%;">
-              {{ '' }}
-
-
-            </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData let-columns="columns">
@@ -51,29 +47,9 @@
             <ng-container >
               <td >{{rowIndex+1}}</td>
               <td *ngFor="let col of columns">
-                {{ rowData[col.field] }}
+                {{ col?.date ? (rowData[col.field] | date: 'short') : (rowData[col.field])  }}
               </td>
-              <td><div class="d-flex justify-content-end dropdown-toggle"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <div>
-                  <i class="fa-solid fa-ellipsis-vertical"></i>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        >Edit</a
-                      >
-                    </li>
-                    <li>
-                      <a
-                        class="dropdown-item"
-                        >Delete</a
-                      >
-                    </li>
-                  </ul>
-                </div>
-              </div> </td>
+             
             </ng-container>
           </tr>
         </ng-template>

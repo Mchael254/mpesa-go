@@ -62,7 +62,12 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { SentenceCasePipe } from './pipes/sentence-case/sentence-case.pipe';
 import { CommaformatDirective } from './directives/comma-format.directive';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ProductPipe } from '../features/lms/pipe/product/product.pipe';
+import { BeneficiaryPipe } from '../features/lms/pipe/beneficiary/beneficiary.pipe';
+import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
+import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
 
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe];
 
 
 
@@ -148,8 +153,8 @@ const SERVICES = [
     DownloadModalComponent,
     CommaformatDirective,
     SentenceCasePipe,
-    CommaformatDirective  
-
+    CommaformatDirective,
+    ...lms_pipes
 
   ],
     imports: [
@@ -204,8 +209,8 @@ const SERVICES = [
         DownloadModalComponent,
         CommaformatDirective,
         SentenceCasePipe,
-        NgbModule
-
+        NgbModule,
+        ...lms_pipes
 
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
