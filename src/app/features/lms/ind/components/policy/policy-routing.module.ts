@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { UnderwritingComponent } from './underwriting/underwriting.component';
+import { UnderwritingComponent } from './components/underwriting/underwriting.component';
 
 const routes: Routes = [
   {path: 'underwriting', component:UnderwritingComponent },

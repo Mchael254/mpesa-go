@@ -16,7 +16,7 @@ export class AccountDetailsComponent {
     ngOnInit() {
 
         this.accountDetailItems = [
-          { label: 'Reciepts', command: () => this.accountDetailItemsActiveTab = 'RECIEPTS' },
+          { label: 'Receipts', command: () => this.accountDetailItemsActiveTab = 'RECIEPTS' },
           { label: 'Maturities', command: () => this.accountDetailItemsActiveTab = 'MATURTIES' },
       ];
 
