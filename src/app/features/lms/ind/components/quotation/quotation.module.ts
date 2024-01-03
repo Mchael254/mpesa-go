@@ -11,10 +11,6 @@ import { QuotationSummaryComponent } from './components/quotation-summary/quotat
 import { InsuranceHistoryComponent } from './components/insurance-history/insurance-history.component';
 import { LifestyleDetailsComponent } from './components/lifestyle-details/lifestyle-details.component';
 import { MedicalHistoryComponent } from './components/medical-history/medical-history.component';
-import { BeneficiaryPipe } from '../../../pipe/beneficiary/beneficiary.pipe';
-import { RelationTypePipe } from '../../../pipe/relation-type/relation-type.pipe';
-import { ProductPipe } from '../../../pipe/product/product.pipe';
-import { CoverTypePipe } from '../../../pipe/cover-type/cover-type.pipe';
 
 const components = [
   QuotationListComponent,
@@ -24,12 +20,11 @@ const components = [
   QuickComponent,
   InsuranceHistoryComponent,
   LifestyleDetailsComponent,
-  MedicalHistoryComponent,
+  MedicalHistoryComponent
 ];
-const pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe];
 
 @NgModule({
-  declarations: [...components, ...pipes],
+  declarations: [...components],
   imports: [CommonModule, QuotationRoutingModule, SharedModule],
 })
 export class QuotationModule {}
