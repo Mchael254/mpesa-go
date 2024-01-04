@@ -10,7 +10,9 @@
             <p>Select which contact details we should send verification code.</p>
             <i class="fa-solid fa-phone"></i>
         </div>
+
         <form class="verify-text">
+            <div *ngIf="error.message" class="alert alert-danger">{{ error.message }}</div>
             <div *ngFor="let account of accountVerification">
                 <div
                   class="verify-button row" [class.selected]="account === selectedAccount"
