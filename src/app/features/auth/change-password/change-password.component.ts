@@ -6,6 +6,7 @@ import {UtilService} from "../../../shared/services";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import {ConfirmedValidator} from "../../../core/validators/confirmed.validator";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-change-password',
@@ -17,6 +18,7 @@ export class ChangePasswordComponent {
   submitted = false;
   public errorOccurred = false;
   public errorMessage: string = undefined;
+  isLoading: boolean = false;
 
   constructor(private router: Router,
               private formBuilder: FormBuilder,
@@ -55,28 +57,51 @@ export class ChangePasswordComponent {
     const email = extras.email;
     // let tempUser = sessionStorage.getItem('tempUser');
     this.submitted = true;
+    this.isLoading = true;
 
     if (this.form.valid) {
       // let pass = this.form.controls['password'].value;
       let newPass = this.form.controls['newPassword'].value;
       let confirmPass = this.form.controls['confirmPassword'].value;
 
-      this.authService.resetPassword(username,  newPass, "N", email )
-        .subscribe(data=>{
+      // this.authService.resetPassword(username,  newPass, "N", email )
+      //   .subscribe(data=>{
+      //     if(data==true) {
+      //       // this.changeSuccess = true;
+      //       this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated your password' );
+
+      //       setTimeout(() => {
+      //         this.router.navigate(['/auth/']);
+      //       }, 3000);
+      //     }
+      //     else{
+      //       this.errorOccurred = true;
+      //       this.errorMessage = "Something went wrong.Please try Again";
+      //       this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong.Please try Again');
+      //     }
+      //   })
+
+      this.authService.resetPassword(username, newPass, 'N', email)
+      .pipe(take(1))
+      .subscribe({
+        next: (data) => {
           if(data==true) {
             // this.changeSuccess = true;
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated your password' );
-
-            setTimeout(() => {
-              this.router.navigate(['/auth/']);
-            }, 3000);
+            this.router.navigate(['/auth/']);
           }
           else{
             this.errorOccurred = true;
             this.errorMessage = "Something went wrong.Please try Again";
             this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong.Please try Again');
           }
-        })
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.isLoading = false;
+        }
+      })
     }
   }
 

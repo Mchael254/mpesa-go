@@ -31,6 +31,8 @@ export class OtpComponent implements OnInit, OnDestroy {
 
   @Output() public otpResponse: EventEmitter<any> = new EventEmitter<any>();
 
+  error: {name: string, status: number, message: string} = { name: '', status: 0, message: '' };
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -61,6 +63,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   keyUpEvent(event, input) {
     const value = event.target.value;
     const index = this.formInput.indexOf(input);
+    this.error = { name: '', status: 0, message: '' };
 
     if (event.keyCode === 8 && event.which === 8 && value.length === 0 && index > 0) {
       const previousInput = this.formInput[index - 1];
@@ -89,15 +92,22 @@ export class OtpComponent implements OnInit, OnDestroy {
       });
       username = extras.username;
       email = extras.email;
-
-      this.authService.verifyResetOtp(username, parseInt(this.otpValue, 10), email)
-        .subscribe(data =>{
-          this.otpResponse.emit(data);
-          this.isLoading = false;
-        },
-        (error) =>{
-          this.isLoading = false;
-
+      
+        this.authService.verifyResetOtp(username, parseInt(this.otpValue, 10), email)
+        .subscribe({
+          next: (data) => {
+            this.otpResponse.emit(data);
+            this.isLoading = false;
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.error = {
+              name: err.statusText, 
+              status: err.status, 
+              message: err.message
+            };
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+          }
         })
     }
 
