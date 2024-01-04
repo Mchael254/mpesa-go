@@ -17,7 +17,7 @@
           </div>
           <div class="row px-4 pt-2">
             <div class="col-3 text-black-50">Payment option:</div>
-            <div class="col-9 text-black">Card*</div>
+            <div class="col-9 text-black">{{ policyUnderwritingSummary['endr_pay_method']}}</div>
           </div>
           <div class="row px-4 pt-2">
             <div class="col-3 text-black-50">Premium mask:</div>
@@ -32,8 +32,8 @@
             <div class="col-9 text-black"> {{policyUnderwritingSummary['assured']}} </div>
           </div>
           <div class="row px-4 pt-2">
-            <div class="col-6 text-black-50">Endorsement Type:</div>
-            <div class="col-6 text-black"> {{policyUnderwritingSummary['endorsement_desc']}} </div>
+            <div class="col-3 text-black-50">Endorsement Type:</div>
+            <div class="col-9 text-black"> {{policyUnderwritingSummary['endorsement_desc']}} </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 px-4">
@@ -46,20 +46,24 @@
             <div class="col-6 text-black">{{policyUnderwritingSummary['life_assured']}}</div>
           </div>
           <div class="row px-4 pt-2">
-            <div class="col-6 text-black-50">Term*:</div>
-            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+            <div class="col-6 text-black-50">Term:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['endr_term']}}</div>
           </div>
           <div class="row px-4 pt-2">
-            <div class="col-6 text-black-50">Agent code*:</div>
-            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+            <div class="col-6 text-black-50">Agent code:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['agn_sht_desc']}}</div>
           </div>
           <div class="row px-4 pt-2">
-            <div class="col-6 text-black-50">ANB*:</div>
-            <div class="col-6 text-black">{{policyUnderwritingSummary['proposal_no']}}</div>
+            <div class="col-6 text-black-50">ANB:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['endr_anb']}}</div>
           </div>
           <div class="row px-4 pt-2">
             <div class="col-6 text-black-50">Endorsement status:</div>
             <div class="col-6 text-black">{{policyUnderwritingSummary['endr_status']}}</div>
+          </div>
+          <div class="row px-4 pt-2">
+            <div class="col-6 text-black-50">Occupation:</div>
+            <div class="col-6 text-black">{{policyUnderwritingSummary['occupation']}}</div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 px-4">
@@ -119,7 +123,7 @@
   <div class="d-flex justify-content-end" style="font-size: 10px !important;">
     <button type="button" class="btn btn-danger m-1" data-bs-toggle="modal"
     data-bs-target="#UnderWritingRejectModal">Reject</button>
-    <button type="button" class="btn btn-primary m-1">Authorize</button>
+    <button type="button" class="btn btn-primary m-1" (click)="authorizePolicy()">Authorize</button>
   </div>
 </div>
 
@@ -138,7 +142,7 @@
         <div class="d-flex justify-content-end"><div style="color: red; font-size: 18px; padding: 0.5rem;">x</div></div>
         <div style="padding: 0 2rem">
           <div class="row" >
-            <div class="col-6">
+            <div class="col-lg-6 col-md-12">
               <div
                 class="col-12"
                 style="
@@ -150,31 +154,31 @@
                 Client Details
               </div>
               <div class="row pt-2">
-                <div class="col-6 text-black-50">Name:</div>
-                <div class="col-6 text-black fw-medium">Mary Anne</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Name:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">DOB:</div>
-                <div class="col-6 text-black fw-medium">10/10/1978</div>
+                <div class="col-lg-4 col-md-12 text-black-50">DOB:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['prp_dob']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Gender:</div>
-                <div class="col-6 text-black fw-medium">Female</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Gender:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Occupation:</div>
-                <div class="col-6 text-black fw-medium">Doctor</div>
+                <div class="col-lg-4 col-md-12  text-black-50">Occupation:</div>
+                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['occupation']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Nationality:</div>
-                <div class="col-6 text-black fw-medium">Kenyan</div>
+                <div class="col-lg-4 col-md-12  text-black-50">Nationality:</div>
+                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Country of Residence:</div>
-                <div class="col-6 text-black fw-medium">Uganda</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Country of Residence:</div>
+                <div class="col-lg-4 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-lg-6 col-md-12">
               <div
                 class="col-12"
                 style="
@@ -186,28 +190,32 @@
                 Product details
               </div>
               <div class="row pt-2">
-                <div class="col-6 text-black-50">Name:</div>
-                <div class="col-6 text-black fw-medium">Mary Anne</div>
+                <div class="col-lg-4 col-md-12  text-black-50">Proposal No. :</div>
+                <div class="col-lg-8 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['proposal_no']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">DOB:</div>
-                <div class="col-6 text-black fw-medium">10/10/1978</div>
+                <div class="col-lg-4 col-md-12  text-black-50">Intermediary:</div>
+                <div class="col-8 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Gender:</div>
-                <div class="col-6 text-black fw-medium">Female</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Payment mode:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_pay_method']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Occupation:</div>
-                <div class="col-6 text-black fw-medium">Doctor</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Sum assured:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_sa']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Nationality:</div>
-                <div class="col-6 text-black fw-medium">Kenyan</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Product:</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['product_description']}}</div>
               </div>
               <div class="row">
-                <div class="col-6 text-black-50">Country of Residence:</div>
-                <div class="col-6 text-black fw-medium">Uganda</div>
+                <div class="col-lg-4 col-md-12 text-black-50">Currency: </div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['sum_assured']}}</div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4 col-md-12 text-black-50">Premium: </div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_premium']}}</div>
               </div>
             </div>
           </div>
@@ -225,34 +233,34 @@
                 Cover Details
               </div>
               <div class="row">
-                <div class="row col-6">
+                <div class="row col-lg-6 col-md-12">
                   <div class="row pt-2">
-                    <div class="col-6 text-black-50">Name:</div>
-                    <div class="col-6 text-black fw-medium">Mary Anne</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Name:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">Mary Anne</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">DOB:</div>
-                    <div class="col-6 text-black fw-medium">10/10/1978</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">DOB:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">10/10/1978</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Gender:</div>
-                    <div class="col-6 text-black fw-medium">Female</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Gender:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">Female</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Occupation:</div>
-                    <div class="col-6 text-black fw-medium">Doctor</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Occupation:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">Doctor</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Nationality:</div>
-                    <div class="col-6 text-black fw-medium">Kenyan</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Nationality:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">Kenyan</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Country of Residence:</div>
-                    <div class="col-6 text-black fw-medium">Uganda</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Country of Residence:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">Uganda</div>
                   </div>
                 </div>
 
-                <div class="row col-6">
+                <div class="row col-lg-6 col-md-12">
                   <div class="row pt-2">
                     <div class="col-6 text-black-50">Name:</div>
                     <div class="col-6 text-black fw-medium">Mary Anne</div>
@@ -409,16 +417,16 @@
     <div class="modal-content-undw-reject modal-content modal-content-sub-header">
       <div>
         <div class="d-flex justify-content-end"><div style="color: red; font-size: 18px; padding: 0.5rem;">x</div></div>
-        <div style="padding: 0 2rem">
+        <div style="padding: 0 2rem" [formGroup]="rejectForm">
           <div class="text-black fw-medium">Please provide a reason for your cancellation</div>
           <div class="text-black fw-medium pt-2">Reason</div>
 
-          <textarea class="form-control pt-1 pb-4" id="exampleFormControlTextarea1" rows="3"></textarea>
+          <textarea class="form-control pt-1 pb-4" id="exampleFormControlTextarea1" rows="3" formControlName="cancellation_source"></textarea>
 
           <div class="d-flex justify-content-end pt-2" style="transform: translateX(0.4rem);">
             <button type="button" class="btn btn-info m-1" data-bs-toggle="modal"
             data-bs-target="#UnderWritingRejectModal" style="color: var(--primary-color);">Close</button>
-            <button type="button" class="btn btn-primary m-1">Reject Quote</button>
+            <button type="button" class="btn btn-primary m-1" (click) = rejectQuote() [disabled]="!rejectForm.invalid">Reject Quote</button>
           </div>
         </div>
 
