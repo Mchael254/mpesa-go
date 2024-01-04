@@ -6,6 +6,7 @@ import { AuthVerification } from '../../../core/auth/auth-verification';
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import { Logger } from '../../../shared/services/logger/logger.service';
 import { UtilService } from '../../../shared/services/util/util.service';
+import { take } from 'rxjs';
 
 const log = new Logger('VerificationComponent');
 
@@ -18,6 +19,8 @@ export class VerificationComponent implements OnInit {
   accountVerification: AuthVerification[] = [];
   selectedAccount?: AuthVerification;
   isLoading: boolean = false;
+  error: {name: string, status: number, message: string} = { name: '', status: 0, message: '' };
+
 
   constructor(
     private router: Router,
@@ -74,9 +77,11 @@ export class VerificationComponent implements OnInit {
     // const extras = this.localStorageService.getItem("extras");
     const extras = JSON.parse(this.localStorageService.getItem("extras"));
     let username = extras.username;
+
     this.authService.sentVerificationOtp(username, verificationType)
-      .pipe(untilDestroyed(this)).subscribe( response =>{
-        log.debug("OTP Sent", response);
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (response) => {
         if(response){
           const channel = {
             action: 'Verify',
@@ -87,10 +92,17 @@ export class VerificationComponent implements OnInit {
           this.router.navigate(['/auth/otp']);
         }
         this.isLoading = false;
+      },
+      error: (err) => {
+        log.info(`error >>>`, err);
+        this.error = {
+          name: '', 
+          status: 0, 
+          message: 'error occured' 
+        }
+        this.isLoading = false;
       }
-
-
-    );
+    })
 
   }
 
