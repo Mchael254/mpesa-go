@@ -48,6 +48,11 @@ export class ListServiceProviderComponent {
   ];
 
   globalFilterFields = ['name', 'category', 'modeOfIdentity', 'pinNumber'];
+  filterObject: {
+    name:string, category: string, providerType: string, modeOfIdentity:string, pinNumber: string
+  } = {
+    name:'',category:'', providerType:'', modeOfIdentity:'', pinNumber: ''
+  };
   constructor(
     private service: ServiceProviderService,
     private router: Router,
@@ -147,7 +152,7 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
     const searchEvent = {
       target: {value: this.searchTerm}
     };
-    this.filter(searchEvent, pageIndex, pageSize);
+    this.filter(searchEvent, pageIndex, pageSize, null);
   }
   else {
     this.getServiceProviders(pageIndex, pageSize, sortField, sortOrder)
@@ -158,7 +163,7 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
       .subscribe(
         (data: Pagination<ServiceProviderDTO>) => {
           data.content.forEach(entity => {
-            entity.spEntityType = entity.providerType.name
+            entity.spEntityType = entity?.providerType?.name
           });
           this.ServiceProviderDetails = data;
           this.tableDetails.rows = this.ServiceProviderDetails?.content;
@@ -186,19 +191,80 @@ lazyLoadServiceProviders(event:LazyLoadEvent | TableLazyLoadEvent){
   ngOnDestroy(): void {
   }
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
     this.ServiceProviderDetails = null; // Initialize with an empty array or appropriate structure
 
-    const value = (event.target as HTMLInputElement).value.toLowerCase();
+   /* const value = (event.target as HTMLInputElement).value.toLowerCase();
 
 
-    this.searchTerm = value;
+    this.searchTerm = value;*/
+    let data = this.filterObject[keyData];
+    console.log('datalog>>',data, keyData)
     this.isSearching = true;
     this.spinner.show();
-    this.service.searchServiceProviders(pageIndex, pageSize, this.searchTerm)
-      .subscribe((data) => {
-        this.ServiceProviderDetails = data;
-        this.spinner.hide();
-      });
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.service
+        .searchServiceProviders(
+          pageIndex, pageSize,
+          keyData, data)
+        .subscribe((data) => {
+            this.ServiceProviderDetails = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.getServiceProviders(pageIndex, pageSize)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => console.log(`Service Providers`, data))
+        )
+        .subscribe(
+          (data: Pagination<ServiceProviderDTO>) => {
+            data.content.forEach(entity => {
+              entity.spEntityType = entity.providerType.name
+            });
+            this.ServiceProviderDetails = data;
+            this.tableDetails.rows = this.ServiceProviderDetails?.content;
+            this.tableDetails.totalElements = this.ServiceProviderDetails?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => {this.spinner.hide();}
+        );
+    }
+  }
+
+  inputName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
+
+  inputCategory(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['category'] = value;
+  }
+
+  inputEntityType(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['spEntityType'] = value;
+  }
+
+  inputModeOfIdentity(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['modeOfIdentity'] = value;
+  }
+
+  inputIdentityNumber(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['pinNumber'] = value;
   }
 }

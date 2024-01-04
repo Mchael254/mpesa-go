@@ -58,6 +58,9 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       url: '/home/entity/list'
     }
   ];
+  filterObject: { identityNumber: string; name: string; pinNumber: string; categoryName: string; modeOfIdentity: { name: string } } = {
+    name:'', identityNumber:'', modeOfIdentity: {name: ''}, pinNumber:'', categoryName:''
+  };
 
   constructor(
     private entityService: EntityService,
@@ -90,7 +93,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
 
     if(nameSearch?.fromSearchScreen) {
       this.entityService
-        .searchEntities(0, 5, nameSearch?.searchNameInput)
+        .searchEntities(0, 5, nameSearch?.searchNameInput || null, nameSearch?.searchIdInput || null)
         .subscribe((data) => {
           this.entities = data;
           this.spinner.hide();
@@ -126,7 +129,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       const searchEvent = {
         target: {value: this.searchTerm}
       };
-      this.filter(searchEvent, pageIndex, pageSize);
+      this.filter(searchEvent, pageIndex, pageSize, null);
     }
     else {
       this.getEntities(pageIndex, pageSize, sortField, sortOrder)
@@ -215,7 +218,7 @@ export class ListEntityComponent implements OnInit, OnDestroy {
       });*/
   }
 
-  filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
     this.entities = null; // Initialize with an empty array or appropriate structure
 
     this.subscription = this.entityService.searchTerm$
@@ -223,18 +226,83 @@ export class ListEntityComponent implements OnInit, OnDestroy {
         this.searchTerm = searchTerm.toString();
       })
     // const searchTerm = localStorage.getItem('searchTerm');
-    const value = (event.target as HTMLInputElement).value.toLowerCase() || this.searchTerm;
+    /*const value = (event.target as HTMLInputElement).value.toLowerCase() || this.searchTerm;
 
     log.info('myvalue>>>', value)
 
-    this.searchTerm = value;
+    this.searchTerm = value;*/
+
+    let data = this.filterObject[keyData];
+    console.log('datalog>>',data, keyData)
+
     this.isSearching = true;
     this.spinner.show();
-    this.entityService
-      .searchEntities(pageIndex, pageSize, this.searchTerm)
-      .subscribe((data) => {
-        this.entities = data;
-        this.spinner.hide();
-      });
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.entityService
+        .searchEntities(
+          pageIndex, pageSize,
+          keyData, data)
+        .subscribe((data) => {
+            this.entities = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.getEntities(pageIndex, pageSize)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching entities>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<EntityDto>) => {
+            // if (searchTerm === null) {
+            data.content.forEach(entity => {
+              entity.modeOfIdentityName = entity.modeOfIdentity.name
+            });
+            this.entities = data;
+            this.tableDetails.rows = this.entities?.content;
+            this.tableDetails.totalElements = this.entities?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+
+          },
+          error => {
+            this.spinner.hide();
+          }
+
+        );
+    }
+
   }
+  inputName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
+
+  inputIdNumber(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['identityNumber'] = value;
+  }
+  inputModeOfIdentityName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['modeOfIdentity.name'] = value;
+  }
+  inputPinNumber(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['pinNumber'] = value;
+  }
+  inputCategoryName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['categoryName'] = value;
+  }
+
 }

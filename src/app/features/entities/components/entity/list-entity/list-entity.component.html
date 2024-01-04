@@ -66,7 +66,17 @@
           </tr>
           <tr>
             <th>
-              <input type="text" class="form-control w-75" (keyup)="filter($event);">
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'name');" (input)="inputName($event)">
+            </th>
+            <th><input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'modeOfIdentity.name');" (input)="inputModeOfIdentityName($event)"></th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'identityNumber');" (input)="inputIdNumber($event)">
+            </th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'pinNumber');" (input)="inputPinNumber($event)">
+            </th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'categoryName');" (input)="inputCategoryName($event)">
             </th>
           </tr>
         </ng-template>
