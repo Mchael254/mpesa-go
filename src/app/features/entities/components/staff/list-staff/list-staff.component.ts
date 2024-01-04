@@ -87,6 +87,11 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   ];
 
   groupStaff: StaffDto[];
+  filterObject: {
+    name:string, userType:string,emailAddress:string , status:string
+  } = {
+    name:'', userType:'', emailAddress:'', status:''
+  };
 
   constructor(private staffService: StaffService,
               private sortFilterService: SortFilterService,
@@ -255,17 +260,45 @@ export class ListStaffComponent implements OnInit, OnDestroy {
   filter(event, pageIndex: number = 0, pageSize: number = event.rows) {
     this.indivData = null; // Initialize with an empty array or appropriate structure
 
-    const value = (event.target as HTMLInputElement).value.toLowerCase();
+    /*const value = (event.target as HTMLInputElement).value.toLowerCase();
 
-    this.searchTerm = value;
+    this.searchTerm = value*/;
     this.isSearching = true;
     this.spinner.show();
     this.staffService
-      .searchStaff(pageIndex, pageSize, this.activeTab2 ===  'Group' ? 'G':  'U', this.searchTerm, null, null)
+      .searchStaff(pageIndex, pageSize,
+        this.filterObject?.userType,
+        this.filterObject?.name,
+        null,
+        null)
       .subscribe((data) => {
         this.indivData = data;
         this.spinner.hide();
-      });
+      },
+        error => {
+          this.spinner.hide();
+        });
+  }
+
+  inputName(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['name'] = value;
+  }
+  inputUserType(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['userType'] = value;
+  }
+  inputEmail(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['emailAddress'] = value;
+  }
+  inputStatus(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['status'] = value;
   }
 }
 

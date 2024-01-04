@@ -5,6 +5,7 @@ import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDT
 import {Pagination} from '../../../../shared/data/common/pagination'
 import {AppConfigService} from "../../../../core/config/app-config-service";
 import { environment } from 'src/environments/environment';
+import {UtilService} from "../../../../shared/services";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class ClientService {
   headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json'});
 
   constructor(private http: HttpClient,
-    private appConfig: AppConfigService) { }
+    private appConfig: AppConfigService,
+              private utilService: UtilService) { }
     getClients(
       page: number | null = 0,
       size: number | null = 5,
@@ -46,6 +48,9 @@ export class ClientService {
       page: number,
       size: number = 5,
       name: string,
+      modeOfIdentity: string = null,
+      idNumber: string = null,
+      clientTypeName: string = null
     ): Observable<Pagination<ClientDTO>> {
       const header = new HttpHeaders({
         'Content-Type': 'application/json',
@@ -57,11 +62,14 @@ export class ClientService {
         .set('page', `${page}`)
         .set('size', `${size}`)
         .set('name', `${name}`)
-        .set('organizationId', 2);
-
+        .set('organizationId', 2)
+        .set('modeOfIdentity', `${modeOfIdentity}`)
+        .set('idNumber', `${idNumber}`)
+        .set('clientTypeName', `${clientTypeName}`);
+      let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
       return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`, {
         headers: header,
-        params: params,
+        params: paramObject,
       });
     }
   getIdentityType(): Observable<any[]> {
