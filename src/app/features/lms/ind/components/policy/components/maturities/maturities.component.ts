@@ -44,7 +44,13 @@ export class MaturitiesComponent {
     let pol_code = StringManipulation.returnNullIfEmpty(this.session_storage_service.getItem(SESSION_KEY.POL_CODE));
     pol_code = pol_code===null ? 0 : pol_code;
     this.spinner_service.show('maturities')
-    this.policy_service.listPolicyMaturities().subscribe((data: any) =>{
+    this.policy_service.listPolicyMaturities().subscribe((data: any[]) =>{
+      data = data.map(r => {
+        r['paid'] = r['paid']==='N' ? 'Not Paid': 'Paid';
+        r['maturity_type'] = r['maturity_type']==='P'?'Partial':'Full';
+        return r
+      })
+      
       this.quotationListInd['rows'] = data
       this.spinner_service.hide('maturities')
     }, err=>{
