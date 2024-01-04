@@ -21,4 +21,8 @@ export class EndorsementService {
   authorizePolicy(endr_code:number){
     return this.api.POST(`${this.IND_ENDORSEMENT_BASE_URL}/${endr_code}/authorize-policy?reins_tot_prem_computed=true&medical_done=true&reins_done=true`, null, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
   }
+
+  rejectPolicy(endr_code=202360705){
+    return this.api.POST(`${this.IND_ENDORSEMENT_BASE_URL}/${endr_code}/reject`, null, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
+  }
 }
