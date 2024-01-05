@@ -3,10 +3,10 @@ import {
   Component,
   ElementRef,
   OnInit,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import * as bootstrap from 'bootstrap';
 
 import stepData from '../../data/steps.json';
 
@@ -32,6 +32,7 @@ import {
 import { StaffDto } from '../../../../features/entities/data/StaffDto';
 import { Table } from 'primeng/table';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
+import { ReplaySubject, combineLatest, filter, takeUntil } from 'rxjs';
 
 const log = new Logger('BranchComponent');
 
@@ -43,6 +44,8 @@ const log = new Logger('BranchComponent');
 export class BranchComponent implements OnInit {
   @ViewChild('branchModal ') branchModal: ElementRef;
   @ViewChild('branchTransferModal ') branchTransferModal: ElementRef;
+  @ViewChild('branchDivisionModal ') branchDivisionModal: ElementRef;
+  @ViewChild('branchContactModal ') branchContactModal: ElementRef;
   @ViewChild('branchTable') branchTable: Table;
   @ViewChild('branchContactTable') branchContactTable: Table;
   @ViewChild('branchConfirmationModal')
@@ -51,6 +54,8 @@ export class BranchComponent implements OnInit {
   branchDivisionConfirmationModal!: ReusableInputComponent;
   @ViewChild('branchContactConfirmationModal')
   branchContactConfirmationModal!: ReusableInputComponent;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   public createBranchForm: FormGroup;
   public createBranchDivisionForm: FormGroup;
@@ -77,6 +82,7 @@ export class BranchComponent implements OnInit {
   public stateSelected: StateDto;
   public selectedCountry: number;
   public selectedOrganization: number;
+  public selectedOrganizationId: number | null = null;
   public selectedRegion: number;
   public selectedState: number;
   public selectedTown = '';
@@ -106,6 +112,7 @@ export class BranchComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private renderer: Renderer2,
     private organizationService: OrganizationService,
     private countryService: CountryService,
     private staffService: StaffService,
@@ -121,6 +128,27 @@ export class BranchComponent implements OnInit {
     this.fetchOrganization();
     this.fetchCountries();
     this.fetchStaffData();
+
+    // Combine observables to wait for both organization and region selection
+    combineLatest([
+      this.organizationService.selectedOrganizationId$,
+      this.organizationService.selectedRegion$,
+    ])
+      .pipe(
+        filter(([organizationId, selectedRegion]) => organizationId !== null),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe(([organizationId, selectedRegion]) => {
+        this.selectedOrganizationId = organizationId;
+        this.selectedRegion = selectedRegion;
+        // call the fetchOrganizationRegion method
+        this.fetchOrganizationRegion(this.selectedOrganizationId);
+        // call the fetchOrganizationBranch method
+        this.fetchOrganizationBranch(
+          this.selectedOrganizationId,
+          this.selectedRegion
+        );
+      });
   }
 
   ngOnDestroy(): void {}
@@ -181,7 +209,7 @@ export class BranchComponent implements OnInit {
     this.branchesData = null;
     this.branchDivisionData = null;
     this.branchContacts = null;
-    const selectedOrganizationId = this.selectedOrganization;
+    const selectedOrganizationId = this.selectedOrganizationId;
     this.selectedOrg = this.organizationsData.find(
       (organization) => organization.id === selectedOrganizationId
     );
@@ -191,30 +219,27 @@ export class BranchComponent implements OnInit {
   onRegionChange() {
     this.branchDivisionData = null;
     this.branchContacts = null;
+
     const selectedRegionId = this.selectedRegion;
-    this.selectedReg = this.regionData.find(
-      (region) => region.code === selectedRegionId
-    );
-    this.fetchOrganizationBranch(this.selectedReg.code);
+
+    // Check if selectedOrg is null, fetch it based on selectedOrganizationId
+    if (!this.selectedOrg) {
+      this.selectedOrg = this.organizationsData.find(
+        (organization) => organization.id === this.selectedOrganizationId
+      );
+    }
+
+    // Ensure this.selectedOrg is not null before calling fetchOrganizationBranch
+    if (this.selectedOrg) {
+      this.selectedReg = this.regionData.find(
+        (region) => region.code === selectedRegionId
+      );
+      this.fetchOrganizationBranch(this.selectedOrg.id, this.selectedReg.code);
+    } else {
+      // Handle the case where this.selectedOrg is null
+      log.error('Selected Organization is null');
+    }
   }
-
-  // onOrganizationChange(event: Event) {
-  //   const selectedOrgId = (event.target as HTMLSelectElement).value;
-  //   const selectedOrgIdAsNumber = parseInt(selectedOrgId, 10);
-  //   this.selectedOrg = this.organizationsData.find(
-  //     (organization) => organization.id === selectedOrgIdAsNumber
-  //   );
-  //   this.fetchOrganizationRegion(this.selectedOrg.id);
-  // }
-
-  // onRegionChange($event: Event) {
-  //   const selectedRegionId = (event.target as HTMLSelectElement).value;
-  //   const selectedRegIdAsNumber = parseInt(selectedRegionId, 10);
-  //   this.selectedReg = this.regionData.find(
-  //     (organization) => organization.code === selectedRegIdAsNumber
-  //   );
-  //   this.fetchOrganizationBranch(this.selectedReg.code);
-  // }
 
   onBranchRowSelect(branch: OrganizationBranchDTO) {
     this.selectedBranch = branch;
@@ -236,6 +261,8 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+    // this.renderer.addClass(this.branchModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.branchModal.nativeElement, 'display', 'block');
   }
 
   closeBranchModal() {
@@ -244,6 +271,8 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+    // this.renderer.removeClass(this.branchModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.branchModal.nativeElement, 'display', 'none');
   }
 
   openBranchTransferModal() {
@@ -252,6 +281,12 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+    // this.renderer.addClass(this.branchTransferModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchTransferModal.nativeElement,
+    //   'display',
+    //   'block'
+    // );
   }
 
   closeBranchTransferModal() {
@@ -260,6 +295,12 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+    // this.renderer.removeClass(this.branchTransferModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchTransferModal.nativeElement,
+    //   'display',
+    //   'none'
+    // );
   }
 
   openBranchDivisionModal() {
@@ -268,6 +309,12 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+    // this.renderer.addClass(this.branchDivisionModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchDivisionModal.nativeElement,
+    //   'display',
+    //   'block'
+    // );
   }
 
   closeBranchDivisionModal() {
@@ -276,6 +323,12 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+    // this.renderer.removeClass(this.branchDivisionModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchDivisionModal.nativeElement,
+    //   'display',
+    //   'none'
+    // );
   }
 
   openBranchContactModal() {
@@ -284,6 +337,12 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
+    // this.renderer.addClass(this.branchContactModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchContactModal.nativeElement,
+    //   'display',
+    //   'block'
+    // );
   }
 
   closeBranchContactModal() {
@@ -292,6 +351,13 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+
+    // this.renderer.removeClass(this.branchContactModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.branchContactModal.nativeElement,
+    //   'display',
+    //   'none'
+    // );
   }
 
   onLogoChange(event) {
@@ -397,10 +463,10 @@ export class BranchComponent implements OnInit {
       });
   }
 
-  fetchOrganizationBranch(regionId: number) {
+  fetchOrganizationBranch(organizationId: number, regionId: number) {
     this.organizationService
-      .getOrganizationBranch(this.selectedOrg.id, regionId)
-      .pipe(untilDestroyed(this))
+      .getOrganizationBranch(organizationId, regionId)
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((data) => {
         this.branchesData = data;
         log.info('Branch Data', this.branchesData);
@@ -419,10 +485,10 @@ export class BranchComponent implements OnInit {
       .subscribe(
         (data) => {
           this.managersData = data.content;
-          console.log('Fetched staff data:', this.managersData);
+          log.info('Fetched staff data:', this.managersData);
         },
         (error) => {
-          console.error('Error fetching staff data:', error);
+          log.error('Error fetching staff data:', error);
         }
       );
   }
@@ -471,7 +537,7 @@ export class BranchComponent implements OnInit {
             'Success',
             'Successfully Created an Organization Branch'
           );
-          this.fetchOrganizationBranch(regionId);
+          this.fetchOrganizationBranch(organizationId, regionId);
         });
     } else {
       const branchFormValues = this.createBranchForm.getRawValue();
@@ -517,7 +583,7 @@ export class BranchComponent implements OnInit {
             'Successfully Updated Organization Branch'
           );
           this.selectedBranch = null;
-          this.fetchOrganizationBranch(regionId);
+          this.fetchOrganizationBranch(organizationId, regionId);
         });
     }
   }
@@ -545,7 +611,10 @@ export class BranchComponent implements OnInit {
         ? 'data:image/jpeg;base64,' + this.selectedBranch.logo
         : '';
     } else {
-      log.info('No Organization Branch is selected!.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Organization Branch is selected!.'
+      );
     }
   }
 
@@ -567,7 +636,10 @@ export class BranchComponent implements OnInit {
           this.fetchOrganizationRegion(this.selectedOrg.id);
         });
     } else {
-      log.info('No Organization Branch is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Organization Branch is selected.'
+      );
     }
   }
 
@@ -655,7 +727,10 @@ export class BranchComponent implements OnInit {
           this.fetchOrganizationBranchDivision(branchId);
         });
     } else {
-      log.info('No Organization Branch Division is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Organization Branch Division is selected.'
+      );
     }
   }
 
@@ -751,7 +826,10 @@ export class BranchComponent implements OnInit {
           this.selectedBranchContact = null;
         });
     } else {
-      log.info('No Organization Branch Contact is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Organization Branch Contact is selected.'
+      );
     }
   }
 

@@ -36,10 +36,10 @@ export interface CountryDto {
   zipCodeString: string;
 }
 export interface StateDto {
+  country: CountryDto;
   id: number;
   shortDescription: string;
   name: string;
-  country: CountryDto;
 }
 export interface TownDto {
   id: number;
@@ -49,43 +49,43 @@ export interface TownDto {
   state: StateDto;
 }
 
-export interface CountryDTO {
-  adminRegMandatory: string;
-  adminRegType: string;
-  currSerial: number;
-  currency: {
-    createdBy: string;
-    createdDate: string;
-    decimalWord: string;
-    id: number;
-    modifiedBy: string;
-    modifiedDate: string;
-    name: string;
-    numberWord: string;
-    roundingOff: number;
-    symbol: string;
-  };
-  drugTraffickingStatus: string;
-  drugWefDate: string;
-  drugWetDate: string;
-  highRiskWefDate: string;
-  highRiskWetDate: string;
-  id: number;
-  isShengen: string;
-  mobilePrefix: number;
-  name: string;
-  nationality: string;
-  risklevel: string;
-  short_description: string;
-  subAdministrativeUnit: string;
-  telephoneMaximumLength: number;
-  telephoneMinimumLength: number;
-  unSanctionWefDate: string;
-  unSanctionWetDate: string;
-  unSanctioned: string;
-  zipCode: number;
-  zipCodeString: string;
-}
+// export interface CountryDTO {
+//   adminRegMandatory: string;
+//   adminRegType: string;
+//   currSerial: number;
+//   currency: {
+//     createdBy: string;
+//     createdDate: string;
+//     decimalWord: string;
+//     id: number;
+//     modifiedBy: string;
+//     modifiedDate: string;
+//     name: string;
+//     numberWord: string;
+//     roundingOff: number;
+//     symbol: string;
+//   };
+//   drugTraffickingStatus: string;
+//   drugWefDate: string;
+//   drugWetDate: string;
+//   highRiskWefDate: string;
+//   highRiskWetDate: string;
+//   id: number;
+//   isShengen: string;
+//   mobilePrefix: number;
+//   name: string;
+//   nationality: string;
+//   risklevel: string;
+//   short_description: string;
+//   subAdministrativeUnit: string;
+//   telephoneMaximumLength: number;
+//   telephoneMinimumLength: number;
+//   unSanctionWefDate: string;
+//   unSanctionWetDate: string;
+//   unSanctioned: string;
+//   zipCode: number;
+//   zipCodeString: string;
+// }
 
 export interface PostCountryDTO {
   adminRegMandatory: string;
@@ -112,12 +112,12 @@ export interface PostCountryDTO {
   zipCode: number;
 }
 
-export interface StateDTO {
-  country: CountryDTO;
-  id: number;
-  name: string;
-  shortDescription: string;
-}
+// export interface StateDTO {
+//   country: CountryDTO;
+//   id: number;
+//   name: string;
+//   shortDescription: string;
+// }
 
 export interface PostStateDTO {
   countryId: number;

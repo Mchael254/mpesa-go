@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
@@ -13,87 +13,34 @@ import { OrganizationDTO } from '../../data/organization-dto';
 import { MandatoryFieldsDTO } from '../../../../shared/data/common/mandatory-fields-dto';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
+import { StaffDto } from '../../../../features/entities/data/StaffDto';
+import { StaffService } from '../../../../features/entities/services/staff/staff.service';
+import { DropdownModule } from 'primeng/dropdown';
 
-const mockOrganizationData: OrganizationDTO[] = [{
-  address: {
-    box_number: '',
-    country_id: 0,
-    estate: '',
-    fax: '',
-    house_number: '',
-    id: 0,
-    is_utility_address: '',
-    phone_number: '',
-    physical_address: '',
-    postal_code: '',
-    residential_address: '',
-    road: '',
-    state_id: 0,
-    town_id: 0,
-    utility_address_proof: '',
-    zip: ''
-  },
-  country: {
-    adminRegMandatory: '',
-    adminRegType: '',
-    currSerial: 0,
-    currency: {
-      createdBy: '',
-      createdDate: '',
-      decimalWord: '',
+const mockOrganizationData: OrganizationDTO[] = [
+  {
+    address: {
+      box_number: '',
+      country_id: 0,
+      estate: '',
+      fax: '',
+      house_number: '',
       id: 0,
-      modifiedBy: '',
-      modifiedDate: '',
-      name: '',
-      numberWord: '',
-      roundingOff: 0,
-      symbol: ''
+      is_utility_address: '',
+      phone_number: '',
+      physical_address: '',
+      postal_code: '',
+      residential_address: '',
+      road: '',
+      state_id: 0,
+      town_id: 0,
+      utility_address_proof: '',
+      zip: '',
     },
-    drugTraffickingStatus: '',
-    drugWefDate: '',
-    drugWetDate: '',
-    highRiskWefDate: '',
-    highRiskWetDate: '',
-    id: 0,
-    isShengen: '',
-    mobilePrefix: 0,
-    name: '',
-    nationality: '',
-    risklevel: '',
-    short_description: '',
-    telephoneMaximumLength: '',
-    telephoneMinimumLength: '',
-    unSanctionWefDate: '',
-    unSanctionWetDate: '',
-    unSanctioned: '',
-    zipCode: 0
-  },
-  currency_id: 0,
-  emailAddress: '',
-  faxNumber: '',
-  groupId: 0,
-  id: 0,
-  license_number: '',
-  manager: 0,
-  motto: '',
-  name: '',
-  organization_type: '',
-  paybill: 0,
-  physicalAddress: '',
-  pin_number: '',
-  postalCode: '',
-  postalAddress: 0,
-  primaryTelephoneNo: '',
-  primarymobileNumber: '',
-  registrationNo: '',
-  secondaryMobileNumber: '',
-  secondaryTelephoneNo: '',
-  short_description: '',
-  state: {
     country: {
       adminRegMandatory: '',
       adminRegType: '',
-      currSerial: '',
+      currSerial: 0,
       currency: {
         createdBy: '',
         createdDate: '',
@@ -104,7 +51,7 @@ const mockOrganizationData: OrganizationDTO[] = [{
         name: '',
         numberWord: '',
         roundingOff: 0,
-        symbol: ''
+        symbol: '',
       },
       drugTraffickingStatus: '',
       drugWefDate: '',
@@ -118,64 +65,175 @@ const mockOrganizationData: OrganizationDTO[] = [{
       nationality: '',
       risklevel: '',
       short_description: '',
-      telephoneMaximumLength: '',
-      telephoneMinimumLength: '',
+      telephoneMaximumLength: 0,
+      telephoneMinimumLength: 0,
       unSanctionWefDate: '',
       unSanctionWetDate: '',
       unSanctioned: '',
-      zipCode: 0
+      zipCode: 0,
+      subAdministrativeUnit: '',
+      zipCodeString: '',
     },
+    currency_id: 0,
+    emailAddress: '',
+    faxNumber: '',
+    groupId: 0,
+    id: 0,
+    license_number: '',
+    manager: 0,
+    motto: '',
+    name: '',
+    organizationGroupLogo: '',
+    organizationLogo: '',
+    organization_type: '',
+    paybill: 0,
+    physicalAddress: '',
+    pin_number: '',
+    postalCode: '',
+    postalAddress: 0,
+    primaryTelephoneNo: '',
+    primarymobileNumber: '',
+    registrationNo: '',
+    secondaryMobileNumber: '',
+    secondaryTelephoneNo: '',
+    short_description: '',
+    state: {
+      country: {
+        adminRegMandatory: '',
+        adminRegType: '',
+        currSerial: 0,
+        currency: {
+          createdBy: '',
+          createdDate: '',
+          decimalWord: '',
+          id: 0,
+          modifiedBy: '',
+          modifiedDate: '',
+          name: '',
+          numberWord: '',
+          roundingOff: 0,
+          symbol: '',
+        },
+        drugTraffickingStatus: '',
+        drugWefDate: '',
+        drugWetDate: '',
+        highRiskWefDate: '',
+        highRiskWetDate: '',
+        id: 0,
+        isShengen: '',
+        mobilePrefix: 0,
+        name: '',
+        nationality: '',
+        risklevel: '',
+        short_description: '',
+        telephoneMaximumLength: 0,
+        telephoneMinimumLength: 0,
+        unSanctionWefDate: '',
+        unSanctionWetDate: '',
+        unSanctioned: '',
+        zipCode: 0,
+        subAdministrativeUnit: '',
+        zipCodeString: '',
+      },
+      id: 0,
+      name: '',
+      shortDescription: '',
+    },
+    town: {
+      country: '',
+      id: 0,
+      name: '',
+      shortDescription: '',
+      state: '',
+    },
+    vatNumber: '',
+    webAddress: '',
+    bankBranchId: 0,
+    bankId: 0,
+    swiftCode: '',
+    bank_account_name: '',
+    bank_account_number: '',
+    customer_care_email: '',
+    customer_care_name: '',
+    customer_care_primary_phone_number: 0,
+    customer_care_secondary_phone_number: 0,
+  },
+];
+
+const mockCountryData: CountryDto[] = [
+  {
+    adminRegMandatory: '',
+    adminRegType: '',
+    currSerial: 0,
+    currency: {
+      createdBy: '',
+      createdDate: '',
+      decimalWord: '',
+      id: 0,
+      modifiedBy: '',
+      modifiedDate: '',
+      name: '',
+      numberWord: '',
+      roundingOff: 0,
+      symbol: '',
+    },
+    drugTraffickingStatus: '',
+    drugWefDate: '',
+    drugWetDate: '',
+    highRiskWefDate: '',
+    highRiskWetDate: '',
+    id: 0,
+    isShengen: '',
+    mobilePrefix: 0,
+    name: '',
+    nationality: '',
+    risklevel: '',
+    short_description: '',
+    subAdministrativeUnit: '',
+    telephoneMaximumLength: 0,
+    telephoneMinimumLength: 0,
+    unSanctionWefDate: '',
+    unSanctionWetDate: '',
+    unSanctioned: '',
+    zipCode: 0,
+    zipCodeString: '',
+  },
+];
+
+const mockCurrencyData: CurrencyDTO[] = [
+  {
+    decimalWord: '',
     id: 0,
     name: '',
-    shortDescription: ''
+    numberWord: '',
+    roundingOff: 0,
+    symbol: '',
   },
-  town: {
-    country: '',
+];
+
+const mockMandatoryData: MandatoryFieldsDTO[] = [
+  {
     id: 0,
-    name: '',
-    shortDescription: '',
-    state: ''
+    fieldName: '',
+    fieldLabel: '',
+    mandatoryStatus: 'Y',
+    visibleStatus: 'Y',
+    disabledStatus: 'N',
+    frontedId: 'country',
+    screenName: '',
+    groupId: '',
+    module: '',
   },
-  vatNumber: '',
-  webAddress: '',
-  bankBranchId: 0,
-  bankId: 0,
-  swiftCode: '',
-  bank_account_name: '',
-  bank_account_number: '',
-  customer_care_email: '',
-  customer_care_name: '',
-  customer_care_primary_phone_number: 0,
-  customer_care_secondary_phone_number: 0
-}]
+];
 
-const mockCountryData: CountryDto[] = [{
-  id: 0,
-  short_description: '',
-  name: ''
-}]
-
-const mockCurrencyData: CurrencyDTO[] =[{
-  decimalWord: '',
-  id: 0,
-  name: '',
-  numberWord: '',
-  roundingOff: 0,
-  symbol: ''
-}]
-
-const mockMandatoryData: MandatoryFieldsDTO[] = [{
-  id: 0,
-  fieldName: '',
-  fieldLabel: '',
-  mandatoryStatus: 'Y',
-  visibleStatus: 'Y',
-  disabledStatus: 'N',
-  frontedId: 'country',
-  screenName: '',
-  groupId: '',
-  module: ''
-}]
+const mockStaffData: StaffDto[] = [
+  {
+    name: '',
+    username: '',
+    userType: '',
+    status: '',
+  },
+];
 
 export class MockOrganizationService {
   getOrganization = jest.fn().mockReturnValue(of(mockOrganizationData));
@@ -190,7 +248,13 @@ export class MockBankService {
 }
 
 export class MockMandatoryService {
-  getMandatoryFieldsByGroupId = jest.fn().mockReturnValue(of(mockMandatoryData));
+  getMandatoryFieldsByGroupId = jest
+    .fn()
+    .mockReturnValue(of(mockMandatoryData));
+}
+
+export class MockStaffService {
+  getStaff = jest.fn().mockReturnValue(of(mockStaffData));
 }
 
 export class MockGlobalMessageService {}
@@ -198,26 +262,30 @@ export class MockGlobalMessageService {}
 describe('OrganizationComponent', () => {
   let component: OrganizationComponent;
   let fixture: ComponentFixture<OrganizationComponent>;
-  let organizationServiceStub: OrganizationService
+  let organizationServiceStub: OrganizationService;
   let countryServiceStub: CountryService;
   let bankServiceStub: BankService;
   let mandatoryFieldsServiceStub: MandatoryFieldsService;
   let messageServiceStub: GlobalMessagingService;
+  let staffServiceStub: StaffService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [OrganizationComponent],
       imports: [
         RouterTestingModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        FormsModule,
+        DropdownModule,
       ],
       providers: [
         { provide: OrganizationService, useClass: MockOrganizationService },
         { provide: CountryService, useClass: MockCountryService },
         { provide: BankService, useClass: MockBankService },
         { provide: MandatoryFieldsService, useClass: MockMandatoryService },
-        { provide: GlobalMessagingService, useClass: MockGlobalMessageService }
-      ]
+        { provide: StaffService, useClass: MockStaffService },
+        { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
+      ],
     });
     fixture = TestBed.createComponent(OrganizationComponent);
     component = fixture.componentInstance;
@@ -226,6 +294,7 @@ describe('OrganizationComponent', () => {
     bankServiceStub = TestBed.inject(BankService);
     mandatoryFieldsServiceStub = TestBed.inject(MandatoryFieldsService);
     messageServiceStub = TestBed.inject(GlobalMessagingService);
+    staffServiceStub = TestBed.inject(StaffService);
     fixture.detectChanges();
   });
 
