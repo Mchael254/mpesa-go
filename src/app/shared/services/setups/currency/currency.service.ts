@@ -87,12 +87,34 @@ export class CurrencyService {
     );
   }
 
-  getCurrenciesRate(currencyId: number): Observable<CurrencyRateDTO[]> {
+  // getCurrenciesRate(baseCurrencyId: number): Observable<CurrencyRateDTO[]> {
+  //   const header = new HttpHeaders({
+  //     'Content-Type': 'application/json',
+  //     'Access-Control-Allow-Origin': '*',
+  //   });
+  //   const params = new HttpParams().set('baseCurrencyId', `${baseCurrencyId}`);
+
+  //   return this.http.get<CurrencyRateDTO[]>(
+  //     `/${this.baseUrl}/setups/currency-rates`,
+  //     { headers: header, params: params }
+  //   );
+  // }
+
+  getCurrenciesRate(
+    baseCurrencyId: number,
+    organizationId?: number
+  ): Observable<CurrencyRateDTO[]> {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     });
-    const params = new HttpParams().set('currencyId', `${currencyId}`);
+
+    let params = new HttpParams().set('baseCurrencyId', `${baseCurrencyId}`);
+
+    // Add organizationId to params if provided
+    if (organizationId !== undefined && organizationId !== null) {
+      params = params.set('organizationId', `${organizationId}`);
+    }
 
     return this.http.get<CurrencyRateDTO[]>(
       `/${this.baseUrl}/setups/currency-rates`,

@@ -14,7 +14,7 @@ import { UtilService } from '../../../../shared/services/util/util.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import {
   AdminstrativeUnitDTO,
-  CountryDTO,
+  CountryDto,
   CountryHolidayDTO,
   PostCountryDTO,
   PostCountryHolidayDTO,
@@ -77,7 +77,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  public countriesData: CountryDTO[] = [];
+  public countriesData: CountryDto[] = [];
   public stateData: StateDto[] = [];
   public districtData: SubCountyDTO[] = [];
   public townData: TownDto[] = [];
@@ -95,7 +95,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
   public selectedDistrict: SubCountyDTO;
   public selectedTown: TownDto;
   public selectedHoliday: CountryHolidayDTO;
-  public countrySelected: CountryDTO;
+  public countrySelected: CountryDto;
   public selectedCountry: number;
   public selectedCurrency = '';
   public filteredState: any;
@@ -344,22 +344,22 @@ export class CountryComponent implements OnInit, AfterViewInit {
     );
     if (this.countrySelected) {
       this.createCountryForm.patchValue({
-        name: this.countrySelected.name,
-        shortDescription: this.countrySelected.short_description,
-        baseCurrency: this.countrySelected.currency.id,
-        nationality: this.countrySelected.nationality,
-        zipCode: this.countrySelected.zipCode,
-        administrativeUnit: this.countrySelected.adminRegType,
-        subadminstrativeUnit: this.countrySelected.subAdministrativeUnit,
-        unSactionWEF: this.countrySelected.unSanctionWefDate,
-        unSactionWET: this.countrySelected.unSanctionWetDate,
-        riskLevelStatusWEF: this.countrySelected.highRiskWefDate,
-        riskLevelStatusWET: this.countrySelected.highRiskWetDate,
-        drugTrafficWEF: this.countrySelected.drugWefDate,
-        drugTrafficWET: this.countrySelected.drugWetDate,
+        name: this.countrySelected?.name,
+        shortDescription: this.countrySelected?.short_description,
+        baseCurrency: this.countrySelected?.currency.id,
+        nationality: this.countrySelected?.nationality,
+        zipCode: this.countrySelected?.zipCode,
+        administrativeUnit: this.countrySelected?.adminRegType,
+        subadminstrativeUnit: this.countrySelected?.subAdministrativeUnit,
+        unSactionWEF: this.countrySelected?.unSanctionWefDate,
+        unSactionWET: this.countrySelected?.unSanctionWetDate,
+        riskLevelStatusWEF: this.countrySelected?.highRiskWefDate,
+        riskLevelStatusWET: this.countrySelected?.highRiskWetDate,
+        drugTrafficWEF: this.countrySelected?.drugWefDate,
+        drugTrafficWET: this.countrySelected?.drugWetDate,
       });
-      this.fetchMainCityStates(this.countrySelected.id);
-      this.fetchCountryHoliday(this.countrySelected.id);
+      this.fetchMainCityStates(this.countrySelected?.id);
+      this.fetchCountryHoliday(this.countrySelected?.id);
       this.updateCardTitles();
     }
   }
@@ -649,24 +649,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
           this.fetchCountries();
         });
     }
-
-    // this.createCountryForm.reset();
   }
-
-  // deleteCountry(countryId: number | null): void {
-  //   if (countryId !== null) {
-  //     this.countryService.deleteCountry(countryId).subscribe(() => {
-  //       this.globalMessagingService.displaySuccessMessage(
-  //         'success',
-  //         'Successfully Deleted a Country'
-  //       );
-  //       this.fetchCountries();
-  //       this.createCountryForm.reset();
-  //     });
-  //   } else {
-  //     log.info('No Country is selected');
-  //   }
-  // }
 
   deleteCountry() {
     this.countryConfirmationModal.show();
@@ -684,7 +667,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         this.createCountryForm.reset();
       });
     } else {
-      log.info('No Country is selected');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Country is selected'
+      );
     }
   }
 
@@ -877,7 +863,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         name: this.selectedState.name,
       });
     } else {
-      log.info('No State is selected!.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No State is selected!.'
+      );
     }
   }
 
@@ -885,19 +874,48 @@ export class CountryComponent implements OnInit, AfterViewInit {
     this.stateConfirmationModal.show();
   }
 
+  // confirmStateDelete() {
+  //   if (this.selectedState) {
+  //     const stateId = this.selectedState.id;
+  //     this.countryService.deleteState(stateId).subscribe((data: any) => {
+  //       this.globalMessagingService.displaySuccessMessage(
+  //         'success',
+  //         'Successfully deleted a state'
+  //       );
+  //       this.fetchMainCityStates(this.countrySelected.id);
+  //       this.selectedState = null;
+  //     });
+  //   } else {
+  //     this.globalMessagingService.displayErrorMessage(
+  //       'Error',
+  //       'No state is selected.'
+  //     );
+  //   }
+  // }
+
   confirmStateDelete() {
     if (this.selectedState) {
       const stateId = this.selectedState.id;
-      this.countryService.deleteState(stateId).subscribe((data) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'success',
-          'Successfully deleted a state'
-        );
-        this.fetchDistricts(this.selectedStateId);
-        this.selectedState = null;
-      });
+      this.countryService.deleteState(stateId).subscribe(
+        (response: any) => {
+          const responseText: string = response as string;
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            responseText
+          );
+          this.fetchMainCityStates(this.countrySelected.id);
+          this.selectedState = null;
+        },
+        (error) => {
+          console.error('Error deleting state:', error);
+          // Handle error here
+        }
+      );
     } else {
-      log.info('No state is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No state is selected.'
+      );
     }
   }
 
@@ -909,7 +927,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         name: this.selectedDistrict.name,
       });
     } else {
-      log.info('No Sub-County is selected!.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Sub-County is selected!.'
+      );
     }
   }
 
@@ -929,7 +950,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         this.selectedDistrict = null;
       });
     } else {
-      log.info('No sub-county is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No sub-county is selected.'
+      );
     }
   }
 
@@ -943,7 +967,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         postalCode: '',
       });
     } else {
-      log.info('No Town is selected!.');
+      this.globalMessagingService.displayErrorMessage(
+        'Errror',
+        'No Town is selected!.'
+      );
     }
   }
 
@@ -963,7 +990,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         this.selectedTown = null;
       });
     } else {
-      log.error('Error', 'No Town is Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Town is Selected!'
+      );
     }
   }
 
@@ -977,7 +1007,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         status: this.selectedHoliday.status,
       });
     } else {
-      log.error('Error', 'No Holiday Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Holiday Selected!'
+      );
     }
   }
 
@@ -997,7 +1030,10 @@ export class CountryComponent implements OnInit, AfterViewInit {
         this.selectedHoliday = null;
       });
     } else {
-      log.error('Error', 'No Holiday Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Holiday Selected!'
+      );
     }
   }
 }
