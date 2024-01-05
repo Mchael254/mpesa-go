@@ -124,10 +124,15 @@ export class ColorSchemeComponent implements OnInit {
 
     this.colorSchemeService.createColorScheme(newColorScheme)
     .pipe(take(1))
-    .subscribe(colorScheme => {
-      // log.info(`color scheme created `, colorScheme);
-      this.globalMessagingService.displaySuccessMessage('success', 'Color Scheme successfully created');
-      this.fetchAllColorSchemes();
+    .subscribe({
+      next: () => {
+        // log.info(`color scheme created `, colorScheme);
+        this.globalMessagingService.displaySuccessMessage('success', 'Color Scheme successfully created');
+        this.fetchAllColorSchemes();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('error', err.message);
+      }
     })
   }
 

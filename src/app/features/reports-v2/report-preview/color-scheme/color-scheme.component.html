@@ -74,13 +74,6 @@
           <div class="row">
             <div class="col-md-12 text-center">
               <span *ngFor="let field of fields" style="float: left; margin-right: 5px;">
-                <!-- <input 
-                [formControlName]="field"
-                [style.background]="field"
-                type="color" 
-                class="form-control form-control-color" 
-                value="#ffffff"
-                > -->
                 <p-colorPicker [formControlName]="field" format="hex"></p-colorPicker>
               </span>
               <span style="float: left; padding: 5px">

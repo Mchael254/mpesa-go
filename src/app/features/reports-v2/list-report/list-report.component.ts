@@ -16,6 +16,7 @@ import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
 import {RenameDTO} from "../../../shared/data/reports/chart-reports";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
+import { take } from 'rxjs';
 
 const log = new Logger('ListReportComponent');
 
@@ -192,15 +193,21 @@ export class ListReportComponent implements OnInit {
     }
 
     this.reportService.deleteReportFromDashboard(this.selectedDashboard, this.selectedReportId)
-      .subscribe(res => {
-        log.info('on delete report', res);
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          log.info('on delete report', res);
 
-        this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully removed from dashboard' );
+          this.globalMessagingService.displaySuccessMessage('Success', 'Report successfully removed from dashboard' );
 
-        setTimeout(() => {
-          this.getDashboardById(this.selectedDashboard);
-          this.cdr.detectChanges();
-        }, 3000);
+          setTimeout(() => {
+            this.getDashboardById(this.selectedDashboard);
+            this.cdr.detectChanges();
+          }, 3000);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('error', err.message);
+        }
       });
   }
 
@@ -212,8 +219,9 @@ export class ListReportComponent implements OnInit {
   getDashboardById(id:number) {
     this.dashboard= [] = [];
     this.reportService.getDashboardsById(id)
-      .subscribe(reportData => {
-
+    .pipe(take(1))
+    .subscribe({
+      next: (reportData) => {
         let reportArr = [];
         reportArr.push(reportData);
         this.dashboard = reportArr;
@@ -239,7 +247,11 @@ export class ListReportComponent implements OnInit {
           }
         }
         this.spinner.hide();
-      })
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('error', err.message);
+      }
+    });
   }
 
   /**

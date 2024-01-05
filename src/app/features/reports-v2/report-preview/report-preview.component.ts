@@ -212,8 +212,8 @@ export class ReportPreviewComponent implements OnInit{
         this.fetchDashboards();
         
       },
-      error: (e) => {
-
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('error', err.message);
       }
     })
   }
@@ -235,8 +235,8 @@ export class ReportPreviewComponent implements OnInit{
           // log.info(`dashboards >>>`, dashboards);
           this.dashboards = dashboards;
         }),
-        error: (e) => {
-
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('error', err.message);
         }
       })
   };
@@ -502,7 +502,6 @@ export class ReportPreviewComponent implements OnInit{
       const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
       const reportData = resultSet.series().map(s => s.series.map(r => r.value));
 
-
       const datasets = this.reportService.generateReportDatasets(reportLabels, reportData, this.measures);
       this.chartData = {
         labels: chartLabels,
@@ -514,6 +513,9 @@ export class ReportPreviewComponent implements OnInit{
       this.tableDetails = this.reportService.prepareTableData(
         reportLabels, reportData, this.dimensions, this.measures, this.criteria
       );
+    },
+    (err) => {
+      this.globalMessagingService.displayErrorMessage('Error', err);
     });
   }
 
