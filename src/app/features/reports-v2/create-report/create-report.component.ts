@@ -13,7 +13,6 @@ import {SessionStorageService} from "../../../shared/services/session-storage/se
 import {ReportServiceV2} from "../services/report.service";
 import { ReportV2 } from 'src/app/shared/data/reports/report';
 import { AuthService } from 'src/app/shared/services/auth.service';
-import { Chart } from 'chart.js';
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -138,19 +137,22 @@ export class CreateReportComponent implements OnInit {
     this.searchForm.reset();
     this.reportService.getCategoriesBySubjectAreaId(s.id)
       .pipe(take(1))
-      .subscribe(res => {
-        this.subjectAreaCategories = res;
-        log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
+      .subscribe({
+        next: (res) => {
+          this.subjectAreaCategories = res;
+          log.info(`subjectAreaCategories>>>`, this.subjectAreaCategories);
 
-        const metrics = res.filter((item) => item.name === 'Metrics');
-        // log.info('metrics >>>>',metrics[0]);
-        this.metrics = metrics[0];
+          const metrics = res.filter((item) => item.name === 'Metrics');
+          // log.info('metrics >>>>',metrics[0]);
+          this.metrics = metrics[0];
 
-        const dimensions = res.filter((item) => item.name !== 'Metrics');
-        // log.info('dimensions >>>', dimensions);
-        this.dimensions = dimensions;
-
-        // this.cdr.detectChanges();
+          const dimensions = res.filter((item) => item.name !== 'Metrics');
+          // log.info('dimensions >>>', dimensions);
+          this.dimensions = dimensions;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
       });
   }
 
@@ -162,15 +164,25 @@ export class CreateReportComponent implements OnInit {
     // Handle the change in reportName and populate reportNameRec accordingly
     this.reportNameRec = event.target.value;
   }
+
+
   /**
    * The function "getSubjectAreas" retrieves subject areas from a report service and logs them.
    */
-  getSubjectAreas(): void {
+  getSubjectAreas(): void {    
     this.reportService.getSubjectAreas()
-      .subscribe((res) => {
+    .pipe(take(1))
+    .subscribe({
+      next: (res) => {
         this.subjectAreas = res;
-      });
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
+    })
   }
+
+
   /**
    * The function `selectCriteria` takes in a category, subcategory, and query, and adds them to a criteria array if they
    * do not already exist.
@@ -361,20 +373,10 @@ export class CreateReportComponent implements OnInit {
           this.reportId = res.id;
           this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
             { queryParams: { isEditing: false }});
-
-          // if ((report.dashboardId)?.toString() === '' || report.dashboardId === undefined) {
-          //   this.router.navigate([`/home/reportsv2/report-management`])
-          // } else {
-          //   this.router.navigate([`/home/reportsv2/list-report`],
-          //     { queryParams: { dashboardId: report.dashboardId }})
-          // }
-
           log.info(`created report >>> `, res);
-
         },
         error: (e) => {
-          this.globalMessagingService
-          .displayErrorMessage('error', `${e?.error?.status}: ${e?.error?.developerMessage}`);
+          this.globalMessagingService.displayErrorMessage('error', `${e.status}: ${e.message}`);
         }
       });
   }
