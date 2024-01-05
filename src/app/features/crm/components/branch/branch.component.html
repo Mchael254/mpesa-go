@@ -10,28 +10,6 @@
         <span class="float-start mt-3">Organization Definition</span>
       </div>
       <div class="card-body">
-        <!-- <div class="row">
-          <div class="col-sm-4">
-            <label for="organization" class="form-label">Select an Organization</label>
-            <p-dropdown 
-              [options]="organizationsData" 
-              [(ngModel)]="selectedOrganization" 
-              (onChange)="onOrganizationChange()"
-              optionLabel="name" optionValue="id" 
-              id="organization" [filter]="true" filterBy="name" [showClear]="true"
-              [style]="{ width: '100%', height: '40%'}" placeholder="Select organization">
-            </p-dropdown>
-          </div>
-          <div class="col-sm-4">
-            <label for="region" class="form-label">Select a Region</label>
-            <p-dropdown 
-              [options]="regionData" [(ngModel)]="selectedRegion" 
-              (onChange)="onRegionChange()" optionLabel="name"
-              optionValue="id" id="region" [filter]="true" filterBy="name" [showClear]="true"
-              [style]="{ width: '100%', height: '40%'}" placeholder="Select Region">
-            </p-dropdown>
-          </div>
-        </div> -->
         <div class="row">
           <div class="col-sm-4">
             <label for="organization" class="form-label"
@@ -39,7 +17,7 @@
             >
             <p-dropdown
               [options]="organizationsData"
-              [(ngModel)]="selectedOrganization"
+              [(ngModel)]="selectedOrganizationId"
               (onChange)="onOrganizationChange()"
               optionLabel="name"
               optionValue="id"
@@ -69,79 +47,6 @@
             >
             </p-dropdown>
           </div>
-          <!-- <div class="col-sm-4">
-            <div class="form-group mb-4">
-              <label for="organization" class="form-label"
-                >Select an Organization</label
-              >
-              <select
-                id="organization"
-                class="form-select mb-1"
-                (change)="onOrganizationChange($event)"
-                [ngClass]="{
-                  'is-invalid':
-                    f['organization']?.invalid &&
-                    (f['organization']?.dirty || f['organization']?.touched)
-                }"
-              >
-                <option value="" selected>Select organization</option>
-                <option
-                  *ngFor="let organization of organizationsData"
-                  [value]="organization.id"
-                >
-                  {{ organization.name }}
-                </option>
-              </select>
-              <div
-                *ngIf="
-                  f['organization']?.invalid &&
-                  (f['organization']?.dirty || f['organization']?.touched)
-                "
-                class="form-text text-danger"
-                [ngClass]="{
-                  'is-invalid': ['submitted'] && f['organization']?.errors
-                }"
-              >
-                <div *ngIf="f['organization']?.errors['required']">
-                  Organization is required
-                </div>
-              </div>
-            </div>
-          </div> -->
-          <!-- <div class="col-sm-4">
-            <div class="form-group mb-4">
-              <label for="region" class="form-label">Select a Region</label>
-              <select
-                id="region"
-                class="form-select mb-1"
-                (change)="onRegionChange($event)"
-                [ngClass]="{
-                  'is-invalid':
-                    f['region']?.invalid &&
-                    (f['region']?.dirty || f['region']?.touched)
-                }"
-              >
-                <option value="" selected>Select Region</option>
-                <option *ngFor="let region of regionData" [value]="region.code">
-                  {{ region.name }}
-                </option>
-              </select>
-              <div
-                *ngIf="
-                  f['region']?.invalid &&
-                  (f['region']?.dirty || f['region']?.touched)
-                "
-                class="form-text text-danger"
-                [ngClass]="{
-                  'is-invalid': ['submitted'] && f['region']?.errors
-                }"
-              >
-                <div *ngIf="f['region']?.errors['required']">
-                  Region is required
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>

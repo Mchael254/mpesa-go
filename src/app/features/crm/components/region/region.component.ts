@@ -57,6 +57,7 @@ export class RegionComponent implements OnInit {
   public selectedRegion: OrganizationRegionDTO;
   public selectedRegionBank: BankRegionDTO;
   public selectedOrganization: number;
+  public selectedOrganizationId: number | null;
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -88,6 +89,19 @@ export class RegionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the selectedOrganizationId$ observable
+    this.organizationService.selectedOrganizationId$.subscribe(
+      (selectedOrganizationId) => {
+        // Update the selected organization ID in your component
+        this.selectedOrganizationId = selectedOrganizationId;
+        // Check if the selected organization ID is already set
+        if (this.selectedOrganizationId !== null) {
+          // Call the fetchOrganizationRegion and fetchManager method
+          this.fetchOrganizationRegion(this.selectedOrganizationId);
+          this.fetchManager(this.selectedOrganizationId);
+        }
+      }
+    );
     this.RegionCreateForm();
     this.RegionBankForm();
     this.fetchOrganization();
@@ -158,13 +172,32 @@ export class RegionComponent implements OnInit {
     this.selectedRegion = null;
     this.selectedRegionBank = null;
     this.bankRegionData = null;
-    const selectedOrganizationId = this.selectedOrganization;
+    const selectedOrganizationId = this.selectedOrganizationId;
     this.selectedOrg = this.organizationsData.find(
       (organization) => organization.id === selectedOrganizationId
     );
-    log.info(`Selected organization details`, this.selectedOrg);
     this.fetchOrganizationRegion(this.selectedOrg.id);
     this.fetchManager(this.selectedOrg.id);
+    // Set the selected organization ID in the service
+    this.organizationService.setSelectedOrganizationId(
+      this.selectedOrganizationId
+    );
+
+    // // Fetch the regions based on the selected organization
+    // this.organizationService
+    //   .getOrganizationRegion(selectedOrganizationId)
+    //   .subscribe(
+    //     (regions) => {
+    //       // Set the default region based on your logic (here I'm assuming the first region)
+    //       if (regions && regions.length > 0) {
+    //         this.organizationService.setSelectedRegion(regions[0].code);
+    //       }
+    //     },
+    //     (error) => {
+    //       // Handle error
+    //       console.error('Error fetching regions:', error);
+    //     }
+    //   );
   }
 
   fetchOrganizationRegion(organizationId: number) {
@@ -209,6 +242,9 @@ export class RegionComponent implements OnInit {
   onRegionRowClick(region: OrganizationRegionDTO) {
     this.selectedRegion = region;
     this.fetchBankRegions(this.selectedRegion.code);
+
+    // Set the selected region in the service
+    this.organizationService.setSelectedRegion(this.selectedRegion.code);
   }
 
   onRegionBankRowClick(bank: BankRegionDTO) {
@@ -363,7 +399,10 @@ export class RegionComponent implements OnInit {
         commissionEarned: this.selectedRegion.overrideCommissionEarned,
       });
     } else {
-      log.error('Error', 'No Region is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region is selected.'
+      );
     }
   }
 
@@ -385,7 +424,10 @@ export class RegionComponent implements OnInit {
           this.selectedRegion = null;
         });
     } else {
-      log.error('Error', 'No Region is Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region is Selected!'
+      );
     }
   }
 
@@ -400,7 +442,10 @@ export class RegionComponent implements OnInit {
         manager: this.selectedRegionBank.managerId,
       });
     } else {
-      log.error('Error', 'No Region Bank is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region Bank is selected.'
+      );
     }
   }
 
@@ -420,7 +465,10 @@ export class RegionComponent implements OnInit {
         this.selectedRegionBank = null;
       });
     } else {
-      log.error('Error', 'No Region Bank is Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region Bank is Selected!'
+      );
     }
   }
 

@@ -17,7 +17,7 @@
             >
             <p-dropdown
               [options]="organizationsData"
-              [(ngModel)]="selectedOrganization"
+              [(ngModel)]="selectedOrganizationId"
               (onChange)="onOrganizationChange()"
               optionLabel="name"
               optionValue="id"
@@ -30,45 +30,6 @@
             >
             </p-dropdown>
           </div>
-          <!-- <div class="col-sm-4">
-            <div class="form-group mb-4">
-              <label for="organization" class="form-label"
-                >Select an Organization</label
-              >
-              <select
-                id="organization"
-                class="form-select mb-1"
-                (change)="onOrganizationChange($event)"
-                [ngClass]="{
-                  'is-invalid':
-                    f['organization']?.invalid &&
-                    (f['organization']?.dirty || f['organization']?.touched)
-                }"
-              >
-                <option value="" selected>Select organization</option>
-                <option
-                  *ngFor="let organization of organizationsData"
-                  [value]="organization.id"
-                >
-                  {{ organization.name }}
-                </option>
-              </select>
-              <div
-                *ngIf="
-                  f['organization']?.invalid &&
-                  (f['organization']?.dirty || f['organization']?.touched)
-                "
-                class="form-text text-danger"
-                [ngClass]="{
-                  'is-invalid': ['submitted'] && f['organization']?.errors
-                }"
-              >
-                <div *ngIf="f['organization']?.errors['required']">
-                  Organization is required
-                </div>
-              </div>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
@@ -377,7 +338,7 @@
 <app-reusable-input
   [modalId]="'divisionConfirmationModal'"
   [title]="'Delete Confirmation'"
-  [message]="'Are you sure you want to delete this division?'"
+  [message]="'Are you sure you want to deactivate this division?'"
   (confirmed)="confirmDivisionDelete()"
   #divisionConfirmationModal
 ></app-reusable-input>

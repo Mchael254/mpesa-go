@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { AppConfigService } from '../../../core/config/app-config-service';
 import {
@@ -20,19 +20,26 @@ import {
   providedIn: 'root',
 })
 export class OrganizationService {
+  private selectedOrganizationIdSource = new BehaviorSubject<number | null>(
+    null
+  );
+  selectedOrganizationId$ = this.selectedOrganizationIdSource.asObservable();
+
+  // Define selectedRegion$ and its associated BehaviorSubject
+  private selectedRegionSource = new BehaviorSubject<number | null>(null);
+  selectedRegion$ = this.selectedRegionSource.asObservable();
+
   baseUrl = this.appConfig.config.contextPath.setup_services;
   accountsBaseUrl = this.appConfig.config.contextPath.accounts_services;
 
-  private selectedOrganization: OrganizationDTO;
-
   constructor(private http: HttpClient, private appConfig: AppConfigService) {}
 
-  setSelectedOrganization(organization: any) {
-    this.selectedOrganization = organization;
+  setSelectedOrganizationId(organizationId: number) {
+    this.selectedOrganizationIdSource.next(organizationId);
   }
 
-  getSelectedOrganization() {
-    return this.selectedOrganization;
+  setSelectedRegion(selectedRegion: number) {
+    this.selectedRegionSource.next(selectedRegion);
   }
 
   getOptionValues(): Observable<YesNoDTO[]> {

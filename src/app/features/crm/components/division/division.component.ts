@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  Input,
   OnInit,
   Renderer2,
   ViewChild,
@@ -35,6 +36,7 @@ export class DivisionComponent implements OnInit {
   @ViewChild('confirmationModal') confirmationModal: ElementRef;
   @ViewChild('divisionConfirmationModal')
   divisionConfirmationModal!: ReusableInputComponent;
+  // @Input() selectOrganization: OrganizationDTO;
 
   public createDivisionForm: FormGroup;
   showModal = false;
@@ -46,7 +48,9 @@ export class DivisionComponent implements OnInit {
   public divisionBranchData: any;
   public selectedRadioValue: string | null = null;
   public selectedOrg: OrganizationDTO;
+  public selectOrganization: OrganizationDTO;
   public selectedOrganization: number;
+  public selectedOrganizationId: number | null;
   public selectedDivision: OrganizationDivisionDTO;
   public selectedDefaultStatus: string = 'No';
   public statusesData: StatusDTO[];
@@ -77,6 +81,18 @@ export class DivisionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the selectedOrganizationId$ observable
+    this.organizationService.selectedOrganizationId$.subscribe(
+      (selectedOrganizationId) => {
+        // Update the selected organization ID in your component
+        this.selectedOrganizationId = selectedOrganizationId;
+        // Check if the selected organization ID is already set
+        if (this.selectedOrganizationId !== null) {
+          // Call the fetchOrganizationDivision method
+          this.fetchOrganizationDivision(this.selectedOrganizationId);
+        }
+      }
+    );
     this.DivisionCreateForm();
     this.fetchOrganization();
     this.fetchStatuses();
@@ -121,11 +137,15 @@ export class DivisionComponent implements OnInit {
   onOrganizationChange() {
     this.selectedOrg = null;
     this.selectedDivision = null;
-    const selectedOrganizationId = this.selectedOrganization;
+    const selectedOrganizationId = this.selectedOrganizationId;
     this.selectedOrg = this.organizationsData.find(
       (organization) => organization.id === selectedOrganizationId
     );
     this.fetchOrganizationDivision(this.selectedOrg.id);
+    // Set the selected organization ID in the service
+    this.organizationService.setSelectedOrganizationId(
+      this.selectedOrganizationId
+    );
   }
 
   fetchOrganizationDivision(organizationId: number) {
@@ -268,7 +288,10 @@ export class DivisionComponent implements OnInit {
         default: this.selectedDivision.is_default_division,
       });
     } else {
-      log.error('Error', 'No Division is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Division is selected.'
+      );
     }
   }
 
@@ -284,13 +307,16 @@ export class DivisionComponent implements OnInit {
         .subscribe((data) => {
           this.globalMessagingService.displaySuccessMessage(
             'success',
-            'Successfully deleted a Division'
+            'Successfully deactivated a Division'
           );
           this.fetchOrganizationDivision(this.selectedOrg.id);
           this.selectedDivision = null;
         });
     } else {
-      log.error('Error', 'No Division is Selected!');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Division is Selected!'
+      );
     }
   }
 
