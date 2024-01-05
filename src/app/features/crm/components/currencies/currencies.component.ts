@@ -142,9 +142,20 @@ export class CurrenciesComponent implements OnInit {
       });
   }
 
-  fetchCurrencyRate(currencyId: number) {
+  // fetchCurrencyRate(currencyId: number) {
+  //   this.currencyService
+  //     .getCurrenciesRate(currencyId)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe((data) => {
+  //       this.currencyRatesData = data;
+  //       log.info('Currencies Rate Data', this.currencyRatesData);
+  //     });
+  // }
+
+  fetchCurrencyRate(baseCurrencyId: number, organizationId?: number) {
+    // Assuming currencyId is the baseCurrencyId, modify accordingly if needed
     this.currencyService
-      .getCurrenciesRate(currencyId)
+      .getCurrenciesRate(baseCurrencyId, organizationId)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.currencyRatesData = data;
@@ -300,6 +311,11 @@ export class CurrenciesComponent implements OnInit {
         round: this.selectedCurrency.roundingOff,
         symbol: this.selectedCurrency.symbol,
       });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Currency is Selected'
+      );
     }
   }
 
@@ -319,7 +335,10 @@ export class CurrenciesComponent implements OnInit {
         this.fetchCurrencies();
       });
     } else {
-      log.info('No Currency is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Currency is selected.'
+      );
     }
   }
 
@@ -406,7 +425,10 @@ export class CurrenciesComponent implements OnInit {
           this.selectedCurrencyRate = null;
         });
     } else {
-      log.info('No Currency Rate is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Currency Rate is selected.'
+      );
     }
   }
 
@@ -471,6 +493,11 @@ export class CurrenciesComponent implements OnInit {
         name: this.selectedCurrencyDenomination.name,
         wef: this.selectedCurrencyDenomination.withEffectiveFrom,
       });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Currency Denomination is Selected'
+      );
     }
   }
 
@@ -493,7 +520,10 @@ export class CurrenciesComponent implements OnInit {
           this.selectedCurrencyDenomination = null;
         });
     } else {
-      log.info('No Currency Denomination is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Currency Denomination is selected.'
+      );
     }
   }
 }

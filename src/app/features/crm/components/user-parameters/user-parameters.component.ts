@@ -142,7 +142,10 @@ export class UserParametersComponent implements OnInit {
         description: this.selectedParameter.description,
       });
     } else {
-      log.error('Error', 'No Region is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Userparameter is selected.'
+      );
     }
   }
 

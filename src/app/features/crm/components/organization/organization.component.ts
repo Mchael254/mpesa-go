@@ -68,6 +68,7 @@ export class OrganizationComponent implements OnInit {
   public countrySelected: CountryDto;
   public stateSelected: StateDto;
   public bankSelected: BankDTO;
+  public selectOrganization: OrganizationDTO;
   public selectedOrganization: number;
   public selectedCountry: number;
   public selectedState: number;
@@ -230,7 +231,6 @@ export class OrganizationComponent implements OnInit {
   }
 
   onOrganizationChange() {
-    this.selectedOrg = null;
     const selectedOrganizationId = this.selectedOrganization;
     this.selectedOrg = this.organizationsData.find(
       (organization) => organization.id === selectedOrganizationId
@@ -240,58 +240,64 @@ export class OrganizationComponent implements OnInit {
       this.isOrganizationSelected = true;
       this.selectedOrganizationId = this.selectedOrg.id;
       this.createOrganizationForm.patchValue({
-        shortDescription: this.selectedOrg.short_description,
-        name: this.selectedOrg.name,
-        country: this.selectedOrg.country.id,
-        stateName: this.selectedOrg.state.id,
-        physicalAddress: this.selectedOrg.physicalAddress,
-        postalAddress: this.selectedOrg.postalAddress,
-        postalCode: this.selectedOrg.postalCode,
-        town: this.selectedOrg.town.id,
-        baseCurrency: this.selectedOrg.currency_id,
-        emailAddress: this.selectedOrg.emailAddress,
-        webLink: this.selectedOrg.webAddress,
-        pinNumber: this.selectedOrg.pin_number,
-        manager: this.selectedOrg.manager,
-        organizationType: this.selectedOrg.organization_type,
-        motto: this.selectedOrg.motto,
+        shortDescription: this.selectedOrg?.short_description,
+        name: this.selectedOrg?.name,
+        country: this.selectedOrg?.country?.id,
+        stateName: this.selectedOrg?.state?.id,
+        physicalAddress: this.selectedOrg?.physicalAddress,
+        postalAddress: this.selectedOrg?.postalAddress,
+        postalCode: this.selectedOrg?.postalCode,
+        town: this.selectedOrg?.town?.id,
+        baseCurrency: this.selectedOrg?.currency_id,
+        emailAddress: this.selectedOrg?.emailAddress,
+        webLink: this.selectedOrg?.webAddress,
+        pinNumber: this.selectedOrg?.pin_number,
+        manager: this.selectedOrg?.manager,
+        organizationType: this.selectedOrg?.organization_type,
+        motto: this.selectedOrg?.motto,
         // logo: this.selectedOrg.organizationLogo,
         // groupLogo: this.selectedOrg.organizationGroupLogo,
-        accountName: this.selectedOrg.bank_account_name,
-        accountNumber: this.selectedOrg.bank_account_number,
-        swiftCode: this.selectedOrg.swiftCode,
-        bankName: this.selectedOrg.bankId,
-        bankBranch: this.selectedOrg.bankBranchId,
-        paybill: this.selectedOrg.paybill,
-        customerCareName: this.selectedOrg.customer_care_name,
-        customerCareEmail: this.selectedOrg.customer_care_email,
+        accountName: this.selectedOrg?.bank_account_name,
+        accountNumber: this.selectedOrg?.bank_account_number,
+        swiftCode: this.selectedOrg?.swiftCode,
+        bankName: this.selectedOrg?.bankId,
+        bankBranch: this.selectedOrg?.bankBranchId,
+        paybill: this.selectedOrg?.paybill,
+        customerCareName: this.selectedOrg?.customer_care_name,
+        customerCareEmail: this.selectedOrg?.customer_care_email,
         customerCarePriNumber:
-          this.selectedOrg.customer_care_primary_phone_number,
+          this.selectedOrg?.customer_care_primary_phone_number,
         customerCareSecNumber:
-          this.selectedOrg.customer_care_secondary_phone_number,
+          this.selectedOrg?.customer_care_secondary_phone_number,
       });
-      this.url = this.selectedOrg.organizationLogo
-        ? 'data:image/jpeg;base64,' + this.selectedOrg.organizationLogo
+      this.url = this.selectedOrg?.organizationLogo
+        ? 'data:image/jpeg;base64,' + this.selectedOrg?.organizationLogo
         : '';
-      this.urlGrp = this.selectedOrg.organizationGroupLogo
-        ? 'data:image/jpeg;base64,' + this.selectedOrg.organizationGroupLogo
+      this.urlGrp = this.selectedOrg?.organizationGroupLogo
+        ? 'data:image/jpeg;base64,' + this.selectedOrg?.organizationGroupLogo
         : '';
 
-      this.fetchMainCityStates(this.selectedOrg.country.id);
-      this.fetchTowns(this.selectedOrg.state.id);
-      this.getBanks(this.selectedOrg.country.id);
-      this.getBankBranches(this.selectedOrg.bankId);
+      this.fetchMainCityStates(this.selectedOrg?.country?.id);
+      this.fetchTowns(this.selectedOrg?.state?.id);
+      this.getBanks(this.selectedOrg?.country?.id);
+      this.getBankBranches(this.selectedOrg?.bankId);
 
       this.patchPhoneNumber(
-        this.selectedOrg.primarymobileNumber,
+        this.selectedOrg?.primarymobileNumber,
         'countryCode',
         'primaryTelephone'
       );
       this.patchPhoneNumber(
-        this.selectedOrg.primaryTelephoneNo,
+        this.selectedOrg?.primaryTelephoneNo,
         'countryCode2',
         'secondaryTelephone'
       );
+
+      // Set the selected organization ID in the service
+      this.organizationService.setSelectedOrganizationId(
+        this.selectedOrganizationId
+      );
+      log.info('Set organization', this.selectedOrganizationId);
     } else {
       this.isOrganizationSelected = false;
     }
@@ -435,8 +441,6 @@ export class OrganizationComponent implements OnInit {
     this.createOrganizationForm.patchValue({
       bankBranch: null,
     });
-    // const selectBank = (event.target as HTMLSelectElement).value;
-    // this.selectedBank = parseInt(selectBank, 10);
 
     const selectedBankId = this.selectedBank;
     this.bankSelected = this.banksData.find(
@@ -511,6 +515,7 @@ export class OrganizationComponent implements OnInit {
     this.selectedOrg = null;
     this.url = '';
     this.urlGrp = '';
+    this.isOrganizationSelected = false;
   }
 
   onSave() {
@@ -651,20 +656,13 @@ export class OrganizationComponent implements OnInit {
       this.organizationService
         .updateOrganization(organizationId, saveOrganization)
         .subscribe((data) => {
-          // data.id = saveOrganization.id;
-          // this.savedOrganization = data;
-          // if (this.selectedFile) {
-          //   this.uploadLogo(this.savedOrganization.id);
-          // } else {
           this.globalMessagingService.displaySuccessMessage(
             'Success',
             'Successfully Updated the Organization'
           );
           this.fetchOrganization();
-          // }
         });
     }
-    // this.createOrganizationForm.reset();
   }
 
   deleteOrganization(): void {
@@ -684,26 +682,14 @@ export class OrganizationComponent implements OnInit {
           this.fetchOrganization();
           this.createOrganizationForm.reset();
           this.selectedOrg = null;
+          this.isOrganizationSelected = false;
         });
     } else {
-      log.info('No organization is selected.');
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No organization is selected.'
+      );
     }
-  }
-
-  uploadLogo(organizationId: number) {
-    this.organizationService
-      .uploadLogo(organizationId, this.selectedFile)
-      .subscribe((res) => {
-        log.info(`Selected Images`, res);
-        this.savedOrganization.organizationLogo = res.file;
-        this.savedOrganization.organizationGroupLogo = res.file;
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Successfully Created an Organization'
-        );
-        this.fetchOrganization();
-        this.createOrganizationForm.reset();
-      });
   }
 
   onReset() {
