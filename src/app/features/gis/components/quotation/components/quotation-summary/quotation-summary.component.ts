@@ -10,6 +10,7 @@ import { IntermediaryService } from 'src/app/features/entities/services/intermed
 import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from 'src/app/shared/services/auth.service';
 const log = new Logger('QuotationSummaryComponent');
 
 
@@ -28,8 +29,15 @@ export class QuotationSummaryComponent {
   agents:AgentDTO[];
   agentName:any
   agentDetails:any
-  productDetails:any;
-  paramRoute:any
+  productDetails:any = [];
+  prodCode:any
+  riskDetails:any
+  quotationProducts:any
+  taxDetails:any
+  riskInfo:any = [];
+  clauses:any;
+  user:any;
+  clientCode:any;
   constructor(
     public sharedService:SharedQuotationsService,
     public quotationService:QuotationsService,
@@ -38,17 +46,30 @@ export class QuotationSummaryComponent {
     public  agentService:IntermediaryService,
     public productService:ProductService,
     public activatedRoute:ActivatedRoute,
-
+    public authService:AuthService,
+    private messageService: GlobalMessagingService
   ){}
+  public isCollapsibleOpen = false;
+  public isRiskCollapsibleOpen = false;
+  public makeQuotationReady = true;
+  public confirmQuotation = false;
+  public authoriseQuotation = false;
+  public showEmail = false;
+  public showSms = false;
   ngOnInit(): void {
-    this.quotationCode=this.sharedService.getQuotationNumber();
-    this.quotationNumber=this.sharedService.getQuotationCode();
-    this.clientDetails = this.sharedService.getFormData()
-    this.paramRoute = decodeURIComponent(this.activatedRoute.snapshot.paramMap.get('num'))
-    this.moreDetails=this.sharedService.getQuotationFormDetails()
-   log.debug(this.paramRoute)
-   this.getQuotationDetails(this.paramRoute)
-
+    this.quotationCode=sessionStorage.getItem('quotationCode');
+    this.quotationNumber=sessionStorage.getItem('quotationNum');
+   
+    this.moreDetails=sessionStorage.getItem('quotationFormDetails')
+    const storedData = sessionStorage.getItem('clientFormData');
+    this.clientDetails=JSON.parse(storedData);
+    this.prodCode = JSON.parse(this.moreDetails).productCode
+    this.clientCode = JSON.parse(this.moreDetails).clientCode
+    this.getuser()
+    this.getQuotationDetails(this.quotationNumber)
+    this.getProductDetails(this.prodCode)
+    this.getProductClause(this.prodCode)
+    this.externalClaimsExperience(this.clientCode)
   }
 
   /**
@@ -60,8 +81,14 @@ export class QuotationSummaryComponent {
   getQuotationDetails(code){
     this.quotationService.getQuotationDetails(code).subscribe(res=>{
       this.quotationDetails = res 
+
        // Extracts product details for each quotation product.
-      this.productDetails = this.quotationDetails.quotationProduct
+      this.quotationProducts = this.quotationDetails.quotationProduct
+      this.riskDetails = this.quotationDetails.riskInformation
+      // this.riskInfo.push(this.riskDetails.sectionsDetails)
+      this.taxDetails = this.quotationDetails.taxInformation
+      log.debug(this.taxDetails)
+
       this.productDetails.forEach(el=>{
           /**
          * Subscribes to the product service to get product details.
@@ -69,7 +96,6 @@ export class QuotationSummaryComponent {
          * @return {void}
          */
         this.productService.getProductByCode(el.proCode).subscribe(res=>{
-          log.debug(res)
           
         })
      
@@ -99,9 +125,9 @@ export class QuotationSummaryComponent {
    * @method getProductDetails
    * @return {void}
    */
-  getProductDetails(){
-    this.productService.getProductByCode(this.moreDetails.productCode).subscribe(res=>{
-      log.debug(res)
+  getProductDetails(code){
+    this.productService.getProductByCode(code).subscribe(res=>{
+      this.productDetails.push(res)
     })
  
 
@@ -112,9 +138,9 @@ export class QuotationSummaryComponent {
    * @return {void}
    */
   computePremium(){
-    this.quotationService.computePremium(this.quotationNumber).subscribe(res=>{
+    this.quotationService.computePremium(this.quotationCode).subscribe(res=>{
       this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
-      this.quotationService.getQuotationDetails(this.quotationCode).subscribe(res=>{
+      this.quotationService.getQuotationDetails(this.quotationNumber).subscribe(res=>{
         this.quotationDetails = res 
         log.debug(this.quotationDetails.premium)
       }
@@ -139,4 +165,92 @@ export class QuotationSummaryComponent {
      
     })
   }
+  toggleProductDetails() {
+    this.isCollapsibleOpen = !this.isCollapsibleOpen;
+  }
+  toggleRiskDetails() {
+    this.isRiskCollapsibleOpen = !this.isRiskCollapsibleOpen;
+  }
+  getProductClause(productCode){
+    this.quotationService.getProductClauses(productCode).subscribe(res=>{
+      this.clauses= res
+      log.debug(this.clauses)
+    })
+  }
+     /**
+   * Retrieves the current user and stores it in the 'user' property.
+   * @method getUser
+   * @return {void}
+   */
+     getuser(){
+      this.user = this.authService.getCurrentUserName()
+      
+     }
+  makeReady(){
+    this.quotationService.makeReady(this.quotationCode,this.user).subscribe(
+      {
+        next: (res) => {
+          this.makeQuotationReady = !this.makeQuotationReady;
+          this.authoriseQuotation = !this.authoriseQuotation;
+          this.messageService.displaySuccessMessage('Success','Quotation Made Ready, Authorise to proceed')
+        },
+        error: (e) => {
+          log.debug(e)
+          this.messageService.displayErrorMessage('error', 'Failed to make ready')
+        }
+      }
+
+    )
+
+  }
+  authorise(){
+    this.quotationService.authoriseQuotation(this.quotationCode,this.user).subscribe(
+      {
+        next: (res) => {
+          this.authoriseQuotation = !this.authoriseQuotation;
+          this.confirmQuotation = !this.confirmQuotation;
+          this.messageService.displaySuccessMessage('Success','Quotation Authorised, Confirm to proceed')
+        },
+        error: (e) => {
+          log.debug(e.message)
+          this.messageService.displayErrorMessage('error', e.error.message)
+        }
+      }
+    ) 
+  
+  }
+  confirm(){
+    this.quotationService.confirmQuotation(this.quotationCode,this.user).subscribe(
+      {
+        next: (res) => {
+          this.authoriseQuotation = !this.authoriseQuotation; 
+          this.confirmQuotation = !this.confirmQuotation;
+          this.messageService.displaySuccessMessage('Success','Quotation Authorization Confirmed')
+        },
+        error: (e) => {
+          log.debug(e.message)
+          this.messageService.displayErrorMessage('error', e.error.message)
+        }
+      }
+    )
+  }
+
+  showCommunicationDetails(section){
+    if(section === 'sms' ){
+      this.showSms  = true
+      this.showEmail = false
+
+    }else if(section === 'email'){
+      this.showEmail = true
+      this.showSms  = false
+
+    }
+  }
+  externalClaimsExperience(clientCode){
+    this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
+      log.debug(res )
+    })
+  }
+
+
 }
