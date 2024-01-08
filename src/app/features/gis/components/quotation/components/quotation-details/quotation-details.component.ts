@@ -54,6 +54,7 @@ export class QuotationDetailsComponent {
   productDetails:any
   userDetails: AccountContact | ClientAccountContact | WebAdmin;
   selected:any;
+  quotationSources:any
   @ViewChild('openModal') openModal;
   constructor(
     public bankService:BankService,
@@ -81,17 +82,27 @@ export class QuotationDetailsComponent {
     this.getAgents()
     
     this.getIntroducers();
-    this.formData = sessionStorage.getItem('clientFormData');
-    log.debug(JSON.parse(this.formData))
-
+    this.getQuotationSources()
+    
+ 
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
+    const clientFormDetails = sessionStorage.getItem('clientFormData');
+    log.debug(quotationFormDetails)
     if (quotationFormDetails) {
-      const parsedData = JSON.parse(this.formData);
-      this.quotationForm.setValue(parsedData);
+      const parsedData = JSON.parse(quotationFormDetails);
+      this.quotationForm.patchValue(parsedData);
+      
+      log.debug(parsedData)
     }
-    // this.quotationForm.controls['clientCode'].setValue(storedData.id);
-    // this.quotationForm.controls['branchCode'].setValue(storedData.branchCode);
-    // this.quotationForm.controls['clientType'].setValue(storedData.clientTypeId);
+    if(clientFormDetails){
+      const clientData = JSON.parse(clientFormDetails)
+      this.quotationForm.controls['clientCode'].setValue(clientData.id);
+      this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
+      this.quotationForm.controls['clientType'].setValue(clientData.clientTypeId);
+    }
+  
+    log.debug(this.quotationForm.value)
+
   }
 
   /**
@@ -139,6 +150,12 @@ export class QuotationDetailsComponent {
   getuser(){
    this.user = this.authService.getCurrentUserName()
    
+  }
+  getQuotationSources(){
+    this.quotationService.getQuotationSources().subscribe(res=>{
+      this.quotationSources = res
+      log.debug(this.quotationSources)
+    })
   }
  /**
    * Creates a new quotation form using Angular Reactive Forms.

@@ -8,11 +8,11 @@
           <div class="row mb-4 mt-3">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Source<span class="required" ></span></label>
-                <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  formControlName="source"  placement="right" >
+                <select  class="form-select form-control-sm mb-1" id="quote-input"  formControlName="source"  placement="right" >
                     <option selected="true" disabled="disabled"></option>
                     <option value="10">Walk In </option>
-                    <option value="email">Email</option>
-                    <option value="broker">Broker/Agent</option>
+                    <option value="11">Email</option>
+                    <option value="12">Broker/Agent</option>
 
                   </select >
 
@@ -20,14 +20,14 @@
             
             <div class="col-xl-4">
                 <label for=""class="quote-label">Intermediary<span class="required"></span></label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
+                <select class="form-select form-control-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
                 </select> 
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Branch<span class="required" ></span></label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="branchCode" placement="right" >
+                <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="branchCode" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of branch"  [value]="data.id">{{data.name}}</option>
                 </select>  
@@ -62,14 +62,14 @@
                 </div>
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Introducer</label>
-                    <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="introducerCode" placement="right" >
+                    <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="introducerCode" placement="right" >
                         <option selected="true" disabled="disabled"></option> 
                         <option *ngFor="let data of introducers"  [value]="data.code">{{data.surName}}</option>
                     </select>  
                 </div>
                 <div class="col-xl-4">      
                     <label for=""class="quote-label">Likelihood</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  placement="right"  >
+                    <select  class="form-select form-control-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
                         <option value="likely">Likely</option>
                         <option value="unlikely">Unlikely</option>
@@ -81,7 +81,7 @@
             <div class="row mb-4">
                 <div class="col-xl-4">
                     <label for=""class="quote-label">Results from campaign?</label>
-                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"  placement="right"  >
+                    <select  class="form-select form-control-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
                         <option value="likely">Others</option>
                         <option value="unlikely">Campaign</option>
@@ -129,7 +129,7 @@
           <div class="row mt-3 mb-3">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Product</label>
-                <select class="form-select form-select-sm mb-1" id="quote-input" formControlName="productCode" (change)="getProductClause($event)" placement="right" >
+                <select class="form-select form-control-sm mb-1" id="quote-input" formControlName="productCode" (change)="getProductClause($event)" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of products" (click)="getProductClause(data.code)" [value]="data.code">{{data.description}}</option>
                 </select> 
