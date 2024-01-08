@@ -427,10 +427,15 @@ export class EditComponent implements OnInit{
 
     //calling updating service
     this.accountService.updatePersonalDetails(personalInfo, this.partyAccountDetails.id)
-    .subscribe(data => {
-      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Personal Details.');
-      //route to 360 view component after successful Updating
+    .subscribe({
+      next: (data) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated Personal Details.');
+        //route to 360 view component after successful Updating
       // this.router.navigate([ `/home/view-entity/${this.entityId}`]); //Confirm this first if needed
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
     })
   }
 
