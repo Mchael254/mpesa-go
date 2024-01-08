@@ -12,6 +12,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AutoUnsubscribe } from '../../../../../shared/services/AutoUnsubscribe';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 const log = new Logger('ListEntityComponent');
 
@@ -66,7 +67,8 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     private entityService: EntityService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private globalMessagingService: GlobalMessagingService
   ) {
 
   }
@@ -94,9 +96,14 @@ export class ListEntityComponent implements OnInit, OnDestroy {
     if(nameSearch?.fromSearchScreen) {
       this.entityService
         .searchEntities(0, 5, nameSearch?.searchNameInput || null, nameSearch?.searchIdInput || null)
-        .subscribe((data) => {
-          this.entities = data;
-          this.spinner.hide();
+        .subscribe({
+          next: (data) => {
+            this.entities = data;
+            this.spinner.hide();
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+          }
         });
     }
   this.spinner.hide();
@@ -137,9 +144,8 @@ export class ListEntityComponent implements OnInit, OnDestroy {
           untilDestroyed(this),
           tap((data) => log.info(`Fetching entities>>>`, data))
         )
-        .subscribe(
-          (data: Pagination<EntityDto>) => {
-            // if (searchTerm === null) {
+        .subscribe({
+          next: (data: Pagination<EntityDto>) => {
             data.content.forEach(entity => {
               entity.modeOfIdentityName = entity.modeOfIdentity.name
             });
@@ -147,18 +153,13 @@ export class ListEntityComponent implements OnInit, OnDestroy {
             this.tableDetails.rows = this.entities?.content;
             this.tableDetails.totalElements = this.entities?.totalElements;
             this.cdr.detectChanges();
-            // }
-            // else {
-            // this.searchEntity(searchTerm);
-            // }
             this.spinner.hide();
-
           },
-          error => {
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
             this.spinner.hide();
           }
-
-        );
+        });
     }
   }
 
