@@ -9,6 +9,7 @@ import {Router} from "@angular/router";
 import {takeUntil, tap} from "rxjs/operators";
 import {AggregatedEmployeeData} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 const log = new Logger('ViewEmployeeComponent');
 
@@ -45,6 +46,7 @@ export class ViewEmployeeComponent  implements OnInit {
     private ticketsService: TicketsService,
     public router: Router,
     private fb: FormBuilder,
+    private globalMessagingService: GlobalMessagingService
   ) { }
 
   /**
@@ -120,25 +122,31 @@ export class ViewEmployeeComponent  implements OnInit {
       this.staffService.getStaffWithSupervisor(0, 10, null, 'dateCreated', 'desc'),
       this.ticketsService.getAllTransactionsPerModule(this.dateFrom, this.dateToday),
       this.ticketsService.getAllDepartments(2)
-    ])).subscribe(([staff,transactions,departments])=>{
-      if (staff.totalElements > 0){
-        const result: AggregatedEmployeeData[] = [];
-        for(const staffData of staff.content){
-          const transaction = transactions.find(value => value.authorizedBy === staffData.username);
-          const department = departments.find(value => value.id === staffData.departmentCode)
-
-          // if (transactions.length != 0 ) {
-            result.push({
-              staffs: staffData,
-              transaction: transaction,
-              department: department
-            })
-          // }
+    ]))
+    .subscribe({
+      next: ([staff,transactions,departments]) => {
+        if (staff.totalElements > 0){
+          const result: AggregatedEmployeeData[] = [];
+          for(const staffData of staff.content){
+            const transaction = transactions.find(value => value.authorizedBy === staffData.username);
+            const department = departments.find(value => value.id === staffData.departmentCode)
+  
+            // if (transactions.length != 0 ) {
+              result.push({
+                staffs: staffData,
+                transaction: transaction,
+                department: department
+              })
+            // }
+          }
+          console.log('aggregated data', result);
+          this.aggregatedEmployeeData.content = result;
+          this.aggregatedEmployeeData.numberOfElements = staff?.numberOfElements;
+          this.cdr.detectChanges();
         }
-        console.log('aggregated data', result);
-        this.aggregatedEmployeeData.content = result;
-        this.aggregatedEmployeeData.numberOfElements = staff?.numberOfElements;
-        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
       }
     })
   }
