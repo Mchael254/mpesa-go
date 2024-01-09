@@ -334,8 +334,9 @@ export class NewEntityComponent implements OnInit {
 
      this.entityService.saveEntityDetails(saveEntity)
        // .pipe(finalize(() => this.uploadImage(this.savedEntity.id)))
-       .subscribe(data => {
-         data.partyTypeId = saveEntity.partyTypeId;
+       .subscribe({
+        next: (data) => {
+          data.partyTypeId = saveEntity.partyTypeId;
          this.savedEntity = data;
          if (this.selectedFile) {
            this.uploadImage(this.savedEntity.id);
@@ -344,10 +345,12 @@ export class NewEntityComponent implements OnInit {
            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created an Entity');
            this.goToNextPage();
          }
-       },
-         error => {
-           this.globalMessagingService.displayErrorMessage('Error', 'Please try again');
-         });
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          log.info(`error >>>`, err);
+        }
+       })
   }
 
   /**
