@@ -344,7 +344,7 @@ export class MenuService{
 
 public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
     {
-      name: 'lang.summary',
+      name: 'base.summary',
       nameSlug: 'summary',
       icon: 'fa-regular fa-newspaper',
       menuItems: [{name:'My Tasks', link:"/my-tasks"}, {name:'My Dashboard', link:"/my-dashboard"}, {name:'My Transactions', link:"/my-transactions"}, {name:'My Policies', link:"/my-policies"}, {name:'My Quotations', link:"/my-quotations"}, {name:'My Renewals', link:"/my-renewals"}],
