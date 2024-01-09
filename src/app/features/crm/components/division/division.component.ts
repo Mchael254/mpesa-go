@@ -159,35 +159,55 @@ export class DivisionComponent implements OnInit {
   }
 
   openDivisionModal() {
-    this.renderer.addClass(this.divisionModal.nativeElement, 'show');
-    this.renderer.setStyle(
-      this.divisionModal.nativeElement,
-      'display',
-      'block'
-    );
+    const modal = document.getElementById('divisionModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.divisionModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.divisionModal.nativeElement,
+    //   'display',
+    //   'block'
+    // );
   }
 
   closeDivisionModal() {
-    this.renderer.removeClass(this.divisionModal.nativeElement, 'show');
-    this.renderer.setStyle(this.divisionModal.nativeElement, 'display', 'none');
+    const modal = document.getElementById('divisionModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.divisionModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.divisionModal.nativeElement, 'display', 'none');
   }
 
   openConfirmationModal() {
-    this.renderer.addClass(this.confirmationModal.nativeElement, 'show');
-    this.renderer.setStyle(
-      this.confirmationModal.nativeElement,
-      'display',
-      'block'
-    );
+    const modal = document.getElementById('confirmationModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.confirmationModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.confirmationModal.nativeElement,
+    //   'display',
+    //   'block'
+    // );
   }
 
   closeConfirmationModal() {
-    this.renderer.removeClass(this.confirmationModal.nativeElement, 'show');
-    this.renderer.setStyle(
-      this.confirmationModal.nativeElement,
-      'display',
-      'none'
-    );
+    const modal = document.getElementById('confirmationModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.confirmationModal.nativeElement, 'show');
+    // this.renderer.setStyle(
+    //   this.confirmationModal.nativeElement,
+    //   'display',
+    //   'none'
+    // );
   }
 
   onDivisionRowSelect(division: OrganizationDivisionDTO) {
@@ -229,7 +249,7 @@ export class DivisionComponent implements OnInit {
     this.finalizeDivisionSave(organizationFormValues, selectedValue);
   }
 
-  private finalizeDivisionSave(formValues: any, isDefault: string) {
+  protected finalizeDivisionSave(formValues: any, isDefault: string) {
     if (!this.selectedDivision) {
       const saveOrganizationDivision: OrganizationDivisionDTO = {
         id: null,

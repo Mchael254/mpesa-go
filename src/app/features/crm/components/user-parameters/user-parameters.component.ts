@@ -74,14 +74,6 @@ export class UserParametersComponent implements OnInit {
     return this.createParameterForm.controls;
   }
 
-  // fetchParameters() {
-  //   this.parameterService.getParameter()
-  //     .pipe(untilDestroyed(this))
-  //     .subscribe((data) => {
-  //       this.userParametersData = data;
-  //     })
-  // }
-
   fetchParameters(name?: string, organizationId?: number) {
     this.parameterService
       .getParameter(name, organizationId)

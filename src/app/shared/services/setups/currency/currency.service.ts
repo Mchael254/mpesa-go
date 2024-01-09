@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../../../core/config/app-config-service';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { retry } from 'rxjs/operators';
 import { Observable } from 'rxjs';
