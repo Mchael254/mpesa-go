@@ -7,10 +7,10 @@
        <div class="header mx-4 mt-2 mb-2">
         <ul class="nav">
             <li class="nav-item">
-              <a class="nav-link sub-title active" data-bs-toggle="tab"  aria-controls="summary" data-bs-target="#summary">Quotation Details</a>
+              <a class="nav-link sub-title active" data-bs-toggle="tab" id="nav-summary-tab"  aria-controls="nav-summary" data-bs-target="#nav-summary">Quotation Details</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link sub-title" data-bs-toggle="tab" aria-controls="authorization" data-bs-target="#authorization">Authorization & Reports </a>
+              <a class="nav-link sub-title" data-bs-toggle="tab"  id="nav-authorization-tab" aria-controls="nav-authorization" data-bs-target="#nav-authorization">Authorization & Reports </a>
             </li>
           </ul>
       
@@ -19,158 +19,23 @@
     
     </div>
 
-  
     <div class="tab-content" id="nav-tabContent">
-
-   
-    <div id="authorization" class="tab-pane fade" role="tabpanel" aria-labelledby="authorization">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="mb-4">Choose Report</h6>
-
-                <div class="form-check form-check-inline" >
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">Quotation summary document</label>
-                  </div>
-                  <div class="form-check form-check-inline" id="report-checks">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                    <label class="form-check-label" for="inlineCheckbox2">Quotation premium calculation</label>
-                  </div>
-                  <div class="form-check form-check-inline"id="report-checks">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">Quotation document</label>
-                  </div>
-                <br><br>
-                <div class="form-check form-check-inline" id="report-checks">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                    <label class="form-check-label" for="inlineCheckbox2">Quotation clauses document</label>
-                  </div>
-                  <div class="form-check form-check-inline"id="report-checks">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">Quotation schedules</label>
-                  </div>
-
-                  <h6 class="mb-4 mt-4">Exceptions</h6>
-
-            </div>
-            <!-- <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Product</th>
-                        <th>Cover From</th>
-                        <th>Cover To</th>
-                        <th>Premium</th>
-                        <th>Commission</th>
-                        <th>Binder</th>
-                        <th>No Binder</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-data>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </ng-template>
-                </p-table> -->
-                <br>
-                <div class="float-end mb-3">
-                    <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Download</button>
-                    <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" >Make Quotation Ready</button>
-                    
-
-                </div>
-        </div>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="mb-4">Communication</h6>
-
-
-                <div class="form-check form-check-inline">
-                   
-                    <label style="margin-left:-24px">Send</label>
-                  </div>
-
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                    <label class="form-check-label" for="inlineRadio1">Email</label>
-                  </div>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                    <label class="form-check-label" for="inlineRadio2">SMS</label>
-                  </div>
-            </div>
+        <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
             
-
-        </div>
-        <!-- <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="mb-4">Document</h6>
-                <div class="form-check form-check-inline mb-4">
-                    <label class="form-check-label" for="inlineRadio1">Document Type</label>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                      </select>
-                    
-                  </div>
-            </div>
-        </div> -->
-    </div>
-
-
-
-    <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="summary" id="summary">
-        <div class="card mb-4">
-            <div class="card-body">
-              
-                <p class="card-title mb-4">Details</p>
+            <!-- Quotation Details Card -->
+            <div class="card mb-4">
+                <div class="card-body">
                   
-                   <div class="row">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <div class="col-6">
-                                <p class="label">Quotation Number</p>
-                            </div>
-                            <div class="col-6">
-                                <p class="content">{{quotationCode}}</p>
-                            </div>
-                        </div>
+                    <p class="card-title mb-4">Details</p>
                       
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <div class="col-6">
-                                <p class="label">Client</p>
-                            </div>
-                            <div class="col-6">
-                                <p class="content" >{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <div class="col-6">
-                                <p class="label">Agent</p>
-                            </div>
-                            <div class="col-6">
-                                <p class="content">{{agentDetails.accountType}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-    
-                    <div class="row">
+                       <div class="row">
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Branch</p>
+                                    <p class="label">Quotation Number</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">NAIROBI</p>
+                                    <p class="content">{{quotationNumber}}</p>
                                 </div>
                             </div>
                           
@@ -178,34 +43,33 @@
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Cover From</p>
+                                    <p class="label">Client</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">{{quotationDetails.coverFrom}}</p>
+                                    <p class="content" >{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="row">
                                 <div class="col-6">
-                                    <p class="label">Cover To</p>
+                                    <p class="label">Agent</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">{{quotationDetails.coverTo}}</p>
+                                    <p class="content">{{agentDetails.accountType}}</p>
                                 </div>
                             </div>
                         </div>
                         </div>
-    
-    
+        
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Currency</p>
+                                        <p class="label">Branch</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">{{quotationDetails.currency}}</p>
+                                        <p class="content">NAIROBI</p>
                                     </div>
                                 </div>
                               
@@ -213,33 +77,34 @@
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Prosper</p>
+                                        <p class="label">Cover From</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content"> </p>
+                                        <p class="content">{{quotationDetails.coverFrom}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="label">Introducer</p>
+                                        <p class="label">Cover To</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content"></p>
+                                        <p class="content">{{quotationDetails.coverTo}}</p>
                                     </div>
                                 </div>
                             </div>
                             </div>
-    
+        
+        
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="label">Expiry Date</p>
+                                            <p class="label">Currency</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content">{{quotationDetails.expiryDate}}</p>
+                                            <p class="content">{{quotationDetails.currency}}</p>
                                         </div>
                                     </div>
                                   
@@ -247,32 +112,33 @@
                                 <div class="col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="label">Status</p>
+                                            <p class="label">Prosper</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content"> {{quotationDetails.status}}</p>
+                                            <p class="content"> </p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="label">Source</p>
+                                            <p class="label">Introducer</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content">Walk In</p>
+                                            <p class="content"></p>
                                         </div>
                                     </div>
                                 </div>
                                 </div>
+        
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="row">
                                             <div class="col-6">
-                                                <p class="label">Premium</p>
+                                                <p class="label">Expiry Date</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">{{quotationDetails.premium| currency:quotationDetails.currency :'symbol':'1.0-0'}}</p>
+                                                <p class="content">{{quotationDetails.expiryDate}}</p>
                                             </div>
                                         </div>
                                       
@@ -280,137 +146,374 @@
                                     <div class="col-md-4">
                                         <div class="row">
                                             <div class="col-6">
-                                                <p class="label">Sum Insured</p>
+                                                <p class="label">Status</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content"> </p>
+                                                <p class="content"> {{quotationDetails.status}}</p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="row">
                                             <div class="col-6">
-                                                <p class="label">Likelihood</p>
+                                                <p class="label">Source</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content"></p>
+                                                <p class="content">Walk In</p>
                                             </div>
                                         </div>
                                     </div>
                                     </div>
-                               
-    
-                                <div class="row mb-3">
-                                    <div class="col-md-4">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <p class="label">Internal Comments</p>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <p class="label">Premium</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="content">{{quotationDetails.premium| currency:quotationDetails.currency :'symbol':'1.0-0'}}</p>
+                                                </div>
                                             </div>
-                                            <div class="col-6">
-                                                <p class="content"></p>
+                                          
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <p class="label">Sum Insured</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="content"> </p>
+                                                </div>
                                             </div>
                                         </div>
-                                      
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <p class="label">External Comments</p>
-                                            </div>
-                                            <div class="col-6">
-                                                <p class="content"> </p>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <p class="label">Likelihood</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="content"></p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                       
-                                    </div>
-                                    </div>
-    
-    
-                        <p class="cancel float-start">Cancel Quotation</p>
-                        <div class="float-end">
-                            <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit Details</button>
-                            <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
-    
+                                        </div>
+                                   
+        
+                                    <div class="row mb-3">
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <p class="label">Internal Comments</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="content"></p>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <p class="label">External Comments</p>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="content"> </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                           
+                                        </div>
+                                        </div>
+        
+        
+                            <p class="cancel float-start">Cancel Quotation</p>
+                            <div class="float-end">
+                                <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit Details</button>
+                                <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
+                            </div>   
                         </div>
-                   <!-- </div> -->
-                  </div>
                   
-            </div>           
-            <div class="card mb-4">
-               
-
-               
+            </div>    
+            <!-- Product Details Card -->
+            <div class="card mb-4">  
                 <div class="card-body">
-                  
-                   
-                      <div class="row">
+                    <div class="row">
                         <div class="col-4">
-                          <p class="card-title">Product Details</p>
+                            <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p>
                         </div>
                         <div class="col-8 d-flex justify-content-end">
-                          <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" aria-expanded="false" aria-controls="collapseExample">
-                            <i class="fa-solid fa-chevron-down"></i>
-                          </button>
+                            <div class="row">
+                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-primary"  title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                </div>
+                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                                </div>
+                                <div class="col-4" *ngIf="!isCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()" [attr.aria-expanded]="!isCollapsibleOpen">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                </div>
+                            </div>            
                         </div>
-                      </div>
-                      <div class="collapse" id="productDetails">
-                        <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>Product</th>
-                                <th>Cover From</th>
-                                <th>Cover To</th>
-                                <th>Premium</th>
-                                <th>Commission</th>
-                                <th>Binder</th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-data>
-                            <tr>
-                                <td>{{data.proCode}}</td>
+                    </div>
+                              <div class="collapse mt-4" id="productDetails">
+                                <p-table [value]="productDetails" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Cover From</th>
+                                        <th>Cover To</th>
+                                        <th>Premium</th>
+                                        <th>Commission</th>
+                                       <th>Binder</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-data>
+                                    <tr>  
+                                        <!-- <td>{{data.productShortDescription}}</td>
                                 <td>{{data.wef}}</td>
                                 <td>{{data.wet}}</td>
                                 <td>{{data.premium}}</td>
                                 <td>{{data.commission}}</td>
-                                <td>{{data.binder}}</td>
+                                <td>{{data.binder}}</td> -->
+                                <td>{{data.description}}</td>
+                                <td>{{data.withEffectFrom}}</td>
+                                <td>{{data.withEffectTo}}</td>
+                                <td>{{data.minimumPremium}}</td>
+                                <td>{{data.commissionRate}}</td>
+                                <td>{{data.doesCashBackApply}}</td>
                             </tr>
                         </ng-template>
                         </p-table>
-                      </div>
-                      </div>
-                      
-                </div>
-    
-                <div class="card mb-4">
-                    <div class="card-body">
-                      
-                       
-                          <div class="row">
-                            <div class="col-4">
-                              <p class="card-title">Risk Details</p>
+                        <br>
+                        <ul class="nav nav-underline mb-4">
+                            <li class="nav-item">
+                              <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-clauses">Clauses</a>
+                            </li>
+                            <br>
+                            <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-taxes">Taxes</a>
+                            </li>
+                            <br>
+                            <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-limits">Limits of Liability</a>
+                            </li>
+                            <br>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-similarities">Similar Quotes</a>
+                              </li>
+                          </ul>
+                          <div class="tab-content mb-4" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-clauses" role="tabpanel" aria-labelledby="nav-clauses" tabindex="0">
+
+                                <p-table
+                                 [value]="clauses" 
+                                 [tableStyle]="{ 'min-width': '50rem' }"  
+                                 styleClass="p-datatable-sm"
+                                 [paginator]="true"
+                                 [rows]="5"
+                                 [showCurrentPageReport]="true"
+                                 currentPageReportTemplate="{first} to {last} of {totalRecords}">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Heading</th>
+                                            <th>Wording</th>
+                                           
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-data>
+                                        <tr>
+                                          <td>{{data.shortDescription}}</td>
+                                          <td>{{data.heading}}</td>
+                                          <td style=" white-space: nowrap;
+                                          overflow: hidden;
+                                          text-overflow: ellipsis;
+                                          max-width:300px;
+                                          overflow-y: auto;">{{data.wording}}</td>
+                                        </tr>
+                                    </ng-template>
+                                    </p-table>
                             </div>
-                            <div class="col-8 d-flex justify-content-end">
-                              <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskDetails" aria-expanded="false" aria-controls="collapseExample">
-                                <i class="fa-solid fa-chevron-down"></i>
-                              </button>
+                            <div class="tab-pane fade" id="nav-taxes" role="tabpanel" aria-labelledby="nav-taxes" tabindex="0">
+                                <p-table [value]="taxDetails" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>Description</th>
+                                            <th>Quotation Rate</th>
+                                           <th>Rate Type</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-data>
+                                        <tr>
+                                          <td>{{data.amount}}</td>
+                                          <td>{{data.description}}</td>
+                                          <td>{{data.quotationRate}}</td>
+                                          <td>{{data.rateType}}</td>
+                                        </tr>
+                                    </ng-template>
+                                    </p-table>
+                            </div>
+                            <div class="tab-pane fade " id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
+                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>Description</th>
+                                            <th>Quotation Rate</th>
+                                           <th>Rate Type</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-data>
+                                        <tr>
+                                          
+                                        </tr>
+                                    </ng-template>
+                                    </p-table>
+                            </div>
+                            <div class="tab-pane fade" id="nav-similarities" role="tabpanel" aria-labelledby="nav-similarities" tabindex="0">
+                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>Description</th>
+                                            <th>Quotation Rate</th>
+                                           <th>Rate Type</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-data>
+                                        <tr>
+                                          
+                                        </tr>
+                                    </ng-template>
+                                    </p-table>
                             </div>
                           </div>
+                      </div>
+                      </div>
+                      
+            </div>
+            <!-- Risk Details Card -->
+            <div class="card mb-4">
+                <div class="card-body"> 
+                    <div class="row">
+                        <div class="col-4">
+                            <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#riskDetails" (click)="toggleRiskDetails()">Risk Details</p>
+                        </div>
+                        <div class="col-8 d-flex justify-content-end">
+                            <div class="row">
+                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                    </div>
+                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-primary"  title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                </div>
+                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                                </div>
+                                <div class="col-4" *ngIf="!isRiskCollapsibleOpen">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#riskDetails" (click)="toggleRiskDetails()" [attr.aria-expanded]="!isRiskCollapsibleOpen">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                </div>
+                            </div>
+                                
+                        </div>
+                    </div>
                           
-                          <div class="collapse" id="riskDetails">
-                            <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                          <div class="collapse mt-4" id="riskDetails">
+                            <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }"   styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th>ID</th>
                                     <th>Description</th>
-                                    <th>Subclass</th>
                                     <th>Cover Type</th>
                                     <th>SI</th>
                                     <th>Premium</th>
-                                    <th>Comm amt</th>
-                                    <th>But Charge</th>
+                                
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-data>
+                                <tr>
+                                    <td>{{data.quotationRiskNo}}</td>
+                                    <td>{{data.propertyId}}</td>
+                                    <td>{{data.covertypeShortDescription}}</td>
+                                    <td>{{data.sectionsDetails.limitamount}}</td>
+                                    <td>{{data.sectionsDetails.premium}}</td>
+                                </tr>
+                            </ng-template>
+                            </p-table>
+                          </div>
+                          </div>
+                          
+            </div>
+            <!-- External Claims Experience -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary titleButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                 Claims Experience
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item active" href="#">External Claims Experience</a></li>
+                                  <li><a class="dropdown-item" href="#">Internal Claims Experience</a></li>
+                            
+                                </ul>
+                              </div>
+                        </div>
+                        <div class="col-8 d-flex justify-content-end">
+                            <div class="row">
+                                <div class="col-4" >
+                                    <button type="button" id="icon" class="btn btn-primary"  title="Add">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                    </div>
+                                <div class="col-4" >
+                                <button type="button" id="icon" class="btn btn-primary"  title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                </div>
+                                <div class="col-4" >
+                                <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                                </div>
+                            
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Product</th>
                                     <th>Cover From</th>
+                                    <th>Cover To</th>
+                                    <th>Premium</th>
+                                    <th>Commission</th>
+                                    <th>Binder</th>
+                                    <th>No Binder</th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
@@ -421,59 +524,276 @@
                                     <td></td>
                                 </tr>
                             </ng-template>
-                            </p-table>
-                          </div>
-                          </div>
-                          
+                        </p-table>
                     </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-authorization" role="tabpanel" aria-labelledby="nav-authorization-tab" tabindex="0">
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="mb-4">Choose Report</h6>
     
-                    <div class="card mb-4">
-                        <div class="card-body">
-                          
-                           
-                              <div class="row">
-                                <div class="col-4">
-                                  <p class="card-title">External Claims Experience</p>
-                                </div>
-                                <div class="col-8 d-flex justify-content-end">
-                                  <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#experience" aria-expanded="false" aria-controls="collapseExample">
-                                    <i class="fa-solid fa-chevron-down"></i>
-                                  </button>
-                                </div>
-                              </div>
-                              <div class="collapse" id="experience">
-                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Cover From</th>
-                                        <th>Cover To</th>
-                                        <th>Premium</th>
-                                        <th>Commission</th>
-                                        <th>Binder</th>
-                                        <th>No Binder</th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-data>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </ng-template>
-                                </p-table>
-                              </div>
-                             
-                              </div>
-                              
-                        </div>
-                        <div class="mt-4"></div>
-
+                    <div class="form-check form-check-inline" id="report-checks">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                        <label class="form-check-label" for="inlineCheckbox1">Quotation summary document</label>
+                      </div>
+                      <div class="form-check form-check-inline" id="report-checks">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                        <label class="form-check-label" for="inlineCheckbox2">Quotation premium calculation</label>
+                      </div>
+                      <div class="form-check form-check-inline" id="report-checks">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                        <label class="form-check-label" for="inlineCheckbox1">Quotation document</label>
+                      </div>
+                    <br><br>
+                    <div class="form-check form-check-inline" id="report-checks" style="margin-right: 10%;">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                        <label class="form-check-label" for="inlineCheckbox1">Quotation clauses document</label>
+                      </div>
+                      <div class="form-check form-check-inline" id="report-checks">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                        <label class="form-check-label" for="inlineCheckbox2">Quotation schedules</label>
+                      </div>
+                     
+                
+    
+                    
+    
+                </div>
+              
+                    <br>
+                    <div class="float-end mb-3">
+                        <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Download</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="makeReady()" *ngIf="makeQuotationReady">Make Quotation Ready</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="confirm()"  *ngIf="confirmQuotation">Confirm</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" (click)="authorise()"  *ngIf="authoriseQuotation">Authorise</button>
+                    </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="mb-4">Communication</h6>
+    
+    
+                    <div class="form-check form-check-inline">
                        
-    </div>
+                        <label style="margin-left:-24px">Send</label>
+                      </div>
+    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" (change)="showCommunicationDetails('email')" value="option1">
+                        <label class="form-check-label" for="inlineRadio1">Email</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" (change)="showCommunicationDetails('sms')" id="inlineRadio2" value="option2">
+                        <label class="form-check-label" for="inlineRadio2">SMS</label>
+                      </div>
+                      <br><br> 
 
+
+
+                <div *ngIf="showSms">
+                    <div class="row mr-4">
+                        <div class="col-sm">
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label" id="communicationLabel">SMS Template</label>
+                                <div class="col-sm-8">
+                                  <input type="text" class="form-control" id="inputEmail3">
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-check form-check-reverse" id="report-checks">
+                                <label class="form-check-label" for="inlineCheckbox2" id="communicationLabel">Send to client</label>
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-check form-check-reverse" id="report-checks">
+                                <label class="form-check-label" for="inlineCheckbox1" id="communicationLabel">Send to agent</label>
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                              </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="float-end mb-3">
+                        <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Cancel</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;">Okay</button>
+                       
+                    </div>
+
+                </div>
+                  
+                
+                <div *ngIf="showEmail">
+                    <div class="row ">
+                        <div class="col-sm">
+                            <div class="row mb-3">
+                                <label class="col-sm-5 col-form-label" id="communicationLabel">Email Template</label>
+                                <div class="col-sm-7">
+                                  <input type="text" class="form-control" id="inputEmail3">
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-check form-check-reverse" >
+                                <label class="form-check-label" for="inlineCheckbox2" id="communicationLabel">Send to client</label>
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-check form-check-reverse">
+                                <label class="form-check-label" for="inlineCheckbox1" id="communicationLabel">Send to agent</label>
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-check form-check-reverse" >
+                                <label class="form-check-label" for="inlineCheckbox1" id="communicationLabel">Send to all agent</label>
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                              </div>
+                        </div>
+                    </div>
+
+                    <div class="float-end mb-3">
+                        <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Cancel</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" data-bs-toggle="modal" data-bs-target="#emailModal">Okay</button>
+                       
+                    </div>
+
+                </div>
+                    
+                <!-- Email Modal -->
+                <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div  class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      
+                        <div class="modal-body">
+                        <h6 class="mb-3">Details</h6>
+                        <!-- Client and Agent -->
+                        <div class="row ">
+                            <div class="col-sm">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <h6>Client</h6>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <p class="text-muted">Example</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <h6>Agent</h6>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <p class="text-muted">Direct</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- Quotation Code -->
+                        <div class="row mb-2">
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <h6>Quotation Code</h6>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <p class="text-muted">Example</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                
+                            </div>
+
+                        </div>
+                        <!-- Quotation Number -->
+                        <div class="row mb-2">
+                            <div class="col-sm-8">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h6>Quotation Number</h6>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <p class="text-muted">Example</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                
+                            </div>
+
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="">
+                            <label class="form-check-label" >
+                              Include policy batch documents
+                            </label>
+                          </div>
+                          <h6 class="mb-3">Message Details</h6>
+
+                          <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label" id="messageLabel">To</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" >
+                            </div>
+                          </div>
+
+                          <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label" id="messageLabel">CC</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" >
+                            </div>
+                          </div>
+
+                          <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label" id="messageLabel">BCC</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" >
+                            </div>
+                          </div>
+
+                          <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label" id="messageLabel">Subject</label>
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" >
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label" id="messageLabel">Message</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                          </div>
+                          <button class="btn btn-primary float-end">Send Email</button>
+                        </div>
+                    
+                    </div>
+                    </div>
+                </div>
+                </div>
+                
+    
+            </div>
+
+        </div>
+       
+
+      </div>
+  
+
+   
+  
+
+
+   
 
 </div>
-   
-    </div>
