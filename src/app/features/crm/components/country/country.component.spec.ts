@@ -1,5 +1,10 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { TableModule } from 'primeng/table';
@@ -9,71 +14,121 @@ import { CountryService } from '../../../../shared/services/setups/country/count
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
-import { CountryDTO, CountryDto } from '../../../../shared/data/common/countryDto';
+import {
+  AdminstrativeUnitDTO,
+  CountryDto,
+  SubadminstrativeUnitDTO,
+} from '../../../../shared/data/common/countryDto';
 import { CurrencyDTO } from '../../../../shared/data/common/bank-dto';
 import { MandatoryFieldsDTO } from '../../../../shared/data/common/mandatory-fields-dto';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SharedModule, UtilService } from '../../../../shared/shared.module';
+import { StatusDTO } from '../../../../shared/data/common/systemsDto';
+import { StatusService } from '../../../../shared/services/system-definitions/status.service';
+import { DropdownModule } from 'primeng/dropdown';
 
-const mockCountryData: CountryDTO[] = [{
-  adminRegMandatory: '',
-  adminRegType: '',
-  currSerial: 0,
-  currency: {
-    createdBy: '',
-    createdDate: '',
+const mockCountryData: CountryDto[] = [
+  {
+    adminRegMandatory: '',
+    adminRegType: '',
+    currSerial: 0,
+    currency: {
+      createdBy: '',
+      createdDate: '',
+      decimalWord: '',
+      id: 0,
+      modifiedBy: '',
+      modifiedDate: '',
+      name: '',
+      numberWord: '',
+      roundingOff: 0,
+      symbol: '',
+    },
+    drugTraffickingStatus: '',
+    drugWefDate: '',
+    drugWetDate: '',
+    highRiskWefDate: '',
+    highRiskWetDate: '',
+    id: 0,
+    isShengen: '',
+    mobilePrefix: 0,
+    name: '',
+    nationality: '',
+    risklevel: '',
+    short_description: '',
+    telephoneMaximumLength: 0,
+    telephoneMinimumLength: 0,
+    unSanctionWefDate: '',
+    unSanctionWetDate: '',
+    unSanctioned: '',
+    zipCode: 0,
+    subAdministrativeUnit: '',
+    zipCodeString: '',
+  },
+];
+
+const mockAdministrativeData: AdminstrativeUnitDTO[] = [
+  {
+    id: '',
+    name: '',
+  },
+];
+
+const mockSubadministrativeData: SubadminstrativeUnitDTO[] = [
+  {
+    id: '',
+    name: '',
+  },
+];
+
+const mockCurrencyData: CurrencyDTO[] = [
+  {
     decimalWord: '',
     id: 0,
-    modifiedBy: '',
-    modifiedDate: '',
     name: '',
     numberWord: '',
     roundingOff: 0,
-    symbol: ''
+    symbol: '',
   },
-  drugTraffickingStatus: '',
-  drugWefDate: '',
-  drugWetDate: '',
-  highRiskWefDate: '',
-  highRiskWetDate: '',
-  id: 0,
-  isShengen: '',
-  mobilePrefix: 0,
-  name: '',
-  nationality: '',
-  risklevel: '',
-  short_description: '',
-  telephoneMaximumLength: 0,
-  telephoneMinimumLength: 0,
-  unSanctionWefDate: '',
-  unSanctionWetDate: '',
-  unSanctioned: '',
-  zipCode: 0
-}]
+];
 
-const mockCurrencyData: CurrencyDTO[] =[{
-  decimalWord: '',
-  id: 0,
-  name: '',
-  numberWord: '',
-  roundingOff: 0,
-  symbol: ''
-}]
+const mockMandatoryData: MandatoryFieldsDTO[] = [
+  {
+    id: 0,
+    fieldName: '',
+    fieldLabel: '',
+    mandatoryStatus: 'Y',
+    visibleStatus: 'Y',
+    disabledStatus: 'N',
+    frontedId: 'country',
+    screenName: '',
+    groupId: '',
+    module: '',
+  },
+];
 
-const mockMandatoryData: MandatoryFieldsDTO[] = [{
-  id: 0,
-  fieldName: '',
-  fieldLabel: '',
-  mandatoryStatus: 'Y',
-  visibleStatus: 'Y',
-  disabledStatus: 'N',
-  frontedId: 'country',
-  screenName: '',
-  groupId: '',
-  module: ''
-}]
+const mockStatusData: StatusDTO[] = [
+  {
+    name: '',
+    value: '',
+  },
+];
 
 export class MockCountryService {
   getCountries = jest.fn().mockReturnValue(of(mockCountryData));
+  getMainCityStatesByCountry = jest.fn();
+  getSubCountyByStateId = jest.fn();
+  getTownsByMainCityState = jest.fn();
+  getAdminstrativeUnit = jest.fn().mockReturnValue(of(mockAdministrativeData));
+  getSubadminstrativeUnit = jest
+    .fn()
+    .mockReturnValue(of(mockSubadministrativeData));
+  getCountryHoliday = jest.fn();
+  createCountry = jest.fn();
+  updateCountry = jest.fn();
+  deleteCountry = jest.fn();
+  createState = jest.fn();
+  updateState = jest.fn();
+  createDistrict = jest.fn();
 }
 
 export class MockBankService {
@@ -81,10 +136,25 @@ export class MockBankService {
 }
 
 export class MockMandatoryService {
-  getMandatoryFieldsByGroupId = jest.fn().mockReturnValue(of(mockMandatoryData));
+  getMandatoryFieldsByGroupId = jest
+    .fn()
+    .mockReturnValue(of(mockMandatoryData));
 }
 
-export class MockGlobalMessageService {}
+export class MockStatusService {
+  getStatus = jest.fn().mockReturnValue(of(mockStatusData));
+}
+
+export class mockUtilService {}
+
+export class MockGlobalMessageService {
+  displayErrorMessage = jest.fn((summary, detail) => {
+    return;
+  });
+  displaySuccessMessage = jest.fn((summary, detail) => {
+    return;
+  });
+}
 
 describe('CountryComponent', () => {
   let component: CountryComponent;
@@ -92,6 +162,8 @@ describe('CountryComponent', () => {
   let countryServiceStub: CountryService;
   let bankServiceStub: BankService;
   let mandatoryFieldsServiceStub: MandatoryFieldsService;
+  let statusServiceStub: StatusService;
+  let utilServiceStub: UtilService;
   let messageServiceStub: GlobalMessagingService;
 
   beforeEach(() => {
@@ -100,21 +172,27 @@ describe('CountryComponent', () => {
       imports: [
         RouterTestingModule,
         ReactiveFormsModule,
+        FormsModule,
+        DropdownModule,
         TableModule,
-        SharedModule
+        SharedModule,
       ],
       providers: [
         { provide: CountryService, useClass: MockCountryService },
         { provide: BankService, useClass: MockBankService },
         { provide: MandatoryFieldsService, useClass: MockMandatoryService },
-        { provide: GlobalMessagingService, useClass: MockGlobalMessageService }
-      ]
+        { provide: StatusService, useClass: MockStatusService },
+        { provide: UtilService, useClass: mockUtilService },
+        { provide: GlobalMessagingService, useClass: MockGlobalMessageService },
+      ],
     });
     fixture = TestBed.createComponent(CountryComponent);
     component = fixture.componentInstance;
     countryServiceStub = TestBed.inject(CountryService);
     bankServiceStub = TestBed.inject(BankService);
     mandatoryFieldsServiceStub = TestBed.inject(MandatoryFieldsService);
+    statusServiceStub = TestBed.inject(StatusService);
+    utilServiceStub = TestBed.inject(UtilService);
     messageServiceStub = TestBed.inject(GlobalMessagingService);
     fixture.detectChanges();
   });
@@ -154,7 +232,9 @@ describe('CountryComponent', () => {
 
     // Simulate async behavior
     tick();
-    expect(component.createCountryForm.controls['country'].validator).toBeTruthy();
+    expect(
+      component.createCountryForm.controls['country'].validator
+    ).toBeTruthy();
     expect(component.createCountryForm.controls['name'].validator).toBeNull();
   }));
 });

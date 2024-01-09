@@ -158,12 +158,14 @@
                 >
                   <td class="body">{{ rate.rateCurrency }}</td>
                   <td class="body">{{ rate.rate }}</td>
-                  <td class="body">{{ rate.withEffectFromDate }}</td>
-                  <td class="body">{{ rate.withEffectToDate }}</td>
+                  <td class="body">
+                    {{ formatDate(rate.withEffectFromDate) }}
+                  </td>
+                  <td class="body">{{ formatDate(rate.withEffectToDate) }}</td>
                   <td class="body">{{ rate.preparedBy }}</td>
                   <td class="body">{{ rate.date }}</td>
                   <td class="body">{{ rate.authorizedBy }}</td>
-                  <td class="body">{{ rate.authorizedDate }}</td>
+                  <td class="body">{{ formatDate(rate.authorizedDate) }}</td>
                   <td class="body">{{ rate.authorized }}</td>
                 </tr>
               </ng-template>
@@ -248,7 +250,7 @@
                 >
                   <td class="body">{{ deno.value }}</td>
                   <td class="body">{{ deno.name }}</td>
-                  <td class="body">{{ deno.withEffectiveFrom }}</td>
+                  <td class="body">{{ formatDate(deno.withEffectiveFrom) }}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
