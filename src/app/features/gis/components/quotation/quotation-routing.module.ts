@@ -44,7 +44,7 @@ const routes: Routes = [
     path:'import-risks',component:ImportRisksComponent
   },
   {
-    path:'quotation-summary/:num',component:QuotationSummaryComponent
+    path:'quotation-summary',component:QuotationSummaryComponent
   }
 ];
 
