@@ -2,7 +2,7 @@
   <!-- Top Header Text and Breadcrumb !-->
   <div class="d-flex justify-content-between my-4 ms-4">
     <div class="mr-auto p-2">
-      <h4 class="htxt page-header">Business Accounts</h4>
+      <h4 class="htxt page-header">{{ 'entities.business_accounts' | translate }}</h4>
     </div>
     <div class="me-4">
       <app-dynamic-breadcrumb [breadCrumbItems]="intermediaryBreadCrumbItems">
@@ -12,9 +12,15 @@
 
   <!-- Top Buttons !-->
   <div class="d-flex my-4 ms-4">
-    <button type="button" class="btn btn-primary rounded-1 px-3 me-3" id="newIntermediaryButton" (click)="gotoEntityPage()">New Account</button>
-    <button type="button" class="btn btn-outline-primary px-3 me-3">Import Account</button>
-    <button type="button" class="btn filter-btn rounded-1 px-3 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+    <button type="button" class="btn btn-primary rounded-1 px-3 me-3" id="newIntermediaryButton" (click)="gotoEntityPage()">
+      {{ 'entities.new_account' | translate }}
+    </button>
+    <button type="button" class="btn btn-outline-primary px-3 me-3">
+      {{ 'entities.import_account' | translate }}
+    </button>
+    <button type="button" class="btn filter-btn rounded-1 px-3 me-3">
+      <i class="fa fa-filter pe-2"></i>{{ 'entities.filter' | translate }}
+    </button>
   </div>
 
   <div class="my-4 ms-4 me-4" style="position: relative;">
@@ -46,26 +52,26 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="name">
-            Name
+            {{ 'entities.name' | translate }}
             <p-sortIcon field="name"></p-sortIcon>
           </th>
           <th pSortableColumn="modeOfIdentity">
-            Primary ID Type
+            {{ 'entities.primary_id_type' | translate }}
             <p-sortIcon field="modeOfIdentity"></p-sortIcon>
           </th>
           <th pSortableColumn="agentIdNo">
-            ID Number
+            {{ 'entities.id_number' | translate }}
             <p-sortIcon field="agentIdNoumber"></p-sortIcon>
           </th>
           <th pSortableColumn="primaryType">
-            Account Type
+            {{ 'entities.account_type' | translate }}
             <p-sortIcon field="primaryType"></p-sortIcon>
           </th>
           <th pSortableColumn="accountType">
-            Business Unit
+            {{ 'entities.business_unit' | translate }}
             <p-sortIcon field="accountType"></p-sortIcon>
           </th>
-          <th class="head">Actions</th>
+          <th class="head">{{ 'entities.actions' | translate }}</th>
         </tr>
         <tr>
           <th>
@@ -94,8 +100,8 @@
           <td>{{agent.accountType | titlecase }}</td>
           <td>
             <div class="actions">
-              <button type="button" class="btn btn-link" (click)="viewDetailsWithId(agent.id)">
-                <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+              <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(agent.id)">
+                <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>{{ 'entities.view' | translate }}
               </button>
             </div>
           </td>
@@ -103,7 +109,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="8">No Agent Found.</td>
+          <td colspan="8">{{ 'entities.no_agent_found' | translate }}</td>
         </tr>
       </ng-template>
     </p-table>
