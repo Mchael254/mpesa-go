@@ -112,7 +112,7 @@ export class RegionComponent implements OnInit {
 
   RegionCreateForm() {
     this.createRegionForm = this.fb.group({
-      organization: [''],
+      // organization: [''],
       shortDescription: [''],
       name: [''],
       manager: [''],
@@ -138,23 +138,43 @@ export class RegionComponent implements OnInit {
   }
 
   openRegionModal() {
-    this.renderer.addClass(this.regionModal.nativeElement, 'show');
-    this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'block');
+    const modal = document.getElementById('regionModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.regionModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'block');
   }
 
   closeRegionModal() {
-    this.renderer.removeClass(this.regionModal.nativeElement, 'show');
-    this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'none');
+    const modal = document.getElementById('regionModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.regionModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'none');
   }
 
   openBankModal() {
-    this.renderer.addClass(this.bankModal.nativeElement, 'show');
-    this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'block');
+    const modal = document.getElementById('bankModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.bankModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'block');
   }
 
   closeBankModal() {
-    this.renderer.removeClass(this.bankModal.nativeElement, 'show');
-    this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'none');
+    const modal = document.getElementById('bankModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.bankModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'none');
   }
 
   fetchOrganization() {
@@ -182,22 +202,6 @@ export class RegionComponent implements OnInit {
     this.organizationService.setSelectedOrganizationId(
       this.selectedOrganizationId
     );
-
-    // // Fetch the regions based on the selected organization
-    // this.organizationService
-    //   .getOrganizationRegion(selectedOrganizationId)
-    //   .subscribe(
-    //     (regions) => {
-    //       // Set the default region based on your logic (here I'm assuming the first region)
-    //       if (regions && regions.length > 0) {
-    //         this.organizationService.setSelectedRegion(regions[0].code);
-    //       }
-    //     },
-    //     (error) => {
-    //       // Handle error
-    //       console.error('Error fetching regions:', error);
-    //     }
-    //   );
   }
 
   fetchOrganizationRegion(organizationId: number) {
@@ -226,6 +230,7 @@ export class RegionComponent implements OnInit {
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.optionData = data;
+        log.info('Option Data', this.optionData);
       });
   }
 

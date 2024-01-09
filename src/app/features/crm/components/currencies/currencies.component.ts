@@ -14,6 +14,7 @@ import {
   CurrencyRateDTO,
 } from '../../../../shared/data/common/currency-dto';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
+import { DatePipe } from '@angular/common';
 
 const log = new Logger('CurrenciesComponent');
 
@@ -66,6 +67,7 @@ export class CurrenciesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private datePipe: DatePipe,
     private bankService: BankService,
     private currencyService: CurrencyService,
     private globalMessagingService: GlobalMessagingService,
@@ -80,6 +82,10 @@ export class CurrenciesComponent implements OnInit {
   }
 
   ngOnDestroy(): void {}
+
+  formatDate(dateString: string): string {
+    return this.datePipe.transform(dateString, 'dd-MM-yyyy') || '';
+  }
 
   updateRound(change: number, form: FormGroup, formControlName: string) {
     const newValue = Math.max(form.get(formControlName).value + change, 0);
@@ -142,18 +148,7 @@ export class CurrenciesComponent implements OnInit {
       });
   }
 
-  // fetchCurrencyRate(currencyId: number) {
-  //   this.currencyService
-  //     .getCurrenciesRate(currencyId)
-  //     .pipe(untilDestroyed(this))
-  //     .subscribe((data) => {
-  //       this.currencyRatesData = data;
-  //       log.info('Currencies Rate Data', this.currencyRatesData);
-  //     });
-  // }
-
   fetchCurrencyRate(baseCurrencyId: number, organizationId?: number) {
-    // Assuming currencyId is the baseCurrencyId, modify accordingly if needed
     this.currencyService
       .getCurrenciesRate(baseCurrencyId, organizationId)
       .pipe(untilDestroyed(this))
@@ -314,7 +309,7 @@ export class CurrenciesComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No Currency is Selected'
+        'No Currency is Selected!'
       );
     }
   }
@@ -496,7 +491,7 @@ export class CurrenciesComponent implements OnInit {
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
-        'No Currency Denomination is Selected'
+        'No Currency Denomination is Selected!'
       );
     }
   }
