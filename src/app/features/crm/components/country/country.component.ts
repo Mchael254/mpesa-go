@@ -250,7 +250,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
             }
           }
         });
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
       });
   }
 
