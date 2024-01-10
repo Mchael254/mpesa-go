@@ -49,12 +49,10 @@ export class QuotationListComponent implements OnInit {
       .getListOfProduct()
       .pipe(
         switchMap((x: any[]) => {
-          console.log(x);
           return this.quotation_service
             .getLmsIndividualQuotationWebQuoteList(page, size)
             .pipe(
               map((data) => {
-                console.log(data);
                 if (data['content']?.length > 0) {
                   let content = [...data['content']];
                   content = content.map((cont) => {
@@ -171,13 +169,12 @@ export class QuotationListComponent implements OnInit {
     // this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
 
-  selectRow(i: any) {
-    console.log(i);
-    
+  selectRow(i: any) {    
     this.session_service.set(SESSION_KEY.QUOTE_CODE, i['quote_no']);
     this.session_service.set(SESSION_KEY.CLIENT_CODE, i['client_code']);
     this.session_service.set(SESSION_KEY.QUICK_CODE, i['code']);
     this.session_service.set(SESSION_KEY.PROPOSAL_CODE, i['proposal_no']);
+    this.session_service.set(SESSION_KEY.WEB_QUOTE_DETAILS, i)
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
   }
 

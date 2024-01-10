@@ -203,7 +203,7 @@
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Sum assured:</div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_sa']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_sa'] | number}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Product:</div>
@@ -215,7 +215,7 @@
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Premium: </div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_premium']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_premium'] | number}}</div>
               </div>
             </div>
           </div>
@@ -378,7 +378,7 @@
               </div>
               <div class="row">
                 <div class="row col-6">
-                  <div class="row pt-2">
+                  <!-- <div class="row pt-2">
                     <div class="col-6 text-black-50">Passport:</div>
                     <div class="col-6 fw-medium" style="color: var(--primary-color); text-decoration: underline;">mypassport.pdf</div>
                   </div>
@@ -389,7 +389,22 @@
                   <div class="row">
                     <div class="col-6 text-black-50">Utility Bill:</div>
                     <div class="col-6 fw-medium" style="color: var(--primary-color); text-decoration: underline;">electricity_bill.pdf</div>
+                  </div> -->
+
+
+
+
+                  <div class="row pt-2" *ngFor="let item of documentList; let i = index">
+                    <div class="d-flex justify-content-start view_document">
+                      <span class="font-grey__font-eight__700">{{i+1}}.</span>
+                      <a (click)="downloadBase64File(item['backend_file_url'])" class="fw-light  click">{{item['type'].replaceAll('_', ' ') | titlecase}}.{{item['file_extension'] | lowercase}}</a>
+                    </div>
                   </div>
+                  <div class="row pt-2" *ngIf="documentList?.length===0" style="color: red;">
+                    No Document Available!!
+                  </div>
+
+
                 </div>
               </div>
 

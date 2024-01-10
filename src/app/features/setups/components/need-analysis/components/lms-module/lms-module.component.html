@@ -20,155 +20,12 @@
             </div>
           </div>
 
-          <!-- <div class="accordion accordion-flush" id="accordionFlushExampleInd">
-            <div class="accordion-item">
-              <h4 class="accordion-header" id="flush-headingOne">
-                <button
-                  style="font-size: 12px"
-                  class="accordion-button collapsed fw-bold"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseOne"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseOne"
-                >
-                  {{ "QUOTATION" | uppercase }}
-                </button>
-              </h4>
-              <div
-                id="flush-collapseOne"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingOne"
-                data-bs-parent="#accordionFlushExampleInd"
-              >
-                <div class="d-flex justify-content-between p-3">
-                  <div></div>
-                  <div>
-                    <i
-                      class="fa-solid fa-square-plus fs-5"
-                      style="color: var(--primary-color)"
-                    ></i>
-                  </div>
-                </div>
-
-                <div class="accordion-body pb-4 fw-medium">
-                  <div
-                    [routerLink]="'/home/setups/need-analysis/new-bussiness'"
-                    style="
-                      cursor: pointer;
-                      color: var(--primary-color);
-                      font-size: 12px;
-                    "
-                  >
-                    New Business
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="flush-headingTwo">
-                <button
-                  style="font-size: 12px"
-                  class="accordion-button collapsed fw-bold"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseTwo"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseTwo"
-                >
-                  {{ "PROPOSAL" | uppercase }}
-                </button>
-              </h2>
-              <div
-                id="flush-collapseTwo"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingTwo"
-                data-bs-parent="#accordionFlushExampleInd"
-              >
-                <div class="accordion-body">
-                  Placeholder content for this accordion, which is intended to
-                  demonstrate the <code>.accordion-flush</code> class. This is
-                  the second item's accordion body. Let's imagine this being
-                  filled with some actual content.
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="flush-headingThree">
-                <button
-                  style="font-size: 12px"
-                  class="accordion-button collapsed fw-bold"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseThree"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseThree"
-                >
-                  {{ "UNDERWRITING" | uppercase }}
-                </button>
-              </h2>
-              <div
-                id="flush-collapseThree"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingThree"
-                data-bs-parent="#accordionFlushExampleInd"
-              >
-                <div class="accordion-body">
-                  Placeholder content for this accordion, which is intended to
-                  demonstrate the <code>.accordion-flush</code> class. This is
-                  the second item's accordion body. Let's imagine this being
-                  filled with some actual content.
-                </div>
-              </div>
-            </div>
-          </div> -->
-
-          <div ngbAccordion #acc="ngbAccordion">
-            <div *ngFor="let item of accordionItems" ngbAccordionItem>
-              <h2 ngbAccordionHeader>
-                <button ngbAccordionButton [attr.aria-expanded]="acc.isExpanded(item.id)" (click)="acc.toggle(item.id)">
-                    <div
-                  style="font-size: 12px"
-                  class="fw-bold"
-
-                >
-                {{ item.title | uppercase}}
-                </div>
-                  
-                </button>
-              </h2>
-              <div [id]="item.id" ngbAccordionCollapse>
-                <div class="d-flex justify-content-between" style="padding: 0.2rem 1.5rem 0.1rem 0;">
-                    <div></div>
-                    <div>
-                      <i
-                        class="fa-solid fa-square-plus fs-5"
-                        style="color: var(--primary-color)"
-                      ></i>
-                    </div>
-                  </div>
-                <div ngbAccordionBody>
-
-                    <div class="accordion-body fw-medium" *ngIf="item?.contents.length>0">
-                        <div *ngFor="let content of item?.contents | distinct">
-                            <div
-                          [routerLink]="content['url']"
-                          style="
-                            cursor: pointer;
-                            color: var(--primary-color);
-                            font-size: 12px;
-                            padding: 0.3rem 0;
-                          "
-                        >
-                        {{content['name']}}
-                        </div>
-                        </div>
-                      </div>
-                
-                </div>
-              </div>
-            </div>
+          <div>
+            <ul *ngFor="let item of filterBySystem('LMS_INDIVIDUAL')">
+              <ol class="sub_sytem_list" (click)="saveSystem(item)" >{{item['name']}}</ol>
+            </ul>
           </div>
+
         </div>
       </div>
 
@@ -185,44 +42,32 @@
             </div>
           </div>
 
-          <div class="accordion accordion-flush" id="accordionFlushExampleGrp">
-            <div class="accordion-item">
-              <h4 class="accordion-header" id="flush-headingOneGrp">
-                <button
-                  style="font-size: 12px"
-                  class="accordion-button collapsed fw-bold"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#flush-collapseOneGrp"
-                  aria-expanded="false"
-                  aria-controls="flush-collapseOneGrp"
-                >
-                  {{ "QUOTATION" | uppercase }}
-                </button>
-              </h4>
-              <div
-                id="flush-collapseOneGrp"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingOneGrp"
-                data-bs-parent="#accordionFlushExampleGrp"
-              >
-                <div class="accordion-body py-4 fw-medium">
-                  <div
-                    style="
-                      cursor: pointer;
-                      color: var(--primary-color);
-                      font-size: 12px;
-                    "
-                  >
-                    New Business
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div>
+            <ul *ngFor="let item of filterBySystem('LMS_GROUP')">
+              <ol class="sub_sytem_list" (click)="saveSystem(item)" >{{item['name']}}</ol>
+            </ul>
           </div>
+
         </div>
       </div>
+
+
+
     </div>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <div>
+      <button
+  [routerLink]="'/home/setups/need-analysis'"
+  type="button"
+  class="btn btn-primary"
+  style="font-size: 12px"
+>
+  Go back to Previous Page
+</button>
+    </div>
+    <div></div>
   </div>
 </div>
 

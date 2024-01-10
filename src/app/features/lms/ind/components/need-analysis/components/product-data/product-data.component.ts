@@ -7,9 +7,10 @@ import { Component, ElementRef, Input, Renderer2 } from '@angular/core';
 })
 export class ProductDataComponent {
   @Input() productId = 0;
+  @Input() productList = []
 
-  imageUrl ='';
-
+  imageUrl =
+  'https://www.productplan.com/uploads/2018/08/product-development.png'
 
   constructor(private renderer: Renderer2, private el: ElementRef) {}
 
@@ -18,7 +19,8 @@ export class ProductDataComponent {
   }
 
   setDynamicBackground() {
-    this.imageUrl =`./assets/images/${this.productId}.jpg`;
+    // this.imageUrl =this.imageUrl
+    // `./assets/images/${this.productId}.jpg`;
     console.log(this.imageUrl);
 
     const element = this.el.nativeElement.querySelector('.picture');

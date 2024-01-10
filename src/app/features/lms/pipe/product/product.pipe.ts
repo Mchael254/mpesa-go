@@ -10,7 +10,7 @@ export class ProductPipe implements PipeTransform {
     if (product) {
       return product['description'];
     }
-    return '';
+    return 'NULL';
   }
 
 }

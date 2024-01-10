@@ -23,7 +23,7 @@ export class BranchService {
    * @param organizationId Organization Id
    * @returns Observable<OrganizationBranchDto[]> List of branches
    */
-  getBranches(organizationId: number) :Observable<OrganizationBranchDto[]>{
+  getBranches(organizationId: number, regionId = 46) :Observable<OrganizationBranchDto[]>{
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -31,7 +31,7 @@ export class BranchService {
     })
     const params = new HttpParams()
       .set('organizationId', organizationId)
-      .set('regionId', 46);
+      // .set('regionId', regionId);
 
     return this.http.get<OrganizationBranchDto[]>(`/${this.baseUrl}/setups/branches`, {
       headers: headers,
