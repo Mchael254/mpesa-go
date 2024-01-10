@@ -2,7 +2,7 @@
   <!-- Top Header Text and Breadcrumb !-->
   <div class="d-flex justify-content-between my-4 ms-4">
     <div class="mr-auto p-2">
-      <h4 class="htxt page-header">Clients</h4>
+      <h4 class="htxt page-header">{{ 'entities.client' | translate }}</h4>
     </div>
     <div class="me-4">
       <app-dynamic-breadcrumb [breadCrumbItems]="clientBreadCrumbItems">
@@ -12,9 +12,11 @@
 
   <!-- Top Buttons !-->
   <div class="d-flex my-4 ms-4">
-    <button type="button" class="btn btn-primary rounded-1 px-4 me-3" id="btn-new-client" (click)="gotoEntityPage()">New Client</button>
-    <button type="button" class="btn btn-outline-primary px-4 me-3">Import Client</button>
-    <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+    <button type="button" class="btn btn-primary rounded-1 px-4 me-3" id="btn-new-client" (click)="gotoEntityPage()">
+      {{ 'entities.new_client' | translate }}
+    </button>
+    <button type="button" class="btn btn-outline-primary px-4 me-3">{{ 'entities.import_client' | translate }}</button>
+    <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>{{ 'entities.filter' | translate }}</button>
   </div>
 
   <div class="my-4 ms-4 me-4" style="position: relative;">
@@ -48,26 +50,33 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="name">
-            Name
+            {{ 'entities.name' | translate }}
             <p-sortIcon field="name"></p-sortIcon>
           </th>
           <th pSortableColumn="modeOfIdentity">
-            Primary ID Type
+            {{ 'entities.primary_id_type' | translate }}
             <p-sortIcon field="modeOfIdentity"></p-sortIcon>
           </th>
           <th pSortableColumn="idNumber">
-            ID Number
+            {{ 'entities.id_number' | translate }}
             <p-sortIcon field="idNumber"></p-sortIcon>
           </th>
           <th pSortableColumn="clientType.clientTypeName">
-            Client Type
+            {{ 'entities.client_type' | translate }}
             <p-sortIcon field="clientType.clientTypeName"></p-sortIcon>
           </th>
-          <th class="head">Actions</th>
+          <th class="head">{{ 'entities.actions' | translate }}</th>
         </tr>
         <tr>
           <th>
-            <input type="text" class="form-control w-75" (keyup)="filter($event);">
+            <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputName($event)">
+          </th>
+          <th><input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputModeOfIdentity($event)"></th>
+          <th>
+            <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputIdNumber($event)">
+          </th>
+          <th>
+            <input type="text" class="form-control w-75" (keyup.enter)="filter($event);" (input)="inputClientTypeName($event)">
           </th>
         </tr>
       </ng-template>
@@ -80,7 +89,7 @@
           <td>
             <div class="actions">
               <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(client.id)">
-                <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+                <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>{{ 'entities.view' | translate }}
               </button>
             </div>
           </td>

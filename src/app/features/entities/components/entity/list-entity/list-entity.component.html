@@ -2,7 +2,7 @@
     <!-- Top Header Text and Breadcrumb !-->
     <div class="d-flex justify-content-between my-4 ms-4">
         <div class="mr-auto p-2">
-            <h6 class="htxt page-header">{{'Entities' | uppercase}}</h6>
+            <h6 class="htxt page-header">{{'entities.entities' | translate | uppercase}}</h6>
         </div>
         <div class="me-4">
             <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
@@ -11,8 +11,20 @@
     </div>
     <!-- Top Buttons !-->
     <div class="d-flex my-4 ms-4">
-      <button type="button" class="btn btn-primary rounded-0 px-3 me-3" id="newEntityButton" (click)="createEntity()"><i class="fa-solid fa-plus"></i>&nbsp; New Entity</button>
-      <button type="button" class="btn filter-btn rounded-0 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+      <button 
+        type="button" 
+        class="btn btn-primary rounded-0 px-3 me-3" 
+        id="newEntityButton" (click)="createEntity()"
+      >
+        <i class="fa-solid fa-plus"></i> {{ 'entities.new_entity' | translate | titlecase }}
+      </button>
+
+      <button 
+        type="button" 
+        class="btn filter-btn rounded-0 px-4 me-3"
+      > 
+        <i class="fa fa-filter pe-2"></i> {{ 'entities.filter' | translate | titlecase }}
+      </button>
     </div>
     <div class="my-4 ms-4 me-4" style="position: relative;">
         <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
@@ -43,30 +55,40 @@
         <ng-template pTemplate="header">
           <tr>
             <th pSortableColumn="name">
-              Name
+              {{ 'entities.name' | translate | titlecase }}
               <p-sortIcon field="name"></p-sortIcon>
             </th>
             <th pSortableColumn="modeOfIdentity.name">
-              ID Type
+              {{ 'entities.id_type' | translate }}
               <p-sortIcon field="modeOfIdentity.name"></p-sortIcon>
             </th>
             <th pSortableColumn="identityNumber">
-              ID Number
+              {{ 'entities.id_number' | translate }}
               <p-sortIcon field="identityNumber"></p-sortIcon>
             </th>
             <th pSortableColumn="pinNumber">
-              Pin Number
+              {{ 'entities.pin_number' | translate }}
               <p-sortIcon field="pinNumber"></p-sortIcon>
             </th>
             <th pSortableColumn="categoryName">
-              Entity Type
+              {{ 'entities.entity_type' | translate }}
               <p-sortIcon field="categoryName"></p-sortIcon>
             </th>
-            <th class="head">Actions</th>
+            <th class="head">{{ 'entities.actions' | translate }}</th>
           </tr>
           <tr>
             <th>
-              <input type="text" class="form-control w-75" (keyup)="filter($event);">
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'name');" (input)="inputName($event)">
+            </th>
+            <th><input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'modeOfIdentity.name');" (input)="inputModeOfIdentityName($event)"></th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'identityNumber');" (input)="inputIdNumber($event)">
+            </th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'pinNumber');" (input)="inputPinNumber($event)">
+            </th>
+            <th>
+              <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'categoryName');" (input)="inputCategoryName($event)">
             </th>
           </tr>
         </ng-template>

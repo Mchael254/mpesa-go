@@ -2,7 +2,7 @@
 
     <div class="d-flex justify-content-between my-4 ms-4">
         <div class="mr-auto p-2">
-          <h4 class="htxt page-header">Service Provider</h4>
+          <h4 class="htxt page-header">{{ 'entities.service_provider' | translate }}</h4>
         </div>
         <div class="me-4">
           <app-dynamic-breadcrumb [breadCrumbItems]="serviceProviderBreadCrumbItems">
@@ -12,9 +12,15 @@
 
 
       <div class="d-flex my-4 ms-4 ">
-        <button type="button" class="btn btn-primary rounded-1 px-3 me-3" (click)="gotoEntityPage()">New Service Provider</button>
-        <button type="button" class="btn btn-outline-primary px-4 me-3">Import Service Provider</button>
-        <button type="button" class="btn filter-btn rounded-1 px-4 me-3"> <i class="fa fa-filter pe-2"></i>Filter</button>
+        <button type="button" class="btn btn-primary rounded-1 px-3 me-3" (click)="gotoEntityPage()">
+          {{ 'entities.new_service_provider' | translate }}
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4 me-3">
+          {{ 'entities.import_service_provider' | translate }}
+        </button>
+        <button type="button" class="btn filter-btn rounded-1 px-4 me-3">
+          <i class="fa fa-filter pe-2"></i>{{ 'entities.filter' | translate }}
+        </button>
 
       </div>
 
@@ -48,30 +54,42 @@
           <ng-template pTemplate="header">
             <tr>
               <th pSortableColumn="name">
-                Name
+                {{ 'entities.name' | translate }}
                 <p-sortIcon field="name"></p-sortIcon>
               </th>
               <th pSortableColumn="category">
-                Category
+                {{ 'entities.category' | translate }}
                 <p-sortIcon field="category"></p-sortIcon>
               </th>
               <th pSortableColumn="spEntityType">
-                Entity Type
+                {{ 'entities.entity_type' | translate }}
                 <p-sortIcon field="spEntityType"></p-sortIcon>
               </th>
               <th pSortableColumn="modeOfIdentity">
-                Primary ID Type
+                {{ 'entities.primary_id_type' | translate }}
                 <p-sortIcon field="modeOfIdentity"></p-sortIcon>
               </th>
               <th pSortableColumn="pinNumber">
-                ID Number
+                {{ 'entities.id_number' | translate }}
                 <p-sortIcon field="pinNumber"></p-sortIcon>
               </th>
-              <th class="head">Actions</th>
+              <th class="head">{{ 'entities.actions' | translate }}</th>
             </tr>
             <tr>
               <th>
-                <input type="text" class="form-control w-75" (keyup)="filter($event);">
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'name');" (input)="inputName($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'category');" (input)="inputCategory($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'spEntityType');" (input)="inputEntityType($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'modeOfIdentity');" (input)="inputModeOfIdentity($event)">
+              </th>
+              <th>
+                <input type="text" class="form-control w-75" (keyup.enter)="filter($event, 0, 5, 'pinNumber');" (input)="inputIdentityNumber($event)">
               </th>
             </tr>
           </ng-template>
@@ -84,8 +102,8 @@
               <td>{{ serviceProvider.pinNumber }}</td>
               <td>
                 <div class="actions">
-                  <button type="button" class="btn btn-link" (click)="viewDetailsWithId(serviceProvider.id)">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>view
+                  <button type="button" class="btn btn-link text-primary" (click)="viewDetailsWithId(serviceProvider.id)">
+                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>{{ 'entities.view' | translate }}
                   </button>
                 </div>
               </td>
@@ -93,10 +111,9 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="8">No Service Provider Found.</td>
+              <td colspan="8">{{ 'entities.no_service_provider_found' | translate }}</td>
             </tr>
           </ng-template>
         </p-table>
       </div>
-
 </div>

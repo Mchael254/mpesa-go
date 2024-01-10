@@ -3,33 +3,42 @@
     <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
-  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper> 
+  <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
   <div class="row">
     <form [formGroup]="createOrganizationForm" class="gap-3">
       <div class="card mb-3">
         <div class="card-header bg-transparent">
           <span class="float-start mt-3">Organization Definition</span>
           <span class="float-end mt-3">
-            <button type="button" class="btn btn-primary" (click)="createOrganization()">Create New</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="createOrganization()"
+            >
+              Create New
+            </button>
           </span>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-sm-4">
-              <label for="organization" class="form-label">Select an Organization</label>
-              <p-dropdown 
-                [options]="organizationsData" 
-                [(ngModel)]="selectedOrganization" 
-                (onChange)="onOrganizationChange()" 
+              <label for="organization" class="form-label"
+                >Select an Organization</label
+              >
+              <p-dropdown
+                [options]="organizationsData"
+                [(ngModel)]="selectedOrganization"
+                (onChange)="onOrganizationChange()"
                 optionLabel="name"
-                optionValue="id" 
-                formControlName="organization" 
-                id="organization" 
-                [filter]="true" 
-                filterBy="name" 
+                optionValue="id"
+                formControlName="organization"
+                id="organization"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '40%'}" 
-                placeholder="Select organization">
+                [style]="{ width: '100%', height: '40%' }"
+                placeholder="Select organization"
+              >
               </p-dropdown>
             </div>
           </div>
@@ -43,42 +52,88 @@
           <div class="row">
             <div class="col-4 mb-4">
               <div class="form-group mb-4">
-                <label for="shortDescription" class="form-label">Short Description</label>
-                <input type="text" class="form-control" id="shortDescription" aria-describedby="shortDescription"
-                  placeholder="Short Description" formControlName="shortDescription"
-                  [ngClass]="{ 'is-invalid': f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched) }">
-                <div *ngIf="f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['shortDescription']?.errors }">
-                  <div *ngIf="f['shortDescription']?.errors['required']">Short Description is required</div>
+                <label for="shortDescription" class="form-label"
+                  >Short Description</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="shortDescription"
+                  aria-describedby="shortDescription"
+                  placeholder="Short Description"
+                  formControlName="shortDescription"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['shortDescription']?.invalid &&
+                      (f['shortDescription']?.dirty ||
+                        f['shortDescription']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['shortDescription']?.invalid &&
+                    (f['shortDescription']?.dirty ||
+                      f['shortDescription']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['shortDescription']?.errors
+                  }"
+                >
+                  <div *ngIf="f['shortDescription']?.errors['required']">
+                    Short Description is required
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col-4">
               <div class="form-group mb-4">
                 <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" aria-describedby="name" placeholder="Name"
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  aria-describedby="name"
+                  placeholder="Name"
                   formControlName="name"
-                  [ngClass]="{ 'is-invalid': f['name']?.invalid && (f['name']?.dirty || f['name']?.touched) }">
-                  <div *ngIf="f['name']?.invalid && (f['name']?.dirty || f['name']?.touched)"
-                    class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['name']?.errors }">
-                    <div *ngIf="f['name']?.errors['required']">Name is required</div>
+                  [ngClass]="{
+                    'is-invalid':
+                      f['name']?.invalid &&
+                      (f['name']?.dirty || f['name']?.touched)
+                  }"
+                />
+                <div
+                  *ngIf="
+                    f['name']?.invalid &&
+                    (f['name']?.dirty || f['name']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['name']?.errors
+                  }"
+                >
+                  <div *ngIf="f['name']?.errors['required']">
+                    Name is required
                   </div>
+                </div>
               </div>
             </div>
             <div class="col-4">
               <label for="country" class="form-label">Country</label>
-              <p-dropdown 
-                [options]="countriesData" 
+              <p-dropdown
+                [options]="countriesData"
                 [(ngModel)]="selectedCountry"
-                (onChange)="onCountryChange()"  
-                optionLabel="name" 
+                (onChange)="onCountryChange()"
+                optionLabel="name"
                 optionValue="id"
-                formControlName="country" 
-                id="country" [filter]="true" 
-                filterBy="name" 
+                formControlName="country"
+                id="country"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '30%'}" 
-                placeholder="Select Country">
+                [style]="{ width: '100%', height: '30%' }"
+                placeholder="Select Country"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="country" class="form-label">Country</label>
@@ -97,19 +152,20 @@
             </div>
             <div class="col-sm-4 mb-4">
               <label for="stateName" class="form-label">State Name</label>
-              <p-dropdown 
-                [options]="stateData" 
-                [(ngModel)]="selectedState" 
-                (onChange)="onCityChange()" 
+              <p-dropdown
+                [options]="stateData"
+                [(ngModel)]="selectedState"
+                (onChange)="onCityChange()"
                 optionLabel="name"
-                optionValue="id" 
-                formControlName="stateName" 
-                id="stateName" 
-                [filter]="true" 
-                filterBy="name" 
+                optionValue="id"
+                formControlName="stateName"
+                id="stateName"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '45%'}" 
-                placeholder="Select State">
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select State"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="stateName" class="form-label">State Name</label>
@@ -128,39 +184,62 @@
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="physicalAddress" class="form-label">Physical Address</label>
-                <input type="text" class="form-control" id="physicalAddress" aria-describedby="physicalAddress" 
-                  placeholder="Physical Address" formControlName="physicalAddress">
+                <label for="physicalAddress" class="form-label"
+                  >Physical Address</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="physicalAddress"
+                  aria-describedby="physicalAddress"
+                  placeholder="Physical Address"
+                  formControlName="physicalAddress"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="postalAddress" class="form-label">Postal Address</label>
-                <input type="text" class="form-control" id="postalAddress" aria-describedby="postalAddress"
-                  placeholder="Postal Address" formControlName="postalAddress">
+                <label for="postalAddress" class="form-label"
+                  >Postal Address</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="postalAddress"
+                  aria-describedby="postalAddress"
+                  placeholder="Postal Address"
+                  formControlName="postalAddress"
+                />
               </div>
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
                 <label for="postalCode" class="form-label">Postal Code</label>
-                <input type="text" class="form-control" id="postalCode" aria-describedby="postalCode"
-                  placeholder="Postal Code" formControlName="postalCode">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="postalCode"
+                  aria-describedby="postalCode"
+                  placeholder="Postal Code"
+                  formControlName="postalCode"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <label for="town" class="form-label">Local Government Area</label>
-              <p-dropdown 
-                [options]="townData" 
-                [(ngModel)]="selectedTown" 
-                optionLabel="name" 
+              <p-dropdown
+                [options]="townData"
+                [(ngModel)]="selectedTown"
+                optionLabel="name"
                 optionValue="id"
-                formControlName="town" 
-                id="town" 
-                [filter]="true" 
-                filterBy="name" 
+                formControlName="town"
+                id="town"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '30%'}" 
-                placeholder="Local Government Area">
+                [style]="{ width: '100%', height: '30%' }"
+                placeholder="Local Government Area"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="town" class="form-label">Local Government Area</label>
@@ -174,17 +253,19 @@
             </div>
             <div class="col-sm-4">
               <label for="baseCurrency" class="form-label">Base Currency</label>
-              <p-dropdown 
-                [options]="currenciesData" 
-                [(ngModel)]="selectedCurrency" 
-                optionLabel="name" 
+              <p-dropdown
+                [options]="currenciesData"
+                [(ngModel)]="selectedCurrency"
+                optionLabel="name"
                 optionValue="id"
-                formControlName="baseCurrency" 
-                id="baseCurrency" 
-                [filter]="true" filterBy="name" 
+                formControlName="baseCurrency"
+                id="baseCurrency"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '30%'}"
-                 placeholder="Select Currency">
+                [style]="{ width: '100%', height: '30%' }"
+                placeholder="Select Currency"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="baseCurrency" class="form-label">Base Currency</label>
@@ -202,126 +283,267 @@
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
-                <label for="primaryTelephone" class="form-label">Telephone no 1</label>
+                <label for="primaryTelephone" class="form-label"
+                  >Telephone no 1</label
+                >
                 <div class="input-group">
-                  <select class="form-select  countryCode" id="countryCode" formControlName="countryCode"
-                    [ngClass]="{ 'is-invalid': f['countryCode']?.invalid && (f['countryCode']?.dirty || f['countryCode']?.touched) }">
+                  <select
+                    class="form-select countryCode"
+                    id="countryCode"
+                    formControlName="countryCode"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['countryCode']?.invalid &&
+                        (f['countryCode']?.dirty || f['countryCode']?.touched)
+                    }"
+                  >
                     <!-- <option value="" selected>+254</option> -->
-                    <option *ngFor="let value of countriesCode" [value]="value.code">
-                      {{ value.code | titlecase }}
+                    <option
+                      *ngFor="let value of countriesData"
+                      [value]="value.zipCodeString"
+                    >
+                      {{ value.zipCodeString | titlecase }}
                     </option>
                   </select>
-                  <input type="text" class="form-control" id="phoneNumber" placeholder="Enter Telephone number"
-                    formControlName="primaryTelephone">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phoneNumber"
+                    placeholder="Enter Telephone number"
+                    formControlName="primaryTelephone"
+                  />
                 </div>
-                <div *ngIf="f['countryCode']?.invalid && (f['countryCode']?.dirty || f['countryCode']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['countryCode']?.errors }">
-                  <div *ngIf="f['countryCode']?.errors['required']">Country Code is required</div>
+                <div
+                  *ngIf="
+                    f['countryCode']?.invalid &&
+                    (f['countryCode']?.dirty || f['countryCode']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['countryCode']?.errors
+                  }"
+                >
+                  <div *ngIf="f['countryCode']?.errors['required']">
+                    Country Code is required
+                  </div>
                 </div>
-                <div *ngIf="f['primaryTelephone']?.invalid && (f['primaryTelephone']?.dirty || f['primaryTelephone']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['primaryTelephone']?.errors }">
-                  <div *ngIf="f['primaryTelephone']?.errors['required']">Telephone no 1 is required</div>
+                <div
+                  *ngIf="
+                    f['primaryTelephone']?.invalid &&
+                    (f['primaryTelephone']?.dirty ||
+                      f['primaryTelephone']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['primaryTelephone']?.errors
+                  }"
+                >
+                  <div *ngIf="f['primaryTelephone']?.errors['required']">
+                    Telephone no 1 is required
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="secondaryTelephone" class="form-label">Telephone no 2</label>
+                <label for="secondaryTelephone" class="form-label"
+                  >Telephone no 2</label
+                >
                 <div class="input-group">
-                  <select class="form-select  countryCode" id="countryCode2" formControlName="countryCode2"
-                     [ngClass]="{ 'is-invalid': f['countryCode2']?.invalid && (f['countryCode2']?.dirty || f['countryCode2']?.touched) }">
+                  <select
+                    class="form-select countryCode"
+                    id="countryCode2"
+                    formControlName="countryCode2"
+                    [ngClass]="{
+                      'is-invalid':
+                        f['countryCode2']?.invalid &&
+                        (f['countryCode2']?.dirty || f['countryCode2']?.touched)
+                    }"
+                  >
                     <!-- <option value="" selected>+254</option> -->
-                    <option *ngFor="let value of countriesCode" [value]="value.code">
-                      {{ value.code | titlecase }}
+                    <option
+                      *ngFor="let value of countriesData"
+                      [value]="value.zipCodeString"
+                    >
+                      {{ value.zipCodeString | titlecase }}
                     </option>
                   </select>
-                  <input type="text" class="form-control" id="phoneNumber" placeholder="Enter Telephone number"
-                    formControlName="secondaryTelephone">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="phoneNumber"
+                    placeholder="Enter Telephone number"
+                    formControlName="secondaryTelephone"
+                  />
                 </div>
-                <div *ngIf="f['countryCode2']?.invalid && (f['countryCode2']?.dirty || f['countryCode2']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['countryCode2']?.errors }">
-                  <div *ngIf="f['countryCode2']?.errors['required']">Country Code is required</div>
+                <div
+                  *ngIf="
+                    f['countryCode2']?.invalid &&
+                    (f['countryCode2']?.dirty || f['countryCode2']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['countryCode2']?.errors
+                  }"
+                >
+                  <div *ngIf="f['countryCode2']?.errors['required']">
+                    Country Code is required
+                  </div>
                 </div>
-                <div *ngIf="f['secondaryTelephone']?.invalid && (f['secondaryTelephone']?.dirty || f['secondaryTelephone']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['secondaryTelephone']?.errors }">
-                  <div *ngIf="f['secondaryTelephone']?.errors['required']">Telephone no 2 is required</div>
+                <div
+                  *ngIf="
+                    f['secondaryTelephone']?.invalid &&
+                    (f['secondaryTelephone']?.dirty ||
+                      f['secondaryTelephone']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid':
+                      ['submitted'] && f['secondaryTelephone']?.errors
+                  }"
+                >
+                  <div *ngIf="f['secondaryTelephone']?.errors['required']">
+                    Telephone no 2 is required
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="emailAddress" class="form-label">Email Address</label>
-                <input type="text" class="form-control" id="emailAddress" aria-describedby="emailAddress"
-                  placeholder="Email Address" formControlName="emailAddress">
+                <label for="emailAddress" class="form-label"
+                  >Email Address</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="emailAddress"
+                  aria-describedby="emailAddress"
+                  placeholder="Email Address"
+                  formControlName="emailAddress"
+                />
               </div>
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
                 <label for="webLink" class="form-label">Website Link</label>
-                <input type="text" class="form-control" id="webLink" aria-describedby="webLink"
-                  placeholder="Website Link" formControlName="webLink">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="webLink"
+                  aria-describedby="webLink"
+                  placeholder="Website Link"
+                  formControlName="webLink"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group">
-                <label for="pinNumber" class="form-label">Pin Registration Number</label>
-                <input type="text" class="form-control" id="pinNumber" aria-describedby="pinNumber"
-                  placeholder="Pin Number" formControlName="pinNumber">
+                <label for="pinNumber" class="form-label"
+                  >Pin Registration Number</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="pinNumber"
+                  aria-describedby="pinNumber"
+                  placeholder="Pin Number"
+                  formControlName="pinNumber"
+                />
               </div>
             </div>
             <div class="col-sm-4">
-              <label for="manager" class="form-label">National Sales Manager</label>
-              <p-dropdown 
-                [options]="managersData" 
-                [(ngModel)]="selectedManager" 
-                optionLabel="name" 
+              <label for="manager" class="form-label"
+                >National Sales Manager</label
+              >
+              <p-dropdown
+                [options]="managersData"
+                [(ngModel)]="selectedManager"
+                optionLabel="name"
                 optionValue="id"
-                formControlName="manager" 
-                id="manager" 
-                [filter]="true" 
+                formControlName="manager"
+                id="manager"
+                [filter]="true"
                 filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '30%'}"
-                placeholder="Select a Manager">
+                [style]="{ width: '100%', height: '30%' }"
+                placeholder="Select a Manager"
+              >
               </p-dropdown>
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
                 <label for="organizationType" class="form-label">Type</label>
-                <select id="type" class="form-select  mb-1" formControlName="organizationType" required>
+                <select
+                  id="type"
+                  class="form-select mb-1"
+                  formControlName="organizationType"
+                  required
+                >
                   <option value="" selected>Type</option>
                   <option value="INS">Insured</option>
                   <option value="BRK" selected>Broker</option>
-                  
                 </select>
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
                 <label for="motto" class="form-label">Motto</label>
-                <input type="text" class="form-control" id="motto" aria-describedby="motto"
-                  placeholder="Motto" formControlName="motto">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="motto"
+                  aria-describedby="motto"
+                  placeholder="Motto"
+                  formControlName="motto"
+                />
               </div>
             </div>
             <div class="row">
-              <div class="col-4 mb-4"> 
+              <div class="col-4 mb-4">
                 <label for="logo">Logo</label>
                 <div (change)="onLogoChange($event)">
-                  <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
+                  <img
+                    *ngIf="url !== '' && url"
+                    [src]="url"
+                    alt=""
+                    id="profile-photo"
+                  />
                   <input type="file" id="logo" formControlName="logo" hidden />
                   <label *ngIf="url === ''" for="logo" class="img_upload">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Logo</label>
-                  <label for="logo" *ngIf="url !== ''" class="img_edit">Edit</label>
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                    Logo</label
+                  >
+                  <label for="logo" *ngIf="url !== ''" class="img_edit"
+                    >Edit</label
+                  >
                 </div>
               </div>
               <div class="col-4 pad-1">
                 <label for="groupLogo">Group Logo</label>
                 <div (change)="onGroupLogoChange($event)">
-                  <img *ngIf="urlGrp !== '' && urlGrp" [src]="urlGrp" alt="" id="profile-photo" />
-                  <input type="file" id="groupLogo" formControlName="groupLogo" hidden />
-                  <label *ngIf="urlGrp === ''" for="groupLogo" class="img_upload">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Group Logo</label>
-                  <label for="groupLogo" *ngIf="urlGrp !== ''" class="img_edit">Edit</label>
+                  <img
+                    *ngIf="urlGrp !== '' && urlGrp"
+                    [src]="urlGrp"
+                    alt=""
+                    id="profile-photo"
+                  />
+                  <input
+                    type="file"
+                    id="groupLogo"
+                    formControlName="groupLogo"
+                    hidden
+                  />
+                  <label
+                    *ngIf="urlGrp === ''"
+                    for="groupLogo"
+                    class="img_upload"
+                  >
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Group
+                    Logo</label
+                  >
+                  <label for="groupLogo" *ngIf="urlGrp !== ''" class="img_edit"
+                    >Edit</label
+                  >
                 </div>
               </div>
             </div>
@@ -337,39 +559,60 @@
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
                 <label for="accountName" class="form-label">Account Name</label>
-                <input type="text" class="form-control" id="accountName" aria-describedby="accountName"
-                  placeholder="Account Name" formControlName="accountName">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="accountName"
+                  aria-describedby="accountName"
+                  placeholder="Account Name"
+                  formControlName="accountName"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="accountNumber" class="form-label">Account Number</label>
-                <input type="text" class="form-control" id="accountNumber" aria-describedby="accountNumber"
-                  placeholder="Account Number" formControlName="accountNumber">
+                <label for="accountNumber" class="form-label"
+                  >Account Number</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="accountNumber"
+                  aria-describedby="accountNumber"
+                  placeholder="Account Number"
+                  formControlName="accountNumber"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
                 <label for="swiftCode" class="form-label">Swift Code</label>
-                <input type="text" class="form-control" id="swiftCode" aria-describedby="swiftCode"
-                  placeholder="Swift Code" formControlName="swiftCode">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="swiftCode"
+                  aria-describedby="swiftCode"
+                  placeholder="Swift Code"
+                  formControlName="swiftCode"
+                />
               </div>
             </div>
             <div class="col-sm-4 mb-4">
               <label for="bankName" class="form-label">Bank Name</label>
-              <p-dropdown 
-                [options]="banksData" 
-                [(ngModel)]="selectedBank" 
-                (onChange)="onBankSelection()" 
-                optionLabel="name" 
+              <p-dropdown
+                [options]="banksData"
+                [(ngModel)]="selectedBank"
+                (onChange)="onBankSelection()"
+                optionLabel="name"
                 optionValue="id"
-                formControlName="bankName" 
-                id="bankName" 
-                [filter]="true" 
-                filterBy="name" 
+                formControlName="bankName"
+                id="bankName"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '45%'}" 
-                placeholder="Select Bank">
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select Bank"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="bankName" class="form-label">Bank Name</label>
@@ -381,18 +624,19 @@
             </div>
             <div class="col-sm-4">
               <label for="bankBranch" class="form-label">Bank Branch</label>
-              <p-dropdown 
-                [options]="bankBranchData" 
-                [(ngModel)]="selectedBankBranch" 
+              <p-dropdown
+                [options]="bankBranchData"
+                [(ngModel)]="selectedBankBranch"
                 optionLabel="name"
-                optionValue="id" 
-                formControlName="bankBranch" 
-                id="bankBranch" 
-                [filter]="true" 
-                filterBy="name" 
+                optionValue="id"
+                formControlName="bankBranch"
+                id="bankBranch"
+                [filter]="true"
+                filterBy="name"
                 [showClear]="true"
-                [style]="{ width: '100%', height: '35%'}" 
-                placeholder="Select Bank Branch">
+                [style]="{ width: '100%', height: '35%' }"
+                placeholder="Select Bank Branch"
+              >
               </p-dropdown>
               <!-- <div class="form-group mb-4">
                 <label for="bankBranch" class="form-label">Bank Branch</label>
@@ -405,8 +649,14 @@
             <div class="col-sm-4">
               <div class="form-group mb-4">
                 <label for="paybill" class="form-label">Paybill</label>
-                <input type="text" class="form-control" id="paybill" aria-describedby="paybill"
-                  placeholder="Paybill" formControlName="paybill">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="paybill"
+                  aria-describedby="paybill"
+                  placeholder="Paybill"
+                  formControlName="paybill"
+                />
               </div>
             </div>
           </div>
@@ -420,60 +670,100 @@
           <div class="row">
             <div class="col-sm-4 mb-4">
               <div class="form-group">
-                <label for="customerCareName" class="form-label">Customer Care Name</label>
-                <input type="text" class="form-control" id="customerCareName" aria-describedby="customerCareName"
-                  placeholder="Customer Care Name" formControlName="customerCareName">
+                <label for="customerCareName" class="form-label"
+                  >Customer Care Name</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerCareName"
+                  aria-describedby="customerCareName"
+                  placeholder="Customer Care Name"
+                  formControlName="customerCareName"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="customerCareEmail" class="form-label">Email Address</label>
-                <input type="text" class="form-control" id="customerCareEmail" aria-describedby="customerCareEmail"
-                  placeholder="Email" formControlName="customerCareEmail">
+                <label for="customerCareEmail" class="form-label"
+                  >Email Address</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerCareEmail"
+                  aria-describedby="customerCareEmail"
+                  placeholder="Email"
+                  formControlName="customerCareEmail"
+                />
               </div>
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
-                <label for="customerCarePriNumber" class="form-label">Number 1</label>
-                <input type="text" class="form-control" id="customerCarePriNumber" aria-describedby="customerCarePriNumber"
-                  placeholder="Number 1" formControlName="customerCarePriNumber">
+                <label for="customerCarePriNumber" class="form-label"
+                  >Number 1</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerCarePriNumber"
+                  aria-describedby="customerCarePriNumber"
+                  placeholder="Number 1"
+                  formControlName="customerCarePriNumber"
+                />
               </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
-                <label for="customerCareSecNumber" class="form-label">Number 2</label>
-                <input type="text" class="form-control" id="customerCareSecNumber" aria-describedby="customerCareSecNumber"
-                  placeholder="Number 2" formControlName="customerCareSecNumber">
+                <label for="customerCareSecNumber" class="form-label"
+                  >Number 2</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerCareSecNumber"
+                  aria-describedby="customerCareSecNumber"
+                  placeholder="Number 2"
+                  formControlName="customerCareSecNumber"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </form>
-    <!-- <div class="row mt-1">
-      <div class="col-sm-12" *ngIf="isOrganizationSelected">
-        <button class="btn btn-outline-primary btn-sm">Delete</button>
-      </div>
-      <div class="col-sm-12">
-        <div class="float-end">
-          <button class="btn btn-outline-primary btn-sm me-2">Cancel</button>
-          <button class="btn btn-primary btn-sm" (click)="onSave()">Next</button>
-        </div>
-      </div>
-    </div> -->
   </div>
   <div class="row mt-1">
-    <div class="col-sm-12" *ngIf="isOrganizationSelected">
-      <button class="btn btn-outline-primary btn-sm" 
-        (click)="deleteOrganization(selectedOrganizationId)">Delete</button>
+    <div class="col-sm-6">
+      <button
+        *ngIf="isOrganizationSelected"
+        class="btn btn-outline-primary btn-sm me-2"
+        (click)="deleteOrganization()"
+      >
+        Delete
+      </button>
+      <button class="btn btn-outline-primary btn-sm me-2" (click)="onReset()">
+        Clear
+      </button>
     </div>
-    <div class="col-sm-12">
+    <div class="col-sm-6">
       <div class="float-end">
-        <button class="btn btn-outline-primary btn-sm me-2">Cancel</button>
-        <button class="btn btn-primary btn-sm" (click)="onSave()">Next</button>
+        <button class="btn btn-primary btn-sm me-2" (click)="onSave()">
+          Save
+        </button>
+        <button class="btn btn-outline-primary btn-sm" (click)="onNext()">
+          Next
+        </button>
       </div>
     </div>
   </div>
-
-
 </div>
+
+<!-- modals -->
+<app-reusable-input
+  [modalId]="'organizationConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this organization?'"
+  (confirmed)="confirmOrganizationDelete()"
+  #organizationConfirmationModal
+></app-reusable-input>

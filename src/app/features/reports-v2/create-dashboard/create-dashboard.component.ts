@@ -20,6 +20,7 @@ import {Criteria} from "../../../shared/data/reports/criteria";
 import {NgxSpinnerService} from "ngx-spinner";
 import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 import {ChartReports, RenameDTO} from "../../../shared/data/reports/chart-reports";
+import { take } from 'rxjs';
 
 const log = new Logger('CreateDashboardComponent');
 @Component({
@@ -281,11 +282,16 @@ export class CreateDashboardComponent implements OnInit {
    */
   getChartReports(): void {
     this.reportService.getChartReports()
-      .subscribe(res => {
-        this.chartReports = res?.content;
-        log.info(`all chart reports >>>`, this.chartReports);
-
-      });
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          this.chartReports = res?.content;
+          log.info(`all chart reports >>>`, this.chartReports);
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('error', err.message);
+        }
+      })
   }
 
   /**
@@ -294,30 +300,35 @@ export class CreateDashboardComponent implements OnInit {
   async getAllDashboards(): Promise<void> {
     this.dashboards = [] = [];
     this.reportService.getDashboards()
-      .subscribe(async res => {
-        this.dashboards = res;
-        log.info(`dashboards >>>`, this.dashboards);
-        for (const dashboard of res) {
+      .pipe(take(1))
+      .subscribe({
+        next: async (res) => {
+          this.dashboards = res;
+          log.info(`dashboards >>>`, this.dashboards);
+          for (const dashboard of res) {
 
-          if (dashboard.reports.length > 0) {
-            const report = dashboard.reports[0];
-            const measures = JSON.parse(report?.measures);
-            const dimensions = JSON.parse(report?.dimensions);
-            const filters = JSON.parse(report?.filter);
-            log.info(`chart to use >>>`, res[1]?.reports[0]?.charts[0]?.type);
-
-            /*log.info(`measures >>>`, measures);
-            log.info(`dimensions >>>`, dimensions);
-            log.info(`filters >>>`, filters);
-            log.info('---------------')*/
-
-            // this.getReportFromCubeJS(measures, dimensions, filters);
-            const chartData = await this.getReportFromCubeJS(measures, dimensions, filters);
-            dashboard.chartData = chartData;
-          }
+              if (dashboard.reports.length > 0) {
+                const report = dashboard.reports[0];
+                const measures = JSON.parse(report?.measures);
+                const dimensions = JSON.parse(report?.dimensions);
+                const filters = JSON.parse(report?.filter);
+                log.info(`chart to use >>>`, res[1]?.reports[0]?.charts[0]?.type);
+    
+                /*log.info(`measures >>>`, measures);
+                log.info(`dimensions >>>`, dimensions);
+                log.info(`filters >>>`, filters);
+                log.info('---------------')*/
+    
+                // this.getReportFromCubeJS(measures, dimensions, filters);
+                const chartData = await this.getReportFromCubeJS(measures, dimensions, filters);
+                dashboard.chartData = chartData;
+              }
+            }
+            this.spinner.hide();
+          },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('error', err.message);
         }
-        this.spinner.hide();
-        // log.info(`all dashboards >>>`, this.dashboards);
       });
   }
 

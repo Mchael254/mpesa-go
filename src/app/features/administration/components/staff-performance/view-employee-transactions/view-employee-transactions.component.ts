@@ -11,6 +11,7 @@ import {take} from "rxjs/internal/operators/take";
 import {untilDestroyed} from "../../../../../shared/shared.module";
 import {BusinessTransactionsDTO, TicketModuleDTO, TransactionsDTO} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 const log = new Logger('ViewEmployeeTransactionsComponent');
 @Component({
@@ -56,7 +57,8 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private globalMessagingService: GlobalMessagingService
   ) {}
 
   /**
@@ -153,9 +155,14 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
           take(1),
           tap((data) => log.info('Fetch transactions data>> ', data))
         )
-        .subscribe((data) =>{
-          this.transactions = data;
-          this.cdr.detectChanges();
+        .subscribe({
+          next: (data) => {
+            this.transactions = data;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+          }
         });
     }
 
@@ -178,11 +185,14 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       .pipe(
         untilDestroyed(this),
       )
-      .subscribe(
-        (data) => {
+      .subscribe({
+        next: (data) => {
           this.systemsData = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
         }
-      )
+      })
   }
 
   /**
@@ -212,9 +222,13 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       payload.amount,
       payload.filterColumn,
       payload.transactionType)
-      .subscribe(data => {
-        this.transactions = data;
-        this.cdr.detectChanges();
+      .subscribe({
+        next: (data) => {
+          this.transactions = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
       })
   }
 
@@ -227,11 +241,14 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       .pipe(untilDestroyed(this),
         tap((data) => log.info('Fetch Ticket modules', data))
       )
-      .subscribe(
-        (data) => {
+      .subscribe({
+        next: (data) => {
           this.ticketModules = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
         }
-      );
+      });
   }
 
   /**
@@ -243,11 +260,14 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
       .pipe(untilDestroyed(this),
         tap((data) => log.info('Fetch business transactions', data))
       )
-      .subscribe(
-        (data) => {
+      .subscribe({
+        next: (data) => {
           this.businessTransactions = data;
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
         }
-      );
+      });
   }
 
   /**

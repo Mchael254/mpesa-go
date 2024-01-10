@@ -1,5 +1,7 @@
 {
-  "lang": {
+  "admin": {},
+  "auth": {},
+  "base": {
     "home":"家",
     "my_dashbaord":"我的仪表板",
     "dashboard": "仪表盘",
@@ -16,5 +18,16 @@
     "my_policies": "我的保单",
     "my_quotations": "我的报价",
     "quotation": "报价"
-  }
+  },
+  "crm": {},
+  "entities": {},
+  "gis": {},
+  "lms": {
+      "common": {},
+      "ind": {},
+      "grp": {}
+  },
+  "reports": {
+  },
+  "setups": {}
 }

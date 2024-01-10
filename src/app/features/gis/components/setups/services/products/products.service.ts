@@ -126,4 +126,10 @@ export class ProductsService {
       catchError(this.errorHandl)
     )
   }
+  getYearOfManufacture():Observable<any>{
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/products/retrieveYearofManufacture?`).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
 }

@@ -167,10 +167,23 @@ export class QuotationsService {
    * @param {string} productCode - The product code for which to retrieve clauses.
    * @return {Observable<any>} - An observable of the response containing product clauses.
    */
-  getProductClauses(productCode){
+ getProductClauses(productCode){
     return this.http.get(`/${this.baseUrl}/setups/api/v1/products/${productCode}/clauses`)
-
-  }
- 
+ }
+ deleteSchedule(level:any,riskCode:any,code:any){
+    return this.http.delete<scheduleDetails>(`/${this.baseUrl}/quotation/api/v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`) 
+ }
+ makeReady(quotationCode,user){
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/make-ready/${quotationCode}?user=${user}`,this.httpOptions)
+ }
+ confirmQuotation(quotationCode,user){
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/confirm/${quotationCode}?user=${user}`,this.httpOptions)
+ }
+ authoriseQuotation(quotationCode,user){
+    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/authorise/${quotationCode}?user=${user}`,this.httpOptions)
+ }
+ getExternalClaimsExperience(clientCode){
+  return this.http.get(`/${this.baseUrl}/setups/api/v1/external-claims-experiences?clientCode=${clientCode}`)
+ }
 }
 

@@ -2,7 +2,7 @@
     <!-- Top Header Text and Breadcrumb !-->
     <div class="d-flex justify-content-between my-4 ms-4">
         <div class="mr-auto p-2">
-            <h6 class="htxt page-header" style="font-size: 15px; font-weight: 900;">{{'New Entity' | uppercase}}</h6>
+            <h6 class="htxt page-header" style="font-size: 15px; font-weight: 900;">{{'entities.new_entity' | translate | uppercase}}</h6>
         </div>
         <div class="me-4">
             <app-dynamic-breadcrumb [breadCrumbItems]="entityBreadCrumbItems">
@@ -16,27 +16,26 @@
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.category === 'Y'">
                             <div class="col-md-4 col-6 pad-1" >
-                                <label for="category">Party Type</label>
+                                <label for="category">{{ 'entities.party_type' | translate | titlecase }}</label>
                                 <select id="category" class="form-select" placeholder="Select Party Type"
                                     formControlName="category"
                                     [ngClass]="{ 'is-invalid': f['category'].invalid && (f['category'].dirty || f['category'].touched) }">
-                                    <option value="" selected>Primary Party Type</option>
-                                    <option value="I">Individual</option>
-                                    <option value="C">Corporate</option>
+                                    <option value="" selected>{{ 'entities.primary' | translate | titlecase }} {{ 'entities.party_type' | translate | titlecase }}</option>
+                                    <option value="I">{{ 'entities.individual' | translate | titlecase }}</option>
+                                    <option value="C">{{ 'entities.corporate' | translate | titlecase }}</option>
                                 </select>
                                 <div *ngIf="f['category'].invalid && (f['category'].dirty || f['category'].touched)"
                                     class="form-text text-danger">
-                                    <div *ngIf="f['category']?.errors['required']">Category is required</div>
+                                    <div *ngIf="f['category']?.errors['required']">{{ 'entities.category_required' | translate | titlecase }}</div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.date_of_birth === 'Y'">
                             <div class="col-md-4 col-6 md-col-4 pad-1">
-                                <label for="date_of_birth">Date of Birth</label>
+                                <label for="date_of_birth">{{ 'entities.dob' | translate | titlecase }}</label>
                                 <input type="text"
                                     class="form-control"
                                     name="inputDateOfBirth"
-                                    placeholder="Date of Birth"
                                     onfocus="(this.type='date')"
                                     onblur="(this.type='text')"
                                     id="date_of_birth"
@@ -46,65 +45,83 @@
                                 <div *ngIf="f['date_of_birth']?.invalid && (f['date_of_birth']?.dirty || f['date_of_birth']?.touched)"
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['date_of_birth']?.errors }">
-                                    <div *ngIf="f['date_of_birth']?.errors['required']">Date of birth is required</div>
+                                    <div *ngIf="f['date_of_birth']?.errors['required']">
+                                        {{ 'entities.dob' | translate | titlecase }} {{ 'entities.required' | translate }}
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.entity_name === 'Y'">
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="entity_name">Entity</label>
-                                <input type="text" class="form-control" id="entity_name" placeholder="Entity Name"
-                                    formControlName="entity_name"
+                                <label for="entity_name">{{ 'entities.entity' | translate | titlecase }} {{ 'entities.name' | translate | titlecase }}</label>
+                                <input type="text" class="form-control" id="entity_name"  formControlName="entity_name"
                                     [ngClass]="{ 'is-invalid': f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched) }">
                                 <div *ngIf="f['entity_name']?.invalid && (f['entity_name']?.dirty || f['entity_name']?.touched)"
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['entity_name']?.errors }">
-                                    <div *ngIf="f['entity_name']?.errors['required']">Name is required</div>
+                                    <div *ngIf="f['entity_name']?.errors['required']">
+                                        {{ 'entities.name' | translate | titlecase }} {{ 'entities.required' | translate }}
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.mode_of_identity === 'Y'">
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="mode_of_identity">Primary ID Type</label>
+                                <label for="mode_of_identity">
+                                    {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }}
+                                </label>
                                 <select id="mode_of_identity" class="form-select" placeholder="Primary ID Type"
                                     formControlName="mode_of_identity"
                                     [ngClass]="{ 'is-invalid': f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched) }">
-                                    <option value="" selected disabled>Primary ID Type</option>
-                                    <option *ngFor="let type of  modeIdentityType" [value]="type.id">{{ type.name }}
+                                    <option value="" selected disabled>
+                                        {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }}
+                                    </option>
+                                    <option *ngFor="let type of  modeIdentityType" [value]="type.id">
+                                        {{ type.name }} <!-- return translation from backend -->
                                     </option>
                                 </select>
                                 <div *ngIf="f['mode_of_identity']?.invalid && (f['mode_of_identity']?.dirty || f['mode_of_identity']?.touched)"
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['mode_of_identity']?.errors }">
-                                    <div *ngIf="f['mode_of_identity']?.errors['required']">Mode of identity is required</div>
+                                    <div *ngIf="f['mode_of_identity']?.errors['required']">
+                                        {{ 'entities.primary' | translate | titlecase }} {{ 'entities.id_type' | translate }} {{ 'entities.required' | translate }}
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.identity_number === 'Y'">
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="identity_number">ID Number</label>
-                                <input type="text" class="form-control" id="identity_number" placeholder="ID Number"
+                                <label for="identity_number">{{ 'entities.id_number' | translate }}</label>
+                                <input type="text" class="form-control" id="identity_number"
                                     formControlName="identity_number"
                                     [ngClass]="{ 'is-invalid': f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched) }">
                                 <div *ngIf="f['identity_number']?.invalid && (f['identity_number']?.dirty || f['identity_number']?.touched)"
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['identity_number']?.errors }">
-                                    <div *ngIf="f['identity_number']?.errors['required']">Identity number is required</div>
-                                    <div *ngIf="f['identity_number'].errors['pattern']">ID Number format 12345678</div>
+                                    <div *ngIf="f['identity_number']?.errors['required']">
+                                        {{ 'entities.id_number' | translate }} {{ 'entities.required' | translate }}
+                                    </div>
+                                    <div *ngIf="f['identity_number'].errors['pattern']">
+                                        {{ 'entities.id_number' | translate }} {{ 'entities.format' | translate }} 12345678
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
                         <ng-container *ngIf="visibleStatus.pin_number === 'Y'">
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="pin_number">Pin Number</label>
-                                <input type="text" class="form-control" id="pin_number" placeholder="Pin Number"
+                                <label for="pin_number">{{ 'entities.pin_number' | translate }}</label>
+                                <input type="text" class="form-control" id="pin_number"
                                     formControlName="pin_number"
                                     [ngClass]="{ 'is-invalid': f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched) }">
                                 <div *ngIf="f['pin_number']?.invalid && (f['pin_number']?.dirty || f['pin_number']?.touched)"
                                     class="form-text text-danger"
                                     [ngClass]="{ 'is-invalid': ['submitted'] && f['pin_number']?.errors }">
-                                    <div *ngIf="f['pin_number']?.errors['required']">PIN Number is required</div>
-                                    <div *ngIf="f['pin_number'].errors['pattern']">PIN Number format A123456789R</div>
+                                    <div *ngIf="f['pin_number']?.errors['required']">
+                                        {{ 'entities.pin_number' | translate }} {{ 'entities.required' | translate }}
+                                    </div>
+                                    <div *ngIf="f['pin_number'].errors['pattern']">
+                                        {{ 'entities.pin_number' | translate }} {{ 'entities.format' | translate }} A123456789R
+                                    </div>
                                 </div>
                             </div>
                         </ng-container>
@@ -117,16 +134,16 @@
                                     value="{{ selectedRole.partyTypeName }}" formControlName="assign_role" [disabled]="true">
                             </div> -->
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="assign_role">Assign Role (Optional)</label>
+                                <label for="assign_role">{{ 'entities.assign_role' | translate | titlecase }} ({{ 'entities.optional' | translate }})</label>
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
                                     [disabled]="true">
                             </div>
 
                             <div class="col-md-4 col-6 pad-1">
-                                <label for="rolesButton">Select Role</label>
+                                <label for="rolesButton">{{ 'entities.select_role' | translate | titlecase }}</label>
                                 <button type="button" id="rolesButton" class="btn btn-outline-primary btn-md btn-block"
                                     data-bs-toggle="modal" data-bs-target="#selectRoleModal" [disabled]="disableRole">
-                                    Select Role
+                                    {{ 'entities.select_role' | translate | titlecase }}
                                 </button>
                             </div>
                         </ng-container>
@@ -134,17 +151,17 @@
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.profilePiture === 'Y'">
                             <div class="col-md-4 col-12 pad-1">
-                                <label for="inputProfileImg">Profile Photo</label>
+                                <label for="inputProfileImg">{{ 'entities.profile_photo' | translate | titlecase }}</label>
                               <p style="padding:7px; border-left: solid 3px #00529b; color: #00529b">
                                 <i class="fa-solid fa-info-circle"></i>
-                                <strong> Note:</strong> png,jpeg,jpg file formats allowed.
+                                <strong> {{ 'entities.note' | translate | titlecase }} - </strong> png, jpeg or jpg
                               </p>
                                 <div (change)="onFileChange($event)">
                                     <img *ngIf="url !== '' && url" [src]="url" alt="" id="profile-photo" />
                                     <input type="file" id="inputProfileImg" formControlName="profilePiture" accept="image/jpeg, image/png" hidden />
                                     <label *ngIf="url === ''" for="inputProfileImg" class="img_upload">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload image</label>
-                                    <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">Edit</label>
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> {{ 'entities.upload_image' | translate | titlecase }}</label>
+                                    <label for="inputProfileImg" *ngIf="url !== ''" class="img_edit">{{ 'entities.edit' | translate | titlecase }}</label>
                                 </div>
                             </div>
                         </ng-container>
@@ -156,7 +173,12 @@
         <div class="lower-navigation pad-1">
             <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
             <span class="float-end">
-                <button style="padding: 0.4 0.5rem;" type="button" id="nextButton" class="btn btn-primary" (click)="onSubmit()"><i class="fa-solid fa-circle-arrow-right"></i>&nbsp;Next</button>
+                <button 
+                    style="padding: 0.4 0.5rem;" 
+                    type="button" id="nextButton" 
+                    class="btn btn-primary" (click)="onSubmit()"
+                ><i class="fa-solid fa-circle-arrow-right"></i> {{ 'entities.next' | translate | titlecase }}
+            </button>
             </span>
         </div>
     </div>
@@ -177,15 +199,14 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">
-                                <h6 class="black-text">Roles</h6>
+                                <h6 class="black-text">{{ 'entities.roles' | translate | titlecase }}</h6>
                                 <div class="row">
                                     <div class="col-md-12 black-text">
                                         <div class="form-check form-check-inline" *ngFor="let role of partyLevel1">
                                             <input class="form-check-input" type="radio" name="partyType"
                                                 id="radioRoles" [value]="role.partyTypeName" formControlName="partyType"
                                                 (click)="onAssignRole(role)">
-                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName
-                                                }}</label>
+                                            <label class="form-check-label" for="partyType">{{ role.partyTypeName}}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -193,7 +214,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <h6 class="black-text">Others</h6>
+                                <h6 class="black-text">{{ 'entities.others' | translate | titlecase }}</h6>
                                 <div class="row">
                                     <ng-container *ngFor="let role of partyLevel2">
                                         <div class="col-sm-4 black-text">
