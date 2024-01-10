@@ -22,10 +22,11 @@ import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { Table } from 'primeng/table';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { finalize, forkJoin, mergeMap, switchMap, tap } from 'rxjs';
-// import * as bootstrap from 'bootstrap'; // Import Bootstrap
 import { ClientBranchesDto } from 'src/app/features/entities/data/ClientDTO';
 import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 
 const log = new Logger("QuickQuoteFormComponent");
@@ -39,8 +40,6 @@ export class QuickQuoteFormComponent {
   @ViewChild('calendar', { static: true }) calendar: Calendar;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
-
-
 
 
   productList:any
@@ -127,7 +126,10 @@ export class QuickQuoteFormComponent {
   dynamicRegexPattern: string;
   carRegNoHasError: boolean = false; 
 
-  xyz:any;
+  passedQuotation:any;
+  
+  // isAddRisk:boolean=false;
+  xyz:boolean;
 
   @ViewChild('dt1') dt1: Table | undefined;
 
@@ -150,11 +152,15 @@ export class QuickQuoteFormComponent {
     public sectionService:SectionsService,
     public countryService:CountryService,
     private router: Router,
+    private apiService:ApiService,
 
 
   ) { }
 
   ngOnInit(): void {
+    this.apiService.GET('email/3/send',API_CONFIG.NOTIFICATION_BASE_URL).subscribe(data =>console.log(data)
+    )
+    this.quotationService.test().subscribe(res=>console.log(res))
   this.loadAllproducts();
   this.loadAllClients();
   this.getbranch();
@@ -164,57 +170,105 @@ export class QuickQuoteFormComponent {
   // this.createForm();
   this.createRiskDetailsForm();
   this.createPersonalDetailsForm();
+  
+  //   const dynamicData = sessionStorage.getItem('dynamicFormData');
+  //   if (dynamicData) {
+  //     const parsedDynamicData = JSON.parse(dynamicData);
+  //     this.dynamicForm.setValue(parsedDynamicData);
+      
+  //   }
   this.createSectionDetailsForm();
   this.getuser();
   this.loadAllSubclass();
   // this.getCountries();
   this.populateYears();
-
-  this.xyz=this.sharedService.getAddAnotherRisk();
+  /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
+  this.passedQuotation=this.sharedService.getAddAnotherRisk();
     // Console log the values
-    console.log("XYZ Details:", this.xyz);
+    // console.log("XYZ Details:", this.passedQuotation);
 
-    console.log("Quotation Details:", this.xyz.quotationDetailsRisk);
-    console.log("Client Details:", this.xyz.clientDetails);
+    // console.log("Quotation Details:", this.passedQuotation.quotationDetailsRisk);
+    // console.log("Client Details:", this.passedQuotation.clientDetails);
+    if(this.passedQuotation){
+      // this.clientName=this.passedQuotation.clientDetails.firstName+ ' ' +this.passedQuotation.clientDetails.lastName;
+      // this.clientEmail=this.passedQuotation.clientDetails.emailAddress;
+      // this.clientPhone=this.passedQuotation.clientDetails.phoneNumber;
+      // this.personalDetailsForm.patchValue(this.passedQuotation.quotationDetailsRisk)
+  
+      // this.xyz=this.sharedService.getIsAddRisk();
+      // console.log("isAddRiskk Details:", this.xyz);
+    }
+   
+    
+    const quickQuoteFormDetails = sessionStorage.getItem('quickQuoteFormData');
+    console.log(quickQuoteFormDetails,'Quick Quote form details session storage')
+
+    if (quickQuoteFormDetails) {
+      const parsedData = JSON.parse(quickQuoteFormDetails);
+      console.log(parsedData)
+      this.personalDetailsForm.setValue(parsedData);
+      
+    }
+   
 
   }
- 
-  
- 
- 
-
-  
  /**
- * Loads all products from the backend service and updates the component's ProductList.
- * Triggers change detection to reflect the updated data in the view.
+ * Loads all products by making an HTTP GET request to the ProductService.
+ * Retrieves a list of products and updates the component's productList property.
+ * Also logs the received product list for debugging purposes.
+ * @method loadAllProducts
+ * @return {void}
  */
  loadAllproducts(){
   this.productService.getAllProducts().subscribe(data =>{
      this.productList = data;
-     log.info(this.productList,"this is a product list")
+    //  log.info(this.productList,"this is a product list")
 
      this.cdr.detectChanges()
    })
 
 }
+/**
+ * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
+ * This method is typically used to reset form fields or client-related data in the component.
+ * @method resetClientData
+ * @return {void}
+ */
 resetClientData() {
   this.clientName = '';
   this.clientEmail = '';
   this.clientPhone = '';
   this.filteredCountry='';
-  // Add any other properties you want to reset
 }
 /* Toggles between a new and existing client */
+/**
+ * Toggles the 'new' state to true.
+ * This method is typically used to toggle between a new and existing client.
+ * @method toggleButton
+ * @return {void}
+ */
 toggleButton(){
   this.new = true
 }
-
+/**
+ * Toggles the 'new' state to false and resets client-related data.
+ * This method is commonly used to switch from a 'new' client state to a default state and clear client input fields.
+ * @method toggleNewClient
+ * @return {void}
+ */
 toggleNewClient(){
   this.new = false
   this.resetClientData();
-
 }
-
+/**
+ * Retrieves user information from the authentication service.
+ * - Sets the 'user' property with the current user's name.
+ * - Sets the 'userDetails' property with the current user's details.
+ * - Logs the user details for debugging purposes.
+ * - Retrieves and sets the 'userBranchId' property with the branch ID from user details.
+ * @method getUser
+ * @return {void}
+ */
 getuser(){
   this.user = this.authService.getCurrentUserName()
   this.userDetails = this.authService.getCurrentUser();
@@ -229,6 +283,14 @@ getuser(){
 
 //   })
 //  }
+
+/**
+ * Retrieves branch information by making an HTTP GET request to the BranchService.
+ * - Populates the 'branchList' property with the received data.
+ * - Logs the retrieved branch list for debugging purposes.
+ * @method getBranch
+ * @return {void}
+ */
  getbranch(){
   this.branchService.getBranch().subscribe(data=>{
     this.branchList = data;
@@ -236,18 +298,29 @@ getuser(){
 
   })
 }
-/* Get all the clients. This is used to get the options when selecting an existing client */
+/**
+ * Fetches client data via HTTP GET from ClientService.
+ * - Populates 'clientList' and extracts data from 'content'.
+ * - Logs client data for debugging using 'log.debug'.
+ * @method loadAllClients
+ * @return {void}
+ */
 loadAllClients(){
   this.clientService.getClients().subscribe(data =>{
     this.clientList = data;
     this.clientData = this.clientList.content
     log.debug("CLIENT DATA:", this.clientData)
-
-    
   })
 }
 
-
+/**
+ * Fetches and filters country data from CountryService.
+ * - Logs the entire country list for debugging.
+ * - Filters for a test country ('KENYA') and logs the result.
+ * - Assigns the mobile prefix of the filtered country to 'mobilePrefix' and logs it.
+ * @method getCountries
+ * @return {void}
+ */
 getCountries(){
   this.countryService.getCountries().subscribe(data=>{
     this.countryList=data;
@@ -261,6 +334,12 @@ getCountries(){
 
   })
 }
+/**
+ * Creates a form group using Angular FormBuilder (fb).
+ * - Defines form controls for client details.
+ * @method createForm
+ * @return {void}
+ */
 createForm(){
   this.clientForm = this.fb.group({
     
@@ -290,6 +369,12 @@ createForm(){
     withEffectFromDate: ['']
   })
 }
+/**
+ * Creates a form group for personal details using Angular FormBuilder (fb).
+ * - Defines form controls for various personal details.
+ * @method createPersonalDetailsForm
+ * @return {void}
+ */
 createPersonalDetailsForm(){
   this.personalDetailsForm=this.fb.group({
     actionType: [''],
@@ -321,9 +406,16 @@ createPersonalDetailsForm(){
 });
 }
 
-
-/* Get A specific client's details on select. When the form controls have been 
-defined use patch value to populate the relevant fields with the client details  */
+/**
+ * - Get A specific client's details on select.
+ * - populate the relevant fields with the client details.
+ * - Retrieves and logs client type and country.
+ * - Invokes 'getCountries()' to fetch countries data.
+ * - Calls 'saveClient()' and closes the modal.
+ * @method loadClientDetails
+ * @param {number} id - ID of the client to load.
+ * @return {void}
+ */
 loadClientDetails(id){
   this.clientService.getClientById(id).subscribe(data =>{
     this.clientDetails = data;
@@ -335,27 +427,31 @@ loadClientDetails(id){
     this.selectedCountry=this.clientDetails.country;
     console.log("Selected client country:",this.selectedCountry)
     this.getCountries();
-  // this.pseudoForm.patchValue(this.clientDetails)
-  // console.log("Selected Form:",this.pseudoForm)
    this.saveclient()
    this.closebutton.nativeElement.click();
-
-  //  const modalElement = document.getElementById('clientModal');
-  //   const modal = bootstrap.Modal.getInstance(modalElement); // Get the modal instance
-  //   modal.hide();
-
   })
 }
-getUserBranch(){
-
-}
+/**
+ * Saves essential client details for further processing.
+ * - Assigns client ID, name, email, and phone from 'clientDetails'.
+ * @method saveClient
+ * @return {void}
+ */
 saveclient(){
   this.clientCode=this.clientDetails.id;
   this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
   this.clientEmail=this.clientDetails.emailAddress;
   this.clientPhone=this.clientDetails.phoneNumber;
 }
-
+/**
+ * Handles the selection of a product.
+ * - Retrieves the selected product code from the event.
+ * - Fetches and loads product subclasses.
+ * - Loads dynamic form fields based on the selected product.
+ * @method onProductSelected
+ * @param {any} event - The event triggered by product selection.
+ * @return {void}
+ */
 onProductSelected(event: any) {
   this.selectedProductCode = event.target.value;
   // const selectedProductCode = event.target.value;
@@ -367,6 +463,14 @@ onProductSelected(event: any) {
     // Load the dynamic form fields based on the selected product
     this.LoadAllFormFields(this.selectedProductCode);
 }
+/**
+ * Retrieves cover to date based on the selected product and cover from date.
+ * - Checks if 'coverFromDate' is available.
+ * - Makes an HTTP GET request to ProductService for cover to date.
+ * - Assigns the cover to date from the received data.
+ * @method getCoverToDate
+ * @return {void}
+ */
 getCoverToDate(){
   if (this.coverFromDate){
     this.productService.getCoverToDate(this.coverFromDate,this.selectedProductCode).subscribe(data=>{
@@ -378,9 +482,16 @@ getCoverToDate(){
     })
   }
 }
-
-
-
+/**
+ * Retrieves and matches product subclasses for a given product code.
+ * - Makes an HTTP GET request to GISService for product subclasses.
+ * - Matches and combines subclasses with the existing 'allSubclassList'.
+ * - Logs the final list of matching subclasses.
+ * - Forces change detection to reflect updates.
+ * @method getProductSubclass
+ * @param {number} code - The product code to fetch subclasses.
+ * @return {void}
+ */
 getProductSubclass(code: number) {
   this.gisService.getProductSubclasses(code).subscribe(data => {
     this.subClassList = data._embedded.product_subclass_dto_list;
@@ -397,9 +508,12 @@ getProductSubclass(code: number) {
     this.cdr.detectChanges();
   });
 }
-
 /**
- * Fetches all subclass data from the subclass service,
+ * Loads all product subclasses from SubclassService.
+ * - Subscribes to 'getAllSubclasses' observable and updates 'allSubclassList'.
+ * - Logs all product subclasses for debugging and triggers change detection.
+ * @method loadAllSubclass
+ * @return {void}
  */
   loadAllSubclass(){
     return this.subclassService.getAllSubclasses().subscribe(data=>{
@@ -409,11 +523,15 @@ getProductSubclass(code: number) {
 
     })
   }
-/** 
-* Handles subclass selection.
-* Updates the selected subclass code, logs the selection, and loads related data.
-* It loads cover types, binders, and subclass clauses based on the selected value.
-*/
+/**
+ * Handles the selection of a subclass.
+ * - Retrieves the selected subclass code from the event.
+ * - Logs the selected subclass code for debugging.
+ * - Calls methods to load cover types, binders, and subclass sections.
+ * @method onSubclassSelected
+ * @param {any} event - The event triggered by subclass selection.
+ * @return {void}
+ */
 onSubclassSelected(event: any) {
   const selectedValue = event.target.value; // Get the selected value
   this.selectedSubclassCode=selectedValue;
@@ -427,6 +545,13 @@ onSubclassSelected(event: any) {
   this.loadSubclassSectionCovertype();
 
 }
+/**
+ * Loads binders for the selected subclass.
+ * - Subscribes to 'getAllBindersQuick' from BinderService.
+ * - Populates 'binderListDetails' and triggers change detection.
+ * @method loadAllBinders
+ * @return {void}
+ */
 loadAllBinders() {
   this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
      this.binderList=data;
@@ -435,6 +560,17 @@ loadAllBinders() {
       this.cdr.detectChanges();
   });
 }
+/**
+ * Handles the selection of a binder.
+ * - Retrieves the selected binder code from the event.
+ * - Filters 'binderListDetails' based on the selected binder code.
+ * - Assigns currency code from the filtered binder.
+ * - Logs the selected binder details and currency code for debugging.
+ * - Calls 'loadAllCurrencies'.
+ * @method onSelectBinder
+ * @param {any} event - The event triggered by binder selection.
+ * @return {void}
+ */
 onSelectBinder(event:any) {
   this.selectedBinderCode = event.target.value;
   const bind = this.binderListDetails.filter(bind => bind.code == this.selectedBinderCode)
@@ -444,6 +580,15 @@ onSelectBinder(event:any) {
   this.loadAllCurrencies();
 
 }
+/**
+ * Loads all currencies and selects based on the currency code.
+ * - Subscribes to 'getAllCurrencies' from CurrencyService.
+ * - Populates 'currencyList' and filters for the selected currency.
+ * - Assigns name and code from the filtered currency.
+ * - Logs the selected currency details and triggers change detection.
+ * @method loadAllCurrencies
+ * @return {void}
+ */
 loadAllCurrencies(){
   this.currencyService.getAllCurrencies().subscribe(data =>{
     this.currencyList =data;
@@ -458,12 +603,16 @@ loadAllCurrencies(){
 
   })
 }
-
-    /**
-   * Load cover types by subclass code
-   * @param code {number} subclass code
-   */
-    loadCovertypeBySubclassCode(code: number) {
+/**
+ * Loads cover types for the provided subclass code.
+ * - Subscribes to 'getSubclassCovertypeBySCode' from SubclassCoverTypesService.
+ * - Populates 'subclassCoverType' and assigns code/short description.
+ * - Logs cover type details and triggers change detection.
+ * @method loadCovertypeBySubclassCode
+ * @param {number} code - Subclass code for fetching cover types.
+ * @return {void}
+ */
+  loadCovertypeBySubclassCode(code: number) {
       this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
         this.subclassCoverType = data;
         log.debug('Subclass Covertype',this.subclassCoverType);
@@ -477,9 +626,15 @@ loadAllCurrencies(){
 
         this.cdr.detectChanges();
       })
-    }
-
-
+  }
+/**
+ * Loads all quotation sources.
+ * - Subscribes to 'getAllQuotationSources' from QuotationService.
+ * - Populates 'sourceList' and assigns 'sourceDetail'.
+ * - Logs source details.
+ * @method loadAllQuotationSources
+ * @return {void}
+ */
 loadAllQoutationSources(){
   this.quotationService.getAllQuotationSources().subscribe(data =>{
     this.sourceList=data;
@@ -487,15 +642,17 @@ loadAllQoutationSources(){
     console.log(this.sourceDetail, "Source list")
   })
 }
-
-// LoadAllFormFields(){
-//   this.quotationService.getFormFields().subscribe(data =>{
-//     this.formContent=data;
-//     // this.formData=this.formContent.fields;
-//     log.info(this.formContent,"this is Form field content")
-
-//   })
-// }
+/**
+ * Loads form fields dynamically based on the selected product code.
+ * - Subscribes to 'getFormFields' observable from QuotationService.
+ * - Populates 'formContent' with received data.
+ * - Assigns 'formData' from 'formContent.fields'.
+ * - Clears existing form controls and adds new controls for each product-specific field.
+ * - Applies custom validators and logs control details for debugging.
+ * @method LoadAllFormFields
+ * @param {Number} selectedProductCode - The selected product code for dynamic form loading.
+ * @return {void}
+ */
 LoadAllFormFields(selectedProductCode: Number) {
   if (selectedProductCode) {
     const formFieldDescription = "product-quick-quote-".concat(selectedProductCode.toString());
@@ -524,8 +681,14 @@ LoadAllFormFields(selectedProductCode: Number) {
     });
   }
 }
-
-
+/**
+ * Validates a car registration number using a dynamic regex pattern.
+ * - Logs the entered value and dynamic regex pattern.
+ * - Tests the car registration number against the regex pattern.
+ * - Updates 'carRegNoHasError' based on the test result.
+ * @method validateCarRegNo
+ * @return {void}
+ */
 validateCarRegNo() {
   console.log('Entered value:', this.carRegNoValue);
   const regex = new RegExp(this.dynamicRegexPattern);
@@ -534,18 +697,28 @@ validateCarRegNo() {
   console.log('Has error:', this.carRegNoHasError);
 }
 
-
-
-
-
-
-// Helper method to remove all form controls from the FormGroup
+/**
+ * Removes all form controls from the dynamic form.
+ * - Retrieves all control names from the dynamic form.
+ * - Iterates through the control names and removes each control.
+ * @method removeFormControls
+ * @return {void}
+ */
 removeFormControls() {
   const formControls = Object.keys(this.dynamicForm.controls);
   formControls.forEach((controlName) => {
       this.dynamicForm.removeControl(controlName);
   });
 }
+/**
+ * Creates quotations with associated risks and handles the asynchronous operations.
+ * - Maps and processes each SubclassCoverType element to create a quotation.
+ * - Maps and processes risk details to create associated risks for each quotation.
+ * - Logs relevant details for debugging.
+ * - Displays success messages for created quotations, risks, and computed premiums.
+ * @method createQuotation
+ * @return {void}
+ */
 createQuotation() {
   this.quotationNumbers = [];
   this.quotationCodes = [];
@@ -582,12 +755,11 @@ createQuotation() {
         const description = element.coverTypeShortDescription;
         console.log('CoverType Code', code);
 
-        // Creating risk mrethod called
+        // create associated risks for each quotation
 
         const risk = this.riskDetailsForm.value;
         const dateWithEffectFromC = quickQuoteForm.withEffectiveFromDate;
         const dateWithEffectToC = quickQuoteForm.withEffectiveToDate;
-
         risk.binderCode = this.selectedBinderCode;
         risk.coverTypeCode = code;
         risk.coverTypeShortDescription = description;
@@ -601,20 +773,13 @@ createQuotation() {
 
         // FROM DYNAMIC FORM
         const riskIDValue = this.dynamicForm.get('carRegNo').value;
-
-     
-        
-
         risk.propertyId = riskIDValue;
-
         console.log('Quick Form Risk', risk);
-
         const riskArray = [risk];
 
         return this.quotationService.createQuotationRisk(this.quotationCode, riskArray).pipe(
           tap(data => {
             this.quotationRiskData = data;
-
             const quotationRiskCode = this.quotationRiskData._embedded[0];
             if (quotationRiskCode) {
               for (const key in quotationRiskCode) {
@@ -649,7 +814,7 @@ createQuotation() {
   forkJoin(riskCreationObservables).subscribe(
     () => {
       try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'All Quotations Created' });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Quotations Created' });
 
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created successfully' });
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
@@ -663,10 +828,13 @@ createQuotation() {
     }
   );
 }
-
-
-
-
+ 
+/**
+ * Creates and initializes the risk details form using Angular FormBuilder.
+ * - Defines form controls with validators for various risk details.
+ * @method createRiskDetailsForm
+ * @return {void}
+ */
 createRiskDetailsForm(){
   this.riskDetailsForm=this.fb.group({
     binderCode: ['', Validators.required],
@@ -687,8 +855,15 @@ createRiskDetailsForm(){
     town: [''],
 });
 }
-
-
+/**
+ * Loads subclass sections and cover types for the selected subclass code.
+ * - Subscribes to 'getSubclassCovertypeSections' from SubclassSectionCovertypeService.
+ * - Populates 'subclassSectionCoverList' and filters mandatory sections.
+ * - Sets the first mandatory section as 'selectedSectionList'.
+ * - Updates shared service with quick section details.
+ * @method loadSubclassSectionCovertype
+ * @return {void}
+ */
 loadSubclassSectionCovertype(){
   this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data =>{
     this.subclassSectionCoverList=data;
@@ -725,10 +900,12 @@ loadSubclassSectionCovertype(){
 //   })
 // }
 
+
 /**
- * Creates and initializes a section details form.
- * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
- * Defines form controls for various section-related fields, setting initial values as needed.
+ * Creates and initializes the section details form using Angular FormBuilder.
+ * - Defines form controls for various section details.
+ * @method createSectionDetailsForm
+ * @return {void}
  */
 createSectionDetailsForm(){
   this.sectionDetailsForm=this.fb.group({
@@ -754,12 +931,17 @@ createSectionDetailsForm(){
 });
 }
 
- 
-  /**
- * Creates a new risk section associated with the current risk.
- * Takes section data from the 'sectionDetailsForm', sends it to the server
- * to create a new risk section associated with the current risk, and handles
- * the response data by displaying a success or error message.
+/**
+ * Creates a risk section, saves it, and triggers premium computation.
+ * - Retrieves relevant values from the dynamic form.
+ * - Sets default values for section details.
+ * - Creates a section object with calculated values.
+ * - Calls 'createRiskSection' from QuotationService.
+ * - Resets the section details form after success.
+ * - Updates shared service with declared sum insured value.
+ * - Triggers premium computation.
+ * @method createRiskSection
+ * @return {void}
  */
   createRiskSection(){
     
@@ -806,19 +988,15 @@ createSectionDetailsForm(){
     
     })
   }
-  
-  
-  // computePremium(){
-  //   this.quotationService.computePremium(this.quotationCode).subscribe(data =>{
-  //     try {
-  //       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premium Computed successfully' });
-  //     } catch (error) {
-  //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-  //     }
-  //     this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
-  //     this.router.navigate(['/home/gis/quotation/cover-type-details']);
-  //   })
-  // }
+  /**
+ * Computes premiums for all generated quotations.
+ * - Subscribes to 'computePremium' for each quotation code.
+ * - Displays success or error messages accordingly.
+ * - Updates shared service with quick quotation details.
+ * - Navigates to the next page after successful premium computation.
+ * @method computePremium
+ * @return {void}
+ */
   computePremium() {
     const premiumComputationObservables = this.quotationCodes.map(quotationCode => {
       return this.quotationService.computePremium(quotationCode);
@@ -833,6 +1011,8 @@ createSectionDetailsForm(){
         }
   
         this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
+        sessionStorage.setItem('quickQuoteFormData', JSON.stringify(this.personalDetailsForm.value));
+
         this.router.navigate(['/home/gis/quotation/cover-type-details']);
       },
       error => {
@@ -840,19 +1020,30 @@ createSectionDetailsForm(){
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error computing premium' });
       }
     );
+    // sessionStorage.setItem('dynamicFormData', JSON.stringify(this.dynamicForm.value));
+
 
   }
   
-  
 /**
- * Applies a global filter to a DataTable by using the provided event value and filter key.
- * This method triggers the global filtering functionality and logs the applied filter.
- * @param $event The event containing the input value triggering the global filter.
- * @param stringVal The filter key to apply the global filter on the DataTable.
+ * Applies a global filter to a DataTable.
+ * - Retrieves the input value from the event target.
+ * - Calls the DataTable's 'filterGlobal' method with the input value and a specified string value.
+ * @method applyFilterGlobal
+ * @param {Event} $event - The event triggering the filter application.
+ * @param {string} stringVal - The specified string value for filtering.
+ * @return {void}
  */
 applyFilterGlobal($event, stringVal) {
   this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
 }
+/**
+ * Populates the 'years' property with the list of cover years.
+ * - Subscribes to 'getYearOfManufacture' observable from ProductService.
+ * - Logs the retrieved data for debugging purposes.
+ * @method populateYears
+ * @return {void}
+ */
 populateYears() {
   return this.productService.getYearOfManufacture().subscribe(data=>{
     log.debug("Data YOM",data._embedded[0]["List of cover years"])

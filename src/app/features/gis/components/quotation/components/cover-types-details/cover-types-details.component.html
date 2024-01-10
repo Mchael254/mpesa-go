@@ -1,5 +1,5 @@
 <div class="container ">
-    <p class="titleMain mt-3">Quotations: Quotation Data Entry</p>
+    <p class="titleMain mt-3">Quotations: Cover types</p>
      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
      <div  class="container mx-2 mt-n1">  
 
@@ -9,7 +9,7 @@
                     <!-- <p class="title ms-4" >{{ coverTypeShortDescription }}</p> -->
                     <p class="title ms-4">{{ quotationDetail.riskInformation[0].covertypeShortDescription }}</p>
                     <div class="row ms-3">
-                        <div class="col-4">
+                        <div class="col-lg-4 col-12">
                         <p class="title2">Basic Premium</p>
                         <div class="row">
                             <div class="col-6">
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-lg-4 col-12" >
                         <p class="title2">Levies and taxes</p>
                         <div *ngFor="let tax of quotationDetail.taxInformation">
                             <div class="row">
@@ -41,53 +41,24 @@
                             </div>
                         </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-lg-4 col-12">
                         <p class="title2">Total payable premium</p>
-                        <p class="payable-premium ms-4">{{ calculateTotalPayablePremium(quotationDetail) | number }}</p>
+                        <p class="payable-premium text-center">{{ calculateTotalPayablePremium(quotationDetail) | number }}</p>
 
                         </div>
                     </div>
-                    <div class="float-end mb-4 me-4 " *ngIf="!isCollapsibleOpen">
-                        <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCoverTypes" (click)="passedClient(quotationDetail.clientCode)">Share quote</button>
-                        <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="selectedQuotationCover(quotationDetail);passSelectedCover()">Select cover</button>
-                    </div>
+                  
                     <div class="float-start mb-4 ms-4" *ngIf="!isCollapsibleOpen">
                         <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addMoreBenefits" id="btnCoverTypes" (click)="passCovertypeDesc(quotationDetail.riskInformation[0].covertypeShortDescription);passedRiskcode(quotationDetail.riskInformation[0].code);passedClient(quotationDetail.clientCode);selectedQuotationCover(quotationDetail)">Add more benefits</button>
                         <a class="btn btn-link ms-2" (click)="toggleCollapsible()">
                             View cover details
                         </a>                
                     </div>
-                    <!-- <div class="row ms-3">
-                        <div class="col-5">
-                            <div class="row">
-                                <div class="col-6" *ngIf="!isCollapsibleOpen">
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMoreBenefits" id="btnCoverTypes">Add more benefits</button>
-        
-                                   
-                                </div>  
-                                <div class="col-6" *ngIf="!isCollapsibleOpen" >
-                                    <p>
-                                        <a class="btn btn-link" (click)="toggleCollapsible()" >
-                                            View cover details
-                                        </a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                         
-                        <div class="col-5 ">
-                            <div class="row ps-4">
-                                <div class="col-6 d-flex justify-content-end " *ngIf="!isCollapsibleOpen">
-                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCoverTypes">Share quote</button>
-                                  </div>
-                                  
-                                  
-                                <div class="col-6 " *ngIf="!isCollapsibleOpen">
-                                    <button class="btn btn-primary ms-n1" type="submit" id="btnCoverTypes">Select cover</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
+                    <div class="float-end mb-4 me-4 " *ngIf="!isCollapsibleOpen">
+                        <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCoverTypes" (click)="passedClient(quotationDetail.clientCode)">Share quote</button>
+                        <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="selectedQuotationCover(quotationDetail);passSelectedCover()">Select cover</button>
+                    </div>
+
                     <!-- Add More Benefits Modal -->
                     <div class="modal fade" id="addMoreBenefits" tabindex="-1" aria-labelledby="addMoreBenefitsLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" style="min-width: 608px;">

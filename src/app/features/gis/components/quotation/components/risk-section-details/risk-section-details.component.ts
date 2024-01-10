@@ -176,6 +176,16 @@ export class RiskSectionDetailsComponent {
       this.createRiskDetailsForm();
       this.createSectionDetailsForm();  
       this.createScheduleDetailsForm();
+
+      const riskFormDetails = sessionStorage.getItem('riskFormData');
+      console.log('Risk form details session storage',riskFormDetails,)
+  
+      if (riskFormDetails) {
+        const parsedData = JSON.parse(riskFormDetails);
+        console.log(parsedData)
+        this.riskDetailsForm.setValue(parsedData);
+        
+      }
       
   }
   openHelperModal(selectedClause: any) {
@@ -619,6 +629,8 @@ onResize(event: any) {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
         // this.riskDetailsForm.reset()
       }
+      sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
+
       this.loadRiskSections();
       // this.loadRiskSubclassSection();
       // this.loadSubclassSectionCovertype();

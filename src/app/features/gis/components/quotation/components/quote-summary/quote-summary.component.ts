@@ -55,6 +55,7 @@ export class QuoteSummaryComponent {
   formattedCoverFrom: string;
   formattedCoverTo: string;
 
+  isAddRisk:boolean=true;
 
   constructor(
     public fb:FormBuilder,
@@ -162,7 +163,8 @@ export class QuoteSummaryComponent {
   }
   addAnotherRisk(){
     this.sharedService.setAddAnotherRisk(this.quotationDetails,this.clientDetails);
-
+    this.sharedService.setIsAddRisk(this.isAddRisk);
+    log.debug("isAddRisk:",this.isAddRisk)
     log.debug("quotation number:",this.quotationNo)
     log.debug("Quotation Details:",this.quotationDetails)
     log.debug("Selected Client Details",this.clientDetails);
