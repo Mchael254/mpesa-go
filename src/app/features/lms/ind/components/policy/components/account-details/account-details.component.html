@@ -1,0 +1,21 @@
+<div>
+  <div>
+    <p-tabMenu [model]="accountDetailItems" [activeItem]="accountDetailActiveItem">
+      <ng-template pTemplate="item" let-item>
+        <div>
+          <span style="color: black"> {{ item.label }}</span>
+        </div>
+      </ng-template>
+    </p-tabMenu>
+  </div>
+
+  <div class="pt-4">
+    <div *ngIf="accountDetailItemsActiveTab === 'RECIEPTS'">
+      <app-receipts></app-receipts>
+    </div>
+
+    <div *ngIf="accountDetailItemsActiveTab === 'MATURTIES'">
+      <app-maturities></app-maturities>
+    </div>
+  </div>
+</div>

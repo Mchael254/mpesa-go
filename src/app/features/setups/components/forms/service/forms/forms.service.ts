@@ -12,6 +12,9 @@ export class FormsService {
   getAllForms(){
     return this.api.GET('web-form-data',API_CONFIG.JSON_SERVICE_BASE_URL);
   }
+  getBySystemAndModuleAndScreeName(system, module, scrrenName){
+    return this.api.GET(`web-form-data/${system}/${module}/${scrrenName}`, API_CONFIG.JSON_SERVICE_BASE_URL)
+  }
   saveForm(form: any){
     return this.api.POST('web-form-data',form, API_CONFIG.JSON_SERVICE_BASE_URL);
   }

@@ -59,7 +59,7 @@ export class QuotationDetailsComponent implements OnInit, OnDestroy{
     },
   ];
 
-  constructor(private quoteFormSetup: QuotationFormSetUp, private location: Location, private fb: FormBuilder, private router: Router, private api: ApiService, private spinner: NgxSpinnerService
+  constructor(private quoteFormSetup: QuotationFormSetUp,private location: Location, private fb: FormBuilder, private router: Router, private api: ApiService, private spinner: NgxSpinnerService
     ){
     this.quotationDetailsFormfields =  quoteFormSetup.quotationDetailsForms();
     this.buttonConfig = quoteFormSetup.quotationDetailsActionButtonConfig();

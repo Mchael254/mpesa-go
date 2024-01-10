@@ -74,6 +74,14 @@ import { CountryService } from './services/setups/country/country.service';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { SentenceCasePipe } from './pipes/sentence-case/sentence-case.pipe';
 import { CommaformatDirective } from './directives/comma-format.directive';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ProductPipe } from '../features/lms/pipe/product/product.pipe';
+import { BeneficiaryPipe } from '../features/lms/pipe/beneficiary/beneficiary.pipe';
+import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
+import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
+import { Error401Interceptor } from './services/http/error-404.interceptor';
+
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe];
 
 import { ReusableInputComponent } from './components/reusable-input/reusable-input.component';
 
@@ -91,6 +99,12 @@ const SERVICES = [
   {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthHeaderInterceptor,
+    multi: true,
+  },
+
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: Error401Interceptor,
     multi: true,
   },
   // provide logger
@@ -159,59 +173,66 @@ const SERVICES = [
     CommaformatDirective,
     SentenceCasePipe,
     CommaformatDirective,
-    ReusableInputComponent,
+    ...lms_pipes,
+    ReusableInputComponent
+
   ],
-  imports: [
-    CommonModule,
-    ToastModule,
-    ProgressBarModule,
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    TableModule,
-    ButtonModule,
-    ChipsModule,
-    ChartModule,
-    RouterLink,
-    NgxSpinnerModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    CalendarModule,
-    DropdownModule,
-    HttpClientModule,
-  ],
-  exports: [
-    ErrorComponent,
-    HideMessageDirective,
-    NotificationsComponent,
-    LoaderComponent,
-    FileExtensionPipe,
-    DocViewerComponent,
-    OtpComponent,
-    DynamicTableComponent,
-    CopyrightFooterComponent,
-    DynamicChartComponent,
-    SpinnerComponent,
-    DynamicFormComponent,
-    DynamicBreadcrumbComponent,
-    StepperComponent,
-    DynamicSimpleModalComponent,
-    DynamicFormModalComponent,
-    NgxSpinnerModule,
-    DynamicSetupSearchListScreenComponent,
-    TranslateModule,
-    DynamicSetupWizardWelcomeScreenComponent,
-    ReactiveFormsModule,
-    CustomFilterPipe,
-    SafeResourceUrlPipe,
-    CalendarModule,
-    TableModule,
-    DropdownModule,
-    TabMenuModule,
-    ShareModalComponent,
-    DownloadModalComponent,
-    CommaformatDirective,
-    SentenceCasePipe,
-    ReusableInputComponent,
+    imports: [
+        CommonModule,
+        ToastModule,
+        ProgressBarModule,
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        TableModule,
+        ButtonModule,
+        ChipsModule,
+        ChartModule,
+        RouterLink,
+        NgxSpinnerModule,
+        TranslateModule,
+        ReactiveFormsModule,
+        CalendarModule,
+        DropdownModule,
+        HttpClientModule,
+        NgbModule
+        
+    ],
+    exports: [
+        ErrorComponent,
+        HideMessageDirective,
+        NotificationsComponent,
+        LoaderComponent,
+        FileExtensionPipe,
+        DocViewerComponent,
+        OtpComponent,
+        DynamicTableComponent,
+        CopyrightFooterComponent,
+        DynamicChartComponent,
+        SpinnerComponent,
+        DynamicFormComponent,
+        DynamicBreadcrumbComponent,
+        StepperComponent,
+        DynamicSimpleModalComponent,
+        DynamicFormModalComponent,
+        NgxSpinnerModule,
+        DynamicSetupSearchListScreenComponent,
+        TranslateModule,
+        DynamicSetupWizardWelcomeScreenComponent,
+        ReactiveFormsModule,
+        CustomFilterPipe,
+        SafeResourceUrlPipe,
+        CalendarModule,
+        TableModule,
+        DropdownModule,
+        TabMenuModule,
+        ShareModalComponent,
+        DownloadModalComponent,
+        CommaformatDirective,
+        SentenceCasePipe,
+        NgbModule,
+        ...lms_pipes,
+        ReusableInputComponent
+
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

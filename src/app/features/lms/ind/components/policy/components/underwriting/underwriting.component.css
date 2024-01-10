@@ -1,0 +1,64 @@
+:host ::ng-deep  .p-tabmenu .p-tabmenu-nav {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-width: 0 0 3px 0 !important;
+}
+
+:host ::ng-deep  .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+  background: #ffffff;
+  border-color:#ffffff;
+  border-bottom-color: #000;
+  border-width: 0 0 4px 0 ;
+  color: #000;
+}
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+  padding: 0.4rem;
+  font-size: 14px;
+}
+
+.btn-danger {
+  background-color: rgb(255, 24, 24);
+}
+.modal-content {
+  border-radius: 3px;
+}
+
+.modal-content-undw-reject {
+  width: 110% !important;
+  transform: translate(-1rem, 6rem);
+  height: 20rem !important;
+  font-size: 13px;
+}
+
+
+.modal-content-undw {
+  width: 170% !important;
+  transform: translate(-8rem, 3rem);
+  height: 65rem !important;
+  font-size: 13px;
+}
+
+.btn-info {
+  background-color: white;
+  border: solid 2px var(--primary-color);
+  border-radius: 0px;
+}
+
+.fw-light:hover,
+.justify-content-start:hover {
+  color: #000;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .modal-content-undw {
+    width: 80% !important; /* Adjust the width as needed */
+    transform: translate(2rem, 3rem);
+    height: 139rem !important;
+  }
+}

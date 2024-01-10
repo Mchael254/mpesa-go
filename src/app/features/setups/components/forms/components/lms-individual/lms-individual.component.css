@@ -30,9 +30,10 @@ table {
   
 
   th {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 400;
+    background-color: #BAD0E4 !important; 
+    /* var(--primary-color); */
+    color: black;
+    font-weight: 500;
   }
   tr, td {
     border: 0;
