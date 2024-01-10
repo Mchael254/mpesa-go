@@ -70,6 +70,8 @@ export class CoverTypesDetailsComponent {
   selectedQuotationData:any;
   selectedQuotationNo:any;
   SelectedQuotationCode:any;
+  formData: any;
+
 
   typedWord: number | null = null; // Initialize as null or a default value
   isChecked: boolean = false;
@@ -110,6 +112,9 @@ export class CoverTypesDetailsComponent {
   ) { }
 
   ngOnInit(): void{
+    this.formData = sessionStorage.getItem('quickQuoteFormDetails');
+    log.debug("MY TRIAL",JSON.parse(this.formData))
+
     this.quickQuotationNumbers=this.sharedService.getQuickQuotationDetails();
     log.debug("Quick Quote Quotation Codes:",this.quickQuotationNumbers );
     this.loadClientQuotations(this.quickQuotationNumbers);

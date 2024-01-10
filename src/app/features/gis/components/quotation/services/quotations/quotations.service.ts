@@ -25,6 +25,7 @@ export class QuotationsService {
    * @type {string}
    */ 
   baseUrl = this.appConfig.config.contextPath.gis_services;
+  testBase = this.appConfig.config.contextPath.notification_service
   /**
    * HTTP options for making requests with JSON content type.
    * @type {any}
@@ -185,5 +186,13 @@ export class QuotationsService {
  getExternalClaimsExperience(clientCode){
   return this.http.get(`/${this.baseUrl}/setups/api/v1/external-claims-experiences?clientCode=${clientCode}`)
  }
+
+test(){
+  return this.http.get(`/${this.testBase}/email/3/send`)
 }
+
+  }
+ 
+
+
 
