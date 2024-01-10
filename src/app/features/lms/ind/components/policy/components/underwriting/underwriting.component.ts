@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
+import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
 import { EndorsementService } from 'src/app/features/lms/service/endorsement/endorsement.service';
 import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
@@ -23,12 +24,14 @@ export class UnderwritingComponent implements OnInit {
   accountDetailItems: MenuItem[] = [];
   productList: any[] = [];
   policyUnderwritingSummary: any = {};
+  documentList: any[] = [];
 
   constructor(private policies_service: PoliciesService, 
     private spinner_service: NgxSpinnerService, 
     private product_service: ProductService, 
     private fb: FormBuilder,
     private endorsement_service: EndorsementService,
+    private dms_service: DmsService,
     private session_storage_service: SessionStorageService) {}
 
   ngOnInit() {
@@ -57,6 +60,7 @@ export class UnderwritingComponent implements OnInit {
     this.accountDetailActiveItem = this.accountDetailItems[0];
     this.listPolicySummaryByPolCodeAndEndrCode();
     this.getProductList();
+    this.getDocumentsByClientId();
 
   }
 
@@ -101,6 +105,25 @@ export class UnderwritingComponent implements OnInit {
     
   }
 
+  getDocumentsByClientId(){
+    let client_code = this.session_storage_service.get(SESSION_KEY.CLIENT_CODE);
+    this.dms_service.getClientDocumentById(client_code)
+    .subscribe(data =>{
+      this.documentList = data['content']
+    });
+  }
+
+  downloadBase64File(url:string) {
+    // this.spinner.show('download_view');
+    this.dms_service.downloadFileById(url)
+    // .pipe(finalize(()=>{
+    //   // this.spinner.hide('download_view');
+    // }))
+    .subscribe(()=>{
+      // this.spinner.hide('download_view');
+    })
+  }
+  
   private getPaymentMethod(g=''){
     if(g==='C'){
       return 'CARD'

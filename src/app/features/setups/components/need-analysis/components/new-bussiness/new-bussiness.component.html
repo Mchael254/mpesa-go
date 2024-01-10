@@ -8,8 +8,10 @@
 
     <div>
       <div>
-        <div *ngIf="isResponse">
+        <div *ngIf="isResponse && savedProductList.length===0">
           <div class="text-black fw-medium" fpr="question">Question</div>
+          <div><span *ngIf="questionForm.get('question').value===null || questionForm.get('question')?.value?.trim()===''" style="color: red; font-size: 11px;"> {{'Add a question' | titlecase}} </span></div>
+
           <div class="text-black fw-medium" >
             <div class="row justify-content-start">
               <div *ngIf="isEditable === false"  class="col-6">
@@ -42,41 +44,45 @@
             <div class="col-xl-9 col-lg-9 col-md-8">
               <div>
                 <div *ngIf="isResponse && savedResponseList.length > 0">
-                  <div class="fw-medium">Response</div>
+                  <div class="fw-medium">Option(s)</div>
                   <div>
-                    <div class="px-2" *ngFor="let item of savedResponseList">
-                      <div class="d-flex justify-content-between w-50">
-                        <div class="text-black">{{ item["option"] }}</div>
+                    <div class="px-2" style="padding: 0.3rem 0;" *ngFor="let item of savedResponseList; let i=index">
+                      <div class="d-flex justify-content-between w-50 response-list">
+                        <div (click)="selectResponse(i)" class="text-black response-list-item">{{ item["option"] }}</div>
 
                         <div>
                           <span
+                          data-bs-toggle="modal"
+                          data-bs-target="#optionModal"
+                          (click)="editOption(item)"
                             style="
                               padding: 0 1rem;
                               color: var(--primary-color);
                               cursor: pointer;
                             "
-                            ><i class="fa-solid fa-pen-to-square"></i
+                            ><i class="fa-solid fa-pen-to-square fs-6 response-list-item"></i
                           ></span>
                           <span
-                            (click)="deletResponse(item)"
+                            (click)="deleteResponse(item)"
                             class="text-danger"
                             style="padding: 0 1rem; cursor: pointer"
-                            ><i class="fa-regular fa-trash-can"></i
+                            ><i class="fa-regular fa-trash-can  fs-6 response-list-item"></i
                           ></span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div *ngIf="isProduct && savedProductList.length > 0">
+                <div *ngIf="isProduct && savedProductList?.length > 0">
                   <div class="fw-medium">Products</div>
                   <div>
                     <div class="px-2" *ngFor="let item of savedProductList">
                       <div class="d-flex justify-content-between w-50">
                         <div class="text-black">
-                          {{ item["description"] | titlecase }}
+                          {{ productList | product: item  }}
                         </div>
                         <div>
+                          
                           <span
                             (click)="deleteProduct(item)"
                             class="text-danger"
@@ -92,7 +98,7 @@
             </div>
             <div class="col-xl-3 col-lg-3 col-md-4 py-2">
               <div class="row">
-                <div class="col-6" *ngIf="isProduct">
+                <div class="col-6" *ngIf=" savedResponseList?.length === 0">
                   <button
                     (click)="setProduct()"
                     data-bs-toggle="modal"
@@ -106,7 +112,7 @@
                     Add Product
                   </button>
                 </div>
-                <div class="col-6" *ngIf="isResponse">
+                <div class="col-6" *ngIf="savedProductList?.length===0">
                   <button
                     (click)="setResponse()"
                     data-bs-toggle="modal"
@@ -117,7 +123,7 @@
                     class="btn btn-primary"
                     style="font-size: 12px"
                   >
-                    Add Response
+                    Add Options
                   </button>
                 </div>
               </div>
@@ -128,18 +134,25 @@
     </div>
   </div>
 
-  <div class="d-flex justify-content-between">
+  <div class="d-flex justify-content-between" >
     <button
-      (click)="setProduct()"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
+    *ngIf="nodeState.length>0"
+      (click)="removeResponse()"
       type="button"
-      name="lms"
-      id="lms"
       class="btn btn-danger"
       style="font-size: 12px"
     >
       Go back to Previous Question
+    </button>
+
+    <button
+    *ngIf="nodeState.length===0"
+    [routerLink]="'/home/setups/need-analysis/lms-modules'"
+      type="button"
+      class="btn btn-primary"
+      style="font-size: 12px"
+    >
+      Go back to Previous Page
     </button>
   </div>
 </div>
@@ -157,7 +170,7 @@
       <div class="modal-body">
         <form [formGroup]="needAnalysisForm">
           <div class="form-group" *ngIf="isResponse">
-            <label for="textInput" class="required">Response:</label>
+            <label for="textInput" class="required">Options:</label>
             <input type="text" formControlName="option" class="form-control" />
           </div>
 
@@ -190,7 +203,43 @@
           class="btn btn-primary"
           (click)="addData()"
         >
-          {{ isProduct ? "add product" : "add response" }}
+          {{ isProduct ? "save product" : "save response" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="optionModal"
+  tabindex="-1"
+  aria-labelledby="optionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form [formGroup]="optionForm">
+          <div class="form-group" >
+            <label for="textInput" class="required">Options:</label>
+            <input type="text" formControlName="option" class="form-control" />
+          </div>
+        </form>
+      </div>
+      <div class="d-flex justify-content-between p-2">
+        <div></div>
+        <button
+          *ngIf="!optionForm.get('option').invalid"
+          type="button"
+          class="btn btn-primary"
+          (click)="saveOption()"
+        >
+          {{ "save Option" }}
         </button>
       </div>
     </div>

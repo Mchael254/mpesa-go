@@ -101,7 +101,7 @@
                     >
                       <ng-container *ngFor="let product of productList">
                         <option [value]="product?.code">
-                          {{ product?.description | lowercase }}
+                          {{ product?.description | titlecase }}
                         </option>
                       </ng-container>
                     </select>
@@ -119,7 +119,7 @@
                     >
                       <ng-container *ngFor="let option of productOptionList">
                         <option [value]="option['code']">
-                          {{ option.desc  | lowercase}}
+                          {{ option.desc  | titlecase}}
                         </option>
                       </ng-container>
                     </select>
@@ -208,7 +208,7 @@
                     (change)="coverTypeState(cover);"
                   />
                   <label class="form-check-label" [for]="i">
-                    {{ cover['cover_type_description'] | lowercase}}
+                    {{ cover['cover_type_description'] | titlecase}}
                   </label>
                 </div>
               </div>
@@ -262,6 +262,15 @@
           <div style="flex: 1; text-align: start">
             <span class="font-grey__font-eight__700">Term : </span> {{ quickQuoteSummary_['policy_term'] || 0 }}
           </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-evenly">
+          <div style="flex: 1; text-align: start">
+            <span class="font-grey__font-eight__700">Quotation No. : </span>
+            {{ quickQuoteSummary_['quote_code'] || '-' }}
+          </div>
+          <div class="m-4"></div>
+
         </div>
 
         <div
@@ -488,13 +497,23 @@
   </div>
 
   <div *ngIf="quickQuoteSummary_['prem_result']>0" class="d-flex justify-content-end mt-2">
+    <div>
     <button
-    (click)="nextPage()"
+    (click)="closePage()"
       type="button"
       class="btn btn-primary btn-sm"
       style="padding: 0.6em; width: 6rem"
     >
       Finish
+    </button>
+
+    <button
+    (click)="nextPage()"
+      type="button"
+      class="btn btn-primary"
+      style="padding: 0.6em; width: 12rem"
+    >
+      Proceed to Quotation
     </button>
   </div>
 </div>
