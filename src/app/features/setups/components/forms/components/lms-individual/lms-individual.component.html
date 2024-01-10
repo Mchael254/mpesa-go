@@ -5,16 +5,26 @@
     <div class="container-fluid">
       <div class="full-border">
         <div class="d-flex justify-content-between">
-          <div class="fw-medium text-black pb-2">Module(s) <span class="mx-2 link" (click)="addForm()"><i class="fa-regular fa-square-plus"></i></span></div>
+          <div class="fw-medium text-black pb-2">Module(s) <span class="mx-2 link" (click)="addScreenFrom('Module')"><i class="fa-regular fa-square-plus"></i></span></div>
         </div>
         <div class="row">
           <ng-container *ngFor="let item of systemList; let i = index">
             <div  style="padding:0.3rem 0">
-              <span class="text-module fw-medium"  (click)="selectModule(item)">
-                {{ i + 1 }}.
-                {{ item?.replaceAll("_", " ") || "NULL" | uppercase }}
-              </span>
-              <span class="mx-4 link" (click)="addForm()"> <i class="fa-solid fa-pen-to-square text-success fs-6"></i></span>
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="text-module fw-medium"  (click)="selectModule(item)">
+                    {{ i + 1 }}.
+                    {{ item?.replaceAll("_", " ") || "NULL" | uppercase }}
+                  </span>
+                  
+                </div>
+                <div>
+                  <span class="mx-4 link" (click)="addForm()"> <i class="fa-solid fa-pen-to-square fs-6" style="color: var(--primary-color);"></i></span>
+                  <span class="mx-0 link" (click)="addForm()"> <i class="fa-solid fa-trash-can text-danger fs-6"></i></span>
+                </div>
+              </div>
+             
+              
             </div>
           </ng-container>
         </div>
@@ -28,16 +38,26 @@
           <div class="fw-medium text-black" style="padding:0.2rem 0">
             {{ screenData["module"]?.replaceAll("_", " ") | titlecase }} Web
             Pages
-            <span class="mx-2 link" (click)="addForm()"><i class="fa-regular fa-square-plus"></i></span>
+            <span class="mx-2 link" (click)="addScreenFrom('Page')"><i class="fa-regular fa-square-plus"></i></span>
           </div>
         </div>
-        <div class="row pb-2">
+        <div class="row pb-2 w-50">
           <ng-container *ngFor="let item of moduleList; let i = index">
-            <div>
-              <span class="text-module fw-medium" (click)="selectPage(item)">
-                {{ item?.replaceAll("_", " ") | titlecase }}
-              </span>
-              <span class="mx-4 link" (click)="addForm()"><i class="fa-solid fa-pen-to-square text-success fs-6"></i></span>
+            <div >
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="text-module fw-medium" (click)="selectPage(item)">
+                    {{ item?.replaceAll("_", " ") | titlecase }}
+                  </span>
+                </div>
+
+                <div>
+                  <div>
+                    <span class="mx-4 link" (click)="addForm()"> <i class="fa-solid fa-pen-to-square fs-6" style="color: var(--primary-color);"></i></span>
+                    <span class="mx-0 link" (click)="addForm()"> <i class="fa-solid fa-trash-can text-danger fs-6"></i></span>
+                  </div>
+                </div>
+              </div>
             </div>
           </ng-container>
         </div>
@@ -45,6 +65,7 @@
     </div>
   </div>
   <div class="col-xl-12 col-sm-12" *ngIf="pagesList.length > 0">
+    
     <div class="container-fluid">
       <div class="full-border">
         <div class="d-flex justify-content-between">
@@ -84,17 +105,17 @@
           <div>
             <table>
               <thead>
-                <tr>
-                  <!-- <th>{{'SN'}}</th> -->
+                <tr >
+                  <th>{{'Form Name' }}</th>
                   <th *ngIf="readerHeaderstatus('label')">
                     {{ "label" | titlecase }}
                   </th>
                   <th *ngIf="readerHeaderstatus('visible')">
                     {{ "visible" | titlecase }}
                   </th>
-                  <th *ngIf="readerHeaderstatus('value')">
+                  <!-- <th *ngIf="readerHeaderstatus('value')">
                     {{ "value" | titlecase }}
-                  </th>
+                  </th> -->
                   <th *ngIf="readerHeaderstatus('required')">
                     {{ "required" | titlecase }}
                   </th>
@@ -113,16 +134,16 @@
                   *ngFor="let row of pagesList; let i = index"
                   (click)="selectForm(row)"
                 >
-                  <!-- <td>{{ i+1}}</td> -->
+                  <td>{{ row?.name?.replaceAll('_', ' ') || '' | titlecase}}</td>
                   <td *ngIf="readerHeaderstatus('label')">
                     {{ row["label"] }}
                   </td>
                   <td *ngIf="readerHeaderstatus('visible')">
                     {{ row["visible"] }}
                   </td>
-                  <td *ngIf="readerHeaderstatus('value')">
+                  <!-- <td *ngIf="readerHeaderstatus('value')">
                     {{ row["value"] }}
-                  </td>
+                  </td> -->
                   <td *ngIf="readerHeaderstatus('required')">
                     {{ row["required"] }}
                   </td>
@@ -172,7 +193,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="formsFormId">Edit form Fields</h5>
+        <h5 class="modal-title p-2 fw-medium text-capitalize text-black " id="formsFormId">{{formsForm.get('name').value?.replaceAll('_', ' ' || '' | titlecase)}} FORM FIELDS</h5>
         <button
           type="button"
           class="btn-close"
@@ -361,4 +382,63 @@
       </div>
     </div>
   </div>
+</div>
+
+
+<div
+  class="modal fade"
+  tabindex="-1"
+  #formScreenId
+  id="formScreenId"
+  aria-labelledby="formScreenId"
+  aria-hidden="true"
+  style="color: #333"
+>
+<div class="modal-dialog ">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="row">
+        <div class="col-12"><h5 class="modal-title" id="formScreenId">Add {{name}}</h5></div>
+      <div class="col-12" style="font-size: 10px; color: red; ">If the words are going to be more than one then use _ as spaces e.g CLAIM_DETAILS</div>
+      </div>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        (click)="closeModal('formScreenId')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="screenForm">
+        <div class="container">
+          <form>
+            <div class="row mb-3">
+              <!-- First Row -->
+              <div class="col-12">
+                <label for="label" class="form-label sm">{{name}} Name</label>
+                <input
+                  formControlName="name"
+                  type="text"
+                  class="form-control"
+                  id="label"
+                />
+              </div>
+            </div>
+          </form>
+          <div class="d-flex justify-content-end">
+            <button
+              (click)="saveScreenForm()"
+              type="button"
+              class="btn btn-primary"
+              style="font-size: 12px"
+            >
+              save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </div>

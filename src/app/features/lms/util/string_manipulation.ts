@@ -1,6 +1,6 @@
 export   class StringManipulation {
 
-  static returnNullIfEmpty<T extends string | number | null>(value: T): T | null | Number  {
+  static returnNullIfEmpty<T extends string | number | {} | null> (value: T): T | null | Number | {} {
     if (value === null) {
       return null;
     } else if (typeof value === 'string' && value.trim() === '') {
@@ -8,6 +8,9 @@ export   class StringManipulation {
     } else if (!!Number(value)) {
       return Number(value);
     } else if (typeof value === 'string') {
+      return value;
+    }
+     else if (typeof value === 'object') {
       return value;
     }
     return null;
@@ -26,4 +29,33 @@ export   class StringManipulation {
     }
     return true;
   }
+
+
+  // static isNull(value: string | number | boolean | object | null | undefined): boolean {
+  //   `
+  //   Checks if a given value is considered empty.
+  
+  //   Args:
+  //     value: The value to check for emptiness.
+  
+  //   Returns:
+  //     True if the value is empty, False otherwise.
+  //   `
+  
+  //   if (value === null || value === undefined) {
+  //     return true;
+  //   } else if (typeof value === 'string' && value.trim() === '') {
+  //     return true;
+  //   } else if (typeof value === 'number' && !isNaN(value)) {
+  //     return false;
+  //   } else if (typeof value === 'boolean') {
+  //     return !value;
+  //   } else if (typeof value === 'object' && value.length === 0) {
+  //     return true;
+  //   } else if (typeof value === 'object' && !Object.keys(value).length) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 }

@@ -22,6 +22,10 @@ export class QuotationService {
     return this.api.GET(`${this.QUOTATION_BASE_URL}/tel-quote/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
+  saveWebQuote(data:any){
+    return this.api.POST(`${this.QUOTATION_BASE_URL}/web-quote`, data,  API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+  }
+
   convert_quotation_to_proposal(code: number){
     return this.api.POST(`${this.QUOTATION_BASE_URL}/generate-proposal-no/${code}`, null, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
   }

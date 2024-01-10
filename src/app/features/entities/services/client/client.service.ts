@@ -5,6 +5,8 @@ import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDT
 import {Pagination} from '../../../../shared/data/common/pagination'
 import {AppConfigService} from "../../../../core/config/app-config-service";
 import { environment } from 'src/environments/environment';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 import {UtilService} from "../../../../shared/services";
 
 @Injectable({
@@ -17,9 +19,9 @@ export class ClientService {
   headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json'});
 
   constructor(private http: HttpClient,
-    private appConfig: AppConfigService,
-              private utilService: UtilService) { }
-    getClients(
+    private appConfig: AppConfigService, private api: ApiService, private utilService: UtilService) { }
+    
+  getClients(
       page: number | null = 0,
       size: number | null = 5,
       sortField: string = 'createdDate',
@@ -125,11 +127,18 @@ export class ClientService {
     return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id);
   }
 
+  // getAccountByCode(code: number): Observable<ClientDTO> {
+  //   let params = new HttpParams().set('accountCode', code)
+  //   // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
+  //   return this.http.get<ClientDTO>(`/${this.baseUrl}/details`, {params: params});
+  // }
+
   getAccountByCode(code: number): Observable<ClientDTO> {
-    let params = new HttpParams().set('accountCode', code)
     // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
-    return this.http.get<ClientDTO>(`/${this.baseUrl}/details`, {params: params});
+    return this.api.GET<ClientDTO>(`details?accountCode=${code}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
   }
+
+
 
   getCLientBranches(): Observable<ClientBranchesDto[]> {
     const headers = new HttpHeaders({
