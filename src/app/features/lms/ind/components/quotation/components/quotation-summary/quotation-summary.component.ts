@@ -122,7 +122,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     let client_code = this.session_storage_Service.get(SESSION_KEY.CLIENT_CODE);
     this.dms_service.getClientDocumentById(client_code)
     .subscribe(data =>{
-      // console.log(data);
       this.documentList = data['content']
     });
   }

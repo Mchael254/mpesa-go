@@ -39,7 +39,7 @@
               class="form-select"
               formControlName="clientType"
               [id]="getFormData('CLIENT_TYPE')['data']['label']"
-              [disabled]="getFormData('CLIENT_TYPE')['data']['is_disabled']"
+              [disabled]="true"
             >
               <option value="" disabled selected>Select Client Type</option>
 
@@ -185,12 +185,14 @@
         >
           <div class="accordion-body">
             <div class="row">
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="branch" class="required">Branch</label>
+              <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="getFormData('BRANCH')">
+                <!-- <label for="branch" class="required">Branch</label> -->
+                <label [for]="getFormData('BRANCH')['data']['label']" [class]="getFormData('BRANCH')['data']['required']?'required' : ''">{{ getFormData('BRANCH')['data']['label'] }}</label>
+
                 <select
                   class="form-select"
                   formControlName="branch"
-                  [id]="'branch'"
+                  [id]="getFormData('BRANCH')['data']['label']"
                 >
                   <option value="" disabled selected>Select Branch</option>
 
@@ -493,24 +495,7 @@
                   [id]="'house_no'"
                 />
               </div>
-              <!-- <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="u_bill">Utility Bill</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="u_bill"
-                  [id]="'u_bill'"
-                />
-              </div>
-              <div class="col-lg-4 col-md-6 col-sm-12">
-                <label for="u_u_bill">Upload Utility Bill</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="u_u_bill"
-                  [id]="'u_u_bill'"
-                />
-              </div> -->
+              
             </div>
           </div>
         </div>
@@ -568,7 +553,7 @@
                   [id]="'bank_branch'"
                 >
                 
-                  <option value="" disabled selected>Select Branch</option>
+                  <option value="" disabled selected>Select Bank Branch</option>
                   <ng-container *ngFor="let bankBranch of bankBranchList; trackBy: trackById">
                     <option [value]="bankBranch['id']">
                       {{ bankBranch["name"] | titlecase }}
@@ -1365,9 +1350,6 @@
 
   <div class="d-flex justify-content-between">
     <div></div>
-    <!-- <button style="padding: 0.6em" type="button" class="btn btn-primary btn-sm">
-      Back
-    </button> -->
     <button
       style="padding: 0.6em"
       type="button"
@@ -1377,7 +1359,6 @@
       
     >
       Continue
-      <!-- &nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i> -->
     </button>
   </div>
 

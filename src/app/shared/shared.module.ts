@@ -66,6 +66,7 @@ import { ProductPipe } from '../features/lms/pipe/product/product.pipe';
 import { BeneficiaryPipe } from '../features/lms/pipe/beneficiary/beneficiary.pipe';
 import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
 import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
+import { Error401Interceptor } from './services/http/error-404.interceptor';
 
 const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe];
 
@@ -85,6 +86,12 @@ const SERVICES = [
   {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthHeaderInterceptor,
+    multi: true,
+  },
+
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: Error401Interceptor,
     multi: true,
   },
   // provide logger
