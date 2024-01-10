@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
@@ -13,7 +13,7 @@ import { DivisionComponent } from './components/division/division.component';
 import { RegionComponent } from './components/region/region.component';
 import { BranchComponent } from './components/branch/branch.component';
 import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
-
+import { CurrenciesComponent } from './components/currencies/currencies.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,8 @@ import { UserParametersComponent } from './components/user-parameters/user-param
     DivisionComponent,
     RegionComponent,
     BranchComponent,
-    UserParametersComponent
+    UserParametersComponent,
+    CurrenciesComponent,
   ],
   imports: [
     CommonModule,
@@ -32,7 +33,8 @@ import { UserParametersComponent } from './components/user-parameters/user-param
     ReactiveFormsModule,
     TableModule,
     DropdownModule,
-    SharedModule
-  ]
+    SharedModule,
+  ],
+  providers: [DatePipe],
 })
-export class CrmModule { }
+export class CrmModule {}

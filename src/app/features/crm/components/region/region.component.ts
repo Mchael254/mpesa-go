@@ -1,31 +1,48 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 
-import stepData from '../../data/steps.json'
+import stepData from '../../data/steps.json';
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { OrganizationService } from '../../services/organization.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { untilDestroyed } from '../../../../shared/services/until-destroyed';
-import { ManagersDTO, OrganizationDTO, OrganizationRegionDTO, PostOrganizationRegionDTO, YesNoDTO } from '../../data/organization-dto';
+import {
+  ManagersDTO,
+  OrganizationDTO,
+  OrganizationRegionDTO,
+  PostOrganizationRegionDTO,
+  YesNoDTO,
+} from '../../data/organization-dto';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { BankRegionDTO } from '../../../../shared/data/common/bank-dto';
 import { Router } from '@angular/router';
 import { BankService } from '../../../../shared/services/setups/bank/bank.service';
 import { Table } from 'primeng/table';
+import { ReusableInputComponent } from 'src/app/shared/components/reusable-input/reusable-input.component';
 
-const log = new Logger( 'RegionComponent');
+const log = new Logger('RegionComponent');
 
 @Component({
   selector: 'app-region',
   templateUrl: './region.component.html',
-  styleUrls: ['./region.component.css']
+  styleUrls: ['./region.component.css'],
 })
 export class RegionComponent implements OnInit {
-
   @ViewChild('regionModal') regionModal: ElementRef;
   @ViewChild('bankModal') bankModal: ElementRef;
   @ViewChild('regionTable') regionTable: Table;
   @ViewChild('bankRegionTable') bankRegionTable: Table;
+  @ViewChild('regionConfirmationModal')
+  regionConfirmationModal!: ReusableInputComponent;
+  @ViewChild('regionBankConfirmationModal')
+  regionBankConfirmationModal!: ReusableInputComponent;
 
   public createRegionForm: FormGroup;
   public createRegionBankForm: FormGroup;
@@ -39,20 +56,26 @@ export class RegionComponent implements OnInit {
   public optionData: YesNoDTO[];
   public selectedRegion: OrganizationRegionDTO;
   public selectedRegionBank: BankRegionDTO;
+  public selectedOrganization: number;
+  public selectedOrganizationId: number | null;
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
-      url: '/home/dashboard'
-    },
-    {
-      label: 'CRM Setups',
       url: '/home/dashboard',
     },
     {
+      label: 'CRM Setups',
+      url: '/home/crm',
+    },
+    {
       label: 'Organization',
-      url: 'home/crm/organization'
-    }
+      url: 'home/crm/organization',
+    },
+    {
+      label: 'Region',
+      url: 'home/crm/region',
+    },
   ];
 
   constructor(
@@ -62,12 +85,25 @@ export class RegionComponent implements OnInit {
     private bankService: BankService,
     private globalMessagingService: GlobalMessagingService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the selectedOrganizationId$ observable
+    this.organizationService.selectedOrganizationId$.subscribe(
+      (selectedOrganizationId) => {
+        // Update the selected organization ID in your component
+        this.selectedOrganizationId = selectedOrganizationId;
+        // Check if the selected organization ID is already set
+        if (this.selectedOrganizationId !== null) {
+          // Call the fetchOrganizationRegion and fetchManager method
+          this.fetchOrganizationRegion(this.selectedOrganizationId);
+          this.fetchManager(this.selectedOrganizationId);
+        }
+      }
+    );
     this.RegionCreateForm();
-    this.RegionBankForm(); 
+    this.RegionBankForm();
     this.fetchOrganization();
     this.fetchOptions();
   }
@@ -76,18 +112,20 @@ export class RegionComponent implements OnInit {
 
   RegionCreateForm() {
     this.createRegionForm = this.fb.group({
-      organization: [''],
+      // organization: [''],
       shortDescription: [''],
       name: [''],
       manager: [''],
       managerAllowed: [''],
       wef: [''],
       wet: [''],
-      commissionEarned: ['']
-    })
-   }
+      commissionEarned: [''],
+    });
+  }
 
-  get f() { return this.createRegionForm.controls; }
+  get f() {
+    return this.createRegionForm.controls;
+  }
 
   RegionBankForm() {
     this.createRegionBankForm = this.fb.group({
@@ -96,85 +134,122 @@ export class RegionComponent implements OnInit {
       wef: [''],
       wet: [''],
       manager: [''],
-    })
+    });
   }
 
   openRegionModal() {
-    this.renderer.addClass(this.regionModal.nativeElement, 'show');
-    this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'block');
+    const modal = document.getElementById('regionModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.regionModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'block');
   }
 
   closeRegionModal() {
-    this.renderer.removeClass(this.regionModal.nativeElement, 'show');
-    this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'none');
+    const modal = document.getElementById('regionModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.regionModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.regionModal.nativeElement, 'display', 'none');
   }
 
   openBankModal() {
-    this.renderer.addClass(this.bankModal.nativeElement, 'show');
-    this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'block');
+    const modal = document.getElementById('bankModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+    // this.renderer.addClass(this.bankModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'block');
   }
 
   closeBankModal() {
-    this.renderer.removeClass(this.bankModal.nativeElement, 'show');
-    this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'none');
+    const modal = document.getElementById('bankModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+    // this.renderer.removeClass(this.bankModal.nativeElement, 'show');
+    // this.renderer.setStyle(this.bankModal.nativeElement, 'display', 'none');
   }
 
   fetchOrganization() {
-    this.organizationService.getOrganization()
+    this.organizationService
+      .getOrganization()
       .pipe(untilDestroyed(this))
-      .subscribe((data) => { 
+      .subscribe((data) => {
         this.organizationsData = data;
         log.info('Organization Data', this.organizationsData);
       });
   }
 
-  onOrganizationChange(event: Event) { 
-    const selectedOrgId = (event.target as HTMLSelectElement).value;
-    const selectedOrgIdAsNumber = parseInt(selectedOrgId, 10);
-    this.selectedOrg = this.organizationsData.find(organization => organization.id === selectedOrgIdAsNumber);
-    log.info(`Slected organization details`, this.selectedOrg);
+  onOrganizationChange() {
+    this.selectedOrg = null;
+    this.selectedRegion = null;
+    this.selectedRegionBank = null;
+    this.bankRegionData = null;
+    const selectedOrganizationId = this.selectedOrganizationId;
+    this.selectedOrg = this.organizationsData.find(
+      (organization) => organization.id === selectedOrganizationId
+    );
     this.fetchOrganizationRegion(this.selectedOrg.id);
     this.fetchManager(this.selectedOrg.id);
+    // Set the selected organization ID in the service
+    this.organizationService.setSelectedOrganizationId(
+      this.selectedOrganizationId
+    );
   }
 
   fetchOrganizationRegion(organizationId: number) {
-    this.organizationService.getOrganizationRegion(organizationId)
+    this.organizationService
+      .getOrganizationRegion(organizationId)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.regionData = data;
         log.info('Region Data', this.regionData);
-      })
+      });
   }
 
   fetchManager(organizationId: number) {
-    this.organizationService.getRegionManagers(organizationId)
+    this.organizationService
+      .getRegionManagers(organizationId)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.regionManagersData = data;
         log.info('Manager Data', this.regionManagersData);
-      })
+      });
   }
 
   fetchOptions() {
-    this.organizationService.getOptionValues()
+    this.organizationService
+      .getOptionValues()
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.optionData = data;
-      })
+        log.info('Option Data', this.optionData);
+      });
   }
 
   fetchBankRegions(code: number) {
-    this.bankService.getBankRegion(code)
+    this.bankService
+      .getBankRegion(code)
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.bankRegionData = data;
         log.info(`Bank Region Data`, this.bankRegionData);
-      })
+      });
   }
 
   onRegionRowClick(region: OrganizationRegionDTO) {
     this.selectedRegion = region;
     this.fetchBankRegions(this.selectedRegion.code);
+
+    // Set the selected region in the service
+    this.organizationService.setSelectedRegion(this.selectedRegion.code);
   }
 
   onRegionBankRowClick(bank: BankRegionDTO) {
@@ -192,7 +267,6 @@ export class RegionComponent implements OnInit {
   }
 
   saveRegion() {
-
     this.closeRegionModal();
     if (!this.selectedRegion) {
       const regionFormValues = this.createRegionForm.getRawValue();
@@ -214,18 +288,21 @@ export class RegionComponent implements OnInit {
         policySeqNo: null,
         postingLevel: null,
         preContractAgentSeqNo: null,
-        shortDescription: regionFormValues.shortDescription
+        shortDescription: regionFormValues.shortDescription,
       };
-      this.organizationService.createOrganizationRegion(saveOrganizationRegion)
-      .subscribe(data => { 
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a Region');
-        this.fetchOrganizationRegion(this.selectedOrg.id);
-      });
-    }
-    else {
+      this.organizationService
+        .createOrganizationRegion(saveOrganizationRegion)
+        .subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully Created a Region'
+          );
+          this.fetchOrganizationRegion(this.selectedOrg.id);
+        });
+    } else {
       const regionFormValues = this.createRegionForm.getRawValue();
       const organizationId = this.selectedOrg.id;
-      const regionCode = this.selectedRegion.code
+      const regionCode = this.selectedRegion.code;
 
       const saveOrganizationRegion: PostOrganizationRegionDTO = {
         agentSeqNo: null,
@@ -243,11 +320,15 @@ export class RegionComponent implements OnInit {
         policySeqNo: null,
         postingLevel: null,
         preContractAgentSeqNo: null,
-        shortDescription: regionFormValues.shortDescription
+        shortDescription: regionFormValues.shortDescription,
       };
-      this.organizationService.updateOrganizationRegion(regionCode, saveOrganizationRegion)
-        .subscribe(data => { 
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a Region');
+      this.organizationService
+        .updateOrganizationRegion(regionCode, saveOrganizationRegion)
+        .subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully Updated a Region'
+          );
           this.selectedRegion = null;
           this.fetchOrganizationRegion(this.selectedOrg.id);
         });
@@ -256,12 +337,11 @@ export class RegionComponent implements OnInit {
   }
 
   saveRegionBank() {
-
     this.closeBankModal();
     if (!this.selectedRegionBank) {
       const regionBankFormValues = this.createRegionBankForm.getRawValue();
       const organizationId = this.selectedOrg.id;
-      const regionCode = this.selectedRegion.code; 
+      const regionCode = this.selectedRegion.code;
 
       const saveRegionBank: BankRegionDTO = {
         bankRegionName: regionBankFormValues.name,
@@ -271,19 +351,20 @@ export class RegionComponent implements OnInit {
         regionCode: regionCode,
         shortDescription: regionBankFormValues.shortDescription,
         wef: regionBankFormValues.wef,
-        wet: regionBankFormValues.wet
+        wet: regionBankFormValues.wet,
       };
-      this.bankService.createBankRegion(saveRegionBank)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a RegionBank');
-          this.fetchBankRegions(this.selectedRegion.code);
-        })
-    }
-    else {
+      this.bankService.createBankRegion(saveRegionBank).subscribe((data) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'Success',
+          'Successfully Created a RegionBank'
+        );
+        this.fetchBankRegions(this.selectedRegion.code);
+      });
+    } else {
       const regionBankFormValues = this.createRegionBankForm.getRawValue();
       const organizationId = this.selectedOrg.id;
       const regionCode = this.selectedRegion.code;
-      const regionBankId = this.selectedRegionBank.id
+      const regionBankId = this.selectedRegionBank.id;
 
       const saveRegionBank: BankRegionDTO = {
         bankRegionName: regionBankFormValues.name,
@@ -293,14 +374,18 @@ export class RegionComponent implements OnInit {
         regionCode: regionCode,
         shortDescription: regionBankFormValues.shortDescription,
         wef: regionBankFormValues.wef,
-        wet: regionBankFormValues.wet
+        wet: regionBankFormValues.wet,
       };
-      this.bankService.updateBankRegion(regionBankId, saveRegionBank)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Updated a RegionBank');
-          this.selectedRegionBank = null;
+      this.bankService
+        .updateBankRegion(regionBankId, saveRegionBank)
+        .subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully Updated a RegionBank'
+          );
           this.fetchBankRegions(this.selectedRegion.code);
-        })
+          this.selectedRegionBank = null;
+        });
     }
     this.createRegionForm.reset();
   }
@@ -316,26 +401,38 @@ export class RegionComponent implements OnInit {
         managerAllowed: this.selectedRegion.managerAllowed,
         wef: this.selectedRegion.dateFrom,
         wet: this.selectedRegion.dateTo,
-        commissionEarned: this.selectedRegion.overrideCommissionEarned
+        commissionEarned: this.selectedRegion.overrideCommissionEarned,
       });
-    }
-    else {
-      log.error('Error', 'No Region is selected.')
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region is selected.'
+      );
     }
   }
 
   deleteRegion() {
+    this.regionConfirmationModal.show();
+  }
+
+  confirmRegionDelete() {
     if (this.selectedRegion) {
       const regionCode = this.selectedRegion.code;
-      this.organizationService.deleteOrganizationRegion(regionCode)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region');
-          this.selectedRegion = null;
+      this.organizationService
+        .deleteOrganizationRegion(regionCode)
+        .subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'success',
+            'Successfully deleted a Region'
+          );
           this.fetchOrganizationRegion(this.selectedOrg.id);
-        })
-    }
-    else {
-      log.error('Error', 'No Region is Selected!');
+          this.selectedRegion = null;
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region is Selected!'
+      );
     }
   }
 
@@ -349,31 +446,38 @@ export class RegionComponent implements OnInit {
         wet: this.selectedRegionBank.wet,
         manager: this.selectedRegionBank.managerId,
       });
-    }
-    else {
-      log.error('Error', 'No Region Bank is selected.')
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region Bank is selected.'
+      );
     }
   }
 
   deleteRegionBank() {
+    this.regionBankConfirmationModal.show();
+  }
+
+  confirmRegionBankDelete() {
     if (this.selectedRegionBank) {
       const regionBankId = this.selectedRegionBank.id;
-      this.bankService.deleteBankRegion(regionBankId)
-        .subscribe(data => {
-          this.globalMessagingService.displaySuccessMessage('success', 'Successfully deleted a Region Bank');
-          this.selectedRegionBank = null;
-          this.fetchBankRegions(this.selectedRegion.code);
-        })
-    }
-    else {
-      log.error('Error', 'No Region Bank is Selected!');
+      this.bankService.deleteBankRegion(regionBankId).subscribe((data) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          'Successfully deleted a Region Bank'
+        );
+        this.fetchBankRegions(this.selectedRegion.code);
+        this.selectedRegionBank = null;
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Region Bank is Selected!'
+      );
     }
   }
-
-  
 
   onNext() {
-    this.router.navigate(['/home/crm/branch'])
+    this.router.navigate(['/home/crm/branch']);
   }
-
 }

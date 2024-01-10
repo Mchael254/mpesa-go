@@ -1,5 +1,7 @@
 {
-  "lang": {
+  "admin": {},
+  "auth": {},
+  "base": {
     "home": "inicio",
     "my_dashbaord": "mi panel",
     "dashboard": "panel de control",
@@ -16,7 +18,16 @@
     "my_policies": "Mis Pólizas",
     "my_quotations": "Mis Cotizaciones",
     "quotation": "Cotización"
-
-
-}
+  },
+  "crm": {},
+  "entities": {},
+  "gis": {},
+  "lms": {
+      "common": {},
+      "ind": {},
+      "grp": {}
+  },
+  "reports": {
+  },
+  "setups": {}
 }

@@ -11,6 +11,7 @@ import { ClientTitlesDto } from '../../data/ClientDTO';
 import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
 import { IdentityModeDTO } from '../../data/entityDto';
 import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
+import {UtilService} from "../../../../shared/services";
 
 
 @Injectable({
@@ -22,7 +23,8 @@ export class ServiceProviderService {
 
   constructor(
     private http: HttpClient,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    private utilService: UtilService
   ) { }
 
   getServiceProviders(
@@ -53,7 +55,8 @@ export class ServiceProviderService {
   searchServiceProviders(
     page: number,
     size: number = 5,
-    name: string
+    columnName: string,
+    columnValue: string,
   ): Observable<Pagination<ServiceProviderDTO>> {
 
     const headers = new HttpHeaders({
@@ -64,12 +67,13 @@ export class ServiceProviderService {
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('organizationId', 2)
-      .set('name', `${name}`)
-
+      .set('columnName', `${columnName}`)
+      .set('columnValue', `${columnValue}`)
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/service-providers`,
       {
         headers: headers,
-        params: params,
+        params: paramObject,
       });
   }
 

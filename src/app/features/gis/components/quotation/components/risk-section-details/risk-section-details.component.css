@@ -1,0 +1,230 @@
+.screenTitle{
+    color: #000;
+    font-family: Lato;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.title2{
+    color: #000;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-left:27px
+}
+#quote-label{
+    color: #000;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 15px;
+}
+#quote-input{
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.20); 
+    height:35px;
+    font-size: 14px;
+    /* background: #fff */
+}
+#quote-dropdown{
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.20);
+    height: 20px;
+    font-size: 14px;
+
+}
+.accordion-button{
+    background-color:transparent;
+    color: #000;
+}
+::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    /* padding: 0.3rem 1rem;  */
+    padding: 0.1rem 0.1rem;
+    color: rgba(105, 105, 105, 0.65);
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px; /* 150% */
+}
+#icon{
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+#icon i{
+    color: #00529B;
+}
+.fa-pencil{
+    color:#00529B
+}
+.fa-trash-can{
+    color:#00529B
+}
+#editScheduleLabel{
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 16px;
+    margin-left:26px;
+
+}
+#editOtherDetailsLabel{
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 16px;
+}
+#scheduleLabel{
+    color: #000;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#scheduleInput{
+    color: #000;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+#scheduleRows{
+    margin-left:16px;
+    margin-right:16px;
+}
+#save{
+    border-radius: 4px;
+    width: 119px;
+    font-size: 16px;
+    /* margin-right:26px; */
+}
+#deleteLabel{
+    color: #080808;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    padding-top: 40px;
+}
+#delete{
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border-radius: 8px;
+    width: 149px;
+}
+#delete:hover{
+    background-color: #00529B;
+}
+#importButton{
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.btn-link{
+    text-decoration: underline;
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+.btn-primary:hover{
+    background-color: #00529B;
+
+}
+/* .btn-primary{
+    border-radius: 4px;
+    background: #00529B;
+} */
+#saveDetails{
+   font-size: 12px;
+}
+/* styles.css */
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #F5F6F8;
+  }
+  
+  /* input[type="text"] {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 5px;
+    color: #B5B5B5;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background-color: #F5F6F8;
+  }
+   */
+  .search-icon {
+    padding: 0 10px; /* Adjust the padding as needed */
+  }
+  
+  .search-icon i {
+    font-size: 12px; /* Adjust the font size as needed */
+    color:#B5B5B5
+  }
+  .form-check-label{
+    color: rgba(0, 0, 0, 0.70);
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; 
+    padding-bottom: 12px;
+  }
+  .form-check-input{
+    border-color: rgba(0, 0, 0, 0.40);
+  }
+ 
+ 
+  #addSectionModal{
+    width:367px;
+
+  }
+  #search-input-Rsection{
+    border: none;
+    background-color: transparent;
+    width:200px;
+  }
+  /* #search-input-Rsection:focus{
+    border-color: transparent;  } */
+    .scrollable-list {
+      max-height: 300px; /* Set the desired height for your scrollable list */
+      overflow-y: auto; /* Enable vertical scrolling */
+    }
+    ::ng-deep .ui-tooltip {
+      color: white !important;
+      background-color: white !important;
+    }
+    
+
+  

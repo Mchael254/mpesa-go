@@ -24,6 +24,7 @@ import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-f
 import {SectorService} from "../../../../../shared/services/setups/sector/sector.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import { DatePipe } from '@angular/common';
+import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
 const log =  new Logger("CreateClientComponent")
 
 @Component({
@@ -33,10 +34,10 @@ const log =  new Logger("CreateClientComponent")
 })
 /**
  * This Angular component handles the creation of a new client registration form.
- *  It includes form controls for various client details.The component also manages dynamic form field visibility 
- * and validation based on user input and retrieves data from various services like country, bank, 
- * sector, and occupation services. It allows users to upload documents and save the client's basic 
- * information upon form submission. Additionally, it provides functionality for selecting countries, 
+ *  It includes form controls for various client details.The component also manages dynamic form field visibility
+ * and validation based on user input and retrieves data from various services like country, bank,
+ * sector, and occupation services. It allows users to upload documents and save the client's basic
+ * information upon form submission. Additionally, it provides functionality for selecting countries,
  * cities, and bank branches based on user choices. Overall, it serves as the interface for creating and
  *  managing new client records within the application.
  */
@@ -124,7 +125,7 @@ export class NewClientComponent implements OnInit{
     distributeChannel: 'Y'
   };
   response: any;
-
+  phoneNumberRegex:string;
   clientBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -156,7 +157,8 @@ export class NewClientComponent implements OnInit{
     private mandatoryFieldsService: MandatoryFieldsService,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private setupsParameterService: SetupsParametersService
   ) { }
 /**
  * Initializes the New Client Component.
@@ -175,7 +177,6 @@ export class NewClientComponent implements OnInit{
 
     this.clientID = this.activatedRoute.snapshot.params['id'];
     // this.clientsService.getClientById(this.clientID)
-    this.clientRegForm();
     this.fetchCountries();
 
     // this.getCountries();
@@ -253,7 +254,7 @@ export class NewClientComponent implements OnInit{
 
             if (field.visibleStatus === 'Y') {
               if (key === field.frontedId && field.mandatoryStatus === 'Y'){
-                this.clientRegistrationForm.get(`contact_details.${key}`).setValidators(Validators.required);
+                this.clientRegistrationForm.get(`contact_details.${key}`).addValidators(Validators.required);
                 this.clientRegistrationForm.get(`contact_details.${key}`).updateValueAndValidity();
                 const label = document.querySelector(`label[for=${field.frontedId}]`);
                 if (label) {
@@ -342,7 +343,9 @@ export class NewClientComponent implements OnInit{
           email: [''],
           channel: [''],
           pinNo: [''],
-          eDocuments: ['']
+          eDocuments: [''],
+          countryCodeSms: [''],
+          countryCodeTel: ['']
         },
       ),
 
@@ -355,7 +358,7 @@ export class NewClientComponent implements OnInit{
           physical_address: [''],
           road: [''],
           house_number: [''],
-          utility_address_proof: ['', Validators.required],
+          utility_address_proof: [''],
           is_utility_address: [''],
         },
       ),
@@ -409,7 +412,21 @@ export class NewClientComponent implements OnInit{
     .subscribe(
       currentEntity => this.entityDetails = currentEntity
     );
+  let name = 'SMS_NO_FORMAT';
+  this.setupsParameterService.getParameters(name)
+    .subscribe((data) => {
+      data.forEach((field) => {
+        if (field.name === 'SMS_NO_FORMAT') {
+          this.phoneNumberRegex = field.value;
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
 
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+        }
+        log.info('parameters>>>', this.phoneNumberRegex)
+      });
+    });
     this.clientRegistrationForm.patchValue({
       surname: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
       otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
@@ -447,7 +464,7 @@ export class NewClientComponent implements OnInit{
   get f() { return this.clientRegistrationForm.controls; }
 
   /**
- * Saves client basic information, including address, contact details, payment details, 
+ * Saves client basic information, including address, contact details, payment details,
  * and wealth details, by making an API call with the form values.
  */
   saveClientBasic() {
@@ -525,10 +542,12 @@ export class NewClientComponent implements OnInit{
             received Document- Field to be provided*/
         emailAddress: clientFormValues.contact_details.email, /*Todo: To add field for Email*/
         id: 0,
-        phoneNumber: clientFormValues.contact_details.phoneNumber,
+        // phoneNumber: clientFormValues.contact_details.phoneNumber,
         receivedDocuments: "N", /*Todo: provide field to capture*/
-        smsNumber: clientFormValues.contact_details.smsNumber,
-        titleShortDescription: "DR"
+        // smsNumber: clientFormValues.contact_details.smsNumber,
+        titleShortDescription: "DR",
+        phoneNumber: clientFormValues.contact_details.countryCodeTel + clientFormValues.contact_details.phoneNumber,
+        smsNumber: clientFormValues.contact_details.countryCodeSms + clientFormValues.contact_details.smsNumber,
 
       }
 
@@ -623,7 +642,7 @@ export class NewClientComponent implements OnInit{
       accountType: 21,
       dateOfBirth: this.entityDetails?.dateOfBirth,
       organizationId: 2,
-      modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
+      modeOfIdentityid: this.entityDetails?.modeOfIdentity?.id,
       nextOfKinDetailsList: null,
 
       }
@@ -657,8 +676,8 @@ export class NewClientComponent implements OnInit{
       }
     }
   }
- 
-  
+
+
 
   uploadNextOfKins() {
 
@@ -711,7 +730,7 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches client titles based on the specified organization ID and updates the component's 
+ * Fetches client titles based on the specified organization ID and updates the component's
  * clientTitlesData property.
  * @param organizationId The organization ID for which client titles are fetched.
  */
@@ -758,7 +777,7 @@ export class NewClientComponent implements OnInit{
       );
   }
   /**
- * Fetches client types based on the provided organization ID and 
+ * Fetches client types based on the provided organization ID and
  * updates the component's clientTypeData property.
  * @param organizationId The organization ID used to retrieve client types.
  */

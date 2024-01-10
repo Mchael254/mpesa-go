@@ -1,5 +1,7 @@
 {
-  "lang": {
+  "admin": {},
+  "auth": {},
+  "base": {
     "home":"home",
     "my_dashbaord":"my dashboard",
     "dashboard": "panel de control",
@@ -13,5 +15,16 @@
     "no_of_tickets": "No. of Tickets",
     "view_all": "VIEW ALL",
     "summary" : "Summary"
-  }
+  },
+  "crm": {},
+  "entities": {},
+  "gis": {},
+  "lms": {
+      "common": {},
+      "ind": {},
+      "grp": {}
+  },
+  "reports": {
+  },
+  "setups": {}
 }

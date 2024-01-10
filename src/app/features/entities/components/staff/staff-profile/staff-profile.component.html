@@ -165,20 +165,62 @@
             <ng-container *ngIf="visibleStatus.phoneNumber === 'Y'">
               <div class="col-sm-4">
                 <label for="phoneNumber" class="label col-form-label">Primary Phone number</label>
-                <input type="tel"  nbInput fullWidth id="phoneNumber" name="phoneNumber" placeholder="Primary phone" class="form-control" formControlName="phoneNumber"
+                <!--<input type="tel"  nbInput fullWidth id="phoneNumber" name="phoneNumber" placeholder="Primary phone" class="form-control" formControlName="phoneNumber"
                        [ngClass]="{ 'is-invalid': f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched) }">
                 <div *ngIf="f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched)" class="form-text text-danger">
                   <div *ngIf="f['contact_details'].get('phoneNumber')?.errors['required']">Phone number is required</div>
+                </div>-->
+                <div class="input-group">
+                  <select class="form-select" id="countryCodePrimary" formControlName="countryCodePrimary" style="max-width:25%"
+                          [ngClass]="{ 'is-invalid': f['contact_details'].get('countryCodePrimary')?.invalid && (f['contact_details'].get('countryCodePrimary')?.dirty || f['contact_details'].get('countryCodePrimary')?.touched) }">
+                    <option *ngFor="let value of countries" [value]="'+' + (value?.zipCode)">
+                      {{ '+' + (value?.zipCode) }}
+                    </option>
+                  </select>
+                  <input type="tel" class="form-control" id="phoneNumber" placeholder="Primary phone"
+                         formControlName="phoneNumber"
+                         [ngClass]="{ 'is-invalid': f['contact_details'].get('phoneNumber')?.invalid &&
+                         (f['contact_details'].get('phoneNumber')?.dirty ||
+                         f['contact_details'].get('phoneNumber')?.touched) }">
+                </div>
+                <div *ngIf="f['contact_details'].get('countryCodePrimary')?.invalid && (f['contact_details'].get('countryCodePrimary')?.dirty || f['contact_details'].get('countryCodePrimary')?.touched)"
+                     class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['contact_details'].get('countryCodePrimary')?.errors }">
+                  <div *ngIf="f['contact_details'].get('countryCodePrimary')?.errors['required']">Country code is required</div>
+                </div>
+                <div *ngIf="f['contact_details'].get('phoneNumber')?.invalid && (f['contact_details'].get('phoneNumber')?.dirty || f['contact_details'].get('phoneNumber')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('phoneNumber')?.errors['required']">Phone number is required</div>
+                  <div *ngIf="f['contact_details'].get('phoneNumber')?.errors['pattern']">Phone Number format 715123456</div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="visibleStatus.otherPhone === 'Y'">
               <div class="col-sm-4">
                 <label for="otherPhone" class="label col-form-label">Secondary phone number</label>
-                <input type="tel"  nbInput fullWidth id="otherPhone" name="otherPhone" placeholder="Secondary phone number" class="form-control" formControlName="otherPhone"
+                <!--<input type="tel"  nbInput fullWidth id="otherPhone" name="otherPhone" placeholder="Secondary phone number" class="form-control" formControlName="otherPhone"
                        [ngClass]="{ 'is-invalid': f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched) }">
                 <div *ngIf="f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched)" class="form-text text-danger">
                   <div *ngIf="f['contact_details'].get('otherPhone')?.errors['required']">Secondary phone number is required</div>
+                </div>-->
+                <div class="input-group">
+                  <select class="form-select" id="countryCodeSecondary" formControlName="countryCodeSecondary" style="max-width:25%"
+                          [ngClass]="{ 'is-invalid': f['contact_details'].get('countryCodeSecondary')?.invalid && (f['contact_details'].get('countryCodeSecondary')?.dirty || f['contact_details'].get('countryCodeSecondary')?.touched) }">
+                    <option *ngFor="let value of countries" [value]="'+' + (value?.zipCode)">
+                      {{ '+' + (value?.zipCode) }}
+                    </option>
+                  </select>
+                  <input type="tel" class="form-control" id="otherPhone" placeholder="Secondary phone number"
+                         formControlName="otherPhone"
+                         [ngClass]="{ 'is-invalid': f['contact_details'].get('otherPhone')?.invalid &&
+                         (f['contact_details'].get('otherPhone')?.dirty ||
+                         f['contact_details'].get('otherPhone')?.touched) }">
+                </div>
+                <div *ngIf="f['contact_details'].get('countryCodeSecondary')?.invalid && (f['contact_details'].get('countryCodeSecondary')?.dirty || f['contact_details'].get('countryCodeSecondary')?.touched)"
+                     class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['contact_details'].get('countryCodeSecondary')?.errors }">
+                  <div *ngIf="f['contact_details'].get('countryCodeSecondary')?.errors['required']">Country code is required</div>
+                </div>
+                <div *ngIf="f['contact_details'].get('otherPhone')?.invalid && (f['contact_details'].get('otherPhone')?.dirty || f['contact_details'].get('otherPhone')?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['contact_details'].get('otherPhone')?.errors['required']">Secondary phone number is required</div>
+                  <div *ngIf="f['contact_details'].get('otherPhone')?.errors['pattern']">Secondary Phone Number format 715123456</div>
                 </div>
               </div>
             </ng-container>

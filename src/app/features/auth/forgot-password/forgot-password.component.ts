@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {AuthService} from "../../../shared/services/auth.service";
 import {UtilService} from "../../../shared/services";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
+import { catchError } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -16,6 +17,8 @@ export class ForgotPasswordComponent implements OnInit{
   form: FormGroup;
   submitted = false;
   saveSuccess = false;
+  error: {name: string, status: number, message: string} = { name: '', status: 0, message: '' };
+  isLoading: boolean = false;
 
   constructor(
     private router: Router,
@@ -52,6 +55,8 @@ export class ForgotPasswordComponent implements OnInit{
    */
   onSubmit() {
     this.submitted = true;
+    this.error = { name: '', status: 0, message: '' };
+    this.isLoading = true;
 
     if(this.form.valid){
       const email = this.f['email'].value;
@@ -69,12 +74,18 @@ export class ForgotPasswordComponent implements OnInit{
           next: (response) => {
             this.globalMessagingService.displaySuccessMessage('Success', response?.message )
             this.saveSuccess = true;
-            setTimeout(() => {
-              this.router.navigate(['/auth/otp'],
-                {queryParams: {referrer: 'password-reset'}});
-            }, 3000);
+            this.router.navigate(['/auth/otp'], {queryParams: {referrer: 'password-reset'}});
+            this.isLoading = false;
           },
-          //error: error => console.log(error)
+          error: (err) => {
+            this.error = {
+              name: err.name,
+              status: err.status,
+              message: err.message
+            };
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+            this.isLoading = false;
+          }
         })
     }
   }

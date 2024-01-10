@@ -234,20 +234,62 @@
                     <ng-container *ngIf="visibleStatus['smsNumber'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="smsNumber" class="label col-form-label">SMS Number</label>
-                        <input type="tel" id="smsNumber" name="smsNumber" placeholder="SMS Number" class="form-control" formControlName="smsNumber"
+                        <!--<input type="tel" id="smsNumber" name="smsNumber" placeholder="SMS Number" class="form-control" formControlName="smsNumber"
                                [ngClass]="{ 'is-invalid': f['contact_details']?.['smsNumber']?.invalid && (f['contact_details']?.['smsNumber']?.dirty || f['contact_details']?.['smsNumber']?.touched) }">
                         <div *ngIf="f['contact_details']?.['smsNumber']?.invalid && (f['contact_details']?.['smsNumber']?.dirty || f['contact_details']?.['smsNumber']?.touched)" class="form-text text-danger">
                           <div *ngIf="f['contact_details']?.['smsNumber']?.errors['required']">SMS Number is required</div>
+                        </div>-->
+                        <div class="input-group">
+                          <select class="form-select" id="countryCodeSms" formControlName="countryCodeSms" style="max-width:25%"
+                                  [ngClass]="{ 'is-invalid': f['contact_details']['controls']['countryCodeSms']['invalid'] && (f['contact_details']['controls']['countryCodeSms']['dirty'] || f['contact_details']['controls']['countryCodeSms']['touched']) }">
+                            <option *ngFor="let value of countryData" [value]="'+' + (value?.zipCode)">
+                              {{ '+' + (value?.zipCode) }}
+                            </option>
+                          </select>
+                          <input type="tel" class="form-control" id="smsNumber" placeholder="SMS Number"
+                                 formControlName="smsNumber"
+                                 [ngClass]="{ 'is-invalid': f['contact_details']['controls']['smsNumber']['invalid'] &&
+                           (f['contact_details']['controls']['smsNumber']['dirty'] ||
+                           f['contact_details']['controls']['smsNumber']['touched']) }">
+                        </div>
+                        <div *ngIf="f['contact_details']['controls']['countryCodeSms']['invalid'] && (f['contact_details']['controls']['countryCodeSms']['dirty'] || f['contact_details']['controls']['countryCodeSms']['touched'])"
+                             class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['contact_details']['controls']['countryCodeSms']?.errors }">
+                          <div *ngIf="f['contact_details']['controls']['countryCodeSms']?.errors['required']">Country code is required</div>
+                        </div>
+                        <div *ngIf="f['contact_details']['controls']['smsNumber']['invalid'] && (f['contact_details']['controls']['smsNumber']['dirty'] || f['contact_details']['controls']['smsNumber']['touched'])" class="form-text text-danger">
+                          <div *ngIf="f['contact_details']['controls']['smsNumber']['errors']['required']">SMS Number is required</div>
+                          <div *ngIf="f['contact_details']['controls']['smsNumber']['errors']['pattern']">SMS Number format 715123456</div>
                         </div>
                       </div>
                     </ng-container>
                     <ng-container *ngIf="visibleStatus?.['phone_number'] === 'Y'">
                       <div class="col-sm-4">
                         <label for="phone_number" class="label col-form-label">Telephone Number</label>
-                        <input type="tel" id="phone_number" name="telNumber" placeholder="Tel Number" class="form-control" formControlName="phone_number"
+                        <!--<input type="tel" id="phone_number" name="telNumber" placeholder="Tel Number" class="form-control" formControlName="phone_number"
                                [ngClass]="{ 'is-invalid': f['contact_details']?.['phone_number']?.invalid && (f['contact_details']?.['phone_number']?.dirty || f['contact_details']?.['phone_number']?.touched) }">
                         <div *ngIf="f['contact_details']?.['phone_number']?.invalid && (f['contact_details']?.['phone_number']?.dirty || f['contact_details']?.['phone_number']?.touched)" class="form-text text-danger">
                           <div *ngIf="f['contact_details']?.['phone_number']?.errors['required']">Telephone Number is required</div>
+                        </div>-->
+                        <div class="input-group">
+                          <select class="form-select" id="countryCodeTel" formControlName="countryCodeTel" style="max-width:25%"
+                                  [ngClass]="{ 'is-invalid': f['contact_details']['controls']['countryCodeTel']['invalid'] && (f['contact_details']['controls']['countryCodeTel']['dirty'] || f['contact_details']['controls']['countryCodeTel']['touched']) }">
+                            <option *ngFor="let value of countryData" [value]="'+' + (value?.zipCode)">
+                              {{ '+' + (value?.zipCode) }}
+                            </option>
+                          </select>
+                          <input type="tel" class="form-control" id="phone_number" placeholder="Tel Number"
+                                 formControlName="phone_number"
+                                 [ngClass]="{ 'is-invalid': f['contact_details']['controls']['phone_number']['invalid'] &&
+                           (f['contact_details']['controls']['phone_number']['dirty'] ||
+                           f['contact_details']['controls']['phone_number']['touched']) }">
+                        </div>
+                        <div *ngIf="f['contact_details']['controls']['countryCodeTel']['invalid'] && (f['contact_details']['controls']['countryCodeTel']['dirty'] || f['contact_details']['controls']['countryCodeTel']['touched'])"
+                             class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['contact_details']['controls']['countryCodeTel']?.errors }">
+                          <div *ngIf="f['contact_details']['controls']['countryCodeTel']?.errors['required']">Country code is required</div>
+                        </div>
+                        <div *ngIf="f['contact_details']['controls']['phone_number']['invalid'] && (f['contact_details']['controls']['phone_number']['dirty'] || f['contact_details']['controls']['phone_number']['touched'])" class="form-text text-danger">
+                          <div *ngIf="f['contact_details']['controls']['phone_number']['errors']['required']">Tel Number is required</div>
+                          <div *ngIf="f['contact_details']['controls']['phone_number']['errors']['pattern']">Tel Number format 715123456</div>
                         </div>
                       </div>
                     </ng-container>
