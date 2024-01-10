@@ -45,6 +45,13 @@
   border-radius: 0px;
 }
 
+.fw-light:hover,
+.justify-content-start:hover {
+  color: #000;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
 
 
 
