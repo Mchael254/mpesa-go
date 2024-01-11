@@ -186,4 +186,18 @@ export class BankService {
       { headers: headers }
     );
   }
+
+  createBank(
+    data: BankDTO
+  ): Observable<BankDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<BankDTO>(
+      `/${this.baseUrl}/setups/banks`,
+      JSON.stringify(data),
+      { headers: headers }
+    );
+  }
 }
