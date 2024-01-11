@@ -1,8 +1,34 @@
 export interface BankDTO {
-    countryId: number,
-    id: number,
-    name: string,
-    short_description: string
+  administrativeCharge: number,
+  allowPesalink: string,
+  bankAccountNoCharacters: number,
+  bankLogo: string,
+  bankSortCode: string,
+  bankType: string,
+  countryId: number,
+  countryName: string,
+  ddiCharge: number,
+  directDebitFormat: string,
+  directDebitReportCode: number,
+  forwardingBankId: number,
+  forwardingBankName: string,
+  hasParentBank: string,
+  id: number,
+  isDirectDebitSupported: string,
+  isEftSupported: string,
+  isForwardingBank: string,
+  isNegotiatedBank: string,
+  maximumAccountNoCharacters: string,
+  minimumAccountNoCharacters: string,
+  name: string,
+  parentBankId: number,
+  parentBankName: string,
+  physicalAddress: string,
+  remarks: string,
+  short_description: string,
+  status: string,
+  withEffectiveFrom: string,
+  withEffectiveTo: string
 }
 
 // export interface BankBranchDTO {
