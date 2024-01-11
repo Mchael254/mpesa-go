@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { NewBusinessService } from '../../service/new-business/new-business.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
+import { NeedAnalysisService } from 'src/app/features/setups/service/need-analysis/need-analysis.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-need-analysis',
@@ -12,18 +13,26 @@ export class NeedAnalysisComponent implements OnInit {
 
   questionData: any = {};
   questions: any[] = [];
-  optionSelected: any[] = []
-  questionSelected: any[] = []
-  constructor(private new_business_service: NewBusinessService, private spinner_service: NgxSpinnerService, private cdr: ChangeDetectorRef,){}
+  optionSelected: any[] = [];
+  questionSelected: any[] = [];
+  constructor( private spinner_service: NgxSpinnerService, private cdr: ChangeDetectorRef, private need_analysis_service: NeedAnalysisService){}
 
   ngOnInit(): void {
     this.getQuestions();
-
   }
 
   getQuestions(){
     this.spinner_service.show('analysis_view')
-    this.new_business_service.getNeedAnalysis().pipe(finalize(() => {
+    let TENANT_ID = environment?.TENANT_ID?.toUpperCase();
+    let NEED_ANALYSIS_PROCESS_TYPE = 'NEW_BUSINESS'
+    let NEED_ANALYSIS_SYSTEM_NAME = 'LMS_INDIVIDUAL'
+
+    this.need_analysis_service
+      .getNeedAnalysisBySystemNameAndProcessTypeAndTenantID(
+        TENANT_ID,
+        NEED_ANALYSIS_PROCESS_TYPE,
+        NEED_ANALYSIS_SYSTEM_NAME
+      ).pipe(finalize(() => {
       this.spinner_service.hide('analysis_view')
     })).subscribe(data =>{
       this.questionData = data['data']['question'];
@@ -34,15 +43,10 @@ export class NeedAnalysisComponent implements OnInit {
   }
 
   selectOption($event) {
-    // this.optionSelected.push($event)
-    this.appendingSelectedQuestionByOption($event)
-
+    this.appendingSelectedQuestionByOption($event);
     }
   appendingSelectedQuestionByOption(e: any) {
-    // console.log(e);
-
     let question = {...this.questionData};
-
     if(question?.options.length >0){
       let pastQuestion = {...this.questionSelected[this.questionSelected.length -1]};
       pastQuestion['isSelected'] = true;
@@ -51,13 +55,15 @@ export class NeedAnalysisComponent implements OnInit {
       this.questionSelected.push(this.questionData);
       this.optionSelected.push(e);
       this.questionSelected = [...this.questionSelected];
-    //   this.cdr.detectChanges();
-
-
-    //   // question["isSelected"] = true
-
     }
+  }
 
+  reset(){
+    this.questionData= {};
+    this.questions = [];
+    this.optionSelected= []
+    this.questionSelected= []
+    this.ngOnInit();
   }
 
 }

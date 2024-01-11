@@ -1,0 +1,11 @@
+.sub_sytem_list {
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.sub_sytem_list:hover {
+    color: black;
+
+}

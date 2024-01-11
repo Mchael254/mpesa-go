@@ -34,6 +34,7 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-spinner/animations/ball-clip-rotate-multiple.css",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/primeicons/primeicons.css",

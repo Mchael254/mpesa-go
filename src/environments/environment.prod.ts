@@ -16,8 +16,8 @@ export const environment = {
     [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, '/lms/ind/marketing'],
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
+    [API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL, '/crm/accounts'],
     [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, '/lms/underwriting'],
-
 
   ]),
   TENANT_ID: API_TENANT_ID.MUTUAL,
