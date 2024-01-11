@@ -148,6 +148,18 @@ export class MenuService{
       collapsed:true,
     },
     {
+      name: 'Bank Setups',
+      nameSlug: 'banks',
+      icon: 'fa-solid fa-bank',
+      menuItems: [
+        {
+          name: 'Banks',
+          link: "/home/crm/bank"
+        }
+      ],
+      collapsed:true,
+    },
+    {
       name: 'Service Desk',
       nameSlug: 'desk',
       icon: 'fa-solid fa-gears',
