@@ -1,5 +1,5 @@
 <div class="container ">
-    <p class="titleMain mt-3">Quotations: Quotation Data Entry</p>
+    <p class="titleMain mt-3">Quotations: Quotation summary</p>
      <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
      <div class="container mx-2 mt-n1">     
           <div class="card">
@@ -7,7 +7,7 @@
                 <!-- QOUTE DETAILS -->
                 <p class="title mt-2">Quote details</p>
                 <div class="row ">
-                    <div class="col-4">
+                    <div class="col-lg-4 col-12">
                         <div class="row">
                            
                             <div class="col-6">
@@ -18,7 +18,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6">
                                 <p class="summary-label">Quote date:</p>
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-4">
+                    <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6" id="value">
                                 <p class="summary-label">Name of insured:</p>
@@ -41,7 +41,7 @@
                    
                 </div>
                 <div class="row ">
-                    <div class="col-4">
+                    <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6">
                                 <p class="summary-label">Intermediary:</p>
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-lg-6 col-12">
                         <div class="row">
                             <div class="col-4">
                                 <p class="summary-label">Period of insurance:</p>
@@ -99,35 +99,6 @@
                     <p class="title ">Risk details</p>
                     <button type="button" class="btn btn-primary mb-2" (click)="addAnotherRisk()">Add another risk</button>
                   </div>
-                  
-                 
-                <!-- <p-table [value]="" [tableStyle]="{ 'min-width': '608px' }">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Description</th>
-                            <th>Risk ID.</th>
-                            <th>Cover type</th>
-                            <th>Options</th>
-                            
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" >
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                          <td colspan="1"></td>
-        
-                          <td colspan="10" style="padding:20px;padding-left: 200px;" id="empty">No data to display.</td>
-                        </tr>
-        
-                      </ng-template>
-                </p-table> -->
 
                 <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }"  >
                     <ng-template pTemplate="header">
@@ -237,82 +208,6 @@
               </div>
             </div>
           </div>
-          <!-- <div class="row mt-4 mb-4">
-            <div class="col-8">
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote" id="btnCancelQuote">Cancel quote</button>
-                <div  class="modal fade"  id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content  ps-4 pt-4 pe-4">
-                        <p class="cancelQouteTitle">Please provide a reason for your cancellation</p>
-                        <p class="cancelQouteTitle">Reason</p>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
-
-
-                        <div class="row mt-4 mb-4">
-                            <div class="col-4"></div>
-                            <div class="col-8">  
-                                <div class="row">
-                                    <div class="col-6 d-flex justify-content-end">
-                                        <button type="button" class="btn btn-outline-primary" id="closeBtn" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                    <div class="col-6 d-flex justify-content-end">
-                                        <button type="button" class="btn btn-primary" id="cancelQoute" >Cancel Quote</button>
-                                    </div>
-                                </div>                                    
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4 ">
-                <div class="row">
-                    <div class="col-6 d-flex justify-content-end" >
-                        <button  type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
-                        <div  class="modal fade"  id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                              <div class="modal-content  ps-4 pt-4 pe-4">
-
-                                  <div class="row">
-                                    <div class="col-3">                                      
-                                        <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="email" /> 
-                                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'email' }">Email</span>
-                                    </div>
-                                    <div class="col-3">                                      
-                                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="sms" /> 
-                                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'sms' }">SMS</span>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="whatsapp" /> 
-                                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">WhatsApp</span>
-
-                                    </div>
-                                  </div>
-                          
-                                  <div class="form-group mt-3">
-                                    <label class="mb-3" for="clientName" id="shareLabel">Client Name</label>
-                                    <input type="text"  [(ngModel)]="clientName" id="clientName" class="form-control" />
-                                  </div>
-                                  <div class="form-group">
-                                    <label class="mb-3 mt-3"  id="shareLabel" [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
-                                    <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" />
-                                  </div>
-                                <div class="row mt-4 mb-4">
-                                    <div class="col-6"></div>
-                                    <div class="col-6 d-flex justify-content-end">                                      
-                                        <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal" >Send</button>
-                                    </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                    </div>
-                    <div class="col-6 d-flex justify-content-end">
-                        <button   class="btn btn-primary" type="submit" id="btnCancelQuote">Accept quote</button>
-                    </div>
-                </div>
-            </div>
-          </div>
-          <br><br><br> <br><br><br> -->
+       
     </div>
 </div>
