@@ -3,5 +3,19 @@ export enum  SESSION_KEY {
   CLIENT_CODE = 'client_code',
   PROPOSAL_CODE = 'proposal_code',
   QUOTE_CODE = 'quote_code',
-  ACCOUNT_CODE = 'account_code'
+  ACCOUNT_CODE = 'account_code',
+  POL_CODE = 'pol_code',
+  ENDR_CODE = 'endr_code',
+
+  // Quick Quote
+  QUICK_QUOTE_DETAILS = 'QUICK_QUOTE_DETAILS',
+  TEL_QUOTE_DETAILS = 'TEL_QUOTE_DETAILS',
+  WEB_QUOTE_DETAILS = 'WEB_QUOTE_DETAILS',
+  CLIENT_DETAILS='CLIENT_DETAILS',
+
+
+
+  // Need Analysis
+  NEED_ANALYSIS_SYSTEM_NAME = 'NEED_ANALYSIS_SYSTEM_NAME',
+  NEED_ANALYSIS_PROCESS_TYPE= 'NEED_ANALYSIS_PROCESS_TYPE'
 }

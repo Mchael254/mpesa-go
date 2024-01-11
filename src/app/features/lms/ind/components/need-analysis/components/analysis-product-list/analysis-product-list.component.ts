@@ -1,4 +1,6 @@
 import { Component, Input, OnInit} from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ProductService } from 'src/app/features/lms/service/product/product.service';
 
 @Component({
   selector: 'app-analysis-product-list',
@@ -8,9 +10,16 @@ import { Component, Input, OnInit} from '@angular/core';
 export class AnalysisProductListComponent implements OnInit{
 
   @Input() products: number[];
+  productList: any[] = []
+  constructor(private product_service:ProductService, private spinner_service: NgxSpinnerService){}
 
   ngOnInit(): void {
+    this.spinner_service.show()
     console.log(this.products);
+    this.product_service.getListOfProduct().subscribe((data) => {
+      this.productList = data;
+      this.spinner_service.hide();
+    });
 
   }
 

@@ -40,7 +40,7 @@ export class MenuService{
       name: 'Actions',
       nameSlug: 'actions',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Quote Need Analysis', link:"/home/lms/need-analysis"},],
+      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Need Analysis', link:"/home/lms/need-analysis"},],
 
       collapsed:true,
     },
@@ -387,6 +387,12 @@ administationSubMenuList() : SidebarMenu[]{
     {
       name:"Screen Setup",
       link:"/home/setups/system",
+      value: "SCREEN_SETUP",
+      isActive: true
+    },
+    {
+      name:"Need Analysis Setup",
+      link:"/home/setups/need-analysis",
       value: "SCREEN_SETUP",
       isActive: true
     }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
@@ -35,6 +35,8 @@ import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from '../../../../../../lms/util/session_storage_enum';
 import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { FormsService } from 'src/app/features/setups/components/forms/service/forms/forms.service';
+import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 
 @Component({
   selector: 'app-personal-details',
@@ -76,6 +78,7 @@ export class PersonalDetailsComponent {
   isBeneficiaryLoading: boolean = false;
   loadBankBranch: boolean;
   getFormControlsNameWithErrors: string[] = [];
+  validationData = [];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -94,11 +97,35 @@ export class PersonalDetailsComponent {
     private relation_type_service: RelationTypesService,
     private dms_service: DmsService,
     private spinner_Service: NgxSpinnerService,
-    private lms_client_service: LMSClientService
-  ) {}
-  ngOnInit() {
-    this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
+    private lms_client_service: LMSClientService,
+    private form_service: FormsService,
+    private quotation_service: QuotationService
+  ) {
+    this.form_service.getBySystemAndModuleAndScreeName('LMS_INDIVIDUAL', 'QUOTATION', 'CLIENT_DETAILS').subscribe(data=> {
+      
+      this.validationData = data['data'].map((val: any) => {
+        let temp = {};
+        temp['name'] = val?.form_name
+        // use english as defaults
+        temp['data'] = val?.inputs.en;
+        return temp;
+      });
+      console.log(this.validationData);
+      
+      this.clientDetailsForm = this.getClientDetailsForm();
+      this.clientDetailsForm?.get('clientType')?.setValue(21);
+    
+    });
+  }
+
+  getFormData(name: string) {
+    const foundData = this.validationData.find(data => data['name'] === name);
+    return foundData !== undefined ? foundData : null;
+  }
+
+  ngOnInit() {    
     this.clientDetailsForm = this.getClientDetailsForm();
+    this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
     this.uploadForm = this.getUploadForm();
     this.beneficiaryForm = this.getBeneficiaryForm();
     this.getCountryList();
@@ -116,14 +143,15 @@ export class PersonalDetailsComponent {
     this.getRelationTypes();
     this.getDocumentsByClientId();
 
-    // if (Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE)) > 0) {
-      // let clientId = Number(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-      let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
+    let web_quote = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS))
+    if (web_quote) {
+      // let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
+      let accountCode = web_quote['account_code'];
       this.crm_client_service.getAccountByCode(accountCode).subscribe((data) => {
-        // To work on Later
         console.log(data);
       });
-    // }
+    }
+    this.getQuotationDetails();
   }
   getRelationTypes() {
     this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
@@ -150,7 +178,7 @@ export class PersonalDetailsComponent {
     });
   }
   getClientDetailsForm(): FormGroup<any> {
-    return this.fb.group({
+        return this.fb.group({
       beneficiary: this.generateBeneficiaryForm(),
       guardian: this.generateGuardianForm(),
 
@@ -176,7 +204,7 @@ export class PersonalDetailsComponent {
       economicSector: [''],
       client: [''],
       IdetifierType: [''],
-      citizenship: [''],
+      citizenship: [{value:'', disabled: !!this.getFormData("CITIZENSHIP")?.data?.is_disabled}],
       date_of_birth: [],
 
       emailAddress: [
@@ -189,16 +217,16 @@ export class PersonalDetailsComponent {
       ],
       gender: ['M'],
       title: [],
-      lastName: [],
+      lastName: [{value:'', disabled: !!this.getFormData('LAST_NAME')?.data?.is_disabled}],
       p_address: [],
-      firstName: [],
-      pinNumber: ['', [Validators.required]],
-      clientType: ['', [Validators.required]],
+      firstName: [{value:'', disabled: !!this.getFormData('FIRST_NAME')?.data?.is_disabled}],
+      pinNumber: [{value:'', disabled: !!this.getFormData('PIN_NO')?.data?.is_disabled}, [Validators.required]],
+      clientType: [{value:21, disabled: !!this.getFormData('CLIENT_TYPE')?.data?.is_disabled}, [Validators.required]],
       phoneNumber: [],
       occupation: [],
-      country: ['', [Validators.required]],
-      branch: ['', [Validators.required]],
-      idNumber: ['', [Validators.required]],
+      country: [{value:'', disabled: false}, [Validators.required]],
+      branch: [{value:'', disabled: !!this.getFormData('BRANCH')?.data?.is_disabled}, [Validators.required]],
+      idNumber: [{value:'', disabled: !!this.getFormData('ID_NO')?.data?.is_disabled}, [Validators.required]],
       with_effect_from: [],
       with_effect_to: [],
       beneficiaries: this.fb.array([]),
@@ -303,8 +331,9 @@ export class PersonalDetailsComponent {
       });
   }
   getBranchList() {
+
     this.branch_Service
-      .getBranches(2)
+      .getBranches(2, 46)
       .pipe(
         map((data) => {
           return this.returnLowerCase(data);
@@ -679,6 +708,17 @@ export class PersonalDetailsComponent {
       }
     });
   }
+
+  getQuotationDetails(){
+    let quick_quote_details = this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+    if(quick_quote_details){
+      this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(quick_quote_details['quote_code']).subscribe(data =>{
+        console.log(data);
+        
+      })
+    }
+    
+  }
   async nextPage() {
     if (!this.clientDetailsForm.valid) {
       this.enableControlsWithErrors(this.clientDetailsForm);
@@ -686,6 +726,8 @@ export class PersonalDetailsComponent {
       this.toast.danger('Fill the required forms', 'Required forms')
     } else {
     let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
+    let quick_quote_details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS));
+    let web_quote_details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
     let formValue = this.clientDetailsForm.value;
     let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
     const contactsDetails = {
@@ -739,25 +781,49 @@ export class PersonalDetailsComponent {
       branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch)
 
     }
-    let clientData = {...partyData, ...accountData}
-    this.lms_client_service.saveClient(clientData).subscribe((data: any) => {
+    let client_req = {...partyData, ...accountData}
+    // Save Client Details to Get Client/AccountID
+    let client_sub = this.lms_client_service.saveClient(client_req);
+    // if()CHECK if Its to save or Update Client Information
+
+    client_sub.pipe(switchMap((client_res) =>{
+      // After Creating and getting Client/Account ID then Get Complete Details of Tel Quote By QuoteCode
+      this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
+      return this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(quick_quote_details['quote_code'] || web_quote_details['quote_no']);
+
+    }),
+    switchMap((tel_quote_res : any)=>{
+      // Converting the Tel Quote Details Into Web Quote Information => Set ClientCode/AccountCode to All in Tel Quote Info
+      let client_data = this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
+
+      let web_quote_req = {}
+      if(web_quote_details){
+        web_quote_req['code'] = web_quote_details['code'];
+        web_quote_req = {...web_quote_details}
+
+      }
+      web_quote_req = {...web_quote_req, ...tel_quote_res}
+      web_quote_req['account_code'] = client_data['accountCode']
+      
+
+
+      return this.quotation_service.saveWebQuote(web_quote_req)
+    })
+    )
+    .subscribe((data: any) => {
+      console.log(data);
+      
+      this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
         // console.log(data);
         // client_code
         // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
-        this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
-        this.toast.success('Create Client Info Successfully!', 'Client Details')
+        // this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
+        // this.toast.success('Create Client Info Successfully!', 'Client Details')
     });
 
   }
 }
-  
 
-  private addEntity(d: any[]) {
-    this.editEntity = true;
-    d.push({ isEdit: true });
-    this.editEntity = false;
-    return d;
-  }
   private deleteEntity(d: any[], i: any) {
     this.editEntity = true;
     d = d.filter((data, x) => {

@@ -275,12 +275,11 @@ export class QuickComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (prem) => {
-            this.session_storage.set(SESSION_KEY.QUOTE_CODE, prem['quote_code']);
-            this.session_storage.set(SESSION_KEY.CLIENT_CODE, prem['client_code']);
-            this.session_storage.set(SESSION_KEY.QUICK_CODE, prem);
+            this.session_storage.set(SESSION_KEY.QUICK_QUOTE_DETAILS, prem)
 
             this.quickQuoteSummary.mutate((da: any) => {
               da['prem_result'] = prem['premium'];
+              da['quote_code'] = prem['quote_code']
               return da;
             });
             this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
@@ -336,6 +335,14 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
     timer(1000).subscribe(() => {
       this.route.navigate(["/home/lms/ind/quotation/client-details"]);
+    })
+
+  }
+
+  closePage(){
+    // this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
+    timer(100).subscribe(() => {
+      this.route.navigate(["/home/lms/quotation/list"]);
     })
 
   }

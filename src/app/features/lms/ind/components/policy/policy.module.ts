@@ -2,12 +2,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { PolicyRoutingModule } from './policy-routing.module';
-import { UnderwritingComponent } from './underwriting/underwriting.component';
+import { UnderwritingComponent } from './components/underwriting/underwriting.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { AccountDetailsComponent } from './account-details/account-details.component';
-import { ExceptionsComponent } from './exceptions/exceptions.component';
-import { ReceiptsComponent } from './receipts/receipts.component';
-import { MaturitiesComponent } from './maturities/maturities.component';
+import { AccountDetailsComponent } from './components/account-details/account-details.component';
+import { ExceptionsComponent } from './components/exceptions/exceptions.component';
+import { ReceiptsComponent } from './components/receipts/receipts.component';
+import { MaturitiesComponent } from './components/maturities/maturities.component';
+
 
 
 @NgModule({
@@ -16,12 +17,13 @@ import { MaturitiesComponent } from './maturities/maturities.component';
     AccountDetailsComponent,
     ExceptionsComponent,
     ReceiptsComponent,
-    MaturitiesComponent
+    MaturitiesComponent,
   ],
   imports: [
     CommonModule,
     PolicyRoutingModule,
     SharedModule
+    
   ]
 })
 export class PolicyModule { }
