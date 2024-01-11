@@ -1,7 +1,7 @@
 <div class="my-5 ms-5 me-5">
   <div class="card mb-4">
     <div class="card-header fw-bold bg-transparent">
-      Assign managable apps(2)
+      {{ 'entities.assign_manageable_apps' | translate }}(2)
     </div>
     <div class="card-body mb-4">
       <div class="row">
@@ -27,6 +27,8 @@
     </div>
   </div>
 
-  <button class="btn btn-lg btn-primary rounded-1 px-5 float-end" id="btn-assign-apps" (click)="assignApps()">SAVE</button>
+  <button class="btn btn-lg btn-primary rounded-1 px-5 float-end" id="btn-assign-apps" (click)="assignApps()">
+    {{ 'entities.save' | translate }}
+  </button>
 
 </div>
