@@ -35,6 +35,7 @@ import { Table } from 'primeng/table';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
 import { StatusService } from '../../../../shared/services/system-definitions/status.service';
 import { StatusDTO } from '../../../../shared/data/common/systemsDto';
+import { SortEvent } from 'primeng/api';
 
 const log = new Logger('CountryComponent');
 
@@ -100,6 +101,9 @@ export class CountryComponent implements OnInit, AfterViewInit {
   public selectedCurrency = '';
   public filteredState: any;
   public submitted = false;
+
+  sortField: string = '';
+  sortOrder: number = 1;
   countryBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -380,6 +384,60 @@ export class CountryComponent implements OnInit, AfterViewInit {
     this.adminCardTitle.nativeElement.innerText = adminValue || 'Counties';
     this.subadminCardTitle.nativeElement.innerText =
       subadminValue || 'Sub-Counties';
+  }
+
+  // onSort(event: Event): void {
+  //   const target = event.target as HTMLSelectElement;
+  //   const selectedValue = target.value;
+
+  //   switch (selectedValue) {
+  //     case 'shortDescriptionAsc':
+  //       this.sortByShortDescriptionAsc();
+  //       break;
+  //     case 'shortDescriptionDesc':
+  //       this.sortByShortDescriptionDesc();
+  //       break;
+  //     default:
+  //       // Handle default case or no sorting
+  //       break;
+  //   }
+  // }
+
+  // sortByShortDescriptionAsc(): void {
+  //   this.townData.sort((a, b) =>
+  //     a.shortDescription.localeCompare(b.shortDescription)
+  //   );
+  // }
+
+  // sortByShortDescriptionDesc(): void {
+  //   this.townData.sort((a, b) =>
+  //     b.shortDescription.localeCompare(a.shortDescription)
+  //   );
+  // }
+
+  onSort(event: Event, dataArray: any[], sortKey: string): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+
+    switch (selectedValue) {
+      case 'asc':
+        this.sortArrayAsc(dataArray, sortKey);
+        break;
+      case 'desc':
+        this.sortArrayDesc(dataArray, sortKey);
+        break;
+      default:
+        // Handle default case or no sorting
+        break;
+    }
+  }
+
+  sortArrayAsc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  }
+
+  sortArrayDesc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
   }
 
   filterState(event: Event) {
