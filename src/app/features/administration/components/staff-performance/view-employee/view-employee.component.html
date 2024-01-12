@@ -9,22 +9,22 @@
       <button type="button" class="btn float-end" id="btn-help">
         <i class="fa fa-question-circle" style="color:#00529B;"></i>
       </button>
-      <label class="btn float-end" style="color: var(--primary-color);">Help</label>
+      <label class="btn float-end" style="color: var(--primary-color);">{{ 'entities.help' | translate }}</label>
     </div>
   </div>
 
   <form [formGroup]="sortingForm" id="filter-form" style="background: none; display: contents">
     <div class="row  pb-2">
       <div class="col-lg-3 col-sm-6 col-4">
-        <label >From</label><br>
+        <label >{{ 'entities.from' | translate }}</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="dateSortEmployees()">
       </div>
       <div class="col-lg-3 col-sm-6 col-4">
-        <label >To</label><br>
+        <label >{{ 'entities.to' | translate }}</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="dateSortEmployees()">
       </div>
       <div class="col-lg-3 col-sm-6 col-4">
-        <label >Employees</label><br>
+        <label >{{ 'entities.employees' | translate }}</label><br>
         <input type="text" class="form-control"
                [value]="aggregatedEmployeeData.numberOfElements === undefined ? 0 : aggregatedEmployeeData.numberOfElements" disabled>
       </div>
@@ -57,12 +57,12 @@
                  currentPageReportTemplate="{first} - {last} of {totalRecords}">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="name" class="head">Name<p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="departmentName"  class="head">Department<p-sortIcon field="departmentName"></p-sortIcon></th>
-              <th pSortableColumn="module"  class="head">Module<p-sortIcon field="module"></p-sortIcon></th>
-              <th pSortableColumn="emailAddress"  class="head">Email<p-sortIcon field="emailAddress"></p-sortIcon></th>
-              <th pSortableColumn="totalCount"  class="head">Transactions<p-sortIcon field="totalCount"></p-sortIcon></th>
-              <th pSortableColumn="totalAmount"  class="head">Total Amount<p-sortIcon field="totalAmount"></p-sortIcon></th>
+              <th pSortableColumn="name" class="head">{{ 'entities.name' | translate }}<p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="departmentName"  class="head">{{ 'entities.department' | translate }}<p-sortIcon field="departmentName"></p-sortIcon></th>
+              <th pSortableColumn="module"  class="head">{{ 'entities.module' | translate }}<p-sortIcon field="module"></p-sortIcon></th>
+              <th pSortableColumn="emailAddress"  class="head">{{ 'entities.email' | translate }}<p-sortIcon field="emailAddress"></p-sortIcon></th>
+              <th pSortableColumn="totalCount"  class="head">{{ 'entities.transactions' | translate }}<p-sortIcon field="totalCount"></p-sortIcon></th>
+              <th pSortableColumn="totalAmount"  class="head">{{ 'entities.total_amount' | translate }}<p-sortIcon field="totalAmount"></p-sortIcon></th>
 
             </tr>
             <tr>
@@ -110,7 +110,7 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="6">No Employees found.</td>
+              <td colspan="6">{{ 'entities.no_employees_found' | translate }}</td>
             </tr>
           </ng-template>
         </p-table>

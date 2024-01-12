@@ -1,8 +1,8 @@
 <app-spinner *ngIf="isLoading"></app-spinner>
 <div class="container-fluid">
-  <p class="fw-bold text-dark mb-3">One Time Password</p>
+  <p class="fw-bold text-dark mb-3">{{ 'auth.verification' | translate }}</p>
   <p class="text-muted mb-3">
-    A four digit verification has been sent to your {{ messageChannel == 'sms' ? 'phone number' : 'email'}}.
+    {{ 'auth.otp_instruction' | translate }} {{ messageChannel == 'sms' ? 'phone number' : 'email'}}.
   </p>
 
   <div class="otp-form">
@@ -13,16 +13,18 @@
                  maxlength="1" (keyup)="keyUpEvent($event, input)">
         </div>
         <div *ngIf="submitted && otpForm.invalid" class="invalid-feedback">
-          <div>OTP value is required</div>
+          <div>
+            {{ 'auth.otp_required' | translate }}
+          </div>
         </div>
       </div>
       <div class="row">
         <div class="my-3">
           <button [disabled]="!this.otpForm.valid" id="onVerify" type="submit" class="btn btn-primary btn-full-width" size="large" (click)="onVerify()">
-            Verify
+            {{ 'auth.verify' | translate }}
           </button>
         </div>
-        <button class="btn btn-link text-primary fw-bold" (click)="resendOtp()">Resend Code</button>
+        <button class="btn btn-link text-primary fw-bold" (click)="resendOtp()">{{ 'auth.resend_code' | translate }}</button>
       </div>
     </form>
   </div>
