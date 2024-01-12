@@ -7,6 +7,7 @@ import {LocalStorageService} from "../../../shared/services/local-storage/local-
 import { Logger } from '../../../shared/services/logger/logger.service';
 import { UtilService } from '../../../shared/services/util/util.service';
 import { take } from 'rxjs';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 
 const log = new Logger('VerificationComponent');
 
@@ -27,6 +28,7 @@ export class VerificationComponent implements OnInit {
     private authService: AuthService,
     public utilService: UtilService,
     private localStorageService: LocalStorageService,
+    private globalMessagingService: GlobalMessagingService
   ) {}
 
   /**
@@ -94,12 +96,13 @@ export class VerificationComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        log.info(`error >>>`, err);
-        this.error = {
-          name: '', 
-          status: 0, 
-          message: 'error occured' 
+        let errorMessage = '';
+        if (err.error.message) {
+          errorMessage = err.error.message
+        } else {
+          errorMessage = err.message
         }
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
         this.isLoading = false;
       }
     })
