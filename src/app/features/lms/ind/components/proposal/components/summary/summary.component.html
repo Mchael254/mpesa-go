@@ -21,11 +21,11 @@ name="summary_view"
           <div class="p-4">
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Proposal Number</div>
-              <div class="col-lg-6 col-sm-12">{{ "AK2569000" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ client_info?.proposal_no || "MTA/23/000053" }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Client Name</div>
-              <div class="col-lg-6 col-sm-12">{{ "Edith Karanja" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ client_info?.name || '-' }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Product</div>
@@ -42,9 +42,8 @@ name="summary_view"
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Cover Types</div>
               <div class="col-lg-6 col-sm-12">
-                <div>{{ "Cover Types 1" }}</div>
-                <div>{{ "Cover Types 2" }}</div>
-                <div>{{ "Cover Types 3" }}</div>
+                <div class="py-2" *ngFor="let item of proposalSummaryData?.quick_quote_covers">{{ coverTypeList | coverType: item?.cover_type_code }}</div>
+                
               </div>
               
             </div>
@@ -67,12 +66,11 @@ name="summary_view"
               </div>
             </div>
             <div class="row e">
-              <div class="col-lg-6 col-sm-12">Beneficiaries</div>
+              <div class="col-lg-6 col-sm-12">Beneficiar(ies)</div>
               <div class="col-lg-6 col-sm-12">
                 
-                <div>{{ "Beneficiaries Types 1" }}</div>
-                <div>{{ "Beneficiaries Types 2" }}</div>
-                <div>{{ "Beneficiaries Types 3" }}</div>
+                <div class="py-2" *ngFor="let beneficiary of beneficiaryList">{{ beneficiary?.beneficiary_info?.first_name | titlecase}} {{ beneficiary?.beneficiary_info?.other_name | titlecase}}</div>
+                
               </div>
             </div>
             <div class="row e">

@@ -5,8 +5,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class CoverTypePipe implements PipeTransform {
 
-  transform(value: unknown, ...args: unknown[]): unknown {
-    return null;
+  transform(coverTypeList: any[], code: number): string {
+    const coverType = coverTypeList.find(data => data['id'] === code);
+    if (coverType) {
+      return coverType['desc'];
+    }
+    return code?.toString();
   }
 
 }

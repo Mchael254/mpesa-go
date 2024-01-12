@@ -62,11 +62,11 @@ export class QuickComponent implements OnInit, OnDestroy {
 
     this.quickForm = this.fb.group({
       date_of_birth: [''],
-      gender: ['M'],
+      gender: [],
       product: [-1],
       option: [-1],
       term: [-1],
-      sa_prem_select: ['P'],
+      sa_prem_select: [],
       sa_prem_amount: [],
     });
 
@@ -81,7 +81,6 @@ export class QuickComponent implements OnInit, OnDestroy {
       .subscribe(
         (products) =>
           (this.productList = [
-            { code: 0, description: 'SELECT PRODUCT' },
             ...products,
           ])
       );
@@ -115,10 +114,7 @@ export class QuickComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((productOptions) => {
-          this.productOptionList = [
-            { code: 0, product_code: 0, desc: 'SELECT PRODUCT OPTION' },
-            ...productOptions,
-          ];
+          this.productOptionList = [ ...productOptions];
           this.isOptionReady = true;
           let prod;
           prod = this.productList.filter((m) => {
