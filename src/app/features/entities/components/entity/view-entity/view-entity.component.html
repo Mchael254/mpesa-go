@@ -4,15 +4,15 @@
     <ul class="nav nav-tabs mb-3" id="ex1" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
-                aria-controls="ex1-tabs-1" aria-selected="false">Overview</a>
+                aria-controls="ex1-tabs-1" aria-selected="false">{{ 'entities.overview' | translate }}</a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
-                aria-selected="true">Transactions</a>
+                aria-selected="true">{{ 'entities.transactions' | translate }}</a>
         </li>
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
-                aria-selected="false">Reports</a>
+                aria-selected="false">{{ 'entities.reports' | translate }}</a>
         </li>
     </ul>
     <div class="tab-content" id="ex1-content">
@@ -37,25 +37,25 @@
                                     <select id="rolesDropDown" (change)="selectAccount($event)">
                                         <option *ngFor="let role of entityAccountIdDetails" [value]="role.id"
                                             [selected]="partyAccountDetails?.partyType?.partyTypeName === role.partyType.partyTypeName">
-                                            {{ role?.partyType.partyTypeName }} Account
+                                            {{ role?.partyType.partyTypeName }} {{ 'entities.account' | translate }}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-sm-6 col-6 account_role_actions float-end">
                                     <button class="img_up" id="btn-assign-roles" data-bs-toggle="modal" data-bs-target="#selectRoleModal">
                                         <i class="pi pi-user-plus" aria-hidden="true"></i>
-                                        Assign Role
+                                        {{ 'entities.assign_role' | translate }}
                                     </button>
                                     <button class="img_up" id="btn-manage-roles" (click)="manageRoles(entityPartyIdDetails?.id)">
                                         <i class="pi pi-user-edit" aria-hidden="true"></i>
-                                        Manage Roles
+                                        {{ 'entities.manage_roles' | translate }}
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header bg-transparent">{{'Profile' | uppercase}}</div>
+                        <div class="card-header bg-transparent">{{ 'entities.profile' | translate | uppercase }}</div>
                         <div class="card-body">
                             <div *ngFor="let role of entityAccountIdDetails" class="accounts_container">
                                 <label for="partyType" class="entity_accounts_list">
@@ -68,24 +68,24 @@
                     </div>
                     <div class="card">
                         <div class="card-header bg-transparent">
-                            {{'Client Information' | uppercase}}
+                          {{ 'entities.client_information' | translate | uppercase }}
                         </div>
                         <div class="card-body">
                             <div class="row entityAccountDetails">
                                 <div class="col-4">
                                     <div class="row">
                                         <div class="col-12 entityLabels">
-                                            <label for="location">Location</label><br><br
+                                            <label for="location">{{ 'entities.location' | translate }}</label><br><br
                                                 *ngIf="partyAccountDetails?.address?.physical_address == null">
                                             <p class="entityDetails" id="location">{{ partyAccountDetails?.address?.physical_address
                                                 }}</p>
                                         </div>
                                         <div class="col-12 entityLabels">
-                                            <label for="phoneNumber">Phone Number</label><br><br *ngIf="partyAccountDetails?.contactDetails?.phoneNumber  == null">
+                                            <label for="phoneNumber">{{ 'entities.phone_number' | translate }}</label><br><br *ngIf="partyAccountDetails?.contactDetails?.phoneNumber  == null">
                                             <p class="entityDetails" id="phoneNumber">{{ partyAccountDetails?.contactDetails?.phoneNumber }}</p>
                                         </div>
                                         <div class="col-12 entityLabels">
-                                            <label for="emailAddress">Email Address</label><br>
+                                            <label for="emailAddress">{{ 'entities.email_address' | translate }}</label><br>
                                             <p class="entityDetails" id="emailAddress">{{ partyAccountDetails?.contactDetails?.emailAddress }}</p>
                                         </div>
                                     </div>
@@ -93,15 +93,15 @@
                                 <div class="col-4">
                                     <div class="row">
                                       <div class="col-12 entityLabels">
-                                        <label for="status">Status</label><br><br *ngIf="partyAccountDetails?.status  == null">
+                                        <label for="status">{{ 'entities.status' | translate }}</label><br><br *ngIf="partyAccountDetails?.status  == null">
                                         <p class="entityDetails" id="status" style="color: #04B400;">{{ partyAccountDetails?.status }}</p>
                                       </div>
                                       <div class="col-12 entityLabels">
-                                        <label for="type">Type</label><br><br *ngIf="partyAccountDetails?.category  == null">
+                                        <label for="type">{{ 'entities.type' | translate }}</label><br><br *ngIf="partyAccountDetails?.category  == null">
                                         <p class="entityDetails" id="type">{{ partyAccountDetails?.category }}</p>
                                       </div>
                                       <div class="col-12 entityLabels">
-                                        <label for="customerSince">Customer Since</label><br>
+                                        <label for="customerSince">{{ 'entities.customer_since' | translate }}</label><br>
                                         <p class="entityDetails" id="customerSince">{{ partyAccountDetails?.effectiveDateFrom | date: 'dd-MMM-yyy' }}</p>
                                       </div>
                                     </div>
@@ -109,7 +109,7 @@
                                 <div class="col-4">
                                     <div class="row">
                                       <div class="col-12 entityLabels">
-                                        <label for="taxId">Tax ID</label><br>
+                                        <label for="taxId">{{ 'entities.tax_id' | translate }}</label><br>
                                         <p class="entityDetails" id="taxId">{{ partyAccountDetails?.pinNumber }}</p>
                                       </div>
                                     </div>
@@ -118,18 +118,18 @@
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header bg-transparent">{{'Basic Information' | uppercase}}</div>
+                        <div class="card-header bg-transparent">{{ 'entities.basic_information' | translate }}</div>
                             <div class="card-body">
 
                                 <div class="row entityAccountDetails">
                                     <div class="col-4">
                                       <div class="row">
                                         <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="entityName">Entity Name</label><br><br *ngIf="entityPartyIdDetails?.name == null">
+                                          <label class="mb-1" for="entityName">{{ 'entities.entity_name' | translate }}</label><br><br *ngIf="entityPartyIdDetails?.name == null">
                                           <p class="entityDetails" id="entityName">{{ entityPartyIdDetails?.name}}</p>
                                         </div>
                                         <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="pinNumber">Pin Number</label><br>
+                                          <label class="mb-1" for="pinNumber">{{ 'entities.pin_number' | translate }}</label><br>
                                           <p class="entityDetails" id="pinNumber">{{ entityPartyIdDetails?.pinNumber }}</p>
                                         </div>
                                       </div>
@@ -137,11 +137,11 @@
                                 <div class="col-4">
                                     <div class="row">
                                         <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="partyType">Party Type</label><br><br *ngIf="partyAccountDetails?.partyType?.partyTypeName == null">
+                                          <label class="mb-1" for="partyType">{{ 'entities.party_type' | translate }}</label><br><br *ngIf="partyAccountDetails?.partyType?.partyTypeName == null">
                                           <p class="entityDetails" id="partyType">{{ partyAccountDetails?.partyType?.partyTypeName  }}</p>
                                         </div>
                                         <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="idNumber">ID Number</label><br>
+                                          <label class="mb-1" for="idNumber">{{ 'entities.id_number' | translate }}</label><br>
                                           <p class="entityDetails" id="idNumber">{{ entityPartyIdDetails?.identityNumber }}</p>
                                         </div>
                                     </div>
@@ -149,7 +149,7 @@
                                 <div class="col-4">
                                     <div class="row">
                                         <div class="col-12 entityLabels">
-                                          <label class="mb-1" for="partyIdType">Party ID Type</label><br>
+                                          <label class="mb-1" for="partyIdType">{{ 'entities.party_id_type' | translate }}</label><br>
                                           <p class="entityDetails" id="partyIdType">{{ entityPartyIdDetails?.modeOfIdentity.name }}</p>
                                         </div>
                                     </div>
@@ -160,7 +160,7 @@
                 </div>
                 <div class="col-md-6 entityAccInfo">
                     <div class="card">
-                        <div class="card-header bg-transparent">{{'More Information' | uppercase}}</div>
+                        <div class="card-header bg-transparent">{{ 'entities.more_information' | translate | uppercase }}</div>
                         <div class="card-body">
                             <div class="row mb-2">
                                 <div class="col-6 card-view ">
@@ -169,8 +169,8 @@
                                             <i class="fa-solid fa-user fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Client Details</h6>
-                                            <p>View Entity Details</p>
+                                            <h6>{{ 'entities.client_details' | translate }}</h6>
+                                            <p>{{ 'entities.view_entity_details' | translate }}</p>
                                         </span>
                                         <span class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -183,8 +183,8 @@
                                             <i class="fa-solid fa-heart fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Claims</h6>
-                                            <p>View claims</p>
+                                            <h6>{{ 'entities.claims' | translate }}</h6>
+                                            <p>{{ 'entities.view_claims' | translate }}</p>
                                         </span>
                                         <span  class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -199,8 +199,8 @@
                                             <i class="fa-solid fa-cart-shopping fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Quotations</h6>
-                                            <p>View Quotations</p>
+                                            <h6>{{ 'entities.quotations' | translate }}</h6>
+                                            <p>{{ 'entities.view_quotations' | translate }}</p>
                                         </span>
                                         <span class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -213,8 +213,8 @@
                                             <i class="fa-solid fa-credit-card fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Payments</h6>
-                                            <p>View Payments</p>
+                                            <h6>{{ 'entities.payments' | translate }}</h6>
+                                            <p>{{ 'entities.view_payments' | translate }}</p>
                                         </span>
                                         <span  class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -229,8 +229,8 @@
                                             <i class="fa-solid fa-shield fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Policies</h6>
-                                            <p>View Policies</p>
+                                            <h6>{{ 'entities.policies' | translate }}</h6>
+                                            <p>{{ 'entities.view_policies' | translate }}</p>
                                         </span>
                                         <span class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -243,8 +243,8 @@
                                             <i class="fa-solid fa-cube fa-2xl"></i>
                                         </span>
                                         <span class="card-txt">
-                                            <h6>Related Accounts</h6>
-                                            <p>View Related Accounts</p>
+                                            <h6>{{ 'entities.related_accounts' | translate }}</h6>
+                                            <p>{{ 'entities.view_related_accounts' | translate }}</p>
                                         </span>
                                         <span  class="img-right">
                                             <i class="fa-solid fa-grid fa-2xl"></i>
@@ -259,12 +259,12 @@
 
         </div>
         <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-            Transactions Content
+          {{ 'entities.transactions_content' | translate }}
                     <div class="row">
                       <div class="col-12 mb-3">
-                        <button type="button" class="btn float-left-element" id="btn-new-policy">New Policy</button>
-                        <button type="button" class="btn float-left-element" id="btn-new-quote">New quote</button>
-                        <button type="button" class="btn float-left-element" id="btn-new-claim">New claim</button>
+                        <button type="button" class="btn float-left-element" id="btn-new-policy">{{ 'entities.new_policy' | translate }}</button>
+                        <button type="button" class="btn float-left-element" id="btn-new-quote">{{ 'entities.new_quote' | translate }}</button>
+                        <button type="button" class="btn float-left-element" id="btn-new-claim">{{ 'entities.new_claim' | translate }}</button>
                       </div>
                       <div class="col-lg-3">
                         <div class="card mb-3" style="height: 97%">
@@ -272,17 +272,17 @@
                             <h6 class="cardHeader">John Doe</h6>
                             <div class="dropdown">
                               <select class="form-control" id="accountDropDown" >
-                                <option >Client account</option>
+                                <option >{{ 'entities.client_account' | translate }}t</option>
                               </select>
                             </div>
                             <span class="float-right">
-                                <p class="editCard">Edit</p>
+                                <p class="editCard">{{ 'entities.edit' | translate }}</p>
                             </span>
                           </div>
                           <div class="card-body">
                             <div class="row">
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Status</h6>
+                                <h6 class="accHead">{{ 'entities.status' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -292,7 +292,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Contact</h6>
+                                <h6 class="accHead">{{ 'entities.contact' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -302,7 +302,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Type</h6>
+                                <h6 class="accHead">{{ 'entities.type' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -312,7 +312,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Phone number</h6>
+                                <h6 class="accHead">{{ 'entities.phone_number' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -322,7 +322,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Email Address</h6>
+                                <h6 class="accHead">{{ 'entities.email_address' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -332,7 +332,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Customer Since</h6>
+                                <h6 class="accHead">{{ 'entities.customer_since' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -347,7 +347,7 @@
                       <div class="col-lg-3">
                         <div class="card mb-3" style="height: 97%">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Statement summary</h6>
+                            <h6 class="cardHeader">{{ 'entities.statement_summary' | translate }}</h6>
                             <span class="float-right">
                                 <i class="fa fa-ellipsis-v dotsV"></i>
                             </span>
@@ -355,7 +355,7 @@
                           <div class="card-body">
                             <div class="row">
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Policies in force</h6>
+                                <h6 class="accHead">{{ 'entities.policies_in_force' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -365,7 +365,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">In-force Premium</h6>
+                                <h6 class="accHead">{{ 'entities.in_force_premium' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -375,7 +375,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Outstanding Premium</h6>
+                                <h6 class="accHead">{{ 'entities.outstanding_premium' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -385,7 +385,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">LTV</h6>
+                                <h6 class="accHead">{{ 'entities.ltv' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -395,7 +395,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Unallocated cash</h6>
+                                <h6 class="accHead">{{ 'entities.unallocated_cash' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -405,7 +405,7 @@
                               </div>
 
                               <div class="col-5 pl-2">
-                                <h6 class="accHead">Loss Ratio</h6>
+                                <h6 class="accHead">{{ 'entities.loss_ratio' | translate }}</h6>
                               </div>
                               <div class="col-1">
                                 <p>:</p>
@@ -416,14 +416,16 @@
                             </div>
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">
+                              {{ 'entities.view_full_report' | translate }}
+                            </button>
                           </div>
                         </div>
                       </div>
                       <div class="col-lg-3">
                         <div class="card mb-3" style="height: 97%">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Activities</h6>
+                            <h6 class="cardHeader">{{ 'entities.activities' | translate }}</h6>
                             <span class="float-right">
                                 <i class="fa fa-ellipsis-v dotsV"></i>
                             </span>
@@ -431,8 +433,12 @@
                           <div class="card-body">
                             <nav class="mb-2">
                               <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <a class="nav-item nav-link active" id="nav-overdue-tab" data-toggle="tab" href="#nav-overdue" role="tab" aria-controls="nav-overdue" aria-selected="true">Overdue</a>
-                                <a class="nav-item nav-link" id="nav-upcoming-tab" data-toggle="tab" href="#nav-upcoming" role="tab" aria-controls="nav-upcoming" aria-selected="false">Upcoming</a>
+                                <a class="nav-item nav-link active" id="nav-overdue-tab" data-toggle="tab" href="#nav-overdue" role="tab" aria-controls="nav-overdue" aria-selected="true">
+                                  {{ 'entities.overdue' | translate }}
+                                </a>
+                                <a class="nav-item nav-link" id="nav-upcoming-tab" data-toggle="tab" href="#nav-upcoming" role="tab" aria-controls="nav-upcoming" aria-selected="false">
+                                  {{ 'entities.upcoming' | translate }}
+                                </a>
                               </div>
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
@@ -489,15 +495,19 @@
                             </div>
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary btnTransactions">Add new</button>
-                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary btnTransactions">
+                              {{ 'entities.add_new' | translate }}
+                            </button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">
+                              {{ 'entities.view_full_report' | translate }}
+                            </button>
                           </div>
                         </div>
                       </div>
                       <div class="col-lg-3">
                         <div class="card mb-3" style="height: 97%">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Products performance</h6>
+                            <h6 class="cardHeader">{{ 'entities.products_performance' | translate }}</h6>
                             <span class="float-right">
                                 <i class="fa fa-ellipsis-v dotsV"></i>
                             </span>
@@ -515,7 +525,9 @@
                             </canvas> -->
                           </div>
                           <div class="card-footer bg-transparent border-top-0">
-                            <button class="btn btn-outline-secondary float-right btnTransactions">View full report</button>
+                            <button class="btn btn-outline-secondary float-right btnTransactions">
+                              {{ 'entities.view_full_report' | translate }}
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -524,10 +536,10 @@
                       <div class="col-lg-6">
                         <div class="card">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Recent Policies</h6>
+                            <h6 class="cardHeader">{{ 'entities.recent_policies' | translate }}</h6>
                             <p class="mb-0">A list of the policies transacted</p>
                             <span class="float-right">
-                                <p class="viewAll">View all</p>
+                                <p class="viewAll">{{ 'entities.view_all' | translate }}</p>
                             </span>
                           </div>
                           <div class="card-body p-0">
@@ -545,14 +557,14 @@
                                      currentPageReportTemplate="{first} - {last} of {totalRecords}">
                               <ng-template pTemplate="header">
                                 <tr>
-                                  <th pSortableColumn="policyNumber"  class="head">Policy Number<p-sortIcon field="policyNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">Product<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="client"  class="head">Client<p-sortIcon field="client"></p-sortIcon></th>
-                                  <th pSortableColumn="status"  class="head">Status<p-sortIcon field="status"></p-sortIcon></th>
-                                  <th pSortableColumn="coverFrom"  class="head">Cover From<p-sortIcon field="coverFrom"></p-sortIcon></th>
-                                  <th pSortableColumn="coverTo"  class="head">Cover To<p-sortIcon field="coverTo"></p-sortIcon></th>
-                                  <th pSortableColumn="premium"  class="head">Premium(KES)<p-sortIcon field="premium"></p-sortIcon></th>
-                                  <th class="head">Action</th>
+                                  <th pSortableColumn="policyNumber"  class="head">{{ 'entities.policy_number' | translate }}<p-sortIcon field="policyNumber"></p-sortIcon></th>
+                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
+                                  <th pSortableColumn="client"  class="head">{{ 'entities.client' | translate }}<p-sortIcon field="client"></p-sortIcon></th>
+                                  <th pSortableColumn="status"  class="head">{{ 'entities.status' | translate }}<p-sortIcon field="status"></p-sortIcon></th>
+                                  <th pSortableColumn="coverFrom"  class="head">{{ 'entities.cover_from' | translate }}<p-sortIcon field="coverFrom"></p-sortIcon></th>
+                                  <th pSortableColumn="coverTo"  class="head">{{ 'entities.cover_to' | translate }}<p-sortIcon field="coverTo"></p-sortIcon></th>
+                                  <th pSortableColumn="premium"  class="head">{{ 'entities.premium' | translate }}(KES)<p-sortIcon field="premium"></p-sortIcon></th>
+                                  <th class="head">{{ 'entities.actions' | translate }}</th>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="body" let-policy>
@@ -565,13 +577,13 @@
                                   <td class="body">{{policy?.wet_dt}}</td>
                                   <td class="body">{{policy?.premium}}</td>
                                   <td>
-                                    <button type="button" class="btn btn-outline-secondary" id="btn_view_policy" >View</button>
+                                    <button type="button" class="btn btn-outline-secondary" id="btn_view_policy" >{{ 'entities.view' | translate }}</button>
                                   </td>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="emptymessage">
                                 <tr>
-                                  <td colspan="8">No policy found.</td>
+                                  <td colspan="8">{{ 'entities.no_policy_found' | translate }}</td>
                                 </tr>
                               </ng-template>
                             </p-table>
@@ -581,10 +593,10 @@
                       <div class="col-lg-6">
                         <div class="card">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Recent Quotations</h6>
+                            <h6 class="cardHeader">{{ 'entities.recent_quotations' | translate }}</h6>
                             <p class="mb-0">A list of the quotes transacted</p>
                             <span class="float-right">
-                                <p class="viewAll">View all</p>
+                                <p class="viewAll">{{ 'entities.view_all' | translate }}</p>
                             </span>
                           </div>
                           <div class="card-body p-0">
@@ -602,13 +614,13 @@
                               currentPageReportTemplate="{first} - {last} of {totalRecords}">
                               <ng-template pTemplate="header">
                                 <tr>
-                                  <th pSortableColumn="no"  class="head">Quotation Number<p-sortIcon field="no"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">Product<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="premium"  class="head">Premium(KES)<p-sortIcon field="premium"></p-sortIcon></th>
-                                  <th pSortableColumn="coverFrom"  class="head">Cover From<p-sortIcon field="coverFrom"></p-sortIcon></th>
-                                  <th pSortableColumn="coverTo"  class="head">Cover To<p-sortIcon field="coverTo"></p-sortIcon></th>
-                                  <th pSortableColumn="client"  class="head">Client<p-sortIcon field="client"></p-sortIcon></th>
-                                  <th class="head">Action</th>
+                                  <th pSortableColumn="no"  class="head">{{ 'entities.quotation_number' | translate }}<p-sortIcon field="no"></p-sortIcon></th>
+                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
+                                  <th pSortableColumn="premium"  class="head">{{ 'entities.premium' | translate }}(KES)<p-sortIcon field="premium"></p-sortIcon></th>
+                                  <th pSortableColumn="coverFrom"  class="head">{{ 'entities.cover_from' | translate }}<p-sortIcon field="coverFrom"></p-sortIcon></th>
+                                  <th pSortableColumn="coverTo"  class="head">{{ 'entities.cover_to' | translate }}<p-sortIcon field="coverTo"></p-sortIcon></th>
+                                  <th pSortableColumn="client"  class="head">{{ 'entities.client' | translate }}<p-sortIcon field="client"></p-sortIcon></th>
+                                  <th class="head">{{ 'entities.actions' | translate }}</th>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="body" let-quotation>
@@ -620,13 +632,13 @@
                                   <td class="body">{{quotation?.cover_to}}</td>
                                   <td class="body">{{quotation?.client | titlecase}}</td>
                                   <td>
-                                    <button type="button" class="btn" id="btn_view_quotation" >View</button>
+                                    <button type="button" class="btn" id="btn_view_quotation" >{{ 'entities.view' | translate }}</button>
                                   </td>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="emptymessage">
                                 <tr>
-                                  <td colspan="7">No quotation found.</td>
+                                  <td colspan="7">{{ 'entities.no_quotation_found' | translate }}</td>
                                 </tr>
                               </ng-template>
                             </p-table>
@@ -636,7 +648,7 @@
                       <div class="col-lg-6 mt-2">
                         <div class="card">
                           <div class="card-header bg-transparent border-bottom-0 pl-2">
-                            <h6 class="cardHeader">Claim Tracking Insights</h6>
+                            <h6 class="cardHeader">{{ 'entities.claim_tracking_insights' | translate }}</h6>
                             <p class="mb-0">Keep track of the insights on claims</p>
                             <span class="float-right">
                                 <p class="viewAll">View all</p>
@@ -657,13 +669,13 @@
                               currentPageReportTemplate="{first} - {last} of {totalRecords}">
                               <ng-template pTemplate="header">
                                 <tr>
-                                  <th pSortableColumn="claimNumber"  class="head">Claim Number<p-sortIcon field="claimNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="policyNumber"  class="head">Policy Number<p-sortIcon field="policyNumber"></p-sortIcon></th>
-                                  <th pSortableColumn="product"  class="head">Product<p-sortIcon field="product"></p-sortIcon></th>
-                                  <th pSortableColumn="status"  class="head">Status<p-sortIcon field="status"></p-sortIcon></th>
-                                  <th pSortableColumn="notificationDate"  class="head">Notification Date<p-sortIcon field="notificationDate"></p-sortIcon></th>
-                                  <th pSortableColumn="total_claim_amount"  class="head">Incurred Amount<p-sortIcon field="total_claim_amount"></p-sortIcon></th>
-                                  <th class="head">Action</th>
+                                  <th pSortableColumn="claimNumber"  class="head">{{ 'entities.claim_number' | translate }}<p-sortIcon field="claimNumber"></p-sortIcon></th>
+                                  <th pSortableColumn="policyNumber"  class="head">{{ 'entities.policy_number' | translate }}<p-sortIcon field="policyNumber"></p-sortIcon></th>
+                                  <th pSortableColumn="product"  class="head">{{ 'entities.product' | translate }}<p-sortIcon field="product"></p-sortIcon></th>
+                                  <th pSortableColumn="status"  class="head">{{ 'entities.status' | translate }}<p-sortIcon field="status"></p-sortIcon></th>
+                                  <th pSortableColumn="notificationDate"  class="head">{{ 'entities.notification_date' | translate }}<p-sortIcon field="notificationDate"></p-sortIcon></th>
+                                  <th pSortableColumn="total_claim_amount"  class="head">{{ 'entities.incurred_amount' | translate }}<p-sortIcon field="total_claim_amount"></p-sortIcon></th>
+                                  <th class="head">{{ 'entities.actions' | translate }}</th>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="body" let-claim>
@@ -675,13 +687,13 @@
                                   <td class="body">{{claim?.notificationDate}}</td>
                                   <td class="body">{{claim?.total_claim_amount}}</td>
                                   <td>
-                                    <button type="button" class="btn" id="btn_view_claim" >View</button>
+                                    <button type="button" class="btn" id="btn_view_claim" >{{ 'entities.view' | translate }}</button>
                                   </td>
                                 </tr>
                               </ng-template>
                               <ng-template pTemplate="emptymessage">
                                 <tr>
-                                  <td colspan="8">No claim found.</td>
+                                  <td colspan="8">{{ 'entities.no_claim_found' | translate }}</td>
                                 </tr>
                               </ng-template>
                             </p-table>
@@ -691,7 +703,7 @@
                     </div>
         </div>
         <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-            Reports Content
+          {{ 'entities.reports_content' | translate }}
         </div>
     </div>
 </div>
@@ -710,7 +722,7 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-12">
-                                <h6>Roles</h6>
+                                <h6>{{ 'entities.roles' | translate }}</h6>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-check form-check-inline"

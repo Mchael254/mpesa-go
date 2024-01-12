@@ -6,8 +6,8 @@
         </div>
         <p style="font-weight:bold; color:#00519a;">Turnquest suite</p>
         <div class="verify-text">
-            <p style="font-weight:bold;">Verification</p>
-            <p>Select which contact details we should send verification code.</p>
+            <p style="font-weight:bold;">{{ 'auth.verification' | translate }}</p>
+            <p>{{ 'auth.verification_instruction' | translate }}</p>
             <i class="fa-solid fa-phone"></i>
         </div>
 
@@ -22,7 +22,7 @@
                         <i class="fa-solid {{account.icon}}"></i>
                     </div>
                     <div class="col-sm-10 col-9 text-start account-info">
-                        <span>Via {{ account.type }}: </span> <br>
+                        <span>{{ 'auth.via' | translate }} {{ account.type }}: </span> <br>
                         <span>{{ account.name | lowercase}}</span>
                     </div>
                 </div>
