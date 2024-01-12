@@ -14,4 +14,8 @@ export class ClientService {
   saveClient(clientDTO: any){
     return this.api.POST<Observable<any>>(`${this.CLIENT_BASE_URL}`, clientDTO, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
+
+  updateClient(clientDTO: any){
+    return this.api.POST<Observable<any>>(`${this.CLIENT_BASE_URL}`, clientDTO, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+  }
 }

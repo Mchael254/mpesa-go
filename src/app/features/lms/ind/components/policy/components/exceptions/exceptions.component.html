@@ -4,7 +4,7 @@
   
     <div class="d-flex justify-content-end">
       <div class="b-r d-flex justify-content-center align-content-center">
-        <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-plus" (click)="openModal()"></i>
       </div>
     </div>
     <ng-container>
@@ -99,5 +99,63 @@
         </ng-template>
       </p-table>
     </ng-container>
+  </div>
+</div>
+
+
+
+<div
+  class="modal fade"
+  tabindex="-1"
+  #UnderWritingModal
+  id="UnderWritingExceptionModal"
+  aria-labelledby="UnderWritingExceptionModal"
+  aria-hidden="true"
+  style="color: #333"
+>
+  <div class="modal-dialog">
+    <div class="modal-content-undw-reject modal-content modal-content-sub-header">
+      <div>
+        <div class="d-flex justify-content-end"><div style="color: red; font-size: 20px; padding: 0.5rem; cursor: pointer;" (click)="closeModal()" > x </div></div>
+        <div style="padding: 0 2rem" [formGroup]="exceptionFormModal">
+          <div class="text-black fw-medium">Add Exception Details</div>
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div>
+                <label class="required">Exception Type</label>
+                <select formControlName="type" class="form-select">
+                  <ng-container *ngFor="let product of []">
+                    <option [value]="product['id']">
+                      {{ product?.description | lowercase }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12">
+              <div>
+                <label class="required">Value</label>
+                <input
+                type="text"
+                class="form-control"
+                formControlName="value"
+                id="value"
+              />              
+            </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end pt-2" style="transform: translateX(0.4rem);">
+            <button type="button" class="btn btn-danger m-1" data-bs-toggle="modal"
+            data-bs-target="#UnderWritingExceptionModal" (click)="closeModal()" >Close</button>
+            <button type="button" class="btn btn-primary m-1"  (click) = saveException() [disabled]="!exceptionFormModal.invalid">save</button>
+          </div>
+        </div>
+
+
+
+      </div>
+
+    </div>
   </div>
 </div>
