@@ -17,7 +17,6 @@ export class ForgotPasswordComponent implements OnInit{
   form: FormGroup;
   submitted = false;
   saveSuccess = false;
-  error: {name: string, status: number, message: string} = { name: '', status: 0, message: '' };
   isLoading: boolean = false;
 
   constructor(
@@ -55,7 +54,6 @@ export class ForgotPasswordComponent implements OnInit{
    */
   onSubmit() {
     this.submitted = true;
-    this.error = { name: '', status: 0, message: '' };
     this.isLoading = true;
 
     if(this.form.valid){
@@ -78,12 +76,13 @@ export class ForgotPasswordComponent implements OnInit{
             this.isLoading = false;
           },
           error: (err) => {
-            this.error = {
-              name: err.name,
-              status: err.status,
-              message: err.message
-            };
-            this.globalMessagingService.displayErrorMessage('Error', err.message);
+            let errorMessage = '';
+            if (err.error.message) {
+              errorMessage = err.error.message
+            } else {
+              errorMessage = err.message
+            }
+            this.globalMessagingService.displayErrorMessage('Error', errorMessage);
             this.isLoading = false;
           }
         })

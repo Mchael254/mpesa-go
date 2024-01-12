@@ -8,6 +8,7 @@ import { RegionComponent } from './components/region/region.component';
 import { BranchComponent } from './components/branch/branch.component';
 import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
 import { CurrenciesComponent } from './components/currencies/currencies.component';
+import {BankComponent} from "./components/bank/bank.component";
 
 const routes: Routes = [
   {
@@ -41,6 +42,10 @@ const routes: Routes = [
   {
     path: 'currencies',
     component: CurrenciesComponent
+  },
+  {
+    path: 'bank',
+    component: BankComponent
   },
 ];
 

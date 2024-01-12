@@ -13,6 +13,8 @@ export class QuotationsService {
 
   baseUrl = this.appConfig.config.contextPath.gis_services;
   setupsbaseurl = "setups/api/v1";
+  testBase = this.appConfig.config.contextPath.notification_service
+
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -125,6 +127,9 @@ export class QuotationsService {
   computePremium(quotationCode) {
     const params = new HttpParams().set('quotationCode', quotationCode);
     return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`, null);
+  }
+  test(){
+    return this.http.get(`/${this.testBase}/api/email/3/send`)
   }
   
 }

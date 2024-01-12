@@ -3,6 +3,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -14,6 +16,7 @@ import { RegionComponent } from './components/region/region.component';
 import { BranchComponent } from './components/branch/branch.component';
 import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
 import { CurrenciesComponent } from './components/currencies/currencies.component';
+import { BankComponent } from './components/bank/bank.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +28,7 @@ import { CurrenciesComponent } from './components/currencies/currencies.componen
     BranchComponent,
     UserParametersComponent,
     CurrenciesComponent,
+    BankComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +37,8 @@ import { CurrenciesComponent } from './components/currencies/currencies.componen
     ReactiveFormsModule,
     TableModule,
     DropdownModule,
+    TooltipModule,
+    DialogModule,
     SharedModule,
   ],
   providers: [DatePipe],

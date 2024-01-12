@@ -98,7 +98,13 @@ export class ChangePasswordComponent {
           this.isLoading = false;
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          let errorMessage = '';
+            if (err.error.message) {
+              errorMessage = err.error.message
+            } else {
+              errorMessage = err.message
+            }
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
           this.isLoading = false;
         }
       })

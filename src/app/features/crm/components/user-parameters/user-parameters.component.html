@@ -31,6 +31,52 @@
         </div>
         <div class="row mb-5">
           <div class="col-12">
+            <!-- <p-table
+              #parameterTable
+              [value]="userParametersData"
+              [autoLayout]="true"
+              [rowHover]="true"
+              responsiveLayout="scroll"
+              styleClass="p-datatable-sm"
+              [scrollable]="true"
+              scrollHeight="400px"
+              class="ui-datatable"
+              [globalFilterFields]="['name']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="head">Name</th>
+                  <th class="head">Value</th>
+                  <th class="head">Description</th>
+                  <th class="head">Status</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-param>
+                <tr
+                  class="custom-table"
+                  (click)="onParamsRowClick(param)"
+                  [class.selected]="selectedParameter === param"
+                >
+                  <td class="body">{{ param.name }}</td>
+                  <td class="body" (click)="openModal('Value', param.value)">
+                    {{ sliceString(param.value) }}
+                  </td>
+                  <td
+                    class="body"
+                    (click)="openModal('Description', param.description)"
+                  >
+                    {{ sliceString(param.description) }}
+                  </td>
+                  <td class="body">{{ param.status }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="8">No user parameters found.</td>
+                </tr>
+              </ng-template>
+            </p-table> -->
+
             <p-table
               #parameterTable
               [value]="userParametersData"
@@ -58,15 +104,26 @@
                   [class.selected]="selectedParameter === param"
                 >
                   <td class="body">{{ param.name }}</td>
-                  <!-- <td class="body">{{ param.value }}</td> -->
-                  <td class="body">{{ sliceString(param.value) }}</td>
-                  <td class="body">{{ param.description }}</td>
+                  <td
+                    class="body"
+                    pTooltip="{{ param.value }}"
+                    tooltipPosition="top"
+                  >
+                    {{ sliceString(param.value) }}
+                  </td>
+                  <td
+                    class="body"
+                    pTooltip="{{ param.description }}"
+                    tooltipPosition="top"
+                  >
+                    {{ sliceString(param.description) }}
+                  </td>
                   <td class="body">{{ param.status }}</td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No user parameter's found.</td>
+                  <td colspan="8">No user parameters found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -157,3 +214,15 @@
     </div>
   </div>
 </div>
+
+<!-- dialog modal for additional information on the table column -->
+<p-dialog
+  header="{{ modalColumnName }}"
+  [(visible)]="isModalOpen"
+  [modal]="true"
+  [responsive]="true"
+>
+  <div>
+    <p>{{ modalColumnValue }}</p>
+  </div>
+</p-dialog>
