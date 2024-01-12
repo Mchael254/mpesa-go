@@ -7,8 +7,8 @@
       </span>
     </div>
     <!-- title-->
-    <h4 class="login-text mb-3">Login</h4>
-    <p class="text-muted mb-3">Enter your email address and password to access account.</p>
+    <h4 class="login-text mb-3">{{ 'auth.login' | translate }}</h4>
+    <p class="text-muted mb-3">{{ 'auth.enter_email_and_pass' | translate }}</p>
 
     <div *ngIf='errorOccurred '>
       <app-error [message]='errorMessage'appHideMessage></app-error>
@@ -16,12 +16,12 @@
     <!-- form -->
     <form [formGroup]='loginForm' novalidate>
       <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
-        <label for="emailAddress" class="form-label">Email address</label>
+        <label for="emailAddress" class="form-label">{{ 'auth.email_address' | translate }}</label>
         <input type="email" class="form-control" id="emailAddress" placeholder="{{ 'Email' }}" formControlName='username'>
       </div>
       <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
-        <a class="text-muted float-end" routerLink="./forgot-password"><small>Forgot your password?</small></a>
-        <label for="password" class="form-label" i18n='Password|Auth Password Input@@authPasswordInput'>Password</label>
+        <a class="text-muted float-end" routerLink="./forgot-password"><small>{{ 'auth.forgot_password' | translate }}</small></a>
+        <label for="password" class="form-label" i18n='Password|Auth Password Input@@authPasswordInput'>{{ 'auth.password' | translate }}</label>
         <div class="input-group input-group-merge">
           <input
             type="{{ showPassword ? 'text' : 'password' }}"
@@ -44,7 +44,7 @@
       </div>
       <div class="form-group mb-3 form-check">
         <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" formControlName="rememberMe">
-        <label class="form-check-label form-label" for="rememberMe">Remember me</label>
+        <label class="form-check-label form-label" for="rememberMe">{{ 'auth.remember_me' | translate }}</label>
       </div>
       <div class="mb-3">
         <button type="submit"
@@ -52,7 +52,7 @@
                 class="btn btn-primary btn-full-width fadeIn"
                 (click)='authAttempt()'
                 i18n='Login|Auth Login Action@@authLoginActionBtn'>
-          Login
+                {{ 'auth.login' | translate }}
         </button>
       </div>
     </form>

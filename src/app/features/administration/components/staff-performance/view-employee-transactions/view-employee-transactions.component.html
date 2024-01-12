@@ -6,7 +6,7 @@
       <button type="button" class="btn float-end" id="btn-help">
         <i class="fa fa-question-circle" style="color:#00529B;"></i>
       </button>
-      <label class="btn float-end" style="color: var(--primary-color);">Help</label>
+      <label class="btn float-end" style="color: var(--primary-color);">{{ 'entities.help' | translate }}</label>
 
     </div>
   </div>
@@ -14,32 +14,32 @@
   <form [formGroup]="sortingForm" style="background: none; display: contents">
     <div class="col-lg-12 pb-2">
       <div class="row col-lg-12 col-sm-6">
-        <label class="transactionLabel w-auto">Employee Name: </label>
+        <label class="transactionLabel w-auto">{{ 'entities.employee_name' | translate }}: </label>
         <p class="col-lg-6 col-6 px-lg-0" style="color: #000">{{name}}</p>
       </div>
 
     </div>
     <div class="row pb-2">
       <div class="col-lg-2 col-sm-4 col-6">
-        <label class="transactionLabel">From:</label><br>
+        <label class="transactionLabel">{{ 'entities.from' | translate }}:</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="sortEmployeeTransactions()">
       </div>
       <div class="col-lg-2 col-sm-4 col-6">
-        <label class="transactionLabel">To:</label><br>
+        <label class="transactionLabel">{{ 'entities.to' | translate }}:</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="sortEmployeeTransactions()">
       </div>
 
       <div class="col-lg-2 col-sm-4 col-6">
-        <label class="transactionLabel">Module:</label><br>
+        <label class="transactionLabel">{{ 'entities.module' | translate }}:</label><br>
         <select class="form-control form-select" formControlName="module" id="module" [(ngModel)]="selectedModule" (change)="sortEmployeeTransactions()">
-          <option value="" selected>All</option>
+          <option value="" selected>{{ 'entities.all' | translate }}</option>
           <option *ngFor="let ticketModule of ticketModules" [ngValue]="ticketModule.shortDescription">{{ ticketModule.description }}</option>
         </select>
       </div>
 
 
       <div class="col-lg-2 col-sm-6 col-6">
-          <label class="transactionLabel">System: </label>
+          <label class="transactionLabel">{{ 'entities.system' | translate }}: </label>
           <select formControlName="system" id="system" class="employeeSelect form-select">
             <!--<option value="" disabled selected>Select option</option>
             <option *ngFor="let systemData of systemsData" value="{{ systemData.id }}"> {{ systemData.shortDesc}}</option>-->
@@ -47,19 +47,19 @@
           </select>
       </div>
       <div class="col-lg-2 col-sm-6 col-6">
-          <label class="transactionLabel">Transaction Type: </label>
+          <label class="transactionLabel">{{ 'entities.transaction_type' | translate }}: </label>
           <select formControlName="transactionType" id="transactionType" class="employeeSelect form-select" (change)="sortEmployeeTransactions()">
-            <option value="">All</option>
+            <option value="">{{ 'entities.all' | translate }}</option>
             <option *ngFor="let businessTransaction of businessTransactions" value="{{businessTransaction.code}}">{{businessTransaction.transactionType | titlecase}}</option>
           </select>
       </div>
       <div class="col-lg-2 col-sm-6 col-6">
-          <label class="transactionLabel">Amount: </label>
+          <label class="transactionLabel">{{ 'entities.amount' | translate }}: </label>
           <select class="employeeSelect form-select" formControlName="amount" (change)="sortEmployeeTransactions()">
-            <option value="all">All</option>
-            <option value="zero">Zero</option>
-            <option value="credit">Credit</option>
-            <option value="Debit">Debit</option>
+            <option value="all">{{ 'entities.all' | translate }}</option>
+            <option value="zero">{{ 'entities.zero' | translate }}</option>
+            <option value="credit">{{ 'entities.credit' | translate }}</option>
+            <option value="Debit">{{ 'entities.debit' | translate }}</option>
           </select>
       </div>
     </div>
@@ -88,15 +88,15 @@
           currentPageReportTemplate="{first} - {last} of {totalRecords}">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="TRANSACTIONDATE" class="head">Trans Date<p-sortIcon field="TRANSACTIONDATE"></p-sortIcon></th>
-              <th pSortableColumn="POLICYNO"  class="head">Policy No<p-sortIcon field="POLICYNO"></p-sortIcon></th>
-              <th pSortableColumn="RENEWALENDORSEMENTNO"  class="head">Ref No<p-sortIcon field="RENEWALENDORSEMENTNO"></p-sortIcon></th>
-              <th pSortableColumn="CLIENTNAME"  class="head">Client<p-sortIcon field="CLIENTNAME"></p-sortIcon></th>
-              <th pSortableColumn="AGENTNAME"  class="head">Intermediary<p-sortIcon field="AGENTNAME"></p-sortIcon></th>
-              <th pSortableColumn="STATUS"  class="head">Status<p-sortIcon field="STATUS"></p-sortIcon></th>
-              <th pSortableColumn="BRANCHNAME"  class="head">Branch<p-sortIcon field="BRANCHNAME"></p-sortIcon></th>
-              <th pSortableColumn="PREMIUM"  class="head">Amount<p-sortIcon field="PREMIUM"></p-sortIcon></th>
-              <th pSortableColumn="AUTHORIZATIONDATE"  class="head">Date Authorized<p-sortIcon field="AUTHORIZATIONDATE"></p-sortIcon></th>
+              <th pSortableColumn="TRANSACTIONDATE" class="head">{{ 'entities.trans_date' | translate }}<p-sortIcon field="TRANSACTIONDATE"></p-sortIcon></th>
+              <th pSortableColumn="POLICYNO"  class="head">{{ 'entities.policy_number' | translate }}<p-sortIcon field="POLICYNO"></p-sortIcon></th>
+              <th pSortableColumn="RENEWALENDORSEMENTNO"  class="head">{{ 'entities.ref_number' | translate }}<p-sortIcon field="RENEWALENDORSEMENTNO"></p-sortIcon></th>
+              <th pSortableColumn="CLIENTNAME"  class="head">{{ 'entities.client' | translate }}<p-sortIcon field="CLIENTNAME"></p-sortIcon></th>
+              <th pSortableColumn="AGENTNAME"  class="head">{{ 'entities.intermediary' | translate }}<p-sortIcon field="AGENTNAME"></p-sortIcon></th>
+              <th pSortableColumn="STATUS"  class="head">{{ 'entities.status' | translate }}<p-sortIcon field="STATUS"></p-sortIcon></th>
+              <th pSortableColumn="BRANCHNAME"  class="head">{{ 'entities.branch' | translate }}<p-sortIcon field="BRANCHNAME"></p-sortIcon></th>
+              <th pSortableColumn="PREMIUM"  class="head">{{ 'entities.amount' | translate }}<p-sortIcon field="PREMIUM"></p-sortIcon></th>
+              <th pSortableColumn="AUTHORIZATIONDATE"  class="head">{{ 'entities.date_authorized' | translate }}<p-sortIcon field="AUTHORIZATIONDATE"></p-sortIcon></th>
 
             </tr>
             <tr>
@@ -142,17 +142,17 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="9">No Transactions found.</td>
+              <td colspan="9">{{ 'entities.no_transactions_found' | translate }}</td>
             </tr>
           </ng-template>
         </p-table>
       </div>
       <div>
-        <button class="btn btn-link align-baseline back-link" (click)="goBack()">
+        <button class="btn btn-link align-baseline back-link text-primary" (click)="goBack()">
         <span>
           <i class="fa fa-angle-double-left" aria-hidden="true"></i>
         </span>
-          Go Back
+        {{ 'entities.go_back' | translate }}
         </button>
       </div>
 
