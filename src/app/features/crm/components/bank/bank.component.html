@@ -1,0 +1,339 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="bankBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-header bg-transparent float-start">
+        <span class="float-start mt-3">Banks</span>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by bank name"
+              aria-label="search"
+              aria-describedby="search"
+
+            />
+          </div>
+          <div class="col-8">
+            <div class="float-end">
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openBankModal()"></i
+              ></span>
+              <span class="icon-circle"
+              ><i class="pi pi-pencil" ></i
+              ></span>
+              <span class="icon-circle"
+              ><i
+                class="fa-regular fa-trash-can"
+
+              ></i
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-5">
+          <div class="col-12">
+            <p-table
+              #bankTable
+              [value]="bankData"
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              styleClass="p-datatable-sm"
+              responsiveLayout="scroll"
+              [scrollable]="true"
+              scrollHeight="400px"
+              class="ui-datatable"
+              [globalFilterFields]="['name']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="head">ID</th>
+                  <th class="head">Name</th>
+                  <th class="head">Remarks</th>
+                  <th class="head">DD forwarding bank</th>
+                  <th class="head">EFT supported</th>
+                  <th class="head">Class type</th>
+                  <th class="head">A/C no. characters</th>
+                  <th class="head">Admin Charge</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-bank>
+                <tr
+                  class="custom-table"
+                  (click)="onBankRowSelect(bank)"
+                  [class.selected]="selectedBank === bank"
+                >
+                  <td class="body">{{ bank.id }}</td>
+                  <td class="body">{{ bank.name }}</td>
+                  <td class="body">{{ bank.remarks }}</td>
+                  <td class="body">{{ bank.forwardingBankName }}</td>
+                  <td class="body">{{ bank.isEftSupported }}</td>
+                  <td class="body">{{ bank.bankType }}</td>
+                  <td class="body">{{ bank.bankAccountNoCharacters }}</td>
+                  <td class="body">{{ bank.administrativeCharge }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9">No bank detail(s) found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  #bankModal
+  id="bankModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">Define a bank</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeBankModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createBankForm">
+          <div class="row">
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="shortDescription" class="form-label">Short description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="shortDescription"
+                  placeholder="Short description"
+                  formControlName="shortDescription"
+                  [ngClass]="{ 'is-invalid': f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched) }"
+                />
+                <div *ngIf="f['shortDescription']?.invalid && (f['shortDescription']?.dirty || f['shortDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['shortDescription']?.errors['required']">Short description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.bankName === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="bankName" class="form-label">Bank name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="bankName"
+                  placeholder="Bank name"
+                  formControlName="bankName"
+                  [ngClass]="{ 'is-invalid': f['bankName']?.invalid && (f['bankName']?.dirty || f['bankName']?.touched) }"
+                />
+                <div *ngIf="f['bankName']?.invalid && (f['bankName']?.dirty || f['bankName']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['bankName']?.errors['required']">Bank name is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.parentBank === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="parentBank" class="form-label">Has parent bank?</label>
+                <select id="parentBank" class="form-select" formControlName="parentBank">
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.country === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="country" class="form-label">Country</label>
+                <p-dropdown
+                  [options]="countriesData"
+                  [(ngModel)]="selectedCountry"
+                  optionLabel="name"
+                  optionValue="id"
+                  formControlName="country"
+                  id="country"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '48%' }"
+                  placeholder="Select Country"
+                  [ngClass]="{ 'is-invalid': f['country']?.invalid && (f['country']?.dirty || f['country']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="f['country']?.invalid && (f['country']?.dirty || f['country']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['country']?.errors['required']">Country is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.ddForwardingBank === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="ddForwardingBank" class="form-label">DD forwarding bank</label>
+                <p-dropdown
+                  [options]="bankData"
+                  [(ngModel)]="selectedBank"
+                  optionLabel="name"
+                  optionValue="id"
+                  formControlName="ddForwardingBank"
+                  id="ddForwardingBank"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '48%' }"
+                  placeholder="Select forwarding bank"
+                  [ngClass]="{ 'is-invalid': f['ddForwardingBank']?.invalid && (f['ddForwardingBank']?.dirty || f['ddForwardingBank']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="f['ddForwardingBank']?.invalid && (f['ddForwardingBank']?.dirty || f['ddForwardingBank']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['ddForwardingBank']?.errors['required']">Forwarding bank is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.eftSupport === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="eftSupport" class="form-label">EFT support</label>
+                <select id="eftSupport" class="form-select" formControlName="eftSupport"
+                        [ngClass]="{ 'is-invalid': f['eftSupport']?.invalid && (f['eftSupport']?.dirty || f['eftSupport']?.touched) }">
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+                <div *ngIf="f['eftSupport']?.invalid && (f['eftSupport']?.dirty || f['eftSupport']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['eftSupport']?.errors['required']">EFT support is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.classify === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="classify" class="form-label">Classify</label>
+                <select id="classify" class="form-select" formControlName="classify"
+                        [ngClass]="{ 'is-invalid': f['classify']?.invalid && (f['classify']?.dirty || f['classify']?.touched) }">
+                  <option value="T">Traditional Banks</option>
+                  <option value="R">Rural Banks</option>
+                  <option value="M">Microfinance Institutions</option>
+                </select>
+                <div *ngIf="f['classify']?.invalid && (f['classify']?.dirty || f['classify']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['classify']?.errors['required']">Classify is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.accountNoCharacters === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="accountNoCharacters" class="form-label">A/C no. characters</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="accountNoCharacters"
+                    formControlName="accountNoCharacters"
+                    [ngClass]="{ 'is-invalid': f['accountNoCharacters']?.invalid && (f['accountNoCharacters']?.dirty || f['accountNoCharacters']?.touched) }"
+                  />
+                <div *ngIf="f['accountNoCharacters']?.invalid && (f['accountNoCharacters']?.dirty || f['accountNoCharacters']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['accountNoCharacters']?.errors['required']">A/C no. characters is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.bankDDICharge === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="bankDDICharge" class="form-label">Bank DDI charge</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="bankDDICharge"
+                    formControlName="bankDDICharge"
+                    [ngClass]="{ 'is-invalid': f['bankDDICharge']?.invalid && (f['bankDDICharge']?.dirty || f['bankDDICharge']?.touched) }"
+                  />
+                <div *ngIf="f['bankDDICharge']?.invalid && (f['bankDDICharge']?.dirty || f['bankDDICharge']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['bankDDICharge']?.errors['required']">Bank DDI Charge is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.adminCharge === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="adminCharge" class="form-label">Administrative charge</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="adminCharge"
+                    formControlName="adminCharge"
+                    [ngClass]="{ 'is-invalid': f['adminCharge']?.invalid && (f['adminCharge']?.dirty || f['adminCharge']?.touched) }"
+                  />
+                <div *ngIf="f['adminCharge']?.invalid && (f['adminCharge']?.dirty || f['adminCharge']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['adminCharge']?.errors['required']">Admin Charge is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.pesaLink === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="pesaLink" class="form-label">Pesalink</label>
+                <select id="pesaLink" class="form-select" formControlName="pesaLink"
+                [ngClass]="{ 'is-invalid': f['pesaLink']?.invalid && (f['pesaLink']?.dirty || f['pesaLink']?.touched) }">
+                  <option value="Y">Yes</option>
+                  <option value="N">No</option>
+                </select>
+                <div *ngIf="f['pesaLink']?.invalid && (f['pesaLink']?.dirty || f['pesaLink']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['pesaLink']?.errors['required']">Pesa Link is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.status === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="Status" class="form-label">Status</label>
+                <select id="Status" class="form-select" formControlName="status"
+                [ngClass]="{ 'is-invalid': f['status']?.invalid && (f['status']?.dirty || f['status']?.touched) }">
+                  <option value="A">Active</option>
+                  <option value="I">Inactive</option>
+                </select>
+                <div *ngIf="f['status']?.invalid && (f['status']?.dirty || f['status']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['status']?.errors['required']">Status is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.status === 'Y'">
+              <div class="col-6 mb-2 row">
+                <label for="logo" class="form-label">Branch logo</label>
+                <div (change)="onLogoChange($event)">
+                  <img
+                    *ngIf="url !== '' && url"
+                    [src]="url"
+                    alt=""
+                    id="profile-photo"
+                  />
+                  <input type="file" id="logo" formControlName="logo" hidden
+                         [ngClass]="{ 'is-invalid': f['logo']?.invalid && (f['logo']?.dirty || f['logo']?.touched) }"/>
+                  <label *ngIf="url === ''" for="logo" class="img_upload">
+                    Upload file
+                  </label>
+                  <label for="logo" *ngIf="url !== ''" class="img_edit">
+                    Edit
+                  </label>
+                </div>
+                <div *ngIf="f['logo']?.invalid && (f['logo']?.dirty || f['logo']?.touched)" class="form-text text-danger">
+                  <div *ngIf="f['logo']?.errors['required']">Logo is required</div>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveBank()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

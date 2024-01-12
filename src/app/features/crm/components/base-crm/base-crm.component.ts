@@ -30,14 +30,16 @@ Relationship Management) application. Each object has the following properties: 
       ]
     },
     { label: 'Account Management', link: '', showSubItems: false, subItems: [] },
-    { label: 'Bank Setups', link: '', showSubItems: false, subItems: [] },
+    { label: 'Bank Setups', link: '', showSubItems: false, subItems: [
+        { label: 'Banks', link: '/home/crm/bank',  }
+      ] },
     { label: 'Administration', link: '',  showSubItems: false, subItems: [] },
     { label: 'Messaging', link: '', showSubItems: false, subItems: [] },
     { label: 'System Reports', link: '',  showSubItems: false, subItems: [] }
   ];
 
   constructor() { }
-  
+
   ngOnInit(): void {
   }
 
