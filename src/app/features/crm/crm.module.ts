@@ -3,6 +3,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -33,6 +35,8 @@ import { CurrenciesComponent } from './components/currencies/currencies.componen
     ReactiveFormsModule,
     TableModule,
     DropdownModule,
+    TooltipModule,
+    DialogModule,
     SharedModule,
   ],
   providers: [DatePipe],

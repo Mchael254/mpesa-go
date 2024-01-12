@@ -27,6 +27,10 @@ export class UserParametersComponent implements OnInit {
   public selectedParameter: UserParameterDTO;
   public statusesData: StatusDTO[];
 
+  isModalOpen = false;
+  modalColumnName: string = '';
+  modalColumnValue: string = '';
+
   userParametersBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -120,8 +124,19 @@ export class UserParametersComponent implements OnInit {
   }
 
   sliceString(str: string): string {
-    const slicedString = str.length > 50 ? str.slice(0, 50) + '...' : str;
-    return slicedString;
+    if (str) {
+      const slicedString = str.length > 35 ? str.slice(0, 35) + '...' : str;
+      return slicedString;
+    } else {
+      return '';
+    }
+  }
+
+  // open modal for addition information on table column
+  openModal(columnName: string, columnValue: string): void {
+    this.isModalOpen = true;
+    this.modalColumnName = columnName;
+    this.modalColumnValue = columnValue;
   }
 
   editParameter() {
