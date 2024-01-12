@@ -19,6 +19,8 @@ import {UserDetailsDTO} from 'src/app/features/administration/data/user-details'
 import {LocalStorageService} from './local-storage/local-storage.service';
 import {Logger} from "./logger/logger.service";
 import {UtilService} from "./util/util.service";
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from './session-storage/session-storage.service';
 
 
 const log = new Logger('AuthService');
@@ -49,6 +51,7 @@ export class AuthService implements OnDestroy {
     private router: Router,
     private browserStorage: BrowserStorage,
     private localStorageService: LocalStorageService,
+    private session_storage: SessionStorageService
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -392,8 +395,12 @@ export class AuthService implements OnDestroy {
    * @deprecated
    */
   getCurrentUser(): AccountContact | ClientAccountContact | WebAdmin {
-    // return this.currentUserSubject.value;
-    return this.localStorageService.getItem('loginUserProfile');
+    let user = StringManipulation.returnNullIfEmpty(this.localStorageService.getItem('loginUserProfile'));    
+    if(null === user){
+      this.session_storage.clear();
+      this.router.navigate(['/auth']);
+    }
+    return user;
   }
 
   /**

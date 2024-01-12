@@ -5,10 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class RelationTypePipe implements PipeTransform {
   transform(relationTypeList: any[], code: number): string {
-    const relationType = relationTypeList.find(data => data['id'] === code);
+    const relationType = relationTypeList.find(data => {return data['id'] === +code});
     if (relationType) {
       return relationType['description'];
     }
-    return '';
+    return code?.toString();
   }
 }

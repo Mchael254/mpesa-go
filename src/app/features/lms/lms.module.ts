@@ -6,6 +6,7 @@ import { PolicyListComponent } from './components/policy-list/policy-list.compon
 import { CoverTypePipe } from './pipe/cover-type/cover-type.pipe';
 import { BaseComponent } from './base/base.component';
 import { EndorsementTypePipe } from './pipe/endorsement-type/endorsement-type.pipe';
+import { DiseasePipe } from './pipe/disease/disease.pipe';
 
 
 @NgModule({
