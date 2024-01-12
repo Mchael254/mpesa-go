@@ -13,8 +13,8 @@ import { Observable, finalize, map, of, switchMap } from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
-import { ClientService as CRMClientService  } from '../../../../../../entities/services/client/client.service';
-import { ClientService as LMSClientService  } from '../../../../../service/client/client.service';
+import { ClientService as CRMClientService } from '../../../../../../entities/services/client/client.service';
+import { ClientService as LMSClientService } from '../../../../../service/client/client.service';
 import { ClientDTO } from '../../../../../../entities/data/ClientDTO';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
@@ -50,7 +50,14 @@ export class PersonalDetailsComponent {
   clientDetailsForm: FormGroup;
   uploadForm: FormGroup;
   clientTypeList: any[] = [];
-  breadCrumbItems: BreadCrumbItem[] = [ { label: 'Home', url: '/home/dashboard'}, { label: 'Quotation', url: '/home/lms/quotation/list'}, { label: 'Client Details(Data Entry)', url: '/home/lms/ind/quotation/client-details'} ];
+  breadCrumbItems: BreadCrumbItem[] = [
+    { label: 'Home', url: '/home/dashboard' },
+    { label: 'Quotation', url: '/home/lms/quotation/list' },
+    {
+      label: 'Client Details(Data Entry)',
+      url: '/home/lms/ind/quotation/client-details',
+    },
+  ];
   isTableOpen: boolean = false;
   countryList: CountryDto[] = [];
   branchList: OrganizationBranchDto[] = [];
@@ -79,6 +86,8 @@ export class PersonalDetailsComponent {
   loadBankBranch: boolean;
   getFormControlsNameWithErrors: string[] = [];
   validationData = [];
+  CLIENT_LIST_SESSION = 'CLIENT_LIST_SESSION';
+  CLIENT_LIST_MAP: any[] = [];
 
   constructor(
     private session_storage: SessionStorageService,
@@ -101,29 +110,41 @@ export class PersonalDetailsComponent {
     private form_service: FormsService,
     private quotation_service: QuotationService
   ) {
-    this.form_service.getBySystemAndModuleAndScreeName('LMS_INDIVIDUAL', 'QUOTATION', 'CLIENT_DETAILS').subscribe(data=> {
-      
-      this.validationData = data['data'].map((val: any) => {
-        let temp = {};
-        temp['name'] = val?.form_name
-        // use english as defaults
-        temp['data'] = val?.inputs.en;
-        return temp;
+    this.form_service
+      .getBySystemAndModuleAndScreeName(
+        'LMS_INDIVIDUAL',
+        'QUOTATION',
+        'CLIENT_DETAILS'
+      )
+      .subscribe((data) => {
+        this.validationData = data['data'].map((val: any) => {
+          let temp = {};
+          temp['name'] = val?.form_name;
+          // use english as defaults
+          temp['data'] = val?.inputs.en;
+          return temp;
+        });
+        console.log(this.validationData);
+
+        this.clientDetailsForm = this.getClientDetailsForm();
+
+        this.clientDetailsForm?.get('clientType')?.setValue(21);
+        let client_info = StringManipulation.returnNullIfEmpty(
+          this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
+        );
+        if(client_info){
+          console.log(client_info);
+          
+        }
       });
-      console.log(this.validationData);
-      
-      this.clientDetailsForm = this.getClientDetailsForm();
-      this.clientDetailsForm?.get('clientType')?.setValue(21);
-    
-    });
   }
 
   getFormData(name: string) {
-    const foundData = this.validationData.find(data => data['name'] === name);
+    const foundData = this.validationData.find((data) => data['name'] === name);
     return foundData !== undefined ? foundData : null;
   }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.clientDetailsForm = this.getClientDetailsForm();
     this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
     this.uploadForm = this.getUploadForm();
@@ -143,15 +164,24 @@ export class PersonalDetailsComponent {
     this.getRelationTypes();
     this.getDocumentsByClientId();
 
-    let web_quote = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS))
-    if (web_quote) {
-      // let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
-      let accountCode = web_quote['account_code'];
-      this.crm_client_service.getAccountByCode(accountCode).subscribe((data) => {
-        console.log(data);
-      });
-    }
+    let web_quote = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    );
+
+    
+
+    // if (web_quote) {
+    //   // let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
+    //   let accountCode = 178565; //web_quote['account_code'];
+    //   this.crm_client_service
+    //     .getAccountByCode(accountCode)
+    //     .subscribe((data) => {
+    //       console.log(data);
+    //     });
+    // }
     this.getQuotationDetails();
+    
+
   }
   getRelationTypes() {
     this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
@@ -178,7 +208,7 @@ export class PersonalDetailsComponent {
     });
   }
   getClientDetailsForm(): FormGroup<any> {
-        return this.fb.group({
+    return this.fb.group({
       beneficiary: this.generateBeneficiaryForm(),
       guardian: this.generateGuardianForm(),
 
@@ -204,7 +234,12 @@ export class PersonalDetailsComponent {
       economicSector: [''],
       client: [''],
       IdetifierType: [''],
-      citizenship: [{value:'', disabled: !!this.getFormData("CITIZENSHIP")?.data?.is_disabled}],
+      citizenship: [
+        {
+          value: '',
+          disabled: !!this.getFormData('CITIZENSHIP')?.data?.is_disabled,
+        },
+      ],
       date_of_birth: [],
 
       emailAddress: [
@@ -217,20 +252,51 @@ export class PersonalDetailsComponent {
       ],
       gender: ['M'],
       title: [],
-      lastName: [{value:'', disabled: !!this.getFormData('LAST_NAME')?.data?.is_disabled}],
+      lastName: [
+        {
+          value: '',
+          disabled: !!this.getFormData('LAST_NAME')?.data?.is_disabled,
+        },
+      ],
       p_address: [],
-      firstName: [{value:'', disabled: !!this.getFormData('FIRST_NAME')?.data?.is_disabled}],
-      pinNumber: [{value:'', disabled: !!this.getFormData('PIN_NO')?.data?.is_disabled}, [Validators.required]],
-      clientType: [{value:21, disabled: !!this.getFormData('CLIENT_TYPE')?.data?.is_disabled}, [Validators.required]],
+      firstName: [
+        {
+          value: '',
+          disabled: !!this.getFormData('FIRST_NAME')?.data?.is_disabled,
+        },
+      ],
+      pinNumber: [
+        {
+          value: '',
+          disabled: !!this.getFormData('PIN_NO')?.data?.is_disabled,
+        },
+        [Validators.required],
+      ],
+      clientType: [
+        {
+          value: 21,
+          disabled: !!this.getFormData('CLIENT_TYPE')?.data?.is_disabled,
+        },
+        [Validators.required],
+      ],
       phoneNumber: [],
       occupation: [],
-      country: [{value:'', disabled: false}, [Validators.required]],
-      branch: [{value:'', disabled: !!this.getFormData('BRANCH')?.data?.is_disabled}, [Validators.required]],
-      idNumber: [{value:'', disabled: !!this.getFormData('ID_NO')?.data?.is_disabled}, [Validators.required]],
+      country: [{ value: '', disabled: false }, [Validators.required]],
+      branch: [
+        {
+          value: '',
+          disabled: !!this.getFormData('BRANCH')?.data?.is_disabled,
+        },
+        [Validators.required],
+      ],
+      idNumber: [
+        { value: '', disabled: !!this.getFormData('ID_NO')?.data?.is_disabled },
+        [Validators.required],
+      ],
       with_effect_from: [],
       with_effect_to: [],
       beneficiaries: this.fb.array([]),
-      bank_branch: []
+      bank_branch: [],
     });
   }
   calculateAge(dateOfBirth: string | number | Date): number {
@@ -331,7 +397,6 @@ export class PersonalDetailsComponent {
       });
   }
   getBranchList() {
-
     this.branch_Service
       .getBranches(2, 46)
       .pipe(
@@ -389,11 +454,14 @@ export class PersonalDetailsComponent {
   // NO UNIT TESTED
   getBeneficiariesByQuotationCode() {
     this.editEntity = true;
-    let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_CODE));
-    let proposal_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.PROPOSAL_CODE));
+    let proposal_code = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    );
     this.party_service
-      // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
-      .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
+      .getListOfBeneficariesByQuotationCode(
+        this.getQuoteCode(),
+        proposal_code ? proposal_code['proposal_code'] : null
+      )
       .pipe(finalize(() => (this.editEntity = false)))
       .subscribe((data) => {
         this.beneficiaryList = data;
@@ -404,20 +472,19 @@ export class PersonalDetailsComponent {
       this.bankList = data;
     });
   }
-  selectBank(d:any){
-    this.getBankBranchList2(d?.target?.value)
+  selectBank(d: any) {
+    this.getBankBranchList2(d?.target?.value);
   }
   getBankBranchList() {
-    let id =
-    this.bank_service.getBankBranch().subscribe((data) => {
+    let id = this.bank_service.getBankBranch().subscribe((data) => {
       this.bankBranchList = data;
     });
   }
 
   getBankBranchList2(id) {
-      this.bank_service.getBankBranchById(id).subscribe((data) => {
-        this.bankBranchList = data;
-      });
+    this.bank_service.getBankBranchById(id).subscribe((data) => {
+      this.bankBranchList = data;
+    });
   }
   getCurrencyList() {
     this.currency_service.getAllCurrencies().subscribe((data) => {
@@ -434,16 +501,30 @@ export class PersonalDetailsComponent {
       this.sectorList = data;
     });
   }
+
+  getQuoteCode() {
+    let client_info = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+    );
+    if (client_info === null) {
+      return StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+      )['quote_no'];
+    }
+    return client_info['quote_code'];
+  }
   saveBeneficiary() {
     this.spinner_Service.show('beneficiary_modal_screen');
     this.isBeneficiaryLoading = true;
     let beneficiary = { ...this.beneficiaryForm.value };
-    beneficiary['client_code'] = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.CLIENT_CODE)
-    );
-    beneficiary['quote_code'] = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.QUOTE_CODE)
-    );
+    beneficiary['client_code'] = null
+    // StringManipulation.returnNullIfEmpty(
+    //   this.session_storage.get(SESSION_KEY.CLIENT_CODE)
+    // );
+    beneficiary['quote_code'] = this.getQuoteCode();
+    // StringManipulation.returnNullIfEmpty(
+    //   this.session_storage.get(SESSION_KEY.QUOTE_CODE)
+    // );
     beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
     );
@@ -464,40 +545,52 @@ export class PersonalDetailsComponent {
     beneficiary['code'] = StringManipulation.returnNullIfEmpty(
       beneficiary['code']
     );
-    let percentage_benefit = this.beneficiaryList?.map(d =>  d?.percentage_benefit)?.reduce((sum, current) => sum + current, 0);
+    let percentage_benefit = this.beneficiaryList
+      ?.map((d) => d?.percentage_benefit)
+      ?.reduce((sum, current) => sum + current, 0);
 
     console.log(percentage_benefit);
-    if(percentage_benefit >100){
-      this.toast.danger('Percentage Benefits', `More than the expected amount by ${percentage_benefit-100}`)
+    if (percentage_benefit > 100) {
+      this.toast.danger(
+        'Percentage Benefits',
+        `Total Percentage Benefits is More than 100%`
+      );
       return;
     }
     if (!this.checkIfGuardianIsNeeded()) {
       beneficiary['appointee_info'] = null;
     }
-    if(percentage_benefit<=100){
-    return this.party_service
-      .createBeneficiary(beneficiary)
-      .pipe(finalize(()=>{
-        this.isBeneficiaryLoading = false;
-        this.spinner_Service.hide('beneficiary_modal_screen');
-      }))
-      .subscribe((data) => {
-        this.getBeneficiariesByQuotationCode();
-        this.closeCategoryDetstModal();
-        this.beneficiaryForm.reset();
-        this.spinner_Service.hide('beneficiary_modal_screen');
-        this.isBeneficiaryLoading = false;
-          this.toast.success('Beneficiary Details Added Successfully', 'Beneficiary/Trustee/Guardian')
-      },
-        err => {
-          this.toast.danger(err?.error?.errors[0], 'Percentage Benefit')
-
-        }
+    if (percentage_benefit <= 100) {
+      return this.party_service
+        .createBeneficiary(beneficiary)
+        .pipe(
+          finalize(() => {
+            this.isBeneficiaryLoading = false;
+            this.spinner_Service.hide('beneficiary_modal_screen');
+          })
+        )
+        .subscribe(
+          (data) => {
+            this.getBeneficiariesByQuotationCode();
+            this.closeCategoryDetstModal();
+            this.beneficiaryForm.reset();
+            this.spinner_Service.hide('beneficiary_modal_screen');
+            this.isBeneficiaryLoading = false;
+            this.toast.success(
+              'Beneficiary Details Added Successfully',
+              'Beneficiary/Trustee/Guardian'
+            );
+          },
+          (err) => {
+            this.toast.danger(err?.error?.errors[0], 'Percentage Benefit');
+          }
+        );
+    } else {
+      console.log('Greater than 100%');
+      this.toast.danger(
+        `Percentage Benefit is greater by  ${percentage_benefit - 100}`,
+        'Percentage Benefit'
       );
-    }else{
-      console.log("Greater than 100%");
-      this.toast.danger(`Percentage Benefit is greater by  ${percentage_benefit -100}`, 'Percentage Benefit')
-
     }
   }
   deleteBeneficiary(i: number) {
@@ -541,6 +634,9 @@ export class PersonalDetailsComponent {
     let type = this.getValueBeneficiaryValue('type');
     return type === 'B' && date_ < 18;
   }
+  isImage(name: any) {
+    return ['jpeg', 'png', 'jpg'].includes(name);
+  }
   getFileChange(event: any) {
     this.clientDetailsForm
       .get('selectedUploadItem')
@@ -548,7 +644,13 @@ export class PersonalDetailsComponent {
   }
   uploadFile(event: any) {
     this.spinner_Service.show('download_view');
-    let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    let client_info =
+      StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+      ) ||
+      StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+      );
     let fileName = StringManipulation.returnNullIfEmpty(
       this.getValue('selectedUploadItem')
     );
@@ -558,7 +660,7 @@ export class PersonalDetailsComponent {
       const formData = new FormData();
       formData.append('file', file, file.name);
       this.dms_service
-        .saveClientDocument(client_code, fileName, formData)
+        .saveClientDocument(client_info['client_code'], fileName, formData)
         .pipe(
           finalize(() => {
             this.spinner_Service.hide('download_view');
@@ -576,32 +678,35 @@ export class PersonalDetailsComponent {
         });
     }
   }
-  deleteDocumentFileById(code:string, x: any){
+  deleteDocumentFileById(code: string, x: any) {
     this.spinner_Service.show('download_view');
 
-    this.dms_service.deleteDocumentById(code)
-    .pipe(
-      finalize(() => {
+    this.dms_service
+      .deleteDocumentById(code)
+      .pipe(
+        finalize(() => {
+          this.spinner_Service.hide('download_view');
+        })
+      )
+      .subscribe((data) => {
+        console.log(data);
+
+        this.documentList = this.documentList.filter((data, i) => i !== x);
         this.spinner_Service.hide('download_view');
-      })
-    )
-    .subscribe(data =>{
-      console.log(data);
-
-      this.documentList = this.documentList.filter((data, i) => i!==x);
-      this.spinner_Service.hide('download_view');
-
-    })
-
+      });
   }
-  isImage(name: any){
-    return ['jpeg', 'png', 'jpg'].includes(name)
-  }
+
   getDocumentsByClientId() {
     this.spinner_Service.show('download_view');
-    let client_code = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    let client_info =
+      StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+      ) ||
+      StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+      );
     this.dms_service
-      .getClientDocumentById(client_code)
+      .getClientDocumentById(client_info['client_code'])
       .pipe(
         finalize(() => {
           this.spinner_Service.hide('download_view');
@@ -640,7 +745,7 @@ export class PersonalDetailsComponent {
       modal.style.display = 'block';
     }
   }
-  cancelBeneficiary(){
+  cancelBeneficiary() {
     this.beneficiaryForm.reset();
     this.closeCategoryDetstModal();
   }
@@ -651,29 +756,38 @@ export class PersonalDetailsComponent {
       modal.style.display = 'none';
     }
   }
-  trackByCode(index, item){ return item?.code; }
-  trackById(index, item){ return item?.id; }
-
-  selectBankBranch(event){
-    this.loadBankBranch = true
-    this.bank_service.getBankBranchListByBankId(event.target.value).subscribe(da => {
-      this.loadBankBranch = false
-      this.bankBranchList = da;
-    }, err => {
-      this.loadBankBranch = false
-    })
-    
+  trackByCode(index, item) {
+    return item?.code;
+  }
+  trackById(index, item) {
+    return item?.id;
   }
 
-  isRequired(name: string){
-    let control = this.clientDetailsForm.get(name);    
-    return (control.hasError('required') || control.hasError('pattern')) && control.touched;
+  selectBankBranch(event) {
+    this.loadBankBranch = true;
+    this.bank_service.getBankBranchListByBankId(event.target.value).subscribe(
+      (da) => {
+        this.loadBankBranch = false;
+        this.bankBranchList = da;
+      },
+      (err) => {
+        this.loadBankBranch = false;
+      }
+    );
+  }
+
+  isRequired(name: string) {
+    let control = this.clientDetailsForm.get(name);
+    return (
+      (control.hasError('required') || control.hasError('pattern')) &&
+      control.touched
+    );
   }
 
   getFormControlsWithErrors(formGroup: FormGroup): string[] {
     const controlsWithErrors: string[] = [];
 
-    Object.keys(formGroup.controls).forEach(controlName => {
+    Object.keys(formGroup.controls).forEach((controlName) => {
       const control = formGroup.get(controlName);
 
       if (control && control.invalid) {
@@ -686,17 +800,16 @@ export class PersonalDetailsComponent {
       }
     });
 
-    const convertedArray = controlsWithErrors.map(str => {
+    const convertedArray = controlsWithErrors.map((str) => {
       // Use regular expression to insert a space before each capital letter
       return str.replace(/([A-Z])/g, ' $1').trim();
     });
 
     return convertedArray;
   }
-  
 
   enableControlsWithErrors(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(controlName => {
+    Object.keys(formGroup.controls).forEach((controlName) => {
       const control = formGroup.get(controlName);
 
       if (control && control.invalid) {
@@ -709,120 +822,187 @@ export class PersonalDetailsComponent {
     });
   }
 
-  getQuotationDetails(){
-    let quick_quote_details = this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-    if(quick_quote_details){
-      this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(quick_quote_details['quote_code']).subscribe(data =>{
-        console.log(data);
-        
-      })
+  getQuotationDetails() {
+    let quick_quote_details = this.session_storage.get(
+      SESSION_KEY.QUICK_QUOTE_DETAILS
+    );
+    if (quick_quote_details) {
+      this.quotation_service
+        .getLmsIndividualQuotationTelQuoteByCode(
+          quick_quote_details['quote_code']
+        )
+        .subscribe((data) => {
+          console.log(data);
+        });
     }
-    
   }
   async nextPage() {
     if (!this.clientDetailsForm.valid) {
       this.enableControlsWithErrors(this.clientDetailsForm);
-      this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(this.clientDetailsForm);
-      this.toast.danger('Fill the required forms', 'Required forms')
+      this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(
+        this.clientDetailsForm
+      );
+      this.toast.danger('Fill the required forms', 'Required forms');
     } else {
-    let client_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.CLIENT_CODE));
-    let quick_quote_details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS));
-    let web_quote_details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    let formValue = this.clientDetailsForm.value;
-    let countryData = this.countryList.find(data => data?.id ===StringManipulation.returnNullIfEmpty(formValue?.country));
-    const contactsDetails = {
-      emailAddress: StringManipulation.returnNullIfEmpty(formValue.emailAddress),
-      id: 0,
-      phoneNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
-      receivedDocuments: "N",
-      smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
-      titleShortDescription: StringManipulation.returnNullIfEmpty(formValue?.title)
+      let web_quote_details = StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+      );
+      let formValue = this.clientDetailsForm.value;
+      let countryData = this.countryList.find(
+        (data) =>
+          data?.id === StringManipulation.returnNullIfEmpty(formValue?.country)
+      );
+      const contactsDetails = {
+        emailAddress: StringManipulation.returnNullIfEmpty(
+          formValue.emailAddress
+        ),
+        id: 0,
+        phoneNumber: StringManipulation.returnNullIfEmpty(
+          formValue?.phoneNumber
+        ),
+        receivedDocuments: 'N',
+        smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
+        titleShortDescription: StringManipulation.returnNullIfEmpty(
+          formValue?.title
+        ),
+      };
+      let partyData = {
+        category: 'C',
+        country: countryData,
+        countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+        dateOfBirth: formValue?.date_of_birth,
+        effectiveDateFrom: formValue?.with_effect_from,
+        effectiveDateTo: formValue?.with_effect_to,
+        id: 0,
+        identityNumber: formValue?.idNumber,
+        modeOfIdentityId: 12,
+        name: StringManipulation.returnNullIfEmpty(
+          `${formValue?.firstName} ${formValue?.lastName}`
+        ),
+        organizationId: 2,
+        partyTypeId: 2,
+        pinNumber: formValue?.pinNumber,
+        profileImage: null,
+        profilePicture: null,
+      };
+      let accountData: any = {
+        address: null,
+        // StringManipulation.returnNullIfEmpty(formValue?.p_address),
+        agentRequestDto: null,
+        contactDetails: contactsDetails,
+        partyId: null,
+        partyTypeShortDesc: 'CLIENT',
+        createdBy: null,
+        effectiveDateFrom: formValue?.with_effect_from,
+        effectiveDateTo: formValue?.with_effect_to,
+        modeOfIdentityId: 12,
+        category: 'C',
+        // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
+        countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
+        gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
+        status: 'A',
+        dateCreated: new Date(),
+        pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
+        account_type: 21,
+        // StringManipulation.returnNullIfEmpty(
+        //   formValue?.clientType
+        // ),
+        first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
+        last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
+        date_of_birth: formValue?.date_of_birth,
+        organization_id: 2,
+        branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch),
+      };
+      let client_req = { ...partyData, ...accountData };
+      client_req['clientType'] = StringManipulation.returnNullIfEmpty(formValue?.clientType)
+      // Save Client Details to Get Client/AccountID
+      console.log(client_req);
+
+      // client_req['accountCode'] = 962479;
+      let client_sub = of(client_req);
+      // this.lms_client_service.saveClient(client_req);
+      // CHECK if Its to save or Update Client Information
+      // if(web_quote_details){
+      //   // update the code/id
+      //   client_sub = this.lms_client_service.updateClient(client_req)
+      // }
+
+      client_sub
+        .pipe(
+          switchMap((client_res) => {
+            // After Creating and getting Client/Account ID then Get Complete Details of Tel Quote By QuoteCode
+            this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
+            return this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(
+              this.getQuoteCode()
+            );
+          }),
+          switchMap((tel_quote_res: any) => {
+            // Converting the Tel Quote Details Into Web Quote Information => Set ClientCode/AccountCode to All in Tel Quote Info
+            let client_data = StringManipulation.returnNullIfEmpty(
+              this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
+            );
+            let quick_quote_details = StringManipulation.returnNullIfEmpty(
+              this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+            );
+            let web_quote_req = {};
+            if (web_quote_details) {
+              web_quote_req['code'] = web_quote_details['code'];
+              web_quote_req = { ...web_quote_details };
+            }
+            web_quote_req = { ...web_quote_req, ...quick_quote_details, ...tel_quote_res,  };
+            web_quote_req['account_code'] = client_data['accountCode'];
+            web_quote_req['client_type'] = client_data['category']
+
+            web_quote_req['client_code'] = this.generateNo();
+            // web_quote_req['quick_quote_covers'] = [];
+            web_quote_req['cover_type_codes'] = [];
+            web_quote_req['quote_no'] = web_quote_req['quote_code']
+
+            return this.quotation_service.saveWebQuote(web_quote_req);
+          })
+        )
+        .subscribe((data: any) => {
+          // console.log(data);
+          this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
+          // console.log(data);
+          // client_code
+          // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
+          // this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
+          this.toast.success('Create Client Details Successfully!', 'Client Details');
+          this.router.navigate['/home/lms/ind/quotation/insurance-history']
+
+        });
     }
-    let partyData = {
-      category: "C",
-      country: countryData,
-      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-      dateOfBirth: formValue?.date_of_birth,
-      effectiveDateFrom: formValue?.with_effect_from,
-      effectiveDateTo: formValue?.with_effect_to,
-      id: 0,
-      identityNumber: formValue?.idNumber,
-      modeOfIdentityId: 12,
-      name:  StringManipulation.returnNullIfEmpty(`${formValue?.firstName} ${formValue?.lastName}`),
-      organizationId: 2,
-      partyTypeId: 2,
-      pinNumber: formValue?.pinNumber,
-      profileImage: null,
-      profilePicture: null,
-    }
-    let accountData: any = {
-      address: null,
-      // StringManipulation.returnNullIfEmpty(formValue?.p_address),
-      agentRequestDto: null,
-      contactDetails: contactsDetails,
-      partyId: null,
-      partyTypeShortDesc: 'CLIENT',
-      createdBy: null,
-      effectiveDateFrom: formValue?.with_effect_from,
-      effectiveDateTo: formValue?.with_effect_to,
-      modeOfIdentityId: 12,
-      category: "C",
-      // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
-      countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-      gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
-      status: 'A',
-      dateCreated: new Date(),
-      pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
-      account_type: StringManipulation.returnNullIfEmpty(formValue?.clientType),
-      first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
-      last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
-      date_of_birth: formValue?.date_of_birth,
-      organization_id: 2,
-      branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch)
-
-    }
-    let client_req = {...partyData, ...accountData}
-    // Save Client Details to Get Client/AccountID
-    let client_sub = this.lms_client_service.saveClient(client_req);
-    // if()CHECK if Its to save or Update Client Information
-
-    client_sub.pipe(switchMap((client_res) =>{
-      // After Creating and getting Client/Account ID then Get Complete Details of Tel Quote By QuoteCode
-      this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
-      return this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(quick_quote_details['quote_code'] || web_quote_details['quote_no']);
-
-    }),
-    switchMap((tel_quote_res : any)=>{
-      // Converting the Tel Quote Details Into Web Quote Information => Set ClientCode/AccountCode to All in Tel Quote Info
-      let client_data = this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
-
-      let web_quote_req = {}
-      if(web_quote_details){
-        web_quote_req['code'] = web_quote_details['code'];
-        web_quote_req = {...web_quote_details}
-
-      }
-      web_quote_req = {...web_quote_req, ...tel_quote_res}
-      web_quote_req['account_code'] = client_data['accountCode']
-      
-
-
-      return this.quotation_service.saveWebQuote(web_quote_req)
-    })
-    )
-    .subscribe((data: any) => {
-      console.log(data);
-      
-      this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
-        // console.log(data);
-        // client_code
-        // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
-        // this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
-        // this.toast.success('Create Client Info Successfully!', 'Client Details')
-    });
-
   }
-}
+
+  // CHECK LATER
+  mapClientDetails() {
+    let client_list: any[] =
+      StringManipulation.returnNullIfEmpty(
+        this.session_storage.get(this.CLIENT_LIST_SESSION)
+      ) || [];
+    let web_details = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
+    if (web_details) {
+      if (client_list.length > 0) {
+        return client_list.find(
+          (data) => data['client_code'] === web_details['client_code']
+        );
+      }
+    }
+
+    return null;
+  }
+
+  generateNo(): string {
+
+    return '2323235976681'
+    // const randomNumbers: string[] = [];
+    // for (let i = 0; i < 3; i++) {
+    //   const randomNumberAsString = Math.floor(Math.random() * 100).toString();
+    //   randomNumbers.push(randomNumberAsString);
+    // }
+    // return randomNumbers.join(', ').replaceAll(', ', '');
+  }
 
   private deleteEntity(d: any[], i: any) {
     this.editEntity = true;

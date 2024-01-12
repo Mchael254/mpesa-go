@@ -41,11 +41,11 @@
               <div class="m-4">
                 <div class="d-flex justify-content-between">
                   <span class="font-grey__font-eight__700">Client Name: </span>
-                  <span class="fw-light">{{ "Ayomi cherop" }}</span>
+                  <span class="fw-light">{{ client_details['name'] }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
-                  <span class="font-grey__font-eight__700">Payment mode: </span>
-                  <span class="fw-light">{{ "Cash/cheque" }}</span>
+                  <span class="font-grey__font-eight__700">Payment Status: </span>
+                  <span class="fw-light">{{ summaryRecord['payment_status']  | titlecase}}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span class="font-grey__font-eight__700">Sum assured: </span>
@@ -59,7 +59,7 @@
                 <div class="d-flex justify-content-between">
                   <span class="font-grey__font-eight__700">Product: </span>
                   <span class="fw-light">{{
-                    productList | product : summaryRecord['product_code']
+                    productList | product : summaryRecord['product_code'] | titlecase
                   }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
@@ -105,25 +105,25 @@
                       <div class="m-4">
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{ "Mary Anne" }}</span>
+                          <span class="fw-light">{{ client_details['name'] }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Date of Birth:
                           </span>
-                          <span class="fw-light">{{ "10/10/1973" }}</span>
+                          <span class="fw-light">{{ summaryRecord['date_of_birth'] | date:'short'}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Occupation:
                           </span>
-                          <span class="fw-light">{{ "Doctor" }}</span>
+                          <span class="fw-light">{{ '-' }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Nationality:
                           </span>
-                          <span class="fw-light">{{ "Kenyan" }}</span>
+                          <span class="fw-light">{{ '-'}}</span>
                         </div>
                       </div>
                     </div>
@@ -140,7 +140,7 @@
                           <span class="font-grey__font-eight__700"
                             >Gender:
                           </span>
-                          <span class="fw-light">{{ "Male" }}</span>
+                          <span class="fw-light">{{ summaryRecord['gender']==='M' ? "Male":"Female" | titlecase }}</span>
                         </div>
                       </div>
                       <div class="col-12">
@@ -180,9 +180,9 @@
                   <div class="row">
 
                     <ng-container *ngFor="let coverType of summaryRecord['tel_quote_covers']">
-                    <div class="col-md-6">
+                    <div class="col-md-6" *ngIf="coverType['tqcvt_premium']>0 || coverType['tqcvt_sa']>0">
                       <div class="m-4">
-                        <div>{{coverType['tqcvt_cvt_sht_desc'] | uppercase }}</div>
+                        <div>{{coverTypeList | coverType:coverType['tqcvt_cvt_code'] }}</div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Premium:

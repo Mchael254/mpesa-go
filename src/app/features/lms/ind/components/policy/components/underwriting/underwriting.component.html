@@ -155,7 +155,7 @@
               </div>
               <div class="row pt-2">
                 <div class="col-lg-4 col-md-12 text-black-50">Name:</div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">DOB:</div>
@@ -163,19 +163,19 @@
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Gender:</div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12  text-black-50">Occupation:</div>
-                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['occupation']}}</div>
+                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['occupation']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12  text-black-50">Nationality:</div>
-                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
+                <div class="col-lg-4 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['assured']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Country of Residence:</div>
-                <div class="col-lg-4 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
+                <div class="col-lg-4 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['assured']| titlecase}}</div>
               </div>
             </div>
             <div class="col-lg-6 col-md-12">
@@ -195,11 +195,11 @@
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12  text-black-50">Intermediary:</div>
-                <div class="col-8 text-black fw-medium"> {{ policyUnderwritingSummary['assured']}}</div>
+                <div class="col-8 text-black fw-medium"> {{ policyUnderwritingSummary['assured']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Payment mode:</div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_pay_method']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_pay_method']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Sum assured:</div>
@@ -207,11 +207,11 @@
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Product:</div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['product_description']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['product_description']| titlecase}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Currency: </div>
-                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['sum_assured']}}</div>
+                <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['sum_assured'] | number}}</div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Premium: </div>
@@ -233,58 +233,23 @@
                 Cover Details
               </div>
               <div class="row">
-                <div class="row col-lg-6 col-md-12">
+                <!-- {{policyUnderwritingSummary | json}} -->
+                <div *ngFor="let item of endorsementCoverTypeList" class="row col-lg-6 col-md-12">
                   <div class="row pt-2">
-                    <div class="col-lg-4 col-md-12 text-black-50">Name:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">Mary Anne</div>
+                    <div class="col-lg-12 col-md-12 text-black fw-medium">{{item['cvt_desc'] | titlecase}}</div>
                   </div>
                   <div class="row">
-                    <div class="col-lg-4 col-md-12 text-black-50">DOB:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">10/10/1978</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Premium:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium">{{item['pcvt_premium'] | number}}</div>
                   </div>
                   <div class="row">
-                    <div class="col-lg-4 col-md-12 text-black-50">Gender:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">Female</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-4 col-md-12 text-black-50">Occupation:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">Doctor</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-4 col-md-12 text-black-50">Nationality:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">Kenyan</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-4 col-md-12 text-black-50">Country of Residence:</div>
-                    <div class="col-lg-8 col-md-12 text-black fw-medium">Uganda</div>
+                    <div class="col-lg-4 col-md-12 text-black-50">Sum Assured:</div>
+                    <div class="col-lg-8 col-md-12 text-black fw-medium"> {{item['pcvt_sa'] | number}} </div>
                   </div>
                 </div>
 
-                <div class="row col-lg-6 col-md-12">
-                  <div class="row pt-2">
-                    <div class="col-6 text-black-50">Name:</div>
-                    <div class="col-6 text-black fw-medium">Mary Anne</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">DOB:</div>
-                    <div class="col-6 text-black fw-medium">10/10/1978</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Gender:</div>
-                    <div class="col-6 text-black fw-medium">Female</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Occupation:</div>
-                    <div class="col-6 text-black fw-medium">Doctor</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Nationality:</div>
-                    <div class="col-6 text-black fw-medium">Kenyan</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Country of Residence:</div>
-                    <div class="col-6 text-black fw-medium">Uganda</div>
-                  </div>
+                <div class=" pt-2" *ngIf="endorsementCoverTypeList?.length===0" style="color: red;">
+                  No Cover Details Available!!
                 </div>
               </div>
 
@@ -305,58 +270,35 @@
               Beneficiary(ies) & trustee(s)
               </div>
               <div class="row">
-                <div class="row col-6">
+                <div *ngFor="let item of policyDependents" class="row col-6">
                   <div class="row pt-2">
                     <div class="col-6 text-black-50">Name:</div>
-                    <div class="col-6 text-black fw-medium">Mary Anne</div>
+                    <div class="col-6 text-black fw-medium"> {{item['surname'] +' '+ item['other_names'] | titlecase }} </div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">DOB:</div>
-                    <div class="col-6 text-black fw-medium">10/10/1978</div>
+                    <div class="col-6 text-black-50">Benefit proportion:</div>
+                    <div class="col-6 text-black fw-medium">{{item['percentage'] || 0 | number}}% </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 text-black-50">Date of birth:</div>
+                    <div class="col-6 text-black fw-medium">{{item['date_of_birth'] | date: 'dd/mm/YYYY'}}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 text-black-50">Relation:</div>
+                    <div class="col-6 text-black fw-medium">{{'-'}}</div>
                   </div>
                   <div class="row">
                     <div class="col-6 text-black-50">Gender:</div>
-                    <div class="col-6 text-black fw-medium">Female</div>
+                    <div class="col-6 text-black fw-medium">{{item['gender']==='M'?'Male': 'Female' | titlecase}}</div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Occupation:</div>
-                    <div class="col-6 text-black fw-medium">Doctor</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Nationality:</div>
-                    <div class="col-6 text-black fw-medium">Kenyan</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Country of Residence:</div>
-                    <div class="col-6 text-black fw-medium">Uganda</div>
+                    <div class="col-6 text-black-50">Type:</div>
+                    <div class="col-6 text-black fw-medium"> {{item['dty_desc'] | titlecase}}</div>
                   </div>
                 </div>
 
-                <div class="row col-6">
-                  <div class="row pt-2">
-                    <div class="col-6 text-black-50">Name:</div>
-                    <div class="col-6 text-black fw-medium">Mary Anne</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">DOB:</div>
-                    <div class="col-6 text-black fw-medium">10/10/1978</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Gender:</div>
-                    <div class="col-6 text-black fw-medium">Female</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Occupation:</div>
-                    <div class="col-6 text-black fw-medium">Doctor</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Nationality:</div>
-                    <div class="col-6 text-black fw-medium">Kenyan</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Country of Residence:</div>
-                    <div class="col-6 text-black fw-medium">Uganda</div>
-                  </div>
+                <div class=" pt-2" *ngIf="policyDependents?.length===0" style="color: red;">
+                  No Beneficiary(ies) Or trustee(s) Available!!
                 </div>
               </div>
 
@@ -453,3 +395,6 @@
     </div>
   </div>
 </div>
+
+
+

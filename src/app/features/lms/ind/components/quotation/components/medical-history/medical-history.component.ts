@@ -6,7 +6,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs';
+import { finalize, of, switchMap } from 'rxjs';
 import { MedicalHistoryService } from 'src/app/features/lms/service/medical-history/medical-history.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../../../../environments/environment';
@@ -47,7 +47,8 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   clonedProducts: any;
   products: any;
   diseaseList: any[] =[]
-  relationTypeList: any[] =[]
+  relationTypeList: any[] =[];
+  gender: string ='';
   constructor(
     private fb: FormBuilder,
     private medical_history_service: MedicalHistoryService,
@@ -94,13 +95,19 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     })
   }
   ngOnInit(): void {
-    this.getMedicalHistoryByClientId();
-    this.medical_history_service.getListOfDisease().subscribe((data)=>{
+    let client_info = StringManipulation.returnNullIfEmpty(SESSION_KEY.CLIENT_DETAILS);
+    this.gender = client_info?client_info['gender']:'';
+    this.relation_type_service.getRelationTypes()
+    .pipe(switchMap((data: any) => {
+      this.relationTypeList = data;
+
+      return this.medical_history_service.getListOfDisease();
+    }))
+    .subscribe((data) =>{
       this.diseaseList = data['data'];
-    })
-      this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
-        this.relationTypeList = data;
-      });
+
+      this.getMedicalHistoryByClientId();
+    });      
 
   }
 
@@ -177,6 +184,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     this.medicalListOne.indexOf(pol, x);
     this.medicalHistoryTableOne.patchValue(pol.length > 0 ? pol[0] : {});
   }
+  
   editPolicyTwo(x: any) {
     let pol = this.medicalListTwo
       .filter((data, i) => {
@@ -310,7 +318,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   nextPage() {
     let val = {...this.medicalHistoryForm.value};
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
-    val['client_code'] = this.session_service.get(SESSION_KEY.CLIENT_CODE);
+    val['client_code'] = this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['client_code'];
     val['tenant_id'] = environment.TENANT_ID;    
     if(this.medicalListOne.length>0){
       val = {...val, dependants_info:[...this.medicalListOne]}

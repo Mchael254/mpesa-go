@@ -8,6 +8,7 @@ import {Observable, of} from "rxjs";
   providedIn: 'root'
 })
 export class PartyService {
+  private POLICY_PARTY_BASE_URL = 'individual/parties';
 
   constructor(private api:ApiService) {}
 
@@ -19,6 +20,11 @@ export class PartyService {
         return data['content'];
     }),
     );
+  }
+
+  getListPolicyDependents(endr_code = 2023618118){
+
+    return this.api.GET(`${this.POLICY_PARTY_BASE_URL}/dependents?endr_code=${endr_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
   getAllBeneficiaryTypes(){
