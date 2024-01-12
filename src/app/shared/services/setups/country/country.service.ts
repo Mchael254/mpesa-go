@@ -16,6 +16,7 @@ import {
 } from '../../../data/common/countryDto';
 import { Observable } from 'rxjs/internal/Observable';
 import { Logger } from '../../logger/logger.service';
+import { environment } from 'src/environments/environment';
 
 const log = new Logger('CountryService');
 
@@ -36,7 +37,6 @@ export class CountryService {
    * @returns Observable<CountryDTO[]> list of countries
    */
   getCountries(): Observable<CountryDto[]> {
-    log.info('Fetching countries');
     return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
   }
 

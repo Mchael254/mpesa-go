@@ -14,6 +14,10 @@ export class EndorsementService {
     return this.api.GET(`${this.IND_ENDORSEMENT_BASE_URL}/${pol_code}/exceptions`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
   }
 
+  listCoverTypesByEndrCode(endr_code=2023200011){
+    return this.api.GET<any>(`${this.IND_ENDORSEMENT_BASE_URL}/${endr_code}/cover-types`,API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
+  }
+
   deleteExceptionsByPolCode(pol_code =2023618139, endr_code=2023315){
     return this.api.DELETE(`${this.IND_ENDORSEMENT_BASE_URL}/${pol_code}/exceptions/${endr_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
   }

@@ -99,7 +99,7 @@
               </div>
             </div>
 
-            <div class="my-2">
+            <div *ngIf="gender==='F'" class="my-2">
               <label class="required"
                 >2. Pregnant? Please provide your status</label
               >
@@ -303,8 +303,8 @@
                           </tr>
                           <tr *ngIf="row['isEdit'] == false">
                            
-                            <td>{{ row["relation_type_code"] }}</td>
-                            <td>{{ row["disease"] }}</td>
+                            <td>{{ relationTypeList | relationType: row["relation_type_code"] }}</td>
+                            <td>{{ diseaseList | diseases: row["disease"] }}</td>
                             <td>{{ row["diagnosis_date"] | date : "short" }}</td>
                             <td>{{ row["diagnosis"] }}</td>
                             <td class="d-flex justify-content-between py-2">

@@ -102,7 +102,7 @@ export class SessionStorageService {
   /**
    * Clear the session storage
    */
-  clear_x(): void {
+  clear_store(): void {
     sessionStorage.setItem('store_', JSON.stringify(''))
   }
 

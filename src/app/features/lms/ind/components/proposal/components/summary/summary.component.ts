@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { of, switchMap } from 'rxjs';
+import { CoverTypeService } from 'src/app/features/lms/service/cover-type/cover-type.service';
 import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { ProductOptionService } from 'src/app/features/lms/service/product-option/product-option.service';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
@@ -20,6 +21,9 @@ import { ToastService } from 'src/app/shared/services/toast/toast.service';
 export class SummaryComponent implements OnInit {
   
   proposalSummaryData: any = {};
+  coverTypeList: any[] = [];
+  beneficiaryList: any[] = [];
+  client_info: any;
 
   constructor(private router:Router, 
     private session_service: SessionStorageService, 
@@ -28,28 +32,48 @@ export class SummaryComponent implements OnInit {
     private product_option_service: ProductOptionService,
     private party_service: PartyService,
     private spinner_service:NgxSpinnerService,
+    private cover_type_service: CoverTypeService,
     private toast_service: ToastService){}
+
+
   ngOnInit(): void {
+    this.getProposalSummaryInfo();
+    this.getBeneficiariesByQuotationCode();
+    this.getCoverType();
+    this.client_info = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.CLIENT_DETAILS))    
+  }
+
+  getCoverType(){
+    this.cover_type_service.getCoverTypeList().subscribe((cover_types:any[]) =>{
+      // console.log(cover_types);
+      this.coverTypeList = cover_types;
+      
+    })
+  }
+
+  getProposalSummaryInfo(){
     this.spinner_service.show('summary_view');
     this.quotation_service
-    .getLmsIndividualQuotationWebQuoteByCode(this.session_service.get(SESSION_KEY.QUICK_CODE))
+    .getLmsIndividualQuotationWebQuoteByCode(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['code'])
     .pipe(
-      switchMap((data: any) =>{ 
-        console.log(data);
+      switchMap((web_quote_res: any) =>{ 
+        console.log(web_quote_res);
         
-        this.proposalSummaryData = data;
-        return this.product_service.getProductByCode(data?.product_code)
+        this.proposalSummaryData = web_quote_res;
+        return this.product_service.getProductByCode(web_quote_res?.product_code)
       }),
-      switchMap((data_1 : any) =>{ 
-        this.proposalSummaryData['product'] = data_1
+      switchMap((product_res : any) =>{ 
+        console.log(product_res);
+        
+        this.proposalSummaryData['product'] = product_res
         return this.product_option_service.getProductOptionByCode(this.proposalSummaryData?.pop_code)
-        // return of(data_1)
       }),
-      switchMap((data_2 : any) =>{ 
-        this.proposalSummaryData['product_option'] = data_2
-        // return this.product_option_service.getProductOptionByCode(this.proposalSummaryData?.pop_code)
-        return of(data_2)
-      }),  
+      switchMap((prod_option_res : any) =>{ 
+        this.proposalSummaryData['product_option'] = prod_option_res
+        // return this.cover_type_service.getCoverTypeByCode(this.proposalSummaryData?.pop_code)
+        return of(prod_option_res)
+        
+      }) 
     )
     .subscribe(
       (data) => 
@@ -63,17 +87,18 @@ export class SummaryComponent implements OnInit {
         this.spinner_service.hide('summary_view');
       }
     )
+  }
 
+
+  getBeneficiariesByQuotationCode() {
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.QUOTE_CODE));
     let proposal_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.PROPOSAL_CODE));
     this.party_service
+      // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
-      .subscribe((data) => {
-        console.log(data);
-        
-        // this.beneficiaryList = data;
+      .subscribe((data: any[] ) => {
+        this.beneficiaryList = data;
       });
-    
   }
 
   returnFreqOfPayment(data: string){

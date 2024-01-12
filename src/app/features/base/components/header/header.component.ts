@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit {
     if (this.user?.image) {
       return this.user.image;
     } else {
-      const initials = this.user.name.split(' ').map((name: string) => name.charAt(0)).join('');
+      const initials = this.user?.name?.split(' ')?.map((name: string) => name.charAt(0))?.join('');
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.width = 40;

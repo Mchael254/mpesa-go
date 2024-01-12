@@ -21,4 +21,6 @@ export class PoliciesService {
   listPolicySummaryByPolCodeAndEndrCode(pol_code=2023237447, endr_code=2023200011){
     return this.api.GET<any>(`${this.IND_POLICY_BASE_URL}/${pol_code}?endorsement_code=${endr_code}`,API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
   }
+
+
 }

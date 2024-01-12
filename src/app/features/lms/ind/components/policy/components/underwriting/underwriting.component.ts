@@ -4,6 +4,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
 import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
 import { EndorsementService } from 'src/app/features/lms/service/endorsement/endorsement.service';
+import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
@@ -25,6 +26,8 @@ export class UnderwritingComponent implements OnInit {
   productList: any[] = [];
   policyUnderwritingSummary: any = {};
   documentList: any[] = [];
+  endorsementCoverTypeList: any[] = [];
+  policyDependents: any[];
 
   constructor(private policies_service: PoliciesService, 
     private spinner_service: NgxSpinnerService, 
@@ -32,6 +35,7 @@ export class UnderwritingComponent implements OnInit {
     private fb: FormBuilder,
     private endorsement_service: EndorsementService,
     private dms_service: DmsService,
+    private party_service: PartyService,
     private session_storage_service: SessionStorageService) {}
 
   ngOnInit() {
@@ -61,6 +65,8 @@ export class UnderwritingComponent implements OnInit {
     this.listPolicySummaryByPolCodeAndEndrCode();
     this.getProductList();
     this.getDocumentsByClientId();
+    this.listCoverTypesByEndrCode();
+    this.getListPolicyDependents();
 
   }
 
@@ -68,10 +74,9 @@ export class UnderwritingComponent implements OnInit {
     this.spinner_service.show('underwriting');
     this.policies_service
       .listPolicySummaryByPolCodeAndEndrCode()
-      .subscribe((data) => {
+      .subscribe((data) => {        
         this.policyUnderwritingSummary = data
         this.policyUnderwritingSummary['endr_pay_method'] = this.getPaymentMethod(this.policyUnderwritingSummary['endr_pay_method']);
-        console.log(data);
         this.spinner_service.hide('underwriting')
 
       },
@@ -81,9 +86,35 @@ export class UnderwritingComponent implements OnInit {
       });
   }
 
+  listCoverTypesByEndrCode() {
+    // this.spinner_service.show('underwriting');
+    this.endorsement_service
+      .listCoverTypesByEndrCode()
+      .subscribe((data: any[]) => {
+        this.endorsementCoverTypeList = data;
+        
+        // this.spinner_service.hide('underwriting')
+
+      },
+      err=>{
+        console.log(err);
+        
+        // this.spinner_service.hide('underwriting')
+
+      });
+  }
+
   getProductList(){
     this.product_service.getListOfProduct().subscribe(data =>{
       this.productList = data
+    })
+  }
+  
+  getListPolicyDependents(){
+    this.party_service.getListPolicyDependents().subscribe((data: any[]) =>{
+      this.policyDependents = data;
+      console.log(data);
+      
     })
   }
 
@@ -131,15 +162,15 @@ export class UnderwritingComponent implements OnInit {
     return ''
   }
 
-  openModal() {
-    const modal = document.getElementById('UnderWritingModal');
+  openModal(name ='UnderWritingModal') {
+    const modal = document.getElementById(name);
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
   }
-  closeModal() {
-    const modal = document.getElementById('UnderWritingModal');
+  closeModal(name ='UnderWritingModal') {
+    const modal = document.getElementById(name);
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
