@@ -13,13 +13,13 @@
     <li class="nav-item" role="presentation">
       <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
         aria-controls="ex1-tabs-1" aria-selected="false" style="font-size: 11px;">
-        {{'Personal Information' | uppercase | translate }}
+        {{ 'entities.personal_info' | translate | uppercase }}
       </a>
     </li>
     <li class="nav-item" role="presentation">
       <a style="font-size: 11px;" class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
         aria-selected="true">
-        {{'Additional Information' | uppercase}}
+        {{'entities.additional_info' | translate | uppercase }}
       </a>
     </li>
   </ul>
@@ -29,28 +29,28 @@
         <div class="card-body mb-2">
           <form [formGroup]="entityDetailsForm">
             <div class="row mb-2">
-              <label for="inputName" class="col-sm-2 col-form-label">Full Names</label>
+              <label for="inputName" class="col-sm-2 col-form-label">{{ 'entities.full_names' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputName" placeholder="Full Names" formControlName="name">
+                <input type="text" class="form-control" id="inputName" formControlName="name">
               </div>
-              <label for="inputPassportNumber" class="col-sm-2 col-form-label">Passport Number</label>
+              <label for="inputPassportNumber" class="col-sm-2 col-form-label">{{ 'entities.passport_number' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputPassportNumber" placeholder="Passport Number"
+                <input type="text" class="form-control" id="inputPassportNumber"
                   formControlName="passportNumber">
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputPartyType" class="col-sm-2 col-form-label">Type</label>
+              <label for="inputPartyType" class="col-sm-2 col-form-label">{{ 'entities.type' | translate }}</label>
               <div class="col-md-4">
                 <select id="inputPartyType" class="form-select" formControlName="partyType">
-                  <option value="" selected>Party Type</option>
-                  <option value="I">Individual</option>
-                  <option value="C">Corporate</option>
+                  <option value="" selected>{{ 'entities.party_type' | translate }}</option>
+                  <option value="I">{{ 'entities.individual' | translate }}</option>
+                  <option value="C">{{ 'entities.corporate' | translate }}</option>
                 </select>
               </div>
-              <label for="inputMobileNumber" class="col-sm-2 col-form-label">Mobile Number</label>
+              <label for="inputMobileNumber" class="col-sm-2 col-form-label">{{ 'entities.mobile_number' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputMobileNumber" placeholder="Mobile Number"
+                <input type="text" class="form-control" id="inputMobileNumber"
                   formControlName="mobileNumber">
               </div>
             </div>
@@ -58,41 +58,41 @@
               <label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
               <div class="col-md-4">
                 <select id="inputTitle" class="form-select" formControlName="clientTitle">
-                  <option value="" selected>Title</option>
+                  <option value="" selected>{{ 'entities.title' | translate }}</option>
                   <option *ngFor="let titles of titlesData" [value]="titles.id">
                   <!-- <option *ngFor="let titles of titlesData" [(ngModel)]="selectedTitle" [ngValue]="titles"> -->
                     {{ titles.description }}
                   </option>
                 </select>
               </div>
-              <label for="inputDOB" class="col-sm-2 col-form-label">Date of Birth</label>
+              <label for="inputDOB" class="col-sm-2 col-form-label">{{ 'entities.dob' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" name="inputDOB" placeholder="Date of Birth"
+                <input type="text" class="form-control" name="inputDOB"
                   onfocus="(this.type='date')" onblur="(this.type='text')" id="date" formControlName="dateOfBirth">
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputEmailAddress" class="col-sm-2 col-form-label">Email Address</label>
+              <label for="inputEmailAddress" class="col-sm-2 col-form-label">{{ 'entities.email_address' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
+                <input type="text" class="form-control" id="inputEmailAddress"
                   formControlName="emailAddress">
               </div>
-              <label for="inputPhysicalAddress" class="col-sm-2 col-form-label">Physical Address</label>
+              <label for="inputPhysicalAddress" class="col-sm-2 col-form-label">{{ 'entities.physical_address' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputPhysicalAddress" placeholder="Physical Address"
+                <input type="text" class="form-control" id="inputPhysicalAddress"
                   formControlName="physicalAddress">
               </div>
             </div>
             <div class="row mb-2">
-              <label for="inputIdNumber" class="col-sm-2 col-form-label">ID Number</label>
+              <label for="inputIdNumber" class="col-sm-2 col-form-label">{{ 'entities.id_number' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputIdNumber" placeholder="ID Number"
+                <input type="text" class="form-control" id="inputIdNumber"
                   formControlName="idNumber">
               </div>
-              <label for="inputOccupation" class="col-sm-2 col-form-label">Occupation</label>
+              <label for="inputOccupation" class="col-sm-2 col-form-label">{{ 'entities.occupation' | translate }}</label>
               <div class="col-md-4">
                 <select id="inputOccupation" class="form-select" formControlName="occupation">
-                  <option value="" selected>Occupation</option>
+                  <option value="" selected>{{ 'entities.occupation' | translate }}</option>
                   <option *ngFor="let occupation of occupationData" [value]="occupation.id">
                     {{ occupation.name }}
                   </option>
@@ -101,17 +101,17 @@
             </div>
   
             <div *ngIf="showExtraStaffDetails" class="row mb-2">
-              <label for="inputStaffDepartments" class="col-sm-2 col-form-label">Department</label>
+              <label for="inputStaffDepartments" class="col-sm-2 col-form-label">{{ 'entities.department' | translate }}</label>
               <div class="col-md-4">
                 <select id="inputStaffDepartments" class="form-select" formControlName="staffDepartment">
-                  <option value="" selected>Department</option>
+                  <option value="" selected>{{ 'entities.department' | translate }}</option>
                   <option *ngFor="let department of staffDepartments" value="{{ department?.id }}">
                     {{ department?.departmentName }}
                   </option>
                 </select>
               </div>
   
-              <label for="inputStaffSupervisor" class="col-sm-2 col-form-label">Supervisor</label>
+              <label for="inputStaffSupervisor" class="col-sm-2 col-form-label">{{ 'entities.supervisor' | translate }}</label>
               <div class="col-md-4">
                 <div class="dropdown-wrapper">
                   <input type="text" id="inputStaffSupervisor" class="disabled-input form-control"
@@ -123,9 +123,9 @@
             </div>
   
             <div class="row mb-2">
-              <label for="inputPinNumber" class="col-sm-2 col-form-label">Pin Number</label>
+              <label for="inputPinNumber" class="col-sm-2 col-form-label">{{ 'entities.pin_number' | translate }}</label>
               <div class="col-md-4">
-                <input type="text" class="form-control" id="inputPinNumber" placeholder="Pin Number"
+                <input type="text" class="form-control" id="inputPinNumber"
                   formControlName="pinNumber">
               </div>
             </div>
@@ -134,11 +134,11 @@
         <div class="mx-2 mb-2">
           <!-- <ngx-back-link ngxBackLink></ngx-back-link> -->
           <button type="button" class="btn btn-light btn-md" id="completeInforButton">
-            COMPLETE {{ partyAccountDetails?.partyType?.partyTypeName | uppercase }} INFORMATION
+            {{ 'entities.complete' | translate | uppercase }} {{ partyAccountDetails?.partyType?.partyTypeName | uppercase }} {{ 'entities.information' | translate | uppercase }}
           </button>
           <span class="float-end">
             <button type="button" class="btn btn-primary btn-md" id="updateUserButton" (click)="updatePersonalInfo()">
-              SAVE
+              {{ 'entities.save' | translate }}
             </button>
           </span>
         </div>
@@ -156,7 +156,7 @@
               role="tab" 
               aria-controls="bank-tab-pane" 
               aria-selected="true">
-            Bank Details
+              {{ 'entities.bank_details' | translate }}
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -169,7 +169,7 @@
               role="tab" 
               aria-controls="wealth-tab-pane" 
               aria-selected="false">
-            Wealth Details
+              {{ 'entities.wealth_details' | translate }}
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -182,7 +182,7 @@
               role="tab" 
               aria-controls="aml-tab-pane" 
               aria-selected="false">
-            AML Details(Organization)
+              {{ 'entities.aml_details' | translate }}({{ 'entities.organisation' | translate }})
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -195,7 +195,7 @@
               role="tab" 
               aria-controls="kins-tab-pane" 
               aria-selected="false">
-            Next of Kins
+              {{ 'entities.next_of_kins' | translate }}
           </button>
         </li>
       </ul>
@@ -205,29 +205,29 @@
             <div class="card-body">
               <form [formGroup]="bankDetailsForm">
                 <div class="row mb-2">
-                  <label for="inputBank" class="col-sm-2 col-form-label">Bank</label>
+                  <label for="inputBank" class="col-sm-2 col-form-label">{{ 'entities.bank' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputBank" class="form-select" formControlName="bankName">
-                      <option value="" selected>Bank</option>
+                      <option value="" selected>{{ 'entities.bank' | translate }}</option>
                       <option *ngFor="let bank of banksData" [value]="bank.id">{{ bank.name }}</option>
                     </select>
                   </div>
-                  <label for="inputAccountNumber" class="col-sm-2 col-form-label">Account</label>
+                  <label for="inputAccountNumber" class="col-sm-2 col-form-label">{{ 'entities.account_number' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputAccountNumber" placeholder="Account Number"
+                    <input type="text" class="form-control" id="inputAccountNumber"
                       formControlName="accountNumber">
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputAccountType" class="col-sm-2 col-form-label">Select Account Type</label>
+                  <label for="inputAccountType" class="col-sm-2 col-form-label">{{ 'entities.select_account_type' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputAccountType" placeholder="Account Type"
+                    <input type="text" class="form-control" id="inputAccountType"
                       formControlName="accountType">
                   </div>
-                  <label for="inputBranch" class="col-sm-2 col-form-label">Branch</label>
+                  <label for="inputBranch" class="col-sm-2 col-form-label">{{ 'entities.branch' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputBranch" class="form-select" formControlName="branch">
-                      <option value="">Branch</option>
+                      <option value="">{{ 'entities.branch' | translate }}</option>
                       <option *ngFor="let branch of branchesData" [value]="branch.id">
                         {{ branch.name }}
                       </option>
@@ -235,17 +235,17 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputPrefferedChannel" class="col-sm-2 col-form-label">Preferred Payment A/C</label>
+                  <label for="inputPrefferedChannel" class="col-sm-2 col-form-label">{{ 'entities.preferred_payment_account' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputPrefferedChannel" class="form-select" formControlName="preferredPaymentAccount">
-                      <option value="">Preferred Payment A/C</option>
-                      <option value="N">Mobile Money</option>
-                      <option value="N">Bank</option>
+                      <option value="">{{ 'entities.preferred_payment_account' | translate }}</option>
+                      <option value="N">{{ 'entities.mobile_money' | translate }}</option>
+                      <option value="N">{{ 'entities.bank' | translate }}</option>
                     </select>
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputShortCodes" class="col-sm-2 col-form-label">Short Codes</label>
+                  <label for="inputShortCodes" class="col-sm-2 col-form-label">{{ 'entities.short_codes' | translate }}</label>
                   <div class="col-md-2">
                     <input type="text" class="form-control" id="inputShortCodes" placeholder="IBAN" formControlName="iban">
                   </div>
@@ -265,7 +265,7 @@
             <div class="mx-2 mb-2">
               <span class="float-end">
                 <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedBankDetails()">
-                  SAVE
+                  {{ 'entities.save' | translate }}
                 </button>
               </span>
             </div>
@@ -276,19 +276,19 @@
             <div class="card-body">
               <form [formGroup]="wealthDetailsForm">
                 <div class="row mb-2">
-                  <label for="inputNationality" class="col-sm-2 col-form-label">Nationality</label>
+                  <label for="inputNationality" class="col-sm-2 col-form-label">{{ 'entities.nationality' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputNationality" class="form-select" formControlName="nationality">
-                      <option value="">Nationality</option>
+                      <option value="">{{ 'entities.nationality' | translate }}</option>
                       <option *ngFor="let country of countryData" [value]="country.id">
                         {{ country.name }}
                       </option>
                     </select>
                   </div>
-                  <label for="inputCitizenship" class="col-sm-2 col-form-label">Citizenship</label>
+                  <label for="inputCitizenship" class="col-sm-2 col-form-label">{{ 'entities.citizenship' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputCitizenship" class="form-select" formControlName="citizenship">
-                      <option value="">Citizenship</option>
+                      <option value="">{{ 'entities.citizenship' | translate }}</option>
                       <option *ngFor="let country of countryData" [value]="country.id">
                         {{ country.name }}
                       </option>
@@ -296,19 +296,19 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputFundSource" class="col-sm-2 col-form-label">Source Of Funds</label>
+                  <label for="inputFundSource" class="col-sm-2 col-form-label">{{ 'entities.source_of_funds' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputFundSource" class="form-select" formControlName="fundSource">
-                      <option value="">Source of Funds</option>
+                      <option value="">{{ 'entities.source_of_funds' | translate }}</option>
                       <option *ngFor="let source of fundSource" [value]="source.code">
                         {{ source.name }}
                       </option>
                     </select>
                   </div>
-                  <label for="inputSector" class="col-sm-2 col-form-label">Sector</label>
+                  <label for="inputSector" class="col-sm-2 col-form-label">{{ 'entities.sector' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputSector" class="form-select" formControlName="sector">
-                      <option value="">Sector</option>
+                      <option value="">{{ 'entities.sector' | translate }}</option>
                       <option *ngFor="let sector of sectorData" [value]="sector.id">
                         {{ sector.name }}
                       </option>
@@ -316,12 +316,12 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputEmploymentType" class="col-sm-2 col-form-label">Type of Employment</label>
+                  <label for="inputEmploymentType" class="col-sm-2 col-form-label">{{ 'entities.type_of_employment' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputEmploymentType" class="form-select" formControlName="employmentType">
-                      <option value="">Type Employment</option>
-                      <option value="Y">Employed</option>
-                      <option value="N">Self-Employed</option>
+                      <option value="">{{ 'entities.type_of_employment' | translate }}</option>
+                      <option value="Y">{{ 'entities.employed' | translate }}</option>
+                      <option value="N">{{ 'entities.self_employed' | translate }}</option>
                     </select>
                   </div>
                 </div>
@@ -330,7 +330,7 @@
             <div class="mx-2 mb-2">
               <span class="float-end">
                 <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedWealthDetails()">
-                  SAVE
+                  {{ 'entities.save' | translate }}
                 </button>
               </span>
             </div>
@@ -341,27 +341,27 @@
             <div class="card-body">
               <form [formGroup]="amlDetailsForm">
                 <div class="row mb-2">
-                  <label for="inputTradingName" class="col-sm-2 col-form-label">Trading Names</label>
+                  <label for="inputTradingName" class="col-sm-2 col-form-label">{{ 'entities.trading_names' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputTradingName" placeholder="Name"
+                    <input type="text" class="form-control" id="inputTradingName"
                       formControlName="tradingName">
                   </div>
-                  <label for="inputRegNumber" class="col-sm-2 col-form-label">Cert Reg Number</label>
+                  <label for="inputRegNumber" class="col-sm-2 col-form-label">{{ 'entities.cert_reg_no' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputRegNumber" placeholder="Certificate Reg Number"
+                    <input type="text" class="form-control" id="inputRegNumber"
                       formControlName="certRegNumber">
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputRegName" class="col-sm-2 col-form-label">Company</label>
+                  <label for="inputRegName" class="col-sm-2 col-form-label">{{ 'entities.company' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputRegName" placeholder="Registered Name"
+                    <input type="text" class="form-control" id="inputRegName"
                       formControlName="companyRegName">
                   </div>
-                  <label for="inputWealthSource" class="col-sm-2 col-form-label">Source of Wealth</label>
+                  <label for="inputWealthSource" class="col-sm-2 col-form-label">{{ 'entities.source_of_wealth' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputWealthSource" class="form-select" formControlName="wealthSource">
-                      <option value="">Source of Wealth</option>
+                      <option value="">{{ 'entities.source_of_wealth' | translate }}</option>
                       <option *ngFor="let source of fundSource" [value]="source.code">
                         {{ source.name }}
                       </option>
@@ -369,15 +369,15 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputCertRegYear" class="col-sm-2 col-form-label">Cert Registration Year</label>
+                  <label for="inputCertRegYear" class="col-sm-2 col-form-label">{{ 'entities.cert_reg_year' | translate }}</label>
                   <div class="col-md-4">
-                    <input type="text" class="form-control" id="inputCertRegYear" placeholder="Cert Registration Year"
+                    <input type="text" class="form-control" id="inputCertRegYear"
                       formControlName="certificateRegYear">
                   </div>
-                  <label for="inputParentCountry" class="col-sm-2 col-form-label">Parent Country</label>
+                  <label for="inputParentCountry" class="col-sm-2 col-form-label">{{ 'entities.parent_country' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputParentCountry" class="form-select" formControlName="parentCountry">
-                      <option value="">Parent Country</option>
+                      <option value="">{{ 'entities.parent_country' | translate }}</option>
                       <option *ngFor="let country of countryData" [value]="country.id">
                         {{ country.name }}
                       </option>
@@ -385,10 +385,10 @@
                   </div>
                 </div>
                 <div class="row mb-2">
-                  <label for="inputOperationCountry" class="col-sm-2 col-form-label">Operation Country</label>
+                  <label for="inputOperationCountry" class="col-sm-2 col-form-label">{{ 'entities.operation_country' | translate }}</label>
                   <div class="col-md-4">
                     <select id="inputOperationCountry" class="form-select" formControlName="operationCountry">
-                      <option value="">Operation Country</option>
+                      <option value="">{{ 'entities.operation_country' | translate }}</option>
                       <option *ngFor="let country of countryData" [value]="country.id">
                         {{ country.name }}
                       </option>
@@ -400,7 +400,7 @@
             <div class="mx-2 mb-2">
               <span class="float-end">
                 <button type="button" class="btn btn-primary btn-md" (click)="saveUpdatedAmlWealthDetails()">
-                  SAVE
+                  {{ 'entities.save' | translate }}
                 </button>
               </span>
             </div>
@@ -411,11 +411,11 @@
             <div class="card-header bg-transparent">
               <div class="nextKinBtn float-end">
                 <button type="button" class="btn btn-outline-primary me-2" id="shareBtn">
-                  Share
+                  {{ 'entities.share' | translate }}
                 </button>
                 <button type="button" class="btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#editKinsModal"
                   id="addButton">
-                  Add
+                  {{ 'entities.add' | translate }}
                 </button>
               </div>
             </div>
@@ -425,13 +425,13 @@
                 styleClass="p-datatable-sm" responsiveLayout="scroll" class="ui-datatable">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="head">Identifier Type</th>
-                    <th class="head">Identifier No</th>
-                    <th class="head">Full Name</th>
-                    <th class="head">Relation</th>
-                    <th class="head">DOB</th>
-                    <th class="head">Mobile</th>
-                    <th class="head">Email</th>
+                    <th class="head">{{ 'entities.identity_type' | translate }}</th>
+                    <th class="head">{{ 'entities.identifier_no' | translate }}</th>
+                    <th class="head">{{ 'entities.full_names' | translate }}</th>
+                    <th class="head">{{ 'entities.relation' | translate }}</th>
+                    <th class="head">{{ 'entities.dob' | translate }}</th>
+                    <th class="head">{{ 'entities.mobile' | translate }}</th>
+                    <th class="head">{{ 'entities.email' | translate }}</th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-kins>
@@ -447,7 +447,7 @@
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="8">No Next of Kin found.</td>
+                    <td colspan="8">{{ 'entities.no_next_of_kin_found' | translate }}</td>
                   </tr>
                 </ng-template>
               </p-table>
@@ -464,54 +464,54 @@
   <div class="modal-dialog modal-md modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add Next of Kins</h5>
+        <h5 class="modal-title">{{ 'entities.add_next_of_kin' | translate }}</h5>
       </div>
       <div class="modal-body">
         <form [formGroup]="nextKinDetailsForm">
           <div class="row">
-            <label for="inputIdentifierType" class="col-4 col-form-label">Identifier Type</label>
+            <label for="inputIdentifierType" class="col-4 col-form-label">{{ 'entities.identity_type' | translate }}</label>
             <div class="col-8 mb-2">
               <select id="inputIdentifierType" class="form-select" formControlName="identifierType">
-                <option value="" selected>Identifier Type</option>
+                <option value="" selected>{{ 'entities.identity_type' | translate }}</option>
                 <option *ngFor="let type of modeIdentityType" [value]="type.id">{{ type.name }}</option>
               </select>
             </div>
-            <label for="inputIdNumber" class="col-4 col-form-label">ID</label>
+            <label for="inputIdNumber" class="col-4 col-form-label">{{ 'entities.id' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" id="inputIdNumber" placeholder="Passport Number"
+              <input type="text" class="form-control" id="inputIdNumber"
                 formControlName="idNumber">
             </div>
-            <label for="inputName" class="col-4 col-form-label">Full Name</label>
+            <label for="inputName" class="col-4 col-form-label">{{ 'entities.full_names' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" id="inputName" placeholder="Full Name" formControlName="fullName">
+              <input type="text" class="form-control" id="inputName" formControlName="fullName">
             </div>
-            <label for="inputEmailAddress" class="col-4 col-form-label">Email Address</label>
+            <label for="inputEmailAddress" class="col-4 col-form-label">{{ 'entities.email_address' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" id="inputEmailAddress" placeholder="Email Address"
+              <input type="text" class="form-control" id="inputEmailAddress"
                 formControlName="emailAddress">
             </div>
-            <label for="inputRelation" class="col-4 col-form-label">Relation</label>
+            <label for="inputRelation" class="col-4 col-form-label">{{ 'entities.relation' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" id="inputRelation" placeholder="Relation"
+              <input type="text" class="form-control" id="inputRelation"
                 formControlName="relationship">
             </div>
-            <label for="inputPhoneNumber" class="col-4 col-form-label">Mobile Number</label>
+            <label for="inputPhoneNumber" class="col-4 col-form-label">{{ 'entities.mobile_number' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" id="inputPhoneNumber" placeholder="Mobile Number"
+              <input type="text" class="form-control" id="inputPhoneNumber"
                 formControlName="phoneNumber">
             </div>
-            <label for="inputDateOfBirth" class="col-4 col-form-label">Date of Birth</label>
+            <label for="inputDateOfBirth" class="col-4 col-form-label">{{ 'entities.dob' | translate }}</label>
             <div class="col-8 mb-2">
-              <input type="text" class="form-control" name="inputDateOfBirth" placeholder="Date of Birth"
+              <input type="text" class="form-control" name="inputDateOfBirth"
                 onfocus="(this.type='date')" onblur="(this.type='text')" id="date" formControlName="dateOfBirth">
             </div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'entities.cancel' | translate }}</button>
         <button type="button" class="btn btn-primary ms-auto" data-bs-dismiss="modal" (click)="saveUpdatedNextofKinDetails()">
-          Save
+          {{ 'entities.save' | translate }}
         </button>
       </div>
     </div>
@@ -523,7 +523,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header border-0">
-        <h5 class="modal-title header">Assign Supervisor</h5>
+        <h5 class="modal-title header">{{ 'entities.assign_supervisor' | translate }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -552,8 +552,8 @@
             (onRowUnselect)="onUserRowUnselect($event)">
           <ng-template pTemplate="header">
             <tr>
-              <th class="head assign-supervisor-table-head">Username</th>
-              <th class="head assign-supervisor-table-head">Full name</th>
+              <th class="head assign-supervisor-table-head">{{ 'entities.username' | translate }}</th>
+              <th class="head assign-supervisor-table-head">{{ 'entities.full_names' | translate }}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-viewUsers>
@@ -564,16 +564,16 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="2">No users found.</td>
+              <td colspan="2">{{ 'entities.no_users_found' | translate }}</td>
             </tr>
           </ng-template>
         </p-table>
       </div>
       <div class="modal-footer" style="border-top: 0;">
         <button class="btn btn-outline-secondary cancelBtn supervisor-modal-bottom-btn float-start" data-bs-dismiss="modal"
-          (click)="clearReassignModalFields()">Cancel</button>
+          (click)="clearReassignModalFields()">{{ 'entities.cancel' | translate }}</button>
         <button class="btn btn-primary ms-auto assign-supervisor-btn supervisor-modal-bottom-btn"
-          data-bs-dismiss="modal" (click)="saveSelectedSupervisor()">Save</button>
+          data-bs-dismiss="modal" (click)="saveSelectedSupervisor()">{{ 'entities.save' | translate }}</button>
       </div>
     </div>
   </div>

@@ -100,13 +100,14 @@ export class OtpComponent implements OnInit, OnDestroy {
             this.isLoading = false;
           },
           error: (err) => {
+            let errorMessage = '';
+            if (err.error.message) {
+              errorMessage = err.error.message
+            } else {
+              errorMessage = err.message
+            }
             this.isLoading = false;
-            this.error = {
-              name: err.statusText, 
-              status: err.status, 
-              message: err.message
-            };
-            this.globalMessagingService.displayErrorMessage('Error', err.message);
+            this.globalMessagingService.displayErrorMessage('Error', errorMessage);
           }
         })
     }

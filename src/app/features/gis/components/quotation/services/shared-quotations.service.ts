@@ -19,6 +19,8 @@ export class SharedQuotationsService {
   quotationDetailsRisk:any;
   clientDetails:any;
 
+  isAddRisk:boolean;
+
   setFormData(data: any) {
     this.formData = data;
   }
@@ -86,6 +88,12 @@ export class SharedQuotationsService {
     }
 
     return { quotationDetailsRisk: this.quotationDetailsRisk, clientDetails: this.clientDetails };
+}
+setIsAddRisk(data){
+  this.isAddRisk=data;
+}
+getIsAddRisk(){
+  return this.isAddRisk;
 }
 
 
