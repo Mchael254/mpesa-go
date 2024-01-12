@@ -3,7 +3,7 @@ import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { finalize, timer } from 'rxjs';
+import { finalize, switchMap, timer } from 'rxjs';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -53,16 +53,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   beneficiaryList: any[] = [];
   relationTypeList: any[] = []
   documentList: any[] = [];
-
-  // constructor(private fb: FormBuilder){
-  //   this.emailForm1 = this.fb.group({
-  //     email_type:['']
-  //   })
-  // }
-
-  // get emailTypeControl() {
-  //   return this.emailForm1.get('email_type') as FormControl;
-  // }
+  coverTypeList: any[];
+  client_details: any;
 
   constructor(
     private fb: FormBuilder,
@@ -106,21 +98,32 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.getCoverType()
     this.getProductList();
     this.getLmsIndividualQuotationWebQuoteByCode();
     this.getClientById();
     this.getBeneficiariesByQuotationCode();
     this.getRelationTypes();
     this.getDocumentsByClientId();
+    this.client_details = this.session_storage_Service.get(SESSION_KEY.CLIENT_DETAILS)
 
   }
   ngOnDestroy(): void {
     console.log('OnDestroy QuotationSummaryComponent');
   }
 
+
+
   getDocumentsByClientId(){
-    let client_code = this.session_storage_Service.get(SESSION_KEY.CLIENT_CODE);
-    this.dms_service.getClientDocumentById(client_code)
+    let client_code = 
+    StringManipulation.returnNullIfEmpty(
+      this.session_storage_Service.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
+    ) ||
+    StringManipulation.returnNullIfEmpty(
+      this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS))
+
+    // this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)?.client_code;
+    this.dms_service.getClientDocumentById(client_code?.client_code)
     .subscribe(data =>{
       this.documentList = data['content']
     });
@@ -142,11 +145,11 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   getClientById() {
-    let client_code = StringManipulation.returnNullIfEmpty(
-      this.session_storage_Service.get(SESSION_KEY.CLIENT_CODE)
+    let account_code = StringManipulation.returnNullIfEmpty(
+      this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['account_code']
     );
     this.client_service
-      .getClientById(client_code)
+      .getClientById(account_code)
       .subscribe((data: ClientDTO) => {
         console.log(data);
 
@@ -161,22 +164,32 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   getLmsIndividualQuotationWebQuoteByCode() {
-    let code = StringManipulation.returnNullIfEmpty(
-      this.session_storage_Service.get(SESSION_KEY.QUOTE_CODE)
+    let web_quote_details = StringManipulation.returnNullIfEmpty(
+      this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)
     );
+    this.getCoverType().pipe(switchMap((cover_types: any[]) =>{
+      this.coverTypeList = cover_types;
 
-    this.quotation_service
-      .getLmsIndividualQuotationTelQuoteByCode(code)
-      .subscribe((data: {}) => {
-        this.summaryRecord = { ...data };
-      });
+      return this.quotation_service
+      .getLmsIndividualQuotationTelQuoteByCode(web_quote_details['quote_no']);
+      
+    }),
+    switchMap((tel_quote_res: any[]) =>{
+      this.summaryRecord = { ...tel_quote_res };
+
+      return this.quotation_service
+      .getLmsIndividualQuotationWebQuoteByCode(web_quote_details['code'])
+      
+    })).subscribe((web_quote_res: {}) => {
+      this.summaryRecord = {...this.summaryRecord, ...web_quote_res };
+    });
+    
   }
 
   getBeneficiariesByQuotationCode() {
     this.spinner.show('summary_screen');
-
-    let quote_code = +this.session_storage_Service.get(SESSION_KEY.QUOTE_CODE);
-    let proposal_code = +this.session_storage_Service.get(SESSION_KEY.PROPOSAL_CODE);
+    let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.QUICK_QUOTE_DETAILS)['quote_code']) || StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['quote_no']);    
+    let proposal_code = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['proposal_no']);
     this.party_service
       .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
       .subscribe((data) => {
@@ -190,25 +203,34 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.shareInputType = value === 'email' ? 'email' : 'phone';
   }
 
+  getCoverType(){
+    return this.cover_type_service.getCoverTypeList()
+  }
+
   nextPage() {
     this.spinner.show('summary_screen');
+    let web_quote = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS));
 
-    let quick_quote_code = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.QUICK_CODE));
-    // this.quotation_service.convert_quotation_to_proposal(quick_quote_code).subscribe(data =>{
-    //   this.toast.success('Next To Proposal Page', 'PROPOSAL');
+    if(web_quote['proposal_no']){
+      this.toast.success('Next To Proposal Page', 'PROPOSAL');
       this.route.navigate(['/home/lms/ind/proposal/summary']);
-    //   console.log(data);
-    //   this.spinner.hide('summary_screen');
-    //   // timer(1300).subscribe(() => {
-    //   //   this.route.navigate(['/home/lms/ind/proposal/summary']);
-    //   // });
-    // },
-    // err=> {
-    //   this.toast.danger('Unable to Proceed to Proposal', 'WARNING');
-    //   this.spinner.hide('summary_screen');
-    //   // console.error(err);
-      
-    // })
+    }else{
+
+      this.quotation_service.convert_quotation_to_proposal(web_quote['code']).subscribe((data:any) =>{
+          this.toast.success('Succesfully Convert Quotation To Proposal', 'PROPOSAL');
+          this.route.navigate(['/home/lms/ind/proposal/summary']);
+          // web_quote['proposal_no'] = data['proposal'];
+          // web_quote['policy_no'] = data['policy_no'];
+          web_quote = {...web_quote, ...data}
+          this.session_storage_Service.set(SESSION_KEY.WEB_QUOTE_DETAILS, web_quote);
+        err=> {
+          this.toast.danger('Unable to Proceed to Proposal', 'WARNING');
+          this.spinner.hide('summary_screen');
+          // console.error(err);
+          
+        }})
+    }
+    
     
   }
 }

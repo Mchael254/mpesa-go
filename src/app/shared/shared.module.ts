@@ -81,9 +81,10 @@ import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
 import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
 import { Error401Interceptor } from './services/http/error-404.interceptor';
 
-const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe];
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe];
 
 import { ReusableInputComponent } from './components/reusable-input/reusable-input.component';
+import { DiseasePipe } from '../features/lms/pipe/disease/disease.pipe';
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
