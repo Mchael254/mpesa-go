@@ -8,7 +8,9 @@
         </div>
         <div class="col-sm-4 col-12">
           <button class="btn btn-outline-primary float-end createDashBtn"
-                  data-bs-toggle="modal" data-bs-target="#createDashboardModal">Create Dashboard</button>
+                  data-bs-toggle="modal" data-bs-target="#createDashboardModal">
+                  {{ 'report.create_dashboard' | translate }}
+            </button>
         </div>
         <div class="row mx-0 mt-3 p-0 dragDropBoundary" cdkDropList (cdkDropListDropped)="drop($event)">
           <div class="col-sm-4 mt-3 move" cdkDragBoundary=".dragDropBoundary" cdkDrag *ngFor="let dashboard of dashboards; let i = index">
@@ -69,19 +71,21 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header border-0">
-          <h1 class="modal-title" id="createDashboardLabel">Create dashboard</h1>
+          <h1 class="modal-title" id="createDashboardLabel">
+            {{ 'report.create_dashboard' | translate }}
+          </h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
 
           <form [formGroup]="createDashboardForm">
             <div class="mb-3">
-              <label for="dashboardName" class="form-label">Dashboard name
-                <span class="text-danger">*</span></label>
+              <label for="dashboardName" class="form-label">
+                {{ 'report.dashboard_name' | translate }}<span class="text-danger">*</span></label>
               <input type="text" class="form-control" id="dashboardName" formControlName="dashboardName">
             </div>
             <div class="col-sm-12 mb-3">
-              <label class="form-label">Add report(s)</label><br>
+              <label class="form-label">{{ 'report.add_reports' | translate }}</label><br>
               <p-multiSelect
                 [options]="chartReports"
                 optionLabel="name"
@@ -108,7 +112,9 @@
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">Create</button>
+          style="border-radius: 4px; margin: auto" (click)="onCreateDashboard()">
+          {{ 'report.create' | translate }}
+          </button>
         </div>
       </div>
     </div>

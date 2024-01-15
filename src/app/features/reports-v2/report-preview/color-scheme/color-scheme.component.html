@@ -42,7 +42,7 @@
         </ng-container>
       </td>
       <td class="text-primary color-name fw-medium create-new" data-bs-toggle="modal" data-bs-target="#colorSchemeModal">
-        Create new
+        {{ 'report.create_new' | translate }}
       </td>
       <td></td>
     </tr>
@@ -59,18 +59,21 @@
       <div class="modal-body">      
         
         <div class="mb-3">
-          <label for="colorName" class="form-label">Enter color scheme name</label>
+          <label for="colorName" class="form-label">
+            {{ 'report.enter_color_scheme_name' | translate }}
+          </label>
           <input 
             type="text" class="form-control" 
             id="colorName" 
             aria-describedby="colorNameHelp"
-            placeholder="Color scheme name"
             (keyup)="defineColorSchemeName($event)"
             >
         </div>
 
         <form [formGroup]="colorSchemeForm" class="mt-5">
-          <p>Pick a square to add color</p>
+          <p>
+            {{ 'report.pick_square' | translate }}
+          </p>
           <div class="row">
             <div class="col-md-12 text-center">
               <span *ngFor="let field of fields" style="float: left; margin-right: 5px;">

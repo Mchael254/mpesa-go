@@ -18,15 +18,15 @@
       <div class="row col-lg-12 mt-4 bs- divBackground">
         <div class="col-lg-4 text-center">
           <p class="fs-2 text-black">$ 2.03 M</p>
-          <label>Quota premium</label>
+          <label>{{ 'report.quota_premium' | translate }}</label>
         </div>
         <div class="col-lg-4 text-center">
           <p class="fs-2 text-black">869</p>
-          <label>YTD premium</label>
+          <label>{{ 'report.ytd_premium' | translate }}</label>
         </div>
         <div class="col-lg-4 text-center">
           <p class="fs-2 text-black">$ 699 k</p>
-          <label>Net premium</label>
+          <label>{{ 'report.net_premium' | translate }}</label>
         </div>
       </div>
 
@@ -91,11 +91,11 @@
         </div>
         <div class="modal-body">
           <div class="text-center">
-            <p>Are you sure you want to delete?</p>
+            <p>{{ 'report.confirm_delete_message' | translate }}</p>
             <button type="button" class="btn btn-primary mx-2" data-bs-dismiss="modal"
-                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">No</button>
+                    style="border-radius: 4px; margin: auto" (click)="closeDeleteModal()">{{ 'report.no' | translate }}</button>
             <button type="button" class="btn btn-danger" id="deleteDashboard" data-bs-dismiss="modal"
-                    style="border-radius: 4px; margin: auto" (click)="removeFromDashboard();closeDeleteModal()">Yes</button>
+                    style="border-radius: 4px; margin: auto" (click)="removeFromDashboard();closeDeleteModal()">{{ 'report.yes' | translate }}</button>
           </div>
 
         </div>
