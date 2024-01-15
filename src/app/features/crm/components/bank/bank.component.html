@@ -26,12 +26,12 @@
               ><i class="fa-solid fa-plus" (click)="openBankModal()"></i
               ></span>
               <span class="icon-circle"
-              ><i class="pi pi-pencil" ></i
+              ><i class="pi pi-pencil" (click)="editBank()"></i
               ></span>
               <span class="icon-circle"
               ><i
                 class="fa-regular fa-trash-can"
-
+                (click)="deleteBank()"
               ></i
               ></span>
             </div>
@@ -185,7 +185,6 @@
                 <label for="ddForwardingBank" class="form-label">DD forwarding bank</label>
                 <p-dropdown
                   [options]="bankData"
-                  [(ngModel)]="selectedBank"
                   optionLabel="name"
                   optionValue="id"
                   formControlName="ddForwardingBank"
@@ -337,3 +336,11 @@
     </div>
   </div>
 </div>
+
+<app-reusable-input
+  [modalId]="'bankConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this bank?'"
+  (confirmed)="confirmBankDelete()"
+  #bankConfirmationModal
+></app-reusable-input>
