@@ -6,7 +6,8 @@
   height: 100%;
 }
 .card {
-  height: 2.8rem;
+  height: 4.5rem;
+  border-radius: 0.2rem;
 }
 .card-body.centered-content > span:nth-child(2){
   padding-left: 0.5rem;
@@ -21,9 +22,12 @@
 
 }
 .card:hover {
-  background-color: rgba(0, 0, 0, 0.899);
+  background-color: rgba(42, 88, 215, 0.079);
   color: white;
   cursor: pointer;
+  border-color:  white;
+  border-width: 0.3rem;
+  border-radius: 2px;
 }
 
 /* Styles for screens with a minimum width of 768px (Tablets) to 991px (Small Tablets) */
