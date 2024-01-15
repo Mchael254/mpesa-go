@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
 import {BankService} from "../../../../shared/services/setups/bank/bank.service";
 import {untilDestroyed} from "../../../../shared/services/until-destroyed";
@@ -9,7 +9,7 @@ import {CountryService} from "../../../../shared/services/setups/country/country
 import {CountryDto} from "../../../../shared/data/common/countryDto";
 import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 import {MandatoryFieldsService} from "../../../../shared/services/mandatory-fields/mandatory-fields.service";
-import {takeUntil} from "rxjs";
+import {ReusableInputComponent} from "../../../../shared/components/reusable-input/reusable-input.component";
 
 const log = new Logger('BankComponent');
 @Component({
@@ -57,6 +57,8 @@ export class BankComponent implements OnInit{
   }
   groupId: string = 'bankTab';
 
+  @ViewChild('bankConfirmationModal')
+  bankConfirmationModal!: ReusableInputComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -75,11 +77,20 @@ export class BankComponent implements OnInit{
 
   ngOnDestroy(): void {}
 
+  /**
+   * The function "onBankRowSelect" assigns the selected bank to the "selectedBank" variable and logs the selected bank
+   * information.
+   * @param {BankDTO} bank - The parameter "bank" is of type "BankDTO".
+   */
   onBankRowSelect(bank: BankDTO) {
     this.selectedBank = bank;
     log.info('bank select', this.selectedBank)
   }
 
+  /**
+   * The function `bankCreateForm()` creates a form using the FormBuilder module in Angular, and sets up validators and
+   * visibility status for each form control based on the response from an API call.
+   */
   bankCreateForm() {
     this.createBankForm = this.fb.group({
       shortDescription: [''],
@@ -122,10 +133,16 @@ export class BankComponent implements OnInit{
       });
   }
 
+  /**
+   * The function returns the controls of a bank form.
+   */
   get f() {
     return this.createBankForm.controls;
   }
 
+  /**
+   * The fetchBanks function retrieves bank data using the bankService and logs the data.
+   */
   fetchBanks() {
     this.bankService
       .getBanks(1100)
@@ -136,6 +153,10 @@ export class BankComponent implements OnInit{
       });
   }
 
+  /**
+   * The fetchCountries function retrieves a list of countries from a service and assigns the data to the countriesData
+   * variable.
+   */
   fetchCountries() {
     this.countryService.getCountries()
       .subscribe((data) => {
@@ -143,6 +164,9 @@ export class BankComponent implements OnInit{
     });
   }
 
+  /**
+   * The function "openBankModal" opens a modal by adding the "show" class and setting the display property to "block".
+   */
   openBankModal() {
     const modal = document.getElementById('bankModal');
     if (modal) {
@@ -151,6 +175,9 @@ export class BankComponent implements OnInit{
     }
   }
 
+  /**
+   * The function "closeBankModal" hides and removes the "bankModal" element from the DOM.
+   */
   closeBankModal() {
     const modal = document.getElementById('bankModal');
     if (modal) {
@@ -159,6 +186,11 @@ export class BankComponent implements OnInit{
     }
   }
 
+  /**
+   * The function `onUpload` reads and converts the uploaded file to a data URL, and assigns the URL to the `url` variable.
+   * @param event - The event parameter is an object that represents the event that triggered the function. In this case,
+   * it is the event that occurs when a file is uploaded.
+   */
   onUpload(event)
   {
     if (event.target.files) {
@@ -171,6 +203,13 @@ export class BankComponent implements OnInit{
     }
   }
 
+  /**
+   * The function "onLogoChange" is triggered when the user selects a file, and it reads the file using FileReader, sets
+   * the selectedFile and url variables, and logs the url.
+   * @param event - The "event" parameter is an object that represents the event that triggered the logo change. It
+   * contains information about the event, such as the target element that triggered the event and the files that were
+   * selected.
+   */
   onLogoChange(event) {
     if (event.target.files) {
       const reader = new FileReader();
@@ -184,6 +223,9 @@ export class BankComponent implements OnInit{
     }
   }
 
+  /**
+   * The `saveBank()` function is used to save or update a bank record based on the form inputs provided.
+   */
   saveBank() {
     this.createBankForm.markAllAsTouched();
     if (this.createBankForm.invalid) {
@@ -191,53 +233,169 @@ export class BankComponent implements OnInit{
       return;
     }
 
-    const bankFormValues = this.createBankForm.getRawValue();
+    if(!this.selectedBank) {
+      const bankFormValues = this.createBankForm.getRawValue();
 
-    const saveBank: BankDTO = {
-      administrativeCharge: bankFormValues.adminCharge,
-      allowPesalink: bankFormValues.pesaLink,
-      bankAccountNoCharacters: bankFormValues.accountNoCharacters,
-      bankLogo: this.url,
-      bankSortCode: null,
-      bankType: bankFormValues.classify,
-      countryId: bankFormValues.country,
-      countryName: null,
-      ddiCharge: bankFormValues.bankDDICharge,
-      directDebitFormat: null,
-      directDebitReportCode: null,
-      forwardingBankId: bankFormValues.ddForwardingBank,
-      forwardingBankName: null,
-      hasParentBank: bankFormValues.parentBank,
-      id: null,
-      isDirectDebitSupported: null,
-      isEftSupported: bankFormValues.eftSupport,
-      isForwardingBank: null,
-      isNegotiatedBank: null,
-      maximumAccountNoCharacters: null,
-      minimumAccountNoCharacters: null,
-      name: bankFormValues.bankName,
-      parentBankId: null,
-      parentBankName: null,
-      physicalAddress: null,
-      remarks: null,
-      short_description: bankFormValues.shortDescription,
-      status: bankFormValues.status,
-      withEffectiveFrom: null,
-      withEffectiveTo: null,
+      const saveBank: BankDTO = {
+        administrativeCharge: bankFormValues.adminCharge,
+        allowPesalink: bankFormValues.pesaLink,
+        bankAccountNoCharacters: bankFormValues.accountNoCharacters,
+        bankLogo: this.url,
+        bankSortCode: null,
+        bankType: bankFormValues.classify,
+        countryId: bankFormValues.country,
+        countryName: null,
+        ddiCharge: bankFormValues.bankDDICharge,
+        directDebitFormat: null,
+        directDebitReportCode: null,
+        forwardingBankId: bankFormValues.ddForwardingBank,
+        forwardingBankName: null,
+        hasParentBank: bankFormValues.parentBank,
+        id: null,
+        isDirectDebitSupported: null,
+        isEftSupported: bankFormValues.eftSupport,
+        isForwardingBank: null,
+        isNegotiatedBank: null,
+        maximumAccountNoCharacters: null,
+        minimumAccountNoCharacters: null,
+        name: bankFormValues.bankName,
+        parentBankId: null,
+        parentBankName: null,
+        physicalAddress: null,
+        remarks: null,
+        short_description: bankFormValues.shortDescription,
+        status: bankFormValues.status,
+        withEffectiveFrom: null,
+        withEffectiveTo: null,
 
+      }
+      log.info('bank create', saveBank);
+      this.bankService.createBank(saveBank)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a bank');
+
+            this.createBankForm.reset();
+            this.fetchBanks();
+            this.closeBankModal();
+          },
+          error => {
+            // log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
     }
-    log.info('bank create', saveBank);
-   /* this.bankService.createBank(saveBank)
-      .subscribe((data) => {
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created a bank');
+    else {
+      const bankFormValues = this.createBankForm.getRawValue();
+      const bankId = this.selectedBank.id;
 
-        this.fetchBanks();
-        this.closeBankModal();
-      },
-        error => {
-        // log.info('>>>>>>>>>', error.error.message)
-          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
-        })*/
+      const saveBank: BankDTO = {
+        administrativeCharge: bankFormValues.adminCharge,
+        allowPesalink: bankFormValues.pesaLink,
+        bankAccountNoCharacters: bankFormValues.accountNoCharacters,
+        bankLogo: this.url,
+        bankSortCode: null,
+        bankType: bankFormValues.classify,
+        countryId: bankFormValues.country,
+        countryName: null,
+        ddiCharge: bankFormValues.bankDDICharge,
+        directDebitFormat: null,
+        directDebitReportCode: null,
+        forwardingBankId: bankFormValues.ddForwardingBank,
+        forwardingBankName: null,
+        hasParentBank: bankFormValues.parentBank,
+        id: bankId,
+        isDirectDebitSupported: null,
+        isEftSupported: bankFormValues.eftSupport,
+        isForwardingBank: null,
+        isNegotiatedBank: null,
+        maximumAccountNoCharacters: null,
+        minimumAccountNoCharacters: null,
+        name: bankFormValues.bankName,
+        parentBankId: null,
+        parentBankName: null,
+        physicalAddress: null,
+        remarks: null,
+        short_description: bankFormValues.shortDescription,
+        status: bankFormValues.status,
+        withEffectiveFrom: null,
+        withEffectiveTo: null,
+
+      }
+      log.info('bank update', saveBank);
+      this.bankService.updateBank(bankId, saveBank)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated a bank');
+
+            this.createBankForm.reset();
+            this.fetchBanks();
+            this.closeBankModal();
+          },
+          error => {
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
+    }
+
   }
 
+  /**
+   * The `editBank()` function is used to populate a bank editing form with the details of a selected bank, or display an
+   * error message if no bank is selected.
+   */
+  editBank() {
+    if (this.selectedBank) {
+      this.openBankModal();
+      this.createBankForm.patchValue({
+        shortDescription: this.selectedBank.short_description,
+        bankName: this.selectedBank.name,
+        parentBank: this.selectedBank.hasParentBank,
+        country: this.selectedBank.countryId,
+        ddForwardingBank: this.selectedBank.forwardingBankId,
+        eftSupport: this.selectedBank.isEftSupported,
+        classify: this.selectedBank.bankType,
+        accountNoCharacters: this.selectedBank.bankAccountNoCharacters,
+        bankDDICharge: this.selectedBank.ddiCharge,
+        adminCharge: this.selectedBank.administrativeCharge,
+        pesaLink: this.selectedBank.allowPesalink,
+        status: this.selectedBank.status,
+        logo: this.selectedBank.bankLogo
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No bank is selected!'
+      );
+    }
+  }
+
+  /**
+   * The deleteBank function displays a confirmation modal.
+   */
+  deleteBank() {
+    this.bankConfirmationModal.show();
+  }
+
+  /**
+   * The function `confirmBankDelete()` checks if a bank is selected, and if so, deletes it and displays a success message,
+   * otherwise it displays an error message.
+   */
+  confirmBankDelete() {
+    if (this.selectedBank) {
+      const bankId = this.selectedBank.id;
+      this.bankService.deleteBank(bankId).subscribe((data) => {
+        this.globalMessagingService.displaySuccessMessage(
+          'success',
+          'Successfully deleted a bank'
+        );
+        this.selectedBank = null;
+        this.fetchBanks();
+      },
+        error => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No bank is selected.'
+      );
+    }
+  }
 }
