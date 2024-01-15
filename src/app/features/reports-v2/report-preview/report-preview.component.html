@@ -3,7 +3,7 @@
     <div class="card-header bg-transparent">
       <span class="float-start text-primary fw-bold">
         <i class="pi pi-chevron-left"></i>
-        <a class="text-primary" routerLink="/home/reportsv2/main">Reports</a> 
+        <a class="text-primary" routerLink="/home/reportsv2/main">{{ 'report.reports' | translate }}</a> 
       </span>
     </div>
     <div class="card-body">
@@ -16,7 +16,7 @@
 
           <div class="visualizations">
             <div class="">
-              <label for="visualization">Visualization</label>
+              <label for="visualization">{{ 'report.visualization' | translate }}</label>
               <p class="selected-visualization" (click)="showVisualizationList()" id="visualization">
                 <i [class]="selectedChartType.iconClass"></i>
                 <span class="ml-2">{{ selectedChartType.name | titlecase }}</span>
@@ -46,7 +46,7 @@
 
           <div class="visualizations mt-3" *ngIf="displayChartTypes.length > 0">
             <div class="">
-              <label for="style">Style</label>
+              <label for="style">{{ 'report.style' | translate }}</label>
               <p class="selected-visualization" (click)="showStyles()" id="style">
                 <span class="ml-2">{{ styleType | titlecase }}</span>
                 <i class="pi pi-chevron-down float-end mt-1"></i>
@@ -88,7 +88,7 @@
               </div>
               <div class="col-md-4 offset-md-2 mt-3 text-end">
                 <span class="float-end" data-bs-toggle="modal" data-bs-target="#advancedFilterModal">
-                  <i class="pi pi-filter"></i> advanced filter
+                  <i class="pi pi-filter"></i> {{ 'report.advanced_filter' | translate }}
                 </span>
               </div>
             </div>
@@ -135,13 +135,13 @@
               class="btn btn-outline-primary mt-3 continueBtn float-start"
               (click)="backToCreateReport()"
               id="backBtn"
-            >Go Back
+            >{{ 'report.go_back' | translate }}
             </button>
             <button
               class="btn btn-primary mt-3 continueBtn float-end"
               data-bs-toggle="modal"
               data-bs-target="#saveReportModal"
-            >Save
+            >{{ 'report.save' | translate }}
             </button>
           </div>
         </div>
@@ -162,7 +162,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Advanced filter</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'report.advanced_filter' | translate }}</h1>
         <button #closebutton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -170,7 +170,7 @@
         <form *ngIf="filterForm" [formGroup]="filterForm" class="mb-3">
           <div class="row g-3">
             <div class="col">
-              <label for="column" class="form-label">Column</label>
+              <label for="column" class="form-label">{{ 'report.column' | translate }}</label>
               <select (change)="showConditions($event)" formControlName="column" id="column" class="form-select">
                 <option
                   *ngFor="let criterion of criteria"
@@ -181,7 +181,7 @@
               </select>
             </div>
             <div class="col">
-              <label for="operator" class="form-label">Operator</label>
+              <label for="operator" class="form-label">{{ 'report.operator' | translate }}</label>
               <select formControlName="operator" id="operator" class="form-select">
                 <option
                   *ngFor="let condition of conditionsOptionsValue"
@@ -192,7 +192,7 @@
               </select>
             </div>
             <div class="col">
-              <label for="value" class="form-label">Value</label>
+              <label for="value" class="form-label">{{ 'report.value' | translate }}</label>
               <span *ngIf="conditionsType !== 'date'">
                 <input formControlName="value" type="text" id="value" class="form-control" aria-label="Value">
               </span>
@@ -206,7 +206,7 @@
                 class="btn btn-outline-primary mt-4 btn-full-width"
                 (click)="addFilter()"
                 id="addFilterBtn"
-              >Add
+              >{{ 'report.add' | translate }}
               </a>
             </div>
           </div>
@@ -224,7 +224,7 @@
         </ng-container>
 
         <div class="text-center mt-5">
-          <button type="button" class="btn btn-primary" (click)="loadChart()">Apply</button>
+          <button type="button" class="btn btn-primary" (click)="loadChart()">{{ 'report.apply' | translate }}</button>
         </div>
       </div>
     </div>
@@ -242,11 +242,11 @@
         <form *ngIf="saveReportForm" [formGroup]="saveReportForm">
           <div class="row g-3">
             <div class="col">
-              <label for="report" class="form-label">Report</label>
+              <label for="report" class="form-label">{{ 'report.report' | translate }}</label>
               <input formControlName="reportName" type="text" id="report" class="form-control" aria-label="Value">
             </div>
             <div class="col">
-              <label for="dashboard" class="form-label">Dashboard</label>
+              <label for="dashboard" class="form-label">{{ 'report.dashboard' | translate }}</label>
                 <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
                   <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
                     {{ dashboard.name }}
@@ -255,7 +255,9 @@
             </div>
           </div>
           <div class="row mt-3">
-            <p class="form-label">Pick a destination for your report</p>
+            <p class="form-label">
+              {{ 'report.pick_destination' | translate }}
+            </p>
             <div class="col-md-4 col-5">
               <input
                 formControlName="destination"
@@ -265,7 +267,7 @@
                 id="my-reports"
               >
               <label class="text-dark" for="my-reports">
-                My reports
+                {{ 'report.my_reports' | translate }}
               </label>
             </div>
             <div class="col-md-4 col-5">
@@ -277,14 +279,16 @@
                 id="shared-reports"
               >
               <label class="text-dark" for="shared-reports">
-                Shared reports
+                {{ 'report.shared_reports' | translate }}
               </label>
             </div>
           </div>
         </form>
 
         <div class="text-center mt-5">
-          <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">Complete</button>
+          <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">
+            {{ 'report.complete' | translate }}
+          </button>
         </div>
       </div>
     </div>
