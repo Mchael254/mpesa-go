@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { PaystackOptions } from 'angular4-paystack';
+// import { PaystackOptions } from 'angular4-paystack';
 
 
 @Component({
@@ -22,11 +22,11 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   // paymentInstance: PaymentInstance;
   token :string
   paystack_details: {key?: string, email?:string, amount?: string, reference?: string} = {};
-  options: PaystackOptions =  {
-    amount: 50000 * 100,
-    email: 'user@mail.com',
-    ref: `ref-${Math.ceil(Math.random() * 10e13)}`
-  }
+  // options: PaystackOptions =  {
+  //   amount: 50000 * 100,
+  //   email: 'user@mail.com',
+  //   ref: `ref-${Math.ceil(Math.random() * 10e13)}`
+  // }
 
  
 
@@ -36,7 +36,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     // this.getBankList();
     this.paystack_details['key'] = 'sk_test_9f5e8c96f1af351cb674ed100e20a28c56cffd17';
-    this.options = {...this.options }
+    // this.options = {...this.options }
 
   }
 
@@ -45,7 +45,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
 
   paymentInit() {
     console.log( this.paystack_details['reference'] );
-    console.log( this.options['ref'] );
+    // console.log( this.options['ref'] );
 
     console.log('Payment initialized');
   }
@@ -59,7 +59,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
 
   paymentCancel() {
     console.log('payment failed');
-    this.options = {...this.options };
+    // this.options = {...this.options };
   }
 
   
