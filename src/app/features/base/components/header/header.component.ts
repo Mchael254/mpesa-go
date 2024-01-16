@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
@@ -24,7 +23,6 @@ export class HeaderComponent implements OnInit {
   @Output('toggleSideNav') toggleSideNav: EventEmitter<any> = new EventEmitter();
 
   constructor(
-    private translate: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
     private localStorageService: LocalStorageService,
@@ -68,20 +66,6 @@ export class HeaderComponent implements OnInit {
       return canvas.toDataURL();
     }
   }
-
-  selectLanguage(value){
-    this.translate.use(value.code)
-    this.defaultLanguage = value.class
-  }
-
-  languages = [
-    { code: 'de', class: 'fi fi-de fis', lang:"German"},
-    { code: 'ke', class: 'fi fi-ke fis', lang:"Swahili"},
-    { code: 'en', class: 'fi fi-gb fis', lang:"English"},
-    { code: 'fr', class: 'fi fi-fr fis', lang:"French"},
-    { code: 'cn', class: 'fi fi-cn fis', lang:"Mandarin"},
-    { code: 'es', class: 'fi fi-es fis', lang:"Espanyol"}
-  ];
 
   navigateAccount() {
     this.router.navigate(['/home/administration'], { relativeTo: this.route, queryParams: { showTabs: 'false' } })
