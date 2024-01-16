@@ -23,12 +23,12 @@
                 <ng-template pTemplate="header">
                     <tr>
                         <!-- <th>ID</th> -->
-                        <th>Name</th>
-                        <th>Created By</th>
-                        <th>Category</th>
-                        <th>Date Created</th>
-                        <th>Dashboard</th>
-                        <th class="text-center">Action</th>
+                        <th>{{ 'report.name' | translate }}</th>
+                        <th>{{ 'report.created_by' | translate }}</th>
+                        <th>{{ 'report.category' | translate }}</th>
+                        <th>{{ 'report.date_created' | translate }}</th>
+                        <th>{{ 'report.dashboard' | translate }}</th>
+                        <th class="text-center">{{ 'report.action' | translate }}</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-report>
@@ -47,8 +47,8 @@
                                     {{ getFolderCategoryName(report.folder) }}
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">My Reports</li>
-                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">Shared Reports</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">{{ 'report.my_reports' | translate }}</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">{{ 'report.shared_reports' | translate }}</li>
                                 </ul>
                             </div>
                         </td>
@@ -75,23 +75,29 @@
                                     <i class="pi pi-ellipsis-v"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li (click)="gotoEditReport(report)">Edit</li>
+                                    <li (click)="gotoEditReport(report)">
+                                        {{ 'report.edit' | translate }}
+                                    </li>
                                     <li
                                         data-bs-toggle="modal"
                                         data-bs-target="#saveReportModal"
                                         id="selectReport"
                                         (click)="selectReport(report)"
                                     >
-                                        Rename
+                                    {{ 'report.rename' | translate }}
                                     </li>
-                                    <li data-bs-toggle="modal" data-bs-target="#shareModal">Share</li>
-                                    <li data-bs-toggle="modal" data-bs-target="#downloadModal">Download</li>
+                                    <li data-bs-toggle="modal" data-bs-target="#shareModal">
+                                        {{ 'report.share' | translate }}
+                                    </li>
+                                    <li data-bs-toggle="modal" data-bs-target="#downloadModal">
+                                        {{ 'report.download' | translate }}
+                                    </li>
                                     <li 
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteReportModal"
                                         (click)="selectReport(report)"
                                     >
-                                    Delete
+                                    {{ 'report.delete' | translate }}
                                     </li>
                                 </ul>
                             </div>                              

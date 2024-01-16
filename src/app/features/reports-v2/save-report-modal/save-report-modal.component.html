@@ -2,11 +2,11 @@
 <form [formGroup]="saveReportForm">
     <div class="row g-3">
       <div class="col">
-        <label for="report" class="form-label">Report</label>
+        <label for="report" class="form-label">{{ 'report.report' | translate }}</label>
         <input formControlName="reportName" type="text" id="report" class="form-control" aria-label="Value">
       </div>
       <div class="col">
-        <label for="dashboard" class="form-label">Dashboard</label>
+        <label for="dashboard" class="form-label">{{ 'report.dashboard' | translate }}</label>
           <select formControlName="dashboard" id="dashboard" class="form-select" aria-label="Default select example">
             <option *ngFor="let dashboard of dashboards" [value]="dashboard.id">
               {{ dashboard.name }}
@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="row mt-3">
-      <p class="form-label">Pick a destination for your report</p>
+      <p class="form-label">{{ 'report.pick_destination' | translate }}</p>
       <div class="col-md-4 col-5">
         <input
           formControlName="destination"
@@ -25,7 +25,7 @@
           id="my-reports"
         >
         <label class="text-dark" for="my-reports">
-          My reports
+          {{ 'report.my_reports' | translate }}
         </label>
       </div>
       <div class="col-md-4 col-5">
@@ -37,12 +37,14 @@
           id="shared-reports"
         >
         <label class="text-dark" for="shared-reports">
-          Shared reports
+          {{ 'report.shared_reports' | translate }}
         </label>
       </div>
     </div>
   </form>
 
   <div class="text-center mt-5">
-    <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">Complete</button>
+    <button id="saveReportBtn" type="button" class="btn btn-primary" (click)="saveReport()">
+      {{ 'report.complete' | translate }}
+    </button>
   </div>
