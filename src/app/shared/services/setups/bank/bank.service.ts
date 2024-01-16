@@ -200,4 +200,27 @@ export class BankService {
       { headers: headers }
     );
   }
+
+  updateBank(id: number, data: BankDTO): Observable<BankDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<BankDTO>(
+      `/${this.baseUrl}/setups/banks/${id}`,
+      data,
+      { headers: headers }
+    );
+  }
+
+  deleteBank(id: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<BankDTO>(
+      `/${this.baseUrl}/setups/banks/${id}`,
+      { headers: headers }
+    );
+  }
 }
