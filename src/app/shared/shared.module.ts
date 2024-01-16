@@ -245,8 +245,8 @@ const SERVICES = [
         NgbModule,
         ...lms_pipes,
         ReusableInputComponent,
-        // Angular4PaystackModule
-
+        // Angular4PaystackModule,
+        LanguageSelectorComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
