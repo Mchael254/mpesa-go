@@ -20,7 +20,7 @@ export class TenantIdInterceptor implements HttpInterceptor {
     // Clone the request and add the 'X-TenantId' header.
     const modifiedRequest = request.clone({
       setHeaders: {
-        'X-TenantId': tenantId
+        'X-Tenantid': tenantId
       }
     });
 
