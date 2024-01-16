@@ -398,6 +398,9 @@ export class CreateDashboardComponent implements OnInit {
         resolve(chartData);
 
         // log.info('report data >>>', reportsData);
+      },
+      error => {
+        this.globalMessagingService.displayErrorMessage('CubeJS Error', error.message);
       })
     })
   }
