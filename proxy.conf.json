@@ -51,6 +51,10 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+<<<<<<< HEAD
  }
+=======
+  }
+>>>>>>> ca565a7 (Multi-tenants cleanup)
 
 }

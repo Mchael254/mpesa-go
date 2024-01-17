@@ -6,6 +6,7 @@ import { CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { ClauseService } from 'src/app/features/gis/services/clause/clause.service';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { FormGroup,FormBuilder } from '@angular/forms';
@@ -61,6 +62,7 @@ export class QuotationDetailsComponent {
     public branchService:BranchService,
     public clauseService:ClauseService,
     public productService:ProductService,
+    public producSetupService: ProductsService,
     public authService:AuthService,
     public sharedService:SharedQuotationsService,
     public fb:FormBuilder,
@@ -109,7 +111,7 @@ export class QuotationDetailsComponent {
  * Retrieves branch data from the branch service and assigns it to the 'branch' property.
  */
   getbranch(){
-    this.branchService.getBranch().subscribe(data=>{
+    this.branchService.getBranches(2).subscribe(data=>{
       this.branch = data
     })
   }
@@ -266,9 +268,9 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   getAgents(){
-    this.agentService.getAgents().subscribe(data=>{
+    this.quotationService.getAgents().subscribe(data=>{
       this.agents = data.content
-     
+     console.log(data)
     })
   }
    /**
@@ -352,6 +354,13 @@ export class QuotationDetailsComponent {
 updateCoverToDate(e) {
     
     const coverFromDate= e.target.value
+    console.log(this.quotationForm.value.productCode)
+    if(this.quotationForm.value.productCode === '7275'){
+      this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode).subscribe(res=>{
+        console.log(res)
+      })
+     
+    }
     if (coverFromDate) {
       const selectedDate = new Date(coverFromDate);
       selectedDate.setFullYear(selectedDate.getFullYear() + 1);

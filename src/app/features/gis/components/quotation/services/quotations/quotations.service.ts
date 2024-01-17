@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
+import { environment } from 'src/environments/environment';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 @Injectable({
   providedIn: 'root'
 })
@@ -34,6 +37,7 @@ export class QuotationsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
 
     })
   }
@@ -130,6 +134,7 @@ export class QuotationsService {
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'X-TenantId': environment.TENANT_ID,
       });
       return this.http.get<introducersDTO>(`/${this.baseUrl}/setups/api/v1/introducers`, {headers:headers}); 
   }
@@ -186,9 +191,36 @@ export class QuotationsService {
  getExternalClaimsExperience(clientCode){
   return this.http.get(`/${this.baseUrl}/setups/api/v1/external-claims-experiences?clientCode=${clientCode}`)
  }
+ getInternalClaimsExperience(clientCode){
+  return this.http.get(`/${this.baseUrl}/setups/api/v1/internal-claims-experience?clientCode=${clientCode}`)
+ }
 
-test(){
-  return this.http.get(`/${this.testBase}/email/3/send`)
+
+ getAgents(
+  page: number | null = 0,
+  size: number | null = 10,
+  sortList: string = 'createdDate',
+
+): Observable<Pagination<AgentDTO>> {
+  const baseUrl = this.appConfig.config.contextPath.accounts_services;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+  const params = new HttpParams()
+    .set('page', `${page}`)
+    .set('size', `${size}`)
+    .set('organizationId', 2)
+    .set('sortListFields', `${sortList}`)
+  
+
+  return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`,{
+    headers:headers,
+    params: params,
+  })
+}
+
 }
 
   }

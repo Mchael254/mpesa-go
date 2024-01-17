@@ -294,7 +294,7 @@ getuser(){
  * @return {void}
  */
  getbranch(){
-  this.branchService.getBranch().subscribe(data=>{
+  this.branchService.getBranches(2).subscribe(data=>{
     this.branchList = data;
     log.debug("Branch List",this.branchList);
 
