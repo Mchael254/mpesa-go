@@ -22,7 +22,7 @@ export const environment = {
   ]),
   TENANT_ID: API_TENANT_ID.MUTUAL,
   
-  PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
-  PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']
+  // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
+  // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']
 
 };
