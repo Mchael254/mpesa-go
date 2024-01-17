@@ -215,7 +215,9 @@
                     </div>
  
                     <div class="modal-body">
-                        <form [formGroup]="searchFormMemberDets" class="mb-1">
+                        <!-- <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
+                            <div style="flex: 1;">
+                        <form [formGroup]="searchFormMemberDets">
                             <div class="row">
                               <div class="col-md-1 d-none d-sm-block">
                                 <div class="label" style="color: black;">Filter by</div>
@@ -272,8 +274,21 @@
                                 </div>
                               </div>
                             </div>
-                          </form>                          
-                          
+                          </form> 
+                        </div>
+                          <div style="flex: 1;">
+                            <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets"></p-multiSelect>                        
+                          </div> 
+                        </div> -->
+
+                        <div class="form">
+                            <i class="fa fa-search"></i>
+                            <input type="text" class="form-control form-input" placeholder="Search">
+                
+                            <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                            </p-multiSelect>
+                          </div>
+                        
                         <div class="card">
                             <!-- <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
                                 [tableStyle]="{'min-width': '50rem'}"
@@ -307,29 +322,29 @@
                             <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
     [tableStyle]="{'min-width': '50rem'}"
     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [rowsPerPageOptions]="[10,25,50]">
+    [rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width:11.11%">Surname</th>
-            <th style="width:11.11%">Other names</th>
-            <th style="width:11.11%">Sum Assured</th>
-            <th style="width:11.11%">Date of birth</th>
-            <th style="width:11.11%">Gender</th>
-            <th style="width:11.11%">Payroll/Member no.</th>
-            <th style="width:11.11%">Category</th>
-            <th style="width:11.11%">Dependant type</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('surname')">Surname</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('other_names')">Other names</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Sum Assured</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">Date of birth</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('gender')">Gender</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('member_number')">Payroll/Member no.</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('description')">Category</th>
+            <th *ngIf="selectedColumnsMemberDets.includes('dty_description')">Dependant type</th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
         <tr (click)="onMemberTableRowClick(membersDetails, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
-            <td id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
-            <td id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
-            <td id="tdStyle">{{ membersDetails.total_sum_assured }}</td>
-            <td id="tdStyle">{{ membersDetails.date_of_birth }}</td>
-            <td id="tdStyle">{{ membersDetails.gender }}</td>
-            <td id="tdStyle">{{ membersDetails.member_number }}</td>
-            <td id="tdStyle">{{ membersDetails.description | titlecase }}</td>
-            <td id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('surname')" id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('other_names')" id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')" id="tdStyle">{{ membersDetails.total_sum_assured }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('date_of_birth')" id="tdStyle">{{ membersDetails.date_of_birth }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('gender')" id="tdStyle">{{ membersDetails.gender }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('description')" id="tdStyle">{{ membersDetails.description | titlecase }}</td>
+            <td *ngIf="selectedColumnsMemberDets.includes('dty_description')" id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
         </tr>
     </ng-template>
 </p-table>
@@ -338,7 +353,7 @@
 
                         <div class="mt-5">
                             <h6 style="color: black;">Member Cover types summary</h6>
-                            <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}">
+                            <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th>Cover type</th>
@@ -384,7 +399,7 @@
                     <div class="modal-body">
                         <div class="card">
                             <p-table [value]="categoryDetailsSummary" [scrollable]="true" scrollHeight="400px"
-                                [tableStyle]="{'min-width': '50rem'}">
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th>Category description</th>
@@ -405,44 +420,49 @@
                                 </ng-template>
                             </p-table>
                         </div>
-                        <!-- brginning of dependant limits table -->
+                        <!-- beginning of dependant limits table -->
                         <h5 class="modal-title mt-5" id="categorySummaryModalLabel">Dependant limit</h5>
+                        <div style="text-align: right;">
+                            <div style="display: inline-block; margin-bottom: 10px;">
+                                <p-multiSelect [options]="columnOptionsDepLimits" [(ngModel)]="selectedColumnsDependantLimits"></p-multiSelect>
+                            </div>
                         <div class="card">
                             <p-table [value]="categorySummary" [scrollable]="true" scrollHeight="400px"
-                                [tableStyle]="{'min-width': '50rem'}">
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Cover Type</th>
-                                        <th>Dependant type</th>
-                                        <th>Lives covered</th>
-                                        <th>Minimum amount</th>
-                                        <th>Maximum limit amount</th>
-                                        <th>Rate</th>
-                                        <th>Division factor</th>
-                                        <th>% of main/yr SA</th>
-                                        <th>Inbuilt</th>
-                                        <th>Accelerated</th>
-                                        <th>Main cover rider</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')">Cover Type</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')">Dependant type</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')">Lives covered</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')">Minimum amount</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('limit_amount')">Maximum limit amount</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('rate')">Rate</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('category_rate_division_factor')">Division factor</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('sum_assured_percentage')">% of main/yr SA</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('cover_inbuilt')">Inbuilt</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('accelerator')">Accelerated</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('main_cover')">Main cover rider</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-categorySummary>
                                     <tr>
-                                        <td id="tdStyle">{{categorySummary.cvt_desc | titlecase}}</td>
-                                        <td id="tdStyle">{{categorySummary.dty_sht_desc | titlecase}}</td>
-                                        <td style="text-align: center;" id="tdStyle">{{categorySummary.maximum_type_allowed}}</td>
-                                        <td id="tdStyle">{{categorySummary.minimum_amt}}</td>
-                                        <td id="tdStyle">{{categorySummary.limit_amount}}</td>
-                                        <td id="tdStyle">{{categorySummary.rate}}</td>
-                                        <td id="tdStyle">{{categorySummary.category_rate_division_factor}}</td>
-                                        <td id="tdStyle">{{categorySummary.sum_assured_percentage}}</td>
-                                        <td id="tdStyle">{{categorySummary.cover_inbuilt}}</td>
-                                        <td id="tdStyle">{{categorySummary.accelerator}}</td>
-                                        <td id="tdStyle">{{categorySummary.main_cover}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')" id="tdStyle">{{categorySummary.cvt_desc | titlecase}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')" id="tdStyle">{{categorySummary.dty_sht_desc | titlecase}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')" style="text-align: center;" id="tdStyle">{{categorySummary.maximum_type_allowed}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')" id="tdStyle">{{categorySummary.minimum_amt}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('limit_amount')" id="tdStyle">{{categorySummary.limit_amount}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('rate')" id="tdStyle">{{categorySummary.rate}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('category_rate_division_factor')" id="tdStyle">{{categorySummary.category_rate_division_factor}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('sum_assured_percentage')" id="tdStyle">{{categorySummary.sum_assured_percentage}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('cover_inbuilt')" id="tdStyle">{{categorySummary.cover_inbuilt}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('accelerator')" id="tdStyle">{{categorySummary.accelerator}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('main_cover')" id="tdStyle">{{categorySummary.main_cover}}</td>
 
                                     </tr>
                                 </ng-template>
                             </p-table>
                         </div>
+                    </div>
                          <!-- end of dependant limits table-->
                     </div>
                     <div class="modal-footer">
@@ -465,39 +485,44 @@
                             (click)="closeCoverSummary()"></button>
                     </div>
                     <div class="modal-body">
+                        <div style="text-align: right;">
+                            <div style="display: inline-block; margin-bottom: 10px;">
+                                <p-multiSelect [options]="columnOptionsCoveDets" [(ngModel)]="selectedColumnsCovDets"></p-multiSelect>
+                            </div>
                         <div class="card">
                             <p-table [value]="coverTypes" [scrollable]="true" scrollHeight="400px"
-                                [tableStyle]="{'min-width': '50rem'}">
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th>Cover types</th>
-                                        <th>Sum assured</th>
-                                        <th>Premium</th>
-                                        <th>Select rate</th>
-                                        <th>Override premiums</th>
-                                        <th>Premium mask</th>
-                                        <th>Rate</th>
-                                        <th>Rate division factor</th>
-                                        <th>% of main/yr SA</th>
-                                        <th>Main cover</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_desc')">Cover types</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('sum_assured')">Sum assured</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium')">Premium</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')">Select rate</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('but_charge_premium')">Override premiums</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')">Premium mask</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('premium_rate')">Rate</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('rate_division_factor')">Rate division factor</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('main_sumassured_percentage')">% of main/yr SA</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_main_cover')">Main cover</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-coverTypes>
                                     <tr>
-                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
-                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
-                                        <td id="tdStyle">{{coverTypes.premium }}</td>
-                                        <td id="tdStyle">{{getUseCvrRateDescription(coverTypes.use_cvr_rate)}}</td>
-                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
-                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
-                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
-                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
-                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
-                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('cvt_desc')" id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('sum_assured')" id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('premium')" id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')" id="tdStyle">{{getUseCvrRateDescription(coverTypes.use_cvr_rate)}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('but_charge_premium')" id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')" id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('premium_rate')" id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('rate_division_factor')" id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('main_sumassured_percentage')" id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('cvt_main_cover')" id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
                                     </tr>
                                 </ng-template>
                             </p-table>
                         </div>
+                    </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"

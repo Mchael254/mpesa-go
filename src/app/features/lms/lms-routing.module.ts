@@ -81,6 +81,13 @@ const routes: Routes = [
                 (m) => m.PolicyModule
               ),
           },
+          {
+            path: 'reinsurance',
+            loadChildren: () =>
+              import('./grp/components/reinsurance/reinsurance.module').then(
+                (m) => m.ReinsuranceModule
+              ),
+          },
         ],
       },
 
