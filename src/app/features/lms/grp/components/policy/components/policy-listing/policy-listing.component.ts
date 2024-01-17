@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PolicySummaryService } from '../../service/policy-summary.service';
 import { PolicyListingDTO } from '../../models/policy-summary';
 import { Router } from '@angular/router';
+import { SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-policy-listing',
@@ -14,6 +15,8 @@ export class PolicyListingComponent implements OnInit, OnDestroy {
   agentCode = 2020201235490;
   clientProposerCode = 20231410738;
   searchTerm: string = '';
+  columnOptions: SelectItem[];
+  selectedColumns: string[];
 
   constructor(
     private policySummaryService: PolicySummaryService,
@@ -22,10 +25,25 @@ export class PolicyListingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getPolicyListing();
+    this.policyListingColumns();
+
   }
 
   ngOnDestroy(): void {
     
+  }
+
+  policyListingColumns() {
+    this.columnOptions = [
+      { label: 'Policy number', value: 'policy_number' },
+      { label: 'Product', value: 'description' },
+      { label: 'Status', value: 'status' },
+      { label: 'Effective date', value: 'effective_date' },
+      { label: 'Premium', value: 'total_premium' },
+      { label: 'Sum assured', value: 'total_sum_assured' },
+  ];
+
+  this.selectedColumns = this.columnOptions.map(option => option.value);
   }
 
   getPolicyListing() {

@@ -5,7 +5,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { formatDate } from '@angular/common';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { MessageService } from "primeng/api";
+import { MessageService, SelectItem } from "primeng/api";
 import { CategoryDetailsDto } from '../../models/categoryDetails';
 import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
@@ -43,7 +43,6 @@ isDisabled: boolean = false;
 membersDetails: MembersDTO[];
 memberCode: number;
 premiumMask: PremiumMaskDTO[];
-showAllColumns: boolean = false;
 selectedRateType: string;
 productCode: number
 productType: string;
@@ -51,6 +50,10 @@ showStateSpinner: boolean;
 showTownSpinner: boolean;
 occupation: OccupationDTO[];
 selectedPmasCode: number;
+columnOptionsMembers: SelectItem[];
+columnOptionsCvt: SelectItem[];
+selectedColumnsMembers: string[];
+selectedColumnsAggregateCvt: string[];
 
   constructor (
     private fb: FormBuilder,
@@ -80,11 +83,51 @@ ngOnInit() {
   this.memberDetsForm();
   this.getOccupations();
   this.getPmasCodeToEdit();
+  this.memberDetailsColumns();
+  this.aggregateCvtDetsColumns();
   
 }
 
 ngOnDestroy(): void {
 
+}
+
+memberDetailsColumns() {
+  this.columnOptionsMembers = [
+    { label: 'Surname', value: 'surname' },
+    { label: 'Other name', value: 'other_names' },
+    { label: 'Date of birth', value: 'date_of_birth' },
+    { label: 'Gender', value: 'gender' },
+    { label: 'Payroll/Member no', value: 'member_number' },
+    { label: 'Category', value: 'description' },
+    { label: 'Dependant type', value: 'dty_description' },
+    { label: 'Monthly earnings', value: 'monthly_earnings' },
+    { label: 'Joining date', value: 'date_joined' },
+    { label: 'Main member no', value: 'member_number' },
+    { label: 'Action', value: 'action' },
+];
+
+this.selectedColumnsMembers = this.columnOptionsMembers.map(option => option.value);
+}
+
+aggregateCvtDetsColumns() {
+  this.columnOptionsCvt = [
+    { label: 'Cover type', value: 'cvt_desc' },
+    { label: 'Dependant type', value: 'dty_description' },
+    { label: 'Select Rate', value: 'use_cvr_rate' },
+    { label: 'Premium mask', value: 'premium_mask_short_description' },
+    { label: 'Premium rate', value: 'premium_rate' },
+    { label: 'Rate div factor', value: 'rate_division_factor' },
+    { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
+    { label: 'Average Earnings per member', value: 'average_earning_per_member' },
+    { label: 'Total member earnings', value: 'total_member_earnings' },
+    { label: 'Average ANB', value: 'average_anb' },
+    { label: 'Override Premium', value: 'but_charge_premium' },
+    { label: 'Sum Assured', value: 'sum_assured' },
+    { label: 'Action', value: 'action' },
+];
+
+this.selectedColumnsAggregateCvt = this.columnOptionsCvt.map(option => option.value);
 }
 
 
@@ -121,10 +164,7 @@ addMemberDependantType = [
 //     this.quotationCode = queryParams['quotationCode'];
 //   });
 // }
-
-toggleShowAllColumns() {
-  this.showAllColumns = !this.showAllColumns;
-} 
+ 
 
 searchFormMember() {
   this.searchFormMemberDets = this.fb.group({
@@ -333,8 +373,20 @@ memberDetsForm() {
     }
   }
 
-  openFileInput() {
-
+  handleFileChange(event) {
+    this.spinner_Service.show('download_view');
+    const selectedFile = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', selectedFile)
+    this.coverageService.uploadMemberTemplate(formData).subscribe((res) => {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
+      console.log('uploadTemplateResponse', res)
+    },
+    (error) => {
+      console.log('uploadTemplateError', error)
+      this.spinner_Service.hide('download_view');
+    });
   }
 
   closeDetailedModal() {

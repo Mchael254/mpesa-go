@@ -12,6 +12,7 @@ import { SummaryComponent } from './components/summary/summary.component';
 import { StepperComponent } from './components/stepper/stepper.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     CalendarModule,
     TableModule,
     CheckboxModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    MultiSelectModule,
   ]
 })
 export class QuotationModule { }
