@@ -9,6 +9,7 @@ import { MembersDTO } from '../../models/members';
 import { QuoteSummaryDTO, MemberSummaryDTO, CategoryDTO, MemberCoverTypeSummaryDto } from '../../models/summary/summaryDTO';
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { SummaryService } from '../../service/summary/summary.service';
+import { SelectItem } from 'primeng/api';
 
 
 
@@ -36,6 +37,12 @@ export class SummaryComponent implements OnInit, OnDestroy {
   memberCoverTypeSummaryDto: MemberCoverTypeSummaryDto[];
   categoryDetailsSummary: CategoryDetailsDto[];
   selectedRowIndex: number;
+  columnOptionsDepLimits: SelectItem[];
+  selectedColumnsDependantLimits: string[];
+  columnOptionsCoveDets: SelectItem[];
+  selectedColumnsCovDets: string[];
+  columnOptionsMemberDets: SelectItem[];
+  selectedColumnsMemberDets: string[];
 
 
 
@@ -55,10 +62,62 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.getMemberCoverTypes();
     this.getMembers();
     this.getCategoryDets();
+    this.dependantLimitsColumns();
+    this.coverDetailsColumns();
+    this.memberDetailsColumns();
   }
 
   ngOnDestroy(): void {
     
+  }
+
+  dependantLimitsColumns() {
+    this.columnOptionsDepLimits = [
+      { label: 'Cover Type', value: 'cvt_desc' },
+      { label: 'Dependant type', value: 'dty_sht_desc' },
+      { label: 'Lives covered', value: 'maximum_type_allowed' },
+      { label: 'Minimum amount', value: 'minimum_amt' },
+      { label: 'Maximum limit amount', value: 'limit_amount' },
+      { label: 'Rate', value: 'rate' },
+      { label: 'Division factor', value: 'category_rate_division_factor' },
+      { label: '% of main/yr SA', value: 'sum_assured_percentage' },
+      { label: 'Inbuilt', value: 'cover_inbuilt' },
+      { label: 'Accelerated', value: 'accelerator' },
+      { label: 'Main cover rider', value: 'main_cover' },
+  ];
+  
+  this.selectedColumnsDependantLimits = this.columnOptionsDepLimits.map(option => option.value);
+  }
+
+  coverDetailsColumns() {
+    this.columnOptionsCoveDets = [
+      { label: 'Cover Type', value: 'cvt_desc' },
+      { label: 'Sum assured', value: 'sum_assured' },
+      { label: 'Premium', value: 'premium' },
+      { label: 'Select rate', value: 'use_cvr_rate' },
+      { label: 'Override premiums', value: 'but_charge_premium' },
+      { label: 'Rate', value: 'rate' },
+      { label: 'Rate division factor', value: 'rate_division_factor' },
+      { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
+      { label: 'Main cover', value: 'cvt_main_cover' },
+  ];
+  
+  this.selectedColumnsCovDets = this.columnOptionsCoveDets.map(option => option.value);
+  }
+
+  memberDetailsColumns() {
+    this.columnOptionsMemberDets = [
+      { label: 'Surname', value: 'surname' },
+      { label: 'Other names', value: 'other_names' },
+      { label: 'Sum Assured', value: 'total_sum_assured' },
+      { label: 'Date of birth', value: 'date_of_birth' },
+      { label: 'Gender', value: 'gender' },
+      { label: 'Payroll/Member no.', value: 'member_number' },
+      { label: 'Category', value: 'description' },
+      { label: 'Dependant type', value: 'dty_description' },
+  ];
+  
+  this.selectedColumnsMemberDets = this.columnOptionsMemberDets.map(option => option.value);
   }
 
   retrievQuoteDets() {
