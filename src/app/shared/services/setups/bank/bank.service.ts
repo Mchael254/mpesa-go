@@ -10,6 +10,7 @@ import {
   FundSourceDTO, POSTBankBranchDTO,
 } from '../../../data/common/bank-dto';
 import { Logger } from '../../logger/logger.service';
+import { environment } from 'src/environments/environment';
 
 const log = new Logger('BankService');
 
@@ -113,6 +114,8 @@ export class BankService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'X-TenantId': environment.TENANT_ID,
+
     });
 
     return this.http.get<CurrencyDTO[]>(`/${this.baseUrl}/setups/currencies`, {

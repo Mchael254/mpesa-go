@@ -16,7 +16,7 @@ export class ClientService {
 
   baseUrl = this.appConfig.config.contextPath.accounts_services;
   baseUrlSetups= this.appConfig.config.contextPath.setup_services;
-  headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json'});
+  headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json','X-TenantId': environment.TENANT_ID});
 
   constructor(private http: HttpClient,
     private appConfig: AppConfigService, private api: ApiService, private utilService: UtilService) { }
@@ -124,7 +124,7 @@ export class ClientService {
   }
 
   getClientById(id: number): Observable<ClientDTO> {
-    return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id);
+    return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id, {headers:this.headers});
   }
 
   // getAccountByCode(code: number): Observable<ClientDTO> {

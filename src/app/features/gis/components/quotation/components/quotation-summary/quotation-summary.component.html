@@ -504,24 +504,24 @@
                         </div>
                     </div>
                     <div class="mb-4">
-                        <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                        <p-table [value]="externalClaims" [tableStyle]="{ 'min-width': '50rem' }">
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th>Product</th>
-                                    <th>Cover From</th>
-                                    <th>Cover To</th>
-                                    <th>Premium</th>
-                                    <th>Commission</th>
-                                    <th>Binder</th>
-                                    <th>No Binder</th>
+                                    <th>Client</th>
+                                    <th>Claim Paid</th>
+                                    <th>Insurer</th>
+                                    <th>Policy Number</th>
+                                    <th>Year</th>
+                                   
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
                                 <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>{{data.clientCode}}</td>
+                                    <td>{{data.claimPaid}}</td>
+                                    <td>{{data.insurer}}</td>
+                                    <td>{{data.policyNo}}</td>
+                                    <td>{{data.year}}</td>
                                 </tr>
                             </ng-template>
                         </p-table>
@@ -681,7 +681,7 @@
                                         <h6>Client</h6>
                                     </div>
                                     <div class="col-sm-8">
-                                        <p class="text-muted">Example</p>
+                                        <p class="text-muted">{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -691,7 +691,7 @@
                                         <h6>Agent</h6>
                                     </div>
                                     <div class="col-sm-8">
-                                        <p class="text-muted">Direct</p>
+                                        <p class="text-muted">{{agentDetails.accountType}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -705,7 +705,7 @@
                                         <h6>Quotation Code</h6>
                                     </div>
                                     <div class="col-sm-7">
-                                        <p class="text-muted">Example</p>
+                                        <p class="text-muted">{{quotationCode}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -716,17 +716,17 @@
                         </div>
                         <!-- Quotation Number -->
                         <div class="row mb-2">
-                            <div class="col-sm-8">
+                            <div class="col-sm-10">
                                 <div class="row">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <h6>Quotation Number</h6>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <p class="text-muted">Example</p>
+                                    <div class="col-sm-8">
+                                        <p class="text-muted">{{quotationNumber}}</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 
                             </div>
 
@@ -783,7 +783,21 @@
                 
     
             </div>
-
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row mt-3 g-3 align-items-center">
+                        <div class="col-auto">
+                          <label for="inputPassword6" class="col-form-label">Document Type</label>
+                        </div>
+                        <div class="col-auto">
+                          <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                        </div>
+                        <div class="col-auto">
+                        
+                        </div>
+                      </div>
+                </div>
+            </div>
         </div>
        
 

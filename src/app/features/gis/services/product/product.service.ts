@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,8 @@ export class ProductService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+        'X-TenantId': environment.TENANT_ID,
+
       })
     }
 
@@ -54,7 +56,7 @@ export class ProductService {
     )
   }
   getAllProducts(): Observable<Products[]> {
-    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`).pipe(
+    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`, this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -177,6 +179,7 @@ export class ProductService {
         catchError(this.errorHandl)
       )
     }
+    
   // Error handling
 errorHandl(error: HttpErrorResponse) {
   let errorMessage = '';

@@ -38,6 +38,8 @@ export class QuotationSummaryComponent {
   clauses:any;
   user:any;
   clientCode:any;
+  externalClaims:any;
+  internalClaims:any
   constructor(
     public sharedService:SharedQuotationsService,
     public quotationService:QuotationsService,
@@ -56,6 +58,8 @@ export class QuotationSummaryComponent {
   public authoriseQuotation = false;
   public showEmail = false;
   public showSms = false;
+  public showInternalClaims = false;
+  public showExternalClaims = true;
   ngOnInit(): void {
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
@@ -70,6 +74,7 @@ export class QuotationSummaryComponent {
     this.getProductDetails(this.prodCode)
     this.getProductClause(this.prodCode)
     this.externalClaimsExperience(this.clientCode)
+    this.internalClaimsExperience(this.clientCode)
   }
 
   /**
@@ -248,9 +253,23 @@ export class QuotationSummaryComponent {
   }
   externalClaimsExperience(clientCode){
     this.quotationService.getExternalClaimsExperience(clientCode).subscribe(res=>{
-      log.debug(res )
+      this.externalClaims = res
+      
+      log.debug(this.externalClaims.empty)
+      
+    })
+  }
+  internalClaimsExperience(clientCode){
+    this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res=>{
+      this.internalClaims = res 
+      log.debug(this.internalClaims.empty)
     })
   }
 
-
+  showExternals(){
+    this.showExternalClaims = !this.showExternalClaims
+  }
+  showInternal(){
+    this.showInternalClaims = !this.showInternalClaims
+  }
 }
