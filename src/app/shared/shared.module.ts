@@ -83,7 +83,7 @@ import { Error401Interceptor } from './services/http/error-404.interceptor';
 // import { Angular4PaystackModule } from 'angular4-paystack';
 
 
-const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe];
+
 
 import { ReusableInputComponent } from './components/reusable-input/reusable-input.component';
 import { DiseasePipe } from '../features/lms/pipe/disease/disease.pipe';
@@ -93,6 +93,7 @@ import { LanguageSelectorComponent } from './components/language-selector/langua
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe];
 const SERVICES = [
   // services
   { provide: HttpClient, useClass: HttpService },
@@ -208,7 +209,7 @@ const SERVICES = [
         NgbModule,
         // Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
 
-        
+
     ],
     exports: [
         ErrorComponent,
