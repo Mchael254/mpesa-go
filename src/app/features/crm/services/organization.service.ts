@@ -15,6 +15,7 @@ import {
   PostOrganizationRegionDTO,
   YesNoDTO,
 } from '../data/organization-dto';
+import {UtilService} from "../../../shared/services";
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +33,7 @@ export class OrganizationService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
   accountsBaseUrl = this.appConfig.config.contextPath.accounts_services;
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService) {}
+  constructor(private http: HttpClient, private appConfig: AppConfigService, private utilService: UtilService) {}
 
   setSelectedOrganizationId(organizationId: number) {
     this.selectedOrganizationIdSource.next(organizationId);
@@ -272,11 +273,12 @@ export class OrganizationService {
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`)
       .set('regionId', `${regionId}`);
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.http.get<OrganizationBranchDTO[]>(
       `/${this.baseUrl}/setups/branches`,
       {
         headers: headers,
-        params: params,
+        params: paramObject,
       }
     );
   }
