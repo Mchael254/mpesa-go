@@ -7,7 +7,7 @@ import {
   BankDTO,
   BankRegionDTO,
   CurrencyDTO,
-  FundSourceDTO,
+  FundSourceDTO, POSTBankBranchDTO,
 } from '../../../data/common/bank-dto';
 import { Logger } from '../../logger/logger.service';
 
@@ -220,6 +220,43 @@ export class BankService {
     });
     return this.http.delete<BankDTO>(
       `/${this.baseUrl}/setups/banks/${id}`,
+      { headers: headers }
+    );
+  }
+
+  createBankBranch(
+    data: POSTBankBranchDTO
+  ): Observable<POSTBankBranchDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<POSTBankBranchDTO>(
+      `/${this.baseUrl}/setups/bank-branches`,
+      JSON.stringify(data),
+      { headers: headers }
+    );
+  }
+
+  updateBankBranch(id: number, data: POSTBankBranchDTO): Observable<POSTBankBranchDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<POSTBankBranchDTO>(
+      `/${this.baseUrl}/setups/bank-branches/${id}`,
+      data,
+      { headers: headers }
+    );
+  }
+
+  deleteBankBranch(id: number) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<POSTBankBranchDTO>(
+      `/${this.baseUrl}/setups/bank-branches/${id}`,
       { headers: headers }
     );
   }

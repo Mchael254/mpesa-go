@@ -64,6 +64,26 @@ export interface BankBranchDTO {
     townName: string
 }
 
+export interface POSTBankBranchDTO {
+  bankId: number,
+  branchCode: number,
+  branchName: string,
+  contactPersonEmail: string,
+  contactPersonName: string,
+  contactPersonPhone: string,
+  countryCode: number,
+  directDebitSupported: string,
+  eftSupported: string,
+  email: string,
+  id: number,
+  name: string,
+  physicalAddress: string,
+  postalAddress: string,
+  referenceCode: string,
+  short_description: string,
+  townCode: number,
+}
+
 export interface BankRegionDTO {
     bankRegionName: string,
     id: number,
