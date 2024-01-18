@@ -2,7 +2,6 @@ import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs/internal/BehaviorSubject";
 import {Observable} from "rxjs/internal/Observable";
-import {SystemsDto} from "../../../shared/data/common/systemsDto";
 import {Pagination} from "../../../shared/data/common/pagination";
 import {DepartmentDto} from "../../../shared/data/common/departmentDto";
 import {
@@ -93,21 +92,6 @@ export class TicketsService {
       'Accept': 'application/json'
     });
     return this.http.get<TicketTypesDTO[]>(`/${this.baseUrl}/workflow/api/v1/ticket-types`,{headers:headers});
-  }
-
-  getSystems(): Observable<SystemsDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-
-    return this.http.get<SystemsDto[]>(`/${this.baseUrlAcc}/setups/systems`,
-      {
-        headers:headers,
-        params: params
-      });
   }
 
   // get all tickets for the logged in user
