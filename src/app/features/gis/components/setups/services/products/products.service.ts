@@ -1,8 +1,9 @@
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError, forkJoin, map } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Products, Product_group, SubclassesDTO } from '../../data/gisDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,8 @@ export class ProductsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID
+
     
     })
   }
@@ -39,12 +42,34 @@ export class ProductsService {
     
 
 
-  getAllProducts(): Observable<Products[]> {
-    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`).pipe(
+  // getAllProducts(): Observable<Products[]> {
+  //   return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`,this.httpOptions).pipe(
+  //     retry(1),
+  //     catchError(this.errorHandl)
+  //   )
+  // }
+
+  getAllProducts():Observable<Products[]>{
+    let page = 0;
+    let size = 1000;
+   const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID
+
+    
+    })
+    const params = new HttpParams()
+    .set('page', `${page}`)
+      .set('pageSize', `${size}`)
+    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`, {
+      headers:headers,
+      params:params
+    }).pipe(
       retry(1),
       catchError(this.errorHandl)
-    )
-  }
+    )  }
+
   createProductgroup(data: any): Observable<Product_group> {
     console.log(JSON.stringify(data))
     return this.http.post<Product_group>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups`, JSON.stringify(data), this.httpOptions)
@@ -127,7 +152,7 @@ export class ProductsService {
     )
   }
   getYearOfManufacture():Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/products/retrieveYearofManufacture?`).pipe(
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/products/retrieveYearofManufacture?`,this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

@@ -18,6 +18,7 @@ import {QuotationDetails,QuotationProduct, RiskInformation, SectionDetail, TaxIn
 import { subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 const log = new Logger('CoverTypesDetailsComponent');
 
 @Component({
@@ -107,6 +108,8 @@ export class CoverTypesDetailsComponent {
     private clientService:ClientService,
     public sharedService:SharedQuotationsService,
     private router: Router,
+    private ngxSpinner: NgxSpinnerService,
+
 
 
   ) { }
@@ -345,6 +348,8 @@ export class CoverTypesDetailsComponent {
     })
   }
   selectedQuotationCover(data:any){
+    // this.ngxSpinner.show("coverComparisonScreen")
+
     this.selectedQuotationData=data;
     log.debug("Selected Quotation/cover:",this.selectedQuotationData);
     this.SelectedQuotationCode=this.selectedQuotationData.riskInformation[0].quotationCode;
@@ -367,6 +372,8 @@ export class CoverTypesDetailsComponent {
   }
   passSelectedCover(){
      this.sharedService.setSelectedCover(this.selectedQuotationNo);
+    //  this.ngxSpinner.show("coverComparisonScreenx")
+
     this.router.navigate(['/home/gis/quotation/quote-summary']);
   }
 //  sendEmail(){

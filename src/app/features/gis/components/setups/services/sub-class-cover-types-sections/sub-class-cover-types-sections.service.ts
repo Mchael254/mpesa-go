@@ -4,6 +4,7 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {subclassCoverSections} from "../../data/gisDTO";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,8 @@ export class SubClassCoverTypesSectionsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID
+
 
     })
   }
@@ -48,7 +51,7 @@ export class SubClassCoverTypesSectionsService {
   }
 
   getSubclassCovertypeSections(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=10000`).pipe(
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=10000`,this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

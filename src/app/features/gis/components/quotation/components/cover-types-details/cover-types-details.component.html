@@ -3,7 +3,16 @@
      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
      <div  class="container mx-2 mt-n1">  
 
-        <div *ngFor="let quotationDetail of quotationDetails" class="card mb-3">
+        <div *ngFor="let quotationDetail of quotationDetails" class="card mb-3" style=" position: relative;">
+            <ngx-spinner
+        name="coverComparisonScreen"
+          type="ball-clip-rotate-multiple"
+  
+          [fullScreen]="false"
+          color="#00529B"
+          size="medium"
+          bdColor="rgba(255, 255, 255, 0.9)"
+        ></ngx-spinner>
                 <div class="card-body">
                   
                     <!-- <p class="title ms-4" >{{ coverTypeShortDescription }}</p> -->
