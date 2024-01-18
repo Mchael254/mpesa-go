@@ -186,6 +186,19 @@ export class RiskSectionDetailsComponent {
         this.riskDetailsForm.setValue(parsedData);
         
       }
+
+      
+      this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
+        this.riskIdPassed(value);
+      });
+      this.riskDetailsForm.get('coverTypeShortDescription').valueChanges.subscribe((selectedValue) => {
+        console.log('Selected CoverType:', selectedValue);
+        this.selectedCoverType=selectedValue
+        console.log('Selected CoverType:', this.selectedCoverType);
+      });
+      this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
+        this.updateCoverToDate();
+      });
       
   }
   openHelperModal(selectedClause: any) {
@@ -241,13 +254,21 @@ onResize(event: any) {
     }
   }
   // This method updates the "Cover To" date when "Cover From" changes
- updateCoverToDate() {
+
+
+updateCoverToDate() {
+  this.coverFromDate = this.riskDetailsForm.get('dateWithEffectFrom').value;
+
   if (this.coverFromDate) {
     const selectedDate = new Date(this.coverFromDate);
     selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-    this.coverToDate = selectedDate.toISOString().split('T')[0];
+    this.riskDetailsForm.patchValue({
+      dateWithEffectTo: selectedDate.toISOString().split('T')[0]
+    });
   } else {
-    this.coverToDate = ''; // Reset "Cover To" if "Cover From" is cleared
+    this.riskDetailsForm.patchValue({
+      dateWithEffectTo: ''
+    });
   }
 }
    /**
@@ -689,10 +710,25 @@ onResize(event: any) {
           this.filteredMandatorySections = this.mandatorySections;
         }
       }
-      riskIdPassed(){
-        log.debug("Passed Risk Id",this.passedRiskId)
- 
+     
+      riskIdPassed(event: any): void {
+        
+      
+        if (event instanceof Event) {
+          this.passedRiskId = (event.target as HTMLInputElement).value;
+        } else {
+          this.passedRiskId = event;
+        }
+      
+        if ( this.passedRiskId !== undefined) {
+          console.log('Passed Risk Id',  this.passedRiskId);
+        } else {
+          console.error('Unable to retrieve value from the event object.');
+        }
       }
+      
+      
+      
       matchesSearch(description: string): boolean {
         return description.toLowerCase().includes(this.searchText.toLowerCase());
       }

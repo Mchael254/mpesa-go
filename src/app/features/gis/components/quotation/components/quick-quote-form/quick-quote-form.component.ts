@@ -27,6 +27,7 @@ import { BranchService } from 'src/app/shared/services/setups/branch/branch.serv
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { ApiService } from 'src/app/shared/services/api/api.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 const log = new Logger("QuickQuoteFormComponent");
@@ -153,14 +154,15 @@ export class QuickQuoteFormComponent {
     public countryService:CountryService,
     private router: Router,
     private apiService:ApiService,
+    private ngxSpinner: NgxSpinnerService,
 
 
   ) { }
 
   ngOnInit(): void {
-    this.apiService.GET('email/3/send',API_CONFIG.NOTIFICATION_BASE_URL).subscribe(data =>console.log(data)
-    )
-    this.quotationService.test().subscribe(res=>console.log(res))
+    // this.apiService.GET('email/3/send',API_CONFIG.NOTIFICATION_BASE_URL).subscribe(data =>console.log(data)
+    // )
+    // this.quotationService.test().subscribe(res=>console.log(res))
   this.loadAllproducts();
   this.loadAllClients();
   this.getbranch();
@@ -222,7 +224,7 @@ export class QuickQuoteFormComponent {
  loadAllproducts(){
   this.productService.getAllProducts().subscribe(data =>{
      this.productList = data;
-    //  log.info(this.productList,"this is a product list")
+     log.info(this.productList,"this is a product list")
 
      this.cdr.detectChanges()
    })
@@ -382,22 +384,22 @@ createPersonalDetailsForm(){
     agentCode: [''],
     agentShortDescription: [''],
     bdivCode: [''],
-    bindCode: [''],
-    branchCode: [''],
+    bindCode:  ['', Validators.required],
+    branchCode:  ['', Validators.required],
     clientCode: [''],
     clientType: [''],
     coinLeaderCombined: [''],
     consCode: [''],
-    currencyCode: [''],
+    currencyCode: ['', Validators.required],
     currencySymbol: [''],
     fequencyOfPayment: [''],
     isBinderPolicy: [''],
     paymentMode: [''],
     proInterfaceType: [''],
-    productCode: [''],
-    source: [''],
-    withEffectiveFromDate: [''],
-    withEffectiveToDate: [''],
+    productCode: ['', Validators.required],
+    source: ['', Validators.required],
+    withEffectiveFromDate:  ['', Validators.required],
+    withEffectiveToDate:  ['', Validators.required],
     multiUser:[''],
     comments:[''],
     internalComments:[''],
@@ -720,6 +722,8 @@ removeFormControls() {
  * @return {void}
  */
 createQuotation() {
+  this.ngxSpinner.show("quickQuoteScreen")
+
   this.quotationNumbers = [];
   this.quotationCodes = [];
 
@@ -824,6 +828,8 @@ createQuotation() {
       }
     },
     error => {
+      this.ngxSpinner.hide("quickQuoteScreen")
+
       console.error('Error creating risks:', error);
     }
   );
@@ -948,7 +954,7 @@ createSectionDetailsForm(){
     const section = this.sectionDetailsForm.value;
      // FROM DYNAMIC FORM
     const riskIDValue = this.dynamicForm.get('carRegNo').value;
-    const yearOfManufactureValue = this.dynamicForm.get('yearOfManufacure').value;
+    const yearOfManufactureValue = this.dynamicForm.get('yearOfManufacture').value;
     const sumInsuredValue = this.dynamicForm.get('selfDeclaredValue').value;
     section.calcGroup = 1;
     section.code = this.selectedSectionList.code;
@@ -998,6 +1004,7 @@ createSectionDetailsForm(){
  * @return {void}
  */
   computePremium() {
+    this.ngxSpinner.show("quickQuoteScreen")
     const premiumComputationObservables = this.quotationCodes.map(quotationCode => {
       return this.quotationService.computePremium(quotationCode);
     });
@@ -1012,10 +1019,14 @@ createSectionDetailsForm(){
   
         this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
         sessionStorage.setItem('quickQuoteFormData', JSON.stringify(this.personalDetailsForm.value));
+        this.ngxSpinner.hide("quickQuoteScreen")
 
         this.router.navigate(['/home/gis/quotation/cover-type-details']);
       },
+      
       error => {
+        this.ngxSpinner.hide("quickQuoteScreen")
+
         console.error('Error computing premium:', error);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error computing premium' });
       }
