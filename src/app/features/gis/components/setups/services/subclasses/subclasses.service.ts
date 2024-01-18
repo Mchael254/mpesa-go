@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Clauses, Subclasses, subclassClauses } from '../../data/gisDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,8 @@ export class SubclassesService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'X-TenantId': environment.TENANT_ID
+
       
       })
     }
@@ -46,6 +49,8 @@ getAllSubclasses(): Observable<Subclasses[]>{
 const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID
+
   })
   const params = new HttpParams()
   .set('page', `${page}`)

@@ -18,4 +18,6 @@ export enum API_TENANT_ID {
   DONEWELL = 'donewell',
   TURNQUEST = 'turnquest',
   STARDISCOVER = 'stardiscover',
+  TQV6 = "v6test"
+
 }
