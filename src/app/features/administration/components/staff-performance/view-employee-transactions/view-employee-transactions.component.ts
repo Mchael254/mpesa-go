@@ -12,6 +12,7 @@ import {untilDestroyed} from "../../../../../shared/shared.module";
 import {BusinessTransactionsDTO, TicketModuleDTO, TransactionsDTO} from "../../../data/ticketsDTO";
 import {TicketsService} from "../../../services/tickets.service";
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import {SystemsService} from "../../../../../shared/services/setups/systems/systems.service";
 
 const log = new Logger('ViewEmployeeTransactionsComponent');
 @Component({
@@ -58,7 +59,8 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private systemsService: SystemsService,
   ) {}
 
   /**
@@ -181,7 +183,7 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
    * variable.
    */
   getAllSystems() {
-    this.ticketsService.getSystems()
+    this.systemsService.getSystems()
       .pipe(
         untilDestroyed(this),
       )
