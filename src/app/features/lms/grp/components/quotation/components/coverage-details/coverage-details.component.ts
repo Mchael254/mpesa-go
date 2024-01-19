@@ -10,6 +10,7 @@ import { CategoryDetailsDto } from '../../models/categoryDetails';
 import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
+import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
 
 
 @AutoUnsubscribe
@@ -54,6 +55,7 @@ columnOptionsMembers: SelectItem[];
 columnOptionsCvt: SelectItem[];
 selectedColumnsMembers: string[];
 selectedColumnsAggregateCvt: string[];
+uploadProgress: number = 0;
 
   constructor (
     private fb: FormBuilder,
@@ -63,7 +65,8 @@ selectedColumnsAggregateCvt: string[];
     private cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
     private spinner_Service: NgxSpinnerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private http: HttpClient
     ) {}
     
 ngOnInit() {
@@ -373,21 +376,56 @@ memberDetsForm() {
     }
   }
 
+  // handleFileChange(event) {
+  //   this.spinner_Service.show('download_view');
+  //   const selectedFile = event.target.files[0];
+  //   const formData = new FormData();
+  //   formData.append('file', selectedFile)
+  //   this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe((res) => {
+  //     this.spinner_Service.hide('download_view');
+  //     this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
+  //     this.getMembers();
+  //     console.log('uploadTemplateResponse', res)
+  //   },
+  //   (error) => {
+  //     console.log('uploadTemplateError', error)
+  //     this.spinner_Service.hide('download_view');
+  //   });
+  // }
+
   handleFileChange(event) {
-    this.spinner_Service.show('download_view');
     const selectedFile = event.target.files[0];
     const formData = new FormData();
-    formData.append('file', selectedFile)
-    this.coverageService.uploadMemberTemplate(formData).subscribe((res) => {
-      this.spinner_Service.hide('download_view');
-      this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
-      console.log('uploadTemplateResponse', res)
-    },
-    (error) => {
-      console.log('uploadTemplateError', error)
-      this.spinner_Service.hide('download_view');
-    });
-  }
+    formData.append('file', selectedFile);
+
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (progress < 100) {
+            progress += 1;
+            this.uploadProgress = progress;
+        }
+    }, 1000);
+
+    this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe(
+        (res) => {
+            clearInterval(interval);
+            this.uploadProgress = 100;
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({
+                severity: 'success',
+                summary: 'summary',
+                detail: 'Template uploaded successfully'
+            });
+            this.getMembers();
+            console.log('uploadTemplateResponse', res);
+        },
+        (error) => {
+            clearInterval(interval);
+            console.log('uploadTemplateError', error);
+        }
+    );
+}
 
   closeDetailedModal() {
     const modal = document.getElementById('detailedModal');
@@ -890,13 +928,16 @@ memberDetsForm() {
       "product_code": this.productCode,
       "loading_discount": "N",
       "multiple_earnings_period": 4,
-      "dty_description": "TEST",
+      "dty_description": "DEFAULT",
+      "dependant_type_code": 1000,
+      "staff_description": "DEFAULT",
     };
     const coverToPostArray = [coverToPost];
     console.log("coverToPost edit", coverToPost)
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
+      this.getCategoryDets();
       this.cdr.detectChanges();
       this.detailedCovDetsForm.reset();
       this.spinner_Service.hide('download_view');
@@ -941,15 +982,17 @@ memberDetsForm() {
           "product_code": this.productCode,
           "multiple_earnings_period": 4,
           "dependant_type_code": 1000,
-          "dty_description": "TEST",
+          "dty_description": "DEFAULT",
           "apply_commission_expense_loading": "N",
           "sum_assured_limit": 0,
+          "staff_description": "DEFAULT",
     };
     console.log("coverToPostArrayForEditedCover", coverToPost)
     const coverToPostArray = [coverToPost];
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
+      this.getCategoryDets();
       this.cdr.detectChanges();
       this.aggregateForm.reset();
       this.closeAggregateCoverDetailsModal();
@@ -1025,7 +1068,7 @@ memberDetsForm() {
   }
 
   deleteMember(membersDetails: MembersDTO) {
-    const confirmation = window.confirm('Are you sure you want to delete this Cover Type?');
+    const confirmation = window.confirm('Are you sure you want to delete this Member?');
     if (confirmation) {
       this.spinner_Service.show('download_view');
       const coverIdToDelete = membersDetails.member_code;
