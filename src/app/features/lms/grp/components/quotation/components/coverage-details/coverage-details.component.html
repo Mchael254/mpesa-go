@@ -605,11 +605,31 @@
                 <div class="p-col-3" style="margin-top: 24px;">
                     <!-- <h6 style="color: rgb(44, 43, 43);">Upload member details template</h6> -->
                     
-                    <button class="choose-file" (click)="fileInput.click()">
+                    <!-- <button class="choose-file" (click)="fileInput.click()">
                         <span class="file-text">Choose file</span>
                         <input type="file" #fileInput style="display: none;" accept=".csv"
                         (change)="handleFileChange($event)">
+                    </button> -->
+
+                    <input type="file" #fileInput style="display: none;" accept=".csv" (change)="handleFileChange($event)">
+                    <button class="choose-file" (click)="fileInput.click()">
+                        <span class="file-text">Choose file</span>
                     </button>
+                    <div style="margin-top: 25px;" *ngIf="fileInput.files && fileInput.files.length > 0">
+                        <div style="width: 30%;">
+                            <span class="file-name">{{ fileInput.files[0].name }}</span>
+                            <span *ngIf="uploadProgress === 100" class="file-name">(100%)</span>
+                            <span class="completed" *ngIf="uploadProgress === 100">Completed</span>
+                        </div>
+                    <p-progressBar [value]="uploadProgress">
+                        <ng-template pTemplate="content" let-value>
+                            <span>{{ value }}%</span>
+                        </ng-template>
+                    </p-progressBar>
+                    </div>
+                    
+                    
+
 
                     <!-- <input type="file" (change)="handleFileChange($event)"> -->
                 </div>
@@ -688,6 +708,10 @@
                       <div class="form">
                         <i class="fa fa-search"></i>
                         <input type="text" class="form-control form-input" placeholder="Search">
+
+                        <div class="add-client-button-container">
+                            <button class="btn btn-success m-1 rounded-circle" (click)="addMemberDetailsModal()">&plus;</button>
+                        </div>
             
                         <p-multiSelect [options]="columnOptionsMembers" [(ngModel)]="selectedColumnsMembers">
                         </p-multiSelect>
@@ -899,7 +923,9 @@
               <!-- end of modal to capture member details -->
                     <div>
                 <p-table [value]="membersDetails" [tableStyle]="{'max-width': '100%'}"
-                styleClass="p-datatable-striped">
+                styleClass="p-datatable-striped" [paginator]="true"
+                [rows]="5"
+                [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
                         <tr>
                             <th *ngIf="selectedColumnsMembers.includes('surname')" pSortableColumn="surname" style="width:auto">Surname <p-sortIcon field="surname"></p-sortIcon></th>
