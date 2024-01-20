@@ -78,8 +78,8 @@ export class CoverageService {
     return this.api.GET(`occupations`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 
-  uploadMemberTemplate(file) {
-    return this.api.FILEUPLOAD('uploads', file, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  uploadMemberTemplate(productCode, quotationCode, file) {
+    return this.api.FILEUPLOAD(`uploads/${productCode}/${quotationCode}`, file, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 
 }
