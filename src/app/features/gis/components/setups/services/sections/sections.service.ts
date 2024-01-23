@@ -61,6 +61,24 @@ export class SectionsService {
       catchError(this.errorHandl)
     )
   }
+  getSectionByCode(code:number): Observable<any>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID
+
+
+    })
+    const params = new HttpParams()
+     
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`,{
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
   getSubclassSections(subClassCode:number): Observable<subclassSection[]>{
     let page = 0;
     let size = 10000;
@@ -80,22 +98,5 @@ export class SectionsService {
       catchError(this.errorHandl)
     )
   }
-  getSectionByCode(code:number): Observable<any>{
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID
-
-
-    })
-    const params = new HttpParams()
-     
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`,{
-      headers:headers,
-      params:params
-    }).pipe(
-      retry(1),
-      catchError(this.errorHandl)
-    )
-  }
+ 
 }

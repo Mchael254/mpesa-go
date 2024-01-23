@@ -500,13 +500,37 @@ updateCoverToDate() {
  * Retrieves all available clauses through an HTTP request, filters them based on the
  * 'selectedClauseCode', and updates 'clauseList' and 'selectedClauseList'.
  */
-  loadAllClauses(){
-    this.subclassService.getAllClauses().subscribe(data =>{
-      this.clauseList=data._embedded.clause_dto_list
-      this.selectedClauseList=this.clauseList.filter(clausesub=>clausesub.code == this.selectedClauseCode);
-      log.debug('ClauseSelectdList',this.selectedClauseList)
-    })
+  // loadAllClauses(){
+  //   this.subclassService.getAllClauses().subscribe(data =>{
+  //     this.clauseList=data._embedded.clause_dto_list
+  //     log.debug('Clause hope List',this.clauseList)
+
+  //     this.selectedClauseList=this.clauseList.filter(clausesub=>clausesub.code == this.selectedClauseCode);
+  //     log.debug('ClauseSelectdList',this.selectedClauseList)
+  //   })
+  // }
+  loadAllClauses() {
+    // Extract clause codes from selectedSubClauseList
+    const subClauseCodes = this.selectedSubClauseList.map(subClause => subClause.clauseCode);
+  
+    // Check if there are any subClauseCodes before making the request
+    if (subClauseCodes.length === 0) {
+      // Handle the case when there are no subClauseCodes
+      return;
+    }
+  
+    // Make the request to get all clauses based on the subClauseCodes
+    this.subclassService.getAllClauses().subscribe(data => {
+      this.clauseList = data._embedded.clause_dto_list;
+  
+      // Filter clauseList based on subClauseCodes
+      this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
+  
+      log.debug('Clause hope List', this.clauseList);
+      log.debug('ClauseSelectdList', this.selectedClauseList);
+    });
   }
+  
   /**
  * Navigates back to the quotation details page.
  * Uses the Angular Router to navigate to the 'quotation-details' page within the 'gis' module
@@ -819,6 +843,7 @@ updateCoverToDate() {
       }
     })
   }
+  
   onSelectSection(event: any){
     this.selectedSection=event;
     log.info("Patched section",this.selectedSection)

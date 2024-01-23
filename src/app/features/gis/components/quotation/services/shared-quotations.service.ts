@@ -21,6 +21,12 @@ export class SharedQuotationsService {
 
   isAddRisk:boolean;
 
+  premiumPayload:any;
+  premiumResponse:any;
+  covertypeDetails:any;
+  quickClientDetails:any;
+  quotationSource:any
+
   setFormData(data: any) {
     this.formData = data;
   }
@@ -95,6 +101,30 @@ setIsAddRisk(data){
 getIsAddRisk(){
   return this.isAddRisk;
 }
+setPremiumComputationPayload(data, covertypes){
+  this.premiumPayload=data;
+  this.covertypeDetails=covertypes
+}
+getPremiumPayload(){
+  return {data:this.premiumPayload,covertypes:this.covertypeDetails}
+}
 
-
+setPremiumResponse(data){
+  this.premiumResponse=data;
+}
+getPremiumResponse(){
+  return this.premiumResponse;
+}
+setClientDetails(data){
+this.quickClientDetails=data;
+}
+getClientDetails(){
+  return this.quickClientDetails
+}
+setQuotationSource(data){
+  this.quotationSource=data;
+}
+getQuotationSource(){
+  return this.quotationSource;
+}
 }

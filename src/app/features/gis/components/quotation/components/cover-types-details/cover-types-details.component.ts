@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import stepData from '../../data/steps.json'
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
@@ -14,7 +14,7 @@ import { QuotationsService } from '../../../../services/quotations/quotations.se
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import {Logger} from '../../../../../../shared/shared.module'
 import { forkJoin } from 'rxjs';
-import {QuotationDetails,QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection} from '../../data/quotationsDTO'
+import {PremiumComputationRequest, QuotationDetails,QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection} from '../../data/quotationsDTO'
 import { subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Router } from '@angular/router';
@@ -62,6 +62,8 @@ export class CoverTypesDetailsComponent {
 
   coverTypeShortDescription:any;
   passedCoverTypeShortDes:any;
+  passedCovertypeDescription:any;
+  passedCovertypeCode:any;
 
   clientDetails:ClientDTO;
   selectedClientName:any;
@@ -91,7 +93,32 @@ export class CoverTypesDetailsComponent {
     "subject": "Ticket Notification",
     "useLocalTemplate": true
   }
-  
+
+  premiumPayload:PremiumComputationRequest;
+  premiumResponse:any;
+  passedCovertypes:any;
+
+  user:any;
+  userDetails: any
+  userBranchId: any;
+
+  quotationCode:any;
+  quotationData:any;
+  quotationNo:any;
+  passedQuotationSource:any;
+  quotationForm:FormGroup;
+
+
+  riskDetailsForm: FormGroup;
+  quotationRiskData:any;
+
+
+  currencyList: any;
+  currencyCode: any;
+  selectedCurrency: any;
+  selectedCurrencyCode: any;
+
+  passedClientDetails
 
   constructor(
     public fb:FormBuilder,
@@ -115,6 +142,32 @@ export class CoverTypesDetailsComponent {
   ) { }
 
   ngOnInit(): void{
+
+   const data=this.sharedService.getPremiumPayload();
+    log.debug("PREMIUM PAYLOAD",data);
+    this.premiumPayload=data.data;
+    this.passedCovertypes=data.covertypes
+    this.premiumResponse=this.sharedService.getPremiumResponse();
+    log.debug("PREMIUM RESPONSE",this.premiumResponse);
+    this.sumInsuredValue=this.premiumPayload.risks[0].limits[0].limitAmount;
+    log.debug("Quick Quote Quotation SI:",this.sumInsuredValue);
+
+
+    this.quickQuoteSectionList=this.sharedService.getQuickSectionDetails();
+    log.debug("Quick Quote Quotation Sections:",this.quickQuoteSectionList );
+    this.passedClientDetails=this.sharedService.getClientDetails();
+    log.debug("Client details",this.passedClientDetails);
+    const passedClientCode= this.passedClientDetails.id;
+    log.debug("Client code",passedClientCode);
+
+    this.passedQuotationSource=this.sharedService.getQuotationSource();
+    log.debug("Source details",this.passedQuotationSource);
+
+    this.createQuotationForm();
+    this.getuser();
+    this.createRiskDetailsForm();
+
+
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
     log.debug("MY TRIAL",JSON.parse(this.formData))
 
@@ -128,10 +181,7 @@ export class CoverTypesDetailsComponent {
     //   console.error('Invalid or empty quickQuotationCodes');
 
     // }    
-    this.quickQuoteSectionList=this.sharedService.getQuickSectionDetails();
-    log.debug("Quick Quote Quotation Sections:",this.quickQuoteSectionList );
-    this.sumInsuredValue=this.sharedService.getSumInsured();
-    log.debug("Quick Quote Quotation SI:",this.sumInsuredValue);
+   
     this.createSectionDetailsForm();  
 
   }
@@ -164,8 +214,11 @@ export class CoverTypesDetailsComponent {
       }
     );
   }
-  passCovertypeDesc(data:any){
-    log.debug("data from passcovertpes;" ,data);
+  passCovertypeDesc(data:any,code:any){
+    log.debug("data from passcovertpes" ,data);
+    log.debug("data from passcovertpes" ,code);
+    this.passedCovertypeDescription=data;
+    this.passedCovertypeCode=code;
     this.passedCoverTypeShortDes=data;
     this.filteredSection = this.quickQuoteSectionList.filter(section => 
       section.coverTypeShortDescription == (this.passedCoverTypeShortDes == "COMP" ? "COMPREHENSIVE" : this.passedCoverTypeShortDes));
@@ -173,10 +226,10 @@ export class CoverTypesDetailsComponent {
 
   }
   
-  passedRiskcode(data:any){
-    log.debug("Risk Code;" ,data);
-    this.riskCode=data;
-  }
+  // passedRiskcode(data:any){
+  //   log.debug("Risk Code;" ,data);
+  //   this.riskCode=data;
+  // }
   passedClient(data:any){
     log.debug("client Code;" ,data);
     this.clientcode=data;
@@ -296,18 +349,18 @@ export class CoverTypesDetailsComponent {
 
     const payload = this.selectedSections.map(section => {
       return {
-        calcGroup: 0,
+        calcGroup: 1,
         code: section.code,
-        compute: null,
-        description:null,
+        compute: "Y",
+        description:this.premiumPayload.risks[0].limits[0].description,
         freeLimit:0,
-        multiplierDivisionFactor:0,
-        multiplierRate:0,
-        premiumAmount:0,
-        premiumRate:0,
-        rateDivisionFactor:0,
-        rateType:null,
-        rowNumber:0,
+        multiplierDivisionFactor:this.premiumPayload.risks[0].limits[0].multiplierDivisionFactor,
+        multiplierRate:this.premiumPayload.risks[0].limits[0].multiplierRate,
+        premiumAmount:this.premiumPayload.risks[0].limits[0].premiumAmount,
+        premiumRate:this.premiumPayload.risks[0].limits[0].premiumRate,
+        rateDivisionFactor:this.premiumPayload.risks[0].limits[0].rateDivisionFactor,
+        rateType:this.premiumPayload.risks[0].limits[0].rateType,
+        rowNumber:this.premiumPayload.risks[0].limits[0].rowNumber,
         sumInsuredLimitType:null,
         sumInsuredRate:0,
         sectionShortDescription: section.sectionShortDescription,
@@ -325,8 +378,8 @@ export class CoverTypesDetailsComponent {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset()
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-        this.sectionDetailsForm.reset()
+        // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        // this.sectionDetailsForm.reset()
       }
       this.computePremium();
 
@@ -386,4 +439,166 @@ export class CoverTypesDetailsComponent {
 //     }
 //     })
 //  }
+
+
+              /**NEW PREMIUM COMPUTATION ENGINE */
+createQuotationForm(){
+  this.quotationForm = this.fb.group({
+    actionType: [''],
+    addEdit: [''],
+    agentCode: [''],
+    agentShortDescription: [''],
+    bdivCode: [''],
+    bindCode: [''],
+    branchCode: [''],
+    clientCode: [''],
+    clientType: [''],
+    coinLeaderCombined: [''],
+    consCode: [''],
+    currencyCode: [''],
+    currencySymbol: [''],
+    fequencyOfPayment: [''],
+    isBinderPolicy: [''],
+    paymentMode: [''],
+    proInterfaceType: [''],
+    productCode: [''],
+    source: [''],
+    withEffectiveFromDate: [''],
+    withEffectiveToDate: [''],
+    multiUser:[''],
+    comments:[''],
+    internalComments:[''],
+    introducerCode:[''],
+    dateRange:[''],
+    RFQDate:[''],
+    expiryDate:['']
+  })
+}
+
+ /**
+   * Creates and initializes the risk details form using Angular FormBuilder.
+   * - Defines form controls with validators for various risk details.
+   * @method createRiskDetailsForm
+   * @return {void}
+   */
+ createRiskDetailsForm() {
+  this.riskDetailsForm = this.fb.group({
+    binderCode: ['', Validators.required],
+    coverTypeCode: ['', Validators.required],
+    coverTypeShortDescription: [''],
+    dateWithEffectFrom: [''],
+    dateWithEffectTo: [''],
+    dateRange: [''],
+    insuredCode: [''],
+    isNoClaimDiscountApplicable: [''],
+    itemDescription: ['', Validators.required],
+    location: [''],
+    noClaimDiscountLevel: [''],
+    productCode: [''],
+    propertyId: [''],
+    riskPremAmount: [''],
+    subClassCode: ['', Validators.required],
+    town: [''],
+  });
+}
+
+   /**
+   * Retrieves the current user and stores it in the 'user' property.
+   * @method getUser
+   * @return {void}
+   */
+   getuser() {
+    this.user = this.authService.getCurrentUserName()
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.userBranchId = this.userDetails.branchId;
+    log.debug("Branch Id", this.userBranchId);
+  }
+  loadAllCurrencies() {
+    this.currencyService.getAllCurrencies().subscribe(data => {
+      this.currencyList = data;
+      log.info(this.currencyList, "this is a currency list");
+      const curr = this.currencyList.filter(currency => currency.id == this.currencyCode);
+      this.selectedCurrency = curr[0].name
+      log.debug("Selected Currency:", this.selectedCurrency);
+      this.selectedCurrencyCode = curr[0].id;
+      log.debug("Selected Currency code:", this.selectedCurrencyCode);
+
+      this.cdr.detectChanges()
+
+    })
+  }
+  createQuotation(){
+    const quoteForm = this.quotationForm.value;
+    quoteForm.agentCode = 0;
+    quoteForm.agentShortDescription = "DIRECT";
+    quoteForm.branchCode = this.userBranchId;
+    quoteForm.bindCode =this.premiumPayload.risks[0].binderDto.code;
+    quoteForm.clientCode =this.passedClientDetails.id
+    quoteForm.clientType="I";
+    quoteForm.currencyCode=this.premiumPayload.risks[0].binderDto.currencyCode;
+    quoteForm.currencySymbol=this.selectedCurrency;
+    quoteForm.productCode=this.premiumPayload.product.code;
+    quoteForm.source=this.passedQuotationSource[0].code;
+    quoteForm.withEffectiveFromDate=this.premiumPayload.risks[0].withEffectFrom;
+    quoteForm.withEffectiveToDate=this.premiumPayload.risks[0].withEffectTo;
+
+    this.quotationService.createQuotation(quoteForm,this.user).subscribe(data=>{
+      this.quotationData = data;
+      this.quotationCode = this.quotationData._embedded[0].quotationCode;
+      this.quotationNo = this.quotationData._embedded[0].quotationNumber;
+      // this.quotationNo = data;
+      console.log(this.quotationData,"Quotation results:")    
+      log.debug("Quotation Number",this.quotationNo);
+      log.debug("Quotation Code",this.quotationCode);
+      this.createQuotationRisk()
+      })
+  }
+  createQuotationRisk(){
+    const risk = this.riskDetailsForm.value;
+    risk.binderCode = this.premiumPayload.risks[0].binderDto.code;
+    risk.coverTypeCode = this.passedCovertypeCode;
+    risk.coverTypeShortDescription = this.passedCovertypeDescription;
+    risk.insuredCode = this.passedClientDetails.id
+    risk.productCode = this.premiumPayload.product.code;
+    risk.dateWithEffectFrom = this.premiumPayload.risks[0].withEffectFrom;
+    risk.dateWithEffectTo = this.premiumPayload.risks[0].withEffectTo;
+    risk.subClassCode = this.premiumPayload.risks[0].subclassSection.code;
+    risk.itemDescription = "volvo 4e";
+
+    // FROM DYNAMIC FORM
+    risk.propertyId = this.premiumPayload.risks[0].propertyId;
+    console.log('Quick Form Risk', risk);
+    const riskArray = [risk];
+
+    return this.quotationService.createQuotationRisk(this.quotationCode, riskArray).subscribe(data =>{
+      this.quotationRiskData = data;
+      const quotationRiskCode = this.quotationRiskData._embedded[0];
+      if (quotationRiskCode) {
+        for (const key in quotationRiskCode) {
+          if (quotationRiskCode.hasOwnProperty(key)) {
+            const value = quotationRiskCode[key];
+            console.log(`${value}`);
+            this.riskCode = value;
+          }
+        }
+      } else {
+        console.log("The quotationRiskCode object is not defined.");
+      }
+
+      console.log(this.quotationRiskData, "Quotation Risk Code Data");
+      console.log(this.riskCode, "Quotation Risk Code ");
+    })
+
+  }
+  selectedQuotation(){
+    log.info("Quote NO",    this.quotationNo    )
+    this.selectedQuotationNo=this.quotationNo;
+  }
+  SelectCover(){
+    this.sharedService.setSelectedCover(this.selectedQuotationNo);
+
+    this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+  }
 }
