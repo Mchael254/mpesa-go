@@ -77,7 +77,8 @@ export class ClientService {
   getIdentityType(): Observable<any[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      // 'X-TenantId': environment.TENANT_ID
     });
     const params = new HttpParams()
       .set('organizationId', 2);
@@ -90,7 +91,8 @@ export class ClientService {
   getClientType(organizationId: number): Observable<any[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Accept': 'application/json',
+      // 'X-TenantId': environment.TENANT_ID
     });
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`);

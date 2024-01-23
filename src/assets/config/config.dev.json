@@ -8,7 +8,7 @@
     "gis_services": "gis",
     "notification_service":"notification",
     "ticket_services": "turnquest",
-    "notification_service": "notification",
+    "computation_service":"premium/computation",
     "lms": "lms",
     "api":"api",
     "json":"json"

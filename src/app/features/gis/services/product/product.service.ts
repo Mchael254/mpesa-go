@@ -82,7 +82,7 @@ export class ProductService {
   }
   getProductByCode(code: number): Observable<Products[]>{
     
-    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
+    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`, this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -90,7 +90,7 @@ export class ProductService {
   }
   getProductDetailsByCode(code: number): Observable<Products>{
     
-    return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`).pipe(
+    return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`,this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -140,7 +140,7 @@ export class ProductService {
   }
   getProductSubclasses (productCode): Observable<SubclassesDTO>{
 
-    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`).pipe(
+    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`, this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl) 
     );

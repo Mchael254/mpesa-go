@@ -4,6 +4,7 @@ import {Observable, throwError} from "rxjs";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {catchError, retry} from "rxjs/operators";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class SubClassCoverTypesService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
 
     })
   }
@@ -56,7 +58,7 @@ export class SubClassCoverTypesService {
    * @param subClassCode Subclass code
    */
   getSubclassCovertypeBySCode(subClassCode: any): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/?pageNo=0&pageSize=100000&subClassCode=${subClassCode}`).pipe(
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-cover-types/?pageNo=0&pageSize=100000&subClassCode=${subClassCode}`,this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

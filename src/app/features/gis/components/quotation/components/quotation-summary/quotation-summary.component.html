@@ -21,7 +21,9 @@
 
     <div class="tab-content" id="nav-tabContent">
         <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
-            
+            <div class="spinner" style="position: relative">
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              </div>
             <!-- Quotation Details Card -->
             <div class="card mb-4">
                 <div class="card-body">
@@ -56,7 +58,7 @@
                                     <p class="label">Agent</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">{{agentDetails.accountType}}</p>
+                                    <p class="content">{{agents.name}}</p>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +71,7 @@
                                         <p class="label">Branch</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">NAIROBI</p>
+                                        <p class="content">{{branch.name}}</p>
                                     </div>
                                 </div>
                               
@@ -80,7 +82,7 @@
                                         <p class="label">Cover From</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">{{quotationDetails.coverFrom}}</p>
+                                        <p class="content">{{quotationDetails.withEffectiveFromDate}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -90,7 +92,7 @@
                                         <p class="label">Cover To</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">{{quotationDetails.coverTo}}</p>
+                                        <p class="content">{{quotationDetails.withEffectiveToDate}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +106,7 @@
                                             <p class="label">Currency</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content">{{quotationDetails.currency}}</p>
+                                            <p class="content">{{quotationView.currency}}</p>
                                         </div>
                                     </div>
                                   
@@ -171,7 +173,8 @@
                                                     <p class="label">Premium</p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p class="content">{{quotationDetails.premium| currency:quotationDetails.currency :'symbol':'1.0-0'}}</p>
+                                                    <p class="content" *ngIf="premium"  >{{premium.premiumAmount| number:'1.2-2'}}</p>
+                                                    <p class="content" *ngIf="!premium"  >0.00</p>
                                                 </div>
                                             </div>
                                           
@@ -461,6 +464,105 @@
                                 </tr>
                             </ng-template>
                             </p-table>
+                            <br>
+                            <ul class="nav nav-underline mb-4">
+                                <li class="nav-item">
+                                  <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-sections">Sections</a>
+                                </li>
+                                <br>
+                                <li class="nav-item">
+                                  <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-riskClauses">Clauses</a>
+                                </li>
+                                <br>
+                                <li class="nav-item">
+                                  <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-schedules">Other Details</a>
+                                </li>
+                                <br>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#nav-excesses">Excesses</a>
+                                  </li>
+                              </ul>
+                              <div class="tab-content mb-4" id="nav-tabContent">
+                                <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections" tabindex="0">
+    
+                                    <p-table
+                                     [value]="" 
+                                     [tableStyle]="{ 'min-width': '50rem' }"  
+                                     styleClass="p-datatable-sm"
+                                     [paginator]="true"
+                                     [rows]="5"
+                                     [showCurrentPageReport]="true"
+                                     currentPageReportTemplate="{first} to {last} of {totalRecords}">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Row Num</th>
+                                                <th>Group</th>
+                                                <th>Section Description</th>
+                                               <th>Section Name</th>
+                                               <th>Section Limit</th>
+                                                <th>Premium</th>
+                                                <th>Rate Type</th>
+                                                <th>Section Rate</th>
+                                                <th>Free Limit</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-data>
+                                            <tr>
+                                              
+                                            </tr>
+                                        </ng-template>
+                                        </p-table>
+                                </div>
+                                <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses" tabindex="0">
+                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Clause</th>
+                                                <th>Product</th>
+                                                <th>Wording</th>
+                                               <th>Editable</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-data>
+                                            <tr>
+                                             
+                                            </tr>
+                                        </ng-template>
+                                        </p-table>
+                                </div>
+                                <div class="tab-pane fade " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0">
+                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Amount</th>
+                                                <th>Description</th>
+                                                <th>Quotation Rate</th>
+                                               <th>Rate Type</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-data>
+                                            <tr>
+                                              
+                                            </tr>
+                                        </ng-template>
+                                        </p-table>
+                                </div>
+                                <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-excesses" tabindex="0">
+                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Excesses</th>
+                                               
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-data>
+                                            <tr>
+                                              
+                                            </tr>
+                                        </ng-template>
+                                        </p-table>
+                                </div>
+                              </div>
                           </div>
                           </div>
                           
@@ -470,16 +572,7 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-4">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary titleButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                 Claims Experience
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item active" href="#">External Claims Experience</a></li>
-                                  <li><a class="dropdown-item" href="#">Internal Claims Experience</a></li>
-                            
-                                </ul>
-                              </div>
+                            <p-panelMenu [model]="menuItems" [style]="{'width':'300px'}"></p-panelMenu>
                         </div>
                         <div class="col-8 d-flex justify-content-end">
                             <div class="row">
@@ -503,8 +596,8 @@
                             
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <p-table [value]="externalClaims" [tableStyle]="{ 'min-width': '50rem' }">
+                    <div class="mb-4" *ngIf="showExternalClaims === true;">
+                        <p-table [value]="externalTable" [tableStyle]="{ 'min-width': '50rem' }">
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th>Client</th>
@@ -524,6 +617,50 @@
                                     <td>{{data.year}}</td>
                                 </tr>
                             </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="1"></td>
+                            
+                                  <td colspan="4" style="padding:100px;padding-left: 350px;" id="empty">No records Found</td>
+                                </tr>
+                            
+                              </ng-template>
+                        </p-table>
+                    </div>
+                    <div class="mb-4" *ngIf="showExternalClaims === false;">
+                        <p-table [value]="internalTable" [tableStyle]="{ 'min-width': '50rem' }">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Policy No</th>
+                                    <th>Claim No</th>
+                                    <th>OST Reserve</th>
+                                   <th>Total Reserve</th>
+                                    <th>Recoveries</th>
+                                    <th>Salvages</th>
+                                   <th>Total Payments</th>
+                                   <th>Net Paid</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-data>
+                                <tr>
+                                  <td>{{data.clientPolicyNo}}</td>
+                                  <td>{{data.claimNo}}</td>
+                                  <td>{{data.reserve}}</td>
+                                  <td>{{data.totalReserve}}</td>
+                                  <td>{{data.recoveries}}</td>
+                                  <td>{{data.salvages}}</td>
+                                  <td>{{data.totalPayments}}</td>
+                                  <td>{{data.netPaid}}</td>       
+                                 </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="4"></td>
+                            
+                                  <td colspan="5" style="padding:100px;padding-left:0px;" id="empty">No records Found</td>
+                                </tr>
+                            
+                              </ng-template>
                         </p-table>
                     </div>
                 </div>
@@ -691,7 +828,7 @@
                                         <h6>Agent</h6>
                                     </div>
                                     <div class="col-sm-8">
-                                        <p class="text-muted">{{agentDetails.accountType}}</p>
+                                        <p class="text-muted"></p>
                                     </div>
                                 </div>
                             </div>
@@ -783,7 +920,7 @@
                 
     
             </div>
-            <div class="card mb-4">
+            <!-- <div class="card mb-4">
                 <div class="card-body">
                     <div class="row mt-3 g-3 align-items-center">
                         <div class="col-auto">
@@ -797,7 +934,7 @@
                         </div>
                       </div>
                 </div>
-            </div>
+            </div> -->
         </div>
        
 

@@ -35,6 +35,7 @@ export class BankService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'X-TenantId': environment.TENANT_ID,
     });
     const params = new HttpParams().set('countryId', `${countryId}`);
 

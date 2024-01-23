@@ -19,6 +19,8 @@ import { SectionsService } from '../../../setups/services/sections/sections.serv
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 const log = new Logger('RiskSectionDetailsComponent');
 
 @Component({
@@ -85,7 +87,7 @@ export class RiskSectionDetailsComponent {
   selectedClauses:any
 
   riskSectionList:riskSection[];
-  sectionList:subclassSection[];
+  sectionList:any;
   selectedSectionList:subclassSection[];
   sectionDetailsForm:FormGroup;
   subclassSectionCoverList:any;
@@ -120,7 +122,7 @@ export class RiskSectionDetailsComponent {
   selectedVehicleMakeName:any;
   selectedVehicleModelName:any;
 
-  
+  premiumList:any;
 
   isFromDateSelected = false;
   isToDateSelected = false;
@@ -128,6 +130,7 @@ export class RiskSectionDetailsComponent {
 
   editing = false; // Add other properties as needed
   modalHeight: number = 200; // Initial height
+  products: Products[];
 
   
   constructor(
@@ -144,6 +147,8 @@ export class RiskSectionDetailsComponent {
     public subclassSectionCovertypeService:SubClassCoverTypesSectionsService,
     public vehicleMakeService:VehicleMakeService,
     public vehicleModelService:VehicleModelService,
+    public producSetupService: ProductsService,
+    public premiumRateService: PremiumRateService,
 
 
     public fb:FormBuilder,
@@ -157,10 +162,11 @@ export class RiskSectionDetailsComponent {
     public isThirdDetailsOpen = false;
  
     ngOnInit(): void {
-
-      this.formData = this.sharedService.getQuotationFormDetails();
+      
+      const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
+      this.formData = JSON.parse(quotationFormDetails) ;
       this.clientFormData=this.sharedService.getFormData();
-      this.quotationCode=this.sharedService.getQuotationCode();
+      this.quotationCode=sessionStorage.getItem('quotationCode');
 
       log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
       log.debug(this.formData ,"Form Data");
@@ -767,7 +773,8 @@ updateCoverToDate() {
     this.checkedSectionCode=section.sectionCode;
     this.checkedSectionDesc=section.sectionShortDescription;
     this.checkedSectionType=section.sectionType;
-
+    this.getPremiumRates()
+    this.getSectionbyCode()
   }
   
   
@@ -782,23 +789,23 @@ updateCoverToDate() {
     this.sectionArray = [section];
     section.calcGroup = 1;
     section.code = null;
-    section.compute = null;
+    section.compute = "Y";
     section.description = null;
     section.freeLimit = 0;
     section.limitAmount = 0;
-    section.multiplierDivisionFactor = 0;
+    section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
     section.multiplierRate = 0;
     section.premiumAmount = 0;
-    section.premiumRate = 0;
-    section.rateDivisionFactor = 0;
-    section.rateType = null;
+    section.premiumRate = this.premiumList[0].rate;
+    section.rateDivisionFactor = this.premiumList[0].divisionFactor;
+    section.rateType = this.premiumList[0].rateType;
     section.rowNumber = 0;
     section.sumInsuredLimitType = null;
     section.sumInsuredRate = 0;
 
     section.sectionCode=this.checkedSectionCode;
     section.sectionShortDescription=this.checkedSectionDesc;
-    section.sectionType=this.checkedSectionType;
+    section.sectionType=this.sectionList.type;
 
     log.debug("Section Form Array",this.sectionArray)
     this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
@@ -834,8 +841,11 @@ updateCoverToDate() {
 
     this.quotationService.updateRiskSection(this.riskCode,this.sectionArray).subscribe((data)=>{
       try{
+        sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
+
         this.sectionDetailsForm.reset()
         log.info(section)
+        
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
       }catch(error){
         log.info(section)
@@ -1030,10 +1040,30 @@ updateCoverToDate() {
   }
   
   
-    
+ 
 
   finish(){
     this.router.navigate(['/home/gis/quotation/quotation-summary'])
+  }
+  getSectionbyCode(){
+    this.sectionService.getSectionByCode(this.checkedSectionCode).subscribe(data =>{
+      this.sectionList=data;
+      sessionStorage.setItem('sectionType', this.sectionList.type)
+      console.log(this.sectionList.type, "SECTION LIST WITH TYPE")
+    })
+  }
+  getPremiumRates() {
+    const selectedSectionCode = this.checkedSectionCode;
+    this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
+      this.premiumList = data;
+      log.debug(this.premiumList[0].multiplierDivisionFactor, "premium List");
+      sessionStorage.setItem('premiumRate', this.premiumList[0].rate)
+      sessionStorage.setItem('multiplierDivisionFactor', this.premiumList[0].multiplierDivisionFactor)
+      sessionStorage.setItem('divisionFactor', this.premiumList[0].divisionFactor)
+      sessionStorage.setItem('rateType', this.premiumList[0].rateType)
+      sessionStorage.setItem('premiumRate', this.premiumList[0].rate)
+      // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+    });
   }
   
 }
