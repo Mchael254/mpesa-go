@@ -51,7 +51,6 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-<<<<<<< Updated upstream
   },
   "/json": {
     "target": "http://10.176.18.211:1020/",
@@ -59,15 +58,11 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/premium": {
+  "/notification": {
     "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-  }
-
-}
-=======
  },
  "/premium": {
   "target": "http://10.176.18.211:1025/",
@@ -75,5 +70,5 @@
   "changeOrigin": true,
   "logLevel": "debug"
 }
+
 }
->>>>>>> Stashed changes
