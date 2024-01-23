@@ -124,7 +124,7 @@ export class PersonalDetailsComponent {
           temp['data'] = val?.inputs.en;
           return temp;
         });
-        console.log(this.validationData);
+        // console.log(this.validationData);
 
         this.clientDetailsForm = this.getClientDetailsForm();
 
@@ -132,6 +132,10 @@ export class PersonalDetailsComponent {
         let client_info = StringManipulation.returnNullIfEmpty(
           this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
         );
+        console.log(this.clientDetailsForm.value);
+        console.log(this.getClientDetailsForm());
+        
+        
         if(client_info){
           console.log(client_info);
           
@@ -211,17 +215,12 @@ export class PersonalDetailsComponent {
     return this.fb.group({
       beneficiary: this.generateBeneficiaryForm(),
       guardian: this.generateGuardianForm(),
-
       question: [''],
-
       selectedUploadItem: [],
       po_box: [''],
-
       county: [''],
-
       road: [''],
       house_no: [''],
-
       town: [''],
       bank: [''],
       countryCode: [''],
@@ -241,7 +240,6 @@ export class PersonalDetailsComponent {
         },
       ],
       date_of_birth: [],
-
       emailAddress: [
         '',
         [
@@ -273,8 +271,9 @@ export class PersonalDetailsComponent {
         [Validators.required],
       ],
       clientType: [
+
         {
-          value: 21,
+          value: '',
           disabled: !!this.getFormData('CLIENT_TYPE')?.data?.is_disabled,
         },
         [Validators.required],
@@ -514,6 +513,8 @@ export class PersonalDetailsComponent {
     return client_info['quote_code'];
   }
   saveBeneficiary() {
+    this.spinner_Service.show('beneficiaries_view');
+
     this.spinner_Service.show('beneficiary_modal_screen');
     this.isBeneficiaryLoading = true;
     let beneficiary = { ...this.beneficiaryForm.value };
@@ -525,12 +526,12 @@ export class PersonalDetailsComponent {
     // StringManipulation.returnNullIfEmpty(
     //   this.session_storage.get(SESSION_KEY.QUOTE_CODE)
     // );
-    beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
-    );
-    beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
-    );
+    // beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(
+    //   this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
+    // );
+    // beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(
+    //   this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
+    // );
     beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(
       beneficiary['percentage_benefit']
     );
@@ -582,10 +583,13 @@ export class PersonalDetailsComponent {
             );
           },
           (err) => {
+            this.spinner_Service.hide('beneficiary_modal_screen');
+
             this.toast.danger(err?.error?.errors[0], 'Percentage Benefit');
           }
         );
     } else {
+      this.spinner_Service.hide('beneficiary_modal_screen');
       console.log('Greater than 100%');
       this.toast.danger(
         `Percentage Benefit is greater by  ${percentage_benefit - 100}`,
@@ -837,6 +841,7 @@ export class PersonalDetailsComponent {
     }
   }
   async nextPage() {
+    this.spinner_Service.show('client_details_view')
     if (!this.clientDetailsForm.valid) {
       this.enableControlsWithErrors(this.clientDetailsForm);
       this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(
@@ -962,15 +967,16 @@ export class PersonalDetailsComponent {
           })
         )
         .subscribe((data: any) => {
-          // console.log(data);
           this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
-          // console.log(data);
-          // client_code
-          // this.session_storage.set(SESSION_KEY.CLIENT_CODE, data['accountCode']);
-          // this.session_storage.set(SESSION_KEY.ACCOUNT_CODE, data['accountCode']);
+          this.spinner_Service.hide('client_details_view');
           this.toast.success('Create Client Details Successfully!', 'Client Details');
-          this.router.navigate['/home/lms/ind/quotation/insurance-history']
+          this.router.navigate(['/home/lms/ind/quotation/insurance-history'])
 
+        },
+        (err: any)=>{
+          this.spinner_Service.hide('client_details_view');
+          console.log(err);
+          
         });
     }
   }
