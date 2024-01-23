@@ -96,7 +96,7 @@
                      <div class="row mb-4">
                         <div class="col-sm-4 col-6 ">
                             <label class="required quote-label" for="Source"  id="Source">Source</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="source">
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="source" (change)="onSourceSelected($event)">
                                 <option value=""></option>
                                 <option *ngFor="let source of sourceDetail" [value]="source.code">{{ source.description | sentenceCase}}</option>
                             </select> 
@@ -156,7 +156,7 @@
                         <div class="col-sm-4 col-6">
                             <label for="binder" class="quote-label" id="binder">Binder</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="bindCode" (change)="onSelectBinder($event)">
-                                
+                                <option></option>
                                 <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{ binder.binder_short_description | sentenceCase }}</option>
                             </select>  
                             <!-- Display error message under the field -->
@@ -334,7 +334,7 @@
         <div class="row ">
             <div class="col-6"></div>
             <div class="col-6 d-flex justify-content-end">
-                <button type="button" class="btn btn-outline-primary btn-lg"  id="compute" (click)="createQuotation();" >Compute</button>
+                <button type="button" class="btn btn-outline-primary btn-lg"  id="compute" (click)="computePremiumV2();" >Compute</button>
             </div>
         </div>
     </div>
