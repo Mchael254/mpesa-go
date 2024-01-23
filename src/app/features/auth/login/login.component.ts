@@ -8,6 +8,8 @@ import {SessionStorageService} from "../../../shared/services/session-storage/se
 import {LocalStorageService} from "../../../shared/services/local-storage/local-storage.service";
 import {Logger, UtilService} from "../../../shared/services";
 import {AuthService} from "../../../shared/services/auth.service";
+import { SESSION_KEY } from '../../lms/util/session_storage_enum';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
 
 const log = new Logger('LoginComponent');
 
@@ -27,6 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public isAuthenticated$!: Observable<boolean>;
   public rememberMe: boolean = false;
   isLoading: boolean = false;
+  private tenant_id;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -35,7 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private sessionStorageService: SessionStorageService,
     private localStorageService: LocalStorageService,
     public  utilService: UtilService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast_service: ToastService
   ) {
   }
 
@@ -57,6 +61,16 @@ export class LoginComponent implements OnInit, OnDestroy {
         rememberMe: true
       });
     }
+
+
+    this.route.queryParams.subscribe((params) => {
+      this.tenant_id = params['id'];
+      console.log('Example Param:', this.tenant_id);
+      if(this.tenant_id===null || this.tenant_id===undefined){
+        this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
+      }
+      this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
+    });
   }
 
   /**
@@ -93,6 +107,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = true
     this.errorOccurred = false;
     this.errorMessage = '';
+
+    
 
     const rawData = this.loginForm.getRawValue();
     const authenticationData: UserCredential = {
@@ -169,6 +185,10 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.isLoading = false;
 
     });
+  }
+
+  isTenantIdPresent(): boolean {
+    return this.tenant_id===undefined || this.tenant_id===null || this.tenant_id==='';
   }
 
   /**

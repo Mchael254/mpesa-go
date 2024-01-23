@@ -1,3 +1,4 @@
+
 export enum  SESSION_KEY {
   QUICK_CODE = 'quick_code',
   CLIENT_CODE = 'client_code',
@@ -6,6 +7,7 @@ export enum  SESSION_KEY {
   ACCOUNT_CODE = 'account_code',
   POL_CODE = 'pol_code',
   ENDR_CODE = 'endr_code',
+
 
   // Quick Quote
   QUICK_QUOTE_DETAILS = 'QUICK_QUOTE_DETAILS',
@@ -17,5 +19,6 @@ export enum  SESSION_KEY {
 
   // Need Analysis
   NEED_ANALYSIS_SYSTEM_NAME = 'NEED_ANALYSIS_SYSTEM_NAME',
-  NEED_ANALYSIS_PROCESS_TYPE= 'NEED_ANALYSIS_PROCESS_TYPE'
+  NEED_ANALYSIS_PROCESS_TYPE= 'NEED_ANALYSIS_PROCESS_TYPE',
+  API_TENANT_ID = 'API_TENANT_ID'
 }

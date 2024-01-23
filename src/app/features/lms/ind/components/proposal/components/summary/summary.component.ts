@@ -57,13 +57,13 @@ export class SummaryComponent implements OnInit {
     .getLmsIndividualQuotationWebQuoteByCode(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['code'])
     .pipe(
       switchMap((web_quote_res: any) =>{ 
-        console.log(web_quote_res);
+        // console.log(web_quote_res);
         
         this.proposalSummaryData = web_quote_res;
         return this.product_service.getProductByCode(web_quote_res?.product_code)
       }),
       switchMap((product_res : any) =>{ 
-        console.log(product_res);
+        // console.log(product_res);
         
         this.proposalSummaryData['product'] = product_res
         return this.product_option_service.getProductOptionByCode(this.proposalSummaryData?.pop_code)
@@ -78,12 +78,11 @@ export class SummaryComponent implements OnInit {
     .subscribe(
       (data) => 
       {
-        console.log(data);
         this.spinner_service.hide('summary_view');
-        this.toast_service.success('Successfull!!', 'Proposal Summary')
+        this.toast_service.success('Fetched all necessary data successfully', 'Proposal Summary')
       },
       err=>{
-        console.log(err);
+        // console.log(err);
         this.spinner_service.hide('summary_view');
       }
     )
