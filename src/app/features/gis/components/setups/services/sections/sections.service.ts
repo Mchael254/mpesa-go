@@ -4,6 +4,7 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import { subclassSection } from '../../data/gisDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,24 @@ export class SectionsService {
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
     return this.http.get<subclassSection[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections?subClassCode=${subClassCode}`,{
+      headers:headers,
+      params:params
+    }).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
+  }
+  getSectionByCode(code:number): Observable<any>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID
+
+
+    })
+    const params = new HttpParams()
+     
+    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`,{
       headers:headers,
       params:params
     }).pipe(
