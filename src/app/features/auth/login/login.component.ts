@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public isAuthenticated$!: Observable<boolean>;
   public rememberMe: boolean = false;
   isLoading: boolean = false;
+  
   constructor(
     private fb: FormBuilder,
     private router: Router,

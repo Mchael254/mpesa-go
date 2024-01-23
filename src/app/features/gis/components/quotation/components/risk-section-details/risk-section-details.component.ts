@@ -19,6 +19,8 @@ import { SectionsService } from '../../../setups/services/sections/sections.serv
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 const log = new Logger('RiskSectionDetailsComponent');
 
 @Component({
@@ -85,7 +87,7 @@ export class RiskSectionDetailsComponent {
   selectedClauses:any
 
   riskSectionList:riskSection[];
-  sectionList:subclassSection[];
+  sectionList:any;
   selectedSectionList:subclassSection[];
   sectionDetailsForm:FormGroup;
   subclassSectionCoverList:any;
@@ -120,7 +122,7 @@ export class RiskSectionDetailsComponent {
   selectedVehicleMakeName:any;
   selectedVehicleModelName:any;
 
-  
+  premiumList:any;
 
   isFromDateSelected = false;
   isToDateSelected = false;
@@ -128,6 +130,7 @@ export class RiskSectionDetailsComponent {
 
   editing = false; // Add other properties as needed
   modalHeight: number = 200; // Initial height
+  products: Products[];
 
   
   constructor(
@@ -144,6 +147,8 @@ export class RiskSectionDetailsComponent {
     public subclassSectionCovertypeService:SubClassCoverTypesSectionsService,
     public vehicleMakeService:VehicleMakeService,
     public vehicleModelService:VehicleModelService,
+    public producSetupService: ProductsService,
+    public premiumRateService: PremiumRateService,
 
 
     public fb:FormBuilder,
@@ -157,10 +162,11 @@ export class RiskSectionDetailsComponent {
     public isThirdDetailsOpen = false;
  
     ngOnInit(): void {
-
-      this.formData = this.sharedService.getQuotationFormDetails();
+      
+      const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
+      this.formData = JSON.parse(quotationFormDetails) ;
       this.clientFormData=this.sharedService.getFormData();
-      this.quotationCode=this.sharedService.getQuotationCode();
+      this.quotationCode=sessionStorage.getItem('quotationCode');
 
       log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
       log.debug(this.formData ,"Form Data");
@@ -186,6 +192,19 @@ export class RiskSectionDetailsComponent {
         this.riskDetailsForm.setValue(parsedData);
         
       }
+
+      
+      this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
+        this.riskIdPassed(value);
+      });
+      this.riskDetailsForm.get('coverTypeShortDescription').valueChanges.subscribe((selectedValue) => {
+        console.log('Selected CoverType:', selectedValue);
+        this.selectedCoverType=selectedValue
+        console.log('Selected CoverType:', this.selectedCoverType);
+      });
+      this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
+        this.updateCoverToDate();
+      });
       
   }
   openHelperModal(selectedClause: any) {
@@ -241,13 +260,21 @@ onResize(event: any) {
     }
   }
   // This method updates the "Cover To" date when "Cover From" changes
- updateCoverToDate() {
+
+
+updateCoverToDate() {
+  this.coverFromDate = this.riskDetailsForm.get('dateWithEffectFrom').value;
+
   if (this.coverFromDate) {
     const selectedDate = new Date(this.coverFromDate);
     selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-    this.coverToDate = selectedDate.toISOString().split('T')[0];
+    this.riskDetailsForm.patchValue({
+      dateWithEffectTo: selectedDate.toISOString().split('T')[0]
+    });
   } else {
-    this.coverToDate = ''; // Reset "Cover To" if "Cover From" is cleared
+    this.riskDetailsForm.patchValue({
+      dateWithEffectTo: ''
+    });
   }
 }
    /**
@@ -473,13 +500,37 @@ onResize(event: any) {
  * Retrieves all available clauses through an HTTP request, filters them based on the
  * 'selectedClauseCode', and updates 'clauseList' and 'selectedClauseList'.
  */
-  loadAllClauses(){
-    this.subclassService.getAllClauses().subscribe(data =>{
-      this.clauseList=data._embedded.clause_dto_list
-      this.selectedClauseList=this.clauseList.filter(clausesub=>clausesub.code == this.selectedClauseCode);
-      log.debug('ClauseSelectdList',this.selectedClauseList)
-    })
+  // loadAllClauses(){
+  //   this.subclassService.getAllClauses().subscribe(data =>{
+  //     this.clauseList=data._embedded.clause_dto_list
+  //     log.debug('Clause hope List',this.clauseList)
+
+  //     this.selectedClauseList=this.clauseList.filter(clausesub=>clausesub.code == this.selectedClauseCode);
+  //     log.debug('ClauseSelectdList',this.selectedClauseList)
+  //   })
+  // }
+  loadAllClauses() {
+    // Extract clause codes from selectedSubClauseList
+    const subClauseCodes = this.selectedSubClauseList.map(subClause => subClause.clauseCode);
+  
+    // Check if there are any subClauseCodes before making the request
+    if (subClauseCodes.length === 0) {
+      // Handle the case when there are no subClauseCodes
+      return;
+    }
+  
+    // Make the request to get all clauses based on the subClauseCodes
+    this.subclassService.getAllClauses().subscribe(data => {
+      this.clauseList = data._embedded.clause_dto_list;
+  
+      // Filter clauseList based on subClauseCodes
+      this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
+  
+      log.debug('Clause hope List', this.clauseList);
+      log.debug('ClauseSelectdList', this.selectedClauseList);
+    });
   }
+  
   /**
  * Navigates back to the quotation details page.
  * Uses the Angular Router to navigate to the 'quotation-details' page within the 'gis' module
@@ -689,10 +740,25 @@ onResize(event: any) {
           this.filteredMandatorySections = this.mandatorySections;
         }
       }
-      riskIdPassed(){
-        log.debug("Passed Risk Id",this.passedRiskId)
- 
+     
+      riskIdPassed(event: any): void {
+        
+      
+        if (event instanceof Event) {
+          this.passedRiskId = (event.target as HTMLInputElement).value;
+        } else {
+          this.passedRiskId = event;
+        }
+      
+        if ( this.passedRiskId !== undefined) {
+          console.log('Passed Risk Id',  this.passedRiskId);
+        } else {
+          console.error('Unable to retrieve value from the event object.');
+        }
       }
+      
+      
+      
       matchesSearch(description: string): boolean {
         return description.toLowerCase().includes(this.searchText.toLowerCase());
       }
@@ -731,7 +797,8 @@ onResize(event: any) {
     this.checkedSectionCode=section.sectionCode;
     this.checkedSectionDesc=section.sectionShortDescription;
     this.checkedSectionType=section.sectionType;
-
+    this.getPremiumRates()
+    this.getSectionbyCode()
   }
   
   
@@ -746,23 +813,23 @@ onResize(event: any) {
     this.sectionArray = [section];
     section.calcGroup = 1;
     section.code = null;
-    section.compute = null;
+    section.compute = "Y";
     section.description = null;
     section.freeLimit = 0;
     section.limitAmount = 0;
-    section.multiplierDivisionFactor = 0;
+    section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
     section.multiplierRate = 0;
     section.premiumAmount = 0;
-    section.premiumRate = 0;
-    section.rateDivisionFactor = 0;
-    section.rateType = null;
+    section.premiumRate = this.premiumList[0].rate;
+    section.rateDivisionFactor = this.premiumList[0].divisionFactor;
+    section.rateType = this.premiumList[0].rateType;
     section.rowNumber = 0;
     section.sumInsuredLimitType = null;
     section.sumInsuredRate = 0;
 
     section.sectionCode=this.checkedSectionCode;
     section.sectionShortDescription=this.checkedSectionDesc;
-    section.sectionType=this.checkedSectionType;
+    section.sectionType=this.sectionList.type;
 
     log.debug("Section Form Array",this.sectionArray)
     this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
@@ -776,6 +843,7 @@ onResize(event: any) {
       }
     })
   }
+  
   onSelectSection(event: any){
     this.selectedSection=event;
     log.info("Patched section",this.selectedSection)
@@ -798,8 +866,11 @@ onResize(event: any) {
 
     this.quotationService.updateRiskSection(this.riskCode,this.sectionArray).subscribe((data)=>{
       try{
+        sessionStorage.setItem('limitAmount', this.sectionDetailsForm.value.limitAmount)
+
         this.sectionDetailsForm.reset()
         log.info(section)
+        
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
       }catch(error){
         log.info(section)
@@ -994,10 +1065,30 @@ onResize(event: any) {
   }
   
   
-    
+ 
 
   finish(){
     this.router.navigate(['/home/gis/quotation/quotation-summary'])
+  }
+  getSectionbyCode(){
+    this.sectionService.getSectionByCode(this.checkedSectionCode).subscribe(data =>{
+      this.sectionList=data;
+      sessionStorage.setItem('sectionType', this.sectionList.type)
+      console.log(this.sectionList.type, "SECTION LIST WITH TYPE")
+    })
+  }
+  getPremiumRates() {
+    const selectedSectionCode = this.checkedSectionCode;
+    this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
+      this.premiumList = data;
+      log.debug(this.premiumList[0].multiplierDivisionFactor, "premium List");
+      sessionStorage.setItem('premiumRate', this.premiumList[0].rate)
+      sessionStorage.setItem('multiplierDivisionFactor', this.premiumList[0].multiplierDivisionFactor)
+      sessionStorage.setItem('divisionFactor', this.premiumList[0].divisionFactor)
+      sessionStorage.setItem('rateType', this.premiumList[0].rateType)
+      sessionStorage.setItem('premiumRate', this.premiumList[0].rate)
+      // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+    });
   }
   
 }

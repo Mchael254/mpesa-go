@@ -154,4 +154,108 @@ export interface QuotationDetails {
   transactionType: string,
   version: number
   }
+
+  ///////////////////////////////////////////
+  export interface PremiumComputationRequest {
+    entityUniqueCode?: number
+    interfaceType?: any
+    frequencyOfPayment: string
+    transactionStatus?: any
+    quotationStatus?: string
+    product: Product
+    currency: Currency
+    risks: Risk[]
+    dateWithEffectTo: string
+    dateWithEffectFrom: string
+    underwritingYear: number
+    age: any
+    coinsuranceLeader: string
+    coinsurancePercentage: number
+  }
+  
+  export interface Product {
+    code: number
+    expiryPeriod: string
+  }
+  
+  export interface Currency {
+    rate: number
+  }
+  
+  export interface Risk {
+    code?: number
+    limits: Limit[]
+    propertyId?: string
+    binderDto: BinderDto
+    baseCurrencyCode?: any
+    withEffectFrom: string
+    withEffectTo: string
+    prorata: string
+    rescueServiceDto?: any
+    subclassSection: Subclass
+    // subClassSectionCode: number
+    itemDescription?: string
+    emlBasedOn?: any
+    noClaimDiscountLevel: number
+    subclassCoverTypeDto: SubclassCoverTypeDto
+    enforceCovertypeMinimumPremium: string
+    futurePremium?: any
+    commissionRate?: any
+    effectiveDateWithEffectTo?: any
+    endorseRemove?: any
+  }
+  
+  export interface Limit {
+    description: string
+    code?: number
+    riskCode: number
+    calculationGroup: number
+    declarationSection: any
+    rowNumber: number
+    rateDivisionFactor: number
+    premiumRate: number
+    rateType: string
+    sectionType: string
+    firstLoss?: any
+    firstLossAmountPercent?: any
+    firstLossValue?: any
+    limitAmount: number
+    freeLimit?: any
+    topLocRate?: any
+    topLocDivFact?: any
+    emlPercentage?: any
+    compute: string
+    section: Section
+    multiplierRate?: any
+    multiplierDivisionFactor?: any
+    minimumPremium?: number
+    annualPremium?: number
+    premiumAmount?: number
+    dualBasis: string
+    limitPeriod?: any
+    indemFstPeriod?: any
+    indemPeriod?: any
+    indemFstPeriodPercentage?: any
+    indemRemPeriodPercentage?: any
+  }
+  
+  export interface Section {
+    code: number
+  }
+  
+  export interface BinderDto {
+    code: number
+    maxExposure?: any
+    currencyCode: number
+    currencyRate: number
+  }
+  
+  export interface Subclass {
+    code: number
+  }
+  
+  export interface SubclassCoverTypeDto {
+    minimumAnnualPremium: number
+    minimumPremium: number
+  }
   
