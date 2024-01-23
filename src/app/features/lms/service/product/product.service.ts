@@ -11,7 +11,7 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 })
 export class ProductService {
 
-  getListOfOrdProduct = toSignal(this.getListOfProduct());
+  private getListOfOrdProduct = toSignal(this.getListOfProduct());
   // getListOfGroupProduct = toSignal(this.getListOfProduct('G'));
 
   constructor(private api:ApiService) {   }

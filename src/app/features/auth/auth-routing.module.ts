@@ -15,6 +15,9 @@ const routes: Routes = [
       {
         path: '',
         component: LoginComponent,
+        data: {
+          queryParams: { id: 'MUTUAL' },
+        },
       },
       {
         path: 'verify',

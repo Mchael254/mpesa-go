@@ -13,6 +13,7 @@ import { StepperComponent } from './components/stepper/stepper.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     CheckboxModule,
     NgxSpinnerModule,
     MultiSelectModule,
+    ProgressBarModule,
   ]
 })
 export class QuotationModule { }

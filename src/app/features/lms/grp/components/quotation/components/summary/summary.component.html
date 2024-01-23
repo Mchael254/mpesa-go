@@ -449,8 +449,8 @@
                                         <td *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')" id="tdStyle">{{categorySummary.cvt_desc | titlecase}}</td>
                                         <td *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')" id="tdStyle">{{categorySummary.dty_sht_desc | titlecase}}</td>
                                         <td *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')" style="text-align: center;" id="tdStyle">{{categorySummary.maximum_type_allowed}}</td>
-                                        <td *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')" id="tdStyle">{{categorySummary.minimum_amt}}</td>
-                                        <td *ngIf="selectedColumnsDependantLimits.includes('limit_amount')" id="tdStyle">{{categorySummary.limit_amount}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')" id="tdStyle" style="text-align: right;">{{categorySummary.minimum_amt | number}}</td>
+                                        <td *ngIf="selectedColumnsDependantLimits.includes('limit_amount')" id="tdStyle" style="text-align: right;">{{categorySummary.limit_amount | number}}</td>
                                         <td *ngIf="selectedColumnsDependantLimits.includes('rate')" id="tdStyle">{{categorySummary.rate}}</td>
                                         <td *ngIf="selectedColumnsDependantLimits.includes('category_rate_division_factor')" id="tdStyle">{{categorySummary.category_rate_division_factor}}</td>
                                         <td *ngIf="selectedColumnsDependantLimits.includes('sum_assured_percentage')" id="tdStyle">{{categorySummary.sum_assured_percentage}}</td>
