@@ -110,12 +110,9 @@
         font-weight: 700;
         line-height: 18px;
     }
-    ::ng-deep .p-icon-wrapper {
-        display: inline-flex;
-        color: #00529B;
-    }
+  
     ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
-        color: #6c757d;
+        color: #00529B;
         padding: 0.25rem;
         font-weight: 700;
     }
