@@ -56,7 +56,7 @@ export class QuoteSummaryComponent {
   formattedCoverTo: string;
 
   isAddRisk:boolean=true;
-
+  
   constructor(
     public fb:FormBuilder,
     public productService:ProductsService,

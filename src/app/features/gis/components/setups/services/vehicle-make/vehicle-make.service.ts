@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { vehicleMake } from '../../data/gisDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ getAllVehicleMake(): Observable<vehicleMake[]>{
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-  
+    'X-TenantId': environment.TENANT_ID   
   })
   const params = new HttpParams()
   .set('page', `${page}`)

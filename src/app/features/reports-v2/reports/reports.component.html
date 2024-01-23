@@ -3,7 +3,7 @@
         <div class="col-sm-6 col-12 mb-3">
             <div class="card fixed-height-card">
                 <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-top">Reports
+                    <span class="float-start mt-3 head-top">{{ 'report.reports' | translate }}
                         <i class="fa fa-chevron-right" aria-hidden="true"></i>
                     </span>
                 </div>
@@ -14,14 +14,12 @@
                         </div>
                         <div class="col-md-8 col-8 float-start d-flex flex-column">
                             <p class="testimony-txt">
-                                Explore key performance metrics and trends to make informed decisions and optimize your
-                                data-driven
-                                strategy.
+                                {{ 'report.report_desc' | translate }}
                             </p>
                             <div class="mt-auto card-btn">
                                 <button type="button" id="create-report-btn"
                                     class="btn btn-outline-primary mt-auto align-self-end" (click)="createReports()">
-                                    Explore Reports
+                                    {{ 'report.explore_reports' | translate }}
                                 </button>
                             </div>
                         </div>
@@ -33,7 +31,7 @@
         <div class="col-sm-6 col-12 mb-3">
             <div class="card fixed-height-card">
                 <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-top">Dashboards
+                    <span class="float-start mt-3 head-top">{{ 'report.dashboards' | translate }}
                         <i class="fa fa-chevron-right" aria-hidden="true"></i>
                     </span>
                 </div>
@@ -44,12 +42,11 @@
                         </div>
                         <div class="col-md-8 col-8 d-flex flex-column">
                             <p class="testimony-txt">
-                                Discover insights and make data-driven decisions effortlessly with our interactive
-                                dashboard.
+                                {{ 'report.dashboard_desc' | translate }}
                             </p>
                             <div class="mt-auto card-btn">
                                 <button type="button" class="btn btn-outline-primary" (click)="createDashboards()">
-                                    Explore Dashboard
+                                    {{ 'report.explore_dashboard' | translate }}
                                 </button>
                             </div>
                         </div>
@@ -61,29 +58,29 @@
         <div class="col-sm-6 col-12 mb-3">
             <div class="card fixed-height-card">
                 <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-bottom">A glance into reports</span>
+                    <span class="float-start mt-3 head-bottom">{{ 'report.glance_into_reports' | translate }}</span>
                 </div>
                 <div class="card-body">
                     <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'myReports'}"
                         (click)="myReports()">
-                        My Reports
+                        {{ 'report.my_reports' | translate }}
                     </button>
                     <button type="button" class="btn-tab" [ngClass]="{'active': activeTab === 'sharedReports'}"
                         (click)="sharedReports()">
-                        Shared Reports
+                        {{ 'report.shared_reports' | translate }}
                     </button>
     
                     <div class="tab-content mt-3 mb-3">
                         <div *ngIf="activeTab === 'myReports'">
                             <div class="row">
                                 <div class="col-md-3 col-4">
-                                    <h5>ID</h5>
+                                    <h5>{{ 'report.id' | translate }}</h5>
                                     <ul>
                                         <li *ngFor="let item of myReportsList">{{ item.id }}</li>
                                     </ul>
                                 </div>
                                 <div class="col-md-9 col-8">
-                                    <h5>Name</h5>
+                                    <h5>{{ 'report.name' | translate }}</h5>
                                     <ul>
                                         <li *ngFor="let item of myReportsList">{{ item.name }}</li>
                                     </ul>
@@ -93,13 +90,13 @@
                         <div *ngIf="activeTab === 'sharedReports'">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <h5>ID</h5>
+                                    <h5>{{ 'report.id' | translate }}</h5>
                                     <ul>
                                         <li *ngFor="let item of anotherTabList">{{ item.id }}</li>
                                     </ul>
                                 </div>
                                 <div class="col-md-9">
-                                    <h5>Name</h5>
+                                    <h5>{{ 'report.name' | translate }}</h5>
                                     <ul>
                                         <li *ngFor="let item of anotherTabList">{{ item.name }}</li>
                                     </ul>
@@ -109,7 +106,7 @@
                     </div>
                     <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
                         (click)="viewReports()">
-                        View All
+                        {{ 'report.view_all' | translate }}
                     </button>
                 </div>
             </div>
@@ -118,13 +115,13 @@
         <div class="col-sm-6 col-12 mb-3">
             <div class="card fixed-height-card">
                 <div class="card-header bg-transparent">
-                    <span class="float-start mt-3 head-bottom">A glance into dashboards</span>
+                    <span class="float-start mt-3 head-bottom">{{ 'report.glance_into_dashboards' | translate }}</span>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-4">
                             <div class="card">
-                                <div class="card-header bg-transparent head-sm">Finance</div>
+                                <div class="card-header bg-transparent head-sm">{{ 'report.finance' | translate }}</div>
                                 <div class="card-body">
                                     <img src="assets/images/finance.png" alt="dashboard-reports">
                                 </div>
@@ -132,7 +129,7 @@
                         </div>
                         <div class="col-4">
                             <div class="card">
-                                <div class="card-header bg-transparent head-sm">Operations</div>
+                                <div class="card-header bg-transparent head-sm">{{ 'report.operations' | translate }}</div>
                                 <div class="card-body">
                                     <img src="assets/images/operations.png" alt="dashboard-reports">
                                 </div>
@@ -140,7 +137,7 @@
                         </div>
                         <div class="col-4">
                             <div class="card">
-                                <div class="card-header bg-transparent head-sm">Other</div>
+                                <div class="card-header bg-transparent head-sm">{{ 'report.other' | translate }}</div>
                                 <div class="card-body">
                                     <img src="assets/images/other.png" alt="dashboard-reports">
                                 </div>
@@ -149,7 +146,7 @@
                     </div>
                     <button type="button" class="btn btn-end btn-link position-absolute bottom-0 end-0 mb-2 me-2"
                         (click)="viewReports()">
-                        View All
+                        {{ 'report.view_all' | translate }}
                     </button>
                 </div>
             </div>

@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
+import { environment } from 'src/environments/environment';
+import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
+import { Pagination } from 'src/app/shared/data/common/pagination';
 @Injectable({
   providedIn: 'root'
 })
@@ -25,7 +28,8 @@ export class QuotationsService {
    * @type {string}
    */ 
   baseUrl = this.appConfig.config.contextPath.gis_services;
-  testBase = this.appConfig.config.contextPath.notification_service
+  testBase = this.appConfig.config.contextPath.notification_service;
+  computationUrl = this.appConfig.config.contextPath.computation_service;
   /**
    * HTTP options for making requests with JSON content type.
    * @type {any}
@@ -34,6 +38,7 @@ export class QuotationsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
 
     })
   }
@@ -98,6 +103,7 @@ export class QuotationsService {
    * @return {Observable<any>} - An observable of the response containing the created risk sections data.
    */
   createRiskSection(quotationRiskCode ,data:riskSection[]){
+    console.log(data , "QUOTATION RISK SECTION")
     return this.http.post(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
 
   }
@@ -130,6 +136,7 @@ export class QuotationsService {
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'X-TenantId': environment.TENANT_ID,
       });
       return this.http.get<introducersDTO>(`/${this.baseUrl}/setups/api/v1/introducers`, {headers:headers}); 
   }
@@ -140,10 +147,14 @@ export class QuotationsService {
    * @param {string} quotationCode - The quotation code for which to compute the premium.
    * @return {Observable<any>} - An observable of the response containing the computed premium data.
    */
-  computePremium(quotationCode){
-    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
+  // computePremium(quotationCode){
+  //   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`,this.httpOptions)
+  // }
+  computePremium(computationDetails){
+    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`,computationDetails)
   }
    /**
+
    * Creates new schedule details using an HTTP POST request.
    * @method createSchedule
    * @param {scheduleDetails[]} data - The data representing the schedule details to be created.
@@ -169,7 +180,7 @@ export class QuotationsService {
    * @return {Observable<any>} - An observable of the response containing product clauses.
    */
  getProductClauses(productCode){
-    return this.http.get(`/${this.baseUrl}/setups/api/v1/products/${productCode}/clauses`)
+    return this.http.get(`/${this.baseUrl}/setups/api/v1/products/${productCode}/clauses`,this.httpOptions)
  }
  deleteSchedule(level:any,riskCode:any,code:any){
     return this.http.delete<scheduleDetails>(`/${this.baseUrl}/quotation/api/v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`) 
@@ -186,12 +197,55 @@ export class QuotationsService {
  getExternalClaimsExperience(clientCode){
   return this.http.get(`/${this.baseUrl}/setups/api/v1/external-claims-experiences?clientCode=${clientCode}`)
  }
+ getInternalClaimsExperience(clientCode){
+  return this.http.get(`/${this.baseUrl}/setups/api/v1/internal-claims-experience?clientCode=${clientCode}`)
+ }
 
-test(){
-  return this.http.get(`/${this.testBase}/email/3/send`)
+
+ getAgents(
+  page: number | null = 0,
+  size: number | null = 10,
+  sortList: string = 'createdDate',
+
+): Observable<Pagination<AgentDTO>> {
+  const baseUrl = this.appConfig.config.contextPath.accounts_services;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+  const params = new HttpParams()
+    .set('page', `${page}`)
+    .set('size', `${size}`)
+    .set('organizationId', 2)
+    .set('sortListFields', `${sortList}`)
+  
+
+  return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`,{
+    headers:headers,
+    params: params,
+  })
+}
+quotationUtils(transactionCode){
+  const params = new HttpParams()
+  .set('transactionCode', transactionCode)
+  .set('transactionsType','QUOTATION')
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+  return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
+    headers: headers,
+    params:params
+  })
 }
 
-  }
+}
+
+  
  
 
 

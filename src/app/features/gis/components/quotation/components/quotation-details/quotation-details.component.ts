@@ -6,6 +6,7 @@ import { CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { ClauseService } from 'src/app/features/gis/services/clause/clause.service';
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { FormGroup,FormBuilder } from '@angular/forms';
@@ -22,7 +23,7 @@ import { ProductSubclassService } from '../../../setups/services/product-subclas
 import { Table } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
-
+import {NgxSpinnerService} from 'ngx-spinner';
 const log = new Logger('QuotationDetails');
 @Component({
   selector: 'app-quotation-details',
@@ -55,16 +56,20 @@ export class QuotationDetailsComponent {
   userDetails: AccountContact | ClientAccountContact | WebAdmin;
   selected:any;
   quotationSources:any
+  midnightexpiry:any
+  modalHeight: number = 200;
   @ViewChild('openModal') openModal;
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
     public clauseService:ClauseService,
     public productService:ProductService,
+    public producSetupService: ProductsService,
     public authService:AuthService,
     public sharedService:SharedQuotationsService,
     public fb:FormBuilder,
     private router: Router,
+    private spinner: NgxSpinnerService,
     public  agentService:IntermediaryService,
     public  quotationService:QuotationsService,
     public  productSubclass:ProductSubclassService,   
@@ -109,7 +114,7 @@ export class QuotationDetailsComponent {
  * Retrieves branch data from the branch service and assigns it to the 'branch' property.
  */
   getbranch(){
-    this.branchService.getBranch().subscribe(data=>{
+    this.branchService.getBranches(2).subscribe(data=>{
       this.branch = data
     })
   }
@@ -126,19 +131,21 @@ export class QuotationDetailsComponent {
  * Sets the 'currencyCode' control value in the quotation form based on the selected currency code.
  * Logs the current value of the quotation form.
  */
-  getCurrencyCode(){
-    this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
-  console.log(this.quotationForm.value)
-  }
+  // getCurrencyCode(){
+  //   console.log(this.quotationForm.value.currencyCode)
+  //   this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
+  // console.log(this.quotationForm.value)
+  // }
 
 /**
  * Retrieves all products from the product service, processes the data, and assigns it to the 'products' property.
  */
 
   getProduct(){
-    this.productService.getAllProducts().subscribe(res=>{
+    this.producSetupService.getAllProducts().subscribe(res=>{
       const ProdList = res
       this.products = ProdList
+    
     })
   
   }
@@ -202,6 +209,7 @@ export class QuotationDetailsComponent {
  * @return {void}
  */
   saveQuotationDetails(){
+    this.spinner.show()
     
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
    
@@ -214,6 +222,7 @@ export class QuotationDetailsComponent {
      */
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data;
+    this.spinner.hide()
     console.log(this.quotationNo,"Quotation results:")    
     this.router.navigate(['/home/gis/quotation/quote-assigning'])
     })
@@ -228,6 +237,7 @@ export class QuotationDetailsComponent {
        */
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data
+    this.spinner.hide()
     console.log(this.quotationForm.value)
     sessionStorage.setItem('quotationNum',this.quotationNum );
     sessionStorage.setItem('quotationCode',this.quotationCode );
@@ -244,6 +254,7 @@ export class QuotationDetailsComponent {
        */
     this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
     this.quotationNo = data;
+    this.spinner.hide()
     console.log(this.quotationNo,'quotation number output');
     this.quotationCode=this.quotationNo._embedded[0].quotationCode;
     this.quotationNum = this.quotationNo._embedded[0].quotationNumber
@@ -266,9 +277,9 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   getAgents(){
-    this.agentService.getAgents().subscribe(data=>{
+    this.quotationService.getAgents().subscribe(data=>{
       this.agents = data.content
-     
+     console.log(data)
     })
   }
    /**
@@ -277,14 +288,21 @@ export class QuotationDetailsComponent {
    * @param {string} id - The ID of the agent for which to retrieve the short description.
    * @return {void}
    */ 
-  agentShortDesc(id){
-    this.agentService.getAgentById(id).subscribe(data=>{
+  agentShortDesc(){
+    this.agentService.getAgentById(this.quotationForm.value.agentCode.id).subscribe(data=>{
       this.agentDetails = data
       this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
      
     })
     
   }
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+}
+onResize(event: any) {
+  this.modalHeight = event.height;
+}
   /**
    * Retrieves existing quotations based on form values and performs further actions.
    * @method getExistingQuotations
@@ -297,6 +315,9 @@ export class QuotationDetailsComponent {
     
     // Set currency code in the form
     this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
+    this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
+    this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
+    this.quotationForm.controls['agentCode'].setValue(this.quotationForm.value.agentCode.id);
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
       this.quotationsList = data
       this.quotation = this.quotationsList.content
@@ -352,15 +373,29 @@ export class QuotationDetailsComponent {
 updateCoverToDate(e) {
     
     const coverFromDate= e.target.value
-    if (coverFromDate) {
-      const selectedDate = new Date(coverFromDate);
-      selectedDate.setFullYear(selectedDate.getFullYear() + 1);
-      const coverToDate = selectedDate.toISOString().split('T')[0];
-      this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
-
+   
+    // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
+    //   this.productDetails = res 
+    //   console.log(this.productDetails)
+      // if(this.productDetails.expires === 'Y'){
+        this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
+          this.midnightexpiry = res
+          console.log(this.midnightexpiry)
+          this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
+        })
+       
+      // }else {
+      //   const selectedDate = new Date(coverFromDate);
+      //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
+      //   const coverToDate = selectedDate.toISOString().split('T')[0];
+      //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
+  
+       
+      // }
+    // })
      
-    } 
   }
+ 
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
    * @method updateQuotationExpiryDate
@@ -384,9 +419,8 @@ updateQuotationExpiryDate(e){
    * @param {Event} productCode - The event containing the target value representing the product code.
    * @return {void}
    */
-getProductClause(productCode){
-  
-  this.quotationService.getProductClauses(productCode.target.value).subscribe(res=>{
+getProductClause(){
+  this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res=>{
     this.clauses= res
   
   })

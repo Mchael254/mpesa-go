@@ -13,7 +13,7 @@ export const environment = {
 
   production: false,
   dmsDefaultUrl: 'http://10.176.18.101:9080/alfrescoServices',
-  TENANT_ID: API_TENANT_ID.MUTUAL,
+  TENANT_ID: API_TENANT_ID.TQV6,
   API_URLS: new Map<API_CONFIG, string>([
     [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
     [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
@@ -25,6 +25,7 @@ export const environment = {
     // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
     [API_CONFIG.NOTIFICATION_BASE_URL, 'http://10.176.18.211:1025/notification/api'],
+    [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation']
   ]),
 
 };

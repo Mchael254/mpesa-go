@@ -1,0 +1,13 @@
+<span class="nav-item dropdown">
+  <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    <span [class]="defaultLanguage" style="border-radius: 700px;  font-size: 1.7rem;"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li *ngFor="let language of languages">
+      <a class="dropdown-item" href="javascript:void(0)" (click)="selectLanguage(language)">
+        <span [class]="language.class"></span> 
+        <span style="color: black; font-size: 14px;"> {{language.lang}}</span>
+      </a>
+    </li>
+  </ul>
+</span>

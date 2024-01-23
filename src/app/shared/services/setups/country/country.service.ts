@@ -29,7 +29,14 @@ const log = new Logger('CountryService');
 })
 export class CountryService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
+  httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
 
+    })
+  }
   constructor(private appConfig: AppConfigService, private http: HttpClient) {}
 
   /**
@@ -37,7 +44,13 @@ export class CountryService {
    * @returns Observable<CountryDTO[]> list of countries
    */
   getCountries(): Observable<CountryDto[]> {
-    return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
+    log.info('Fetching countries');
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'X-TenantId': environment.TENANT_ID,
+    });
+    return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`, { headers: headers });
   }
 
   /**
@@ -69,8 +82,7 @@ export class CountryService {
   getMainCityStatesByCountry(id: number): Observable<StateDto[]> {
     log.info('Fetching city states');
     return this.http.get<StateDto[]>(
-      `/${this.baseUrl}/setups/countries/${id}/states`
-    );
+      `/${this.baseUrl}/setups/countries/${id}/states`, this.httpOptions);
   }
 
   /**
@@ -112,7 +124,7 @@ export class CountryService {
    */
   getTownsByMainCityState(id: number): Observable<TownDto[]> {
     return this.http.get<TownDto[]>(
-      `/${this.baseUrl}/setups/states/${id}/towns`
+      `/${this.baseUrl}/setups/states/${id}/towns`,this.httpOptions
     );
   }
 

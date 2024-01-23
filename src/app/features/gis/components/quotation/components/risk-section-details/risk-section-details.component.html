@@ -28,7 +28,7 @@
                 <label for="minmax-buttons" id="quote-label">Product</label>
                 <select class="form-select form-control-sm " id="quote-dropdown" formControlName="productCode">
                   <option value="">{{description}}</option>
-                  <option></option>
+                  
               </select>                
             </div>
             <div class="col-4">
@@ -44,6 +44,7 @@
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required">Subclass</label>
                   <select class="form-select form-control-sm" id="quote-dropdown" (change)="onSubclassSelected($event);loadSubclassSectionCovertype();" formControlName="subClassCode" >
+                    <option></option>
                     <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">{{subclass.description}}</option>
                   </select>
                 </div>
@@ -56,12 +57,14 @@
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label">Vehicle Make</label>
                   <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" (change)="onVehicleMakeSelected($event)">
+                    <option></option>
                     <option *ngFor="let vehicleMake of vehicleMakeList" [value]="vehicleMake.code">{{vehicleMake.name}}</option> 
                   </select>
                 </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label">Vehicle Model</label>
                   <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" (change)="onVehicleModelSelected($event)">
+                    <option></option>
                     <option *ngFor="let vehicleModel of filteredVehicleModel" [value]="vehicleModel.code">{{ vehicleModel.name }}</option>
                   </select>
                 </div>
@@ -71,8 +74,9 @@
             <div class="row mt-2 mx-4 mb-4">
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label">Risk ID</label>
-                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">  
-                 
+                  <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" [(ngModel)]="passedRiskId" (change)="riskIdPassed()">   -->
+                  <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="propertyId" (input)="riskIdPassed($event)">
+
             </div>
             <div class="col-4">
                 <label for="minmax-buttons" id="quote-label" class="required">Risk description</label>
@@ -81,16 +85,20 @@
             </div>
                 <div class="col-4">
                   <label for="minmax-buttons" id="quote-label" class="required">Cover type</label>
-                  <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription" [(ngModel)]="selectedCoverType" (change)="filterMandatorySections()">
+                  <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription" [(ngModel)]="selectedCoverType" (change)="filterMandatorySections()">
+                    <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.description}}</option>
+                  </select> -->
+                  <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="coverTypeShortDescription">
                     <option *ngFor="let covertype of subclassCoverType" [value]="covertype.coverTypeShortDescription">{{covertype.description}}</option>
                   </select>
+                  
                 </div>
                
             </div>
             <div class="row mt-2 mx-4 mb-4">
               <div class="col-4">
                 <label for="minmax-buttons" id="quote-label"  class="required">Premium band</label>
-                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"  >
+                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="binderCode" >
                     <option *ngFor="let binder of binderListDetails" [value]="binder.code">
                       {{binder.binder_name}}
                     </option>
@@ -98,17 +106,13 @@
             </div>
             <div class="col-xl-4">
               <label for="" id="quote-label">Cover From</label>
-              <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-              <!-- <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="dateWithEffectFrom" [(ngModel)]="coverFromDate" (ngModelChange)="updateCoverToDate()"> -->
-              <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="dateWithEffectFrom" [(ngModel)]="coverFromDate" (ngModelChange)="updateCoverToDate()">
+              <input type="date" id="cover-from" class="form-control form-control-sm mb-1" formControlName="dateWithEffectFrom">
 
           </div>
              
             <div class="col-xl-4">
               <label for="" id="quote-label">Cover To</label>
-              <!-- <input type="date" id="quote-input" class="form-control form-control-sm mb-1" formControlName="withEffectiveFromDate"> -->
-              <!-- <input type="date" id="cover-to" class="form-control form-control-sm mb-1"  formControlName="dateWithEffectFrom" [(ngModel)]="coverToDate"> -->
-              <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="dateWithEffectTo" [(ngModel)]="coverToDate">
+              <input type="date" id="cover-to" class="form-control form-control-sm mb-1" formControlName="dateWithEffectTo">
 
           </div>
             </div>
@@ -540,7 +544,7 @@
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </div>
-                  <div class="col-6 d-flex justify-content-center" >
+                  <div class="col-6 d-flex justify-content-end" >
                     <button type="button" class="btn btn-primary" id="importButton" data-bs-dismiss="modal">Import Files</button>
 
                   </div>
@@ -855,8 +859,11 @@
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Rate Type :</label>
                               <div class="col-7">
                                 <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="rateType">
-                                  <option ></option>
-                                  <option ></option>
+                                  <option value="FXD">Fixed</option>
+                                  <option value="RCU">Recursive</option>
+                                  <option value="RT">Rate Table</option>
+                                  <option value="ARG">Absolute Range</option>
+                                  <option value="SRG">Step Ranges</option>
                                 </select>                                          
                               </div>
                             </div>
@@ -866,8 +873,7 @@
                               <label for="minmax-buttons" class="col-5 col-form-label" id="scheduleLabel">Premium Type:</label>
                               <div class="col-7">
                                 <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="description" >
-                                  <option ></option>
-                                  <option ></option>
+                                  
                                 </select>                              
                                 </div>
                               </div>
@@ -1088,6 +1094,7 @@
                   <th>Limit Amount</th>
                   <th>Premium Rate</th>
                   <th>Rate Type</th>
+                  <th></th>
               </tr>
           </ng-template>
           <ng-template pTemplate="body" let-sectionArray let-editing="editing" let-ri="rowIndex">
