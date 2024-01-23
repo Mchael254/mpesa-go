@@ -4,7 +4,7 @@ import {AppConfigService} from '../../../../core/config/app-config-service'
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
-import { quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { PremiumComputationRequest, quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -15,8 +15,8 @@ export class QuotationsService {
   baseUrl = this.appConfig.config.contextPath.gis_services;
   setupsbaseurl = "setups/api/v1";
   testBase = this.appConfig.config.contextPath.notification_service;
-  computationUrl = this.appConfig.config.contextPath.computation_service;
 
+  computationBaseUrl = this.appConfig.config.contextPath.computation_service;
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
@@ -141,9 +141,24 @@ export class QuotationsService {
       'X-TenantId': environment.TENANT_ID,
     });
 
-    return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
+    return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{
       headers: headers,
       params:params
     })
   }
+  premiumComputationEngine(payload:PremiumComputationRequest):Observable<any>{
+    console.log("Premium Payload",JSON.stringify(payload))
+    console.log("Premium Payload",payload)
+    payload.risks.forEach(risk =>{
+      risk.limits.forEach(limit =>{
+        console.log("Limit",limit)
+
+      })
+    })
+   return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
+     console.log("Premium Payload after",payload)
+
+  }
+ 
+
 }
