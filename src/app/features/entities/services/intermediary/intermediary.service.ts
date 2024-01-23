@@ -49,6 +49,7 @@ export class IntermediaryService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
     });
 
     return this.http.get<AgentDTO>(`/${baseUrl}/agents/${id}`,{

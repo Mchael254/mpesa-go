@@ -169,4 +169,7 @@ border: 1px solid #00529B;
     font-size: 16px;
     text-align: left;
   }
+  .dropdown-item.active, .dropdown-item:active {
   
+    background-color: #00529B;
+}

@@ -5,6 +5,7 @@ import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class QuotationsService {
 
   baseUrl = this.appConfig.config.contextPath.gis_services;
   setupsbaseurl = "setups/api/v1";
-  testBase = this.appConfig.config.contextPath.notification_service
+  testBase = this.appConfig.config.contextPath.notification_service;
+  computationUrl = this.appConfig.config.contextPath.computation_service;
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -128,8 +130,20 @@ export class QuotationsService {
     const params = new HttpParams().set('quotationCode', quotationCode);
     return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`, null);
   }
-  test(){
-    return this.http.get(`/${this.testBase}/api/email/3/send`)
+  quotationUtils(transactionCode){
+    const params = new HttpParams()
+    .set('transactionCode', transactionCode)
+    .set('transactionsType','QUOTATION')
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
+    });
+
+    return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
+      headers: headers,
+      params:params
+    })
   }
-  
 }
