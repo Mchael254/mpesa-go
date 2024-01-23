@@ -330,6 +330,45 @@ p-multiSelect {
   height: 20px;
 }
 
+/* :host ::ng-deep .p-datatable-scrollable {
+  width: 20px;
+  height: 20px;
+} */
+
+
+:host ::ng-deep .p-progressbar-value {
+  border-radius: 10px;
+  background: #138700;
+  font-size: 0px;
+}
+
+:host ::ng-deep .p-progressbar {
+  width: 30%;
+  height: 3px;
+}
+
+.file-name {
+  color: #00529B;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.completed {
+  color: #138700;
+  leading-trim: both;
+  text-edge: cap;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  float: right;
+}
 
 @media (max-width: 820px) {
   .scrollable-container {

@@ -95,17 +95,15 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     })
   }
   ngOnInit(): void {
-    let client_info = StringManipulation.returnNullIfEmpty(SESSION_KEY.CLIENT_DETAILS);
+        let client_info = StringManipulation.returnNullIfEmpty(SESSION_KEY.CLIENT_DETAILS);
     this.gender = client_info?client_info['gender']:'';
     this.relation_type_service.getRelationTypes()
     .pipe(switchMap((data: any) => {
       this.relationTypeList = data;
-
       return this.medical_history_service.getListOfDisease();
     }))
     .subscribe((data) =>{
       this.diseaseList = data['data'];
-
       this.getMedicalHistoryByClientId();
     });      
 
@@ -124,49 +122,42 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
       .pipe(finalize(() => this.spinner_service.hide('medical_history_screen')))
       .subscribe(
         (data) => {
-          console.log(data['data']);
           let data_ = data['data'];
           if(data_ !== null){
             if(data_?.medical_personnel!=null){
-              data_['question1'] = 'Y'
+              data_['question1'] = 'Y';
             }
             if(data_?.pregnancy_due_date!=null){
-              data_['question2'] = 'Y'
+              data_['question2'] = 'Y';
               data_['pregnancy_due_date'] = new Date(data_?.pregnancy_due_date)
             }else{
-              data_['question2'] = 'N'
+              data_['question2'] = 'N';
             }
             if(data_?.medication_intake!=null){
-              data_['question3'] = 'Y'
+              data_['question3'] = 'Y';
               data_['medication_intake'] = data_?.medication_intake;
             }
             if(data_?.hereditary_disease!=null){
-              data_['question5'] = 'Y'
+              data_['question5'] = 'Y';
               data_['hereditary_disease'] = data_?.hereditary_disease;
             }
             if(data_?.physical_challenge){
-              data_['physical_challenge'] = 'Y'
+              data_['physical_challenge'] = 'Y';
             }else{
-              data_['physical_challenge'] = 'N'
+              data_['physical_challenge'] = 'N';
             }
-
-
             this.medicalHistoryForm.patchValue(data['data'])
-            console.log(data?.data?.dependants_info)
             if(data?.data?.dependants_info!==null){
-              this.medicalListOne = data?.data?.dependants_info.map(da => {
+              this.medicalListOne = data?.data?.dependants_info?.map((da: any) => {
                 da['isEdit'] = false;
                 return da;
               });
             }
           }
-          this.toast.success(data?.message,"Medical History" );
-
+          this.toast.success(data?.message, 'Medical History');
           this.spinner_service.hide('medical_history_screen');
         },
-        (err) => {
-          this.spinner_service.hide('medical_history_screen');
-        }
+        (err) => {this.spinner_service.hide('medical_history_screen');}
       );
   }
 
@@ -206,6 +197,10 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let deleted_pol = this.medicalListOne.find((data, x) => {
       return i === x;
     });
+    this.medicalListOne = this.medicalListOne.filter((data, x) => {
+      return i !== x;
+    });
+
     // this.medical_history_service.deleteMedicalHistory(deleted_pol['code']).subscribe(data =>{
     //   this.medicalListOne = this.medicalListOne.filter((data, x) => {
     //     return i !== x;
@@ -280,11 +275,17 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     });
   }
   addEmptyMedicalList(medicalList: any[]) {
-    this.addEntity(medicalList);
+    this.medicalListOne = this.addEntity(medicalList);
   }
 
   private addEntity(d: any[]) {
+    console.log(d);
+    
     this.editEntity = true;
+    if(d===undefined){
+      console.log(d);
+      d = []
+    }
     d.push({ isEdit: true });
     this.editEntity = false;
     return d;
@@ -320,7 +321,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
     val['client_code'] = this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['client_code'];
     val['tenant_id'] = environment.TENANT_ID;    
-    if(this.medicalListOne.length>0){
+    if(this.medicalListOne?.length>0){
       val = {...val, dependants_info:[...this.medicalListOne]}
     };
     this.medical_history_service.saveMedicalHistory(val).subscribe((data: any) => {
