@@ -11,6 +11,8 @@ import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quo
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { MenuModule } from 'primeng/menu';
+import { PanelMenuModule } from 'primeng/panelmenu';
 import { QuotationsClientDetailsComponent } from './components/quotations-client-details/quotations-client-details.component';
 import { QuotationDetailsComponent } from './components/quotation-details/quotation-details.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
@@ -46,8 +48,9 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     CalendarModule,
     DialogModule,
     InputTextModule,
-    DropdownModule
-    
+    DropdownModule,
+    MenuModule,
+    PanelMenuModule
   ],
   
 })

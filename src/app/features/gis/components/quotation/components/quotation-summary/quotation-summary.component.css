@@ -95,3 +95,24 @@
         font-weight: 700;
         line-height: 18px; 
     }
+
+    ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
+         border: 0px;
+         color:#00529B;
+         padding: 0.5rem;
+            }
+
+    ::ng-deep .p-panelmenu .p-menuitem-text {
+        
+        color: #00529B;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 18px;
+    }
+  
+    ::ng-deep .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content .p-panelmenu-header-action {
+        color: #00529B;
+        padding: 0.25rem;
+        font-weight: 700;
+    }
