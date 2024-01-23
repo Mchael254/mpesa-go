@@ -21,7 +21,7 @@ name="summary_view"
           <div class="p-4">
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Proposal Number</div>
-              <div class="col-lg-6 col-sm-12">{{ client_info?.proposal_no || "MTA/23/000053" }}</div>
+              <div class="col-lg-6 col-sm-12">{{ proposalSummaryData?.proposal_no || "-" }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Client Name</div>
@@ -81,8 +81,8 @@ name="summary_view"
         </div>
       </div>
 
-      <div class="col-lg-6 col-sm-12 gap-above">
-        <app-payment-option></app-payment-option>
+      <div class="col-lg-6 col-sm-12 gap-above" *ngIf="proposalSummaryData?.premium">
+        <app-payment-option  [payment_details] = proposalSummaryData></app-payment-option>
       </div>
     </div>
     <div style="margin-bottom: 6rem"></div>
