@@ -47,9 +47,10 @@
         <label class="form-check-label form-label" for="rememberMe">{{ 'auth.remember_me' | translate }}</label>
       </div>
       <div class="mb-3">
-        <button type="submit"
+        <button [disabled]="isTenantIdPresent()" type="submit"
                 id="login-submit"
-                class="btn btn-primary btn-full-width fadeIn"
+                [ngClass]="isTenantIdPresent()? '': 'btn-primary'"
+                class="btn btn-full-width fadeIn"
                 (click)='authAttempt()'
                 i18n='Login|Auth Login Action@@authLoginActionBtn'>
                 {{ 'auth.login' | translate }}
