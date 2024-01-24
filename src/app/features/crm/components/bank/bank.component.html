@@ -17,7 +17,7 @@
               placeholder="Search by bank name"
               aria-label="search"
               aria-describedby="search"
-
+              (input)="filterBanks($event)"
             />
           </div>
           <div class="col-8">
@@ -138,6 +138,7 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-bankbranch>
+                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
                 <tr
                   class="custom-table"
                   (click)="onBankBranchRowSelect(bankbranch)"
@@ -155,6 +156,77 @@
               <ng-template pTemplate="emptymessage">
                 <tr>
                   <td colspan="7">No bank branch detail(s) found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header bg-transparent float-start">
+        <span class="float-start mt-3">Bank charges</span>
+        <div class="row mt-3 mb-3 float-end">
+          <div>
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openBankChargeModal()"></i
+              ></span>
+            <span class="icon-circle"
+            ><i class="pi pi-pencil" (click)="editBankCharge()"></i
+            ></span>
+            <span class="icon-circle"
+            ><i
+              class="fa-regular fa-trash-can"
+              (click)="deleteBankCharge()"
+            ></i
+            ></span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mb-5">
+          <div class="col-12">
+            <p-table
+              #bankChargeTable
+              [value]="bankChargeData"
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              styleClass="p-datatable-sm"
+              responsiveLayout="scroll"
+              [scrollable]="true"
+              scrollHeight="400px"
+              class="ui-datatable"
+              [globalFilterFields]="['rate']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="head">Rate</th>
+                  <th class="head">Date from</th>
+                  <th class="head">Date to</th>
+                  <th class="head">Rate type</th>
+                  <th class="head">System</th>
+                  <th class="head">Product</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-bankCharge>
+                <tr
+                  class="custom-table"
+                  (click)="onBankChargeRowSelect(bankCharge)"
+                  [class.selected]="selectedBankCharge === bankCharge"
+                >
+                  <td class="body">{{ bankCharge.rate }}</td>
+                  <td class="body">{{ bankCharge.dateFrom | date:'MMMM d, yyyy'}}</td>
+                  <td class="body">{{ bankCharge.dateTo | date:'MMMM d, yyyy'}}</td>
+                  <td class="body">{{ bankCharge.rateType }}</td>
+                  <td class="body">{{ bankCharge.systemName | titlecase }}</td>
+                  <td class="body">{{ bankCharge.productName | titlecase }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6">No bank charge detail(s) found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -401,7 +473,7 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveBank()">
+        <button type="button" id="saveBankBtn" class="btn btn-primary" (click)="saveBank()">
           Save Details
         </button>
       </div>
@@ -668,7 +740,161 @@
         </form>
       </div>
       <div class="modal-footer border-top-0">
-        <button type="button" class="btn btn-primary" (click)="saveBankBranch()">
+        <button type="button" id="saveBankBranchBtn" class="btn btn-primary" (click)="saveBankBranch()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  #bankChargeModal
+  id="bankChargeModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">Define a bank charge</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeBankChargeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createBankChargeForm">
+          <div class="row">
+            <ng-container *ngIf="visibleStatus.rate === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="rate" class="form-label">Rate</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="rate"
+                  placeholder="Rate"
+                  formControlName="rate"
+                  [ngClass]="{ 'is-invalid': h['rate']?.invalid && (h['rate']?.dirty || h['rate']?.touched) }"
+                />
+                <div *ngIf="h['rate']?.invalid && (h['rate']?.dirty || h['rate']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['rate']?.errors['required']">Rate is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.dateFrom === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="dateFrom" class="form-label">Date from</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dateFrom"
+                  placeholder="Date from"
+                  formControlName="dateFrom"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  [ngClass]="{ 'is-invalid': h['dateFrom']?.invalid && (h['dateFrom']?.dirty || h['dateFrom']?.touched) }"
+                />
+                <div *ngIf="h['dateFrom']?.invalid && (h['dateFrom']?.dirty || h['dateFrom']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['dateFrom']?.errors['required']">Date from is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.dateTo === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="dateTo" class="form-label">Date to</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="dateTo"
+                  placeholder="Date to"
+                  formControlName="dateTo"
+                  onfocus="(this.type='date')"
+                  onblur="(this.type='text')"
+                  [ngClass]="{ 'is-invalid': h['dateTo']?.invalid && (h['dateTo']?.dirty || h['dateTo']?.touched) }"
+                />
+                <div *ngIf="h['dateTo']?.invalid && (h['dateTo']?.dirty || h['dateTo']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['dateTo']?.errors['required']">Date to is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.rateType === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="rateType" class="form-label">Rate type</label>
+                <p-dropdown
+                  [options]="bankChargeRateTypesData"
+                  optionLabel="name"
+                  optionValue="value"
+                  formControlName="rateType"
+                  id="rateType"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '48%' }"
+                  placeholder="Select rate type"
+                  [ngClass]="{ 'is-invalid': h['rateType']?.invalid && (h['rateType']?.dirty || h['rateType']?.touched) }"
+                >
+                </p-dropdown>
+
+                <div *ngIf="h['rateType']?.invalid && (h['rateType']?.dirty || h['rateType']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['rateType']?.errors['required']">Rate type is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.system === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="system" class="form-label">System</label>
+                <p-dropdown
+                  [options]="systemsData"
+                  [(ngModel)]="selectedSystem"
+                  optionLabel="systemName"
+                  formControlName="system"
+                  id="system"
+                  [filter]="true"
+                  filterBy="systemName"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '48%' }"
+                  placeholder="Select system"
+                  (onChange)="onSystemChange($event)"
+                  [ngClass]="{ 'is-invalid': h['system']?.invalid && (h['system']?.dirty || h['system']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="h['system']?.invalid && (h['system']?.dirty || h['system']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['system']?.errors['required']">System is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.product === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="product" class="form-label">Product</label>
+                <p-dropdown
+                  [options]="productList"
+                  optionLabel="description"
+                  formControlName="product"
+                  id="product"
+                  [filter]="true"
+                  filterBy="description"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '48%' }"
+                  placeholder="Select product"
+                  [ngClass]="{ 'is-invalid': h['product']?.invalid && (h['product']?.dirty || h['product']?.touched) }"
+                >
+                </p-dropdown>
+                <div *ngIf="h['product']?.invalid && (h['product']?.dirty || h['product']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['product']?.errors['required']">Product is required</div>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="saveBankCharge()">
           Save Details
         </button>
       </div>
@@ -691,3 +917,12 @@
   (confirmed)="confirmBankBranchDelete()"
   #bankBranchConfirmationModal
 ></app-reusable-input>
+
+<app-reusable-input
+  [modalId]="'bankChargeConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this bank charge?'"
+  (confirmed)="confirmBankChargeDelete()"
+  #bankChargeConfirmationModal
+></app-reusable-input>
+<div class="mobile-bottom"></div>
