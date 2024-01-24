@@ -10,6 +10,8 @@
           <div class="add-client-button-container">
             <button class="btn btn-success m-1 rounded-circle" *ngIf="quatationCalType === 'D'" (click)="showDetailedCoverDetailsModal()">&plus;</button>
             <button class="btn btn-success m-1 rounded-circle" *ngIf="quatationCalType === 'A'" (click)="showAggregateCoverDetailsModal()">&plus;</button>
+            <p-multiSelect [options]="columnOptionsCvt" [(ngModel)]="selectedColumnsAggregateCvt">
+            </p-multiSelect>
         </div>
               <!-- modal to capture detailed cover types details -->
               <div class="modal fade" tabindex="-1" #detailedModal id="detailedModal" aria-labelledby="detailedModalLabel" aria-hidden="true"
@@ -360,7 +362,7 @@
 <!-- detailed -->
 <div *ngIf="quatationCalType === 'D'">
     <p-table [value]="coverTypes" [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template pTemplate="header">
+        <ng-template pTemplate="header" styleClass="p-datatable-striped">
           <tr>
             <th>Cover type</th>
             <th>Dependant type</th>
@@ -406,45 +408,46 @@
       [tableStyle]="{'min-width': '50rem'}"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       [rowsPerPageOptions]="[10, 25, 50]"
+      styleClass="p-datatable-striped"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th>Cover type</th>
-          <th>Dependant type</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('cvt_desc')">Cover type</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('dty_description')">Dependant type</th>
           <!-- <th>Rate type</th> -->
-          <th>Select Rate</th>
-          <th>Premium mask</th>
-          <th>Premium rate</th>
-          <th>Rate div factor</th>
-          <th>% of main/yr SA</th>
-          <th>No of Members</th>
-          <th>Average Earnings per member</th>
-          <th>Total member earnings</th>
-          <th>Average ANB</th>
-          <th>Override Premium</th>
-          <th>Sum Assured</th>
-          <th>Action</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('use_cvr_rate')">Select Rate</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_mask_short_description')">Premium mask</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('premium_rate')">Premium rate</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('rate_division_factor')">Rate div factor</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('main_sumassured_percentage')">% of main/yr SA</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('total_members')">No of Members</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('average_earning_per_member')">Average Earnings per member</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('total_member_earnings')">Total member earnings</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('average_anb')">Average ANB</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('but_charge_premium')">Override Premium</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('sum_assured')">Sum Assured</th>
+          <th *ngIf="selectedColumnsAggregateCvt.includes('action')">Action</th>
         </tr>
       </ng-template>
   
       <ng-template pTemplate="body" let-coverTypes>
         <tr>
-            <td class="odd-column" style="text-align: left; width: 13.5%">{{ coverTypes.cvt_desc | titlecase }}</td>
-            <td class="even-column" style="text-align: left; width: 6.5%">{{ coverTypes.dty_description | titlecase }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('cvt_desc')" style="text-align: left; width: 13.5%">{{ coverTypes.cvt_desc | titlecase }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('dty_description')" style="text-align: left; width: 6.5%">{{ coverTypes.dty_description | titlecase }}</td>
             <!-- <td style="text-align: right;">{{ coverTypes.cvt_rate_type }}</td> -->
-            <td class="odd-column" style="text-align: left; width: 12.5%">{{ getUseCvrRateDescription(coverTypes.use_cvr_rate) }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('use_cvr_rate')" style="text-align: left; width: 12.5%">{{ getUseCvrRateDescription(coverTypes.use_cvr_rate) }}</td>
            
-            <td class="even-column" style="text-align: left; width: 7.5%" id="tdStyle">{{ coverTypes.premium_mask_short_description }}</td>
-            <td class="odd-column" style="text-align: center; width: 4.5%" id="tdStyle">{{ coverTypes.premium_rate }}</td>
-            <td class="even-column" style="text-align: right; width: 5.5%" id="tdStyle">{{ coverTypes.rate_division_factor | number }}</td>
-            <td class="odd-column" style="text-align: right; width: 7%" id="tdStyle">{{ coverTypes.main_sumassured_percentage }}</td>
-            <td class="even-column" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.total_members }} </td>
-            <td class="odd-column" class="odd-column" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.average_earning_per_member | number }}</td>
-            <td class="even-column" style="text-align: right; width: 9.5%" id="tdStyle">{{ coverTypes.total_member_earnings | number }}</td>
-            <td class="odd-column" class="odd-column" style="text-align: center; width: 4.5%" id="tdStyle">{{ coverTypes.average_anb }} </td>
-            <td class="even-column" style="text-align: right; width: 6.5%" id="tdStyle">{{ coverTypes.but_charge_premium | number}} </td>
-            <td class="odd-column" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.sum_assured | number }}</td>
-            <td style="text-align: right;">
+            <td *ngIf="selectedColumnsAggregateCvt.includes('premium_mask_short_description')" style="text-align: left; width: 7.5%" id="tdStyle">{{ coverTypes.premium_mask_short_description }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('premium_rate')" style="text-align: center; width: 4.5%" id="tdStyle">{{ coverTypes.premium_rate }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('rate_division_factor')" style="text-align: right; width: 5.5%" id="tdStyle">{{ coverTypes.rate_division_factor | number }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('main_sumassured_percentage')" style="text-align: right; width: 7%" id="tdStyle">{{ coverTypes.main_sumassured_percentage }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('total_members')" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.total_members }} </td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('average_earning_per_member')" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.average_earning_per_member | number }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('total_member_earnings')" style="text-align: right; width: 9.5%" id="tdStyle">{{ coverTypes.total_member_earnings | number }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('average_anb')" style="text-align: center; width: 4.5%" id="tdStyle">{{ coverTypes.average_anb }} </td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('but_charge_premium')" style="text-align: right; width: 6.5%" id="tdStyle">{{ coverTypes.but_charge_premium | number}} </td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('sum_assured')" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.sum_assured | number }}</td>
+            <td *ngIf="selectedColumnsAggregateCvt.includes('action')" style="text-align: right;">
                 <button class="edit-button" (click)="showEditAggregateCoverDetailsModal(coverTypes)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </button>
@@ -461,7 +464,7 @@
 
 
         <h5 class="mt-5 mb-1">Category details</h5>
-        <div style="max-width: 50rem;">
+        <div style="max-width: 40rem;">
           <div class="add-client-button-container">
             <button class="btn btn-success m-1 rounded-circle" (click)="showCategoryDetstModal()">&plus;</button>
           </div>
@@ -548,7 +551,8 @@
           <!-- end of modal to capture category details -->
 
 <p-table *ngIf="categoryDetails" [value]="categoryDetails" [rows]="10" [showCurrentPageReport]="true" [tableStyle]="{'max-width': '50rem'}"
-         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         styleClass="p-datatable-striped">
     <ng-template pTemplate="header">
         <tr>
             <th style="width:12.5%">Short description</th>
@@ -582,7 +586,7 @@
         <tr>
             <td></td>
             <td *ngIf="categoryDetails && categoryDetails.length === 0" colspan="4">
-                    No record captured. Click on + icon to add.
+                    <span style="color: black;">No record captured. Click on + icon to add.</span>
             </td>
         </tr>
     </ng-template>
@@ -590,33 +594,59 @@
 
         </div>
 
-            <div>
-                <h5 class="mt-5">Member details</h5>
-                <h6 style="color: black;">Add members</h6>
-                      <h6 style="color: gray;">
+        <ng-container *ngIf="quatationCalType === 'D' ">    
+        <div>
+                <h5 class="mt-5 member-dets">Member details</h5>
+                <h6 class="add-member" style="margin-top: 22px;">Add members</h6>
+                      <h6 class="download-member" style="margin-top: 12px;">
                         Download member upload template
                         <a style="text-decoration: underline; cursor: pointer;" (click)="downloadMemberUploadTemplate()" class="link">here</a>
                       </h6>
-                <div class="p-col-3">
-                    <h6 style="color: rgb(44, 43, 43);">Upload member details template</h6>
-                    <input type="file" #fileInput style="display: none;" accept=".csv">
-                    <button class="choose-file" (click)="openFileInput()">
+                <div class="p-col-3" style="margin-top: 24px;">
+                    <!-- <h6 style="color: rgb(44, 43, 43);">Upload member details template</h6> -->
+                    
+                    <!-- <button class="choose-file" (click)="fileInput.click()">
+                        <span class="file-text">Choose file</span>
+                        <input type="file" #fileInput style="display: none;" accept=".csv"
+                        (change)="handleFileChange($event)">
+                    </button> -->
+
+                    <input type="file" #fileInput style="display: none;" accept=".csv" (change)="handleFileChange($event)">
+                    <button class="choose-file" (click)="fileInput.click()">
                         <span class="file-text">Choose file</span>
                     </button>
+                    <div style="margin-top: 25px;" *ngIf="fileInput.files && fileInput.files.length > 0">
+                        <div style="width: 30%;">
+                            <span class="file-name">{{ fileInput.files[0].name }}</span>
+                            <span *ngIf="uploadProgress === 100" class="file-name">(100%)</span>
+                            <span class="completed" *ngIf="uploadProgress === 100">Completed</span>
+                        </div>
+                    <p-progressBar [value]="uploadProgress">
+                        <ng-template pTemplate="content" let-value>
+                            <span>{{ value }}%</span>
+                        </ng-template>
+                    </p-progressBar>
+                    </div>
+                    
+                    
+
+
+                    <!-- <input type="file" (change)="handleFileChange($event)"> -->
                 </div>
                 </div>
-            <div class="mt-5">
+            <div class="" style="margin-top: 43px;">
                 <div class="col-md-12 mb-1">
                     
                     <!-- search in member details table -->
 
-                  <form [formGroup]="searchFormMemberDets">
-                    <div class="custom-row">
-                        <div class="col-md-11 col-lg-11 col-sm-12 col-xs-12">
+                    <!-- <div class="custom-row">
+                    <form [formGroup]="searchFormMemberDets">
+                    
+                        <div class="col-md-11 col-lg-11 col-sm-12 col-xs-12" style="background-color: aqua;">
                           <div class="d-flex justify-content-end">
                             <div class="scrollable-container">
-                            <div class="col-xs-12" style="display: inline-block; color: black;">Filter by</div>
-                            <div class="col-md-2 col-sm-12 form-groupp searchForm" style="display: inline-block; padding-left: 5px;">
+                            <div class="col-md-1 col-xs-12" style="display: inline-block; color: black;">Filter by</div>
+                            <div class="col-md-3 col-sm-12 form-groupp searchForm" style="display: inline-block; padding-left: 5px;">
                                 <p-dropdown id='filterby'
                                 [options]='membersDetails'
                                 [optionLabel]="'surname'"
@@ -626,7 +656,7 @@
                                 >
                                 </p-dropdown>
                             </div>
-                            <div class="col-md-2 col-sm-12 searchForm" style="display: inline-block; margin-left: 5px;">
+                            <div class="col-md-3 col-sm-12 searchForm" style="display: inline-block; margin-left: 5px;">
                               <input 
                                 type="text"
                                 pInputText
@@ -646,7 +676,7 @@
                                 placeholder="Enter value"
                               >
                             </div>
-                            <div class="col-md-2 col-sm-12 searchForm search">
+                            <div class="col-md-3 col-sm-12 searchForm search">
                                 <div class="box">
                                     <i class="fa fa-search" aria-hidden="true"></i>
                                   <input
@@ -663,15 +693,30 @@
                           </div>
                         </div>
                         </div>
+                    </form>
                         
-                        <div class="col-md-1 col-lg-1 col-sm-12 col-xs-12 ">
+                        <div class="col-md-1 col-lg-1 col-sm-12 col-xs-12 " style="background-color: blue;">
                             <div class="add-client-button-container">
                               <button class="btn btn-success m-1 rounded-circle" (click)="addMemberDetailsModal()">&plus;</button>
+                              <p-multiSelect [options]="columnOptionsMembers" [(ngModel)]="selectedColumnsMembers">
+                            </p-multiSelect>
                             </div>
                         </div>
-                      </div>
+                    </div>
+                      </div> -->
                       
-                  </form>
+                      <div class="form">
+                        <i class="fa fa-search"></i>
+                        <input type="text" class="form-control form-input" placeholder="Search">
+
+                        <div class="add-client-button-container">
+                            <button class="btn btn-success m-1 rounded-circle" (click)="addMemberDetailsModal()">&plus;</button>
+                        </div>
+            
+                        <p-multiSelect [options]="columnOptionsMembers" [(ngModel)]="selectedColumnsMembers">
+                        </p-multiSelect>
+                      </div>
+                  <!-- </form> -->
                   <!-- end of search in member details table  -->
 
                    <!-- modal to capture member details -->
@@ -876,40 +921,40 @@
                      </div>
                    </div>
               <!-- end of modal to capture member details -->
-             
-                    <div class="field-checkbox" style="padding-bottom: 5px;">
-                        <label style="margin-right: 10px;">Show All Columns</label>
-                        <p-checkbox (onChange)="toggleShowAllColumns()" [binary]="true"></p-checkbox>
-                <p-table [value]="membersDetails" [tableStyle]="{'max-width': '100%'}">
+                    <div>
+                <p-table [value]="membersDetails" [tableStyle]="{'max-width': '100%'}"
+                styleClass="p-datatable-striped" [paginator]="true"
+                [rows]="5"
+                [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th pSortableColumn="surname" style="width:auto">Surname <p-sortIcon field="surname"></p-sortIcon></th>
-                            <th pSortableColumn="other_names" style="width:auto">Other name <p-sortIcon field="other_names"></p-sortIcon></th>
-                            <th pSortableColumn="date_of_birth" style="width:auto">Date of birth <p-sortIcon field="date_of_birth"></p-sortIcon></th>
-                            <th pSortableColumn="gender" style="width:auto">Gender <p-sortIcon field="gender"></p-sortIcon></th>
-                            <th *ngIf="showAllColumns" pSortableColumn="member_number" style="width:auto">Payroll/Member no <p-sortIcon field="member_number"></p-sortIcon></th>
-                            <th pSortableColumn="description" style="width:auto">Category <p-sortIcon field="description"></p-sortIcon></th>
-                            <th *ngIf="showAllColumns" pSortableColumn="dty_description" style="width:auto">Dependant type <p-sortIcon field="dty_description"></p-sortIcon></th>
-                            <th *ngIf="showAllColumns" pSortableColumn="monthly_earnings" style="width:auto">Monthly earnings <p-sortIcon field="monthly_earnings"></p-sortIcon></th>
-                            <th *ngIf="showAllColumns" pSortableColumn="date_joined" style="width:auto">Joining date<p-sortIcon field="date_joined"></p-sortIcon></th>
-                            <th *ngIf="showAllColumns" pSortableColumn="member_number" style="width:10%">Main member no<p-sortIcon field="member_number"></p-sortIcon></th>
-                            <th style="width:auto">Action</th>
+                            <th *ngIf="selectedColumnsMembers.includes('surname')" pSortableColumn="surname" style="width:auto">Surname <p-sortIcon field="surname"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('other_names')" pSortableColumn="other_names" style="width:auto">Other name <p-sortIcon field="other_names"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('date_of_birth')" pSortableColumn="date_of_birth" style="width:auto">Date of birth <p-sortIcon field="date_of_birth"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('gender')" pSortableColumn="gender" style="width:auto">Gender <p-sortIcon field="gender"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:auto">Payroll/Member no <p-sortIcon field="member_number"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('description')" pSortableColumn="description" style="width:auto">Category <p-sortIcon field="description"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('dty_description')" pSortableColumn="dty_description" style="width:auto">Dependant type <p-sortIcon field="dty_description"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('monthly_earnings')" pSortableColumn="monthly_earnings" style="width:auto">Monthly earnings <p-sortIcon field="monthly_earnings"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('date_joined')" pSortableColumn="date_joined" style="width:auto">Joining date<p-sortIcon field="date_joined"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('member_number')" pSortableColumn="member_number" style="width:10%">Main member no<p-sortIcon field="member_number"></p-sortIcon></th>
+                            <th *ngIf="selectedColumnsMembers.includes('action')" style="width:auto">Action</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-membersDetails>
                         <tr>
-                          <td id="tdStyle">{{ membersDetails.surname }}</td>
-                          <td id="tdStyle">{{ membersDetails.other_names }}</td>
-                          <td id="tdStyle">{{ membersDetails.date_of_birth }}</td>
-                          <td id="tdStyle">{{ membersDetails.gender }}</td>
-                          <td id="tdStyle" *ngIf="showAllColumns">{{ membersDetails.member_number }}</td>
-                          <td id="tdStyle">{{ membersDetails.description }}</td>
-                          <td id="tdStyle" *ngIf="showAllColumns">{{ membersDetails.dty_description  }}</td>
-                          <td id="tdStyle" *ngIf="showAllColumns">{{ membersDetails.monthly_earnings }}</td>
-                          <td id="tdStyle" *ngIf="showAllColumns">{{ membersDetails.date_joined }}</td>
-                          <td *ngIf="showAllColumns" id="tdStyle">{{ membersDetails.member_number }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('surname')" id="tdStyle">{{ membersDetails.surname }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('other_names')" id="tdStyle">{{ membersDetails.other_names }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('date_of_birth')" id="tdStyle">{{ membersDetails.date_of_birth }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('gender')" id="tdStyle">{{ membersDetails.gender }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('description')" id="tdStyle">{{ membersDetails.description }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('dty_description')" id="tdStyle">{{ membersDetails.dty_description  }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('monthly_earnings')" id="tdStyle">{{ membersDetails.monthly_earnings }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('date_joined')" id="tdStyle">{{ membersDetails.date_joined }}</td>
+                          <td *ngIf="selectedColumnsMembers.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
                           <!-- <td><i class="fas fa-ellipsis-v"></i></td> -->
-                          <td style="text-align: center;">
+                          <td *ngIf="selectedColumnsMembers.includes('action')" style="text-align: center;">
                             <!-- <button class="edit-button">
                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                             </button> -->
@@ -933,6 +978,7 @@
             </div>
     </div>
 </div>
+</ng-container>
 <div>
     <button
       type="button"

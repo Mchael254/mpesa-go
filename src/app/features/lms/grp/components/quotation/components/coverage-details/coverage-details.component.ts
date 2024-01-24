@@ -5,11 +5,12 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { formatDate } from '@angular/common';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { MessageService } from "primeng/api";
+import { MessageService, SelectItem } from "primeng/api";
 import { CategoryDetailsDto } from '../../models/categoryDetails';
 import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
+import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
 
 
 @AutoUnsubscribe
@@ -43,7 +44,6 @@ isDisabled: boolean = false;
 membersDetails: MembersDTO[];
 memberCode: number;
 premiumMask: PremiumMaskDTO[];
-showAllColumns: boolean = false;
 selectedRateType: string;
 productCode: number
 productType: string;
@@ -51,6 +51,11 @@ showStateSpinner: boolean;
 showTownSpinner: boolean;
 occupation: OccupationDTO[];
 selectedPmasCode: number;
+columnOptionsMembers: SelectItem[];
+columnOptionsCvt: SelectItem[];
+selectedColumnsMembers: string[];
+selectedColumnsAggregateCvt: string[];
+uploadProgress: number = 0;
 
   constructor (
     private fb: FormBuilder,
@@ -60,7 +65,8 @@ selectedPmasCode: number;
     private cdr: ChangeDetectorRef,
     private session_storage: SessionStorageService,
     private spinner_Service: NgxSpinnerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private http: HttpClient
     ) {}
     
 ngOnInit() {
@@ -80,11 +86,51 @@ ngOnInit() {
   this.memberDetsForm();
   this.getOccupations();
   this.getPmasCodeToEdit();
+  this.memberDetailsColumns();
+  this.aggregateCvtDetsColumns();
   
 }
 
 ngOnDestroy(): void {
 
+}
+
+memberDetailsColumns() {
+  this.columnOptionsMembers = [
+    { label: 'Surname', value: 'surname' },
+    { label: 'Other name', value: 'other_names' },
+    { label: 'Date of birth', value: 'date_of_birth' },
+    { label: 'Gender', value: 'gender' },
+    { label: 'Payroll/Member no', value: 'member_number' },
+    { label: 'Category', value: 'description' },
+    { label: 'Dependant type', value: 'dty_description' },
+    { label: 'Monthly earnings', value: 'monthly_earnings' },
+    { label: 'Joining date', value: 'date_joined' },
+    { label: 'Main member no', value: 'member_number' },
+    { label: 'Action', value: 'action' },
+];
+
+this.selectedColumnsMembers = this.columnOptionsMembers.map(option => option.value);
+}
+
+aggregateCvtDetsColumns() {
+  this.columnOptionsCvt = [
+    { label: 'Cover type', value: 'cvt_desc' },
+    { label: 'Dependant type', value: 'dty_description' },
+    { label: 'Select Rate', value: 'use_cvr_rate' },
+    { label: 'Premium mask', value: 'premium_mask_short_description' },
+    { label: 'Premium rate', value: 'premium_rate' },
+    { label: 'Rate div factor', value: 'rate_division_factor' },
+    { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
+    { label: 'Average Earnings per member', value: 'average_earning_per_member' },
+    { label: 'Total member earnings', value: 'total_member_earnings' },
+    { label: 'Average ANB', value: 'average_anb' },
+    { label: 'Override Premium', value: 'but_charge_premium' },
+    { label: 'Sum Assured', value: 'sum_assured' },
+    { label: 'Action', value: 'action' },
+];
+
+this.selectedColumnsAggregateCvt = this.columnOptionsCvt.map(option => option.value);
 }
 
 
@@ -121,10 +167,7 @@ addMemberDependantType = [
 //     this.quotationCode = queryParams['quotationCode'];
 //   });
 // }
-
-toggleShowAllColumns() {
-  this.showAllColumns = !this.showAllColumns;
-} 
+ 
 
 searchFormMember() {
   this.searchFormMemberDets = this.fb.group({
@@ -333,9 +376,56 @@ memberDetsForm() {
     }
   }
 
-  openFileInput() {
+  // handleFileChange(event) {
+  //   this.spinner_Service.show('download_view');
+  //   const selectedFile = event.target.files[0];
+  //   const formData = new FormData();
+  //   formData.append('file', selectedFile)
+  //   this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe((res) => {
+  //     this.spinner_Service.hide('download_view');
+  //     this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
+  //     this.getMembers();
+  //     console.log('uploadTemplateResponse', res)
+  //   },
+  //   (error) => {
+  //     console.log('uploadTemplateError', error)
+  //     this.spinner_Service.hide('download_view');
+  //   });
+  // }
 
-  }
+  handleFileChange(event) {
+    const selectedFile = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        if (progress < 100) {
+            progress += 1;
+            this.uploadProgress = progress;
+        }
+    }, 1000);
+
+    this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe(
+        (res) => {
+            clearInterval(interval);
+            this.uploadProgress = 100;
+            this.spinner_Service.hide('download_view');
+            this.messageService.add({
+                severity: 'success',
+                summary: 'summary',
+                detail: 'Template uploaded successfully'
+            });
+            this.getMembers();
+            console.log('uploadTemplateResponse', res);
+        },
+        (error) => {
+            clearInterval(interval);
+            console.log('uploadTemplateError', error);
+        }
+    );
+}
 
   closeDetailedModal() {
     const modal = document.getElementById('detailedModal');
@@ -838,13 +928,16 @@ memberDetsForm() {
       "product_code": this.productCode,
       "loading_discount": "N",
       "multiple_earnings_period": 4,
-      "dty_description": "TEST",
+      "dty_description": "DEFAULT",
+      "dependant_type_code": 1000,
+      "staff_description": "DEFAULT",
     };
     const coverToPostArray = [coverToPost];
     console.log("coverToPost edit", coverToPost)
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
+      this.getCategoryDets();
       this.cdr.detectChanges();
       this.detailedCovDetsForm.reset();
       this.spinner_Service.hide('download_view');
@@ -889,15 +982,17 @@ memberDetsForm() {
           "product_code": this.productCode,
           "multiple_earnings_period": 4,
           "dependant_type_code": 1000,
-          "dty_description": "TEST",
+          "dty_description": "DEFAULT",
           "apply_commission_expense_loading": "N",
           "sum_assured_limit": 0,
+          "staff_description": "DEFAULT",
     };
     console.log("coverToPostArrayForEditedCover", coverToPost)
     const coverToPostArray = [coverToPost];
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
+      this.getCategoryDets();
       this.cdr.detectChanges();
       this.aggregateForm.reset();
       this.closeAggregateCoverDetailsModal();
@@ -973,7 +1068,7 @@ memberDetsForm() {
   }
 
   deleteMember(membersDetails: MembersDTO) {
-    const confirmation = window.confirm('Are you sure you want to delete this Cover Type?');
+    const confirmation = window.confirm('Are you sure you want to delete this Member?');
     if (confirmation) {
       this.spinner_Service.show('download_view');
       const coverIdToDelete = membersDetails.member_code;

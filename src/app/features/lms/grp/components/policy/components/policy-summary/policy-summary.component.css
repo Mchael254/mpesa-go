@@ -1,6 +1,6 @@
 * {
   /* for every element */
-  font-family: Roboto;
+  /* font-family: Roboto; */
   font-style: normal;
   /* font-size: 16px; */
 }
@@ -86,4 +86,53 @@
 
 .back-text {
   color: #00529B;
+}
+
+.accordion-item {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.accordion-button {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.accordion-button {
+  border-radius: 0;
+}
+
+.accordion-button {
+  padding: 1rem;
+  margin: 0;
+}
+
+.accordion-button:hover {
+  background-color: transparent;
+}
+
+.accordion-header {
+    color: #00529B;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.hidden-elements {
+  display: none;
+  text-align: center;
+}
+
+.hiper-link:hover .hidden-elements {
+  display: inline-block;
+}
+
+td {
+  padding-left: 20px;
 }
