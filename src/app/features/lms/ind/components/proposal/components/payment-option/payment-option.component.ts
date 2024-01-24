@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-// import { PaystackOptions } from 'angular4-paystack';
+import { PaystackOptions } from 'angular4-paystack';
 
 
 @Component({
@@ -13,6 +13,9 @@ import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 @AutoUnsubscribe
 export class PaymentOptionComponent implements OnInit, OnDestroy{
 
+
+  @Input() payment_details: any = {};
+
   isMpesaSelected: boolean;
   isCardSelected: boolean;
   isBankSelected: boolean;
@@ -22,11 +25,11 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   // paymentInstance: PaymentInstance;
   token :string
   paystack_details: {key?: string, email?:string, amount?: string, reference?: string} = {};
-  // options: PaystackOptions =  {
-  //   amount: 50000 * 100,
-  //   email: 'user@mail.com',
-  //   ref: `ref-${Math.ceil(Math.random() * 10e13)}`
-  // }
+  options: PaystackOptions =  {
+    amount: this.payment_details?.premium * 100,
+    email: 'user@mail.com',
+    ref: `ref-${Math.ceil(Math.random() * 10e13)}`
+  }
 
  
 
@@ -35,8 +38,12 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   constructor(private bank_service: BankService){  }
   ngOnInit(): void {
     // this.getBankList();
+    console.log(this.payment_details);
+    
+    
     this.paystack_details['key'] = 'sk_test_9f5e8c96f1af351cb674ed100e20a28c56cffd17';
-    // this.options = {...this.options }
+    this.options['amount'] = Math.ceil(this.payment_details['premium'])*100;
+    this.options = {...this.options }
 
   }
 
@@ -45,9 +52,11 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
 
   paymentInit() {
     console.log( this.paystack_details['reference'] );
-    // console.log( this.options['ref'] );
+    console.log( this.options['ref'] );
 
     console.log('Payment initialized');
+    console.log(this.payment_details);
+
   }
 
   paymentDone(ref: any) {
@@ -59,7 +68,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
 
   paymentCancel() {
     console.log('payment failed');
-    // this.options = {...this.options };
+    this.options = {...this.options };
   }
 
   

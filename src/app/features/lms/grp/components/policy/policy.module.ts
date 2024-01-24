@@ -10,6 +10,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { PolicyRoutingModule } from './policy-routing.module';
 import { PolicyListingComponent } from './components/policy-listing/policy-listing.component';
+import { AccordionModule } from 'primeng/accordion';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { PolicyListingComponent } from './components/policy-listing/policy-listi
     TableModule,
     DropdownModule,
     CalendarModule,
-    RadioButtonModule
+    RadioButtonModule,
+    AccordionModule,
+    MultiSelectModule,
   ]
 })
 export class PolicyModule { }

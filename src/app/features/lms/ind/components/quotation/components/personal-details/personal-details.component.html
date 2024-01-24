@@ -9,7 +9,16 @@
     </div>
   </div>
 
-  <div class="full-border" [formGroup]="clientDetailsForm">
+  <div class="full-border" [formGroup]="clientDetailsForm" style=" position: relative;">
+    <ngx-spinner
+name="client_details_view"
+  type="ball-clip-rotate-multiple"
+
+  [fullScreen]="false"
+  color="#00529B"
+  size="medium"
+  bdColor="rgba(255, 255, 255, 0.9)"
+></ngx-spinner>
     <div class="d-flex justify-content-between">
       <div class="fw-bold m-3 text-black">Client Details</div>
       <button
@@ -1471,7 +1480,16 @@
   style="color: #333"
 >
   <div class="modal-dialog">
-    <div class="modal-content p-4 w-75" style="font-size: 12px;">
+    <div class="modal-content p-4 w-75" style="font-size: 12px; position: relative;">
+          <ngx-spinner
+      name="beneficiary_modal_screen"
+        type="ball-clip-rotate-multiple"
+
+        [fullScreen]="false"
+        color="#00529B"
+        size="medium"
+        bdColor="rgba(255, 255, 255, 0.9)"
+      ></ngx-spinner>
       <div class="modal-body">
         <div [formGroup]="beneficiaryForm">
           <div class="modal-title fw-bold py-2" id="categoryDetsModal">

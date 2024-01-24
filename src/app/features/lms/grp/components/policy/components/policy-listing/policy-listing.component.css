@@ -5,10 +5,13 @@
     background: #FFF;
 }
 
+/* search form and select column dropdown begins */
 .form {
     position: relative;
     width: 270px;
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
 .form .fa-search {
@@ -33,6 +36,7 @@
     text-indent: 33px;
     border-radius: 4px;
     width: 100%;
+    flex: 1;
 }
 
 .form-input:focus {
@@ -40,6 +44,50 @@
     border: 1;
 }
 
+p-multiSelect {
+    margin-left: 10px;
+    margin-top: 15px;
+  }
+  
+  :host ::ng-deep .p-multiselect-label-container {
+    display: none;
+  }
+  
+  :host ::ng-deep .p-multiselect {
+    height: auto;
+  }
+  
+  :host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%; 
+    overflow-y: auto;
+  }
+  
+  :host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+  }
+
+/* form and select column dropdown end */
+
 ::ng-deep .table-row-spacing tr {
-    margin-bottom: 20px; /* Adjust the margin-bottom as needed */
+    margin-bottom: 20px;
 }
+
+:host ::ng-deep {
+    .p-datatable .p-datatable-thead>tr>th {
+      color: #000000;
+      font-family: Roboto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      opacity: 70%;
+      white-space: nowrap;
+    }
+  
+    .p-datatable-thead {
+      border-radius: 4px 0px 0px 0px;
+      background: #BAD0E4;
+    }
+  }
