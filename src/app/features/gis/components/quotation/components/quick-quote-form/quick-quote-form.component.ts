@@ -9,7 +9,7 @@ import { CurrencyService } from '../../../../../../shared/services/setups/curren
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import stepData from '../../data/steps.json'
 import { ProductService } from 'src/app/features/gis/services/product/product.service';
-import { Binders, Premiums, Products, Sections, Subclass, Subclasses, subclassCoverTypes, subclassSection } from '../../../setups/data/gisDTO';
+import { Binders, Premiums, Products, Sections, Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection } from '../../../setups/data/gisDTO';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
@@ -57,8 +57,7 @@ export class QuickQuoteFormComponent {
   selectedSubclassCode: any;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
-  mandatorySections: any;
-
+  mandatorySections: subclassCoverTypeSection[]
   binderList: any;
   binderListDetails: any;
   selectedBinderCode: any;
@@ -67,8 +66,8 @@ export class QuickQuoteFormComponent {
 
   sourceList: any;
   sourceDetail: any;
-  selectedSourceCode:any;
-  selectedSource:any;
+  selectedSourceCode: any;
+  selectedSource: any;
 
   currencyList: any;
   currencyCode: any;
@@ -118,7 +117,7 @@ export class QuickQuoteFormComponent {
   sectionList: subclassSection[];
   selectedSectionList: any;
   filteredSectionList: subclassSection[];
-  section:Sections;
+  section: Sections;
 
   steps = stepData;
   user: any;
@@ -145,7 +144,10 @@ export class QuickQuoteFormComponent {
   expiryPeriod: any;
   propertyId: any;
   premiumList: Premiums[] = [];
-
+  allPremiumRate: Premiums[] = []
+  additionalLimit:[]=[];
+  addedBenefit:[];
+  addedBenefitsList:[]=[];
   @ViewChild('dt1') dt1: Table | undefined;
 
   constructor(
@@ -201,21 +203,37 @@ export class QuickQuoteFormComponent {
     this.loadAllSubclass();
     // this.getCountries();
     this.populateYears();
+
+    const QuickFormDetails = sessionStorage.getItem('riskFormData');
+    const storedData=sessionStorage.getItem("Added Benefit");
+    this.addedBenefit = storedData ? JSON.parse(storedData) : [];
+    // this.additionalLimit.push(...this.addedBenefit);
+    // this.addedBenefitsList.push(this.addedBenefit);
+    log.debug("AddedBenefit",storedData)
+    log.debug("AddedBenefit",this.addedBenefit)
+
+
+
+
+
+
+
+
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
     this.passedQuotation = this.sharedService.getAddAnotherRisk();
     // Console log the values
-    // console.log("XYZ Details:", this.passedQuotation);
+    console.log("XYZ Details:", this.passedQuotation);
 
-    // console.log("Quotation Details:", this.passedQuotation.quotationDetailsRisk);
-    // console.log("Client Details:", this.passedQuotation.clientDetails);
+    console.log("Quotation Details:", this.passedQuotation.quotationDetailsRisk);
+    console.log("Client Details:", this.passedQuotation.clientDetails);
     if (this.passedQuotation) {
-      // this.clientName=this.passedQuotation.clientDetails.firstName+ ' ' +this.passedQuotation.clientDetails.lastName;
-      // this.clientEmail=this.passedQuotation.clientDetails.emailAddress;
-      // this.clientPhone=this.passedQuotation.clientDetails.phoneNumber;
-      // this.personalDetailsForm.patchValue(this.passedQuotation.quotationDetailsRisk)
+      this.clientName = this.passedQuotation.clientDetails.firstName + ' ' + this.passedQuotation.clientDetails.lastName;
+      this.clientEmail = this.passedQuotation.clientDetails.emailAddress;
+      this.clientPhone = this.passedQuotation.clientDetails.phoneNumber;
+      this.personalDetailsForm.patchValue(this.passedQuotation.quotationDetailsRisk)
 
-      // this.xyz=this.sharedService.getIsAddRisk();
-      // console.log("isAddRiskk Details:", this.xyz);
+      this.xyz = this.sharedService.getIsAddRisk();
+      console.log("isAddRiskk Details:", this.xyz);
     }
 
 
@@ -315,7 +333,8 @@ export class QuickQuoteFormComponent {
     this.branchService.getBranch().subscribe(data => {
       this.branchList = data;
       log.debug("Branch List", this.branchList);
-
+      const branch= this.branchList.filter(branch =>branch.id == this.userBranchId)
+      log.debug("branch",branch)
     })
   }
   /**
@@ -474,8 +493,8 @@ export class QuickQuoteFormComponent {
    * @param {any} event - The event triggered by product selection.
    * @return {void}
    */
-  onProductSelected(event: any) {
-    this.selectedProductCode = event.target.value;
+  onProductSelected(selectedValue: any) {
+    this.selectedProductCode = selectedValue.code;
     // const selectedProductCode = event.target.value;
     console.log("Selected Product Code:", this.selectedProductCode);
 
@@ -501,6 +520,7 @@ export class QuickQuoteFormComponent {
         const dataDate = data;
         this.passedCoverToDate = dataDate._embedded[0].coverToDate;
         log.debug("DATe FROM DATA:", this.passedCoverToDate)
+        this.getPremiumRates();
 
       })
     }
@@ -620,7 +640,6 @@ export class QuickQuoteFormComponent {
     console.log("Selected Binder:", this.selectedBinder);
     console.log("Selected Currency Code:", this.currencyCode);
     this.loadAllCurrencies();
-    this.getPremiumRates();
 
   }
   /**
@@ -689,7 +708,7 @@ export class QuickQuoteFormComponent {
   onSourceSelected(event: any) {
     this.selectedSourceCode = event.target.value;
     console.log("Selected Source Code:", this.selectedSourceCode);
-    this.selectedSource= this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
+    this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
     console.log("Selected Source :", this.selectedSource);
     this.sharedService.setQuotationSource(this.selectedSource)
 
@@ -927,9 +946,15 @@ export class QuickQuoteFormComponent {
       log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
       this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
       log.debug("Mandatory Section Covertype:", this.mandatorySections);
-
+      const notMandatorySections = this.subclassSectionCoverList.filter(section =>
+        section.subClassCode == this.selectedSubclassCode &&
+        section.isMandatory == null
+      );
+      log.debug("NOT MANDATORY", notMandatorySections)
       if (this.mandatorySections.length > 0) {
+
         this.selectedSectionList = this.mandatorySections[0];
+
         log.debug("Selected Section ", this.selectedSectionList)
 
       } else {
@@ -939,10 +964,10 @@ export class QuickQuoteFormComponent {
       this.getSectionByCode();
     })
   }
-  getSectionByCode(){
-    this.sectionService.getSectionByCode(this.selectedSectionList.sectionCode).subscribe(data =>{
-      this.section=data;
-      log.debug("Section",this.section)
+  getSectionByCode() {
+    this.sectionService.getSectionByCode(this.selectedSectionList.sectionCode).subscribe(data => {
+      this.section = data;
+      log.debug("Section", this.section)
     })
   }
   // loadSubclassSection(){
@@ -1119,17 +1144,32 @@ export class QuickQuoteFormComponent {
 
     })
   }
-  //  NEW PREMIUM COMPUTATION
+  /***********************NEW PREMIUM COMPUTATION*******************************/
   getPremiumRates() {
-    const selectedSectionCode = this.selectedSectionList.sectionCode;
-    this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
-      this.premiumList = data;
-      log.debug(this.premiumList, "premium List");
-      // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
-    });
+    
+    for (let i = 0; i < this.mandatorySections.length; i++) {
+      this.selectedSectionList = this.mandatorySections[i];
+      const selectedSectionCode = this.selectedSectionList.sectionCode;
+      this.premiumRateService.getAllPremiums(selectedSectionCode, this.selectedBinderCode, this.selectedSubclassCode).subscribe(data => {
+        this.premiumList = data;
+        log.debug("data ", data)
+        this.allPremiumRate.push(...this.premiumList)
+        log.debug(this.premiumList, "premium List");
+
+        // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+      });
+      log.debug(this.allPremiumRate, "all premium List");
+
+    }
+
   }
+
   setRiskPremiumDto(): Risk[] {
-    log.debug("subclass cover type",this.subclassCoverType)
+    log.debug("subclass cover type", this.subclassCoverType)
+     // Store binder information in session storage
+  sessionStorage.setItem('selectedBinderCode', this.selectedBinderCode);
+  sessionStorage.setItem('currencyCode', this.currencyCode);
+ 
     return this.subclassCoverType.map(item => {
       let risk: Risk = {
         propertyId: this.dynamicForm.get('carRegNo').value,
@@ -1152,43 +1192,211 @@ export class QuickQuoteFormComponent {
           maxExposure: this.selectedBinder.maximum_exposure,
           currencyRate: 415.25 /**TODO: Fetch from API */
         },
-        limits: this.setLimitPremiumDto(),
+        limits: this.setLimitPremiumDto(item.coverTypeCode),
       }
       // this.riskPremiumDto.push(risk);
+      sessionStorage.setItem('subclassCode', this.selectedSubclassCode);
+      sessionStorage.setItem('propertyId', this.dynamicForm.get('carRegNo').value);
+      sessionStorage.setItem('coverFromDate', this.coverFromDate.toString());
+      sessionStorage.setItem('passedCoverToDate', this.passedCoverToDate.toString());
+      sessionStorage.setItem('limitAmount', 'YOUR_LIMIT_AMOUNT_VALUE'); // Replace with the actual value
+  
       return risk
     })
 
 
   }
-  setLimitPremiumDto(): Limit[] {
-    const selectedSectionCode = this.selectedSectionList.sectionCode;
-    let response:Limit[]=[];
-    let limitItem: Limit = {
-      calculationGroup: 1,
-      declarationSection: "N",
-      rowNumber: 1,
-      rateDivisionFactor: this.premiumList[0].divisionFactor,
-      premiumRate:this.premiumList[0].rate,
-      rateType:this.premiumList[0].rateType,
-      minimumPremium:this.premiumList[0].premiumMinimumAmount,
-      annualPremium:0,
-      multiplierDivisionFactor:this.premiumList[0].multiplierDivisionFactor,
-      multiplierRate:this.premiumList[0].multiplierRate,
-      description:this.selectedSectionList.sectionShortDescription,
-      section:{
-        code:this.selectedSectionList.sectionCode
-      },
-      sectionType:this.section.type,
-      riskCode:null,
-      limitAmount:this.dynamicForm.get('selfDeclaredValue').value,
-      compute:"Y",
-      dualBasis:"N"
+  // setLimitPremiumDto(coverTypeCode: number): Limit[] {
+  //   const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '')
+
+  //   let limitItems = []
+  //   let sectionCodes = []
+  //   let sectionsForCovertype = this.mandatorySections.filter(sect => {
+  //     log.debug(sect)
+  //     log.debug(sect.coverTypeCode + " vs " + coverTypeCode)
+  //     return sect.coverTypeCode == coverTypeCode
+  //   })
+  //   // const selectedSectionCode = this.selectedSectionList.sectionCode;
+  //   // let response: Limit[] = [];
+  //   if (!this.allPremiumRate) return []
+  //   this.getPremiumRates()
+  //   log.debug("Found "  + sectionsForCovertype.length+ " Sections ")
+  //   log.debug("Premium rates "  + this.allPremiumRate)
+  //   let response: Limit[] = sectionsForCovertype.map(it =>
+  //       this.allPremiumRate
+  //         .filter(rate => {
+  //           log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
+  //           return rate.sectionCode == it.sectionCode;
+  //         })
+  //         .map(rate => {
+  //           return {
+  //             calculationGroup: 1,
+  //             declarationSection: "N",
+  //             rowNumber: 1,
+  //             rateDivisionFactor: rate.divisionFactor,
+  //             premiumRate: rate.rate,
+  //             rateType: rate.rateType,
+  //             minimumPremium: rate.premiumMinimumAmount,
+  //             annualPremium: 0,
+  //             multiplierDivisionFactor: 1,
+  //             multiplierRate: rate.multiplierRate,
+  //             description: rate.sectionShortDescription,
+  //             section: {
+  //               code: it.sectionCode
+  //             },
+  //             sectionType: rate.sectionType,
+  //             riskCode: null,
+  //             limitAmount: sumInsured,
+  //             compute: "Y",
+  //             dualBasis: "N"
+  //           }
+           
+  //         })
+
+  //   ).flatMap(item => item)
+  //   if (this.additionalLimit.length > 0) {
+  //     let additionalRisk: Limit[] = 
+  //       sectionsForCovertype.map(it =>
+  //         this.allPremiumRate
+  //           .filter(rate => {
+  //             log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
+  //             return rate.sectionCode == it.sectionCode;
+  //           })
+  //           .map(rate => {
+  //             return {
+  //               calculationGroup: 1,
+  //               declarationSection: "N",
+  //               rowNumber: 1,
+  //               rateDivisionFactor: rate.divisionFactor,
+  //               premiumRate: rate.rate,
+  //               rateType: rate.rateType,
+  //               minimumPremium: rate.premiumMinimumAmount,
+  //               annualPremium: 0,
+  //               multiplierDivisionFactor: 1,
+  //               multiplierRate: rate.multiplierRate,
+  //               description: rate.sectionShortDescription,
+  //               section: {
+  //                 code: it.sectionCode
+  //               },
+  //               sectionType: rate.sectionType,
+  //               riskCode: null,
+  //               limitAmount: sumInsured,
+  //               compute: "Y",
+  //               dualBasis: "N"
+  //             }
+             
+  //           })
+  
+  //     ).flatMap(item => item)
+      
+  //     return additionalRisk
+  //   } else {
+    
+  //     return response
+  //   }
+
+  //   log.debug("Covertype", coverTypeCode)
+  //   log.debug("Section items", sectionsForCovertype)
+  //   log.debug("limit items", response)
+
+
+  // }
+  setLimitPremiumDto(coverTypeCode: number): Limit[] {
+    const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
+  
+    let limitItems = [];
+    let sectionCodes = [];
+    let sectionsForCovertype = this.mandatorySections.filter(sect => {
+      log.debug(sect)
+      log.debug(sect.coverTypeCode + " vs " + coverTypeCode)
+      return sect.coverTypeCode == coverTypeCode
+    });
+  
+    if (!this.allPremiumRate) return []
+    this.getPremiumRates()
+    log.debug("Found " + sectionsForCovertype.length + " Sections ")
+    log.debug("Premium rates " + this.allPremiumRate)
+    let response: Limit[] = sectionsForCovertype.map(it =>
+      this.allPremiumRate
+        .filter(rate => {
+          log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
+          return rate.sectionCode == it.sectionCode;
+        })
+        .map(rate => {
+          return {
+            calculationGroup: 1,
+            declarationSection: "N",
+            rowNumber: 1,
+            rateDivisionFactor: rate.divisionFactor,
+            premiumRate: rate.rate,
+            rateType: rate.rateType,
+            minimumPremium: rate.premiumMinimumAmount,
+            annualPremium: 0,
+            multiplierDivisionFactor: 1,
+            multiplierRate: rate.multiplierRate,
+            description: rate.sectionShortDescription,
+            section: {
+              code: it.sectionCode
+            },
+            sectionType: rate.sectionType,
+            riskCode: null,
+            limitAmount: sumInsured,
+            compute: "Y",
+            dualBasis: "N"
+          }
+  
+        })
+  
+    ).flatMap(item => item)
+  
+    if (this.additionalLimit.length > 0) {
+      log.debug("Added Limit",this.additionalLimit)
+      // Adjust the existing response to include the additional risk
+      this.additionalLimit.forEach(item =>sectionsForCovertype.push(item))
+      log.debug("section for CoverType:",sectionsForCovertype)
+      response = response.concat(
+        sectionsForCovertype.map(it =>
+          this.allPremiumRate
+            .filter(rate => {
+              log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
+              return rate.sectionCode == it.sectionCode;
+            })
+            .map(rate => {
+              return {
+                calculationGroup: 2,  // Adjust the calculationGroup for the additional risk
+                declarationSection: "N",
+                rowNumber: 1,
+                rateDivisionFactor: rate.divisionFactor,
+                premiumRate: rate.rate,
+                rateType: rate.rateType,
+                minimumPremium: rate.premiumMinimumAmount,
+                annualPremium: 0,
+                multiplierDivisionFactor: 1,
+                multiplierRate: rate.multiplierRate,
+                description: rate.sectionShortDescription,
+                section: {
+                  code: it.sectionCode
+                },
+                sectionType: rate.sectionType,
+                riskCode: null,
+                limitAmount: sumInsured,
+                compute: "Y",
+                dualBasis: "N"
+              }
+            })
+        ).flatMap(item => item)
+      );
     }
-
-
-    return [limitItem]
+  
+    log.debug("Covertype", coverTypeCode)
+    log.debug("Section items", sectionsForCovertype)
+    log.debug("limit items", response)
+  
+    return response;
   }
   computePremiumV2() {
+    sessionStorage.setItem('product', this.selectedProductCode); 
+
     this.premiumComputationRequest = {
       dateWithEffectFrom: this.coverFromDate,
       dateWithEffectTo: this.passedCoverToDate,
@@ -1211,7 +1419,7 @@ export class QuickQuoteFormComponent {
       risks: this.setRiskPremiumDto(),
 
     }
-    log.debug("PREMIUM COMPUTATION PAYLOAD",this.premiumComputationRequest);
+    log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputationRequest);
     this.sharedService.setPremiumComputationPayload(this.premiumComputationRequest, this.subclassCoverType);
 
     return this.quotationService.premiumComputationEngine(this.premiumComputationRequest).subscribe(
@@ -1221,7 +1429,7 @@ export class QuickQuoteFormComponent {
         this.router.navigate(['/home/gis/quotation/cover-type-details']);
 
       }
-      
+
     )
 
   }

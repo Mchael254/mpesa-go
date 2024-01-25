@@ -19,6 +19,9 @@ import { subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 const log = new Logger('CoverTypesDetailsComponent');
 
 @Component({
@@ -43,6 +46,7 @@ export class CoverTypesDetailsComponent {
   selectedSections: any[] = [];
   sections: any[] = []; 
   filteredSection:any;
+  passedSections:any[]=[];
   sectionDetailsForm:FormGroup;
   checkedSectionCode:any;
   checkedSectionDesc:any;
@@ -96,6 +100,7 @@ export class CoverTypesDetailsComponent {
 
   premiumPayload:PremiumComputationRequest;
   premiumResponse:any;
+  riskLevelPremiums:any;
   passedCovertypes:any;
 
   user:any;
@@ -118,7 +123,16 @@ export class CoverTypesDetailsComponent {
   selectedCurrency: any;
   selectedCurrencyCode: any;
 
-  passedClientDetails
+  passedClientDetails:any;
+  computationDetails:any;
+
+  selectedSectionCode:any;
+  selectedSubclassCode: any;
+  allMatchingSubclasses = [];
+  subclassSectionCoverList: any;
+  covertypeSectionList:any;
+  covertypeSpecificSection:any;
+  sectionCodesArray: number[] = [];
 
   constructor(
     public fb:FormBuilder,
@@ -136,6 +150,10 @@ export class CoverTypesDetailsComponent {
     public sharedService:SharedQuotationsService,
     private router: Router,
     private ngxSpinner: NgxSpinnerService,
+    public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
+    private globalMessagingService: GlobalMessagingService,
+
+
 
 
 
@@ -146,13 +164,18 @@ export class CoverTypesDetailsComponent {
    const data=this.sharedService.getPremiumPayload();
     log.debug("PREMIUM PAYLOAD",data);
     this.premiumPayload=data.data;
-    this.passedCovertypes=data.covertypes
+    log.debug("PREMIUM PAYLOAD",this.premiumPayload);
+    const hope=this.premiumPayload.risks
+    this.extractSectionCodes(hope);
+
+    this.passedCovertypes=data.covertypes;
     this.premiumResponse=this.sharedService.getPremiumResponse();
     log.debug("PREMIUM RESPONSE",this.premiumResponse);
+    this.riskLevelPremiums=this.premiumResponse.riskLevelPremiums;
     this.sumInsuredValue=this.premiumPayload.risks[0].limits[0].limitAmount;
     log.debug("Quick Quote Quotation SI:",this.sumInsuredValue);
-
-
+    this.selectedSectionCode =this.premiumPayload.risks[0].limits[0].section.code
+    this.selectedSubclassCode=this.premiumPayload.risks[0].subclassSection.code
     this.quickQuoteSectionList=this.sharedService.getQuickSectionDetails();
     log.debug("Quick Quote Quotation Sections:",this.quickQuoteSectionList );
     this.passedClientDetails=this.sharedService.getClientDetails();
@@ -166,14 +189,13 @@ export class CoverTypesDetailsComponent {
     this.createQuotationForm();
     this.getuser();
     this.createRiskDetailsForm();
-
-
+    
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
     log.debug("MY TRIAL",JSON.parse(this.formData))
 
-    this.quickQuotationNumbers=this.sharedService.getQuickQuotationDetails();
+    this.quickQuotationNumbers=this.sharedService.getQuickQuotationDetails()
     log.debug("Quick Quote Quotation Codes:",this.quickQuotationNumbers );
-    this.loadClientQuotations(this.quickQuotationNumbers);
+    // this.loadClientQuotations(this.quickQuotationNumbers);
 
     // if (Array.isArray(this.quickQuotationCodes) && this.quickQuotationCodes.length > 0) {
     //   this.loadClientQuotations(this.quickQuotationCodes);
@@ -214,17 +236,25 @@ export class CoverTypesDetailsComponent {
       }
     );
   }
-  passCovertypeDesc(data:any,code:any){
-    log.debug("data from passcovertpes" ,data);
-    log.debug("data from passcovertpes" ,code);
-    this.passedCovertypeDescription=data;
-    this.passedCovertypeCode=code;
-    this.passedCoverTypeShortDes=data;
+  passCovertypeDesc(data: any, code: any) {
+    log.debug("data from passcovertpes", data);
+    log.debug("data from passcovertpes", code);
+    this.passedCovertypeDescription = data;
+    this.passedCovertypeCode = code;
+    this.passedCoverTypeShortDes = data;
     this.filteredSection = this.quickQuoteSectionList.filter(section => 
-      section.coverTypeShortDescription == (this.passedCoverTypeShortDes == "COMP" ? "COMPREHENSIVE" : this.passedCoverTypeShortDes));
-        log.debug("Filtered Section", this.filteredSection);
+      
+        this.passedCoverTypeShortDes == "COMP" ? 
+        section.coverTypeShortDescription == "COMPREHENSIVE" : 
+        section.coverTypeShortDescription == this.passedCoverTypeShortDes
+    );
+    log.debug("Filtered Section", this.filteredSection);
+    this.passedSections= this.quickQuoteSectionList.filter(section => section.coverTypeCode == this.passedCovertypeCode);
+    log.debug("Passed Section", this.passedSections);
 
-  }
+    this.loadSubclassSectionCovertype()
+}
+
   
   // passedRiskcode(data:any){
   //   log.debug("Risk Code;" ,data);
@@ -321,9 +351,9 @@ export class CoverTypesDetailsComponent {
       section.isChecked = !isNaN(section.typedWord);
     
       // Check if the section is checked and add it to the selectedSections array
-      if (section.isChecked && !this.selectedSections.includes(section)) {
-        this.selectedSections.push(section);
-        console.log('Selected Sections:', this.selectedSections);
+      if (section.isChecked && !this.passedSections.includes(section)) {
+        this.passedSections.push(section);
+        console.log('Selected Sections:', this.passedSections);
 
       }
     }
@@ -342,12 +372,13 @@ export class CoverTypesDetailsComponent {
   createRiskSection(payload: any) {
     // Your implementation for createRiskSection
     console.log('createRiskSection called with payload:', payload);
+    sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
   }
 
   onCreateRiskSection() {
-    console.log('Selected Sections:', this.selectedSections);
+    console.log('Selected Sections:', this.passedSections);
 
-    const payload = this.selectedSections.map(section => {
+    const payload = this.passedSections.map(section => {
       return {
         calcGroup: 1,
         code: section.code,
@@ -365,7 +396,7 @@ export class CoverTypesDetailsComponent {
         sumInsuredRate:0,
         sectionShortDescription: section.sectionShortDescription,
         sectionCode:section.sectionCode,
-        limitAmount: section.limitAmount,
+        limitAmount: this.sumInsuredValue,
       };
     });
     this.sectionArray = payload;
@@ -381,7 +412,10 @@ export class CoverTypesDetailsComponent {
         // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
         // this.sectionDetailsForm.reset()
       }
-      this.computePremium();
+      // this.computePremium();
+      // this.computeQuotePremium();
+      this.callQuotationUtilsService();
+
 
     })
   }
@@ -441,7 +475,22 @@ export class CoverTypesDetailsComponent {
 //  }
 
 
-              /**NEW PREMIUM COMPUTATION ENGINE */
+              /******************NEW PREMIUM COMPUTATION ENGINE **************/
+
+  loadSubclassSectionCovertype() {
+                this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+                  this.subclassSectionCoverList = data;
+                  log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+                  this.covertypeSectionList = this.subclassSectionCoverList.filter(section => 
+                    section.subClassCode == this.selectedSubclassCode &&
+                    section.isMandatory == null 
+                  );
+                  log.debug("NOT MANDATORY",this.covertypeSectionList)
+                this.covertypeSpecificSection= this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
+                log.debug("COVER SPECIFIC SECTIONS",this.covertypeSpecificSection)
+                })
+  }
+
 createQuotationForm(){
   this.quotationForm = this.fb.group({
     actionType: [''],
@@ -552,6 +601,7 @@ createQuotationForm(){
       log.debug("Quotation Number",this.quotationNo);
       log.debug("Quotation Code",this.quotationCode);
       this.createQuotationRisk()
+
       })
   }
   createQuotationRisk(){
@@ -588,8 +638,9 @@ createQuotationForm(){
 
       console.log(this.quotationRiskData, "Quotation Risk Code Data");
       console.log(this.riskCode, "Quotation Risk Code ");
-    })
+      this.onCreateRiskSection()
 
+    })
   }
   selectedQuotation(){
     log.info("Quote NO",    this.quotationNo    )
@@ -603,4 +654,76 @@ createQuotationForm(){
     this.router.navigate(['/home/gis/quotation/quote-summary']);
 
   }
+  callQuotationUtilsService() {
+    this.quotationService.quotationUtils(this.quotationCode).subscribe({
+      next: (res) => {
+        this.computationDetails = res;
+
+        // Update the underwritingYear to the current year
+        this.computationDetails.underwritingYear = new Date().getFullYear();
+
+        // Modify the prorata field for all risks
+        this.computationDetails.risks.forEach((risk: any) => {
+          risk.prorata = 'F';
+        });
+
+        log.debug("Updated computational details", this.computationDetails); // Log the updated data
+
+      },
+      error: (error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, you cannot compute premium, check quotation details and try again.');
+      }
+    });
+  }
+   // Function to be called when you want to re-fetch the data
+   reloadQuotationDetails() {
+    // Call the quotationUtils service again
+    this.callQuotationUtilsService();
+  }
+   // Your existing computeQuotePremium function
+   computeQuotePremium() {
+    // Call the quotationUtils service for the first time
+    this.callQuotationUtilsService();
+    this.computePremiumQuickQuote();
+  }
+  extractSectionCodes(risks: any[]): void {
+    risks.forEach((risk) => {
+      if (risk.limits && Array.isArray(risk.limits)) {
+        risk.limits.forEach((limit) => {
+          const sectionCode = limit.section && limit.section.code;
+          if (sectionCode !== undefined && !this.sectionCodesArray.includes(sectionCode)) {
+            this.sectionCodesArray.push(sectionCode);
+          }
+        });
+      }
+    });
+
+    console.log('Section Codes Array:', this.sectionCodesArray);
+  }
+
+/**Compute premium adding additional benefit */
+computePremiumQuickQuote(){
+    
+  this.quotationService.computePremium(this.computationDetails).subscribe(
+ {  
+  next:(res)=>{
+    this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
+        const premiums = res
+        console.log(res)
+    },
+  error : (error: HttpErrorResponse) => {
+    log.info(error);
+    this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+   
+    }  
+  }
+    )
+}
+// ComputePremiumFinal(){
+//   this.computeQuotePremium()
+//   log.debug("SEDRF",this.computationDetails)
+// }
+
+
 }
