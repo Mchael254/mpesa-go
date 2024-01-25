@@ -9,7 +9,6 @@
     "notification_service":"notification",
     "computation_service":"premium/computation",
     "ticket_services": "turnquest",
-    "computation_service":"premium/computation",
     "lms": "lms",
     "api":"api",
     "json":"json"
