@@ -15,6 +15,8 @@ import { BranchService } from 'src/app/shared/services/setups/branch/branch.serv
 import {NgxSpinnerService} from 'ngx-spinner';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { MenuItem } from 'primeng/api';
+
+
 const log = new Logger('QuotationSummaryComponent');
 
 
@@ -52,6 +54,7 @@ export class QuotationSummaryComponent {
   externalTable:any;
   internalTable:any;
   menuItems:MenuItem[] | undefined;
+  sumInsured:any;
   constructor(
     public sharedService:SharedQuotationsService,
     public quotationService:QuotationsService,
@@ -96,8 +99,8 @@ export class QuotationSummaryComponent {
     this.quotationDetails = JSON.parse(this.moreDetails) 
     this.spinner.show()
     this.getPremiumComputationDetails()
-    console.log(this.quotationDetails , "DETAILS TEST")
-
+    console.log(this.quotationDetails , "MORE DETAILS TEST")
+    this.sumInsured = sessionStorage.getItem('limitAmount')
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
@@ -386,6 +389,18 @@ internal(){
       }  
     }
       )
+  }
+
+  cancelQuotation(){
+    sessionStorage.removeItem('clientFormData');
+    sessionStorage.removeItem('quotationFormDetails');
+    sessionStorage.removeItem('quotationCode');
+    sessionStorage.removeItem('quotationNum');
+    this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+    // this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+  }
+  editQuotations(){
+    this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
   
 }

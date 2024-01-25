@@ -58,6 +58,8 @@ export class QuotationDetailsComponent {
   quotationSources:any
   midnightexpiry:any
   modalHeight: number = 200;
+  quickQuotationDetails:any
+  quickQuotationCode:any
   @ViewChild('openModal') openModal;
   constructor(
     public bankService:BankService,
@@ -88,11 +90,13 @@ export class QuotationDetailsComponent {
     
     this.getIntroducers();
     this.getQuotationSources()
+    this.quickQuoteDetails()
     
- 
+  
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     const clientFormDetails = sessionStorage.getItem('clientFormData');
     log.debug(quotationFormDetails)
+
     if (quotationFormDetails) {
       const parsedData = JSON.parse(quotationFormDetails);
       this.quotationForm.patchValue(parsedData);
@@ -108,6 +112,37 @@ export class QuotationDetailsComponent {
   
     log.debug(this.quotationForm.value)
 
+  }
+
+  quickQuoteDetails(){
+    const quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
+    this.quickQuotationCode =  sessionStorage.getItem('quickQuotationCode');
+    if( this.quickQuotationCode){
+      sessionStorage.setItem('quotationNum',quickQuotationNum );
+      sessionStorage.setItem('quotationCode', this.quickQuotationCode );
+      this.quotationService.getQuotationDetails(quickQuotationNum).subscribe(res=>{
+        this.quickQuotationDetails = res
+        console.log("QUICK QUOTE DETAILS",this.quickQuotationDetails)
+        this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
+        this.quotationForm.controls['withEffectiveFromDate'].setValue(this.quickQuotationDetails.coverFrom);
+        this.quotationForm.controls['withEffectiveToDate'].setValue(this.quickQuotationDetails.coverTo);
+        this.quotationForm.controls['source'].setValue(this.quickQuotationDetails.source.code);
+
+        const productCode = this.quickQuotationDetails.quotationProduct[0].proCode
+        this.productService.getProductByCode(productCode).subscribe(res=>{
+          this.quotationForm.controls['productCode'].setValue(res);
+        })
+
+        console.log("Test currency",this.currency)
+        this.currency.forEach(el=>{
+          
+          if(el.symbol === this.quickQuotationDetails.currency){
+            console.log("Test currency", el)
+            this.quotationForm.controls['currencyCode'].setValue(el);
+          }
+        })
+      })
+    }
   }
 
   /**
@@ -159,9 +194,10 @@ export class QuotationDetailsComponent {
    
   }
   getQuotationSources(){
-    this.quotationService.getQuotationSources().subscribe(res=>{
-      this.quotationSources = res
-      log.debug(this.quotationSources)
+    this.quotationService.getAllQuotationSources().subscribe(res=>{
+      const sources = res
+      this.quotationSources = sources.content
+      console.log("SOURCES",this.quotationSources)
     })
   }
  /**
@@ -212,7 +248,8 @@ export class QuotationDetailsComponent {
     this.spinner.show()
     
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
-   
+    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+    
     if(this.quotationForm.value.multiUser == 'Y'){
         /**
      * Creates a new quotation with multi-user and navigates to quote assigning.
@@ -220,12 +257,26 @@ export class QuotationDetailsComponent {
      * @param {string} this.user - The user associated with the quotation.
      * @return {Observable<any>} - An observable of the response containing created quotation data.
      */
-    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
-    this.quotationNo = data;
-    this.spinner.hide()
-    console.log(this.quotationNo,"Quotation results:")    
-    this.router.navigate(['/home/gis/quotation/quote-assigning'])
-    })
+    if(this.quickQuotationDetails){
+      console.log("Quick Quotation results")    
+      this.router.navigate(['/home/gis/quotation/quote-assigning'])
+      this.spinner.hide()
+      
+    }else{
+      this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+        this.quotationNo = data;
+        this.spinner.hide()
+        console.log(this.quotationNo,"Quotation results:")    
+        this.router.navigate(['/home/gis/quotation/quote-assigning'])
+      },(error: HttpErrorResponse) => {
+        log.info(error);
+        this.spinner.hide()
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+       
+      })
+    }
+    
+  
     
     }else{
     if (this.isChecked) {
@@ -235,15 +286,27 @@ export class QuotationDetailsComponent {
        * @param {string} this.user - The user associated with the quotation.
        * @return {Observable<any>} - An observable of the response containing created quotation data.
        */
-    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
-    this.quotationNo = data
-    this.spinner.hide()
-    console.log(this.quotationForm.value)
-    sessionStorage.setItem('quotationNum',this.quotationNum );
-    sessionStorage.setItem('quotationCode',this.quotationCode );
-    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-    this.router.navigate(['/home/gis/quotation/import-risks'])
-    })
+        if(this.quickQuotationDetails){
+          this.router.navigate(['/home/gis/quotation/import-risks'])
+          this.spinner.hide()
+          sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+        }else{
+          this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+            this.quotationNo = data
+            this.spinner.hide()
+            console.log(this.quotationForm.value)
+            sessionStorage.setItem('quotationNum',this.quotationNum );
+            sessionStorage.setItem('quotationCode',this.quotationCode );
+            sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+            this.router.navigate(['/home/gis/quotation/import-risks'])
+            },(error: HttpErrorResponse) => {
+              log.info(error);
+              this.spinner.hide()
+              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+             
+            })
+        }
+  
     
     } else {
        /**
@@ -252,20 +315,33 @@ export class QuotationDetailsComponent {
        * @param {string} this.user - The user associated with the quotation.
        * @return {Observable<any>} - An observable of the response containing created quotation data.
        */
-    this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
-    this.quotationNo = data;
-    this.spinner.hide()
-    console.log(this.quotationNo,'quotation number output');
-    this.quotationCode=this.quotationNo._embedded[0].quotationCode;
-    this.quotationNum = this.quotationNo._embedded[0].quotationNumber
-    sessionStorage.setItem('quotationNum',this.quotationNum );
-    sessionStorage.setItem('quotationCode',this.quotationCode );
-    sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
 
-    this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
+    if(this.quickQuotationDetails){ 
+      this.router.navigate(['/home/gis/quotation/risk-section-details']);
+      this.spinner.hide()
+      
+     }else{
+      this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
+        this.quotationNo = data;
+        this.spinner.hide()
+        console.log(this.quotationNo,'quotation number output');
+        this.quotationCode=this.quotationNo._embedded[0].quotationCode;
+        this.quotationNum = this.quotationNo._embedded[0].quotationNumber
+        sessionStorage.setItem('quotationNum',this.quotationNum );
+        sessionStorage.setItem('quotationCode',this.quotationCode );
+        sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
+    
+        this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
+    
+        this.router.navigate(['/home/gis/quotation/risk-section-details']);
+        },(error: HttpErrorResponse) => {
+          log.info(error);
+          this.spinner.hide()
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+         
+        })
+     }
 
-    this.router.navigate(['/home/gis/quotation/risk-section-details']);
-    })
     
     } 
   }  
@@ -318,6 +394,8 @@ onResize(event: any) {
     this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
     this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
     this.quotationForm.controls['agentCode'].setValue(this.quotationForm.value.agentCode.id);
+    sessionStorage.setItem('coverFrom', JSON.stringify(this.quotationForm.value.withEffectiveFromDate));
+    sessionStorage.setItem('coverTo', JSON.stringify(this.quotationForm.value.withEffectiveToDate));
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{
       this.quotationsList = data
       this.quotation = this.quotationsList.content
@@ -329,6 +407,7 @@ onResize(event: any) {
         // const myModal = new Modal(element);
         // myModal.show();
       }else{
+       
         this.saveQuotationDetails()
       }
      

@@ -463,6 +463,7 @@ export class QuickQuoteFormComponent {
     this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     this.clientEmail = this.clientDetails.emailAddress;
     this.clientPhone = this.clientDetails.phoneNumber;
+    sessionStorage.setItem('clientCode',this.clientCode);
   }
   /**
    * Handles the selection of a product.
