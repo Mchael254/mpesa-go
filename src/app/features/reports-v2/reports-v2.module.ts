@@ -27,6 +27,8 @@ import { TableModule } from 'primeng/table';
 import { SaveReportModalComponent } from './save-report-modal/save-report-modal.component';
 import { BaseComponent } from './base/base.component';
 
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+
 
 @NgModule({
   declarations: [
@@ -59,6 +61,7 @@ import { BaseComponent } from './base/base.component';
       CalendarModule,
       MultiSelectModule,
       TableModule,
+      ScrollPanelModule
     ]
 })
 export class ReportsV2Module { }
