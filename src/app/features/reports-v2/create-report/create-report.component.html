@@ -129,6 +129,14 @@
         </div>
 
         <div class="col-sm-9">
+
+          <div class="ai-bot float-end text-secondary" (click)="showAIBot()">
+            <span class="robot text-primary">
+              <i class="fa-solid fa-robot"></i>
+            </span>
+            TurnkeyBot <span>AI</span>
+          </div>
+
           <div class="text-center" id="reportName">
             <input
               type="text"
@@ -138,6 +146,65 @@
               disabled
             >
           </div>
+
+          
+          <div 
+            class="ai-bot-dialogue float-end bg-white"
+            [ngStyle]="{'visibility': (shouldShowChatBot === true) ? 'visible' : 'hidden' }"
+          >
+            <div class="bot-header">
+              <i class="fa-solid fa-robot"></i>
+              TurnkeyBot <span>AI</span>
+              <span class="float-end" (click)="closeChatBox()" style="cursor: pointer;">
+                <i class="fa-solid fa-times"></i>
+              </span>
+            </div>
+            <div class="bot-content p-2">
+              <p-scrollPanel [style]="{ width: '100%', height: '280px' }">
+                <div *ngFor="let conversation of conversations">
+                  <div  class="chat-message mb-1" [ngClass]="{'float-end': conversation.user == 'Bot'}">
+                    <span class="fw-bold">{{conversation.user}}</span> {{ conversation.message }}
+                  </div>
+                </div>
+              </p-scrollPanel>
+            </div>
+            <div class="bot-footer">
+              <form [formGroup]="chatForm" >
+                <div class="row ps-2 pe-2">
+                  <div class="col-11 p-0">
+                    <div class="">
+                      <input type="text" class="form-control" formControlName="queryTerm">
+                    </div>                
+                  </div>
+                  <div class="col-1 p-1">
+                    <button class="btn btn-primary" (click)="getQueryResult()">
+                      <i class="pi pi-send"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+
+          <!-- AI Bot Modal -->
+          <!-- <div class="modal fade" id="aiBot" tabindex="-1" aria-labelledby="aiBotLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="aiBotLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  ...
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div> -->
 
           <ng-container *ngIf="isCriteriaButtonActive">
             <app-criteria
