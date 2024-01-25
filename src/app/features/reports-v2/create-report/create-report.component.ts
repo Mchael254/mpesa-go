@@ -33,6 +33,7 @@ export class CreateReportComponent implements OnInit {
     },
   ];
   public searchForm: FormGroup;
+  public chatForm: FormGroup;
   public subjectAreas: SubjectArea[] = [];
   public selectedSubjectArea: string = null;
   public subjectAreaCategories: SubjectAreaCategory[] = [];
@@ -53,6 +54,9 @@ export class CreateReportComponent implements OnInit {
   public reportId: number;
 
   private currentUser;
+
+  public shouldShowChatBot: boolean = false;
+  public conversations: ChatMessage[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -87,6 +91,7 @@ export class CreateReportComponent implements OnInit {
     }
     this.getSubjectAreas();
     this.createSearchForm();
+    this.createChatForm();
     this.currentUser = this.authService.getCurrentUser();
   }
 
@@ -99,6 +104,16 @@ export class CreateReportComponent implements OnInit {
       subjectArea: ['']
     });
   }
+
+  /**
+   * The function creates a chat form using the FormBuilder module in Angular.
+   */
+  createChatForm(): void {
+    this.chatForm = this.fb.group({
+      queryTerm: ['']
+    });
+  }
+  
 
   /**
    * 1. gets a specific report by it's id
@@ -413,4 +428,36 @@ export class CreateReportComponent implements OnInit {
     // this.loadChart();
   }
 
+
+  showAIBot() {
+    this.shouldShowChatBot = !this.shouldShowChatBot;
+  }
+
+  closeChatBox() {
+    this.shouldShowChatBot = false;
+  }
+
+  getQueryResult() {
+    const queryTerm = this.chatForm.getRawValue().queryTerm;
+    log.info(`query term: `, queryTerm);
+    this.conversations.push({
+      message: queryTerm,
+      user: 'Me'
+    });
+
+    this.chatForm.patchValue({queryTerm: ''})
+
+    setTimeout(() => {
+      this.conversations.push({
+        message: 'Welcome Tunde, how can I help you.',
+        user: 'Bot'
+      });
+    }, 1000)
+  }
+
+}
+
+interface ChatMessage {
+  message: string,
+  user: string
 }
