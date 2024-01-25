@@ -84,6 +84,19 @@ export interface POSTBankBranchDTO {
   townCode: number,
 }
 
+export interface BankChargeDTO {
+  bankCode: number,
+  bankName: string,
+  dateFrom: string,
+  dateTo: string,
+  id: number,
+  productCode: number,
+  productName: string,
+  rate: number,
+  rateType: string,
+  systemCode: number,
+  systemName: string
+}
 export interface BankRegionDTO {
     bankRegionName: string,
     id: number,

@@ -133,7 +133,7 @@ export class MenuService{
           link: "/home/crm/user-parameters"
         },
         {
-          name: 'currencies',
+          name: 'Currencies',
           link: "/home/crm/currencies"
         },
         {
