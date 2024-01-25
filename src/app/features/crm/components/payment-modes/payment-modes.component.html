@@ -1,0 +1,185 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="paymentModesBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-header bg-transparent float-start">
+        <span class="float-start mt-3">Payment modes</span>
+        <div class="row mt-3 mb-3 float-end">
+          <div>
+              <span class="icon-circle"
+              ><i class="fa-solid fa-plus" (click)="openPaymentModesModal()"></i
+              ></span>
+            <span class="icon-circle"
+            ><i class="pi pi-pencil" (click)="editPaymentMode()"></i
+            ></span>
+            <span class="icon-circle"
+            ><i
+              class="fa-regular fa-trash-can"
+              (click)="deletePaymentMode()"
+            ></i
+            ></span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row mb-5">
+          <div class="col-12">
+            <p-table
+              #paymentModesTable
+              [value]="paymentModesData"
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              styleClass="p-datatable-sm"
+              responsiveLayout="scroll"
+              [scrollable]="true"
+              scrollHeight="400px"
+              class="ui-datatable"
+              [globalFilterFields]="['name']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="head">Short description</th>
+                  <th class="head">Description</th>
+                  <th class="head">Narration</th>
+                  <th class="head">Default mode?</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-paymentmode>
+                <tr
+                  class="custom-table"
+                  (click)="onPaymentModeRowSelect(paymentmode)"
+                  [class.selected]="selectedPaymentMode === paymentmode"
+                >
+                  <td class="body">{{ paymentmode.shortDescription }}</td>
+                  <td class="body">{{ paymentmode.description }}</td>
+                  <td class="body">{{ paymentmode.narration }}</td>
+                  <td class="body">{{ paymentmode.isDefault }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4">No payment mode detail(s) found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  #paymentModesModal
+  id="paymentModesModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">Add a new payment mode</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closePaymentModesModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createPaymentModeForm">
+          <div class="row">
+            <ng-container *ngIf="visibleStatus.shortDescription === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="shortDescription" class="form-label">Short description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="shortDescription"
+                  placeholder="Short description"
+                  formControlName="shortDescription"
+                  [ngClass]="{ 'is-invalid': h['shortDescription']?.invalid && (h['shortDescription']?.dirty || h['shortDescription']?.touched) }"
+                />
+                <div *ngIf="h['shortDescription']?.invalid && (h['shortDescription']?.dirty || h['shortDescription']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['shortDescription']?.errors['required']">Short description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.description === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="description"
+                  placeholder="Description"
+                  formControlName="description"
+                  [ngClass]="{ 'is-invalid': h['description']?.invalid && (h['description']?.dirty || h['description']?.touched) }"
+                />
+                <div *ngIf="h['description']?.invalid && (h['description']?.dirty || h['description']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['description']?.errors['required']">Description is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.narration === 'Y'">
+              <div class="col-6 mb-3">
+                <label for="narration" class="form-label">Narration</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="narration"
+                  placeholder="Narration"
+                  formControlName="narration"
+                  [ngClass]="{ 'is-invalid': h['narration']?.invalid && (h['narration']?.dirty || h['narration']?.touched) }"
+                />
+                <div *ngIf="h['narration']?.invalid && (h['narration']?.dirty || h['narration']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['narration']?.errors['required']">Narration is required</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="visibleStatus.defaultMode === 'Y'">
+              <div class="col-6 mb-3">
+                  <label for="defaultMode" class="form-label w-100">Default mode</label>
+
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" formControlName="defaultMode" id="defaultMode" value="Y">
+                    <label class="form-label" for="defaultMode">Yes</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" formControlName="defaultMode" id="defaultMode" value="N">
+                    <label class="form-label" for="defaultMode">No</label>
+                  </div>
+                <div *ngIf="h['defaultMode']?.invalid && (h['defaultMode']?.dirty || h['defaultMode']?.touched)" class="form-text text-danger">
+                  <div *ngIf="h['defaultMode']?.errors['required']">Default mode is required</div>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0">
+        <button type="button" class="btn btn-primary" (click)="savePaymentMode()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-reusable-input
+  [modalId]="'paymentModeConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this payment mode?'"
+  (confirmed)="confirmPaymentModeDelete()"
+  #paymentModeConfirmationModal
+></app-reusable-input>
+<div class="mobile-bottom"></div>
