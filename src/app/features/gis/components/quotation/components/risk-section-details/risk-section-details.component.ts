@@ -131,7 +131,8 @@ export class RiskSectionDetailsComponent {
   editing = false; // Add other properties as needed
   modalHeight: number = 200; // Initial height
   products: Products[];
-
+  coverFrom:any;
+  coverTo:any;
   
   constructor(
     private router: Router,
@@ -167,7 +168,11 @@ export class RiskSectionDetailsComponent {
       this.formData = JSON.parse(quotationFormDetails) ;
       this.clientFormData=this.sharedService.getFormData();
       this.quotationCode=sessionStorage.getItem('quotationCode');
-
+      this.createRiskDetailsForm();
+      this.coverFrom = sessionStorage.getItem('coverFrom');
+      this.coverTo = sessionStorage.getItem('coverTo');
+      this.riskDetailsForm.controls['dateWithEffectFrom'].setValue(this.coverFrom);
+      this.riskDetailsForm.controls['dateWithEffectTo'].setValue(this.coverTo);
       log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
       log.debug(this.formData ,"Form Data");
       log.debug(this.clientFormData ,"CLIENT Form Data");
@@ -179,7 +184,7 @@ export class RiskSectionDetailsComponent {
       // this.getVehicleModel();
 
       // this.loadFormData();
-      this.createRiskDetailsForm();
+
       this.createSectionDetailsForm();  
       this.createScheduleDetailsForm();
 

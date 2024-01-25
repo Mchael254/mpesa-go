@@ -117,7 +117,7 @@
                                             <p class="label">Prosper</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content"> </p>
+                                            <p class="content"> {{quotationDetails.proInterfaceType}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@
                                             <p class="label">Introducer</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content"></p>
+                                            <p class="content">{{quotationDetails.introducerCode}}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +151,7 @@
                                                 <p class="label">Status</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content"> {{quotationDetails.status}}</p>
+                                                <p class="content">{{quotationView.status}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -161,7 +161,7 @@
                                                 <p class="label">Source</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">Walk In</p>
+                                                <p class="content">{{quotationView.source.description}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -185,11 +185,11 @@
                                                     <p class="label">Sum Insured</p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p class="content"> </p>
+                                                    <p class="content">{{sumInsured }}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <!-- <div class="col-md-4">
                                             <div class="row">
                                                 <div class="col-6">
                                                     <p class="label">Likelihood</p>
@@ -198,7 +198,7 @@
                                                     <p class="content"></p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         </div>
                                    
         
@@ -209,7 +209,7 @@
                                                     <p class="label">Internal Comments</p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p class="content"></p>
+                                                    <p class="content">{{quotationDetails.internalComments}}</p>
                                                 </div>
                                             </div>
                                           
@@ -220,7 +220,7 @@
                                                     <p class="label">External Comments</p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p class="content"> </p>
+                                                    <p class="content">{{quotationDetails.comments}}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -230,7 +230,7 @@
                                         </div>
         
         
-                            <p class="cancel float-start">Cancel Quotation</p>
+                            <p class="cancel float-start" (click)="cancelQuotation()">Cancel Quotation</p>
                             <div class="float-end">
                                 <button class="btn btn-outline-primary" style="margin-right: 10px;" (click)="editDetails()">Edit Details</button>
                                 <button class="btn btn-primary" (click)="computePremium()">Compute Premium</button>
@@ -465,7 +465,7 @@
                             </ng-template>
                             </p-table>
                             <br>
-                            <ul class="nav nav-underline mb-4">
+                            <!-- <ul class="nav nav-underline mb-4">
                                 <li class="nav-item">
                                   <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-sections">Sections</a>
                                 </li>
@@ -562,7 +562,7 @@
                                         </ng-template>
                                         </p-table>
                                 </div>
-                              </div>
+                              </div> -->
                           </div>
                           </div>
                           

@@ -62,11 +62,19 @@ export class QuotationsClientDetailsComponent {
     this.getCurrency();
     this.getClient();
     this.createForm();  
+    this.quickClientDetails();
     const storedData = sessionStorage.getItem('clientFormData');
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       this.clientForm.setValue(parsedData);
       
+    }
+  }
+  quickClientDetails(){
+    const storedClientCode = sessionStorage.getItem('clientCode');
+
+    if(storedClientCode){
+      this.getClientDetails(storedClientCode)
     }
   }
   /**

@@ -143,7 +143,7 @@
         </div>
         <div class="float-end mt-4 mb-4  ">
             <button  type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
-            <button   class="btn btn-primary" type="submit" id="btnCancelQuote">Accept quote</button>
+            <button   class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">Accept quote</button>
         </div>
         <!-- Cancel Quote Modal -->
         <div  class="modal fade"  id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">

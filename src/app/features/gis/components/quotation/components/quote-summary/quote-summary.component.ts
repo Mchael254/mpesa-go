@@ -173,5 +173,8 @@ export class QuoteSummaryComponent {
     
   }
 
+  acceptQuote(){
+    this.router.navigate(['/home/gis/quotation/quotations-client-details'])
+  }
 
 }
