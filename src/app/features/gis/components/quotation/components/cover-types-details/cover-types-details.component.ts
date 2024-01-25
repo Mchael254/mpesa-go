@@ -597,6 +597,8 @@ createQuotationForm(){
   }
   SelectCover(){
     this.sharedService.setSelectedCover(this.selectedQuotationNo);
+    sessionStorage.setItem('quickQuotationNum',this.selectedQuotationNo );
+    sessionStorage.setItem('quickQuotationCode',this.quotationCode);
 
     this.router.navigate(['/home/gis/quotation/quote-summary']);
 

@@ -5,14 +5,14 @@
     <div class="card mb-4">
         <div class="card-body">
           <h6>Quotation Details </h6>
+          <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationCode}}</strong></p>
           <div class="row mb-4 mt-3">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Source<span class="required" ></span></label>
                 <select  class="form-select form-control-sm mb-1" id="quote-input"  formControlName="source"  placement="right" >
                     <option selected="true" disabled="disabled"></option>
-                    <option value="10">Walk In </option>
-                    <option value="11">Email</option>
-                    <option value="12">Broker/Agent</option>
+                    <option *ngFor="let data of quotationSources"  [value]="data.code" >{{data.description}}</option>
+                  
 
                   </select >
 
@@ -20,7 +20,7 @@
             
             <div class="col-xl-4">
                 <label for=""class="quote-label">Intermediary<span class="required"></span></label>
-                <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" placeholder=" " (onChange)="agentShortDesc(   )" [filter]="true" ></p-dropdown>
+                <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" [filterBy]="'name'" (onChange)="agentShortDesc()" [filter]="true" ></p-dropdown>
                 <!-- <select class="form-select form-control-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
                     <option selected="true" disabled="disabled"></option> 
                     <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Branch<span class="required" ></span></label>
-                <p-dropdown formControlName="branchCode" [options]="branch" optionLabel="name" placeholder=" " [filter]="true" ></p-dropdown>
+                <p-dropdown formControlName="branchCode" [options]="branch" optionLabel="name" placeholder=" " [filterBy]="'name'" [filter]="true" ></p-dropdown>
                
             </div>
            
@@ -36,7 +36,7 @@
           <div class="row mb-4">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Currency<span class="required"></span></label><br>
-                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" placeholder=" " [filter]="true" ></p-dropdown>
+                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
             </div>
             <div class="col-xl-4">
                 <label for=""class="quote-label">Request for quote date</label>
@@ -66,7 +66,7 @@
                         <option *ngFor="let data of introducers"  [value]="data.code">{{data.surName}}</option>
                     </select>  
                 </div>
-                <div class="col-xl-4">      
+                <!-- <div class="col-xl-4">      
                     <label for=""class="quote-label">Likelihood</label>
                     <select  class="form-select form-control-sm mb-1" id="quote-input"  placement="right"  >
                         <option selected="true" disabled="disabled"></option>
@@ -75,7 +75,7 @@
                         
     
                       </select >
-                </div>
+                </div> -->
             </div>
             <div class="row mb-4">
                 <div class="col-xl-4">
@@ -132,7 +132,7 @@
             <div class="col-xl-4">
                
                 <label for=""class="quote-label">Product</label>
-                <p-dropdown formControlName="productCode" [options]="products" optionLabel="description" (onChange)="getProductClause()" placeholder=" " [filter]="true" ></p-dropdown>
+                <p-dropdown formControlName="productCode" [options]="products" optionLabel="description" [filterBy]="'description'" (onChange)="getProductClause()" placeholder=" " [filter]="true" ></p-dropdown>
                
             </div>
 
@@ -239,6 +239,7 @@
 
     <div class="float-end mb-4">
         <button class="btn btn-primary" #openModal data-bs-toggle="modal" data-bs-target="#exampleModal" hidden></button>
+       
         <button class="btn btn-primary"  (click)="getExistingQuotations()" >Next</button>
     </div>
     
