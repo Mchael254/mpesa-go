@@ -47,9 +47,22 @@ export class QuotationsService {
    * @method getQuotationSources
    * @return {Observable<any>} - An observable of the response containing quotation sources.
    */
-  getQuotationSources(){
-    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation-sources`)
-  }
+    getAllQuotationSources(): Observable<any>{
+      let page = 0;
+      let size = 10;
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      
+      })
+      const params = new HttpParams()
+      .set('pageNo', `${page}`)
+        .set('pageSize', `${size}`)
+      return this.http.get<any>(`/${this.baseUrl}/quotation/api/v2/quotation-sources`,{
+        headers:headers,
+        params:params
+      })
+    }
  /**
    * Creates a new quotation using an HTTP POST request.
    * @method createQuotation
