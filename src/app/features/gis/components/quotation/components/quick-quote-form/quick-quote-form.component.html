@@ -132,11 +132,13 @@
                          
                         </div>
                         <div class="col-sm-4 col-6">
-                            <label for="product" class="quote-label" id="product">Product</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="productCode" (change)="onProductSelected($event)">
+                            <label for="product" class="quote-label" id="product">Product</label><br>
+                            <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input" formControlName="productCode" (change)="onProductSelected($event)">
                                 <option value=""></option>
                                 <option *ngFor="let product of productList" [value]="product.code">{{ product.description | sentenceCase  }}</option>
-                            </select>   
+                            </select>    -->
+                            <p-dropdown formControlName="productCode" [options]="productList" optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" " [filter]="true" ></p-dropdown>
+
                              <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched" class="form-text text-danger">
                                 Product is required.
@@ -228,9 +230,14 @@
                                         </div>
                                         <div *ngIf="field.name == 'carRegNo'">
                                             <label class="quote-label" [for]="field.name">{{ field.label }}</label>
-                                            <input type="text" id="carRegNo" class="form-control form-control-sm mb-1"
-                                                   [formControlName]="field.name" [(ngModel)]="carRegNoValue"
-                                                   (blur)="validateCarRegNo()">
+                                            <input type="text" 
+                                            id="carRegNo" 
+                                            class="form-control form-control-sm mb-1"
+                                            [formControlName]="field.name" 
+                                            [(ngModel)]="carRegNoValue"
+                                            (blur)="validateCarRegNo()"
+                                            placeholder="KCA 345R">
+
                                             <div *ngIf="carRegNoHasError" class="form-text text-danger">
                                               Please enter a valid car registration number.
                                             </div>

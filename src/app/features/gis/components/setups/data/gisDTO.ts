@@ -1025,3 +1025,15 @@ export interface vehicleModel{
     organization_code: number,
     version: number,
 }
+export interface subclassCoverTypeSection{
+    code: number,
+    coverTypeCode: number,
+    coverTypeShortDescription: string,
+    isMandatory: string,
+    order: number,
+    organizationCode: number,
+    sectionCode: number,
+    sectionShortDescription: string,
+    subClassCode: number,
+    subClassCoverTypeCode: number
+}
