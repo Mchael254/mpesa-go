@@ -28,6 +28,7 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Org Parameters', link: '/home/crm/user-parameters',  },
         { label: 'Currencies', link: '/home/crm/currencies',  },
+        { label: 'Payment Modes', link: '/home/crm/payment-modes',  },
       ]
     },
     { label: 'Account Management', link: '', showSubItems: false, subItems: [] },
