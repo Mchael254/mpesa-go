@@ -10,7 +10,8 @@ import {
   FundSourceDTO, POSTBankBranchDTO,
 } from '../../../data/common/bank-dto';
 import { Logger } from '../../logger/logger.service';
-import { environment } from 'src/environments/environment';
+import {environment} from "../../../../../environments/environment";
+// import { environment } from 'src/environments/environment';
 
 const log = new Logger('BankService');
 

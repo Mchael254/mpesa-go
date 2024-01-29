@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MandatoryFieldsService} from "../../../../shared/services/mandatory-fields/mandatory-fields.service";
-import {PaymentModesDto} from "../../../../shared/data/common/payment-modes-dto";
+import {ClaimsPaymentModesDto, PaymentModesDto} from "../../../../shared/data/common/payment-modes-dto";
 import {PaymentModesService} from "../../../../shared/services/setups/payment-modes/payment-modes.service";
 import {Logger} from "../../../../shared/services";
 import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
@@ -19,7 +19,11 @@ export class PaymentModesComponent implements OnInit {
   paymentModesData: PaymentModesDto[];
   selectedPaymentMode: PaymentModesDto;
 
+  claimPaymentModesData: ClaimsPaymentModesDto[];
+  selectedClaimsPaymentMode: ClaimsPaymentModesDto;
+
   createPaymentModeForm: FormGroup;
+  createClaimsPaymentModeForm: FormGroup;
 
   paymentModesBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -44,12 +48,22 @@ export class PaymentModesComponent implements OnInit {
     shortDescription: 'Y',
     description: 'Y',
     narration: 'Y',
-    defaultMode: 'Y'
+    defaultMode: 'Y',
+  //
+    id: 'Y',
+    claimsDescription: 'Y',
+    minAmount: 'Y',
+    maxAmount: 'Y',
+    claimsDefaultMode: 'Y'
   }
   groupId: string = 'paymentModeTab';
+  claimsPaymentGroupId: string = 'claimsPaymentModeTab';
 
   @ViewChild('paymentModeConfirmationModal')
   paymentModeConfirmationModal!: ReusableInputComponent;
+
+  @ViewChild('claimsPaymentModeConfirmationModal')
+  claimsPaymentModeConfirmationModal!: ReusableInputComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -61,7 +75,9 @@ export class PaymentModesComponent implements OnInit {
 
   ngOnInit(): void {
     this.paymentModeCreateForm();
+    this.claimsPaymentModeCreateForm();
     this.fetchPaymentModes();
+    this.fetchClaimsPaymentModes();
   }
 
   ngOnDestroy(): void {}
@@ -73,6 +89,16 @@ export class PaymentModesComponent implements OnInit {
   onPaymentModeRowSelect(paymentMode: PaymentModesDto) {
     this.selectedPaymentMode = paymentMode;
     log.info('payment mode select', this.selectedPaymentMode);
+  }
+
+  /**
+   * The function "onClaimPaymentModeRowSelect" selects a claims payment mode and logs the selected mode.
+   * @param {ClaimsPaymentModesDto} claimsPaymentMode - The parameter `claimsPaymentMode` is of type
+   * `ClaimsPaymentModesDto`.
+   */
+  onClaimPaymentModeRowSelect(claimsPaymentMode: ClaimsPaymentModesDto) {
+    this.selectedClaimsPaymentMode = claimsPaymentMode;
+    log.info('claim payment mode select', this.selectedClaimsPaymentMode)
   }
 
   /**
@@ -113,11 +139,57 @@ export class PaymentModesComponent implements OnInit {
   }
 
   /**
+   * The function creates a form for claims payment mode and sets validators for mandatory fields based on the response
+   * from an API call.
+   */
+  claimsPaymentModeCreateForm() {
+    this.createClaimsPaymentModeForm = this.fb.group({
+      id: [''],
+      claimsDescription: [''],
+      minAmount: [''],
+      maxAmount: [''],
+      claimsDefaultMode: ['']
+    });
+    this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.claimsPaymentGroupId).pipe(
+      untilDestroyed(this)
+    )
+      .subscribe((response) =>{
+        response.forEach((field) =>{
+          for (const key of Object.keys(this.createClaimsPaymentModeForm.controls)) {
+            this.visibleStatus[field.frontedId] = field.visibleStatus;
+            if (field.visibleStatus === 'Y') {
+              if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+                this.createClaimsPaymentModeForm.controls[key].addValidators(Validators.required);
+                this.createClaimsPaymentModeForm.controls[key].updateValueAndValidity();
+                const label = document.querySelector(`label[for=${field.frontedId}]`);
+                if (label) {
+                  const asterisk = document.createElement('span');
+                  asterisk.innerHTML = ' *';
+                  asterisk.style.color = 'red';
+                  label.appendChild(asterisk);
+                }
+              }
+            }
+          }
+        })
+        this.cdr.detectChanges();
+      });
+  }
+
+  /**
    * The function returns the controls of a form named "createPaymentModeForm".
    * @returns The `createPaymentModeForm.controls` object is being returned.
    */
   get h() {
     return this.createPaymentModeForm.controls;
+  }
+
+  /**
+   * The function returns the controls of a form named "createClaimsPaymentModeForm".
+   * @returns the controls of the createClaimsPaymentModeForm.
+   */
+  get f() {
+    return this.createClaimsPaymentModeForm.controls;
   }
 
   /**
@@ -132,6 +204,16 @@ export class PaymentModesComponent implements OnInit {
         })
   }
 
+  /**
+   * The function fetches claims payment modes data from a service and assigns it to a variable.
+   */
+  fetchClaimsPaymentModes() {
+    this.paymentModesService.getClaimsPaymentModes()
+      .subscribe(
+        (data) => {
+          this.claimPaymentModesData = data;
+        })
+  }
   /**
    * The function opens a modal by adding a 'show' class and setting the display property to 'block'.
    */
@@ -149,6 +231,29 @@ export class PaymentModesComponent implements OnInit {
    */
   closePaymentModesModal() {
     const modal = document.getElementById('paymentModesModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
+
+  /**
+   * The function opens a modal for claim payment modes by adding a 'show' class and setting the display property to
+   * 'block'.
+   */
+  openClaimPaymentModesModal() {
+    const modal = document.getElementById('claimsPaymentModesModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  /**
+   * The function "closeClaimPaymentModesModal" hides and removes the "claimsPaymentModesModal" element from the DOM.
+   */
+  closeClaimPaymentModesModal() {
+    const modal = document.getElementById('claimsPaymentModesModal');
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
@@ -276,6 +381,133 @@ export class PaymentModesComponent implements OnInit {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'No payment mode is selected.'
+      );
+    }
+  }
+
+  /**
+   * The `saveClaimPaymentMode` function is used to save or update a claims payment mode based on the form inputs.
+   * @returns In this code, if the `createClaimsPaymentModeForm` is invalid, the function will return and no further code
+   * will be executed. If the `selectedClaimsPaymentMode` is not truthy, a new claims payment mode will be created and the
+   * function will return. If the `selectedClaimsPaymentMode` is truthy, an existing claims payment mode will be updated
+   * and the function will return
+   */
+  saveClaimPaymentMode() {
+    this.createClaimsPaymentModeForm.markAllAsTouched();
+    if (this.createClaimsPaymentModeForm.invalid) {
+      // this.globalMessagingService.displayErrorMessage('Error', 'Fill required fields');
+      return;
+    }
+
+    if(!this.selectedClaimsPaymentMode) {
+      const claimsPaymentModeFormValues = this.createClaimsPaymentModeForm.getRawValue();
+
+      const saveClaimsPaymentMode: ClaimsPaymentModesDto = {
+        description: claimsPaymentModeFormValues.claimsDescription,
+        id: null,
+        isDefault: claimsPaymentModeFormValues.claimsDefaultMode,
+        maximumAmount: claimsPaymentModeFormValues.maxAmount,
+        minimumAmount: claimsPaymentModeFormValues.minAmount,
+        organizationId: 2,
+        remarks: null,
+        shortDescription: claimsPaymentModeFormValues.id.shortDescription
+
+      }
+      log.info('claims payment mode create', saveClaimsPaymentMode);
+      this.paymentModesService.createClaimsPaymentMode(saveClaimsPaymentMode)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully created a claims payment mode');
+
+            this.createClaimsPaymentModeForm.reset();
+            this.fetchClaimsPaymentModes();
+            this.closeClaimPaymentModesModal();
+          },
+          error => {
+            // log.info('>>>>>>>>>', error.error.message)
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
+    }
+    else {
+      const claimsPaymentModeFormValues = this.createClaimsPaymentModeForm.getRawValue();
+      const claimsPaymentModeId = this.selectedClaimsPaymentMode.id;
+
+      const saveClaimsPaymentMode: ClaimsPaymentModesDto = {
+        description: claimsPaymentModeFormValues.claimsDescription,
+        id: claimsPaymentModeId,
+        isDefault: claimsPaymentModeFormValues.claimsDefaultMode,
+        maximumAmount: claimsPaymentModeFormValues.maxAmount,
+        minimumAmount: claimsPaymentModeFormValues.minAmount,
+        organizationId: 2,
+        remarks: null,
+        shortDescription: claimsPaymentModeFormValues.id.shortDescription
+      }
+      log.info('claims payment mode update', saveClaimsPaymentMode);
+      this.paymentModesService.updateClaimsPaymentMode(claimsPaymentModeId, saveClaimsPaymentMode)
+        .subscribe((data) => {
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated a claims payment mode');
+
+            this.createClaimsPaymentModeForm.reset();
+            this.fetchClaimsPaymentModes();
+            this.closeClaimPaymentModesModal();
+          },
+          error => {
+            this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+          })
+    }
+  }
+
+  /**
+   * The function `editClaimPaymentMode()` is used to populate a form with the details of a selected claims payment mode or
+   * display an error message if no claims payment mode is selected.
+   */
+  editClaimPaymentMode() {
+    if (this.selectedClaimsPaymentMode) {
+      this.openClaimPaymentModesModal();
+      this.createClaimsPaymentModeForm.patchValue({
+        id: this.selectedClaimsPaymentMode.shortDescription,
+        claimsDescription: this.selectedClaimsPaymentMode.description,
+        minAmount: this.selectedClaimsPaymentMode.minimumAmount,
+        maxAmount: this.selectedClaimsPaymentMode.maximumAmount,
+        claimsDefaultMode: this.selectedClaimsPaymentMode.isDefault
+      });
+
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No claims payment mode is selected!'
+      );
+    }
+  }
+
+  /**
+   * The function "deleteClaimPaymentMode" displays a confirmation modal for deleting a claims payment mode.
+   */
+  deleteClaimPaymentMode() {
+    this.claimsPaymentModeConfirmationModal.show();
+  }
+
+  /**
+   * The function `confirmClaimsPaymentModeDelete()` deletes a selected claims payment mode and displays success or error
+   * messages accordingly.
+   */
+  confirmClaimsPaymentModeDelete() {
+    if (this.selectedClaimsPaymentMode) {
+      const claimPaymentModeId = this.selectedClaimsPaymentMode.id;
+      this.paymentModesService.deleteClaimsPaymentMode(claimPaymentModeId).subscribe((data) => {
+          this.globalMessagingService.displaySuccessMessage(
+            'Success',
+            'Successfully deleted a claims payment mode'
+          );
+          this.selectedClaimsPaymentMode = null;
+          this.fetchClaimsPaymentModes();
+        },
+        error => {
+          this.globalMessagingService.displayErrorMessage('Error', error.error.message);
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No claims payment mode is selected.'
       );
     }
   }
