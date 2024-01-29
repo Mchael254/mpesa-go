@@ -82,12 +82,17 @@ const mockBankBranchData: BankBranchDTO[] = [
   }];
 
 const mockBankChargeData: BankChargeDTO[] = [{
-  rate: "",
+  bankCode: 0,
+  bankName: "",
   dateFrom: "",
   dateTo: "",
+  id: 0,
+  productCode: 0,
+  productName: "",
+  rate: 0,
   rateType: "",
-  system: "",
-  product: "",
+  systemCode: 0,
+  systemName: ""
 }];
 const mockMandatoryData: MandatoryFieldsDTO[] = [
   {
@@ -384,10 +389,10 @@ describe('BankComponent', () => {
     expect(patchValueSpy).toHaveBeenCalledWith({
       dateFrom: mockselectedBankCharge.dateFrom,
       dateTo: mockselectedBankCharge.dateTo,
-      product: mockselectedBankCharge.product,
+      product: mockselectedBankCharge.productName,
       rate: mockselectedBankCharge.rate,
       rateType: mockselectedBankCharge.rateType,
-      system: mockselectedBankCharge.system
+      system: mockselectedBankCharge.systemName
     });
   });
 
