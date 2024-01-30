@@ -98,11 +98,11 @@
   transition: font-size 500ms;
 }
 
-.ai-bot .robot {
+.ai-bot .robot, .robot {
   padding: 8px;
   font-size: 1rem;
   border-radius: 100%;
-  background: #d9d9d9;
+  background: #e5efef;
 }
 
 .ai-bot span {
@@ -117,7 +117,7 @@
 }
 
 .ai-bot-dialogue {
-  width: 300px;
+  width: 350px;
   height: 400px;
   border: solid 1px #d9d9d9;
   border-radius: 10px;
@@ -135,16 +135,39 @@
 }
 
 .ai-bot-dialogue .bot-footer {
-  position: absolute;
+  /* position: absolute; */
   bottom: 0;
   padding: 10px;
-  margin-top: 10px;
+  /* margin-top: 10px; */
+  margin-bottom: 10px;
 }
 
 .ai-bot-dialogue .chat-message {
-  background: #f5f6f8;
-  padding: 5px;
+  padding: 5px 5px 10px;
   border-radius: 10px;
-  width: 90%;
-  display: inline-block;
+  display: block;
+}
+
+.ai-bot-dialogue .chat-message .message {
+  background: #f5f6f8;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.ai-bot-dialogue .chat-message .bot-message {
+  background-color: #e5efef;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+@keyframes flickerAnimation {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1;}
+}
+
+.animate-flicker {
+  animation: flickerAnimation 1s infinite;
 }
