@@ -61,7 +61,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
       CalendarModule,
       MultiSelectModule,
       TableModule,
-      ScrollPanelModule
+      ScrollPanelModule,
     ]
 })
 export class ReportsV2Module { }

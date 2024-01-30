@@ -79,6 +79,13 @@ export class ReportServiceV2 {
       `/${baseUrl}/chart/chart-reports/${id}`, {headers: this.headers});
   }
 
+  aiBotQuestion(question: string): Observable<any> {
+    return this.http.post<any>(
+      // `/${baseUrl}?user_input_area=${question}`, {}
+      `http://192.0.0.183:9090/answer_question?user_input_area=${question}`, {}
+    )
+  }
+
   fetchFilterConditions() {
     const metricConditions = [
       {label: 'Greater than', value: 'gt'},
