@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ReportService} from "../../reports/services/report.service";
@@ -13,6 +13,7 @@ import {SessionStorageService} from "../../../shared/services/session-storage/se
 import {ReportServiceV2} from "../services/report.service";
 import { ReportV2 } from 'src/app/shared/data/reports/report';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { tap } from 'rxjs';
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -21,6 +22,8 @@ const log = new Logger('CreateReportComponent');
   styleUrls: ['./create-report.component.css']
 })
 export class CreateReportComponent implements OnInit {
+
+  @ViewChild("queryTerm") queryTermField: ElementRef;
 
   createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -431,6 +434,10 @@ export class CreateReportComponent implements OnInit {
 
   showAIBot() {
     this.shouldShowChatBot = !this.shouldShowChatBot;
+     if (this.shouldShowChatBot) {
+      this.queryTermField.nativeElement.focus();
+      console.log(this.queryTermField.nativeElement)
+     }
   }
 
   closeChatBox() {
@@ -440,20 +447,51 @@ export class CreateReportComponent implements OnInit {
   getQueryResult() {
     const queryTerm = this.chatForm.getRawValue().queryTerm;
     log.info(`query term: `, queryTerm);
-    this.conversations.push({
-      message: queryTerm,
-      user: 'Me'
-    });
+    this.conversations.push(
+      {
+        message: queryTerm,
+        user: 'me'
+      },
+      {
+        message: 'loading...',
+        user: 'bot'
+      }
+    );
 
     this.chatForm.patchValue({queryTerm: ''})
 
-    setTimeout(() => {
-      this.conversations.push({
-        message: 'Welcome Tunde, how can I help you.',
-        user: 'Bot'
-      });
-    }, 1000)
+    this.reportServiceV2.aiBotQuestion(queryTerm)
+    .pipe(
+      take(1),
+      tap((res) => {
+        console.log(`aibot feedback >>>`, res)
+      })
+      )
+    .subscribe({
+      next: (res) => {
+        this.conversations.pop();
+        this.conversations.push({
+          message: res.result,
+          user: 'bot'
+        });
+      },
+      error: (err) => {
+        let errorMessage = '';
+        if (err.error.message) {
+          errorMessage = err.error.message
+        } else {
+          errorMessage = err.message
+        }
+        this.conversations.pop();
+        this.conversations.push({
+          message: "Chat service currently unavailable.",
+          user: 'bot'
+        });
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage)
+      }
+    })
   }
+  
 
 }
 
