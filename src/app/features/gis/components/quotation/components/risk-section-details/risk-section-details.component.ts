@@ -190,13 +190,20 @@ export class RiskSectionDetailsComponent {
 
       const riskFormDetails = sessionStorage.getItem('riskFormData');
       console.log('Risk form details session storage',riskFormDetails,)
-  
-      if (riskFormDetails) {
-        const parsedData = JSON.parse(riskFormDetails);
-        console.log(parsedData)
-        this.riskDetailsForm.setValue(parsedData);
-        
+      
+      const sections=sessionStorage.getItem('sections')
+      console.log(sections)
+      if (sections){
+
+        this.sectionArray = JSON.parse(sections)
+        console.log("parsed sections", this.sectionArray)
       }
+      // if (riskFormDetails) {
+      //   const parsedData = JSON.parse(riskFormDetails);
+      //   console.log(parsedData)
+      //   this.riskDetailsForm.setValue(parsedData);
+        
+      // }
 
       
       this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
@@ -837,6 +844,7 @@ updateCoverToDate() {
     section.sectionType=this.sectionList.type;
 
     log.debug("Section Form Array",this.sectionArray)
+
     this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
       
       try {
@@ -1073,6 +1081,8 @@ updateCoverToDate() {
  
 
   finish(){
+    console.log('sections',this.sectionArray)
+    sessionStorage.setItem('sections', JSON.stringify(this.sectionArray))
     this.router.navigate(['/home/gis/quotation/quotation-summary'])
   }
   getSectionbyCode(){

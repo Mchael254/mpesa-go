@@ -5,14 +5,14 @@
     <div class="card mb-4">
         <div class="card-body">
           <h6>Quotation Details </h6>
-          <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationCode}}</strong></p>
+          <p *ngIf="quickQuotationDetails">Quotation Number :<strong> {{quickQuotationNum}}</strong></p>
           <div class="row mb-4 mt-3">
             <div class="col-xl-4">
                 <label for=""class="quote-label">Source<span class="required" ></span></label>
                 <select  class="form-select form-control-sm mb-1" id="quote-input"  formControlName="source"  placement="right" >
                     <option selected="true" disabled="disabled"></option>
                     <option *ngFor="let data of quotationSources"  [value]="data.code" >{{data.description}}</option>
-                  
+                  x
 
                   </select >
 

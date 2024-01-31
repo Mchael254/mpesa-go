@@ -14,7 +14,7 @@ export class QuotationsService {
 
   baseUrl = this.appConfig.config.contextPath.gis_services;
   setupsbaseurl = "setups/api/v1";
-  testBase = this.appConfig.config.contextPath.notification_service;
+  notificationUrl = this.appConfig.config.contextPath.notification_service;
 
   computationBaseUrl = this.appConfig.config.contextPath.computation_service;
   httpOptions = {
@@ -159,6 +159,11 @@ export class QuotationsService {
      console.log("Premium Payload after",payload)
 
   }
+  sendEmail(data){
+    return this.http.post(`/${this.baseUrl}/email/send`, JSON.stringify(data),this.httpOptions)
+
+  }
+
  
 
 }
