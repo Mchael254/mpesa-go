@@ -116,3 +116,6 @@
         padding: 0.25rem;
         font-weight: 700;
     }
+    .point{
+        cursor: pointer;
+    }

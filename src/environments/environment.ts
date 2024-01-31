@@ -13,7 +13,7 @@ export const environment = {
 
   production: false,
   dmsDefaultUrl: 'http://10.176.18.101:9080/alfrescoServices',
-  TENANT_ID: API_TENANT_ID.TURNQUEST,
+  TENANT_ID: API_TENANT_ID.TQV6,
   API_URLS: new Map<API_CONFIG, string>([
     [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
     [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
