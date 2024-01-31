@@ -89,8 +89,7 @@ export class QuotationSummaryComponent {
   ngOnInit(): void {
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
-    const sections=sessionStorage.getItem('sections')
-    console.log(sections)
+    
     this.moreDetails=sessionStorage.getItem('quotationFormDetails')
     const storedData = sessionStorage.getItem('clientFormData');
     this.clientDetails=JSON.parse(storedData);
@@ -171,10 +170,7 @@ internal(){
        // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
       this.riskDetails = this.quotationView.riskInformation
-      this.riskDetails.forEach(el=>{
-        this.sections = el.sectionsDetails
-      })
-      console.log(this.sections)
+      
       // this.riskInfo.push(this.riskDetails.sectionsDetails)
       this.taxDetails = this.quotationView.taxInformation
       log.debug(this.taxDetails)
@@ -182,28 +178,18 @@ internal(){
         this.agents = res
         console.log(res)
       })
-      // this.productDetails.forEach(el=>{
-      //     /**
-      //    * Subscribes to the product service to get product details.
-      //    * @param {any} productRes - The response containing product details.
-      //    * @return {void}
-      //    */
-      //   this.productService.getProductByCode(el.proCode).subscribe(res=>{
-          
-      //   })
-     
-      //   log.debug(el.proCode)
-      // })
-      // this.agentService.getAgents().subscribe(data=>{
-      //   this.agents = data.content
-      //   this.agents.forEach(el=>{
-      //     if(el.id === this.quotationDetails.agentCode ){
-      //       this.agentDetails = el
-      //     }
-      //   })
-      
-      // })
     })
+  }
+  getSections(data){
+    
+    this.riskDetails.forEach(el=>{
+   
+      if(data===el.code){
+        this.sections = el.sectionsDetails
+      }
+      
+    })
+    console.log(this.sections,"Section Details")
   }
   /**
    * Navigates to the edit details page.
@@ -465,11 +451,16 @@ internal(){
         systemModule: this.emailForm.value.systemModule,
         
       };
-      this.quotationService.sendEmail(payload).subscribe(res=>{
+      this.quotationService.sendEmail(payload).subscribe(
+        {next:(res)=>{
         const response = res
-        if(response === false)
+        this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully' );
         console.log(res)
-      })
+      },error : (error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+       
+        }  })
       console.log('Submitted payload:',JSON.stringify(payload) );
   }
 

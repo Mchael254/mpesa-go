@@ -443,7 +443,7 @@
                     </div>
                           
                           <div class="collapse mt-4" id="riskDetails">
-                            <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }"   styleClass="p-datatable-sm">
+                            <p-table [value]="riskDetails" [tableStyle]="{ 'min-width': '50rem' }" class='ui-datatable'  styleClass="p-datatable-striped"  styleClass="p-datatable-sm">
                             <ng-template pTemplate="header">
                                 <tr>
                                     <th>ID</th>
@@ -455,7 +455,7 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
-                                <tr>
+                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code)">
                                     <td>{{data.quotationRiskNo}}</td>
                                     <td>{{data.propertyId}}</td>
                                     <td>{{data.covertypeShortDescription}}</td>
@@ -486,19 +486,14 @@
                                 <div class="tab-pane fade show active" id="nav-sections" role="tabpanel" aria-labelledby="nav-sections" tabindex="0">
     
                                     <p-table
-                                     [value]="" 
+                                     [value]="sections" 
                                      [tableStyle]="{ 'min-width': '50rem' }"  
-                                     styleClass="p-datatable-sm"
-                                     [paginator]="true"
-                                     [rows]="5"
-                                     [showCurrentPageReport]="true"
-                                     currentPageReportTemplate="{first} to {last} of {totalRecords}">
+                                     styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
                                                 <th>Row Num</th>
                                                 <th>Group</th>
                                                 <th>Section Description</th>
-                                               <th>Section Name</th>
                                                <th>Section Limit</th>
                                                 <th>Premium</th>
                                                 <th>Rate Type</th>
@@ -508,9 +503,17 @@
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                              
+                                                <td></td>
+                                                <td></td>
+                                                <td>{{data.description}}</td>
+                                                <td>{{data.limitAmount}}</td>
+                                                <td>{{data.premium}}</td>
+                                                <td></td>
+                                                <td>{{data.rate}}</td>
+                                                <td>{{data.freeLimit}}</td>
                                             </tr>
                                         </ng-template>
+                                      
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade" id="nav-riskClauses" role="tabpanel" aria-labelledby="nav-riskClauses" tabindex="0">
@@ -913,7 +916,7 @@
                               </div>
                           </form>
                          
-                          <button class="btn btn-primary float-end" (click)="emaildetails()">Send Email</button>
+                          <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="emaildetails()">Send Email</button>
                         </div>
                     
                     </div>
