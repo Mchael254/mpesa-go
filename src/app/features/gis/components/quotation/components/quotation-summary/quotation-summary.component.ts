@@ -15,6 +15,7 @@ import { BranchService } from 'src/app/shared/services/setups/branch/branch.serv
 import {NgxSpinnerService} from 'ngx-spinner';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { MenuItem } from 'primeng/api';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 
 const log = new Logger('QuotationSummaryComponent');
@@ -55,7 +56,11 @@ export class QuotationSummaryComponent {
   internalTable:any;
   menuItems:MenuItem[] | undefined;
   sumInsured:any;
+  userDetails:any;
+  emailForm: FormGroup;
+  sections:any;
   constructor(
+
     public sharedService:SharedQuotationsService,
     public quotationService:QuotationsService,
     private router: Router,
@@ -68,6 +73,7 @@ export class QuotationSummaryComponent {
     public branchService:BranchService,
     private spinner: NgxSpinnerService,
     public bankService:BankService,
+    private fb: FormBuilder
   ){}
   public isCollapsibleOpen = false;
   public isRiskCollapsibleOpen = false;
@@ -83,7 +89,8 @@ export class QuotationSummaryComponent {
   ngOnInit(): void {
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
-   
+    const sections=sessionStorage.getItem('sections')
+    console.log(sections)
     this.moreDetails=sessionStorage.getItem('quotationFormDetails')
     const storedData = sessionStorage.getItem('clientFormData');
     this.clientDetails=JSON.parse(storedData);
@@ -101,6 +108,7 @@ export class QuotationSummaryComponent {
     this.getPremiumComputationDetails()
     console.log(this.quotationDetails , "MORE DETAILS TEST")
     this.sumInsured = sessionStorage.getItem('limitAmount')
+    this.createEmailForm()
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
@@ -163,7 +171,10 @@ internal(){
        // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
       this.riskDetails = this.quotationView.riskInformation
-      
+      this.riskDetails.forEach(el=>{
+        this.sections = el.sectionsDetails
+      })
+      console.log(this.sections)
       // this.riskInfo.push(this.riskDetails.sectionsDetails)
       this.taxDetails = this.quotationView.taxInformation
       log.debug(this.taxDetails)
@@ -253,9 +264,12 @@ internal(){
    * @method getUser
    * @return {void}
    */
-     getuser(){
+     getuser():void{
       this.user = this.authService.getCurrentUserName()
-      
+      this.quotationService.getUserProfile().subscribe(res=>{
+        this.userDetails = res
+       
+      })
      }
   makeReady(){
     this.quotationService.makeReady(this.quotationCode,this.user).subscribe(
@@ -263,6 +277,7 @@ internal(){
         next: (res) => {
           this.makeQuotationReady = !this.makeQuotationReady;
           this.authoriseQuotation = !this.authoriseQuotation;
+          this.getQuotationDetails(this.quotationNumber);
           this.messageService.displaySuccessMessage('Success','Quotation Made Ready, Authorise to proceed')
         },
         error: (e) => {
@@ -280,6 +295,7 @@ internal(){
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
+          this.getQuotationDetails(this.quotationNumber);
           this.messageService.displaySuccessMessage('Success','Quotation Authorised, Confirm to proceed')
         },
         error: (e) => {
@@ -296,6 +312,7 @@ internal(){
         next: (res) => {
           this.authoriseQuotation = !this.authoriseQuotation; 
           this.confirmQuotation = !this.confirmQuotation;
+          this.getQuotationDetails(this.quotationNumber);
           this.messageService.displaySuccessMessage('Success','Quotation Authorization Confirmed')
         },
         error: (e) => {
@@ -402,5 +419,58 @@ internal(){
   editQuotations(){
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
-  
+  createEmailForm(){
+    
+    this.emailForm = this.fb.group({
+      from: ['', [Validators.required, Validators.email]],
+      clientCode: ['', Validators.required],
+      emailAggregator: ['N', Validators.required],
+      fromName: ['', Validators.required],
+      message: ['', Validators.required],
+      sendOn: ['', Validators.required], 
+      status: ['D', Validators.required],
+      subject: ['', Validators.required],
+      systemCode: ['0', Validators.required],
+      systemModule: ['NB', Validators.required],
+      address: ['', Validators.required],
+      cc: ['', Validators.required],
+      bcc: ['', Validators.required],  
+    });
+  }
+
+  emaildetails(){
+    const currentDate = new Date();
+    const current = currentDate.toISOString();
+    console.log(this.clientDetails)
+    console.log(this.emailForm.value)
+
+    
+      
+
+      const payload = {
+        address: [
+          this.emailForm.value.address,
+          this.emailForm.value.cc,
+          this.emailForm.value.bcc,
+        ].filter(email => email), // Filter out any empty values
+        clientCode: this.clientDetails.id,
+        emailAggregator: this.emailForm.value.emailAggregator,
+        from: this.userDetails.emailAddress,
+        fromName: this.emailForm.value.fromName,
+        message: this.emailForm.value.message,
+        sendOn: current,
+        status: this.emailForm.value.status,
+        subject: this.emailForm.value.subject,
+        systemCode: this.emailForm.value.systemCode,
+        systemModule: this.emailForm.value.systemModule,
+        
+      };
+      this.quotationService.sendEmail(payload).subscribe(res=>{
+        const response = res
+        if(response === false)
+        console.log(res)
+      })
+      console.log('Submitted payload:',JSON.stringify(payload) );
+  }
+
 }
