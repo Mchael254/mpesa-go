@@ -48,7 +48,7 @@ export class ColorSchemeService {
    * @returns an observable of type {id: number, name: string, colors: string, }
    */
   deleteColorScheme(id: number): Observable<any> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const baseUrl = this.appConfig.config.contextPath.setup_services;
     return this.http.delete<any>(
       `/${baseUrl}/chart/color-schemes/${id}`, {headers: this.headers});
   }

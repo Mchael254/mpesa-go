@@ -47,9 +47,9 @@ export class ReportPreviewComponent implements OnInit{
     { iconClass: 'pi pi-chart-bar', name: 'bar', isSelected: false },
     { iconClass: 'pi pi-chart-line', name: 'line', isSelected: false },
     { iconClass: 'pi pi-chart-pie', name: 'pie', isSelected: false },
-    { iconClass: 'pi pi-chart-bar', name: 'doughnut', isSelected: false },
-    { iconClass: 'pi pi-chart-bar', name: 'polarArea', isSelected: false },
-    { iconClass: 'pi pi-chart-bar', name: 'radar', isSelected: false },
+    { iconClass: 'pi pi-chart-pie', name: 'doughnut', isSelected: false },
+    // { iconClass: 'pi pi-chart-bar', name: 'polarArea', isSelected: false },
+    // { iconClass: 'fas fa-radar', name: 'radar', isSelected: false },
   ];
 
   public conditions = [];
