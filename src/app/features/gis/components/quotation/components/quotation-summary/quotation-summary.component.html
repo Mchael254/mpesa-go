@@ -185,7 +185,7 @@
                                                     <p class="label">Sum Insured</p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <p class="content">{{sumInsured }}</p>
+                                                    <p class="content">{{sumInsured| number:'1.2-2' }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -465,7 +465,7 @@
                             </ng-template>
                             </p-table>
                             <br>
-                            <!-- <ul class="nav nav-underline mb-4">
+                            <ul class="nav nav-underline mb-4">
                                 <li class="nav-item">
                                   <a class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#nav-sections">Sections</a>
                                 </li>
@@ -562,7 +562,7 @@
                                         </ng-template>
                                         </p-table>
                                 </div>
-                              </div> -->
+                              </div>
                           </div>
                           </div>
                           
@@ -875,42 +875,45 @@
                             </label>
                           </div>
                           <h6 class="mb-3">Message Details</h6>
+                          <form [formGroup]="emailForm" >
 
-                          <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label" id="messageLabel">To</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" >
-                            </div>
-                          </div>
-
-                          <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label" id="messageLabel">CC</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" >
-                            </div>
-                          </div>
-
-                          <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label" id="messageLabel">BCC</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" >
-                            </div>
-                          </div>
-
-                          <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label" id="messageLabel">Subject</label>
-                            <div class="col-sm-9">
-                              <input type="text" class="form-control" >
-                            </div>
-                          </div>
-                          
-                          <div class="mb-3 row">
-                            <label class="col-sm-3 col-form-label" id="messageLabel">Message</label>
-                            <div class="col-sm-9">
-                                <textarea class="form-control" rows="3"></textarea>
-                            </div>
-                          </div>
-                          <button class="btn btn-primary float-end">Send Email</button>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label" id="messageLabel">To</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" formControlName="address" >
+                                </div>
+                              </div>
+    
+                              <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label" id="messageLabel">CC</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" formControlName="cc"  >
+                                </div>
+                              </div>
+    
+                              <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label" id="messageLabel">BCC</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" formControlName="bcc" >
+                                </div>
+                              </div>
+    
+                              <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label" id="messageLabel">Subject</label>
+                                <div class="col-sm-9">
+                                  <input type="text" class="form-control" formControlName="subject" >
+                                </div>
+                              </div>
+                              
+                              <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label" id="messageLabel">Message</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" rows="3" formControlName="message" ></textarea>
+                                </div>
+                              </div>
+                          </form>
+                         
+                          <button class="btn btn-primary float-end" (click)="emaildetails()">Send Email</button>
                         </div>
                     
                     </div>
@@ -920,8 +923,9 @@
                 
     
             </div>
-            <!-- <div class="card mb-4">
+            <div class="card mb-4">
                 <div class="card-body">
+                    <h6 class="mb-4">Documents</h6>
                     <div class="row mt-3 g-3 align-items-center">
                         <div class="col-auto">
                           <label for="inputPassword6" class="col-form-label">Document Type</label>
@@ -934,7 +938,7 @@
                         </div>
                       </div>
                 </div>
-            </div> -->
+            </div>
         </div>
        
 

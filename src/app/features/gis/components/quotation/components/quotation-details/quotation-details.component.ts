@@ -59,7 +59,8 @@ export class QuotationDetailsComponent {
   midnightexpiry:any
   modalHeight: number = 200;
   quickQuotationDetails:any
-  quickQuotationCode:any
+  quickQuotationCode:any;
+  quickQuotationNum:any
   @ViewChild('openModal') openModal;
   constructor(
     public bankService:BankService,
@@ -115,12 +116,12 @@ export class QuotationDetailsComponent {
   }
 
   quickQuoteDetails(){
-    const quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
+    this.quickQuotationNum = sessionStorage.getItem('quickQuotationNum');
     this.quickQuotationCode =  sessionStorage.getItem('quickQuotationCode');
     if( this.quickQuotationCode){
-      sessionStorage.setItem('quotationNum',quickQuotationNum );
+      sessionStorage.setItem('quotationNum',this.quickQuotationNum );
       sessionStorage.setItem('quotationCode', this.quickQuotationCode );
-      this.quotationService.getQuotationDetails(quickQuotationNum).subscribe(res=>{
+      this.quotationService.getQuotationDetails(this.quickQuotationNum).subscribe(res=>{
         this.quickQuotationDetails = res
         console.log("QUICK QUOTE DETAILS",this.quickQuotationDetails)
         this.quotationForm.controls['expiryDate'].setValue(this.quickQuotationDetails.expiryDate);
