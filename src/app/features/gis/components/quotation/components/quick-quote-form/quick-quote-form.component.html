@@ -128,6 +128,7 @@
                             class="form-control form-control-sm mb-1"
                             formControlName="branchCode"
                             [value]="userBranchId | sentenceCase"
+                            readonly
                           >
                          
                         </div>
@@ -137,7 +138,7 @@
                                 <option value=""></option>
                                 <option *ngFor="let product of productList" [value]="product.code">{{ product.description | sentenceCase  }}</option>
                             </select>    -->
-                            <p-dropdown formControlName="productCode" [options]="productList" optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" " [filter]="true" ></p-dropdown>
+                            <p-dropdown formControlName="productCode" [options]="productList" optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" " [filterBy]="'description'" [filter]="true" ></p-dropdown>
 
                              <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('productCode').hasError('required') && personalDetailsForm.get('productCode').touched" class="form-text text-danger">

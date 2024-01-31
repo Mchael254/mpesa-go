@@ -78,7 +78,7 @@ export class ClientService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      // 'X-TenantId': environment.TENANT_ID
+      'X-TenantId': environment.TENANT_ID
     });
     const params = new HttpParams()
       .set('organizationId', 2);

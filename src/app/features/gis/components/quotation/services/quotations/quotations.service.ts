@@ -30,6 +30,7 @@ export class QuotationsService {
   baseUrl = this.appConfig.config.contextPath.gis_services;
   testBase = this.appConfig.config.contextPath.notification_service;
   computationUrl = this.appConfig.config.contextPath.computation_service;
+  notificationUrl = this.appConfig.config.contextPath.notification_service;
   /**
    * HTTP options for making requests with JSON content type.
    * @type {any}
@@ -254,6 +255,13 @@ quotationUtils(transactionCode){
     headers: headers,
     params:params
   })
+}
+sendEmail(data){
+  return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
+}
+getUserProfile(){
+  const baseUrl = this.appConfig.config.contextPath.users_services;
+  return this.http.get(`/${baseUrl}/administration/users/profile`)
 }
 
 }
