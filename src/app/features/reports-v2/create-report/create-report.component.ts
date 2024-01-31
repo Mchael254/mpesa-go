@@ -28,7 +28,7 @@ export class CreateReportComponent implements OnInit {
   createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Criteria',
-      url: '/reportsv2/create-report'
+      url: 'reportsv2/create-report'
     },
     {
       label: 'Preview',
@@ -432,12 +432,18 @@ export class CreateReportComponent implements OnInit {
   }
 
 
-  showAIBot() {
+  showAIBot(): void {
     this.shouldShowChatBot = !this.shouldShowChatBot;
-     if (this.shouldShowChatBot) {
-      this.queryTermField.nativeElement.focus();
-      console.log(this.queryTermField.nativeElement)
-     }
+    setTimeout(() => {
+      this.conversations.push({
+        user: 'bot',
+        message: 'Welcome to our Reports Section! I\'m here to assist you in exploring and generating insightful reports.'
+       });
+    }, 1000)
+  }
+
+  clearChat(): void {
+    this.conversations = [];
   }
 
   closeChatBox() {

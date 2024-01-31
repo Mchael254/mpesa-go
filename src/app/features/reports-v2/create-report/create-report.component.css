@@ -117,14 +117,14 @@
 }
 
 .ai-bot-dialogue {
-  width: 350px;
+  width: 400px;
   height: 400px;
   border: solid 1px #d9d9d9;
   border-radius: 10px;
   margin: 10px;
   /* padding: 10px; */
   position: absolute;
-  right: 10px;
+  right: 50px;
   z-index: 1000;
 }
 
@@ -132,11 +132,13 @@
   background: #00529b;
   padding: 10px;
   color: #fff;
+  border-radius: 10px;
+  z-index: 900;
 }
 
 .ai-bot-dialogue .bot-footer {
   /* position: absolute; */
-  bottom: 0;
+  /* bottom: 0; */
   padding: 10px;
   /* margin-top: 10px; */
   margin-bottom: 10px;
@@ -148,18 +150,31 @@
   display: block;
 }
 
-.ai-bot-dialogue .chat-message .message {
+.ai-bot-dialogue .message {
   background: #f5f6f8;
+  border: solid 1px #eee;
+  color: #00529b;
   padding: 10px;
   border-radius: 10px;
-  width: 100%;
+  float: right;
 }
 
-.ai-bot-dialogue .chat-message .bot-message {
-  background-color: #e5efef;
+.ai-bot-dialogue .bot-message {
+  background-color: #00529b;
+  opacity: 0.8;
   padding: 10px;
   border-radius: 10px;
-  width: 100%;
+  color: #fff;
+  clear: both;
+}
+
+.ai-bot-dialogue .chat-icons i {
+  cursor: pointer;
+}
+
+.ai-bot-dialogue .chat-icons i:hover {
+  font-size: 1.1em;
+  transition: font-size 0.5s;
 }
 
 @keyframes flickerAnimation {
