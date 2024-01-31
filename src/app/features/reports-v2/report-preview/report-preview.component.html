@@ -163,7 +163,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'report.advanced_filter' | translate }}</h1>
-        <button #closebutton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <span #closebutton class="btn btn-link btn-danger" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fa fa-times text-danger"></i>
+        </span>
       </div>
       <div class="modal-body">
 
@@ -238,7 +240,6 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
-
         <form *ngIf="saveReportForm" [formGroup]="saveReportForm">
           <div class="row g-3">
             <div class="col">
