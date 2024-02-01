@@ -1,0 +1,338 @@
+.container {
+    width: 1216px;
+    max-height: 1354px;
+    flex-shrink: 0;
+    background: #FFF;
+}
+
+.main {
+    padding: 0 48px 0 48px;
+}
+
+.finish-button {
+    display: inline-flex;
+    height: 40px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #00529B;
+}
+
+.finish-text {
+    color: #FFF;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.finish-button:hover {
+    background: #70b7f4;
+}
+
+.back-button {
+    display: inline-flex;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: #00529B;
+    float: left;
+    padding: 12px 16px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.back-text {
+    color: #00529B;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
+}
+
+.back-text:hover {
+    color: #96c0e4;
+}
+
+.reisnurance-summary {
+    color: #00529B;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tool-title {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.td-label {
+    color: #808080;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.td-desc {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-left: 15px;
+}
+
+.table-desc {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+/* search form and select column dropdown begins */
+.form {
+    position: relative;
+    width: 270px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.form .fa-search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    color: #9ca3af;
+}
+
+.form span {
+    position: absolute;
+    right: 17px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 2px;
+    border-left: 1px solid #d1d5db;
+}
+
+.form-input {
+    height: 35px;
+    text-indent: 33px;
+    border-radius: 4px;
+    width: 100%;
+    flex: 1;
+}
+
+.form-input:focus {
+    box-shadow: none;
+    border: 1;
+}
+
+p-multiSelect {
+    margin-left: 10px;
+    margin-top: 15px;
+}
+
+:host ::ng-deep .p-multiselect-label-container {
+    display: none;
+}
+
+:host ::ng-deep .p-multiselect {
+    height: auto;
+}
+
+:host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+}
+
+/* form and select column dropdown end */
+
+:host ::ng-deep {
+    .p-datatable .p-datatable-thead>tr>th {
+        color: #000000;
+        font-family: Roboto;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        opacity: 70%;
+        white-space: nowrap;
+    }
+
+    .p-datatable-thead {
+        border-radius: 4px 0px 0px 0px;
+        background: #BAD0E4;
+    }
+}
+
+.accordion-item {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.accordion-button {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-button {
+    border-radius: 0;
+}
+
+.accordion-button {
+    padding: 1rem;
+    margin: 0;
+}
+
+.accordion-button:hover {
+    background-color: transparent;
+}
+
+.accordion-header {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+td {
+    position: relative;
+}
+
+.ellipsis-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* display: none; */
+}
+
+td:hover .ellipsis-container {
+    display: block;
+}
+
+.details-button {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    white-space: nowrap;
+
+    /* padding: 14px 39px 15px 12px; */
+    align-items: center;
+    border-radius: 4px;
+    background: #FFF;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.10);
+}
+
+.view-dets-text {
+    color: #000;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.ellipsis-container:hover .details-button {
+    display: block;
+}
+
+.custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+}
+
+.custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.custom-modal-body {
+    padding-top: 3px;
+}
+
+.member-title {
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.horizontal-border {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.50);
+    padding: 8px;
+    text-align: right;
+
+}
+
+.reinsurance-text {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.reinsurance-data {
+    color: #000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.reinsurance-desc {
+    padding-top: 70px;
+    white-space: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
