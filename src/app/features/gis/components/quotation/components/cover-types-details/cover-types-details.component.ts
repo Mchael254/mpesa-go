@@ -12,16 +12,17 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import {Logger} from '../../../../../../shared/shared.module'
+import { Logger } from '../../../../../../shared/shared.module'
 import { forkJoin } from 'rxjs';
-import {PremiumComputationRequest, QuotationDetails,QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection} from '../../data/quotationsDTO'
-import { subclassSection } from '../../../setups/data/gisDTO';
+import { PremiumComputationRequest, QuotationDetails, QuotationProduct, RiskInformation, SectionDetail, TaxInformation, subclassCovertypeSection } from '../../data/quotationsDTO'
+import { Premiums, subclassSection } from '../../../setups/data/gisDTO';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { Router } from '@angular/router';
 const log = new Logger('CoverTypesDetailsComponent');
 
 @Component({
@@ -30,92 +31,92 @@ const log = new Logger('CoverTypesDetailsComponent');
   styleUrls: ['./cover-types-details.component.css']
 })
 export class CoverTypesDetailsComponent {
-  
+
   isCollapsibleOpen = false;
   isModalOpen = false;
   selectedOption: string = 'email';
   clientName: string = '';
   contactValue: string = '';
   steps = stepData;
-  coverTypes:any[];
+  coverTypes: any[];
 
-  quickQuotationNumbers:any;
-  quotationDetails:QuotationDetails[];
+  quickQuotationNumbers: any;
+  quotationDetails: QuotationDetails[];
 
-  quickQuoteSectionList:any;
+  quickQuoteSectionList: any;
   selectedSections: any[] = [];
-  sections: any[] = []; 
-  filteredSection:any;
-  passedSections:any[]=[];
-  sectionDetailsForm:FormGroup;
-  checkedSectionCode:any;
-  checkedSectionDesc:any;
-  checkedSectionType:any;
-  sectionArray:any;
+  sections: any[] = [];
+  filteredSection: any;
+  passedSections: any[] = [];
+  sectionDetailsForm: FormGroup;
+  checkedSectionCode: any;
+  checkedSectionDesc: any;
+  checkedSectionType: any;
+  sectionArray: any;
   // checked:boolean=false;
   // limitAmount:number=0;
 
-  taxInformation:any;
-  riskInformation:any
-  riskInfo:any;
-  sumInsuredValue:any;
+  taxInformation: any;
+  riskInformation: any
+  riskInfo: any;
+  sumInsuredValue: any;
 
-  riskCode:any;
-  premium:any;
-  index=1;
+  riskCode: any;
+  premium: any;
+  index = 1;
 
-  coverTypeShortDescription:any;
-  passedCoverTypeShortDes:any;
-  passedCovertypeDescription:any;
-  passedCovertypeCode:any;
+  coverTypeShortDescription: any;
+  passedCoverTypeShortDes: any;
+  passedCovertypeDescription: any;
+  passedCovertypeCode: any;
 
-  clientDetails:ClientDTO;
-  selectedClientName:any;
-  clientcode:any;
-  selectedEmail:any;
-  selectedPhoneNo:any;
-  selectedQuotationData:any;
-  selectedQuotationNo:any;
-  SelectedQuotationCode:any;
+  clientDetails: ClientDTO;
+  selectedClientName: any;
+  clientcode: any;
+  selectedEmail: any;
+  selectedPhoneNo: any;
+  selectedQuotationData: any;
+  selectedQuotationNo: any;
+  SelectedQuotationCode: any;
   formData: any;
 
 
   typedWord: number | null = null; // Initialize as null or a default value
   isChecked: boolean = false;
 
-  emailData:any={
+  emailData: any = {
     "address": [
       "kevine.oyanda@turnkeyafrica.com"
     ],
     "attachments": [],
-    "fromName":"TQ Ticketing Service",
+    "fromName": "TQ Ticketing Service",
     "bcc": [],
     "cc": [],
     "data": {
-        "html_content": "<p>Test</p>"
+      "html_content": "<p>Test</p>"
     },
     "subject": "Ticket Notification",
     "useLocalTemplate": true
   }
 
-  premiumPayload:PremiumComputationRequest;
-  premiumResponse:any;
-  riskLevelPremiums:any;
-  passedCovertypes:any;
+  premiumPayload: PremiumComputationRequest;
+  premiumResponse: any;
+  riskLevelPremiums: any;
+  passedCovertypes: any;
 
-  user:any;
+  user: any;
   userDetails: any
   userBranchId: any;
 
-  quotationCode:any;
-  quotationData:any;
-  quotationNo:any;
-  passedQuotationSource:any;
-  quotationForm:FormGroup;
+  quotationCode: any;
+  quotationData: any;
+  quotationNo: any;
+  passedQuotationSource: any;
+  quotationForm: FormGroup;
 
 
   riskDetailsForm: FormGroup;
-  quotationRiskData:any;
+  quotationRiskData: any;
 
 
   currencyList: any;
@@ -123,78 +124,82 @@ export class CoverTypesDetailsComponent {
   selectedCurrency: any;
   selectedCurrencyCode: any;
 
-  passedClientDetails:any;
-  computationDetails:any;
+  passedClientDetails: any;
+  computationDetails: any;
 
-  selectedSectionCode:any;
+  selectedSectionCode: any;
   selectedSubclassCode: any;
   allMatchingSubclasses = [];
   subclassSectionCoverList: any;
-  covertypeSectionList:any;
-  covertypeSpecificSection:any;
+  covertypeSectionList: any;
+  covertypeSpecificSection: any;
   sectionCodesArray: number[] = [];
+  premiumList: Premiums[] = [];
+  passedQuotationNumber:any;
+  passedQuotationCode:any;
 
   constructor(
-    public fb:FormBuilder,
-    public productService:ProductsService,
-    public binderService:BinderService,
-    public quotationService:QuotationsService,
+    public fb: FormBuilder,
+    public productService: ProductsService,
+    public binderService: BinderService,
+    public quotationService: QuotationsService,
     private subclassCoverTypesService: SubClassCoverTypesService,
-    public subclassService:SubclassesService,
-    public currencyService:CurrencyService,
+    public subclassService: SubclassesService,
+    public currencyService: CurrencyService,
     private gisService: ProductService,
-    public authService:AuthService,
-    public cdr:ChangeDetectorRef,
-    private messageService:MessageService,
-    private clientService:ClientService,
-    public sharedService:SharedQuotationsService,
+    public authService: AuthService,
+    public cdr: ChangeDetectorRef,
+    private messageService: MessageService,
+    private clientService: ClientService,
+    public sharedService: SharedQuotationsService,
     private router: Router,
     private ngxSpinner: NgxSpinnerService,
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     private globalMessagingService: GlobalMessagingService,
-
-
-
-
+    public premiumRateService: PremiumRateService,
 
   ) { }
 
-  ngOnInit(): void{
+  ngOnInit(): void {
+    this.passedQuotationNumber=sessionStorage.getItem('passedQuotationNumber');
+    log.debug("Passed Quotation Number:",this.passedQuotationNumber);
+    this.passedQuotationCode=sessionStorage.getItem('passedQuotationCode');
+    log.debug("Passed Quotation code:",this.passedQuotationCode);
 
-   const data=this.sharedService.getPremiumPayload();
-    log.debug("PREMIUM PAYLOAD",data);
-    this.premiumPayload=data.data;
-    log.debug("PREMIUM PAYLOAD",this.premiumPayload);
-    const hope=this.premiumPayload.risks
+    const data = this.sharedService.getPremiumPayload();
+    log.debug("PREMIUM PAYLOAD", data);
+    this.premiumPayload = data.data;
+    log.debug("PREMIUM PAYLOAD", this.premiumPayload);
+    const hope = this.premiumPayload.risks
     this.extractSectionCodes(hope);
 
-    this.passedCovertypes=data.covertypes;
-    this.premiumResponse=this.sharedService.getPremiumResponse();
-    log.debug("PREMIUM RESPONSE",this.premiumResponse);
-    this.riskLevelPremiums=this.premiumResponse.riskLevelPremiums;
-    this.sumInsuredValue=this.premiumPayload.risks[0].limits[0].limitAmount;
-    log.debug("Quick Quote Quotation SI:",this.sumInsuredValue);
-    this.selectedSectionCode =this.premiumPayload.risks[0].limits[0].section.code
-    this.selectedSubclassCode=this.premiumPayload.risks[0].subclassSection.code
-    this.quickQuoteSectionList=this.sharedService.getQuickSectionDetails();
-    log.debug("Quick Quote Quotation Sections:",this.quickQuoteSectionList );
-    this.passedClientDetails=this.sharedService.getClientDetails();
-    log.debug("Client details",this.passedClientDetails);
-    const passedClientCode= this.passedClientDetails.id;
-    log.debug("Client code",passedClientCode);
+    this.passedCovertypes = data.covertypes;
+    this.premiumResponse = this.sharedService.getPremiumResponse();
+    log.debug("PREMIUM RESPONSE", this.premiumResponse);
+    this.riskLevelPremiums = this.premiumResponse.riskLevelPremiums;
+    this.sumInsuredValue = this.premiumPayload.risks[0].limits[0].limitAmount;
+    log.debug("Quick Quote Quotation SI:", this.sumInsuredValue);
+    this.selectedSectionCode = this.premiumPayload.risks[0].limits[0].section.code
+    this.selectedSubclassCode = this.premiumPayload.risks[0].subclassSection.code
+    this.quickQuoteSectionList = this.sharedService.getQuickSectionDetails();
+    log.debug("Quick Quote Quotation Sections:", this.quickQuoteSectionList);
+    this.passedClientDetails = this.sharedService.getClientDetails();
+    log.debug("Client details", this.passedClientDetails);
+    const passedClientCode = this.passedClientDetails.id;
+    log.debug("Client code", passedClientCode);
 
-    this.passedQuotationSource=this.sharedService.getQuotationSource();
-    log.debug("Source details",this.passedQuotationSource);
+    this.passedQuotationSource = this.sharedService.getQuotationSource();
+    log.debug("Source details", this.passedQuotationSource);
 
     this.createQuotationForm();
     this.getuser();
     this.createRiskDetailsForm();
-    
-    this.formData = sessionStorage.getItem('quickQuoteFormDetails');
-    log.debug("MY TRIAL",JSON.parse(this.formData))
 
-    this.quickQuotationNumbers=this.sharedService.getQuickQuotationDetails()
-    log.debug("Quick Quote Quotation Codes:",this.quickQuotationNumbers );
+    this.formData = sessionStorage.getItem('quickQuoteFormDetails');
+    log.debug("MY TRIAL", JSON.parse(this.formData))
+
+    this.quickQuotationNumbers = this.sharedService.getQuickQuotationDetails()
+    log.debug("Quick Quote Quotation Codes:", this.quickQuotationNumbers);
     // this.loadClientQuotations(this.quickQuotationNumbers);
 
     // if (Array.isArray(this.quickQuotationCodes) && this.quickQuotationCodes.length > 0) {
@@ -203,8 +208,8 @@ export class CoverTypesDetailsComponent {
     //   console.error('Invalid or empty quickQuotationCodes');
 
     // }    
-   
-    this.createSectionDetailsForm();  
+
+    this.createSectionDetailsForm();
 
   }
 
@@ -218,9 +223,9 @@ export class CoverTypesDetailsComponent {
   closeModal() {
     this.isModalOpen = false;
   }
- 
 
- 
+
+
   loadClientQuotations(quotationNumbers: string[]) {
     forkJoin(
       quotationNumbers.map(code =>
@@ -242,30 +247,31 @@ export class CoverTypesDetailsComponent {
     this.passedCovertypeDescription = data;
     this.passedCovertypeCode = code;
     this.passedCoverTypeShortDes = data;
-    this.filteredSection = this.quickQuoteSectionList.filter(section => 
-      
-        this.passedCoverTypeShortDes == "COMP" ? 
-        section.coverTypeShortDescription == "COMPREHENSIVE" : 
+    this.filteredSection = this.quickQuoteSectionList.filter(section =>
+
+      this.passedCoverTypeShortDes == "COMP" ?
+        section.coverTypeShortDescription == "COMPREHENSIVE" :
         section.coverTypeShortDescription == this.passedCoverTypeShortDes
     );
     log.debug("Filtered Section", this.filteredSection);
-    this.passedSections= this.quickQuoteSectionList.filter(section => section.coverTypeCode == this.passedCovertypeCode);
+    this.passedSections = this.quickQuoteSectionList.filter(section => section.coverTypeCode == this.passedCovertypeCode);
     log.debug("Passed Section", this.passedSections);
 
-    this.loadSubclassSectionCovertype()
-}
+    this.loadSubclassSectionCovertype();
+    this.loadAllPremiums();
+  }
 
-  
+
   // passedRiskcode(data:any){
   //   log.debug("Risk Code;" ,data);
   //   this.riskCode=data;
   // }
-  passedClient(data:any){
-    log.debug("client Code;" ,data);
-    this.clientcode=data;
+  passedClient(data: any) {
+    log.debug("client Code;", data);
+    this.clientcode = data;
     this.getClient();
   }
-  
+
 
   // loadClientQuotations(quotationCodes: string[]) {
   //   forkJoin(
@@ -277,19 +283,19 @@ export class CoverTypesDetailsComponent {
   //       for (let i = 0; i < data.length; i++) {
   //         const quotationDetails = data[i];
   //         log.debug(`Quotation Details for Code ${quotationCodes[i]}:`, quotationDetails);
-  
+
   //         const taxInformation = quotationDetails.taxInformation;
   //         log.debug(`Tax and Levies Details for Code ${quotationCodes[i]}:`, taxInformation);
-  
+
   //         const premium = quotationDetails.premium;
   //         log.debug(`Premium for Code ${quotationCodes[i]}:`, premium);
-  
+
   //         const riskInformation = quotationDetails.riskInformation;
   //         log.debug(`Risk Info for Code ${quotationCodes[i]}:`, riskInformation);
-  
+
   //         const coverTypeShortDescription = riskInformation[0].covertypeShortDescription;
   //         log.debug(`Cover type Desc for Code ${quotationCodes[i]}:`, coverTypeShortDescription);
-  
+
   //         // Handle other details as needed
   //       }
   //     },
@@ -298,7 +304,7 @@ export class CoverTypesDetailsComponent {
   //     }
   //   );
   // }
- 
+
   calculateTotalPayablePremium(quotationDetail: QuotationDetails): number {
     let totalPremium = quotationDetail.premium || 0;
 
@@ -309,147 +315,178 @@ export class CoverTypesDetailsComponent {
 
     return totalPremium;
   }
-    /**
- * Creates and initializes a section details form.
- * Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
- * Defines form controls for various section-related fields, setting initial values as needed.
- */
-    createSectionDetailsForm(){
-      this.sectionDetailsForm=this.fb.group({
-        calcGroup: [''],
-        code: [''],
-        compute: [''],
-        description: [''],
-        freeLimit: [''],
-        limitAmount: [''],
-        multiplierDivisionFactor: [''],
-        multiplierRate: [''],
-        premiumAmount: [''],
-        premiumRate: [''],
-        quotRiskCode: [''],
-        rateDivisionFactor: [''],
-        rateType: [''],
-        rowNumber: [''],
-        sectionCode: [''],
-        sectionShortDescription: [''],
-        sectionType: [''],
-        sumInsuredLimitType: [''],
-        sumInsuredRate: ['']
+  /**
+* Creates and initializes a section details form.
+* Utilizes the 'FormBuilder'to create a form group ('sectionDetailsForm').
+* Defines form controls for various section-related fields, setting initial values as needed.
+*/
+  createSectionDetailsForm() {
+    this.sectionDetailsForm = this.fb.group({
+      calcGroup: [''],
+      code: [''],
+      compute: [''],
+      description: [''],
+      freeLimit: [''],
+      limitAmount: [''],
+      multiplierDivisionFactor: [''],
+      multiplierRate: [''],
+      premiumAmount: [''],
+      premiumRate: [''],
+      quotRiskCode: [''],
+      rateDivisionFactor: [''],
+      rateType: [''],
+      rowNumber: [''],
+      sectionCode: [''],
+      sectionShortDescription: [''],
+      sectionType: [''],
+      sumInsuredLimitType: [''],
+      sumInsuredRate: ['']
     });
-    }
-    // onInputChange(section: any): void {
-    //   log.debug("this method has been called")
-    //   this.checked = this.limitAmount >0;
-    // }
-    
-    onKeyUp(event: KeyboardEvent, section: any): void {
-      const inputElement = event.target as HTMLInputElement;
-      const inputValue = inputElement.value;
-    
-      // Assuming each row in the p-table has a 'code' property
-      section.typedWord = parseInt(inputValue, 10);
-      section.isChecked = !isNaN(section.typedWord);
-    
-      // Check if the section is checked and add it to the selectedSections array
-      if (section.isChecked && !this.passedSections.includes(section)) {
-        this.passedSections.push(section);
-        console.log('Selected Sections:', this.passedSections);
+  }
+  // onInputChange(section: any): void {
+  //   log.debug("this method has been called")
+  //   this.checked = this.limitAmount >0;
+  // }
 
-      }
+  onKeyUp(event: KeyboardEvent, section: any): void {
+    const inputElement = event.target as HTMLInputElement;
+    const inputValue = inputElement.value;
+
+    // Assuming each row in the p-table has a 'code' property
+    section.typedWord = parseInt(inputValue, 10);
+    section.isChecked = !isNaN(section.typedWord);
+
+    // Check if the section is checked and add it to the selectedSections array
+    if (section.isChecked && !this.passedSections.includes(section)) {
+      this.passedSections.push(section);
+      console.log('Selected Sections:', this.passedSections);
+      sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+
+      this.loadAllPremiums();
     }
-    
-  
-    // Function to determine the checkbox state for each row
-    isSectionChecked(section: any): boolean {
-      return section.isChecked || false;
-      
-    }
-    // onSelectionChange(event: any) {
-    //   console.log('Selected Sections:', this.selectedSections);
-    // }
-   
-  
+  }
+
+
+  // Function to determine the checkbox state for each row
+  isSectionChecked(section: any): boolean {
+    return section.isChecked || false;
+
+  }
+  // onSelectionChange(event: any) {
+  //   console.log('Selected Sections:', this.selectedSections);
+  // }
+
+
   createRiskSection(payload: any) {
     // Your implementation for createRiskSection
     console.log('createRiskSection called with payload:', payload);
     sessionStorage.setItem("Added Benefit", JSON.stringify(payload));
   }
+  loadAllPremiums() {
+    const selectedBinder = this.premiumPayload.risks[0].binderDto.code;
+    const selectedSubclassCode = this.premiumPayload.risks[0].subclassSection.code;
+    const sections = this.passedSections;
+
+    // Create an array to store observables returned by each service call
+    const observables = sections.map(section => {
+      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+    });
+
+    // Use forkJoin to wait for all observables to complete
+    forkJoin(observables).subscribe(data => {
+      // data is an array containing the results of each service call
+      this.premiumList = data.flat(); // Flatten the array if needed
+      this.cdr.detectChanges();
+      log.debug("Premium List", this.premiumList)
+      // this.onCreateRiskSection();
+    });
+  }
+
+
 
   onCreateRiskSection() {
     console.log('Selected Sections:', this.passedSections);
 
-    const payload = this.passedSections.map(section => {
+    // Assuming this.premiumList is an array of premium rates retrieved from the service
+    const premiumRates = this.premiumList;
+
+    if (premiumRates.length !== this.passedSections.length) {
+      // Handle the case where the number of premium rates doesn't match the number of sections
+      console.error("Number of premium rates doesn't match the number of sections");
+      return;
+    }
+
+    const payload = this.passedSections.map((section, index) => {
+      const premiumRate = premiumRates[index]; // Get the corresponding premium rate for the current section
+
       return {
         calcGroup: 1,
         code: section.code,
         compute: "Y",
-        description:this.premiumPayload.risks[0].limits[0].description,
-        freeLimit:0,
-        multiplierDivisionFactor:this.premiumPayload.risks[0].limits[0].multiplierDivisionFactor,
-        multiplierRate:this.premiumPayload.risks[0].limits[0].multiplierRate,
-        premiumAmount:this.premiumPayload.risks[0].limits[0].premiumAmount,
-        premiumRate:this.premiumPayload.risks[0].limits[0].premiumRate,
-        rateDivisionFactor:this.premiumPayload.risks[0].limits[0].rateDivisionFactor,
-        rateType:this.premiumPayload.risks[0].limits[0].rateType,
-        rowNumber:this.premiumPayload.risks[0].limits[0].rowNumber,
-        sumInsuredLimitType:null,
-        sumInsuredRate:0,
+        description: premiumRate.sectionShortDescription,
+        freeLimit: 0,
+        multiplierDivisionFactor: premiumRate.multiplierDivisionFactor,
+        multiplierRate: premiumRate.multiplierRate,
+        premiumAmount: 0,
+        premiumRate: premiumRate.rate,
+        rateDivisionFactor: premiumRate.divisionFactor,
+        rateType: premiumRate.rateType,
+        rowNumber: 1,
+        sumInsuredLimitType: null,
+        sumInsuredRate: 0,
         sectionShortDescription: section.sectionShortDescription,
-        sectionCode:section.sectionCode,
+        sectionCode: section.sectionCode,
         limitAmount: this.sumInsuredValue,
       };
     });
+
     this.sectionArray = payload;
 
-    // Call your createRiskSection method with the constructed payload
-    this.createRiskSection(payload);
-    this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
-      
+    this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
       try {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
-        this.sectionDetailsForm.reset()
+        this.sectionDetailsForm.reset();
       } catch (error) {
-        // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-        // this.sectionDetailsForm.reset()
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        // this.sectionDetailsForm.reset();
       }
-      // this.computePremium();
-      // this.computeQuotePremium();
-      this.callQuotationUtilsService();
-
-
-    })
+      this.computeQuotePremium();
+      // this.sharedFunctionService.sendClickEvent(30);
+      // log.debug("Function called on cover types")
+    });
   }
-   
 
-  getClient(){
-    this.clientService.getClientById(this.clientcode).subscribe(data=>{
+
+
+  getClient() {
+    this.clientService.getClientById(this.clientcode).subscribe(data => {
       this.clientDetails = data;
-      log.debug("Selected Client Details",this.clientDetails);
-      this.selectedClientName=this.clientDetails.firstName + ' ' + this.clientDetails.lastName
-      log.debug("Selected Client Name",this.selectedClientName);
-      this.selectedEmail=this.clientDetails.emailAddress;
+      log.debug("Selected Client Details", this.clientDetails);
+      this.selectedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName
+      log.debug("Selected Client Name", this.selectedClientName);
+      this.selectedEmail = this.clientDetails.emailAddress;
       // remember to remove phonenumber
-      this.selectedPhoneNo=+254789456123;
+      this.selectedPhoneNo = +254789456123;
       // this.selectedPhoneNo=this.clientDetails.phoneNumber;
 
     })
   }
-  selectedQuotationCover(data:any){
+  selectedQuotationCover(data: any) {
     // this.ngxSpinner.show("coverComparisonScreen")
 
-    this.selectedQuotationData=data;
-    log.debug("Selected Quotation/cover:",this.selectedQuotationData);
-    this.SelectedQuotationCode=this.selectedQuotationData.riskInformation[0].quotationCode;
-    log.debug("Selected Quotation Code:",this.SelectedQuotationCode);
+    this.selectedQuotationData = data;
+    log.debug("Selected Quotation/cover:", this.selectedQuotationData);
+    this.SelectedQuotationCode = this.selectedQuotationData.riskInformation[0].quotationCode;
+    log.debug("Selected Quotation Code:", this.SelectedQuotationCode);
 
-    this.selectedQuotationNo=this.selectedQuotationData.quotationProduct[0].quotationNo;
-    log.debug("Selected Quotation/cover Number:",this.selectedQuotationNo);
+    this.selectedQuotationNo = this.selectedQuotationData.quotationProduct[0].quotationNo;
+    log.debug("Selected Quotation/cover Number:", this.selectedQuotationNo);
     // this.sharedService.setSelectedCover(this.selectedQuotationNo);
     // this.router.navigate(['/home/gis/quotation/quote-summary']);
 
   }
-  computePremium(){
-    this.quotationService.computePremium(this.SelectedQuotationCode).subscribe(data =>{
+  computePremium() {
+    this.quotationService.computePremium(this.SelectedQuotationCode).subscribe(data => {
       try {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
       } catch (error) {
@@ -457,106 +494,106 @@ export class CoverTypesDetailsComponent {
       }
     })
   }
-  passSelectedCover(){
-     this.sharedService.setSelectedCover(this.selectedQuotationNo);
+  passSelectedCover() {
+    this.sharedService.setSelectedCover(this.selectedQuotationNo);
     //  this.ngxSpinner.show("coverComparisonScreenx")
 
     this.router.navigate(['/home/gis/quotation/quote-summary']);
   }
-//  sendEmail(){
-//   this.notificationService.sendEmail(this.emailData).subscribe(data=>{
-//     try {
-//       log.debug("email:",data)
-//       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Email sent' });
-//     } catch (error) {
-//       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, please try again later' });
-//     }
-//     })
-//  }
+  //  sendEmail(){
+  //   this.notificationService.sendEmail(this.emailData).subscribe(data=>{
+  //     try {
+  //       log.debug("email:",data)
+  //       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Email sent' });
+  //     } catch (error) {
+  //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, please try again later' });
+  //     }
+  //     })
+  //  }
 
 
-              /******************NEW PREMIUM COMPUTATION ENGINE **************/
+  /******************NEW PREMIUM COMPUTATION ENGINE **************/
 
   loadSubclassSectionCovertype() {
-                this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
-                  this.subclassSectionCoverList = data;
-                  log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-                  this.covertypeSectionList = this.subclassSectionCoverList.filter(section => 
-                    section.subClassCode == this.selectedSubclassCode &&
-                    section.isMandatory == null 
-                  );
-                  log.debug("NOT MANDATORY",this.covertypeSectionList)
-                this.covertypeSpecificSection= this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
-                log.debug("COVER SPECIFIC SECTIONS",this.covertypeSpecificSection)
-                })
+    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+      this.subclassSectionCoverList = data;
+      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+      this.covertypeSectionList = this.subclassSectionCoverList.filter(section =>
+        section.subClassCode == this.selectedSubclassCode &&
+        section.isMandatory == null
+      );
+      log.debug("NOT MANDATORY", this.covertypeSectionList)
+      this.covertypeSpecificSection = this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
+      log.debug("COVER SPECIFIC SECTIONS", this.covertypeSpecificSection)
+    })
   }
 
-createQuotationForm(){
-  this.quotationForm = this.fb.group({
-    actionType: [''],
-    addEdit: [''],
-    agentCode: [''],
-    agentShortDescription: [''],
-    bdivCode: [''],
-    bindCode: [''],
-    branchCode: [''],
-    clientCode: [''],
-    clientType: [''],
-    coinLeaderCombined: [''],
-    consCode: [''],
-    currencyCode: [''],
-    currencySymbol: [''],
-    fequencyOfPayment: [''],
-    isBinderPolicy: [''],
-    paymentMode: [''],
-    proInterfaceType: [''],
-    productCode: [''],
-    source: [''],
-    withEffectiveFromDate: [''],
-    withEffectiveToDate: [''],
-    multiUser:[''],
-    comments:[''],
-    internalComments:[''],
-    introducerCode:[''],
-    dateRange:[''],
-    RFQDate:[''],
-    expiryDate:['']
-  })
-}
+  createQuotationForm() {
+    this.quotationForm = this.fb.group({
+      actionType: [''],
+      addEdit: [''],
+      agentCode: [''],
+      agentShortDescription: [''],
+      bdivCode: [''],
+      bindCode: [''],
+      branchCode: [''],
+      clientCode: [''],
+      clientType: [''],
+      coinLeaderCombined: [''],
+      consCode: [''],
+      currencyCode: [''],
+      currencySymbol: [''],
+      fequencyOfPayment: [''],
+      isBinderPolicy: [''],
+      paymentMode: [''],
+      proInterfaceType: [''],
+      productCode: [''],
+      source: [''],
+      withEffectiveFromDate: [''],
+      withEffectiveToDate: [''],
+      multiUser: [''],
+      comments: [''],
+      internalComments: [''],
+      introducerCode: [''],
+      dateRange: [''],
+      RFQDate: [''],
+      expiryDate: ['']
+    })
+  }
 
- /**
-   * Creates and initializes the risk details form using Angular FormBuilder.
-   * - Defines form controls with validators for various risk details.
-   * @method createRiskDetailsForm
-   * @return {void}
-   */
- createRiskDetailsForm() {
-  this.riskDetailsForm = this.fb.group({
-    binderCode: ['', Validators.required],
-    coverTypeCode: ['', Validators.required],
-    coverTypeShortDescription: [''],
-    dateWithEffectFrom: [''],
-    dateWithEffectTo: [''],
-    dateRange: [''],
-    insuredCode: [''],
-    isNoClaimDiscountApplicable: [''],
-    itemDescription: ['', Validators.required],
-    location: [''],
-    noClaimDiscountLevel: [''],
-    productCode: [''],
-    propertyId: [''],
-    riskPremAmount: [''],
-    subClassCode: ['', Validators.required],
-    town: [''],
-  });
-}
+  /**
+    * Creates and initializes the risk details form using Angular FormBuilder.
+    * - Defines form controls with validators for various risk details.
+    * @method createRiskDetailsForm
+    * @return {void}
+    */
+  createRiskDetailsForm() {
+    this.riskDetailsForm = this.fb.group({
+      binderCode: ['', Validators.required],
+      coverTypeCode: ['', Validators.required],
+      coverTypeShortDescription: [''],
+      dateWithEffectFrom: [''],
+      dateWithEffectTo: [''],
+      dateRange: [''],
+      insuredCode: [''],
+      isNoClaimDiscountApplicable: [''],
+      itemDescription: ['', Validators.required],
+      location: [''],
+      noClaimDiscountLevel: [''],
+      productCode: [''],
+      propertyId: [''],
+      riskPremAmount: [''],
+      subClassCode: ['', Validators.required],
+      town: [''],
+    });
+  }
 
-   /**
-   * Retrieves the current user and stores it in the 'user' property.
-   * @method getUser
-   * @return {void}
-   */
-   getuser() {
+  /**
+  * Retrieves the current user and stores it in the 'user' property.
+  * @method getUser
+  * @return {void}
+  */
+  getuser() {
     this.user = this.authService.getCurrentUserName()
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
@@ -577,34 +614,34 @@ createQuotationForm(){
 
     })
   }
-  createQuotation(){
+  createQuotation() {
     const quoteForm = this.quotationForm.value;
     quoteForm.agentCode = 0;
     quoteForm.agentShortDescription = "DIRECT";
     quoteForm.branchCode = this.userBranchId;
-    quoteForm.bindCode =this.premiumPayload.risks[0].binderDto.code;
-    quoteForm.clientCode =this.passedClientDetails.id
-    quoteForm.clientType="I";
-    quoteForm.currencyCode=this.premiumPayload.risks[0].binderDto.currencyCode;
-    quoteForm.currencySymbol=this.selectedCurrency;
-    quoteForm.productCode=this.premiumPayload.product.code;
-    quoteForm.source=this.passedQuotationSource[0].code;
-    quoteForm.withEffectiveFromDate=this.premiumPayload.risks[0].withEffectFrom;
-    quoteForm.withEffectiveToDate=this.premiumPayload.risks[0].withEffectTo;
+    quoteForm.bindCode = this.premiumPayload.risks[0].binderDto.code;
+    quoteForm.clientCode = this.passedClientDetails.id
+    quoteForm.clientType = "I";
+    quoteForm.currencyCode = this.premiumPayload.risks[0].binderDto.currencyCode;
+    quoteForm.currencySymbol = this.selectedCurrency;
+    quoteForm.productCode = this.premiumPayload.product.code;
+    quoteForm.source = this.passedQuotationSource[0].code;
+    quoteForm.withEffectiveFromDate = this.premiumPayload.risks[0].withEffectFrom;
+    quoteForm.withEffectiveToDate = this.premiumPayload.risks[0].withEffectTo;
 
-    this.quotationService.createQuotation(quoteForm,this.user).subscribe(data=>{
+    this.quotationService.createQuotation(quoteForm, this.user).subscribe(data => {
       this.quotationData = data;
       this.quotationCode = this.quotationData._embedded[0].quotationCode;
       this.quotationNo = this.quotationData._embedded[0].quotationNumber;
       // this.quotationNo = data;
-      console.log(this.quotationData,"Quotation results:")    
-      log.debug("Quotation Number",this.quotationNo);
-      log.debug("Quotation Code",this.quotationCode);
+      console.log("Quotation results:",this.quotationData )
+      log.debug("Quotation Number", this.quotationNo);
+      log.debug("Quotation Code", this.quotationCode);
       this.createQuotationRisk()
 
-      })
+    })
   }
-  createQuotationRisk(){
+  createQuotationRisk() {
     const risk = this.riskDetailsForm.value;
     risk.binderCode = this.premiumPayload.risks[0].binderDto.code;
     risk.coverTypeCode = this.passedCovertypeCode;
@@ -621,7 +658,7 @@ createQuotationForm(){
     console.log('Quick Form Risk', risk);
     const riskArray = [risk];
 
-    return this.quotationService.createQuotationRisk(this.quotationCode, riskArray).subscribe(data =>{
+    return this.quotationService.createQuotationRisk( this.passedQuotationCode == null? this.quotationCode: this.passedQuotationCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
       const quotationRiskCode = this.quotationRiskData._embedded[0];
       if (quotationRiskCode) {
@@ -642,20 +679,61 @@ createQuotationForm(){
 
     })
   }
-  selectedQuotation(){
-    log.info("Quote NO",    this.quotationNo    )
-    this.selectedQuotationNo=this.quotationNo;
+  selectedRiskLevelPremium(data: any) {
+    log.info("RiskLevelPremium::::::", data);
+    this.sharedService.setPremiumResponse(data);
+
+    this.selectedQuotationNo = this.quotationNo;
   }
-  SelectCover(){
-    this.sharedService.setSelectedCover(this.selectedQuotationNo);
-    sessionStorage.setItem('quickQuotationNum',this.selectedQuotationNo );
-    sessionStorage.setItem('quickQuotationCode',this.quotationCode);
+  // SelectCover() {
+  //   this.sharedService.setSelectedCover(this.selectedQuotationNo);
+  //   sessionStorage.setItem('quickQuotationNum', this.selectedQuotationNo);
+  //   sessionStorage.setItem('quickQuotationCode', this.quotationCode);
 
-    this.router.navigate(['/home/gis/quotation/quote-summary']);
+  //   this.router.navigate(['/home/gis/quotation/quote-summary']);
 
+  // }
+  SelectCover() {
+    if(this.passedQuotationNumber == null){
+      if (this.quotationData != null && this.quotationData._embedded.length > 0) {
+        // Quotation data is not empty
+        console.log("QUOTATION DATA IS NOT EMPTY")
+        this.sharedService.setSelectedCover(this.quotationNo);
+        sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+    
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
+      } else {
+        console.log("QUOTATION DATA IS  EMPTY")
+  
+        // Quotation data is empty, call createQuotation method
+        this.createQuotation();
+        this.getQuotationNumber();
+  
+      }
+
+    }else{
+      this.createQuotationRisk();
+      this.sharedService.setSelectedCover(this.passedQuotationNumber);
+      this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+    }
+   
+  }
+  getQuotationNumber(): Promise<String>{
+    return new Promise((resolve)=>{
+      setTimeout(()=>{
+      resolve(this.quotationNo)
+      log.debug("Quotation Number has been generated",this.quotationNo)
+      this.sharedService.setSelectedCover(this.quotationNo);
+      sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+      sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+      this.router.navigate(['/home/gis/quotation/quote-summary']);
+      }, 2000)
+    })
   }
   callQuotationUtilsService() {
-    this.quotationService.quotationUtils(this.quotationCode).subscribe({
+    this.quotationService.quotationUtils(this.passedQuotationCode == null ? this.quotationCode : this.passedQuotationCode).subscribe({
       next: (res) => {
         this.computationDetails = res;
 
@@ -665,8 +743,11 @@ createQuotationForm(){
         // Modify the prorata field for all risks
         this.computationDetails.risks.forEach((risk: any) => {
           risk.prorata = 'F';
+          risk.limits.forEach((limit: any) => {
+            limit.multiplierDivisionFactor = 1
+          });
         });
-
+        this.computePremiumQuickQuote();
         log.debug("Updated computational details", this.computationDetails); // Log the updated data
 
       },
@@ -676,16 +757,16 @@ createQuotationForm(){
       }
     });
   }
-   // Function to be called when you want to re-fetch the data
-   reloadQuotationDetails() {
-    // Call the quotationUtils service again
-    this.callQuotationUtilsService();
-  }
-   // Your existing computeQuotePremium function
-   computeQuotePremium() {
+  // Function to be called when you want to re-fetch the data
+  //  reloadQuotationDetails() {
+  //   // Call the quotationUtils service again
+  //   this.callQuotationUtilsService();
+  // }
+
+  // Your existing computeQuotePremium function
+  computeQuotePremium() {
     // Call the quotationUtils service for the first time
     this.callQuotationUtilsService();
-    this.computePremiumQuickQuote();
   }
   extractSectionCodes(risks: any[]): void {
     risks.forEach((risk) => {
@@ -702,28 +783,79 @@ createQuotationForm(){
     console.log('Section Codes Array:', this.sectionCodesArray);
   }
 
-/**Compute premium adding additional benefit */
-computePremiumQuickQuote(){
-    
-  this.quotationService.computePremium(this.computationDetails).subscribe(
- {  
-  next:(res)=>{
-    this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
-        const premiums = res
-        console.log(res)
-    },
-  error : (error: HttpErrorResponse) => {
-    log.info(error);
-    this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-   
-    }  
-  }
+  /**Compute premium adding additional benefit */
+  computePremiumQuickQuote() {
+
+    this.quotationService.premiumComputationEngine(this.computationDetails).subscribe(
+      {
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed');
+          const premiums = res;
+          console.log(res)
+          const newriskLevelPremiums = res.riskLevelPremiums;
+
+
+          // Iterate through the cover types in the first payload
+          for (let i = 0; i < this.riskLevelPremiums.length; i++) {
+            const coverTypeFirstPayload = this.riskLevelPremiums[i].coverTypeDetails;
+
+            // Find matching cover type code in the second payload
+            const matchingCoverTypeSecondPayload = newriskLevelPremiums.find(
+              (coverTypeSecondPayload) => coverTypeSecondPayload.coverTypeDetails.coverTypeCode === coverTypeFirstPayload.coverTypeCode
+            );
+
+            // If a match is found, replace the data in the first payload
+            if (matchingCoverTypeSecondPayload) {
+              this.riskLevelPremiums[i] = matchingCoverTypeSecondPayload;
+            }
+          }
+
+          log.debug("Updated Risk Level Premium:", this.riskLevelPremiums)
+
+          // Loop through each item in riskLevelPremiums and push it to riskpremiumsArray
+          // newriskLevelPremiums.forEach(item => {
+          //   this.riskLevelPremiums.push(item);
+          // });
+          // log.debug("Updated Risk Level Premium:", this.riskLevelPremiums)
+
+          // Extract the cover types from the computationalDetails
+          const coverTypesToReplace = this.computationDetails.risks.map((risk) => risk.subclassCoverTypeDto.coverTypeCode);
+          log.debug("COVERTYPE TO REPLACE", coverTypesToReplace)
+
+          // Loop through the risks in the premiumPayload
+          for (let i = 0; i < this.premiumPayload.risks.length; i++) {
+            const currentRisk = this.premiumPayload.risks[i];
+            const currentCoverTypeCode = currentRisk.subclassCoverTypeDto.coverTypeCode;
+
+            // Check if the cover type code is in the list of cover types to replace
+            if (coverTypesToReplace.includes(currentCoverTypeCode)) {
+              // Find the corresponding risk in the computationalDetails
+              const correspondingRisk = this.computationDetails.risks.find(
+                (risk) => risk.subclassCoverTypeDto.coverTypeCode === currentCoverTypeCode
+              );
+
+              // Replace the risk in the premiumPayload with the one from the computationalDetails
+              this.premiumPayload.risks[i] = correspondingRisk;
+
+            }
+          }
+          console.log(JSON.stringify(this.premiumPayload, null, 2));
+          log.debug("UPDATED PREMIUM PAYLOAD", this.premiumPayload)
+
+
+        },
+        error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        }
+      }
     )
-}
-// ComputePremiumFinal(){
-//   this.computeQuotePremium()
-//   log.debug("SEDRF",this.computationDetails)
-// }
+  }
+  // ComputePremiumFinal(){
+  //   this.computeQuotePremium()
+  //   log.debug("SEDRF",this.computationDetails)
+  // }
 
 
 }
