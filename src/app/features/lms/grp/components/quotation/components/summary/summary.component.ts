@@ -96,7 +96,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { label: 'Premium', value: 'premium' },
       { label: 'Select rate', value: 'use_cvr_rate' },
       { label: 'Override premiums', value: 'but_charge_premium' },
-      { label: 'Rate', value: 'rate' },
+      { label: 'Rate', value: 'premium_rate' },
       { label: 'Rate division factor', value: 'rate_division_factor' },
       { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
       { label: 'Main cover', value: 'cvt_main_cover' },

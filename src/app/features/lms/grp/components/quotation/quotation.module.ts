@@ -14,6 +14,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
     NgxSpinnerModule,
     MultiSelectModule,
     ProgressBarModule,
+    RadioButtonModule,
   ]
 })
 export class QuotationModule { }
