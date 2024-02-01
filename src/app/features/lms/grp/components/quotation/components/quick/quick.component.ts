@@ -92,6 +92,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   quickQuoteForm() {
     this.quickForm = this.fb.group({
+      communicationType: [""],
       clients: ["", [Validators.required] ],
       branch: [""],
       products: ["", [Validators.required] ],
@@ -108,6 +109,11 @@ export class QuickComponent implements OnInit, OnDestroy {
 
     });
   }
+
+  shareSummaryForm = this.fb.group({
+    communicationType: ['', Validators.required],
+  });
+  
 
   capitalizeFirstLetterOfEachWord(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');

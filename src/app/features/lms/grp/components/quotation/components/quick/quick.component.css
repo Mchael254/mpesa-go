@@ -17,12 +17,12 @@
 
 .client-details,
 .product-details {
+  color: #000;
   font-family: Roboto;
   font-size: 16px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   line-height: normal;
-  padding: 10px;
 }
 
 .label {
@@ -72,6 +72,51 @@
   color: white;
   float: right;
   margin-top: 10px;
+}
+
+.button:hover {
+  background-color: #7eb9ec
+}
+
+.black-text-form {
+  color: #000;
+}
+
+.custom-radio-button-container {
+  display: flex;
+  align-items: center;
+}
+
+.custom-radio-button {
+  border-color: #000;
+  outline-color: #000;
+}
+
+:host ::ng-deep {
+  .custom-radio-button .ui-radiobutton-box.ui-widget {
+      background-color: black !important;
+      border-color: black !important;
+  }
+
+}
+
+:host ::ng-deep {
+  .custom-radio-button .ui-radiobutton-icon {
+      background-color: black !important;
+  }
+
+}
+
+:host ::ng-deep {
+  .custom-radio-button .ui-radiobutton-label {
+      color: black !important;
+  }
+
+}
+
+
+.custom-label {
+  margin-left: 8px;
 }
 
 input[type="number"] {
