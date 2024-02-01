@@ -1,15 +1,15 @@
 <div class="container ">
     <p class="titleMain mt-3">Quotations: Quotation summary</p>
-     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
-     <div class="container mx-2 mt-n1">     
-          <div class="card">
+    <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+    <div class="container mx-2 mt-n1">
+        <div class="card">
             <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
                 <p class="title mt-2">Quote details</p>
                 <div class="row ">
                     <div class="col-lg-4 col-12">
                         <div class="row">
-                           
+
                             <div class="col-6">
                                 <p class="summary-label">Quote number:</p>
                             </div>
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
                 <div class="row ">
                     <div class="col-lg-4 col-12">
@@ -57,7 +57,8 @@
                                 <p class="summary-label">Period of insurance:</p>
                             </div>
                             <div class="col-7" id="value">
-                                <p class="summary-value ps-3">{{ coverFrom | date:'MMMM d, yyyy' }} to {{ coverTo | date:'MMMM d, yyyy' }}</p>
+                                <p class="summary-value ps-3">{{ coverFrom | date:'MMMM d, yyyy' }} to {{ coverTo |
+                                    date:'MMMM d, yyyy' }}</p>
                             </div>
                         </div>
                     </div>
@@ -76,138 +77,154 @@
                             <th class="text-end" style="width: 100px;">Total premium</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-quotationDetails>
+                    <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td style="width: 100px;">{{ productDesc}}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.riskInformation[0].sectionsDetails[0].limitAmount | number}}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0].amount| number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0].amount | number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0].amount | number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.quotationProduct[0].premium | number}}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.quotationProduct[0].premium | number}}</td>
-        </tr>
+                            <td class="text-end" style="width: 100px;"> {{ quotationDetails.riskInformation.sectionsDetails?.[0]?.limitAmount | number }}</td>
+                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
+                                number }}</td>
+                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
+                                number }}</td>
+                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
+                                number }}</td>
+                            <td class="text-end" style="width: 100px;">{{passedPremium | number}}</td>
+                            <td class="text-end" style="width: 100px;">{{ quotationDetails.quotationProduct[0].premium |
+                                number}}</td>
+                        </tr>
+                        
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="7" style="padding: 20px; padding-left: 300px;" id="empty">No data to display.</td>
+                            <td colspan="7" style="padding: 20px; padding-left: 300px;" id="empty">No data to display.
+                            </td>
                         </tr>
                     </ng-template>
                 </p-table>
-                
+
                 <!-- RISK DETAILS -->
                 <div class="d-flex justify-content-between align-items-center mt-5">
                     <p class="title ">Risk details</p>
-                    <button type="button" class="btn btn-primary mb-2" (click)="addAnotherRisk()">Add another risk</button>
-                  </div>
+                    <button type="button" class="btn btn-primary mb-2" (click)="addAnotherRisk()">Add another
+                        risk</button>
+                </div>
 
-                <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }"  >
+                <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
-                      <tr>
-                        <th style="width: 20%">Description</th>
-                        <th style="width: 20%">Risk ID</th>
-                        <th style="width: 20%">Cover type</th>
-                        <th style="width: 35%">Options</th>
-                        <!-- <th style="width: 10px"></th> -->
-                      </tr>
+                        <tr>
+                            <th style="width: 20%">Description</th>
+                            <th style="width: 20%">Risk ID</th>
+                            <th style="width: 20%">Cover type</th>
+                            <th style="width: 35%">Options</th>
+                            <!-- <th style="width: 10px"></th> -->
+                        </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-item>
-                      <tr>
-                        <td>{{ productDesc}}</td>
-                        <td>{{ quotationDetails.riskInformation[0].propertyId}}</td>
-                        <td>{{ quotationDetails.riskInformation[0].covertypeShortDescription}}</td>
-                        <td>
-                          <div class="options">
-                            <button id="ellipsis" pButton icon="pi pi-ellipsis-h" (click)="showOptions(item)"></button>
-                            <div class="options-content" *ngIf="item.showOptions">
-                              <button id="optionsButton" pButton icon="pi pi-pencil" pButton label="Edit" (click)="editItem(item)"></button>
-                              <button id="optionsButton-delete" pButton icon="pi pi-trash" pButton label="Delete" (click)="deleteItem(item)"></button>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
+                    <ng-template pTemplate="body" let-item let-i="index">
+
+                        <ng-container *ngFor="let riskItem of item.riskInformation; let i = index">
+                            <tr>
+                                <td>{{ productDesc}}</td>
+                                <td>{{ riskItem.propertyId }}</td>
+                                <td>{{ riskItem.covertypeShortDescription }}</td>
+                                <td><!-- Add your options here --></td>
+                            </tr>
+                        </ng-container>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
-                      <tr>
-                        <td colspan="1"></td>
-                        <td colspan="10" style="padding: 20px; padding-left: 200px;" id="empty">No data to display.</td>
-                      </tr>
+                        <tr>
+                            <td colspan="1"></td>
+                            <td colspan="10" style="padding: 20px; padding-left: 200px;" id="empty">No data to display.
+                            </td>
+                        </tr>
                     </ng-template>
-                  </p-table>
-                  
-            </div>
-          </div>
+                </p-table>
 
-        <div class="float-start mt-4 mb-4 " >
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote" id="btnCancelQuote">Cancel quote</button>
-                    
+            </div>
+        </div>
+
+        <div class="float-start mt-4 mb-4 ">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
+                id="btnCancelQuote">Cancel quote</button>
+
         </div>
         <div class="float-end mt-4 mb-4  ">
-            <button  type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
-            <button   class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">Accept quote</button>
+            <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal"
+                data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
+            <button class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">Accept
+                quote</button>
         </div>
         <!-- Cancel Quote Modal -->
-        <div  class="modal fade"  id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
+        <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content  ps-4 pt-4 pe-4">
-                <p class="cancelQouteTitle">Please provide a reason for your cancellation</p>
-                <p class="cancelQouteTitle">Reason</p>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
+                <div class="modal-content  ps-4 pt-4 pe-4">
+                    <p class="cancelQouteTitle">Please provide a reason for your cancellation</p>
+                    <p class="cancelQouteTitle">Reason</p>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
 
 
-                <div class="row mt-4 mb-4">
-                    <div class="col-4"></div>
-                    <div class="col-8">  
-                        <div class="row">
-                            <div class="col-6 d-flex justify-content-end">
-                                <button type="button" class="btn btn-outline-primary" id="closeBtn" data-bs-dismiss="modal">Close</button>
+                    <div class="row mt-4 mb-4">
+                        <div class="col-4"></div>
+                        <div class="col-8">
+                            <div class="row">
+                                <div class="col-6 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-primary" id="closeBtn"
+                                        data-bs-dismiss="modal">Close</button>
+                                </div>
+                                <div class="col-6 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-primary" id="cancelQoute">Cancel Quote</button>
+                                </div>
                             </div>
-                            <div class="col-6 d-flex justify-content-end">
-                                <button type="button" class="btn btn-primary" id="cancelQoute" >Cancel Quote</button>
-                            </div>
-                        </div>                                    
+                        </div>
                     </div>
                 </div>
-              </div>
             </div>
         </div>
         <!-- Share Quote Modal -->
-        <div  class="modal fade"  id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
+        <div class="modal fade" id="shareQuote" tabindex="-1" aria-labelledby="shareQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content  ps-4 pt-4 pe-4">
+                <div class="modal-content  ps-4 pt-4 pe-4">
 
-                  <div class="row">
-                    <div class="col-3">                                      
-                        <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="email" /> 
-                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'email' }">Email</span>
-                    </div>
-                    <div class="col-3">                                      
-                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="sms" /> 
-                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'sms' }">SMS</span>
-                    </div>
-                    <div class="col-4">
-                        <input type="radio"  id="shareRadio" name="shareOption" [(ngModel)]="selectedOption" value="whatsapp" /> 
-                        <span class="ps-2 radio-placeholder" [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">WhatsApp</span>
+                    <div class="row">
+                        <div class="col-3">
+                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
+                                value="email" />
+                            <span class="ps-2 radio-placeholder"
+                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">Email</span>
+                        </div>
+                        <div class="col-3">
+                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
+                                value="sms" />
+                            <span class="ps-2 radio-placeholder"
+                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">SMS</span>
+                        </div>
+                        <div class="col-4">
+                            <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
+                                value="whatsapp" />
+                            <span class="ps-2 radio-placeholder"
+                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">WhatsApp</span>
 
+                        </div>
                     </div>
-                  </div>
-          
-                  <div class="form-group mt-3">
-                    <label class="mb-3" for="clientName" id="shareLabel">Client Name</label>
-                    <input type="text"  [(ngModel)]="clientName" id="clientName" class="form-control" />
-                  </div>
-                  <div class="form-group">
-                    <label class="mb-3 mt-3"  id="shareLabel" [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
-                    <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'" [(ngModel)]="contactValue" class="form-control" />
-                  </div>
-                <div class="row mt-4 mb-4">
-                    <div class="col-6"></div>
-                    <div class="col-6 d-flex justify-content-end">                                      
-                        <button type="button" class="btn btn-primary" id="sendQoute" data-bs-dismiss="modal" >Send</button>
+
+                    <div class="form-group mt-3">
+                        <label class="mb-3" for="clientName" id="shareLabel">Client Name</label>
+                        <input type="text" [(ngModel)]="clientName" id="clientName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="mb-3 mt-3" id="shareLabel"
+                            [textContent]="selectedOption === 'email' ? 'Email' : 'Phone Number'"></label>
+                        <input id="shareInput" [type]="selectedOption === 'email' ? 'email' : 'tel'"
+                            [(ngModel)]="contactValue" class="form-control" />
+                    </div>
+                    <div class="row mt-4 mb-4">
+                        <div class="col-6"></div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" id="sendQoute"
+                                data-bs-dismiss="modal">Send</button>
+                        </div>
                     </div>
                 </div>
-              </div>
             </div>
-          </div>
-       
+        </div>
+
     </div>
 </div>
