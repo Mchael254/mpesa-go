@@ -255,7 +255,11 @@ export interface QuotationDetails {
   }
   
   export interface SubclassCoverTypeDto {
+    subclassCode:number
+    coverTypeCode:number
     minimumAnnualPremium: number
     minimumPremium: number
+    coverTypeShortDescription:string
+
   }
   

@@ -17,7 +17,7 @@
                 <div class="card-body">
                   
                     <!-- <p class="title ms-4" >{{ coverTypeShortDescription }}</p> -->
-                    <p class="title ms-4">{{ passedCovertypes[i].description }}</p>
+                    <p class="title ms-4">{{ premiumPayload.risks[i].subclassCoverTypeDto.coverTypeShortDescription }}</p>
                     
                     <div class="row ms-3">
                         <div class="col-lg-4 col-12">
@@ -35,7 +35,7 @@
                             <p class="details-label">Premium</p>
                             </div>
                             <div class="col-6">
-                            <p class="details-label">{{risk.premium | number }}</p>
+                            <p class="details-label">{{risk.premium | number:'1.2-2' }}</p>
                             </div>
                         </div>
                         </div>
@@ -54,21 +54,21 @@
                         </div>
                         <div class="col-lg-4 col-12">
                         <p class="title2">Total payable premium</p>
-                        <p class="payable-premium ms-4">{{risk.premium | number }}</p>
+                        <p class="payable-premium ms-4">{{risk.premium | number:'1.2-2' }}</p>
 
                         </div>
                     </div>
                    
                   
                     <div class="float-start mb-4 ms-4" *ngIf="!isCollapsibleOpen">
-                        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addMoreBenefits" id="btnCoverTypes" (click)="passCovertypeDesc(passedCovertypes[i].coverTypeShortDescription ,passedCovertypes[i].coverTypeCode);createQuotation();" >Add more benefits</button>
+                        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addMoreBenefits" id="btnCoverTypes" (click)="passCovertypeDesc(passedCovertypes[i].coverTypeShortDescription ,passedCovertypes[i].coverTypeCode);" >Add more benefits</button>
                         <a class="btn btn-link ms-2" (click)="toggleCollapsible()">
                             View cover details
                         </a>                
                     </div>
                     <div class="float-end mb-4 me-4 " *ngIf="!isCollapsibleOpen">
                         <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal" data-bs-target="#shareQuote" id="btnCoverTypes" >Share quote</button>
-                        <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="selectedQuotation(); SelectCover();">Select cover</button>
+                        <button class="btn btn-primary" type="submit" id="btnCoverTypes" (click)="passCovertypeDesc(passedCovertypes[i].coverTypeShortDescription ,passedCovertypes[i].coverTypeCode); selectedRiskLevelPremium(risk.premium);SelectCover();">Select cover</button>
                     </div>
 
                     <!-- Add More Benefits Modal -->
@@ -141,7 +141,7 @@
                                     <button type="button" data-bs-dismiss="modal" class="btn btn-link"> Back</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
-                                    <button class="btn btn-primary" type="submit" id="btnCoverTypes" data-bs-dismiss="modal" (click)="onCreateRiskSection()">Update quote</button>
+                                    <button class="btn btn-primary" type="submit" id="btnCoverTypes" data-bs-dismiss="modal" (click)="onCreateRiskSection();createQuotation();">Update quote</button>
                                 </div>
     
                             </div>
@@ -198,20 +198,20 @@
                         <p class="title2">Additional Benefits</p>
                         <div class="row">
                             <div class="col-6">
-                            <p class="details-label"></p>
+                            <p class="details-label"> {{premiumPayload.risks[i].limits[0].description}}</p>
                             </div>
                             <div class="col-6">
-                            <p class="details-label">{{  sumInsuredValue | number }}</p>
+                            <!-- <p class="details-label">{{  sumInsuredValue | number }}</p> -->
                             </div>
                         </div>
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-6">
                             <p class="details-label">Premium</p>
                             </div>
                             <div class="col-6">
                             <p class="details-label"></p>
                             </div>
-                        </div>
+                        </div> -->
                         </div>
                 </div>
                 <div >
