@@ -17,6 +17,7 @@ export class PolicyListingComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   columnOptions: SelectItem[];
   selectedColumns: string[];
+  role: string = 'agent'
 
   constructor(
     private policySummaryService: PolicySummaryService,

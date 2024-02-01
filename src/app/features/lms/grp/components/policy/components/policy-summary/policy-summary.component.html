@@ -26,6 +26,7 @@
                 </div>
                 <div class="col-md-4 col-xs-12">
                     <table style="width: 100%;">
+                        <ng-container *ngIf="role !== 'policy-holder' ">
                         <tr>
                             <td style=" align-items: left; color: grey;">Sum assured: </td>
                             <td class="style-text" style=" align-items: right;">{{ polDets.basic_sum_assured | number }}</td>
@@ -34,6 +35,7 @@
                             <td style=" align-items: left; color: grey;">Total premium: </td>
                             <td class="style-text" style=" align-items: right;">{{ polDets.total_premium | number }}</td>
                         </tr>
+                    </ng-container>
                         <tr>
                             <td style=" align-items: left; color: grey;">Branch: </td>
                             <td class="style-text" style=" align-items: right;">{{ polDets.branch_description | titlecase }}</td>
@@ -65,8 +67,43 @@
     
             <!-- tabView -->
             <p-tabView>
+                <ng-container *ngIf="role !== 'policy-holder' ">
                 <p-tabPanel header="Policy details">
                     <p-tabView>
+                        <p-tabPanel header="Cover details">
+                            <div style="color: #00529B;">Cover details</div>
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Cover types</th>
+                                        <th>Sum assured</th>
+                                        <th>Premium</th>
+                                        <th>Select rate</th>
+                                        <th>Override premiums</th>
+                                        <th>Premium mask</th>
+                                        <th>Rate</th>
+                                        <th>Rate division factor</th>
+                                        <th>% of main/yr SA</th>
+                                        <th>Main cover</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-coverTypes>
+                                    <tr>
+                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td id="tdStyle">{{coverTypes.use_cvr_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
                         <p-tabPanel header="Receipts allocated">
                             <div style="color: #00529B;">Receipts allocated</div>
                             <div>
@@ -205,7 +242,7 @@
                                 </ng-template>
                             </p-table>
                         </p-tabPanel>
-                        <p-tabPanel header="Deductions">
+                        <!-- <p-tabPanel header="Deductions">
                             <div style="color: #00529B;">Deductions</div>
                             <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
                                 <ng-template pTemplate="header">
@@ -229,10 +266,73 @@
                                     </tr>
                                 </ng-template>
                             </p-table>
-                        </p-tabPanel>
+                        </p-tabPanel> -->
                     </p-tabView>
                 </p-tabPanel>
+            </ng-container>
                 <p-tabPanel header="Members">
+                    <ng-container *ngIf="role === 'policy-holder' ">
+                        <div class="row col-12 mt-1" style="color: black; padding-left: 25px;"
+                        *ngFor="let polDets of policyDetails">
+                            <div class="col-md-4 col-xs-12">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Member number: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.policy_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Main Member number: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.product_name | titlecase }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Client: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Occupation: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.branch_description | titlecase }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-4 col-xs-12">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">ANB: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.basic_sum_assured | number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Joint member?: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.total_premium | number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Dependant type: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.effective_date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Member status: </td>
+                                        <td class="style-text" style="align-items: right;">{{ polDets.client | titlecase }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-4 col-xs-12">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Shedule number: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.agent | titlecase }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Join Date: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.underwriting_year }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style=" align-items: left; color: grey;">Category: </td>
+                                        <td class="style-text" style=" align-items: right;">{{ polDets.currency_symbol }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                </ng-container>
+                    <ng-container *ngIf="role !== 'policy-holder' ">
                     <div style="color: #00529B;">Policy members</div>
                     
     <div class="col-12">
@@ -295,7 +395,40 @@
     
     
                     <p-tabView>
-                        <p-tabPanel header="Receipt allocations">
+                        <p-tabPanel header="Cover details">
+                            <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Cover types</th>
+                                        <th>Sum assured</th>
+                                        <th>Premium</th>
+                                        <th>Select rate</th>
+                                        <th>Override premiums</th>
+                                        <th>Premium mask</th>
+                                        <th>Rate</th>
+                                        <th>Rate division factor</th>
+                                        <th>% of main/yr SA</th>
+                                        <th>Main cover</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-coverTypes>
+                                    <tr>
+                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td id="tdStyle">{{coverTypes.use_cvr_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <!-- <p-tabPanel header="Receipt allocations">
                             <p-table [value]="" [scrollable]="true" scrollHeight="400px" [tableStyle]="{'min-width': '50rem'}">
                                 <ng-template pTemplate="header">
                                     <tr>
@@ -397,16 +530,18 @@
                                     </tr>
                                 </ng-template>
                             </p-table>
-                        </p-tabPanel>
+                        </p-tabPanel> -->
                     </p-tabView>
+                </ng-container>
                 </p-tabPanel>
                 <p-tabPanel header="Reports">
 
                     <div class="accordion col-6" id="accordionExample">
+                        <div *ngIf="role === 'client' ">
                         <div class="accordion-item">
                           <h2 class="accordion-header" id="headingOne">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                              <span class="accordion-header">Clients</span>
+                              <span class="accordion-header">Clients-Reports(to remove)</span>
                             </button>
                           </h2>
                           <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -445,18 +580,21 @@
                                         </td>
                                     </tr>
 
-                                    <tr class="hiper-link">
+                                    <!-- <tr class="hiper-link">
                                         <td>Commission statements</td>
                                         <td class="hidden-elements">
                                             <i class="fa fa-eye" aria-hidden="true"></i>&nbsp;
                                             <a href="#" download><i class="fas fa-download" aria-hidden="true"></i></a>
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                 </table>
 
                               </div>
-                          </div>
+                          
                         </div>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="role !== 'client' && role !== 'agent' ">
                         <div class="accordion-item">
                           <h2 class="accordion-header" id="headingTwo">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -514,6 +652,8 @@
                               </div>
                           </div>
                         </div>
+                    </ng-container>
+                        <ng-container *ngIf="role === 'agent' ">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
@@ -542,6 +682,8 @@
                          </div>
                             </div>
                           </div>
+                        </ng-container>
+                        <ng-container *ngIf="role !== 'client' && role !== 'agent' ">
                           <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFive">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
@@ -578,6 +720,7 @@
                               </div>
                             </div>
                           </div>
+                        </ng-container>
                       </div>
                 </p-tabPanel>
             </p-tabView>
@@ -587,7 +730,7 @@
     <!-- view more modal -->
     <div class="modal fade" tabindex="-1" #memberSummaryModal id="viewMoreModal"
             aria-labelledby="viewMoreModalModal" aria-hidden="true">
-            <div class="modal-dialog modal-l">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="custom-red-button ms-auto" data-bs-dismiss="modal"
@@ -595,7 +738,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- <div class="card"> -->
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-6">
                                 <table>
                                     <tr>
@@ -656,7 +799,77 @@
 
                             </div>
 
+                        </div> -->
+                        <h5>Benefits Listing</h5>
+
+                        <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Cover type</th>
+                                        <th>Earning period</th>
+                                        <th>Earning Amount</th>
+                                        <th>Sum assured</th>
+                                        <th>Payable amount</th>
+                                        <th>Amount claimed</th>
+                                        <th>Amount to be paid</th>
+                                        <th>But pay</th>
+                                        <th>Paid amount</th>
+                                        <th>Payee</th>
+                                        <th>Paid</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-coverTypes>
+                                    <tr>
+                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td id="tdStyle">{{coverTypes.use_cvr_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+
+                            <div style="padding-top: 40px;">
+
+                            <h5>Payment voucher</h5>
+
+                        <p-table [value]="" [scrollable]="true" scrollHeight="400px"
+                                [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Voucher no</th>
+                                        <th>Date</th>
+                                        <th>Voucher amount</th>
+                                        <th>Payee</th>
+                                        <th>Dispatch status</th>
+                                        <th>Trans source</th>
+                                        <th>Pay method</th>
+                                        <th>Voucher authorised</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-coverTypes>
+                                    <tr>
+                                        <td id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
+                                        <td id="tdStyle">{{coverTypes.sum_assured }}</td>
+                                        <td id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td id="tdStyle">{{coverTypes.use_cvr_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.but_charge_premium}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
+                                        <td id="tdStyle">{{coverTypes.premium_rate}}</td>
+                                        <td id="tdStyle">{{coverTypes.rate_division_factor}}</td>
+                                        <td id="tdStyle">{{coverTypes.main_sumassured_percentage}}</td>
+                                        <td id="tdStyle">{{coverTypes.cvt_main_cover}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
                         </div>
+
 
                         <!-- </div> -->
                     </div>

@@ -1,1 +1,122 @@
-<p>reinsurance-selection works!</p>
+<div class="container">
+    <span class="reinsurance-title">Reinsurance</span>
+    <div class="main">
+
+        <div>
+            <span class="policy-summary">Policy summary</span>
+        </div>
+
+        <div class="row col-12">
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Client: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Effective date: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Coverage duration: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Total sum assured: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Product: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Cover from: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Occupation: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Policy number: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Cover to: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Total premium: </td>
+                        <td class="td-desc">{{ label }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <div class="treaty">Please select a treaty below</div>
+            <div class="treaty-label">Treaty</div>
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                <select class="form-select" id="premium_mask_short_description" formControlName="premiumMask">
+                    <ng-container *ngFor="let mask">
+                        <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] | titlecase }}</option>
+                    </ng-container>
+                </select>
+            </div>
+        </div>
+
+        <div class="reinsurance-params">Reinsurance parameters</div>
+
+          <div class="form">
+            <i class="fa fa-search"></i>
+            <input type="text" class="form-control form-input" placeholder="Search">
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
+            </p-multiSelect>
+          </div>
+
+          <div style="margin-top: 4px;">
+            
+            <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header" styleClass="p-datatable-striped">
+                  <tr>
+                    <th>Cover type name</th>
+                    <th>Retention limit</th>
+                    <th>Ceding limit</th>
+                    <th>Cede rate</th>
+                    <th>Rate type</th>
+                    <th>Commission rate</th>
+                    <th>Division factor</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-coverTypes >
+                  <tr>
+                    <td style="text-align: left; width: 14.5%;" id="tdStyle">{{ coverTypes.cvt_desc | titlecase }} </td>
+                    <td style="text-align: left; width: 10.5%;" id="tdStyle">{{ coverTypes.dty_description | titlecase }}</td>
+                    <td style="text-align: left; width: 14.5%;" id="tdStyle">{{coverTypes.use_cvr_rate }}</td>
+                    <td style="text-align: left; width: 12.5%;" id="tdStyle">{{ coverTypes.premium_mask_short_description }}</td>
+                    <td style="text-align: center; width: 10.5%;" id="tdStyle">{{ coverTypes.premium_rate }} </td>
+                    <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.rate_division_factor | number }}</td>
+                    <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.main_sumassured_percentage }}</td>
+                    
+                  </tr>
+                </ng-template>
+              </p-table> 
+            
+          </div>
+
+    </div>
+
+</div>
+<div style="display: flex; justify-content: flex-end; padding-top: 12px; padding-right: 35px;">
+    <button class="proceed-button" (click)="proceed()">
+        <span class="button-text">Proceed</span>
+    </button>
+</div>
