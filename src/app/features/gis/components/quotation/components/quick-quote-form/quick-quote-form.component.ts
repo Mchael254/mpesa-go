@@ -15,14 +15,14 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Calendar } from 'primeng/calendar';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { Table } from 'primeng/table';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { finalize, forkJoin, mergeMap, switchMap, tap } from 'rxjs';
-import { ClientBranchesDto } from 'src/app/features/entities/data/ClientDTO';
+import { ClientBranchesDto, ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { ApiService } from 'src/app/shared/services/api/api.service';
@@ -32,6 +32,8 @@ import { Limit, PremiumComputationRequest, Risk } from '../../data/quotationsDTO
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+// import { SentenceCasePipe } from 'src/app/shared/pipes/sentence-case/sentence-case.pipe';
 
 
 const log = new Logger("QuickQuoteFormComponent");
@@ -48,6 +50,7 @@ export class QuickQuoteFormComponent {
 
 
   productList: Products[];
+  ProductDescriptionArray:any=[];
   selectedProduct: Products[];
   selectedProductCode: any;
 
@@ -84,7 +87,7 @@ export class QuickQuoteFormComponent {
   sectionDetailsForm: FormGroup;
 
   clientList: any;
-  clientDetails: any;
+  clientDetails: ClientDTO;
   clientData: any
   clientCode: any;
   clientType: any;
@@ -135,6 +138,8 @@ export class QuickQuoteFormComponent {
   carRegNoHasError: boolean = false;
 
   passedQuotation: any;
+  passedQuotationNo:any;
+  passedQuotationCode:any
 
   // isAddRisk:boolean=false;
   xyz: boolean;
@@ -145,8 +150,8 @@ export class QuickQuoteFormComponent {
   propertyId: any;
   premiumList: Premiums[] = [];
   allPremiumRate: Premiums[] = []
-  additionalLimit:[]=[];
-  addedBenefit:[];
+  additionalLimit = [];
+  // addedBenefit:subclassCoverTypes;
   addedBenefitsList:[]=[];
   @ViewChild('dt1') dt1: Table | undefined;
 
@@ -172,8 +177,8 @@ export class QuickQuoteFormComponent {
     private apiService: ApiService,
     private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
-    public globalMessagingService: GlobalMessagingService
-
+    public globalMessagingService: GlobalMessagingService,
+    // private sentenceCase: SentenceCasePipe
 
 
   ) { }
@@ -182,9 +187,14 @@ export class QuickQuoteFormComponent {
     // this.apiService.GET('email/3/send',API_CONFIG.NOTIFICATION_BASE_URL).subscribe(data =>console.log(data)
     // )
     // this.quotationService.test().subscribe(res=>console.log(res))
+    // this.sharedFunctionService.getClickEvent().subscribe(()=>{
+    //   log.debug("This is who we are")
+    //   this.setLimitPremiumDto(304);
+    //   log.debug("Try it out")
+    //   })
+
     this.loadAllproducts();
     this.loadAllClients();
-    this.getbranch();
     this.loadAllQoutationSources();
     this.LoadAllFormFields(this.selectedProductCode);
     this.dynamicForm = this.fb.group({});
@@ -205,12 +215,12 @@ export class QuickQuoteFormComponent {
     this.populateYears();
 
     const QuickFormDetails = sessionStorage.getItem('riskFormData');
-    const storedData=sessionStorage.getItem("Added Benefit");
-    this.addedBenefit = storedData ? JSON.parse(storedData) : [];
-    // this.additionalLimit.push(...this.addedBenefit);
-    // this.addedBenefitsList.push(this.addedBenefit);
-    log.debug("AddedBenefit",storedData)
-    log.debug("AddedBenefit",this.addedBenefit)
+    // const storedData=sessionStorage.getItem("Added Benefit");
+    // const addedBenefit = storedData ? JSON.parse(storedData) : [];
+    // this.additionalLimit.push(...addedBenefit);
+    // // this.addedBenefitsList.push(this.addedBenefit);
+    // log.debug("AddedBenefit",storedData)
+    // log.debug("Test it out additional limits",this.additionalLimit)
 
 
 
@@ -225,6 +235,12 @@ export class QuickQuoteFormComponent {
     console.log("XYZ Details:", this.passedQuotation);
 
     console.log("Quotation Details:", this.passedQuotation.quotationDetailsRisk);
+    this.passedQuotationNo=this.passedQuotation.quotationDetailsRisk.no;
+    this.passedQuotationCode=this.passedQuotation.quotationDetailsRisk.quotationProduct[0].quotCode
+    
+    sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
+    sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
+
     console.log("Client Details:", this.passedQuotation.clientDetails);
     if (this.passedQuotation) {
       this.clientName = this.passedQuotation.clientDetails.firstName + ' ' + this.passedQuotation.clientDetails.lastName;
@@ -257,13 +273,31 @@ export class QuickQuoteFormComponent {
   * @return {void}
   */
   loadAllproducts() {
+
+    const productDescription = [];
+    const modifiedArray = [];
+
     this.productService.getAllProducts().subscribe(data => {
       this.productList = data;
       log.info(this.productList, "this is a product list")
+      this.productList.forEach(product => {
+        // Access each product inside the callback function
+        let capitalizedDescription = product.description.charAt(0).toUpperCase() + product.description.slice(1).toLowerCase();
+        productDescription.push({
+          code: product.code,
+          description: capitalizedDescription
+        });
+      });
+    
+      // Combine the characters back into words
+      const combinedWords = productDescription.join(',');
+      this.ProductDescriptionArray.push(...productDescription)
+      
+      // Now 'combinedWords' contains the result with words instead of individual characters
+      log.info("modified product description", this.ProductDescriptionArray);
 
-      this.cdr.detectChanges()
-    })
-
+      this.cdr.detectChanges();
+    });
   }
   /**
    * Resets client data by clearing the values of clientName, clientEmail, clientPhone, and filteredCountry.
@@ -312,6 +346,8 @@ export class QuickQuoteFormComponent {
     log.info('Login UserDetails', this.userDetails);
     this.userBranchId = this.userDetails.branchId;
     log.debug("Branch Id", this.userBranchId);
+    this.getbranch();
+
   }
   //  getAllBranches(){
   //   this.clientService.getCLientBranches().subscribe(data=>{
@@ -365,10 +401,11 @@ export class QuickQuoteFormComponent {
       this.countryList = data;
       log.debug("Country List", this.countryList);
       const testCountry = "KENYA"
-      this.filteredCountry = this.countryList.filter(prefix => prefix.name == testCountry)
+      // const clientCountry= this.clientDetails.
+      this.filteredCountry = this.countryList.filter(prefix => prefix.id == this.selectedCountry)
       log.debug("Filtered Country", this.filteredCountry);
 
-      this.mobilePrefix = this.filteredCountry[0].mobilePrefix;
+      this.mobilePrefix = this.filteredCountry[0].zipCodeString;
       log.debug("Filtered mobilePrefix", this.mobilePrefix);
 
     })
@@ -1158,18 +1195,16 @@ export class QuickQuoteFormComponent {
 
         // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
       });
-      log.debug(this.allPremiumRate, "all premium List");
+      log.debug(this.allPremiumRate, "all quick quote premium List");
 
     }
-
+   
   }
+  
 
   setRiskPremiumDto(): Risk[] {
     log.debug("subclass cover type", this.subclassCoverType)
-     // Store binder information in session storage
-  sessionStorage.setItem('selectedBinderCode', this.selectedBinderCode);
-  sessionStorage.setItem('currencyCode', this.currencyCode);
- 
+   
     return this.subclassCoverType.map(item => {
       let risk: Risk = {
         propertyId: this.dynamicForm.get('carRegNo').value,
@@ -1182,8 +1217,12 @@ export class QuickQuoteFormComponent {
         itemDescription: this.dynamicForm.get('carRegNo').value,
         noClaimDiscountLevel: 0,
         subclassCoverTypeDto: {
+          subclassCode:this.selectedSubclassCode,
+          coverTypeCode:item.coverTypeCode,
           minimumAnnualPremium: 0,
-          minimumPremium: parseInt(item.minimumPremium, 10)
+          minimumPremium: parseInt(item.minimumPremium, 10),
+          coverTypeShortDescription:item.description
+      
         },
         enforceCovertypeMinimumPremium: "N",
         binderDto: {
@@ -1195,12 +1234,7 @@ export class QuickQuoteFormComponent {
         limits: this.setLimitPremiumDto(item.coverTypeCode),
       }
       // this.riskPremiumDto.push(risk);
-      sessionStorage.setItem('subclassCode', this.selectedSubclassCode);
-      sessionStorage.setItem('propertyId', this.dynamicForm.get('carRegNo').value);
-      sessionStorage.setItem('coverFromDate', this.coverFromDate.toString());
-      sessionStorage.setItem('passedCoverToDate', this.passedCoverToDate.toString());
-      sessionStorage.setItem('limitAmount', 'YOUR_LIMIT_AMOUNT_VALUE'); // Replace with the actual value
-  
+     
       return risk
     })
 
@@ -1389,6 +1423,7 @@ export class QuickQuoteFormComponent {
     }
   
     log.debug("Covertype", coverTypeCode)
+    log.debug("We are testing it here", coverTypeCode)
     log.debug("Section items", sectionsForCovertype)
     log.debug("limit items", response)
   

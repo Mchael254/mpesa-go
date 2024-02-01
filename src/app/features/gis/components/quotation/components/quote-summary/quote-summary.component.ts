@@ -16,6 +16,7 @@ import { SharedQuotationsService } from '../../services/shared-quotations.servic
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -56,6 +57,7 @@ export class QuoteSummaryComponent {
   formattedCoverTo: string;
 
   isAddRisk:boolean=true;
+  passedPremium:any;
   
   constructor(
     public fb:FormBuilder,
@@ -81,7 +83,10 @@ export class QuoteSummaryComponent {
     this.quickQuotationCode=this.sharedService.getQuickQuotationDetails();
     log.debug("Quick Quote Quotation Number:",this.quickQuotationCode );
     this.coverQuotationNo=this.sharedService.getSelectedCover();
+    this.passedPremium=this.sharedService.getPremiumResponse();
+
     log.debug("Selected Cover Quotation Number:",this.coverQuotationNo );
+    log.debug("Passed Premium :",this.passedPremium );
 
     this.loadClientQuotation()
   }
