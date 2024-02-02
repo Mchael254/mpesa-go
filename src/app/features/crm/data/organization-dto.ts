@@ -188,7 +188,7 @@ export interface OrganizationBranchDTO {
   policyPrefix: string;
   policySequence: number;
   postalAddress: string;
-  postalCode: string;
+  postalCode: number;
   regionId: number;
   regionName: string;
   shortDescription: string;
