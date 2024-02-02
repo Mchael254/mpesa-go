@@ -24,4 +24,17 @@ export class StatusService {
       }
     );
   }
+
+  getDivisionStatus(): Observable<StatusDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<StatusDTO[]>(
+      `/${this.baseUrl}/setups/division-statuses`,
+      {
+        headers: headers,
+      }
+    );
+  }
 }

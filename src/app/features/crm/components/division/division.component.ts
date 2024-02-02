@@ -55,6 +55,9 @@ export class DivisionComponent implements OnInit {
   public selectedDefaultStatus: string = 'No';
   public statusesData: StatusDTO[];
 
+  public errorOccurred = false;
+  public errorMessage: string = '';
+
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -126,7 +129,7 @@ export class DivisionComponent implements OnInit {
 
   fetchStatuses() {
     this.statusService
-      .getStatus()
+      .getDivisionStatus()
       .pipe(untilDestroyed(this))
       .subscribe((data) => {
         this.statusesData = data;
@@ -164,12 +167,6 @@ export class DivisionComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.divisionModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.divisionModal.nativeElement,
-    //   'display',
-    //   'block'
-    // );
   }
 
   closeDivisionModal() {
@@ -178,8 +175,6 @@ export class DivisionComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    // this.renderer.removeClass(this.divisionModal.nativeElement, 'show');
-    // this.renderer.setStyle(this.divisionModal.nativeElement, 'display', 'none');
   }
 
   openConfirmationModal() {
@@ -188,12 +183,6 @@ export class DivisionComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.confirmationModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.confirmationModal.nativeElement,
-    //   'display',
-    //   'block'
-    // );
   }
 
   closeConfirmationModal() {
@@ -202,12 +191,6 @@ export class DivisionComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    // this.renderer.removeClass(this.confirmationModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.confirmationModal.nativeElement,
-    //   'display',
-    //   'none'
-    // );
   }
 
   onDivisionRowSelect(division: OrganizationDivisionDTO) {
@@ -256,20 +239,37 @@ export class DivisionComponent implements OnInit {
         is_default_division: isDefault,
         name: formValues.name,
         order: formValues.divisionOrder,
-        organization_id: this.selectedOrg.id,
+        organization_id: this.selectedOrganizationId,
         short_description: formValues.shortDescription,
         status: formValues.divisionStatus,
       };
       this.organizationService
         .createOrganizationDivision(saveOrganizationDivision)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created a Division'
-          );
-          this.createDivisionForm.reset();
-          this.fetchOrganizationDivision(this.selectedOrg.id);
-          this.onNext();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created a Division'
+              );
+              this.createDivisionForm.reset();
+              this.fetchOrganizationDivision(this.selectedOrganizationId);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       const divisionId = this.selectedDivision.id;
@@ -279,20 +279,38 @@ export class DivisionComponent implements OnInit {
         is_default_division: isDefault,
         name: formValues.name,
         order: formValues.divisionOrder,
-        organization_id: this.selectedOrg.id,
+        organization_id: this.selectedOrganizationId,
         short_description: formValues.shortDescription,
         status: formValues.divisionStatus,
       };
       this.organizationService
         .updateOrganizationDivision(divisionId, saveOrganizationDivision)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated a Division'
-          );
-          this.selectedDivision = null;
-          this.fetchOrganizationDivision(this.selectedOrg.id);
-          this.createDivisionForm.reset();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated a Division'
+              );
+              this.selectedDivision = null;
+              this.fetchOrganizationDivision(this.selectedOrganizationId);
+              this.createDivisionForm.reset();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
   }
@@ -324,13 +342,31 @@ export class DivisionComponent implements OnInit {
       const divisionId = this.selectedDivision.id;
       this.organizationService
         .deleteOrganizationDivision(divisionId)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deactivated a Division'
-          );
-          this.fetchOrganizationDivision(this.selectedOrg.id);
-          this.selectedDivision = null;
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deactivated a Division'
+              );
+              this.fetchOrganizationDivision(this.selectedOrg.id);
+              this.selectedDivision = null;
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       this.globalMessagingService.displayErrorMessage(

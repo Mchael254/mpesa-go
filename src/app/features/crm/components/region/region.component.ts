@@ -58,6 +58,8 @@ export class RegionComponent implements OnInit {
   public selectedRegionBank: BankRegionDTO;
   public selectedOrganization: number;
   public selectedOrganizationId: number | null;
+  public errorOccurred = false;
+  public errorMessage: string = '';
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -292,12 +294,31 @@ export class RegionComponent implements OnInit {
       };
       this.organizationService
         .createOrganizationRegion(saveOrganizationRegion)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created a Region'
-          );
-          this.fetchOrganizationRegion(this.selectedOrg.id);
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created a Region'
+              );
+              this.createRegionForm.reset();
+              this.fetchOrganizationRegion(this.selectedOrg.id);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       const regionFormValues = this.createRegionForm.getRawValue();
@@ -324,16 +345,34 @@ export class RegionComponent implements OnInit {
       };
       this.organizationService
         .updateOrganizationRegion(regionCode, saveOrganizationRegion)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated a Region'
-          );
-          this.selectedRegion = null;
-          this.fetchOrganizationRegion(this.selectedOrg.id);
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated a Region'
+              );
+              this.selectedRegion = null;
+              this.createRegionForm.reset();
+              this.fetchOrganizationRegion(this.selectedOrg.id);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
-    this.createRegionForm.reset();
   }
 
   saveRegionBank() {
@@ -353,12 +392,31 @@ export class RegionComponent implements OnInit {
         wef: regionBankFormValues.wef,
         wet: regionBankFormValues.wet,
       };
-      this.bankService.createBankRegion(saveRegionBank).subscribe((data) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'Success',
-          'Successfully Created a RegionBank'
-        );
-        this.fetchBankRegions(this.selectedRegion.code);
+      this.bankService.createBankRegion(saveRegionBank).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'Success',
+              'Successfully Created a RegionBank'
+            );
+            this.createRegionForm.reset();
+            this.fetchBankRegions(this.selectedRegion.code);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
+          );
+          log.info(`error >>>`, err);
+        },
       });
     } else {
       const regionBankFormValues = this.createRegionBankForm.getRawValue();
@@ -378,16 +436,34 @@ export class RegionComponent implements OnInit {
       };
       this.bankService
         .updateBankRegion(regionBankId, saveRegionBank)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated a RegionBank'
-          );
-          this.fetchBankRegions(this.selectedRegion.code);
-          this.selectedRegionBank = null;
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated a RegionBank'
+              );
+              this.selectedRegionBank = null;
+              this.createRegionForm.reset();
+              this.fetchBankRegions(this.selectedRegion.code);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
-    this.createRegionForm.reset();
   }
 
   editRegion() {
@@ -418,16 +494,32 @@ export class RegionComponent implements OnInit {
   confirmRegionDelete() {
     if (this.selectedRegion) {
       const regionCode = this.selectedRegion.code;
-      this.organizationService
-        .deleteOrganizationRegion(regionCode)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted a Region'
+      this.organizationService.deleteOrganizationRegion(regionCode).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a Region'
+            );
+            this.selectedRegion = null;
+            this.fetchOrganizationRegion(this.selectedOrg.id);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
           );
-          this.fetchOrganizationRegion(this.selectedOrg.id);
-          this.selectedRegion = null;
-        });
+          log.info(`error >>>`, err);
+        },
+      });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -461,13 +553,31 @@ export class RegionComponent implements OnInit {
   confirmRegionBankDelete() {
     if (this.selectedRegionBank) {
       const regionBankId = this.selectedRegionBank.id;
-      this.bankService.deleteBankRegion(regionBankId).subscribe((data) => {
-        this.globalMessagingService.displaySuccessMessage(
-          'success',
-          'Successfully deleted a Region Bank'
-        );
-        this.fetchBankRegions(this.selectedRegion.code);
-        this.selectedRegionBank = null;
+      this.bankService.deleteBankRegion(regionBankId).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted a Region Bank'
+            );
+            this.fetchBankRegions(this.selectedRegion.code);
+            this.selectedRegionBank = null;
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
+          );
+          log.info(`error >>>`, err);
+        },
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
