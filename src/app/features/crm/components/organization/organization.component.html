@@ -133,22 +133,27 @@
                 [showClear]="true"
                 [style]="{ width: '100%', height: '30%' }"
                 placeholder="Select Country"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['country']?.invalid &&
+                    (f['country']?.dirty || f['country']?.touched)
+                }"
               >
               </p-dropdown>
-              <!-- <div class="form-group mb-4">
-                <label for="country" class="form-label">Country</label>
-                <select id="country" class="form-select  mb-1" formControlName="country" (change)="onCountryChange($event)"
-                  [ngClass]="{ 'is-invalid': f['country']?.invalid && (f['country']?.dirty || f['country']?.touched) }">
-                  <option value="" selected>Select Country</option>
-                  <option *ngFor="let country of countriesData" [value]="country.id">
-                    {{ country.name | titlecase }}
-                  </option>
-                </select>
-                <div *ngIf="f['country']?.invalid && (f['country']?.dirty || f['country']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['country']?.errors }">
-                  <div *ngIf="f['country']?.errors['required']">Country is required</div>
+              <div
+                *ngIf="
+                  f['country']?.invalid &&
+                  (f['country']?.dirty || f['country']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['country']?.errors
+                }"
+              >
+                <div *ngIf="f['country']?.errors['required']">
+                  Country is required
                 </div>
-              </div> -->
+              </div>
             </div>
             <div class="col-sm-4 mb-4">
               <label for="stateName" class="form-label">State Name</label>
@@ -163,24 +168,29 @@
                 [filter]="true"
                 filterBy="name"
                 [showClear]="true"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['stateName']?.invalid &&
+                    (f['stateName']?.dirty || f['stateName']?.touched)
+                }"
                 [style]="{ width: '100%', height: '45%' }"
                 placeholder="Select State"
               >
               </p-dropdown>
-              <!-- <div class="form-group mb-4">
-                <label for="stateName" class="form-label">State Name</label>
-                <select id="stateName" class="form-select  mb-1" formControlName="stateName" (change)="onCityChange($event)"
-                  [ngClass]="{ 'is-invalid': f['stateName']?.invalid && (f['stateName']?.dirty || f['stateName']?.touched) }">
-                  <option value="" selected>Select State</option>
-                  <option *ngFor="let state of stateData" [value]="state.id">
-                    {{ state.name | titlecase }}
-                  </option>
-                </select>
-                <div *ngIf="f['stateName']?.invalid && (f['stateName']?.dirty || f['stateName']?.touched)" class="form-text text-danger"
-                  [ngClass]="{ 'is-invalid': ['submitted'] && f['stateName']?.errors }">
-                  <div *ngIf="f['stateName']?.errors['required']">State Name is required</div>
+              <div
+                *ngIf="
+                  f['stateName']?.invalid &&
+                  (f['stateName']?.dirty || f['stateName']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['stateName']?.errors
+                }"
+              >
+                <div *ngIf="f['stateName']?.errors['required']">
+                  State Name is required
                 </div>
-              </div> -->
+              </div>
             </div>
             <div class="col-sm-4">
               <div class="form-group mb-4">
@@ -241,15 +251,6 @@
                 placeholder="Local Government Area"
               >
               </p-dropdown>
-              <!-- <div class="form-group mb-4">
-                <label for="town" class="form-label">Local Government Area</label>
-                <select id="town" class="form-select  mb-1" formControlName="town" required>
-                  <option value="" selected>Local Government Area</option>
-                  <option *ngFor="let town of townData" [value]="town.id">
-                    {{ town.name | titlecase }}
-                  </option>
-                </select>
-              </div> -->
             </div>
             <div class="col-sm-4">
               <label for="baseCurrency" class="form-label">Base Currency</label>
@@ -265,21 +266,27 @@
                 [showClear]="true"
                 [style]="{ width: '100%', height: '30%' }"
                 placeholder="Select Currency"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['baseCurrency']?.invalid &&
+                    (f['baseCurrency']?.dirty || f['baseCurrency']?.touched)
+                }"
               >
               </p-dropdown>
-              <!-- <div class="form-group mb-4">
-                <label for="baseCurrency" class="form-label">Base Currency</label>
-                <select id="baseCurrency" class="form-select  mb-1" formControlName="baseCurrency"
-                  [ngClass]="{ 'is-invalid': f['baseCurrency']?.invalid && (f['baseCurrency']?.dirty || f['baseCurrency']?.touched) }">
-                  <option value="" selected>Select Currency</option>
-                  <option *ngFor="let currency of currenciesData" [value]="currency.id">{{ currency.name }}
-                  </option>
-                </select>
-                <div *ngIf="f['baseCurrency']?.invalid && (f['baseCurrency']?.dirty || f['baseCurrency']?.touched)" class="form-text text-danger"
-                  [ngClass]="{ 'is-invalid': ['submitted'] && f['baseCurrency']?.errors }">
-                  <div *ngIf="f['baseCurrency']?.errors['required']">Base Currency is required</div>
+              <div
+                *ngIf="
+                  f['baseCurrency']?.invalid &&
+                  (f['baseCurrency']?.dirty || f['baseCurrency']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['baseCurrency']?.errors
+                }"
+              >
+                <div *ngIf="f['baseCurrency']?.errors['required']">
+                  Base Currency is required
                 </div>
-              </div> -->
+              </div>
             </div>
             <div class="col-sm-4 mb-4">
               <div class="form-group mb-4">
@@ -477,12 +484,33 @@
                   id="type"
                   class="form-select mb-1"
                   formControlName="organizationType"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['organizationType']?.invalid &&
+                      (f['organizationType']?.dirty ||
+                        f['organizationType']?.touched)
+                  }"
                   required
                 >
                   <option value="" selected>Type</option>
                   <option value="INS">Insured</option>
                   <option value="BRK" selected>Broker</option>
                 </select>
+                <div
+                  *ngIf="
+                    f['organizationType']?.invalid &&
+                    (f['organizationType']?.dirty ||
+                      f['organizationType']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['organizationType']?.errors
+                  }"
+                >
+                  <div *ngIf="f['organizationType']?.errors['required']">
+                    Organization Type is required
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-sm-4">
