@@ -36,6 +36,7 @@ import { StaffService } from '../../../entities/services/staff/staff.service';
 import { StaffDto } from '../../../entities/data/StaffDto';
 import { Router } from '@angular/router';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
+import { UtilService } from '../../../../shared/services/util/util.service';
 
 const log = new Logger('OrganizationComponent');
 
@@ -86,40 +87,10 @@ export class OrganizationComponent implements OnInit {
   public isOrganizationSelected: boolean = false;
   public selectedOrganizationId: number | null = null;
   public selectedStateName: string | null = null;
-  public visibleStatus: any = {
-    organization: 'Y',
-    shortDescription: 'Y',
-    name: 'Y',
-    country: 'Y',
-    stateName: 'Y',
-    physicalAddress: 'Y',
-    postalAddress: 'Y',
-    postalCode: 'Y',
-    town: 'Y',
-    baseCurrency: 'Y',
-    countryCode: 'Y',
-    primaryTelephone: 'Y',
-    countryCode2: 'Y',
-    secondaryTelephone: 'Y',
-    emailAddress: 'Y',
-    webLink: 'Y',
-    pinNumber: 'Y',
-    manager: 'Y',
-    organizationType: 'Y',
-    motto: 'Y',
-    logo: 'Y',
-    groupLogo: 'Y',
-    accountName: 'Y',
-    accountNumber: 'Y',
-    swiftCode: 'Y',
-    bankName: 'Y',
-    bankBranch: 'Y',
-    paybill: 'Y',
-    customerCareName: 'Y',
-    customerCareEmail: 'Y',
-    customerCarePriNumber: 'Y',
-    customerCareSecNumber: 'Y',
-  };
+  public submitted = false;
+  public visibleStatus: any = {};
+  public errorOccurred = false;
+  public errorMessage: string = '';
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -144,6 +115,7 @@ export class OrganizationComponent implements OnInit {
     private countryService: CountryService,
     private bankService: BankService,
     private staffService: StaffService,
+    private utilService: UtilService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -199,25 +171,19 @@ export class OrganizationComponent implements OnInit {
       .subscribe((response) => {
         this.response = response;
         response.forEach((field) => {
-          for (const key of Object.keys(this.createOrganizationForm.controls)) {
-            this.visibleStatus[field.frontedId] = field.visibleStatus;
-            if (field.visibleStatus === 'Y') {
-              if (key === field.frontedId && field.mandatoryStatus === 'Y') {
-                this.createOrganizationForm.controls[key].addValidators(
-                  Validators.required
-                );
-                this.createOrganizationForm.controls[
-                  key
-                ].updateValueAndValidity();
-                const label = document.querySelector(
-                  `label[for=${field.frontedId}]`
-                );
-                if (label) {
-                  const asterisk = document.createElement('span');
-                  asterisk.innerHTML = ' *';
-                  asterisk.style.color = 'red';
-                  label.appendChild(asterisk);
-                }
+          this.visibleStatus[field.frontedId] = field.visibleStatus;
+          if (field.visibleStatus === 'Y' && field.mandatoryStatus === 'Y') {
+            const key = field.frontedId;
+            const control = this.createOrganizationForm.get(key);
+            if (control) {
+              control.setValidators(Validators.required);
+              control.updateValueAndValidity();
+              const label = document.querySelector(`label[for=${key}]`);
+              if (label) {
+                const asterisk = document.createElement('span');
+                asterisk.innerHTML = ' *';
+                asterisk.style.color = 'red';
+                label.appendChild(asterisk);
               }
             }
           }
@@ -519,6 +485,48 @@ export class OrganizationComponent implements OnInit {
   }
 
   onSave() {
+    this.submitted = true;
+    this.createOrganizationForm.markAllAsTouched();
+
+    if (this.createOrganizationForm.invalid) {
+      const invalidControls = Array.from(
+        document.querySelectorAll('.is-invalid')
+      ) as Array<HTMLInputElement | HTMLSelectElement>;
+
+      let firstInvalidUnfilledControl:
+        | HTMLInputElement
+        | HTMLSelectElement
+        | null = null;
+
+      for (const control of invalidControls) {
+        if (!control.value) {
+          firstInvalidUnfilledControl = control;
+          break;
+        }
+      }
+
+      if (firstInvalidUnfilledControl) {
+        firstInvalidUnfilledControl.focus();
+        const scrollContainer = this.utilService.findScrollContainer(
+          firstInvalidUnfilledControl
+        );
+        if (scrollContainer) {
+          scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+        }
+      } else {
+        const firstInvalidControl = invalidControls[0];
+        if (firstInvalidControl) {
+          firstInvalidControl.focus();
+          const scrollContainer =
+            this.utilService.findScrollContainer(firstInvalidControl);
+          if (scrollContainer) {
+            scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+          }
+        }
+      }
+      return;
+    }
+
     if (!this.selectedOrg) {
       const organizationFormValues = this.createOrganizationForm.getRawValue();
 
@@ -580,17 +588,33 @@ export class OrganizationComponent implements OnInit {
         organizationLogo: this.createOrganizationForm.get('logo').value,
       };
       // Create a new organization
-      this.organizationService
-        .createOrganization(saveOrganization)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created an Organization'
+      this.organizationService.createOrganization(saveOrganization).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'Success',
+              'Successfully Created an Organization'
+            );
+            this.fetchOrganization();
+            this.selectedOrganization = data.id;
+            this.isOrganizationSelected = true;
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.message
           );
-          this.fetchOrganization();
-          this.selectedOrganization = data.id;
-          this.isOrganizationSelected = true;
-        });
+          log.info(`error >>>`, err);
+        },
+      });
     } else {
       const organizationFormValues = this.createOrganizationForm.getRawValue();
       const organizationId = this.selectedOrg.id;
@@ -655,12 +679,30 @@ export class OrganizationComponent implements OnInit {
       // Update an existing organization
       this.organizationService
         .updateOrganization(organizationId, saveOrganization)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated the Organization'
-          );
-          this.fetchOrganization();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated the Organization'
+              );
+              this.fetchOrganization();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.message
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
   }
@@ -672,18 +714,36 @@ export class OrganizationComponent implements OnInit {
   confirmOrganizationDelete() {
     if (this.selectedOrg) {
       const organizationId = this.selectedOrg.id;
-      this.organizationService
-        .deleteOrganization(organizationId)
-        .subscribe(() => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully Deleted an Organization'
+      this.organizationService.deleteOrganization(organizationId).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully Deleted an Organization'
+            );
+            this.createOrganizationForm.reset();
+            this.url = null;
+            this.urlGrp = null;
+            this.selectedOrg = null;
+            this.isOrganizationSelected = false;
+            this.fetchOrganization();
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.message
           );
-          this.fetchOrganization();
-          this.createOrganizationForm.reset();
-          this.selectedOrg = null;
-          this.isOrganizationSelected = false;
-        });
+          log.info(`error >>>`, err);
+        },
+      });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',

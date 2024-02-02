@@ -6,7 +6,7 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import stepData from '../../data/steps.json';
 
@@ -33,6 +33,8 @@ import { StaffDto } from '../../../../features/entities/data/StaffDto';
 import { Table } from 'primeng/table';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
 import { ReplaySubject, combineLatest, filter, takeUntil } from 'rxjs';
+import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
+import { UtilService } from '../../../../shared/services/util/util.service';
 
 const log = new Logger('BranchComponent');
 
@@ -90,6 +92,11 @@ export class BranchComponent implements OnInit {
   public selectedStateName: string | null = null;
   public selectedFile: File;
   public url = '';
+  public groupId: string = 'organizationBranchTab';
+  public response: any;
+  public submitted = false;
+  public errorOccurred = false;
+  public errorMessage: string = '';
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -110,12 +117,16 @@ export class BranchComponent implements OnInit {
     },
   ];
 
+  public visibleStatus: any = {};
+
   constructor(
     private fb: FormBuilder,
     private renderer: Renderer2,
     private organizationService: OrganizationService,
     private countryService: CountryService,
     private staffService: StaffService,
+    private utilService: UtilService,
+    private mandatoryFieldsService: MandatoryFieldsService,
     private globalMessagingService: GlobalMessagingService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -170,6 +181,30 @@ export class BranchComponent implements OnInit {
       commission: [''],
       branchLogo: [''],
     });
+    this.mandatoryFieldsService
+      .getMandatoryFieldsByGroupId(this.groupId)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((response) => {
+        this.response = response;
+        response.forEach((field) => {
+          this.visibleStatus[field.frontedId] = field.visibleStatus;
+          if (field.visibleStatus === 'Y' && field.mandatoryStatus === 'Y') {
+            const key = field.frontedId;
+            this.createBranchForm.controls[key].setValidators(
+              Validators.required
+            );
+            this.createBranchForm.controls[key].updateValueAndValidity();
+            const label = document.querySelector(`label[for=${key}]`);
+            if (label) {
+              const asterisk = document.createElement('span');
+              asterisk.innerHTML = ' *';
+              asterisk.style.color = 'red';
+              label.appendChild(asterisk);
+            }
+          }
+        });
+        this.cdr.detectChanges();
+      });
   }
 
   get f() {
@@ -261,8 +296,6 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.branchModal.nativeElement, 'show');
-    // this.renderer.setStyle(this.branchModal.nativeElement, 'display', 'block');
   }
 
   closeBranchModal() {
@@ -271,8 +304,6 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    // this.renderer.removeClass(this.branchModal.nativeElement, 'show');
-    // this.renderer.setStyle(this.branchModal.nativeElement, 'display', 'none');
   }
 
   openBranchTransferModal() {
@@ -281,12 +312,6 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.branchTransferModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchTransferModal.nativeElement,
-    //   'display',
-    //   'block'
-    // );
   }
 
   closeBranchTransferModal() {
@@ -295,12 +320,6 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    // this.renderer.removeClass(this.branchTransferModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchTransferModal.nativeElement,
-    //   'display',
-    //   'none'
-    // );
   }
 
   openBranchDivisionModal() {
@@ -309,12 +328,6 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.branchDivisionModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchDivisionModal.nativeElement,
-    //   'display',
-    //   'block'
-    // );
   }
 
   closeBranchDivisionModal() {
@@ -323,12 +336,6 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    // this.renderer.removeClass(this.branchDivisionModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchDivisionModal.nativeElement,
-    //   'display',
-    //   'none'
-    // );
   }
 
   openBranchContactModal() {
@@ -337,12 +344,6 @@ export class BranchComponent implements OnInit {
       modal.classList.add('show');
       modal.style.display = 'block';
     }
-    // this.renderer.addClass(this.branchContactModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchContactModal.nativeElement,
-    //   'display',
-    //   'block'
-    // );
   }
 
   closeBranchContactModal() {
@@ -351,13 +352,6 @@ export class BranchComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-
-    // this.renderer.removeClass(this.branchContactModal.nativeElement, 'show');
-    // this.renderer.setStyle(
-    //   this.branchContactModal.nativeElement,
-    //   'display',
-    //   'none'
-    // );
   }
 
   onLogoChange(event) {
@@ -494,11 +488,53 @@ export class BranchComponent implements OnInit {
   }
 
   saveBranch() {
+    this.submitted = true;
+    this.createBranchForm.markAllAsTouched();
+
+    if (this.createBranchForm.invalid) {
+      const invalidControls = Array.from(
+        document.querySelectorAll('.is-invalid')
+      ) as Array<HTMLInputElement | HTMLSelectElement>;
+
+      let firstInvalidUnfilledControl:
+        | HTMLInputElement
+        | HTMLSelectElement
+        | null = null;
+
+      for (const control of invalidControls) {
+        if (!control.value) {
+          firstInvalidUnfilledControl = control;
+          break;
+        }
+      }
+
+      if (firstInvalidUnfilledControl) {
+        firstInvalidUnfilledControl.focus();
+        const scrollContainer = this.utilService.findScrollContainer(
+          firstInvalidUnfilledControl
+        );
+        if (scrollContainer) {
+          scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+        }
+      } else {
+        const firstInvalidControl = invalidControls[0];
+        if (firstInvalidControl) {
+          firstInvalidControl.focus();
+          const scrollContainer =
+            this.utilService.findScrollContainer(firstInvalidControl);
+          if (scrollContainer) {
+            scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+          }
+        }
+      }
+      return;
+    }
+
     this.closeBranchModal();
     if (!this.selectedBranch) {
       const branchFormValues = this.createBranchForm.getRawValue();
-      const organizationId = this.selectedOrg.id;
-      const regionId = this.selectedReg.code;
+      const organizationId = this.selectedOrganizationId;
+      const regionId = this.selectedRegion;
 
       const saveBranch: OrganizationBranchDTO = {
         bnsCode: null,
@@ -530,19 +566,36 @@ export class BranchComponent implements OnInit {
         townName: null,
       };
       // Create a new organization branch
-      this.organizationService
-        .createOrganizationBranch(saveBranch)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created an Organization Branch'
+      this.organizationService.createOrganizationBranch(saveBranch).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'Success',
+              'Successfully Created an Organization Branch'
+            );
+            this.createBranchForm.reset();
+            this.fetchOrganizationBranch(organizationId, regionId);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
           );
-          this.fetchOrganizationBranch(organizationId, regionId);
-        });
+          log.info(`error >>>`, err);
+        },
+      });
     } else {
       const branchFormValues = this.createBranchForm.getRawValue();
-      const organizationId = this.selectedOrg.id;
-      const regionId = this.selectedReg.code;
+      const organizationId = this.selectedOrganizationId;
+      const regionId = this.selectedRegion;
       const branchId = this.selectedBranch.id;
 
       const saveBranch: OrganizationBranchDTO = {
@@ -577,13 +630,32 @@ export class BranchComponent implements OnInit {
       // Update organization branch
       this.organizationService
         .updateOrganizationBranch(branchId, saveBranch)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated Organization Branch'
-          );
-          this.selectedBranch = null;
-          this.fetchOrganizationBranch(organizationId, regionId);
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated Organization Branch'
+              );
+              this.selectedBranch = null;
+              this.createBranchForm.reset();
+              this.fetchOrganizationBranch(organizationId, regionId);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
   }
@@ -625,16 +697,34 @@ export class BranchComponent implements OnInit {
   confirmBranchDelete() {
     if (this.selectedBranch) {
       const branchId = this.selectedBranch.id;
-      this.organizationService
-        .deleteOrganizationBranch(branchId)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted an Organizatio Branch'
+      const organizationId = this.selectedOrganizationId;
+      const regionId = this.selectedRegion;
+      this.organizationService.deleteOrganizationBranch(branchId).subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully deleted an Organizatio Branch'
+            );
+            this.selectedBranch = null;
+            this.fetchOrganizationBranch(organizationId, regionId);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
           );
-          this.selectedBranch = null;
-          this.fetchOrganizationRegion(this.selectedOrg.id);
-        });
+          log.info(`error >>>`, err);
+        },
+      });
     } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
@@ -662,13 +752,31 @@ export class BranchComponent implements OnInit {
       };
       this.organizationService
         .createOrganizationBranchDivision(branchId, saveBranchDivision)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created a Branch Division'
-          );
-          this.fetchOrganizationBranchDivision(branchId);
-          this.createBranchDivisionForm.reset();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created a Branch Division'
+              );
+              this.fetchOrganizationBranchDivision(branchId);
+              this.createBranchDivisionForm.reset();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       const divisionFormValues = this.createBranchDivisionForm.getRawValue();
@@ -690,13 +798,31 @@ export class BranchComponent implements OnInit {
           saveBranchDivision,
           branchId
         )
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Update a Branch Division'
-          );
-          this.fetchOrganizationBranchDivision(branchId);
-          this.createBranchDivisionForm.reset();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Update a Branch Division'
+              );
+              this.fetchOrganizationBranchDivision(branchId);
+              this.createBranchDivisionForm.reset();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
   }
@@ -718,13 +844,31 @@ export class BranchComponent implements OnInit {
       const branchDivisionId = this.selectedBranchDivision.id;
       this.organizationService
         .deleteOrganizationBranchDivision(branchDivisionId, branchId)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted an Organizatio Branch Division'
-          );
-          this.selectedBranchDivision = null;
-          this.fetchOrganizationBranchDivision(branchId);
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deleted an Organizatio Branch Division'
+              );
+              this.selectedBranchDivision = null;
+              this.fetchOrganizationBranchDivision(branchId);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       this.globalMessagingService.displayErrorMessage(
@@ -754,13 +898,31 @@ export class BranchComponent implements OnInit {
       };
       this.organizationService
         .createOrganizationBranchContact(saveBranchContact)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Created an Organization Branch Contact'
-          );
-          this.fetchOrganizationBranchContact(this.selectedBranch.id);
-          this.createBranchContactForm.reset();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created an Organization Branch Contact'
+              );
+              this.fetchOrganizationBranchContact(this.selectedBranch.id);
+              this.createBranchContactForm.reset();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       const branchContactFormValues =
@@ -781,14 +943,32 @@ export class BranchComponent implements OnInit {
       };
       this.organizationService
         .updateOrganizationBranchContact(branchContactId, saveBranchContact)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'Success',
-            'Successfully Updated an Organization Branch Contact'
-          );
-          this.fetchOrganizationBranchContact(this.selectedBranch.id);
-          this.selectedBranchContact = null;
-          this.createBranchContactForm.reset();
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated an Organization Branch Contact'
+              );
+              this.fetchOrganizationBranchContact(this.selectedBranch.id);
+              this.selectedBranchContact = null;
+              this.createBranchContactForm.reset();
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     }
   }
@@ -817,13 +997,31 @@ export class BranchComponent implements OnInit {
       const branchContactId = this.selectedBranchContact.id;
       this.organizationService
         .deleteOrganizationBranchContact(branchContactId)
-        .subscribe((data) => {
-          this.globalMessagingService.displaySuccessMessage(
-            'success',
-            'Successfully deleted an Organizatio Branch Contact'
-          );
-          this.fetchOrganizationBranchContact(this.selectedBranch.id);
-          this.selectedBranchContact = null;
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deleted an Organizatio Branch Contact'
+              );
+              this.fetchOrganizationBranchContact(this.selectedBranch.id);
+              this.selectedBranchContact = null;
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
         });
     } else {
       this.globalMessagingService.displayErrorMessage(

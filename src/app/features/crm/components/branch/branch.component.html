@@ -352,7 +352,28 @@
                 id="shortDescription"
                 placeholder="Short Description"
                 formControlName="shortDescription"
+                [ngClass]="{
+                  'is-invalid':
+                    f['shortDescription']?.invalid &&
+                    (f['shortDescription']?.dirty ||
+                      f['shortDescription']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['shortDescription']?.invalid &&
+                  (f['shortDescription']?.dirty ||
+                    f['shortDescription']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['shortDescription']?.errors
+                }"
+              >
+                <div *ngIf="f['shortDescription']?.errors['required']">
+                  Short Description is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="branchName" class="form-label">Branch Name</label>
@@ -362,7 +383,26 @@
                 id="branchName"
                 placeholder="Branch Name"
                 formControlName="branchName"
+                [ngClass]="{
+                  'is-invalid':
+                    f['branchName']?.invalid &&
+                    (f['branchName']?.dirty || f['branchName']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['branchName']?.invalid &&
+                  (f['branchName']?.dirty || f['branchName']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['branchName']?.errors
+                }"
+              >
+                <div *ngIf="f['branchName']?.errors['required']">
+                  Branch Name is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="country" class="form-label">Country</label>
@@ -379,8 +419,27 @@
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
                 placeholder="Select Country"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['country'].invalid &&
+                    (f['country'].dirty || f['country'].touched)
+                }"
               >
               </p-dropdown>
+              <div
+                *ngIf="
+                  f['country']?.invalid &&
+                  (f['country']?.dirty || f['country']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['country']?.errors
+                }"
+              >
+                <div *ngIf="f['country']?.errors['required']">
+                  Country is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="state" class="form-label">State</label>
@@ -397,8 +456,27 @@
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
                 placeholder="Select State"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['state']?.invalid &&
+                    (f['state']?.dirty || f['state']?.touched)
+                }"
               >
               </p-dropdown>
+              <div
+                *ngIf="
+                  f['state']?.invalid &&
+                  (f['state']?.dirty || f['state']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['state']?.errors
+                }"
+              >
+                <div *ngIf="f['state']?.errors['required']">
+                  State Name is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="town" class="form-label">Town</label>
@@ -414,8 +492,26 @@
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
                 placeholder="Select Town"
+                [ngClass]="{
+                  'p-dropdown-invalid':
+                    f['town']?.invalid &&
+                    (f['town']?.dirty || f['town']?.touched)
+                }"
               >
               </p-dropdown>
+              <div
+                *ngIf="
+                  f['town']?.invalid && (f['town']?.dirty || f['town']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['town']?.errors
+                }"
+              >
+                <div *ngIf="f['town']?.errors['required']">
+                  Town is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="physicalAddress" class="form-label"
@@ -427,7 +523,27 @@
                 id="physicalAddress"
                 placeholder="Physical Address"
                 formControlName="physicalAddress"
+                [ngClass]="{
+                  'is-invalid':
+                    f['physicalAddress']?.invalid &&
+                    (f['physicalAddress']?.dirty ||
+                      f['physicalAddress']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['physicalAddress']?.invalid &&
+                  (f['physicalAddress']?.dirty || f['physicalAddress']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['physicalAddress']?.errors
+                }"
+              >
+                <div *ngIf="f['physicalAddress']?.errors['required']">
+                  Physical Address is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="postalAddress" class="form-label"
@@ -439,7 +555,26 @@
                 id="postalAddress"
                 placeholder="Postal Address"
                 formControlName="postalAddress"
+                [ngClass]="{
+                  'is-invalid':
+                    f['postalAddress']?.invalid &&
+                    (f['postalAddress']?.dirty || f['postalAddress']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['postalAddress']?.invalid &&
+                  (f['postalAddress']?.dirty || f['postalAddress']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['postalAddress']?.errors
+                }"
+              >
+                <div *ngIf="f['postalAddress']?.errors['required']">
+                  Postal Address is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="postalCode" class="form-label">Postal Code</label>
@@ -459,7 +594,26 @@
                 id="telephone"
                 placeholder="Telephone"
                 formControlName="telephone"
+                [ngClass]="{
+                  'is-invalid':
+                    f['telephone']?.invalid &&
+                    (f['telephone']?.dirty || f['telephone']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['telephone']?.invalid &&
+                  (f['telephone']?.dirty || f['telephone']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['telephone']?.errors
+                }"
+              >
+                <div *ngIf="f['telephone']?.errors['required']">
+                  Telephone is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="emailAddress" class="form-label">Email Address</label>
@@ -469,7 +623,26 @@
                 id="emailAddress"
                 placeholder="Email Address"
                 formControlName="emailAddress"
+                [ngClass]="{
+                  'is-invalid':
+                    f['emailAddress']?.invalid &&
+                    (f['emailAddress']?.dirty || f['emailAddress']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['emailAddress']?.invalid &&
+                  (f['emailAddress']?.dirty || f['emailAddress']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['emailAddress']?.errors
+                }"
+              >
+                <div *ngIf="f['emailAddress']?.errors['required']">
+                  Email Address is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <fieldset>

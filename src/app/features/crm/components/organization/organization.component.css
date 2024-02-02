@@ -32,7 +32,7 @@ label {
 
 .img_upload {
   display: inline-block;
-  font-family: 'Roboto', serif;
+  font-family: "Roboto", serif;
   text-align: center;
   background-color: white;
   color: var(--primary-color);
@@ -44,7 +44,6 @@ label {
 
   .fa {
     vertical-align: middle;
-
   }
 }
 
@@ -72,4 +71,8 @@ label {
 
 ::ng-deep .p-dropdown .p-dropdown-filter {
   height: 35px;
+}
+
+::ng-deep .p-dropdown-invalid .p-dropdown {
+  border: solid 1px red !important;
 }
