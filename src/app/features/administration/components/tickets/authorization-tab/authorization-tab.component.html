@@ -1,0 +1,309 @@
+<div class="row mt-5 mb-2">
+  <div class="col-6">
+    <label class="text-primary">Exceptions</label>
+  </div>
+
+  <div class="col-6 d-flex justify-content-end">
+    <button
+      class="btn btn-outline-primary me-2" style="font-size: 12px;">Undo make ready
+    </button>
+    <button
+      class="btn btn-primary" style="font-size: 12px;">Authorise exceptions
+    </button>
+
+  </div>
+</div>
+<p-table
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="risKCedingDetails?.totalElements"
+  [value]="risKCedingDetails?.content"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  [(selection)]="risKCedingDetails"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Select</th>
+      <th>ID</th>
+      <th>Description</th>
+      <th>Remarks</th>
+      <th>Set standard</th>
+      <th>Used standard</th>
+      <th>Authorized</th>
+      <th>Submission date</th>
+      <th>Authorized by</th>
+      <th>Authorized date</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-exception>
+    <tr>
+      <td class="body">
+        <p-tableCheckbox [value]=""></p-tableCheckbox>
+      </td>
+      <td>Section SI</td>
+      <td>Sum insured</td>
+      <td>600,000</td>
+      <td>30,000.00</td>
+      <td>FXD</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9">No Exception Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div class="row mt-5 mb-2">
+  <div class="col-6">
+    <label class="text-primary">Receipts</label>
+  </div>
+
+  <div class="col-6 d-flex justify-content-end">
+    <button
+      class="btn btn-primary" style="font-size: 12px;">Transmittal report
+    </button>
+
+  </div>
+</div>
+
+<p-table
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="risKCedingDetails?.totalElements"
+  [value]="risKCedingDetails?.content"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Receipt no</th>
+      <th>Receipt date</th>
+      <th>Receipt amount</th>
+      <th>Receipt balance</th>
+      <th>Receipt settlement</th>
+      <th>Debit/credit</th>
+      <th>Receipt by</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-receipt>
+    <tr>
+      <td>Section SI</td>
+      <td>Sum insured</td>
+      <td>600,000</td>
+      <td>30,000.00</td>
+      <td>FXD</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9">No Receipt Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div class="row mt-5 mb-2">
+  <div class="col-6">
+    <label class="text-primary">Authorization levels</label>
+  </div>
+
+  <div class="col-6 d-flex justify-content-end">
+    <button
+      class="btn btn-primary" style="font-size: 12px;">Authorize level
+    </button>
+
+  </div>
+</div>
+
+<p-table
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  [rows]="pageSize || 5"
+  [totalRecords]="risKCedingDetails?.totalElements"
+  [value]="risKCedingDetails?.content"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Level</th>
+      <th>Authorized</th>
+      <th>Role name</th>
+      <th>Authorize date</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-authlevels>
+    <tr>
+      <td>Section SI</td>
+      <td>Sum insured</td>
+      <td>600,000</td>
+      <td>30,000.00</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9">No Authorization Levels Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="exampleModalToggleLabel">Debt owner and promise date</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="debtOwnerForm" class="clearfix">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <label for="modalUserAssignTo" class="text-dark">Debt owner</label>
+            </div>
+            <div class="col-9">
+              <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
+            </div>
+            <div class="col-2">
+              <button class="btn btn-outline-primary"  (click)="openAllUsersModal()">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+
+            <!--<div  *ngIf="f['modalUserAssignTo'].invalid && (f['modalUserAssignTo'].dirty || f['modalUserAssignTo'].touched)" class="form-text text-danger form-error-text" [ngClass]="{ 'is-invalid': f['modalUserAssignTo'].errors }">
+              <div *ngIf="f['modalUserAssignTo'].errors['required']">Main user is required</div>
+            </div>-->
+          </div>
+
+          <div *ngIf="showDefaultUser" class="row mt-2">
+            <div class="col-3">
+              <label for="modalDefaultGroupUser">Default User</label>
+            </div>
+            <div class="col-7">
+              <input type="text" name="modalDefaultGroupUser" formControlName="modalDefaultGroupUser" id="modalDefaultGroupUser" class="form-control w-100 h-39 border border-secondary">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="dropdownBtn">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-12">
+              <label class="text-dark">Promise date</label>
+            </div>
+            <div class="col-12">
+              <input type="date" name="" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer d-block float-end" style="border-top:0">
+          <button class="btn btn-primary cancelBtn" id="cancelReassignBtn"
+                  #cancelReassign>Cancel</button>
+          <button class="btn btn-outline-primary float-right reassign" id="reassignTktBtn"
+                  data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Select schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="width: 350px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="exampleModalToggleLabel2">Schedule check</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 mb-3">
+          <label for="scheduleReadyAuth" class="form-label w-100">Is this the schedule ready for authorization?</label>
+          <form [formGroup]="scheduleCheckForm">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="Y">
+              <label class="form-label" for="scheduleReadyAuth">Yes</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="N">
+              <label class="form-label" for="scheduleReadyAuth">No</label>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Back to debt owner</button>
+      </div>
+    </div>
+  </div>
+</div>
+<button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Open first modal</button>
+
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Save debt owner'"
+  [modalTitle]="'Select debt owner'"
+  [useDynamicContent]="true"
+  [zIndex]="firstModalZIndex"
+  (actionEmitter)="processSelectedUser($event)"
+>
+  <!---Use content projection !-->
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    </app-staff-modal>
+  </div>
+  <!---Use content projection !-->
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the allUsersModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="allUsersModalVisible"
+     [style.z-index]="firstModalZIndex"></div>
+
+
+<!-- Modal for Viewing Group Members if User from above list was of group Type (type = G) !-->
+<app-dynamic-simple-modal
+  [modalVisible]="groupUserModalVisible"
+  [modalButtonLabel]="'Save default debt owner'"
+  [zIndex]="secondModalZIndex"
+  [title]="'Select default debt owner'"
+  [useDynamicContent]="true"
+  (actionEmitter)="processDefaultUser($event)"
+>
+  <div modal-body-content>
+    <app-staff-modal
+      [isLazyLoaded]="false"
+      [staffList]="groupStaffMembers"
+      (userSelected)="getSelectedDefaultUser($event)">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the groupUserModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="groupUserModalVisible"
+     [style.z-index]="zIndex"></div>
