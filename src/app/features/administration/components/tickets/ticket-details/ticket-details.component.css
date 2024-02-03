@@ -1,6 +1,6 @@
 .ticketLabel {
   margin-right: 10px;
-  width: 140px;
+  /*width: 140px;*/
 }
 
 .ticketDesc {
@@ -8,12 +8,8 @@
 }
 
 .risks, .taxes {
-  border: solid 1px #eee;
   margin-top: 20px;
   margin-bottom: 20px;
-  padding: 5px;
-  border-radius: 2px;
-  box-shadow: 1px 1px #eee;
 }
 
 .view-more {

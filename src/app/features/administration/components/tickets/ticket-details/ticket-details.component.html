@@ -1,29 +1,93 @@
 <div class="base-content-section">
 
-  <div class="me-4">
-    <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
-    </app-dynamic-breadcrumb>
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Home',
+        url: '/home/dashboard'
+      },
+      {
+        label: 'Tickets',
+        url: '/home/administration/tickets',
+      },
+      {
+        label: selectedTicket?.ticketID.toString(),
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
   </div>
 
   <p-tabView>
-    <p-tabPanel header="Ticket Details">
+    <label class="mb-3 float-end">Current ticket:
+      <span class="text-primary">{{selectedTicket?.ticketName}}</span>
+    </label>
+
+
+    <p-tabPanel header="Policy details">
+
+      <label class="text-primary mb-3">Policy details</label>
       <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-3">
           <p>
-            <label class="ticketLabel">Ticket By:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketBy }}</span>
+            <label class="ticketLabel">Client:</label>
+            <span class="ticketDesc">{{ selectedTicket?.clientName }}</span>
           </p>
           <p>
-            <label class="ticketLabel">Ticket Remarks:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketRemarks }}</span>
+            <label class="ticketLabel">Currency:</label>
+<!--            <span class="ticketDesc">{{ policyDetails?.currency }}</span>-->
+            <span class="ticketDesc">{{ selectedTicket?.currency }}</span>
           </p>
+          <p>
+            <label class="ticketLabel">Agency:</label>
+            <span class="ticketDesc">{{ selectedTicket?.intermediaryName }}</span>
+          </p>
+        </div>
+
+        <div class="col-sm-3">
           <p *ngIf="selectedTicket?.policyNumber">
             <label class="ticketLabel">Policy No:</label>
             <span class="ticketDesc">{{ selectedTicket?.policyNumber }}</span>
           </p>
           <p>
+            <label class="ticketLabel">Total S.I.:</label>
+            <span class="ticketDesc">{{ selectedTicket?.totalSI | number: '1.2-2' }}</span>
+          </p>
+          <p>
+            <label class="ticketLabel">Transaction type:</label>
+<!--            <span class="ticketDesc">{{ policyDetails?.transactiontype }}</span>-->
+          </p>
+        </div>
+        <div class="col-sm-3">
+          <p>
+            <label class="ticketLabel">Endorse. No:</label>
+            <span class="ticketDesc">{{ selectedTicket?.endorsementNumber }}</span>
+          </p>
+          <p>
+            <label class="ticketLabel">Premium:</label>
+<!--            <span class="ticketDesc">{{ selectedTicket?.premium }}</span>-->
+          </p>
+          <p>
+            <label class="ticketLabel">Ticket Remarks:</label>
+            <span class="ticketDesc">{{ selectedTicket?.ticketRemarks }}</span>
+          </p>
+        </div>
+        <div class="col-sm-3">
+          <p>
             <label class="ticketLabel">Cover From:</label>
             <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
+          </p>
+          <p>
+            <label class="ticketLabel">Cover To:</label>
+            <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
+          </p>
+        </div>
+       <!-- <div class="col-sm-6">
+          <p>
+            <label class="ticketLabel">Ticket By:</label>
+            <span class="ticketDesc">{{ selectedTicket?.ticketBy }}</span>
           </p>
           <p *ngIf="selectedTicket?.claimNumber">
             <label class="ticketLabel">Claim No:</label>
@@ -33,61 +97,37 @@
             <label class="ticketLabel">Renewal Date:</label>
             <span class="ticketDesc">{{ selectedTicket?.renewalDate | date: 'shortDate' }}</span>
           </p>
-          <p>
-            <label class="ticketLabel">Agency:</label>
-            <span class="ticketDesc">{{ selectedTicket?.intermediaryName }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Endorse. No:</label>
-            <span class="ticketDesc">{{ selectedTicket?.endorsementNumber }}</span>
-          </p>
-        </div>
-        <div class="col-sm-6">
+        </div>-->
+        <!--<div class="col-sm-6">
           <p>
             <label class="ticketLabel">Ticket Date:</label>
             <span class="ticketDesc">{{ selectedTicket?.ticketDate | date: 'shortDate' }}</span>
           </p>
           <p>
-            <label class="ticketLabel">Client:</label>
-            <span class="ticketDesc">{{ selectedTicket?.clientName }}</span>
-          </p>
-          <p>
             <label class="ticketLabel">Due Date:</label>
             <span class="ticketDesc">{{ selectedTicket?.ticketDueDate | date: 'shortDate' }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Cover To:</label>
-            <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
           </p>
           <p *ngIf="selectedTicket?.quotationNumber">
             <label class="ticketLabel">Quotation No:</label>
             <span class="ticketDesc">{{ selectedTicket?.quotationNumber }}</span>
           </p>
           <p>
-            <label class="ticketLabel">Currency:</label>
-            <span class="ticketDesc">{{ policyDetails?.currency }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Total S.I.:</label>
-            <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
-          </p>
-          <p>
             <label class="ticketLabel">Endorse. Remarks:</label>
             <span class="ticketDesc">{{ selectedTicket?.endorsementRemarks }}</span>
           </p>
-        </div>
+        </div>-->
       </div>
 
-      <div class="risks" *ngIf="policyDetails?.riskInformation">
+      <div class="risks mt-5" >
         <ng-container>
           <!--preloader goes here-->
         </ng-container>
         <app-risk-details
           [risk]="policyDetails?.riskInformation[0]"
         ></app-risk-details>
-        <div class="view-more">
+        <!--<div class="view-more">
           <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()" >View more</button>
-        </div>
+        </div>-->
       </div>
 
       <div class="total-premium">
@@ -111,43 +151,56 @@
         ></app-tax-details>
       </div>
 
-      <div class="row action-buttons my-2 p-1">
-        <div class="col-sm-5">
-          <button class="btn btn-outline-secondary" (click)="backToPrevious()">Back</button>
-        </div>
-        <div class="col-sm-7">
-          <button
-            class="btn btn-success authorize-btn"
-            (click)="callGenerateAuthorizeOtp()"
-          >
-            Authorize
-          </button>
-
-          <button
-            class="btn btn-primary reassign-btn"
-            data-toggle="modal"
-            data-target="#reassignModal"
-          >
-            Re-assign Task
-          </button>
-        </div>
-      </div>
-
     </p-tabPanel>
-    <p-tabPanel header="Reports">
+
+    <p-tabPanel header="Reinsurance allocations">
+      <app-reinsurance-allocations></app-reinsurance-allocations>
+    </p-tabPanel>
+    <p-tabPanel header="Authorization">
+      <app-authorization-tab></app-authorization-tab>
+    </p-tabPanel>
+    <p-tabPanel header="Documents and reports">
+      <label class="text-primary mb-2">Reports</label>
       <app-ticket-reports></app-ticket-reports>
-    </p-tabPanel>
-    <p-tabPanel header="Documents">
+
+      <label class="text-primary mb-2">Documents</label>
       <app-ticket-documents [currentTicket]="currentTicket">
       </app-ticket-documents>
     </p-tabPanel>
   </p-tabView>
+  <div class="row action-buttons my-2 p-1">
+    <div class="col-sm-5">
+      <button class="btn btn-outline-secondary" (click)="backToPrevious()">Back</button>
+    </div>
+    <div class="col-sm-7">
+      <button
+        class="btn btn-success authorize-btn"
+        (click)="callGenerateAuthorizeOtp()"
+      >
+        Authorize
+      </button>
+
+      <button
+        class="btn btn-outline-primary reassign-btn"
+        data-toggle="modal"
+        data-target="#reassignModal"
+      >
+        Reassign
+      </button>
+<!--TODO hide reinsure button in other tabs-->
+      <button
+        class="btn btn-primary ms-2 reinsure-btn"
+      >
+        Reinsure
+      </button>
+    </div>
+  </div>
 </div>
 
 
 <!--view more dialog-->
 <p-dialog header="" [(visible)]="shouldShowViewMoreDialog" [style]="{width: '50vw'}">
-  <div class="total-premium mb-4" style="font-size: 1em">
+  <!--<div class="total-premium mb-4" style="font-size: 1em">
     <table class="table table-borderless">
       <thead>
       <tr *ngIf="policyDetails?.premium">
@@ -171,6 +224,56 @@
         [totalPremium]="policyDetails?.total_premium"
       ></app-tax-details>
     </ng-container>
-  </div>
+  </div>-->
+
+  <p-table
+    [autoLayout]="true"
+    [paginator]="true"
+    [rowHover]="true"
+    [resizableColumns]="true"
+    [showCurrentPageReport]="true"
+    [rows]="pageSize || 5"
+    [totalRecords]="sectionDetails?.totalElements"
+    [value]="sectionDetails?.content"
+    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+    responsiveLayout="stack"
+    [scrollable]="true"
+    scrollHeight="400px"
+    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    [globalFilterFields]=globalFilterFields
+  >
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Description</th>
+        <th>Name</th>
+        <th>Limit</th>
+        <th>Premium</th>
+        <th>Rate type</th>
+        <th>Section rate</th>
+        <th>Free limit</th>
+        <th>Rate Div Fac</th>
+        <th>Multip</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-sectionDetail>
+      <tr>
+        <td>Section SI</td>
+        <td>Sum insured</td>
+        <td>600,000</td>
+        <td>30,000.00</td>
+        <td>FXD</td>
+        <td>5</td>
+        <td></td>
+        <td>100</td>
+        <td></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">No Section Detail(s) Found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
 </p-dialog>
 

@@ -465,7 +465,7 @@ export class TicketsService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
-    return this.http.get<any>(`/${baseUrl}/underwriting/api/v1/policies/${batchNumber}`, { headers })
+    return this.http.get<any>(`/${baseUrl}/underwriting/api/v2/policies/${batchNumber}`, { headers })
   }
 
   getTransactionTypes(): Observable<any> {

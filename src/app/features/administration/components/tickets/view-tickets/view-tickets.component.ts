@@ -110,7 +110,7 @@ export class ViewTicketsComponent implements OnInit {
         "General_Ticket_Details.usrCode"
       ],
       filters: [
-        {member:"General_Ticket_Details.ticketAssignee","operator":"contains","values": [assignee]},
+        {member:"General_Ticket_Details.ticketAssignee","operator":"contains","values": ['IBRAHIM']},
       ]
     }
 
