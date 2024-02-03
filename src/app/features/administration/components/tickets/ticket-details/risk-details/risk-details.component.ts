@@ -7,4 +7,12 @@ import {Component, Input} from '@angular/core';
 })
 export class RiskDetailsComponent {
   @Input() risk;
+
+  public pageSize: 5;
+  sectionDetails: any;
+  public shouldShowViewMoreDialog: boolean = false;
+
+  showViewMoreDialog() {
+    this.shouldShowViewMoreDialog = true;
+  }
 }

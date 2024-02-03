@@ -34,7 +34,12 @@ export class TicketDetailsComponent implements OnInit {
   showAdditionalColumns = true;
   showSpinner: boolean = false;
 
-  breadCrumbItems: BreadCrumbItem[] = [
+  public pageSize: 5;
+  sectionDetails: any;
+
+  globalFilterFields = [''];
+
+  /*breadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
       url: '/home/dashboard'
@@ -43,11 +48,15 @@ export class TicketDetailsComponent implements OnInit {
       label: 'Tickets',
       url: '/home/administration/tickets',
     },
+    // {
+    //   label: 'Ticket Details',
+    //   url: '/home/administration/ticket/details'
+    // },
     {
-      label: 'Ticket Details',
-      url: '/home/administration/ticket/details'
+      label: this.selectedTicket.ticketID.toString(),
+      url: ''
     }
-  ];
+  ];*/
 
   constructor(
     private localStorageService: LocalStorageService,
@@ -62,7 +71,7 @@ export class TicketDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.selectedTicket = this.localStorageService.getItem('ticketDetails');
-    this.fetchPolicyDetails(this.selectedTicket.policyCode);
+    this.fetchPolicyDetails(this.selectedTicket?.policyCode);
     this.ticketId = this.activatedRoute.snapshot.params['id'];
     this.ticketModule = this.activatedRoute.snapshot.params['module'];
     this.currentTicket = this.ticketService.currentTicketDetail();
