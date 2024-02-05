@@ -24,9 +24,9 @@
             </span>
           </button>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" (click)="navigateAccount()">Profile</a></li>
-            <li><a class="dropdown-item" href="#">Settings</a></li>
-            <li><a class="dropdown-item"  (click)="logout()">Logout</a></li>
+            <li><a class="dropdown-item" (click)="navigateAccount()">{{ 'base.profile' | translate }}</a></li>
+            <li><a class="dropdown-item" href="#">{{ 'base.settings' | translate }}</a></li>
+            <li><a class="dropdown-item"  (click)="logout()">{{ 'base.logout' | translate }}</a></li>
           </ul>
         </div>
 

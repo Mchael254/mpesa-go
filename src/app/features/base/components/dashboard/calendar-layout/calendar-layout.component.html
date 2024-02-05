@@ -1,6 +1,8 @@
 <div class="calendar">
   <ul class="weeks">
-    <li *ngFor="let day of daysOfTheWeek"> {{ day | slice: 0: 3 }}</li>
+    <li *ngFor="let day of daysOfTheWeek">
+      {{ 'base.'+day | translate | slice: 0: 3 }}
+    </li>
   </ul>
   <ul class="days">
     <li
@@ -18,7 +20,7 @@
         </span>
         <br>
         <span *ngIf="day?.event?.length > 1" (click)="showDialog(day)" class="mt-2 view-more" id="showDialog">
-          {{ day.event.length - 1}} more
+          {{ day.event.length - 1}} {{ 'base.more' | translate }}
         </span>
       </ng-container>
 
