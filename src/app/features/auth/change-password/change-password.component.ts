@@ -93,7 +93,7 @@ export class ChangePasswordComponent {
           else{
             this.errorOccurred = true;
             this.errorMessage = "Something went wrong.Please try Again";
-            this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong.Please try Again');
+            this.globalMessagingService.displayErrorMessage('Error', 'Something went wrong. Please try Again');
           }
           this.isLoading = false;
         },
