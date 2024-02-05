@@ -46,8 +46,8 @@ export class CalendarComponent implements OnInit {
     'aug', 'sep', 'oct', 'nov', 'dec'
   ];
   public daysOfTheWeek = [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday',
-    'Thursday', 'Friday', 'Saturday'
+    'sun', 'mon', 'tue', 'wed',
+    'thu', 'fri', 'sat'
   ]
 
   public dateRange = [DURATION.DAY, DURATION.WEEK, DURATION.MONTH];

@@ -16,8 +16,8 @@
           <h6 class="text-black">
             {{ 'report.report_name' | translate }}<span class="text-danger">*</span>
           </h6>
-          <input type="text" class="form-control form-control-sm" placeholder="Pilot report"
-                 [(ngModel)]="reportName" (input)="onReportNameChange($event)">
+          <input type="text" class="form-control form-control" placeholder="Pilot report"
+                 [(ngModel)]="reportName" (input)="onReportNameChange($event)" style="padding: 8px">
           <h6 class="text-black mt-3">
             {{ 'report.subject_area' | translate }}<span class="text-danger">*</span>
           </h6>
@@ -172,7 +172,7 @@
                             <i class="fa-solid fa-robot"></i>
                           </span>
                         </div>
-                        <div class="col-8 bot-message" [ngClass]="{'animate-flicker': conversation.message === 'loading...'}">
+                        <div class="col-9 col-sm-8 bot-message" [ngClass]="{'animate-flicker': conversation.message === 'loading...'}">
                           <span>
                             {{ conversation.message }}
                           </span>
