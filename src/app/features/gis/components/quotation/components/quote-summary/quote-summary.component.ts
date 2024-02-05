@@ -80,10 +80,17 @@ export class QuoteSummaryComponent {
   }
 
   ngOnInit(): void{
-    this.quickQuotationCode=this.sharedService.getQuickQuotationDetails();
-    log.debug("Quick Quote Quotation Number:",this.quickQuotationCode );
-    this.coverQuotationNo=this.sharedService.getSelectedCover();
-    this.passedPremium=this.sharedService.getPremiumResponse();
+    // this.quickQuotationCode=this.sharedService.getQuickQuotationDetails();
+    // log.debug("Quick Quote Quotation Number:",this.quickQuotationCode );
+    const quotationNumberString = sessionStorage.getItem('quotationNumber');
+    this.coverQuotationNo = JSON.parse(quotationNumberString);
+
+    // this.coverQuotationNo=this.sharedService.getSelectedCover();
+
+    const riskLevelPremiumString = sessionStorage.getItem('riskLevelPremium');
+    this.passedPremium = JSON.parse(riskLevelPremiumString);
+
+    // this.passedPremium=this.sharedService.getPremiumResponse();
 
     log.debug("Selected Cover Quotation Number:",this.coverQuotationNo );
     log.debug("Passed Premium :",this.passedPremium );
@@ -167,8 +174,19 @@ export class QuoteSummaryComponent {
     })
   }
   addAnotherRisk(){
-    this.sharedService.setAddAnotherRisk(this.quotationDetails,this.clientDetails);
-    this.sharedService.setIsAddRisk(this.isAddRisk);
+    const passedQuotationDetailsString = JSON.stringify(this.quotationDetails);
+    sessionStorage.setItem('passedQuotationDetails', passedQuotationDetailsString);
+
+    const passedClientDetailsString = JSON.stringify(this.clientDetails);
+    sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
+
+    const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
+    sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
+
+
+    // this.sharedService.setAddAnotherRisk(this.quotationDetails,this.clientDetails);
+    // this.sharedService.setIsAddRisk(this.isAddRisk);
+
     log.debug("isAddRisk:",this.isAddRisk)
     log.debug("quotation number:",this.quotationNo)
     log.debug("Quotation Details:",this.quotationDetails)

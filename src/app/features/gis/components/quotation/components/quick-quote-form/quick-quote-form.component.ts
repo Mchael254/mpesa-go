@@ -140,9 +140,10 @@ export class QuickQuoteFormComponent {
   passedQuotation: any;
   passedQuotationNo:any;
   passedQuotationCode:any
+  PassedClientDetails:any;
 
   // isAddRisk:boolean=false;
-  xyz: boolean;
+  isAddRisk: boolean;
 
   premiumComputationRequest: PremiumComputationRequest;
   riskPremiumDto: Risk[] = [];
@@ -230,26 +231,35 @@ export class QuickQuoteFormComponent {
 
 
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
-    this.passedQuotation = this.sharedService.getAddAnotherRisk();
-    // Console log the values
-    console.log("XYZ Details:", this.passedQuotation);
+    const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
+    this.passedQuotation = JSON.parse(passedQuotationDetailsString);
 
-    console.log("Quotation Details:", this.passedQuotation.quotationDetailsRisk);
-    this.passedQuotationNo=this.passedQuotation.quotationDetailsRisk.no;
-    this.passedQuotationCode=this.passedQuotation.quotationDetailsRisk.quotationProduct[0].quotCode
+    const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
+    this.PassedClientDetails = JSON.parse(passedClientDetailsString);
+
+    // this.passedQuotation = this.sharedService.getAddAnotherRisk();
+    // Console log the values
+    // console.log("XYZ Details:", this.passedQuotation);
+
+    console.log("Quotation Details:", this.passedQuotation);
+    this.passedQuotationNo=this.passedQuotation.no;
+    this.passedQuotationCode=this.passedQuotation.quotationProduct[0].quotCode
     
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
 
-    console.log("Client Details:", this.passedQuotation.clientDetails);
+    console.log("Client Details:", this.PassedClientDetails);
     if (this.passedQuotation) {
-      this.clientName = this.passedQuotation.clientDetails.firstName + ' ' + this.passedQuotation.clientDetails.lastName;
-      this.clientEmail = this.passedQuotation.clientDetails.emailAddress;
-      this.clientPhone = this.passedQuotation.clientDetails.phoneNumber;
-      this.personalDetailsForm.patchValue(this.passedQuotation.quotationDetailsRisk)
+      this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
+      this.clientEmail = this.PassedClientDetails.emailAddress;
+      this.clientPhone = this.PassedClientDetails.phoneNumber;
+      this.personalDetailsForm.patchValue(this.passedQuotation)
 
-      this.xyz = this.sharedService.getIsAddRisk();
-      console.log("isAddRiskk Details:", this.xyz);
+      const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
+    this.isAddRisk = JSON.parse(passedIsAddRiskString);
+
+      // this.isAddRisk = this.sharedService.getIsAddRisk();
+      console.log("isAddRiskk Details:", this.isAddRisk);
     }
 
 
@@ -498,7 +508,9 @@ export class QuickQuoteFormComponent {
       // this.clientCode=this.clientDetails.id;
       this.clientType = this.clientDetails.clientType.clientTypeName
       console.log("Selected Client Details:", this.clientDetails)
-      this.sharedService.setClientDetails(this.clientDetails)
+      // this.sharedService.setClientDetails(this.clientDetails)
+      const clientDetailsString = JSON.stringify(this.clientDetails);
+      sessionStorage.setItem('clientDetails', clientDetailsString);
       // console.log("Selected code client:",this.clientCode)
       console.log("Selected code client:", this.clientType)
       this.selectedCountry = this.clientDetails.country;
@@ -747,7 +759,10 @@ export class QuickQuoteFormComponent {
     console.log("Selected Source Code:", this.selectedSourceCode);
     this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
     console.log("Selected Source :", this.selectedSource);
-    this.sharedService.setQuotationSource(this.selectedSource)
+    // this.sharedService.setQuotationSource(this.selectedSource)
+    const quotationSourceString = JSON.stringify(this.selectedSource);
+    sessionStorage.setItem('quotationSource', quotationSourceString);
+
 
   }
   /**
@@ -997,7 +1012,10 @@ export class QuickQuoteFormComponent {
       } else {
 
       }
-      this.sharedService.setQuickSectionDetails(this.mandatorySections);
+      // this.sharedService.setQuickSectionDetails(this.mandatorySections);
+
+      const mandatorySectionsString = JSON.stringify(this.mandatorySections);
+      sessionStorage.setItem('mandatorySections', mandatorySectionsString);
       this.getSectionByCode();
     })
   }
@@ -1106,7 +1124,8 @@ export class QuickQuoteFormComponent {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
         this.sectionDetailsForm.reset()
       }
-      this.sharedService.setSumInsured(sumInsuredValue);
+      // this.sharedService.setSumInsured(sumInsuredValue);
+      
 
 
       // this.computePremium()
@@ -1136,7 +1155,8 @@ export class QuickQuoteFormComponent {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, please try again later' });
         }
 
-        this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
+        // this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
+
         sessionStorage.setItem('quickQuoteFormData', JSON.stringify(this.personalDetailsForm.value));
         this.ngxSpinner.hide("quickQuoteScreen")
 
@@ -1455,12 +1475,21 @@ export class QuickQuoteFormComponent {
 
     }
     log.debug("PREMIUM COMPUTATION PAYLOAD", this.premiumComputationRequest);
-    this.sharedService.setPremiumComputationPayload(this.premiumComputationRequest, this.subclassCoverType);
+
+    const premiumComputationRequestString = JSON.stringify(this.premiumComputationRequest);
+    sessionStorage.setItem('premiumComputationRequest', premiumComputationRequestString);
+    const subclassCoverTypeString = JSON.stringify(this.subclassCoverType);
+    sessionStorage.setItem('subclassCoverType', subclassCoverTypeString);
+
+    // this.sharedService.setPremiumComputationPayload(this.premiumComputationRequest, this.subclassCoverType);
 
     return this.quotationService.premiumComputationEngine(this.premiumComputationRequest).subscribe(
       (data) => {
         log.debug("Data", data)
-        this.sharedService.setPremiumResponse(data);
+        const premiumResponseString = JSON.stringify(data);
+        sessionStorage.setItem('premiumResponse', premiumResponseString);
+
+        // this.sharedService.setPremiumResponse(data);
         this.router.navigate(['/home/gis/quotation/cover-type-details']);
 
       }

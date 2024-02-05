@@ -133,7 +133,7 @@ export class RiskSectionDetailsComponent {
   products: Products[];
   coverFrom:any;
   coverTo:any;
-  
+
   constructor(
     private router: Router,
     private messageService:MessageService,
@@ -171,8 +171,8 @@ export class RiskSectionDetailsComponent {
       this.createRiskDetailsForm();
       this.coverFrom = sessionStorage.getItem('coverFrom');
       this.coverTo = sessionStorage.getItem('coverTo');
-      this.riskDetailsForm.controls['dateWithEffectFrom'].setValue(this.coverFrom);
-      this.riskDetailsForm.controls['dateWithEffectTo'].setValue(this.coverTo);
+      this.riskDetailsForm.controls['dateWithEffectFrom'].patchValue(this.coverFrom);
+      this.riskDetailsForm.controls['dateWithEffectTo'].patchValue(this.coverTo);
       log.debug(this.quotationCode ,"RISK DETAILS Screen Quotation No:");
       log.debug(this.formData ,"Form Data");
       log.debug(this.clientFormData ,"CLIENT Form Data");
@@ -192,11 +192,17 @@ export class RiskSectionDetailsComponent {
       console.log('Risk form details session storage',riskFormDetails,)
       
       const sections=sessionStorage.getItem('sections')
-      console.log(sections)
+      console.log("Sections",sections)
       if (sections){
 
         this.sectionArray = JSON.parse(sections)
         console.log("parsed sections", this.sectionArray)
+      }
+      const schedules =sessionStorage.getItem('schedules')
+      console.log("Schedules",schedules)
+      if (schedules){
+        this.scheduleList = JSON.parse(schedules)
+        console.log("parsed Schedules", this.scheduleList)
       }
       // if (riskFormDetails) {
       //   const parsedData = JSON.parse(riskFormDetails);
@@ -217,6 +223,10 @@ export class RiskSectionDetailsComponent {
       this.riskDetailsForm.get('dateWithEffectFrom').valueChanges.subscribe(() => {
         this.updateCoverToDate();
       });
+
+    
+
+
       
   }
   openHelperModal(selectedClause: any) {
@@ -372,7 +382,7 @@ updateCoverToDate() {
 
     this.loadCovertypeBySubclassCode(selectedValue);
     this.loadAllBinders();
-    this.loadSubclassClauses(selectedValue);
+    this.loadSubclassClauses(this.selectedSubclassCode);
   }
 
     /**
@@ -493,6 +503,7 @@ updateCoverToDate() {
       this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
       this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
+      log.debug('subclass ClauseList',this.SubclauseList)
 
       log.debug('ClauseList',this.selectedSubClauseList)
       log.debug('ClauseCode',this.selectedClauseCode)
@@ -1082,7 +1093,11 @@ updateCoverToDate() {
 
   finish(){
     console.log('sections',this.sectionArray)
+    console.log('Schedules',this.scheduleList)
+
     sessionStorage.setItem('sections', JSON.stringify(this.sectionArray))
+    sessionStorage.setItem('schedules', JSON.stringify(this.scheduleList))
+
     this.router.navigate(['/home/gis/quotation/quotation-summary'])
   }
   getSectionbyCode(){
