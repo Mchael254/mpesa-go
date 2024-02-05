@@ -125,6 +125,7 @@ export class CoverTypesDetailsComponent {
   selectedCurrencyCode: any;
 
   passedClientDetails: any;
+  passedClientCode: any;
   computationDetails: any;
 
   selectedSectionCode: any;
@@ -135,8 +136,10 @@ export class CoverTypesDetailsComponent {
   covertypeSpecificSection: any;
   sectionCodesArray: number[] = [];
   premiumList: Premiums[] = [];
-  passedQuotationNumber:any;
-  passedQuotationCode:any;
+  passedQuotationNumber: any;
+  passedQuotationCode: any;
+
+  emailForm: FormGroup;
 
   constructor(
     public fb: FormBuilder,
@@ -161,45 +164,73 @@ export class CoverTypesDetailsComponent {
   ) { }
 
   ngOnInit(): void {
-    this.passedQuotationNumber=sessionStorage.getItem('passedQuotationNumber');
-    log.debug("Passed Quotation Number:",this.passedQuotationNumber);
-    this.passedQuotationCode=sessionStorage.getItem('passedQuotationCode');
-    log.debug("Passed Quotation code:",this.passedQuotationCode);
+    this.passedQuotationNumber = sessionStorage.getItem('passedQuotationNumber');
+    log.debug("Passed Quotation Number:", this.passedQuotationNumber);
+    this.passedQuotationCode = sessionStorage.getItem('passedQuotationCode');
+    log.debug("Passed Quotation code:", this.passedQuotationCode);
+    const premiumComputationRequestString = sessionStorage.getItem('premiumComputationRequest');
+    this.premiumPayload = JSON.parse(premiumComputationRequestString);
 
-    const data = this.sharedService.getPremiumPayload();
-    log.debug("PREMIUM PAYLOAD", data);
-    this.premiumPayload = data.data;
+    // const data = this.sharedService.getPremiumPayload();
+
+    // log.debug("PREMIUM PAYLOAD", data);
+    // this.premiumPayload = data.data;
     log.debug("PREMIUM PAYLOAD", this.premiumPayload);
     const hope = this.premiumPayload.risks
     this.extractSectionCodes(hope);
 
-    this.passedCovertypes = data.covertypes;
-    this.premiumResponse = this.sharedService.getPremiumResponse();
+    const subclassCoverTypeString = sessionStorage.getItem('subclassCoverType');
+    this.passedCovertypes = JSON.parse(subclassCoverTypeString);
+    log.debug("SUBCLASS PAYLOAD", this.passedCovertypes);
+
+    // this.passedCovertypes = data.covertypes;
+    const premiumResponseString = sessionStorage.getItem('premiumResponse');
+    this.premiumResponse = JSON.parse(premiumResponseString);
+
+    // this.premiumResponse = this.sharedService.getPremiumResponse();
     log.debug("PREMIUM RESPONSE", this.premiumResponse);
     this.riskLevelPremiums = this.premiumResponse.riskLevelPremiums;
     this.sumInsuredValue = this.premiumPayload.risks[0].limits[0].limitAmount;
     log.debug("Quick Quote Quotation SI:", this.sumInsuredValue);
     this.selectedSectionCode = this.premiumPayload.risks[0].limits[0].section.code
     this.selectedSubclassCode = this.premiumPayload.risks[0].subclassSection.code
-    this.quickQuoteSectionList = this.sharedService.getQuickSectionDetails();
-    log.debug("Quick Quote Quotation Sections:", this.quickQuoteSectionList);
-    this.passedClientDetails = this.sharedService.getClientDetails();
-    log.debug("Client details", this.passedClientDetails);
-    const passedClientCode = this.passedClientDetails.id;
-    log.debug("Client code", passedClientCode);
 
-    this.passedQuotationSource = this.sharedService.getQuotationSource();
+    const storedMandatorySectionsString = sessionStorage.getItem('mandatorySections');
+    this.quickQuoteSectionList = JSON.parse(storedMandatorySectionsString);
+
+
+    // this.quickQuoteSectionList = this.sharedService.getQuickSectionDetails();
+    log.debug("Quick Quote Quotation Sections:", this.quickQuoteSectionList);
+    const storedClientDetailsString = sessionStorage.getItem('clientDetails');
+    this.passedClientDetails = JSON.parse(storedClientDetailsString);
+
+
+    // this.passedClientDetails = this.sharedService.getClientDetails();
+    log.debug("Client details", this.passedClientDetails);
+    this.passedClientCode = this.passedClientDetails.id;
+    this.clientcode = this.passedClientCode;
+    log.debug("Client code", this.passedClientCode);
+
+    this.selectedClientName = this.passedClientDetails.firstName + ' ' + this.passedClientDetails.lastName
+    log.debug("Selected Client Name", this.selectedClientName);
+    // this.passedQuotationSource = this.sharedService.getQuotationSource();
+    this.passedQuotationSource = sessionStorage.getItem('quotationSource');
     log.debug("Source details", this.passedQuotationSource);
+    this.selectedEmail = this.passedClientDetails.emailAddress;
+    this.selectedPhoneNo = this.passedClientDetails.phoneNumber;
+
 
     this.createQuotationForm();
     this.getuser();
     this.createRiskDetailsForm();
+    this.createEmailForm();
+
 
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
     log.debug("MY TRIAL", JSON.parse(this.formData))
 
-    this.quickQuotationNumbers = this.sharedService.getQuickQuotationDetails()
-    log.debug("Quick Quote Quotation Codes:", this.quickQuotationNumbers);
+    // this.quickQuotationNumbers = this.sharedService.getQuickQuotationDetails()
+    // log.debug("Quick Quote Quotation Codes:", this.quickQuotationNumbers);
     // this.loadClientQuotations(this.quickQuotationNumbers);
 
     // if (Array.isArray(this.quickQuotationCodes) && this.quickQuotationCodes.length > 0) {
@@ -494,12 +525,12 @@ export class CoverTypesDetailsComponent {
       }
     })
   }
-  passSelectedCover() {
-    this.sharedService.setSelectedCover(this.selectedQuotationNo);
-    //  this.ngxSpinner.show("coverComparisonScreenx")
+  // passSelectedCover() {
+  //   this.sharedService.setSelectedCover(this.selectedQuotationNo);
+  //   //  this.ngxSpinner.show("coverComparisonScreenx")
 
-    this.router.navigate(['/home/gis/quotation/quote-summary']);
-  }
+  //   this.router.navigate(['/home/gis/quotation/quote-summary']);
+  // }
   //  sendEmail(){
   //   this.notificationService.sendEmail(this.emailData).subscribe(data=>{
   //     try {
@@ -634,7 +665,7 @@ export class CoverTypesDetailsComponent {
       this.quotationCode = this.quotationData._embedded[0].quotationCode;
       this.quotationNo = this.quotationData._embedded[0].quotationNumber;
       // this.quotationNo = data;
-      console.log("Quotation results:",this.quotationData )
+      console.log("Quotation results:", this.quotationData)
       log.debug("Quotation Number", this.quotationNo);
       log.debug("Quotation Code", this.quotationCode);
       this.createQuotationRisk()
@@ -658,7 +689,7 @@ export class CoverTypesDetailsComponent {
     console.log('Quick Form Risk', risk);
     const riskArray = [risk];
 
-    return this.quotationService.createQuotationRisk( this.passedQuotationCode == null? this.quotationCode: this.passedQuotationCode, riskArray).subscribe(data => {
+    return this.quotationService.createQuotationRisk(this.passedQuotationCode == null ? this.quotationCode : this.passedQuotationCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
       const quotationRiskCode = this.quotationRiskData._embedded[0];
       if (quotationRiskCode) {
@@ -681,7 +712,10 @@ export class CoverTypesDetailsComponent {
   }
   selectedRiskLevelPremium(data: any) {
     log.info("RiskLevelPremium::::::", data);
-    this.sharedService.setPremiumResponse(data);
+    // this.sharedService.setPremiumResponse(data);
+
+    const riskLevelPremiumString = JSON.stringify(data);
+    sessionStorage.setItem('riskLevelPremium', riskLevelPremiumString);
 
     this.selectedQuotationNo = this.quotationNo;
   }
@@ -694,41 +728,50 @@ export class CoverTypesDetailsComponent {
 
   // }
   SelectCover() {
-    if(this.passedQuotationNumber == null){
+    if (this.passedQuotationNumber == null) {
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
         // Quotation data is not empty
         console.log("QUOTATION DATA IS NOT EMPTY")
-        this.sharedService.setSelectedCover(this.quotationNo);
+        // this.sharedService.setSelectedCover(this.quotationNo);
+        const quotationNumberString = JSON.stringify(this.quotationNo);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
+
         sessionStorage.setItem('quickQuotationNum', this.quotationNo);
         sessionStorage.setItem('quickQuotationCode', this.quotationCode);
-    
+
         this.router.navigate(['/home/gis/quotation/quote-summary']);
       } else {
         console.log("QUOTATION DATA IS  EMPTY")
-  
+
         // Quotation data is empty, call createQuotation method
         this.createQuotation();
         this.getQuotationNumber();
-  
+
       }
 
-    }else{
+    } else {
       this.createQuotationRisk();
-      this.sharedService.setSelectedCover(this.passedQuotationNumber);
+      // this.sharedService.setSelectedCover(this.passedQuotationNumber);
+      const quotationNumberString = JSON.stringify(this.passedQuotationNumber);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
+
       this.router.navigate(['/home/gis/quotation/quote-summary']);
 
     }
-   
+
   }
-  getQuotationNumber(): Promise<String>{
-    return new Promise((resolve)=>{
-      setTimeout(()=>{
-      resolve(this.quotationNo)
-      log.debug("Quotation Number has been generated",this.quotationNo)
-      this.sharedService.setSelectedCover(this.quotationNo);
-      sessionStorage.setItem('quickQuotationNum', this.quotationNo);
-      sessionStorage.setItem('quickQuotationCode', this.quotationCode);
-      this.router.navigate(['/home/gis/quotation/quote-summary']);
+  getQuotationNumber(): Promise<String> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.quotationNo)
+        log.debug("Quotation Number has been generated", this.quotationNo)
+        // this.sharedService.setSelectedCover(this.quotationNo);
+        const quotationNumberString = JSON.stringify(this.quotationNo);
+        sessionStorage.setItem('quotationNumber', quotationNumberString);
+
+        sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+        sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+        this.router.navigate(['/home/gis/quotation/quote-summary']);
       }, 2000)
     })
   }
@@ -856,6 +899,61 @@ export class CoverTypesDetailsComponent {
   //   this.computeQuotePremium()
   //   log.debug("SEDRF",this.computationDetails)
   // }
+  createEmailForm() {
 
+    this.emailForm = this.fb.group({
+      from: ['', [Validators.required, Validators.email]],
+      clientCode: ['', Validators.required],
+      emailAggregator: ['N', Validators.required],
+      fromName: ['', Validators.required],
+      message: ['', Validators.required],
+      sendOn: ['', Validators.required],
+      status: ['D', Validators.required],
+      subject: ['', Validators.required],
+      systemCode: ['0', Validators.required],
+      systemModule: ['NB', Validators.required],
+      address: ['', Validators.required],
+      // cc: ['', Validators.required],
+      // bcc: ['', Validators.required],
+    });
+  }
+  emaildetails() {
+    const currentDate = new Date();
+    const current = currentDate.toISOString();
+    const emailForm = this.emailForm.value;
+
+    console.log(this.clientDetails)
+    // console.log(this.emailForm.value)
+
+    emailForm.address = [
+      this.selectedEmail
+    ],
+      emailForm.clientCode = this.passedClientCode;
+    emailForm.emailAggregator = "N";
+    emailForm.from = this.userDetails.emailAddress;
+    emailForm.fromName = "Turnkey Africa";
+    emailForm.message = "Attached is your Quotation Details";
+    emailForm.sendOn = current;
+    emailForm.status = "D";
+    emailForm.subject = "Quotation Details";
+    emailForm.systemCode = "0";
+    emailForm.systemModule = "NB";
+    // emailForm.cc = this.selectedEmail;
+    // emailForm.bcc = this.selectedEmail;
+
+    this.quotationService.sendEmail(emailForm).subscribe(
+      {
+        next: (res) => {
+          const response = res
+          this.globalMessagingService.displaySuccessMessage('Success', 'Email sent successfully');
+          console.log(res)
+        }, error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        }
+      })
+    console.log('Submitted payload:', JSON.stringify(emailForm));
+  }
 
 }

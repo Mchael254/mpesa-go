@@ -505,13 +505,13 @@
           <ng-template pTemplate="body" let-schedule>
             <tr (click)="onSelectSchedule(schedule)" [pEditableRow]="schedule">
               <td>{{ schedule.details.level1.registrationNumber}}</td>
-              <td>{{ schedule.details.level1.Make| sentenceCase }}</td>
+              <td>{{ schedule.details.level1.Make }}</td>
               <td>{{ schedule.details.level1.cubicCapacity }}</td>
               <td>{{ schedule.details.level1.yearOfManufacture }}</td>
               <td>{{ schedule.details.level1.seatingCapacity }}</td>
               <td>{{ schedule.details.level1.value |number }}</td>
-              <td>{{ schedule.details.level1.bodyType | sentenceCase}}</td>
-              <td>{{ schedule.details.level1.coverType| sentenceCase }}</td>
+              <td>{{ schedule.details.level1.bodyType }}</td>
+              <td>{{ schedule.details.level1.coverType }}</td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
