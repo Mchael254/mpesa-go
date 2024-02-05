@@ -232,6 +232,11 @@ p-multiSelect {
     line-height: normal;
 }
 
+.accordion-style {
+    padding-top: 63px; 
+    width: 932px;
+}
+
 td {
     position: relative;
 }
@@ -335,4 +340,38 @@ td:hover .ellipsis-container {
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+@media screen and (max-width: 800px) {
+    .container {
+      width: 100%;
+      max-height: 3000px;
+    }
+
+    .form-select {
+        width: 100%;
+    }
+
+    .form {
+        width: 100%;
+    }
+
+    .accordion-style {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 801px) and (max-width: 1200px) {
+    .container {
+      width: 100%;
+      max-height: 2000px;
+    }
+
+    .form-select {
+        width: 100%;
+    }
+    
+    .accordion-style {
+        width: 80%;
+    }
 }
