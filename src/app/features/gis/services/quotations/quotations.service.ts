@@ -21,6 +21,7 @@ export class QuotationsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-tenantid':'v6test'
 
     })
   }
@@ -160,8 +161,7 @@ export class QuotationsService {
 
   }
   sendEmail(data){
-    return this.http.post(`/${this.baseUrl}/email/send`, JSON.stringify(data),this.httpOptions)
-
+    return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
   }
 
  
