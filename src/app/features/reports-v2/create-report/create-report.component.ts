@@ -14,6 +14,7 @@ import {ReportServiceV2} from "../services/report.service";
 import { ReportV2 } from 'src/app/shared/data/reports/report';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { tap } from 'rxjs';
+import { ChatBotComponent } from '../chat-bot/chat-bot.component';
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -23,7 +24,7 @@ const log = new Logger('CreateReportComponent');
 })
 export class CreateReportComponent implements OnInit {
 
-  @ViewChild("queryTerm") queryTermField: ElementRef;
+  @ViewChild(ChatBotComponent) chatBot: ChatBotComponent
 
   createReportBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -36,7 +37,6 @@ export class CreateReportComponent implements OnInit {
     },
   ];
   public searchForm: FormGroup;
-  public chatForm: FormGroup;
   public subjectAreas: SubjectArea[] = [];
   public selectedSubjectArea: string = null;
   public subjectAreaCategories: SubjectAreaCategory[] = [];
@@ -57,9 +57,7 @@ export class CreateReportComponent implements OnInit {
   public reportId: number;
 
   private currentUser;
-
-  public shouldShowChatBot: boolean = false;
-  public conversations: ChatMessage[] = [];
+  public showChatBot: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -70,6 +68,7 @@ export class CreateReportComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private sessionStorageService: SessionStorageService,
     private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -94,7 +93,6 @@ export class CreateReportComponent implements OnInit {
     }
     this.getSubjectAreas();
     this.createSearchForm();
-    this.createChatForm();
     this.currentUser = this.authService.getCurrentUser();
   }
 
@@ -106,17 +104,7 @@ export class CreateReportComponent implements OnInit {
       searchTerm: [''],
       subjectArea: ['']
     });
-  }
-
-  /**
-   * The function creates a chat form using the FormBuilder module in Angular.
-   */
-  createChatForm(): void {
-    this.chatForm = this.fb.group({
-      queryTerm: ['']
-    });
-  }
-  
+  }  
 
   /**
    * 1. gets a specific report by it's id
@@ -431,77 +419,12 @@ export class CreateReportComponent implements OnInit {
     // this.loadChart();
   }
 
-
+  /**
+   * Calls a method in the child component (ChatBotComponent) to show the chat window
+   * @returns void
+   */
   showAIBot(): void {
-    this.shouldShowChatBot = !this.shouldShowChatBot;
-    setTimeout(() => {
-      this.conversations.push({
-        user: 'bot',
-        message: 'Welcome to our Reports Section! I\'m here to assist you in exploring and generating insightful reports.'
-       });
-    }, 1000)
+    this.chatBot.showAIBot()
   }
 
-  clearChat(): void {
-    this.conversations = [];
-  }
-
-  closeChatBox() {
-    this.shouldShowChatBot = false;
-  }
-
-  getQueryResult() {
-    const queryTerm = this.chatForm.getRawValue().queryTerm;
-    log.info(`query term: `, queryTerm);
-    this.conversations.push(
-      {
-        message: queryTerm,
-        user: 'me'
-      },
-      {
-        message: 'loading...',
-        user: 'bot'
-      }
-    );
-
-    this.chatForm.patchValue({queryTerm: ''})
-
-    this.reportServiceV2.aiBotQuestion(queryTerm)
-    .pipe(
-      take(1),
-      tap((res) => {
-        console.log(`aibot feedback >>>`, res)
-      })
-      )
-    .subscribe({
-      next: (res) => {
-        this.conversations.pop();
-        this.conversations.push({
-          message: res.result,
-          user: 'bot'
-        });
-      },
-      error: (err) => {
-        let errorMessage = '';
-        if (err.error.message) {
-          errorMessage = err.error.message
-        } else {
-          errorMessage = err.message
-        }
-        this.conversations.pop();
-        this.conversations.push({
-          message: "Chat service currently unavailable.",
-          user: 'bot'
-        });
-        this.globalMessagingService.displayErrorMessage('Error', errorMessage)
-      }
-    })
-  }
-  
-
-}
-
-interface ChatMessage {
-  message: string,
-  user: string
 }
