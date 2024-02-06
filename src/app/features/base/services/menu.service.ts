@@ -13,7 +13,14 @@ export class MenuService{
         name: 'Summary',
         nameSlug: 'summary',
         icon: 'fa-regular fa-newspaper',
-        menuItems: [{name:'My Tasks', link:"/my-tasks"}, {name:'My Dashboard', link:"/my-dashboard"}, {name:'My Transactions', link:"/my-transactions"}, {name:'My Policies', link:"/my-policies"}, {name:'My Quotations', link:"/my-quotations"}, {name:'My Renewals', link:"/my-renewals"}],
+        menuItems: [
+          {name:'My Tasks', link:"/my-tasks"}, 
+          {name:'My Dashboard', link:"/my-dashboard"}, 
+          {name:'My Transactions', link:"/my-transactions"}, 
+          {name:'My Policies', link:"/my-policies"}, 
+          {name:'My Quotations', link:"/my-quotations"}, 
+          {name:'My Renewals', link:"/my-renewals"}
+        ],
         collapsed:true,
       }
 
@@ -40,7 +47,9 @@ export class MenuService{
       name: 'Actions',
       nameSlug: 'actions',
       icon: 'fa-solid fa-gears',
-      menuItems: [{name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},{name:'Need Analysis', link:"/home/lms/need-analysis"},],
+      menuItems: [
+        {name:'New Quote', link:"", isModal:true, target:'#NewQuoteModal'},
+        {name:'Need Analysis', link:"/home/lms/need-analysis"},],
 
       collapsed:true,
     },
@@ -48,7 +57,8 @@ export class MenuService{
       name: 'Quotation',
       nameSlug: 'quotation',
       icon: 'fa-solid fa-quote-right',
-      menuItems: [ {name:'Quotation List', link:"/home/lms/quotation/list"}],
+      menuItems: [ 
+        {name:'Quotation List', link:"/home/lms/quotation/list"}],
       collapsed:true,
     }
 
@@ -356,7 +366,7 @@ export class MenuService{
 
 public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
     {
-      name: 'base.summary',
+      name: 'Summary',
       nameSlug: 'summary',
       icon: 'fa-regular fa-newspaper',
       menuItems: [{name:'My Tasks', link:"/my-tasks"}, {name:'My Dashboard', link:"/my-dashboard"}, {name:'My Transactions', link:"/my-transactions"}, {name:'My Policies', link:"/my-policies"}, {name:'My Quotations', link:"/my-quotations"}, {name:'My Renewals', link:"/my-renewals"}],
