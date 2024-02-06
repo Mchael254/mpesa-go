@@ -219,7 +219,6 @@
                       type="text"
                       class="form-control"
                       id="input1"
-                      placeholder="Search Name"
                       formControlName="searchNameInput"
                     />
                   </div>
@@ -239,7 +238,6 @@
                       type="text"
                       class="form-control"
                       id="input2"
-                      placeholder="Search ID"
                       formControlName="searchIdInput"
                     />
                   </div>
@@ -322,7 +320,6 @@
                     type="text"
                     class="form-control"
                     id="input2"
-                    placeholder="Search By Policy ID"
                   />
                 </div>
               </div>
@@ -343,7 +340,6 @@
                     type="text"
                     class="form-control"
                     id="input2"
-                    placeholder="Search By Quotation ID"
                   />
                 </div>
               </div>
@@ -473,8 +469,9 @@
                   <a
                     class="dropdown-item"
                     (click)="dynamicSideBarMenu(admin)"
-                    >{{ admin["name"] }}</a
                   >
+                    {{ 'base.'+admin["name"] | translate }}
+                  </a>
                 </li>
               </ng-container>
             </ul>
