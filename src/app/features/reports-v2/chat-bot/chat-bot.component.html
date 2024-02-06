@@ -1,0 +1,66 @@
+<div 
+  class="ai-bot-dialogue float-end bg-white"
+  [ngStyle]="{'visibility': (shouldShowChatBot === true) ? 'visible' : 'hidden' }"
+>
+  <div class="bot-header">
+    <i class="fa-solid fa-robot"></i>
+    Turnquest AI <span style="font-size: 0.6rem;">Copilot</span>
+    <span class="float-end chat-icons">
+      <i class="fa fa-trash me-3" id="clearChat" (click)="clearChat()"></i>
+      <i class="fa-solid fa-times" id="closeChatBox" (click)="closeChatBox()" ></i>
+    </span>
+  </div>
+  <div class="bot-content p-2">
+    <p-scrollPanel [style]="{ width: '100%', height: '280px' }">                
+      <div *ngFor="let conversation of conversations">
+
+        <div *ngIf="conversation.user==='bot'">
+          <div class="chat-message">
+            <div class="row">
+              <div class="col-1" style="margin-right: 20px;">
+                <span class="robot text-primary">
+                  <i class="fa-solid fa-robot"></i>
+                </span>
+              </div>
+              <div class="col-9 col-sm-8 bot-message" [ngClass]="{'animate-flicker': conversation.message === 'loading...'}">
+                <span>
+                  {{ conversation.message }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="conversation.user==='me'">
+          <div class="chat-message">
+            <div class="row">
+              <div class="col-8 offset-4">
+                <span class="float-end message">
+                  {{ conversation.message }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </p-scrollPanel>
+  </div>
+  <div class="bot-footer">
+    <form [formGroup]="chatForm" (keyup.enter)="chatForm.valid && chatForm.dirty && getQueryResult()">
+
+      <div class="input-group mb-3">
+        <input type="text" 
+          class="form-control" 
+          placeholder="Enter query" 
+          formControlName="queryTerm"
+          id="queryTerm"
+          #queryTerm
+        >
+        <button type="button" class="btn btn-primary" id="getQueryResult" (click)="getQueryResult()">
+          <i class="pi pi-send"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
