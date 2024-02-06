@@ -28,6 +28,7 @@ import { SaveReportModalComponent } from './save-report-modal/save-report-modal.
 import { BaseComponent } from './base/base.component';
 
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { ChatBotComponent } from './chat-bot/chat-bot.component';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
     ReportManagementComponent,
     SaveReportModalComponent,
     BaseComponent,
+    ChatBotComponent,
 
   ],
     imports: [

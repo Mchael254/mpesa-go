@@ -13,7 +13,6 @@ import {CUSTOM_ELEMENTS_SCHEMA, DebugElement, NO_ERRORS_SCHEMA} from "@angular/c
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {createSpyObj} from "jest-createspyobj";
-import {ReportService} from "../../reports/services/report.service";
 import {ReportV2} from "../../../shared/data/reports/report";
 import {ReportServiceV2} from "../services/report.service";
 import cubejs from "@cubejs-client/core";
@@ -115,8 +114,6 @@ export class MockSessionStorageService {
     },
   ]
 
-
-
   setItem() {
     return null
   }
@@ -153,9 +150,7 @@ describe('ReportPreviewComponent', () => {
 
   let component: ReportPreviewComponent;
   let fixture: ComponentFixture<ReportPreviewComponent>;
-  let authService: AuthService;
-  let appConfigService: AppConfigService;
-
+  
   const report: ReportV2 = {
     charts: [],
     createdDate: "",
