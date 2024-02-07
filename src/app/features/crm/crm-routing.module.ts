@@ -8,54 +8,59 @@ import { RegionComponent } from './components/region/region.component';
 import { BranchComponent } from './components/branch/branch.component';
 import { UserParametersComponent } from './components/user-parameters/user-parameters.component';
 import { CurrenciesComponent } from './components/currencies/currencies.component';
-import {BankComponent} from "./components/bank/bank.component";
-import {PaymentModesComponent} from "./components/payment-modes/payment-modes.component";
+import { BankComponent } from './components/bank/bank.component';
+import { PaymentModesComponent } from './components/payment-modes/payment-modes.component';
+import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: BaseCrmComponent
+    component: BaseCrmComponent,
   },
   {
     path: 'country',
-    component: CountryComponent
+    component: CountryComponent,
   },
   {
     path: 'organization',
-    component: OrganizationComponent
+    component: OrganizationComponent,
   },
   {
     path: 'disivion',
-    component: DivisionComponent
+    component: DivisionComponent,
   },
   {
     path: 'region',
-    component: RegionComponent
+    component: RegionComponent,
   },
   {
     path: 'branch',
-    component: BranchComponent
+    component: BranchComponent,
   },
   {
     path: 'user-parameters',
-    component: UserParametersComponent
+    component: UserParametersComponent,
   },
   {
     path: 'currencies',
-    component: CurrenciesComponent
+    component: CurrenciesComponent,
   },
   {
     path: 'bank',
-    component: BankComponent
+    component: BankComponent,
   },
   {
     path: 'payment-modes',
-    component: PaymentModesComponent
+    component: PaymentModesComponent,
+  },
+  {
+    path: 'required-documents',
+    component: RequiredDocumentsComponent,
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class CrmRoutingModule { }
+export class CrmRoutingModule {}
