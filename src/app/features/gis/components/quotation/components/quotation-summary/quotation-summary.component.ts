@@ -59,6 +59,11 @@ export class QuotationSummaryComponent {
   userDetails:any;
   emailForm: FormGroup;
   sections:any;
+  schedules:any[];
+  limits:any;
+  limitsList:any[];
+  excesses:any;
+  excessesList:any[];
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -113,7 +118,7 @@ export class QuotationSummaryComponent {
         next: (res) => {
           this.agents = res
           this.spinner.hide()
-          console.log(res)
+          console.log(res,"AGENTS")
         },
         error: (e) => {
           log.debug(e.message)
@@ -186,10 +191,12 @@ internal(){
    
       if(data===el.code){
         this.sections = el.sectionsDetails
+        this.schedules = [el.scheduleDetails.level1]
       }
       
     })
-    console.log(this.sections,"Section Details")
+    console.log(this.schedules,"schedules Details")
+    
   }
   /**
    * Navigates to the edit details page.
@@ -207,6 +214,7 @@ internal(){
   getProductDetails(code){
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
+      console.log("Product details", this.productDetails)
     })
  
 
@@ -462,6 +470,37 @@ internal(){
        
         }  })
       console.log('Submitted payload:',JSON.stringify(payload) );
+  }
+
+
+  getLimits(productCode){
+    this.quotationService.assignProductLimits(productCode).subscribe(
+      {next:(res)=>{
+        this.quotationService.getLimits(productCode,'L').subscribe(
+          {next:(res)=>{
+
+            this.limits = res
+            this.limitsList = this.limits._embedded
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+            console.log(res)
+          }
+          
+          }
+        )
+      }
+    }
+    )
+   
+  }
+  getExcesses(riskCode){
+    this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
+      next:(res)=>{
+        this.excesses = res
+            this.excessesList = this.excesses._embedded
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+      }
+    })
+
   }
 
 }

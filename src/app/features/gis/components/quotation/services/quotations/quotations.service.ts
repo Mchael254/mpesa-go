@@ -28,7 +28,6 @@ export class QuotationsService {
    * @type {string}
    */ 
   baseUrl = this.appConfig.config.contextPath.gis_services;
-  testBase = this.appConfig.config.contextPath.notification_service;
   computationUrl = this.appConfig.config.contextPath.computation_service;
   notificationUrl = this.appConfig.config.contextPath.notification_service;
   /**
@@ -263,7 +262,29 @@ getUserProfile(){
   const baseUrl = this.appConfig.config.contextPath.users_services;
   return this.http.get(`/${baseUrl}/administration/users/profile`)
 }
+getLimits(productCode,type,quotRiskCode?){
+  let url = `/${this.baseUrl}/quotation/api/v1/quotation/scheduleValues?pageSize=100&pageNo=0&quotationProductCode=${productCode}&scheduleValueType=${type}`;
 
+  if (quotRiskCode) {
+    url += `&quotRiskCode=${quotRiskCode}`;
+  }
+
+  return this.http.get(url);
+}
+assignProductLimits(productCode){
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+
+
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`,
+  {headers:headers})
+
+}
 }
 
   
