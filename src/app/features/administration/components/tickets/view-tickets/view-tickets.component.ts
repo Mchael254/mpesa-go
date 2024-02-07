@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
+import {NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {TicketsService} from "../../../services/tickets.service";
@@ -14,6 +14,10 @@ import {GlobalMessagingService} from "../../../../../shared/services/messaging/g
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {ReplaySubject, takeUntil, tap} from "rxjs";
+import {Pagination} from "../../../../../shared/data/common/pagination";
+import {LazyLoadEvent} from "primeng/api";
+import {TableLazyLoadEvent} from "primeng/table";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -26,6 +30,12 @@ export class ViewTicketsComponent implements OnInit {
   public filteredTickets: NewTicketDto[] = [];
   private allTickets: NewTicketDto[] = [];
   selectedTickets: NewTicketDto[] = [];
+
+  public springTickets: Pagination<TicketsDTO> =  <Pagination<TicketsDTO>>{};
+  selectedSpringTickets: TicketsDTO[] = [];
+  public filteredSpringTickets: TicketsDTO[] = [];
+  private allSpringTickets: TicketsDTO[] = [];
+
   pageSize: 5;
   ticketModules: TicketModuleDTO[] = [];
 
@@ -40,7 +50,7 @@ export class ViewTicketsComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  dateFrom = `${this.year-2}-${this.month}-${this.day}`;
+  dateFrom = `${this.year-4}-${this.month}-${this.day}`;
 
   globalFilterFields = [
     'createdOn',
@@ -56,7 +66,7 @@ export class ViewTicketsComponent implements OnInit {
   private cubejsApi = cubejs({
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
-
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   constructor(
     private authService: AuthService,
     private ticketsService: TicketsService,
@@ -73,10 +83,10 @@ export class ViewTicketsComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    this.getAllTicketsFromCubeJs();
+    // this.getAllTicketsFromCubeJs();
     this.createSortForm();
     this.getAllTicketTypes();
-    this.getAllTicketModules();
+    // this.getAllTicketModules();
   }
 
   getAllTicketsFromCubeJs() {
@@ -170,6 +180,42 @@ export class ViewTicketsComponent implements OnInit {
 
   }
 
+  getAllTickets(
+    pageIndex: number,
+    pageSize: number,
+    sort: string = '',
+    query: string = '',
+    queryColumn: string = '') {
+
+    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, query, queryColumn )
+      .pipe(
+        takeUntil(this.destroyed$),
+        tap((data) => log.info('Fetch Tickets data>> ', data))
+      );
+  }
+
+  lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
+    const pageIndex = event.first / event.rows;
+    const queryColumn = event.sortField;
+    const pageSize = event.rows;
+
+    this.getAllTickets(pageIndex, pageSize)
+      .pipe(untilDestroyed(this))
+      .subscribe((data:Pagination<TicketsDTO>) => {
+        this.springTickets = data;
+        this.cdr.detectChanges();
+        this.ticketsService.setCurrentTickets(this.springTickets.content);
+
+
+        // Extracting all the code values from the tickets
+        const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+
+        // Passing the code values to the getCodeValue method
+        const result = codeValues.map(code => this.getTicketCode(code));
+
+      })
+  }
+
 /**
  * The function `getTicketCode` takes a code as input and returns the corresponding ticket code based
  * on the system module.
@@ -178,12 +224,12 @@ export class ViewTicketsComponent implements OnInit {
  * @returns the ticket code as a string.
  */
   getTicketCode(code: string) {
-    const ticket = this.allTickets.find(t => t.systemModule === code);
+    const ticket = this.allSpringTickets.find(t => t.ticket.sysModule === code);
     let ticketCode: string;
 
     if (ticket) {
-      ticketCode = ticket?.systemModule === 'Q' ?  ticket?.quotationNo :
-        (ticket?.systemModule === 'C' ? ticket?.claimNo: ticket?.policyNumber);
+      ticketCode = ticket?.ticket?.sysModule === 'Q' ?  ticket?.ticket.quotationNo :
+        (ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo: ticket?.ticket.policyNo);
     }
     return ticketCode;
   }
@@ -405,13 +451,13 @@ export class ViewTicketsComponent implements OnInit {
   * @param {NewTicketDto} ticket - The parameter `ticket` is of type `NewTicketDto`, which is an object
   * containing information about a new ticket.
   */
-  goToTicketDetails(ticket: NewTicketDto) {
+  goToTicketDetails(ticket: TicketsDTO) {
     this.localStorageService.setItem('ticketDetails', ticket);
-    this.router.navigate([`home/administration/ticket/details/${ticket.ticketID}`]);
+    this.router.navigate([`home/administration/ticket/details/${ticket.ticket.code}`]);
     this.ticketsService.currentTicketDetail.set(ticket);
 
-    let ticketId = ticket?.ticketID;
-    let module = ticket?.systemModule;
+    let ticketId = ticket?.ticket?.code;
+    let module = ticket?.ticket?.sysModule;
     this.router.navigate([`home/administration/ticket/details/`],
       {queryParams: { ticketId, module}}).then(r => {
     });
@@ -472,16 +518,16 @@ export class ViewTicketsComponent implements OnInit {
     }
 
     if (payload.ticketModules === '') {
-      return this.filteredTickets =  this.allTickets;
+      return this.filteredSpringTickets =  this.allSpringTickets;
     }
 
-    this.filteredTickets = this.allTickets.filter((t) => {
-      return payload.ticketModules === t.systemModule;
+    this.filteredSpringTickets = this.allSpringTickets.filter((t) => {
+      return payload.ticketModules === t.ticket.sysModule;
     });
-    log.info(`tickets >>>`, this.filteredTickets);
+    log.info(`tickets >>>`, this.filteredSpringTickets);
 
-    /*this.ticketsService.sortTickets(
-      this.pageNo,
+    this.ticketsService.sortTickets(
+      0,
       this.pageSize,
       payload.fromDate,
       payload.toDate,
@@ -489,9 +535,9 @@ export class ViewTicketsComponent implements OnInit {
       payload.ticketModules
       )
       .subscribe(data => {
-        this.tickets = data;
+        this.springTickets = data;
         this.cdr.detectChanges();
-      })*/
+      })
   }
 
   getAllTicketTypes() {
