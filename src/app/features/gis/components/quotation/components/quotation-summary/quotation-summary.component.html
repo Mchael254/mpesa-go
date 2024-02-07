@@ -283,7 +283,7 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-data>
-                                    <tr>  
+                                    <tr (click)="getLimits(data.code)">  
                                         <!-- <td>{{data.productShortDescription}}</td>
                                 <td>{{data.wef}}</td>
                                 <td>{{data.wet}}</td>
@@ -370,18 +370,18 @@
                                     </p-table>
                             </div>
                             <div class="tab-pane fade " id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
-                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                <p-table [value]="limitsList" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
                                     <ng-template pTemplate="header">
                                         <tr>
-                                            <th>Amount</th>
-                                            <th>Description</th>
-                                            <th>Quotation Rate</th>
-                                           <th>Rate Type</th>
+                                            <th>Narration</th>
+                                            <th>Scl Desc</th>
+                                            <th>Value</th>
+                                           
                                         </tr>
                                     </ng-template>
                                     <ng-template pTemplate="body" let-data>
                                         <tr>
-                                          
+                                          <td>{{data.narration}}</td>
                                         </tr>
                                     </ng-template>
                                     </p-table>
@@ -455,7 +455,7 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
-                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code)">
+                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code);getExcesses(data.code)">
                                     <td>{{data.quotationRiskNo}}</td>
                                     <td>{{data.propertyId}}</td>
                                     <td>{{data.covertypeShortDescription}}</td>
@@ -534,33 +534,45 @@
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0">
-                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <p-table [value]="schedules" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th>Amount</th>
-                                                <th>Description</th>
-                                                <th>Quotation Rate</th>
-                                               <th>Rate Type</th>
+                                                <th>Reg no.</th>
+                                                <th>Vehicle make</th>
+                                                <th>Cubic capacity</th>
+                                                <th>Year of manufacture</th>
+                                                <th>Seating capacity</th>
+                                                <th>Value</th>
+                                                <th>Body type</th>
+                                                <th>Cover type</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                              
+                                              <td>{{data.registrationNumber}}</td>
+                                              <td>{{data.Make}}</td>
+                                              <td>{{data.cubicCapacity}}</td>
+                                              <td>{{data.yearOfManufacture}}</td>
+                                              <td>{{data.carryCapacity}}</td>
+                                              <td>{{data.value}}</td>
+                                              <td>{{data.bodyType}}</td>
+                                              <td>{{data.coverType}}</td>
                                             </tr>
                                         </ng-template>
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-excesses" tabindex="0">
-                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <p-table [value]="excessesList" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th>Excesses</th>
-                                               
+                                                <th>Narration</th>
+                                                <th>Value</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                              
+                                              <td>{{data.narration}}</td>
+                                              <td>{{data.value}}</td>
                                             </tr>
                                         </ng-template>
                                         </p-table>
