@@ -169,5 +169,7 @@ export interface NewTicketDto {
   endorsementNumber?: string;
   endorsementRemarks?: string;
   quotationNumber?: string;
+  currency?: string;
+  totalSI?: string;
 
 }

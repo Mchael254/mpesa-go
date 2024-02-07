@@ -81,7 +81,7 @@
 </div>
 
 <div class="my-4 mx-4">
-  <div class="card">
+  <!--<div class="card">
     <div class="card-body" style="position: relative;">
 
       <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
@@ -167,7 +167,7 @@
               <td class="body">{{ ticket.ticketAssignee }}</td>
               <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
                  <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
-                 <!-- Details -->
+                 &lt;!&ndash; Details &ndash;&gt;
                 </td>
             </tr>
         </ng-template>
@@ -177,7 +177,7 @@
           </tr>
         </ng-template>
     </p-table>
-      <!-- <p-table
+      &lt;!&ndash; <p-table
         #ticketsTable
         [value]="filteredTickets"
         [(selection)]="selectedTickets"
@@ -274,7 +274,120 @@
             <td colspan="8">No tickets found.</td>
           </tr>
         </ng-template>
-      </p-table> -->
+      </p-table> &ndash;&gt;
+    </div>
+  </div>-->
+
+  <div class="card">
+    <div class="card-body" style="position: relative;">
+
+      <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
+      <p-table #dt
+               (onLazyLoad)="lazyLoadTickets($event)"
+               [lazy]="true"
+               [value]="springTickets.content"
+               [(selection)]="selectedSpringTickets"
+               [tableStyle]="{ 'min-width': '50rem' }"
+               [paginator]="true"
+               [rows]="10"
+               [rowHover]="true"
+               [autoLayout]="true"
+               [totalRecords]="springTickets.totalElements"
+               [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+               currentPageReportTemplate="{first} - {last} of {totalRecords}"
+               [scrollable]="true"
+               scrollHeight="400px"
+               responsiveLayout="scroll"
+               [resizableColumns]="true"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="head">
+              Select All
+            </th>
+            <th class="head" pSortableColumn="createdOn">
+              Created On <p-sortIcon field="createdOn"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketName">
+              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="refNo">
+              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="clientName">
+              Client <p-sortIcon field="clientName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="intermediaryName">
+              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketFrom">
+              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
+            </th>
+            <th class="head" pSortableColumn="ticketAssignee">
+              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+          <tr>
+            <th class="head">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="createdOn"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="refNo"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="clientName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
+            </th>
+            <th>
+              <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
+            </th>
+            <th>
+            </th>
+
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-ticket>
+          <tr>
+            <td class="body">
+              <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
+            </td>
+            <td class="body">{{ticket.ticket.date | date: 'shortDate'}}</td>
+            <td class="body" style="cursor:pointer;">{{ ticket?.task?.activityName }}</td>
+            <td class="body">
+              {{ ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :
+              ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo :
+                ticket?.ticket.sysModule === 'P' ? ticket?.ticket.policyNo : ''
+                === '' ? '' : '' }}
+            <td class="body">{{ ticket.clientName }}</td>
+            <td class="body">{{ ticket.agentName }}</td>
+            <td class="body">{{ ticket.ticket.reporter }}</td>
+            <td class="body">{{ ticket.ticket.assignee }}</td>
+            <td class="body ticket-button" (click)="goToTicketDetails(ticket)">
+              <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+              <!-- Details -->
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="9">No tickets found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+
     </div>
   </div>
 

@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {NewTicketDto, TicketModuleDTO} from "../../../data/ticketsDTO";
+import {NewTicketDto, TicketModuleDTO, TicketsDTO} from "../../../data/ticketsDTO";
 import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
 import {Logger} from "../../../../../shared/services";
@@ -26,7 +26,6 @@ export class TicketDetailsComponent implements OnInit {
 
   selectedTicket: NewTicketDto;
   public policyDetails: PolicyDetailsDTO;
-  public shouldShowViewMoreDialog: boolean = false;
   selectedTickets: NewTicketDto[] = [];
   ticketModules: TicketModuleDTO[] = [];
   private allTickets: NewTicketDto[] = [];
@@ -34,7 +33,16 @@ export class TicketDetailsComponent implements OnInit {
   showAdditionalColumns = true;
   showSpinner: boolean = false;
 
-  breadCrumbItems: BreadCrumbItem[] = [
+  selectedSpringTickets: TicketsDTO;
+
+  public pageSize: 5;
+  sectionDetails: any;
+
+  globalFilterFields = [''];
+
+  activeIndex: number = 0;
+
+  /*breadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
       url: '/home/dashboard'
@@ -43,11 +51,15 @@ export class TicketDetailsComponent implements OnInit {
       label: 'Tickets',
       url: '/home/administration/tickets',
     },
+    // {
+    //   label: 'Ticket Details',
+    //   url: '/home/administration/ticket/details'
+    // },
     {
-      label: 'Ticket Details',
-      url: '/home/administration/ticket/details'
+      label: this.selectedTicket.ticketID.toString(),
+      url: ''
     }
-  ];
+  ];*/
 
   constructor(
     private localStorageService: LocalStorageService,
@@ -61,8 +73,9 @@ export class TicketDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.selectedTicket = this.localStorageService.getItem('ticketDetails');
-    this.fetchPolicyDetails(this.selectedTicket.policyCode);
+    // this.selectedTicket = this.localStorageService.getItem('ticketDetails');
+    this.selectedSpringTickets = this.localStorageService.getItem('ticketDetails');
+    this.fetchPolicyDetails(this.selectedSpringTickets?.ticket?.policyCode);
     this.ticketId = this.activatedRoute.snapshot.params['id'];
     this.ticketModule = this.activatedRoute.snapshot.params['module'];
     this.currentTicket = this.ticketService.currentTicketDetail();
@@ -73,13 +86,12 @@ export class TicketDetailsComponent implements OnInit {
     this.ticketService.getPolicyDetails(batchNumber)
       .pipe(take(1))
       .subscribe((policyDetails) => {
-        this.policyDetails = policyDetails;
+        this.policyDetails = policyDetails?.content[0];
+
+        log.info('policy details>>', this.policyDetails);
       })
   }
 
-  showViewMoreDialog() {
-    this.shouldShowViewMoreDialog = true;
-  }
 
   callGenerateAuthorizeOtp() {
     this.selectedTickets = [this.selectedTicket];

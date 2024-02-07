@@ -1,0 +1,737 @@
+<div class="row col-12">
+  <div class="col-2">
+    <div class="card">
+      <ul class="nav nav-tabs flex-column mb-3" id="ex1" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
+             aria-controls="ex1-tabs-1" aria-selected="false">Treaty risk ceding</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
+             aria-selected="true">Previous ceding</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
+             aria-selected="false">Treaty setup</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="ex1-tab-4" data-bs-toggle="tab" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
+             aria-selected="false">Policy facre ceding</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card mt-2 p-2">
+      <div class="mb-3">
+        <label class="col-form-label text-primary fw-bold">Risks</label>
+        <button
+          class="btn btn-primary" style="font-size: 12px;">Populate allocations
+        </button>
+        <input
+          type="text" class="form-control mt-2" placeholder="Search for a risk"
+          aria-label="search" aria-describedby="search"
+        />
+        <div class="form-check mt-2">
+          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+          <label class="form-check-label fw-bold text-dark" for="flexCheckDefault">
+            KAL 567J
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-10">
+    <div class="card p-2">
+      <div class="tab-content" id="ex1-content">
+        <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+          <label class="text-primary mb-2">Treaty risk ceding</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Current</th>
+                <th>Gross retn</th>
+                <th>Risk ID</th>
+                <th>Risk desc</th>
+                <th>Subclass</th>
+                <th>Special retn</th>
+                <th>Excess</th>
+                <th>Excess %</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-risKCedingDetail>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+                <td>FXD</td>
+                <td>5</td>
+                <td></td>
+                <td>100</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Treaty Risk Ceding Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <div class="mt-5">
+            <p-tabView>
+              <p-tabPanel header="Treaty RI summary">
+                <p-table
+                  [autoLayout]="true"
+                  [rowHover]="true"
+                  [resizableColumns]="true"
+                  [showCurrentPageReport]="true"
+                  [rows]="pageSize || 5"
+                  [totalRecords]="risKCedingDetails?.totalElements"
+                  [value]="risKCedingDetails?.content"
+                  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                  responsiveLayout="stack"
+                  [scrollable]="true"
+                  scrollHeight="400px"
+                  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                >
+
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Treaty</th>
+                      <th>Rate</th>
+                      <th>Rate type</th>
+                      <th>P rate</th>
+                      <th>RI amount</th>
+                      <th>Cession %</th>
+                      <th>Premium</th>
+                      <th>Prem tax</th>
+                      <th>Comm</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-risKRIDetail>
+                    <tr>
+                      <td>Section SI</td>
+                      <td>Sum insured</td>
+                      <td>600,000</td>
+                      <td>30,000.00</td>
+                      <td>FXD</td>
+                      <td>5</td>
+                      <td></td>
+                      <td>100</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="9">No Treaty RI Detail(s) Found.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+
+                <form [formGroup]="treatyRISummaryForm">
+                  <div class="row g-3 align-items-center mt-5">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label">Company net retention</label>
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="companyNetPRate">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="companyNetRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="companyNetCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="companyNetPremium">
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label">Reinsurance pool</label>
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="reinsurancePRate">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="reinsuranceRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="reinsuranceCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="reinsurancePremium">
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label">Treaty cessions</label>
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="treatyPRate">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="treatyRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="treatyCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="treatyPremium">
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label">Facre cessions</label>
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="facrePRate">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="facreRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="facreCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="facrePremium">
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label text-dark fw-bold">Total</label>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="totalRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="totalCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="totalPremium">
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center">
+                    <div class="col-4 mb-2">
+                      <label class="col-form-label">Excess</label>
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="excessRiAmt">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="excessCession">
+                    </div>
+                    <div class="col-2">
+                      <input type="number" class="form-control" formControlName="excessPremium">
+                    </div>
+                  </div>
+                </form>
+              </p-tabPanel>
+              <p-tabPanel header="Treaty participants">
+                <div class="d-flex justify-content-end">
+              <span class="icon-circle "
+              ><i class="pi pi-pencil"></i
+              ></span>
+                </div>
+                <div>
+                  <p-table
+                    [autoLayout]="true"
+                    [rowHover]="true"
+                    [resizableColumns]="true"
+                    [showCurrentPageReport]="true"
+                    [rows]="pageSize || 5"
+                    [totalRecords]="risKCedingDetails?.totalElements"
+                    [value]="risKCedingDetails?.content"
+                    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                    responsiveLayout="stack"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  >
+
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Reinsurer</th>
+                        <th>Rate</th>
+                        <th>Rein prem tax</th>
+                        <th>Prem tax</th>
+                        <th>Sum reinsured</th>
+                        <th>Premium</th>
+                        <th>Commission</th>
+                        <th>Treaty</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-treatyParticipant>
+                      <tr>
+                        <td>Section SI</td>
+                        <td>Sum insured</td>
+                        <td>600,000</td>
+                        <td>30,000.00</td>
+                        <td>FXD</td>
+                        <td>5</td>
+                        <td></td>
+                        <td>100</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9">No Treaty Participants Detail(s) Found.</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+              </p-tabPanel>
+              <p-tabPanel header="Facre ceding">
+                <div class="row">
+                  <div class="col-6 d-flex ">
+                    <button
+                      class="btn btn-primary" style="font-size: 12px;">Facre out offer slip
+                    </button>
+                    <button
+                      class="btn btn-primary" style="font-size: 12px;">Reinsurers debit/credit note
+                    </button>
+                  </div>
+                  <div class="col-6 d-flex justify-content-end">
+                    <button
+                      class="btn btn-primary" style="font-size: 12px;">Import CSV file
+                    </button>
+                    <span class="icon-circle "
+                    ><i class="pi pi-plus"></i
+                    ></span>
+                    <span class="icon-circle "
+                    ><i class="pi pi-pencil"></i
+                    ></span>
+                    <span class="icon-circle"
+                    ><i
+                      class="fa-regular fa-trash-can"
+                    ></i
+                    ></span>
+                  </div>
+                </div>
+
+                <div>
+                  <p-table
+                    [autoLayout]="true"
+                    [rowHover]="true"
+                    [resizableColumns]="true"
+                    [showCurrentPageReport]="true"
+                    [rows]="pageSize || 5"
+                    [totalRecords]="risKCedingDetails?.totalElements"
+                    [value]="risKCedingDetails?.content"
+                    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                    responsiveLayout="stack"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  >
+
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Reinsurer name</th>
+                        <th>Broker name</th>
+                        <th>Facre account Id</th>
+                        <th>Rate/amount</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Cession rate</th>
+                        <th>Comm %</th>
+                        <th>Vat %</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-facreCeding>
+                      <tr>
+                        <td>Section SI</td>
+                        <td>Sum insured</td>
+                        <td>600,000</td>
+                        <td>30,000.00</td>
+                        <td>FXD</td>
+                        <td>5</td>
+                        <td></td>
+                        <td>100</td>
+                        <td></td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9">No Facre Ceding Detail(s) Found.</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+              </p-tabPanel>
+              <p-tabPanel header="Reinsurance pool">
+                <div>
+                  <p-table
+                    [autoLayout]="true"
+                    [rowHover]="true"
+                    [resizableColumns]="true"
+                    [showCurrentPageReport]="true"
+                    [rows]="pageSize || 5"
+                    [totalRecords]="risKCedingDetails?.totalElements"
+                    [value]="risKCedingDetails?.content"
+                    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                    responsiveLayout="stack"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  >
+
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Risk premium</th>
+                        <th>Trt own ret amt</th>
+                        <th>Pool rate</th>
+                        <th>Pool amt</th>
+                        <th>Pool own ret prem</th>
+                        <th>Comm rate</th>
+                        <th>Comm amt</th>
+                        <th>Vat rate</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-reinsurancePool>
+                      <tr>
+                        <td>Section SI</td>
+                        <td>Sum insured</td>
+                        <td>600,000</td>
+                        <td>30,000.00</td>
+                        <td>FXD</td>
+                        <td>5</td>
+                        <td></td>
+                        <td>100</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9">No Treaty Participants Detail(s) Found.</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+              </p-tabPanel>
+              <p-tabPanel header="XOL UW cessions">
+                <div class="row g-3 align-items-center">
+                  <div class="col-3 mb-2" style="padding-right: 0px">
+                    <label class="col-form-label" style="font-size: 13px;">VMLP excess sum insured</label>
+                  </div>
+                  <div class="col-2">
+                    <input type="text" class="form-control">
+                  </div>
+
+                  <div class="col-2 mb-2">
+                    <label class="col-form-label" style="font-size: 13px;">VMLP excess premium</label>
+                  </div>
+                  <div class="col-2">
+                    <input type="text" class="form-control">
+                  </div>
+
+                  <div class="col-3">
+                    <button
+                      class="btn btn-primary" style="font-size: 12px; float: right;">Update premium rate
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <p-table
+                    [autoLayout]="true"
+                    [rowHover]="true"
+                    [resizableColumns]="true"
+                    [showCurrentPageReport]="true"
+                    [rows]="pageSize || 5"
+                    [totalRecords]="risKCedingDetails?.totalElements"
+                    [value]="risKCedingDetails?.content"
+                    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                    responsiveLayout="stack"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  >
+
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Reinsurer</th>
+                        <th>Rate</th>
+                        <th>Rein prem tax</th>
+                        <th>Prem tax</th>
+                        <th>Sum reinsured</th>
+                        <th>Premium</th>
+                        <th>Commission</th>
+                        <th>Treaty</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-treatyParticipant>
+                      <tr>
+                        <td>Section SI</td>
+                        <td>Sum insured</td>
+                        <td>600,000</td>
+                        <td>30,000.00</td>
+                        <td>FXD</td>
+                        <td>5</td>
+                        <td></td>
+                        <td>100</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9">No Treaty Participants Detail(s) Found.</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
+          <label class="text-primary mb-2">Previous ceding</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Comp gross ret</th>
+                <th>Net comp ret</th>
+                <th>Facre ceded</th>
+                <th>Retention rate</th>
+                <th>Group risk pct</th>
+                <th>Group top loc</th>
+                <th>RI prem</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-previousCeding>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+                <td>FXD</td>
+                <td>5</td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Previous Ceding Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <label class="text-primary mt-5 mb-2">Treaty cessions</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Treaty</th>
+                <th>Cession pct</th>
+                <th>Premium</th>
+                <th>Comm</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-treatyCession>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Treaty Cessions Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <label class="text-primary mt-5 mb-2">Facre cessions</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Reinsurer name</th>
+                <th>Reinsurer</th>
+                <th>Rate</th>
+                <th>Premium</th>
+                <th>Commission</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-facreCession>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+                <td>FXD</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Facre Cessions Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
+          <label class="text-primary mb-2">Treaty setup</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Treaty</th>
+                <th>Treaty type</th>
+                <th>Currency</th>
+                <th>Rate type</th>
+                <th>U/W year</th>
+                <th>Comm rate</th>
+                <th>SI stating from</th>
+                <th>Limit</th>
+                <th>Rate</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-treatySetup>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+                <td>FXD</td>
+                <td>5</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Treaty Setup Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
+          <label class="text-primary mb-2">Policy facre ceding</label>
+          <p-table
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]="risKCedingDetails?.totalElements"
+            [value]="risKCedingDetails?.content"
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Reinsurer name</th>
+                <th>Facre account id</th>
+                <th>Rate/amount</th>
+                <th>Rate</th>
+                <th>Date</th>
+                <th>Comm %</th>
+                <th>Management type</th>
+                <th>Management value</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-policyFacreCeding>
+              <tr>
+                <td>Section SI</td>
+                <td>Sum insured</td>
+                <td>600,000</td>
+                <td>30,000.00</td>
+                <td>FXD</td>
+                <td>5</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9">No Policy Facre Ceding Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

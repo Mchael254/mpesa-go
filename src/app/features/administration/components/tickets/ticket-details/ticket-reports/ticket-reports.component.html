@@ -1,12 +1,13 @@
 <div>
-  <label for="format" style="font-weight: 700; font-size: 13px; padding: 0 0.5rem 1rem 0;">{{'Select format:' | uppercase}}</label>
+  <label for="format" style="font-weight: 700; font-size: 13px; padding: 0 0.5rem 1rem 0;">{{'Select format:'}}</label>
   <select style="font-weight: 500; font-size: 13px; width: 90px;" id="format" [(ngModel)]="selectedFormat">
     <option value="HTML">HTML</option>
     <option value="PDF">PDF</option>
   </select>
+  <button class="btn btn-primary ms-4" style="font-size: 13px;">Dispatch documents</button>
 </div>
-<ul style="padding-left: 0;">
-  <li *ngFor="let report of reportsWithLinks" style="list-style: none;">
+<ul class="list-group list-group-horizontal mb-3">
+  <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
     <a [href]="getReportLink(report)" target="_blank" class="report-link">{{ report.name }}</a>
   </li>
 </ul>
