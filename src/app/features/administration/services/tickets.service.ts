@@ -18,6 +18,7 @@ import {AppConfigService} from "../../../core/config/app-config-service";
 import {GeneralTicketApiResponse} from "../data/generalTicketApiResponse";
 import {Logger} from "../../../shared/services/logger/logger.service";
 import {UtilService} from "../../../shared/services/util/util.service";
+import {environment} from "../../../../environments/environment";
 
 const log = new Logger('TicketsService');
 
@@ -97,7 +98,7 @@ export class TicketsService {
   // get all tickets for the logged in user
   getAllTickets(
     pageNo: number = 0,
-    pageSize: number = 5,
+    pageSize: number,
     fromDate: string,
     toDate: string,
     sort: string,
@@ -464,8 +465,9 @@ export class TicketsService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'X-TenantId': environment.TENANT_ID,
     });
-    return this.http.get<any>(`/${baseUrl}/underwriting/api/v2/policies/${batchNumber}`, { headers })
+    return this.http.get<any>(`/${baseUrl}/underwriting/api/v2/policies?batchNo=${batchNumber}`, { headers })
   }
 
   getTransactionTypes(): Observable<any> {

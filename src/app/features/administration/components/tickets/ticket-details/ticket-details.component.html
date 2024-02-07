@@ -12,7 +12,7 @@
         url: '/home/administration/tickets',
       },
       {
-        label: selectedTicket?.ticketID.toString(),
+        label: selectedSpringTickets?.task?.activityName,
         url: ''
       }
     ]">
@@ -20,9 +20,9 @@
     </div>
   </div>
 
-  <p-tabView>
+  <p-tabView [(activeIndex)]="activeIndex">
     <label class="mb-3 float-end">Current ticket:
-      <span class="text-primary">{{selectedTicket?.ticketName}}</span>
+      <span class="text-primary">{{selectedSpringTickets?.task?.activityName}}</span>
     </label>
 
 
@@ -33,48 +33,47 @@
         <div class="col-sm-3">
           <p>
             <label class="ticketLabel">Client:</label>
-            <span class="ticketDesc">{{ selectedTicket?.clientName }}</span>
+            <span class="ticketDesc">{{ selectedSpringTickets?.clientName }}</span>
           </p>
           <p>
             <label class="ticketLabel">Currency:</label>
-<!--            <span class="ticketDesc">{{ policyDetails?.currency }}</span>-->
-            <span class="ticketDesc">{{ selectedTicket?.currency }}</span>
+            <span class="ticketDesc">{{ policyDetails?.currency }}</span>
           </p>
           <p>
             <label class="ticketLabel">Agency:</label>
-            <span class="ticketDesc">{{ selectedTicket?.intermediaryName }}</span>
+            <span class="ticketDesc">{{ selectedSpringTickets?.agentName }}</span>
           </p>
         </div>
 
         <div class="col-sm-3">
-          <p *ngIf="selectedTicket?.policyNumber">
+          <p *ngIf="selectedSpringTickets?.ticket.policyCode">
             <label class="ticketLabel">Policy No:</label>
-            <span class="ticketDesc">{{ selectedTicket?.policyNumber }}</span>
+            <span class="ticketDesc">{{ policyDetails?.policy_no }}</span>
           </p>
           <p>
             <label class="ticketLabel">Total S.I.:</label>
-            <span class="ticketDesc">{{ selectedTicket?.totalSI | number: '1.2-2' }}</span>
+            <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
           </p>
           <p>
             <label class="ticketLabel">Transaction type:</label>
-<!--            <span class="ticketDesc">{{ policyDetails?.transactiontype }}</span>-->
+            <span class="ticketDesc">{{ policyDetails?.policy_status }}</span>
           </p>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <p>
             <label class="ticketLabel">Endorse. No:</label>
-            <span class="ticketDesc">{{ selectedTicket?.endorsementNumber }}</span>
+            <span class="ticketDesc">{{ policyDetails?.endorsement_no }}</span>
           </p>
           <p>
             <label class="ticketLabel">Premium:</label>
-<!--            <span class="ticketDesc">{{ selectedTicket?.premium }}</span>-->
+            <span class="ticketDesc">{{ policyDetails?.premium }}</span>
           </p>
           <p>
             <label class="ticketLabel">Ticket Remarks:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketRemarks }}</span>
+            <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
           </p>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
           <p>
             <label class="ticketLabel">Cover From:</label>
             <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
@@ -84,38 +83,7 @@
             <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
           </p>
         </div>
-       <!-- <div class="col-sm-6">
-          <p>
-            <label class="ticketLabel">Ticket By:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketBy }}</span>
-          </p>
-          <p *ngIf="selectedTicket?.claimNumber">
-            <label class="ticketLabel">Claim No:</label>
-            <span class="ticketDesc">{{ selectedTicket?.claimNumber }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Renewal Date:</label>
-            <span class="ticketDesc">{{ selectedTicket?.renewalDate | date: 'shortDate' }}</span>
-          </p>
-        </div>-->
-        <!--<div class="col-sm-6">
-          <p>
-            <label class="ticketLabel">Ticket Date:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketDate | date: 'shortDate' }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Due Date:</label>
-            <span class="ticketDesc">{{ selectedTicket?.ticketDueDate | date: 'shortDate' }}</span>
-          </p>
-          <p *ngIf="selectedTicket?.quotationNumber">
-            <label class="ticketLabel">Quotation No:</label>
-            <span class="ticketDesc">{{ selectedTicket?.quotationNumber }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Endorse. Remarks:</label>
-            <span class="ticketDesc">{{ selectedTicket?.endorsementRemarks }}</span>
-          </p>
-        </div>-->
+
       </div>
 
       <div class="risks mt-5" >
@@ -123,7 +91,8 @@
           <!--preloader goes here-->
         </ng-container>
         <app-risk-details
-          [risk]="policyDetails?.riskInformation[0]"
+          [risk]="policyDetails?.riskInformation"
+          [sectionDetails]="[]"
         ></app-risk-details>
         <!--<div class="view-more">
           <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()" >View more</button>
@@ -176,6 +145,7 @@
       <button
         class="btn btn-success authorize-btn"
         (click)="callGenerateAuthorizeOtp()"
+        *ngIf="activeIndex === 2"
       >
         Authorize
       </button>
@@ -196,84 +166,4 @@
     </div>
   </div>
 </div>
-
-
-<!--view more dialog-->
-<p-dialog header="" [(visible)]="shouldShowViewMoreDialog" [style]="{width: '50vw'}">
-  <!--<div class="total-premium mb-4" style="font-size: 1em">
-    <table class="table table-borderless">
-      <thead>
-      <tr *ngIf="policyDetails?.premium">
-        <td>Total premium on {{ policyDetails?.riskInformation.length }} risks</td>
-        <td style="text-align: right">{{ policyDetails?.premium | number: '1.2-2' }}</td>
-      </tr>
-      </thead>
-    </table>
-  </div>
-
-  <div class="risks" *ngFor="let risk of policyDetails?.riskInformation">
-    <app-risk-details
-      [risk]="policyDetails?.riskInformation[0]"
-    ></app-risk-details>
-  </div>
-
-  <div class="taxes">
-    <ng-container *ngIf="policyDetails?.taxInformation">
-      <app-tax-details
-        [taxInformation]="policyDetails?.taxInformation"
-        [totalPremium]="policyDetails?.total_premium"
-      ></app-tax-details>
-    </ng-container>
-  </div>-->
-
-  <p-table
-    [autoLayout]="true"
-    [paginator]="true"
-    [rowHover]="true"
-    [resizableColumns]="true"
-    [showCurrentPageReport]="true"
-    [rows]="pageSize || 5"
-    [totalRecords]="sectionDetails?.totalElements"
-    [value]="sectionDetails?.content"
-    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-    responsiveLayout="stack"
-    [scrollable]="true"
-    scrollHeight="400px"
-    currentPageReportTemplate="{first} - {last} of {totalRecords}"
-    [globalFilterFields]=globalFilterFields
-  >
-
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Description</th>
-        <th>Name</th>
-        <th>Limit</th>
-        <th>Premium</th>
-        <th>Rate type</th>
-        <th>Section rate</th>
-        <th>Free limit</th>
-        <th>Rate Div Fac</th>
-        <th>Multip</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-sectionDetail>
-      <tr>
-        <td>Section SI</td>
-        <td>Sum insured</td>
-        <td>600,000</td>
-        <td>30,000.00</td>
-        <td>FXD</td>
-        <td>5</td>
-        <td></td>
-        <td>100</td>
-        <td></td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="9">No Section Detail(s) Found.</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</p-dialog>
 

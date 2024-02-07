@@ -48,18 +48,16 @@
 
   <p-table
     [autoLayout]="true"
-    [paginator]="true"
     [rowHover]="true"
     [resizableColumns]="true"
     [showCurrentPageReport]="true"
     [rows]="pageSize || 5"
-    [totalRecords]="risk?.totalElements"
-    [value]="risk?.content"
+    [totalRecords]="risk?.length"
+    [value]="risk"
     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
     responsiveLayout="stack"
     [scrollable]="true"
     scrollHeight="400px"
-    currentPageReportTemplate="{first} - {last} of {totalRecords}"
   >
 
     <ng-template pTemplate="header">
@@ -76,19 +74,20 @@
         <th></th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-sectionDetail>
+    <ng-template pTemplate="body" let-risk>
       <tr>
-        <td>{{ sectionDetail?.riskId}}</td>
-        <td>{{ sectionDetail?.sectionDesc | titlecase }}</td>
-        <td>{{ sectionDetail?.coverPeriod }}</td>
-        <td>{{ sectionDetail?.subclass }}</td>
-        <td>{{ sectionDetail?.sumInsured | number: '1.2-2'}}</td>
-        <td>{{ sectionDetail?.premium | number: '1.2-2' }}</td>
-        <td>{{ sectionDetail?.insured | titlecase}}</td>
-        <td>{{ sectionDetail?.commission | number: '1.2-2'}}</td>
+        <td>{{ risk?.propertyId}}</td>
+        <td>{{ risk?.propertyDescription | titlecase }}</td>
+        <td>{{ risk?.dateCoverFrom }} - {{ risk?.dateCoverTo }}</td>
+        <td>{{ risk?.subClassDescription }}</td>
+        <td>{{ risk?.coverTypeShortDescription }}</td>
+        <td>{{ risk?.value | number: '1.2-2'}}</td>
+        <td>{{ risk?.grossPremium | number: '1.2-2' }}</td>
+        <td>{{ risk?.firstName | titlecase}} {{ risk?.lastName | titlecase}}</td>
+        <td>{{ risk?.commissionAmount | number: '1.2-2'}}</td>
         <td>
           <div class="view-more">
-            <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()">
+            <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog(risk)">
               <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
             </button>
           </div>
@@ -104,48 +103,44 @@
 </div>
 
 <!--view more dialog-->
-<p-dialog header="" [(visible)]="shouldShowViewMoreDialog" [style]="{width: '50vw'}">
+<p-dialog header="Section details" [(visible)]="shouldShowViewMoreDialog" [style]="{width: '50vw'}" [modal]="true">
 
   <p-table
     [autoLayout]="true"
-    [paginator]="true"
     [rowHover]="true"
     [resizableColumns]="true"
     [showCurrentPageReport]="true"
     [rows]="pageSize || 5"
-    [totalRecords]="sectionDetails?.totalElements"
-    [value]="sectionDetails?.content"
+    [totalRecords]="sectionDetails.length"
+    [value]="sectionDetails"
     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
     responsiveLayout="stack"
     [scrollable]="true"
     scrollHeight="400px"
-    currentPageReportTemplate="{first} - {last} of {totalRecords}"
   >
 
     <ng-template pTemplate="header">
       <tr>
         <th>Description</th>
-        <th>Name</th>
         <th>Limit</th>
         <th>Premium</th>
         <th>Rate type</th>
         <th>Section rate</th>
         <th>Free limit</th>
         <th>Rate Div Fac</th>
-        <th>Multip</th>
+        <th>Multiplier</th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-sectionDetail>
+    <ng-template pTemplate="body" let-risk>
       <tr>
-        <td>Section SI</td>
-        <td>Sum insured</td>
-        <td>600,000</td>
-        <td>30,000.00</td>
-        <td>FXD</td>
-        <td>5</td>
-        <td></td>
-        <td>100</td>
-        <td></td>
+        <td>{{risk?.sectionDesc | titlecase }}</td>
+        <td>{{risk?.limitAmount}}</td>
+        <td>{{risk?.premium}}</td>
+        <td>{{risk?.rateType}}</td>
+        <td>{{risk?.pilPremiumRate}}</td>
+        <td>{{risk?.freeLimit}}</td>
+        <td>{{risk?.divFactor}}</td>
+        <td>{{risk?.multiplierRate}}</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
