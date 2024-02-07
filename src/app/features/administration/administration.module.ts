@@ -18,6 +18,8 @@ import {TabViewModule} from "primeng/tabview";
 import { TicketReportsComponent } from './components/tickets/ticket-details/ticket-reports/ticket-reports.component';
 import { TicketDocumentsComponent } from './components/tickets/ticket-details/ticket-documents/ticket-documents.component';
 import {DialogModule} from "primeng/dialog";
+import { ReinsuranceAllocationsComponent } from './components/tickets/reinsurance-allocations/reinsurance-allocations.component';
+import { AuthorizationTabComponent } from './components/tickets/authorization-tab/authorization-tab.component';
 
 
 @NgModule({
@@ -31,7 +33,9 @@ import {DialogModule} from "primeng/dialog";
     TicketDetailsComponent,
     ReassignTicketModalComponent,
     TicketReportsComponent,
-    TicketDocumentsComponent
+    TicketDocumentsComponent,
+    ReinsuranceAllocationsComponent,
+    AuthorizationTabComponent
   ],
   imports: [
     CommonModule,

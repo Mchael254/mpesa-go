@@ -649,7 +649,21 @@ p-table tr > th {
   display: none;
 }
 
+.p-component {
+  font-family: Roboto;
+}
 
+.p-tabview-title {
+  color: #000;
+}
+
+.p-tabview-title:hover {
+  color: var(--primary-color);
+}
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-title {
+  color: var(--primary-color);
+}
 
 /* responsive design */
 
@@ -703,7 +717,7 @@ p-table tr > th {
     padding: 0;
   }
 
-  .base-content .base-content-section table tr th, 
+  .base-content .base-content-section table tr th,
   .base-content .base-content-section table tr td {
     font-size: 0.8rem;
   }
@@ -716,5 +730,5 @@ p-table tr > th {
     display: block;
     margin-top: 250px;
   }
-  
+
 }
