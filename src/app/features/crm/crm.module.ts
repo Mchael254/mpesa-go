@@ -18,6 +18,7 @@ import { UserParametersComponent } from './components/user-parameters/user-param
 import { CurrenciesComponent } from './components/currencies/currencies.component';
 import { BankComponent } from './components/bank/bank.component';
 import { PaymentModesComponent } from './components/payment-modes/payment-modes.component';
+import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { PaymentModesComponent } from './components/payment-modes/payment-modes.
     CurrenciesComponent,
     BankComponent,
     PaymentModesComponent,
+    RequiredDocumentsComponent,
   ],
   imports: [
     CommonModule,

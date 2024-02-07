@@ -84,8 +84,28 @@
                   <td class="body">{{ division.name }}</td>
                   <td class="body">{{ division.short_description }}</td>
                   <td class="body">{{ division.order }}</td>
-                  <td class="body">{{ division.status }}</td>
-                  <td class="body">{{ division.is_default_division }}</td>
+                  <td class="body">
+                    {{
+                      division.status === "I"
+                        ? "Inactive"
+                        : division.status === "A"
+                        ? "Active"
+                        : division.status === "B"
+                        ? "Blacklisted"
+                        : division.status === "U"
+                        ? "Unknown"
+                        : division.status
+                    }}
+                  </td>
+                  <td class="body">
+                    {{
+                      division.is_default_division === "Y"
+                        ? "Yes"
+                        : division.is_default_division === "N"
+                        ? "No"
+                        : division.is_default_division
+                    }}
+                  </td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
