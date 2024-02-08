@@ -159,8 +159,8 @@ export class MenuService {
             link: '/home/crm/required-documents',
           },
           {
-            name: 'Division',
-            link: '',
+            name: 'Channels',
+            link: '/home/crm/channel',
           },
         ],
         collapsed: true,
