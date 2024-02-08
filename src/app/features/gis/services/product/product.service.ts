@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
-import { environment } from 'src/environments/environment';
+import {environment} from "../../../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class ProductService {
   baseurl = this.appConfig.config.contextPath.gis_services;
   crmurl = this.appConfig.config.contextPath.setup_services;
   setupsbaseurl = "setups/api/v1"
-  
+
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService
@@ -47,7 +47,7 @@ export class ProductService {
       retry(1),
       catchError(this.errorHandl)
     )
-  
+
   }
   createProductgroup(data: any): Observable<Product_group> {
     console.log(JSON.stringify(data))
@@ -81,36 +81,36 @@ export class ProductService {
     return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/screens`).pipe();
   }
   getProductByCode(code: number): Observable<Products[]>{
-    
+
     return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`, this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
-  
+
   }
   getProductDetailsByCode(code: number): Observable<Products>{
-    
+
     return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`,this.httpOptions).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
-  
+
   }
   getProductDocument(code: number): Observable<any>{
-    
+
     return this.http.get<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents?productCode=${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
-  
+
   }
   getFormScreen(code: number): Observable<FormScreen>{
-    
+
     return this.http.get<FormScreen>(`/${this.baseurl}/${this.setupsbaseurl}/forms/${code}`).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
-  
+
   }
   createProducts(data: any): Observable<Products> {
     console.log(JSON.stringify(data))
@@ -135,19 +135,19 @@ export class ProductService {
 
     return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?pageNo=0&pageSize=90`).pipe(
       retry(1),
-      catchError(this.errorHandl) 
+      catchError(this.errorHandl)
     );
   }
   getProductSubclasses (productCode): Observable<SubclassesDTO>{
 
     return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`, this.httpOptions).pipe(
       retry(1),
-      catchError(this.errorHandl) 
+      catchError(this.errorHandl)
     );
   }
   getsubclassByCode(code: any): Observable<SubclassesDTO>{
     return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`).pipe(
-      
+
     )
   }
   updateSubclass(data:any,code:any): Observable<SubclassesDTO> {
@@ -179,7 +179,7 @@ export class ProductService {
         catchError(this.errorHandl)
       )
     }
-    
+
   // Error handling
 errorHandl(error: HttpErrorResponse) {
   let errorMessage = '';
