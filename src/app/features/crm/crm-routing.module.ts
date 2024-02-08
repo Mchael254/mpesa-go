@@ -11,6 +11,7 @@ import { CurrenciesComponent } from './components/currencies/currencies.componen
 import { BankComponent } from './components/bank/bank.component';
 import { PaymentModesComponent } from './components/payment-modes/payment-modes.component';
 import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
+import { ChannelComponent } from './components/channel/channel.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,10 @@ const routes: Routes = [
   {
     path: 'required-documents',
     component: RequiredDocumentsComponent,
+  },
+  {
+    path: 'channel',
+    component: ChannelComponent,
   },
 ];
 

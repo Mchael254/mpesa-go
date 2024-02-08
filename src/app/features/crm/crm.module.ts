@@ -19,6 +19,7 @@ import { CurrenciesComponent } from './components/currencies/currencies.componen
 import { BankComponent } from './components/bank/bank.component';
 import { PaymentModesComponent } from './components/payment-modes/payment-modes.component';
 import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
+import { ChannelComponent } from './components/channel/channel.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { RequiredDocumentsComponent } from './components/required-documents/requ
     BankComponent,
     PaymentModesComponent,
     RequiredDocumentsComponent,
+    ChannelComponent,
   ],
   imports: [
     CommonModule,
