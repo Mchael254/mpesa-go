@@ -80,7 +80,7 @@ import { BeneficiaryPipe } from '../features/lms/pipe/beneficiary/beneficiary.pi
 import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
 import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
 import { Error401Interceptor } from './services/http/error-404.interceptor';
-// import { Angular4PaystackModule } from 'angular4-paystack';
+import { Angular4PaystackModule } from 'angular4-paystack';
 
 
 
@@ -207,7 +207,7 @@ const SERVICES = [
         DropdownModule,
         HttpClientModule,
         NgbModule,
-        // Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
+        Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
 
 
     ],
@@ -246,7 +246,7 @@ const SERVICES = [
         NgbModule,
         ...lms_pipes,
         ReusableInputComponent,
-        // Angular4PaystackModule,
+        Angular4PaystackModule,
         LanguageSelectorComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
