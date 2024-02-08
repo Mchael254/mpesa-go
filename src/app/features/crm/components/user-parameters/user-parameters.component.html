@@ -175,11 +175,39 @@
                 id="value"
                 placeholder="Value"
                 formControlName="value"
+                [ngClass]="{
+                  'is-invalid':
+                    f['value']?.invalid &&
+                    (f['value']?.dirty || f['value']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['value']?.invalid &&
+                  (f['value']?.dirty || f['value']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['value']?.errors
+                }"
+              >
+                <div *ngIf="f['value']?.errors['required']">
+                  value is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="status" class="form-label">Status</label>
-              <select class="form-select" id="status" formControlName="status">
+              <select
+                class="form-select"
+                id="status"
+                formControlName="status"
+                [ngClass]="{
+                  'is-invalid':
+                    f['status']?.invalid &&
+                    (f['status']?.dirty || f['status']?.touched)
+                }"
+              >
                 <option value="">Select Status</option>
                 <option
                   *ngFor="let status of statusesData"
@@ -188,6 +216,20 @@
                   {{ status.name }}
                 </option>
               </select>
+              <div
+                *ngIf="
+                  f['status']?.invalid &&
+                  (f['status']?.dirty || f['status']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['status']?.errors
+                }"
+              >
+                <div *ngIf="f['status']?.errors['required']">
+                  Status is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="description" class="form-label">Description</label>
@@ -197,7 +239,26 @@
                 id="description"
                 placeholder="Description"
                 formControlName="description"
+                [ngClass]="{
+                  'is-invalid':
+                    f['description']?.invalid &&
+                    (f['description']?.dirty || f['description']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['description']?.invalid &&
+                  (f['description']?.dirty || f['description']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['description']?.errors
+                }"
+              >
+                <div *ngIf="f['description']?.errors['required']">
+                  Description is required
+                </div>
+              </div>
             </div>
           </div>
         </form>

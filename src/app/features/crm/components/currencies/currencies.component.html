@@ -297,7 +297,26 @@
                 id="symbol"
                 placeholder="Symbol"
                 formControlName="symbol"
+                [ngClass]="{
+                  'is-invalid':
+                    f['symbol']?.invalid &&
+                    (f['symbol']?.dirty || f['symbol']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['symbol']?.invalid &&
+                  (f['symbol']?.dirty || f['symbol']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['symbol']?.errors
+                }"
+              >
+                <div *ngIf="f['symbol']?.errors['required']">
+                  Symbol is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="description" class="form-label">Description</label>
@@ -307,7 +326,26 @@
                 id="description"
                 placeholder="Description"
                 formControlName="description"
+                [ngClass]="{
+                  'is-invalid':
+                    f['description']?.invalid &&
+                    (f['description']?.dirty || f['description']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  f['description']?.invalid &&
+                  (f['description']?.dirty || f['description']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['description']?.errors
+                }"
+              >
+                <div *ngIf="f['description']?.errors['required']">
+                  Description is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="round" class="form-label">Round</label>
@@ -357,55 +395,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- <div class="col-6 mb-3">
-              <label for="round" class="form-label">Round</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="round"
-                  style="width: 70px; height: 42px; border-right: none"
-                />
-                <div class="input-group-append">
-                  <span
-                    class="d-block"
-                    (click)="increment()"
-                    style="
-                      width: 20px;
-                      height: 20px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-top: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-up"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                  <span
-                    (click)="decrement()"
-                    style="
-                      width: 20px;
-                      height: 22px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-bottom: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-down"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                </div>
-              </div>
-            </div> -->
             <div class="col-6 mb-3">
               <label for="numberRound" class="form-label">Number Round</label>
               <input
@@ -471,6 +460,11 @@
                   class="form-control"
                   formControlName="value"
                   style="width: 70px; height: 42px; border-right: none"
+                  [ngClass]="{
+                    'is-invalid':
+                      d['value']?.invalid &&
+                      (d['value']?.dirty || d['value']?.touched)
+                  }"
                 />
                 <div class="input-group-append">
                   <span
@@ -510,6 +504,20 @@
                   </span>
                 </div>
               </div>
+              <div
+                *ngIf="
+                  d['value']?.invalid &&
+                  (d['value']?.dirty || d['value']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && d['value']?.errors
+                }"
+              >
+                <div *ngIf="d['value']?.errors['required']">
+                  Value is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="name" class="form-label">Name</label>
@@ -519,7 +527,25 @@
                 id="name"
                 placeholder="Name"
                 formControlName="name"
+                [ngClass]="{
+                  'is-invalid':
+                    d['name']?.invalid &&
+                    (d['name']?.dirty || d['name']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  d['name']?.invalid && (d['name']?.dirty || d['name']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && d['name']?.errors
+                }"
+              >
+                <div *ngIf="d['name']?.errors['required']">
+                  Name is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="wef" class="form-label">WEF Date</label>
@@ -531,7 +557,24 @@
                 onfocus="(this.type='date')"
                 onblur="(this.type='text')"
                 formControlName="wef"
+                [ngClass]="{
+                  'is-invalid':
+                    d['wef']?.invalid && (d['wef']?.dirty || d['wef']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  d['wef']?.invalid && (d['wef']?.dirty || d['wef']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && d['wef']?.errors
+                }"
+              >
+                <div *ngIf="d['wef']?.errors['required']">
+                  WEF Date is required
+                </div>
+              </div>
             </div>
           </div>
         </form>
@@ -584,56 +627,29 @@
                 id="exchangeCurrency"
                 placeholder="Exchange Currency"
                 formControlName="exchangeCurrency"
+                [ngClass]="{
+                  'is-invalid':
+                    c['exchangeCurrency']?.invalid &&
+                    (c['exchangeCurrency']?.dirty ||
+                      c['exchangeCurrency']?.touched)
+                }"
               />
-            </div>
-            <!-- <div class="col-6 mb-3">
-              <label for="rate" class="form-label">Rate</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="rate"
-                  style="width: 70px; height: 42px; border-right: none"
-                />
-                <div class="input-group-append">
-                  <span
-                    class="d-block"
-                    (click)="increment()"
-                    style="
-                      width: 20px;
-                      height: 20px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-top: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-up"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                  <span
-                    (click)="decrement()"
-                    style="
-                      width: 20px;
-                      height: 22px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-bottom: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-down"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
+              <div
+                *ngIf="
+                  c['exchangeCurrency']?.invalid &&
+                  (c['exchangeCurrency']?.dirty ||
+                    c['exchangeCurrency']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && c['exchangeCurrency']?.errors
+                }"
+              >
+                <div *ngIf="c['exchangeCurrency']?.errors['required']">
+                  Exchange Currencyis required
                 </div>
               </div>
-            </div> -->
+            </div>
             <div class="col-6 mb-3">
               <label for="rate" class="form-label">Rate</label>
               <div class="input-group">
@@ -642,6 +658,11 @@
                   class="form-control"
                   formControlName="rate"
                   style="width: 70px; height: 42px; border-right: none"
+                  [ngClass]="{
+                    'is-invalid':
+                      c['rate']?.invalid &&
+                      (c['rate']?.dirty || c['rate']?.touched)
+                  }"
                 />
                 <div class="input-group-append">
                   <span
@@ -680,6 +701,20 @@
                     ></i>
                   </span>
                 </div>
+                <div
+                  *ngIf="
+                    c['rate']?.invalid &&
+                    (c['rate']?.dirty || c['rate']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && c['rate']?.errors
+                  }"
+                >
+                  <div *ngIf="c['rate']?.errors['required']">
+                    Rate is required
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-6 mb-3">
@@ -703,7 +738,24 @@
                 onfocus="(this.type='date')"
                 onblur="(this.type='text')"
                 formControlName="wef"
+                [ngClass]="{
+                  'is-invalid':
+                    c['wef']?.invalid && (c['wef']?.dirty || c['wef']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  c['wef']?.invalid && (c['wef']?.dirty || c['wef']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && c['wef']?.errors
+                }"
+              >
+                <div *ngIf="c['wef']?.errors['required']">
+                  WEF Date is required
+                </div>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="wet" class="form-label">WET Date</label>
@@ -715,7 +767,24 @@
                 onfocus="(this.type='date')"
                 onblur="(this.type='text')"
                 formControlName="wet"
+                [ngClass]="{
+                  'is-invalid':
+                    c['wet']?.invalid && (c['wet']?.dirty || c['wet']?.touched)
+                }"
               />
+              <div
+                *ngIf="
+                  c['wet']?.invalid && (c['wet']?.dirty || c['wet']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && c['wet']?.errors
+                }"
+              >
+                <div *ngIf="c['wet']?.errors['required']">
+                  WET Date is required
+                </div>
+              </div>
             </div>
           </div>
         </form>
