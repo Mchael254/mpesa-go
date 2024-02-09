@@ -11,6 +11,7 @@ import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
+import stepData from '../../data/steps.json';
 
 
 @AutoUnsubscribe
@@ -56,6 +57,7 @@ columnOptionsCvt: SelectItem[];
 selectedColumnsMembers: string[];
 selectedColumnsAggregateCvt: string[];
 uploadProgress: number = 0;
+steps = stepData;
 
   constructor (
     private fb: FormBuilder,
@@ -376,54 +378,86 @@ memberDetsForm() {
     }
   }
 
-  // handleFileChange(event) {
-  //   this.spinner_Service.show('download_view');
-  //   const selectedFile = event.target.files[0];
-  //   const formData = new FormData();
-  //   formData.append('file', selectedFile)
-  //   this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe((res) => {
-  //     this.spinner_Service.hide('download_view');
-  //     this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
-  //     this.getMembers();
-  //     console.log('uploadTemplateResponse', res)
-  //   },
-  //   (error) => {
-  //     console.log('uploadTemplateError', error)
-  //     this.spinner_Service.hide('download_view');
-  //   });
-  // }
+ 
 
-  handleFileChange(event) {
-    const selectedFile = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', selectedFile);
+//   handleFileChange(event) {
+//     const selectedFile = event.target.files[0];
+//     const formData = new FormData();
+//     formData.append('file', selectedFile);
 
     
-    let progress = 0;
-    const interval = setInterval(() => {
-        if (progress < 100) {
-            progress += 1;
-            this.uploadProgress = progress;
-        }
-    }, 1000);
+//     let progress = 0;
+//     const interval = setInterval(() => {
+//         if (progress < 100) {
+//             progress += 1;
+//             this.uploadProgress = progress;
+//         }
+//     }, 1000);
 
-    this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe(
-        (res) => {
-            clearInterval(interval);
-            this.uploadProgress = 100;
-            this.spinner_Service.hide('download_view');
-            this.messageService.add({
-                severity: 'success',
-                summary: 'summary',
-                detail: 'Template uploaded successfully'
-            });
-            this.getMembers();
-            console.log('uploadTemplateResponse', res);
-        },
-        (error) => {
-            clearInterval(interval);
-            console.log('uploadTemplateError', error);
+//     this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe(
+//         (res) => {
+//           console.log("TemplateUploadResponse", res)
+//             clearInterval(interval);
+//             this.uploadProgress = 100;
+//             this.spinner_Service.hide('download_view');
+//             this.messageService.add({
+//                 severity: 'success',
+//                 summary: 'summary',
+//                 detail: 'Template uploaded successfully'
+//             });
+//             this.getMembers();
+//             console.log('uploadTemplateResponse', res);
+//         },
+//         (error) => {
+//             clearInterval(interval);
+//             console.log('uploadTemplateError', error);
+//         }
+//     );
+// }
+
+handleFileChange(event) {
+  const selectedFile = event.target.files[0];
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 100) {
+      progress += 1;
+      this.uploadProgress = progress;
+    }
+  }, 1000);
+
+  this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData)
+    .subscribe(
+      (res) => {
+        clearInterval(interval);
+        this.uploadProgress = 100;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Template uploaded successfully'
+        });
+        this.getMembers();
+        console.log('uploadTemplateResponse', res);
+      },
+      (error) => {
+        clearInterval(interval);
+        console.error('uploadTemplateError', error);
+        if (error.status === 400) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'An error occurred while uploading the template.'
+          });
         }
+      }
     );
 }
 
