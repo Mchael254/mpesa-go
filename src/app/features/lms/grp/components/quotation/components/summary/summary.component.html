@@ -1,7 +1,12 @@
 <div class="container">
-    <div class="container">
+    <!-- <div class="container">
         <app-stepper></app-stepper>
-    </div>
+    </div> -->
+    <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
     <div id="container">
         <div class="col-md-12 text-center">
             <h4>Group quote summary</h4>

@@ -9,6 +9,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ReinsuranceListingComponent } from './components/reinsurance-listing/reinsurance-listing.component';
+import { SharedModule } from 'src/app/shared/shared.module';
+
 
 
 @NgModule({
@@ -22,9 +24,11 @@ import { ReinsuranceListingComponent } from './components/reinsurance-listing/re
     CommonModule,
     ReinsuranceRoutingModule,
     TableModule,
+    FormsModule,
     ReactiveFormsModule,
     FormsModule,
-    MultiSelectModule
+    MultiSelectModule,
+    SharedModule,
   ]
 })
 export class ReinsuranceModule { }

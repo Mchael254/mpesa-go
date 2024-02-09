@@ -342,6 +342,10 @@ td:hover .ellipsis-container {
     -ms-overflow-style: none;
 }
 
+.stepper {
+    background-color: #F5F6F8;
+}
+
 @media screen and (max-width: 800px) {
     .container {
       width: 100%;
