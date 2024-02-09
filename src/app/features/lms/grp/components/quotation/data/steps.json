@@ -1,0 +1,17 @@
+[
+    {
+      "number": 1,
+      "title": "Product details",
+      "link": "/home/lms/grp/quotation/quick"
+    },
+    {
+      "number": 2,
+      "title": "Coverage details",
+      "link": "/home/lms/grp/quotation/coverage"
+    },
+    {
+      "number": 3,
+      "title": "Summary details",
+      "link": "/home/lms/grp/quotation/summary"
+    }
+  ]

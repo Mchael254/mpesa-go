@@ -23,6 +23,7 @@ import { QuotationCovers, DurationTypes, UnitRate, FacultativeType } from '../..
 import { GrpQuoteDetails } from '../../models/quoteDetails';
 import { PayFrequencyService } from '../../service/pay-frequency/pay-frequency.service';
 import { QuickService } from '../../service/quick/quick.service';
+import stepData from '../../data/steps.json';
 
 
 @AutoUnsubscribe
@@ -50,6 +51,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   showStateSpinner: boolean;
   showTownSpinner: boolean;
   quotationCode: number;
+  steps = stepData;
 
 
   constructor (

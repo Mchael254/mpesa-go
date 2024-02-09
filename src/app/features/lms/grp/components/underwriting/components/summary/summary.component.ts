@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import stepData from '../../data/steps.json';
 
 @Component({
   selector: 'app-summary',
@@ -10,6 +11,7 @@ import { Router } from '@angular/router';
 export class SummaryComponent implements OnInit, OnDestroy {
 
   quoteSummary = 'summary'
+  steps = stepData;
 
 
   constructor(

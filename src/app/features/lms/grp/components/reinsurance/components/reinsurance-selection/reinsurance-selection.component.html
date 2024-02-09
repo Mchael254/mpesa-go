@@ -1,4 +1,9 @@
 <div class="container">
+    <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
     <span class="reinsurance-title">Reinsurance</span>
     <div class="main">
 
@@ -11,19 +16,19 @@
                 <table style="width: 100%;">
                     <tr class="tr-class">
                         <td class="td-label">Client: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.client | titlecase }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Effective date: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.effective_date }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Coverage duration: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.duration_type }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Total sum assured: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.basic_sum_assured | number }}</td>
                     </tr>
                 </table>
             </div>
@@ -31,15 +36,15 @@
                 <table style="width: 100%;">
                     <tr class="tr-class">
                         <td class="td-label">Product: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.product_name | titlecase }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Cover from: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.cover_from_date }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Occupation: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.occupation_of_holder }}</td>
                     </tr>
                 </table>
             </div>
@@ -47,15 +52,15 @@
                 <table style="width: 100%;">
                     <tr class="tr-class">
                         <td class="td-label">Policy number: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.policy_number }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Cover to: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.cover_to_date }}</td>
                     </tr>
                     <tr class="tr-class">
                         <td class="td-label">Total premium: </td>
-                        <td class="td-desc">{{ label }}</td>
+                        <td class="td-desc">{{ policySummary[0]?.total_premium | number }}</td>
                     </tr>
                 </table>
             </div>
@@ -64,13 +69,15 @@
         <div style="margin-top: 40px;">
             <div class="treaty">Please select a treaty below</div>
             <div class="treaty-label">Treaty</div>
+            <form [formGroup]="treatyForm">
             <div class="col-lg-4 col-md-4 col-sm-12">
-                <select class="form-select" id="premium_mask_short_description" formControlName="premiumMask">
-                    <ng-container *ngFor="let mask">
-                        <option [value]="mask['pmas_code']">{{ mask['pmas_sht_desc'] | titlecase }}</option>
-                    </ng-container>
-                </select>
+                    <select class="form-select" id="treaty" formControlName="treaty"> 
+                        <ng-container *ngFor="let treatyItems of treaty">
+                            <option [value]="treatyItems['ta_code']">{{ treatyItems['ta_desc'] | titlecase }}</option>
+                        </ng-container>
+                    </select>
             </div>
+        </form>
         </div>
 
         <div class="reinsurance-params">Reinsurance parameters</div>
