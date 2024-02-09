@@ -210,6 +210,10 @@ p-multiSelect {
     line-height: normal;
 }
 
+.stepper {
+    background-color: #F5F6F8;
+}
+
 @media screen and (max-width: 800px) {
     .container {
       width: 100%;

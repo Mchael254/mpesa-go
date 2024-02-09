@@ -1,7 +1,11 @@
 <div class="container">  
-    <div class="container">
+    <!-- <div class="container">
       <app-stepper></app-stepper>
-      </div>
+      </div> -->
+      <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+        </div>
   <div id="container">
     <!-- <form [formGroup]="shareSummaryForm" class="black-text-form">
         <div class="row">

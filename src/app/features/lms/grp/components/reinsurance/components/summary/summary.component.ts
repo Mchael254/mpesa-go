@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
+import stepData from '../../data/steps.json';
 
 @Component({
   selector: 'app-summary',
@@ -11,6 +12,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   data = 257;
   columnOptions: SelectItem[];
   selectedColumns: string[];
+  steps = stepData;
 
   dummyData = [
     { cvt_desc: 'Member1', dty_descriptiontitlecase: '12345', use_cvr_rate: '10000', premium_mask_short_description: 'Premium1', premium_rate: '500', rate_division_factor: 0.25 },

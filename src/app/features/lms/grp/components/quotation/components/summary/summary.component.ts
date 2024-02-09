@@ -10,6 +10,7 @@ import { QuoteSummaryDTO, MemberSummaryDTO, CategoryDTO, MemberCoverTypeSummaryD
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { SummaryService } from '../../service/summary/summary.service';
 import { SelectItem } from 'primeng/api';
+import stepData from '../../data/steps.json';
 
 
 
@@ -43,6 +44,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   selectedColumnsCovDets: string[];
   columnOptionsMemberDets: SelectItem[];
   selectedColumnsMemberDets: string[];
+  steps = stepData;
 
 
 
