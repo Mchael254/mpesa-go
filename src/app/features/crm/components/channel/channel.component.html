@@ -48,7 +48,7 @@
                 [scrollable]="true"
                 scrollHeight="400px"
                 class="ui-datatable"
-                [globalFilterFields]="['name', 'description']"
+                [globalFilterFields]="['channelName', 'channelDesc']"
               >
                 <ng-template pTemplate="header">
                   <tr>
@@ -63,10 +63,10 @@
                     (click)="onChannelRowSelect(channel)"
                     [class.selected]="selectedChannel === channel"
                   >
-                    <td class="body">{{ channel.code }}</td>
-                    <td class="body">{{ channel.name }}</td>
+                    <td class="body">{{ channel.id }}</td>
+                    <td class="body">{{ channel.channelName }}</td>
                     <td class="body">
-                      {{ channel.description }}
+                      {{ channel.channelDesc }}
                     </td>
                   </tr>
                 </ng-template>
