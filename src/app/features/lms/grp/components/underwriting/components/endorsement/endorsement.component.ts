@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import stepData from '../../data/steps.json';
 
 @Component({
   selector: 'app-endorsement',
@@ -16,6 +17,7 @@ export class EndorsementComponent implements OnInit, OnDestroy {
   endorsementDetailForm: FormGroup;
   coInsuranceForm: FormGroup;
   quotationCalcType = 'D';
+  steps = stepData;
 
   constructor(
     private router: Router,
