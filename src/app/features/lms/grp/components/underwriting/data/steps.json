@@ -1,0 +1,17 @@
+[
+    {
+      "number": 1,
+      "title": "Policy conversion",
+      "link": "/home/lms/grp/underwriting/underwriting"
+    },
+    {
+      "number": 2,
+      "title": "Policy editing",
+      "link": "/home/lms/grp/underwriting/endorsement"
+    },
+    {
+      "number": 3,
+      "title": "Summary",
+      "link": "/home/lms/grp/underwriting/summary"
+    }
+  ]
