@@ -23,5 +23,9 @@ ul.dropdown-menu li:hover {
 
 .p-datatable-tbody tr td,
 p-table tr > th {
-    font-size: 1rem!important;
+    font-size: 0.9em1rem!important;
+}
+
+.dropend .btn-link {
+    font-size: 0.9em;
 }
