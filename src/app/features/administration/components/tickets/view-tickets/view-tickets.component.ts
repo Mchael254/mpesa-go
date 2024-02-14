@@ -36,7 +36,7 @@ export class ViewTicketsComponent implements OnInit {
   public filteredSpringTickets: TicketsDTO[] = [];
   private allSpringTickets: TicketsDTO[] = [];
 
-  pageSize: 5;
+  pageSize: 10;
   ticketModules: TicketModuleDTO[] = [];
 
   showReassignTicketsModal: boolean;
@@ -86,7 +86,7 @@ export class ViewTicketsComponent implements OnInit {
     // this.getAllTicketsFromCubeJs();
     this.createSortForm();
     this.getAllTicketTypes();
-    // this.getAllTicketModules();
+    this.getAllTicketModules();
   }
 
   getAllTicketsFromCubeJs() {
@@ -260,7 +260,7 @@ export class ViewTicketsComponent implements OnInit {
  */
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
-      const selectedTickets = this.selectedTickets;
+      const selectedTickets = this.selectedSpringTickets;
 
     // Check if any products are selected
       if (selectedTickets.length === 0) {
@@ -268,7 +268,7 @@ export class ViewTicketsComponent implements OnInit {
       return;
       }
 
-      const selectedTicketCodes = this.selectedTickets.map(ticket => ticket.systemModule);
+      const selectedTicketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.sysModule);
       this.otpRequestCheck(selectedTicketCodes)
         .then((results) => {
 
@@ -319,14 +319,14 @@ export class ViewTicketsComponent implements OnInit {
       log.info('Value from selectedTickets:', ticketCodes);
 
       const ticketPromises = ticketCodes.map((sysModule) => {
-        const ticket = this.allTickets.find(t => t.systemModule === sysModule);
+        const ticket = this.allSpringTickets.find(t => t.ticket.sysModule === sysModule);
         if (!ticket) {
           return Promise.resolve(null);
         }
 
         if (sysModule === 'Q') {
           log.info('Calling quotation method...');
-          const quotationNo = ticket?.quotationNumber;
+          const quotationNo = ticket?.ticket.quotationNo;
           return this.ticketsService.getQuotation(quotationNo)
             .toPromise()
             .then((response) => {
@@ -335,7 +335,7 @@ export class ViewTicketsComponent implements OnInit {
             });
         } else if (sysModule === 'C') {
           log.info('Calling claim Method...');
-          const claimNo = ticket?.claimNumber;
+          const claimNo = ticket?.ticket.claimNo;
           return this.ticketsService.getClaims(claimNo)
             .toPromise()
             .then((response) => {
@@ -344,7 +344,7 @@ export class ViewTicketsComponent implements OnInit {
             });
         } else {
           log.info('Calling default method...');
-          const policyCode = ticket?.policyCode.toString();
+          const policyCode = ticket?.ticket.policyCode.toString();
           return this.ticketsService.getUnderWriting(policyCode)
             .toPromise()
             .then((response) => {
@@ -365,7 +365,7 @@ export class ViewTicketsComponent implements OnInit {
   authorizeTickets() {
     this.cdr.detectChanges();
 
-    const ticketCodes = this.selectedTickets.map(ticket => ticket.ticketID);
+    const ticketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.code);
     const username = this.authService.getCurrentUserName();
 
     const ticket = { ticketIds: ticketCodes }; // Format the data as an object with an array of ticket ids
@@ -411,7 +411,7 @@ export class ViewTicketsComponent implements OnInit {
               this.globalMessagingService.displayErrorMessage('Failed', `All ${totalCount} tickets have failed to be authorized`);
             }
             // Clear the selected tickets after authorizing
-          this.selectedTickets = [];
+          this.selectedSpringTickets = [];
           this.cdr.detectChanges();
 
         } else {
@@ -469,7 +469,7 @@ export class ViewTicketsComponent implements OnInit {
 
   checkSelectedTickets(): boolean {
     // Get the selected tickets from the table
-    const selectedTickets = this.selectedTickets;
+    const selectedTickets = this.selectedSpringTickets;
 
     // Check if any ticket is selected
     if (selectedTickets.length === 0) {
@@ -516,10 +516,9 @@ export class ViewTicketsComponent implements OnInit {
       ticketTypes: sortValues.ticketTypes ? sortValues.ticketTypes : '',
       ticketModules: sortValues.ticketModules ? sortValues.ticketModules : ''
     }
-
-    if (payload.ticketModules === '') {
+    /*if (payload.ticketModules === '') {
       return this.filteredSpringTickets =  this.allSpringTickets;
-    }
+    }*/
 
     this.filteredSpringTickets = this.allSpringTickets.filter((t) => {
       return payload.ticketModules === t.ticket.sysModule;
