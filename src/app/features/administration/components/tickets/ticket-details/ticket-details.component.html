@@ -122,8 +122,10 @@
 
     </p-tabPanel>
 
-    <p-tabPanel header="Reinsurance allocations">
-      <app-reinsurance-allocations></app-reinsurance-allocations>
+    <p-tabPanel header="Reinsurance allocations" >
+      <app-reinsurance-allocations *ngIf="policyDetails?.riskInformation"
+        [policyDetails]="policyDetails?.riskInformation"
+      ></app-reinsurance-allocations>
     </p-tabPanel>
     <p-tabPanel header="Authorization">
       <app-authorization-tab></app-authorization-tab>

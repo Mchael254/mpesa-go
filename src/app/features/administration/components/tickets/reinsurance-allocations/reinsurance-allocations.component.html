@@ -22,20 +22,25 @@
     </div>
     <div class="card mt-2 p-2">
       <div class="mb-3">
-        <label class="col-form-label text-primary fw-bold">Risks</label>
-        <button
-          class="btn btn-primary" style="font-size: 12px;">Populate allocations
-        </button>
-        <input
-          type="text" class="form-control mt-2" placeholder="Search for a risk"
-          aria-label="search" aria-describedby="search"
-        />
-        <div class="form-check mt-2">
-          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-          <label class="form-check-label fw-bold text-dark" for="flexCheckDefault">
-            KAL 567J
-          </label>
-        </div>
+
+        <form [formGroup]="risksForm">
+          <label class="col-form-label text-primary fw-bold w-100">Risks</label>
+          <button
+            class="btn btn-primary" style="font-size: 12px;" (click)="populateAllocations()">Populate allocations
+          </button>
+          <input
+            type="text" class="form-control mt-2" placeholder="Search for a risk"
+            aria-label="search" aria-describedby="search"
+          />
+          <div class="form-check mt-2" *ngFor="let riskDetail of riskReinsuranceRiskDetailsData">
+            <input class="form-check-input" type="checkbox" value="true" id="checkboxId"
+            (click)="selectRiskDetails(riskDetail)" [checked]="riskDetail?.checked">
+            <label class="form-label fw-bold text-dark" for="checkboxId">
+              {{riskDetail?.propertyId}}
+            </label>
+          </div>
+        </form>
+
       </div>
     </div>
   </div>
@@ -50,8 +55,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="riskReinsuranceDetails?.length"
+            [value]="riskReinsuranceDetails"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -72,15 +77,19 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-risKCedingDetail>
-              <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
-                <td>FXD</td>
-                <td>5</td>
+              <tr (click)="selectTreatyRiskCeding(risKCedingDetail)">
+                <td>{{risKCedingDetail.prrdCurrent }}</td>
+                <td>{{risKCedingDetail.prrdGrossCompRetention | number}}</td>
+                <td>{{risKCedingDetail.ipuPropertyId}}</td>
+
+<!--                <td>{{risKCedingDetail.ipuItemDesc}}</td>-->
+                <td type="button" class="btn btn-outline-secondary me-2" placement="top" [ngbTooltip]="risKCedingDetail.ipuItemDesc">
+                  {{risKCedingDetail.ipuItemDesc.substring(0,10)}}....
+                </td>
+                <td>{{risKCedingDetail.sclCode}}</td>
                 <td></td>
-                <td>100</td>
+                <td>{{risKCedingDetail.prrdExcessPct}}</td>
+                <td>{{risKCedingDetail.prrdExcessPct}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -99,8 +108,8 @@
                   [resizableColumns]="true"
                   [showCurrentPageReport]="true"
                   [rows]="pageSize || 5"
-                  [totalRecords]="risKCedingDetails?.totalElements"
-                  [value]="risKCedingDetails?.content"
+                  [totalRecords]="reinsuranceRiskDetailsData?.totalElements"
+                  [value]="reinsuranceRiskDetailsData?.content"
                   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                   responsiveLayout="stack"
                   [scrollable]="true"
@@ -123,40 +132,41 @@
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-risKRIDetail>
-                    <tr>
-                      <td>Section SI</td>
-                      <td>Sum insured</td>
-                      <td>600,000</td>
-                      <td>30,000.00</td>
-                      <td>FXD</td>
-                      <td>5</td>
+                    <tr (click)="selectRiskRiSummary(risKRIDetail)">
+                      <td>{{risKRIDetail.treatyShortDescription}}</td>
+                      <td>{{risKRIDetail.rate}}</td>
                       <td></td>
-                      <td>100</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="9">No Treaty RI Detail(s) Found.</td>
+                      <td colspan="10">No Treaty RI Detail(s) Found.</td>
                     </tr>
                   </ng-template>
                 </p-table>
-
                 <form [formGroup]="treatyRISummaryForm">
                   <div class="row g-3 align-items-center mt-5">
                     <div class="col-4 mb-2">
                       <label class="col-form-label">Company net retention</label>
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="companyNetPRate">
+                      <input type="text" class="form-control" formControlName="companyNetPRate">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="companyNetRiAmt">
+                      <input type="text" class="form-control" formControlName="companyNetRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="companyNetCession">
+                      <input type="text" class="form-control" formControlName="companyNetCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="companyNetPremium">
+                      <input type="text" class="form-control" formControlName="companyNetPremium">
                     </div>
                   </div>
 
@@ -165,16 +175,16 @@
                       <label class="col-form-label">Reinsurance pool</label>
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="reinsurancePRate">
+                      <input type="text" class="form-control" formControlName="reinsurancePRate">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="reinsuranceRiAmt">
+                      <input type="text" class="form-control" formControlName="reinsuranceRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="reinsuranceCession">
+                      <input type="text" class="form-control" formControlName="reinsuranceCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="reinsurancePremium">
+                      <input type="text" class="form-control" formControlName="reinsurancePremium">
                     </div>
                   </div>
 
@@ -183,16 +193,16 @@
                       <label class="col-form-label">Treaty cessions</label>
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="treatyPRate">
+                      <input type="text" class="form-control" formControlName="treatyPRate">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="treatyRiAmt">
+                      <input type="text" class="form-control" formControlName="treatyRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="treatyCession">
+                      <input type="text" class="form-control" formControlName="treatyCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="treatyPremium">
+                      <input type="text" class="form-control" formControlName="treatyPremium">
                     </div>
                   </div>
 
@@ -201,16 +211,16 @@
                       <label class="col-form-label">Facre cessions</label>
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="facrePRate">
+                      <input type="text" class="form-control" formControlName="facrePRate">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="facreRiAmt">
+                      <input type="text" class="form-control" formControlName="facreRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="facreCession">
+                      <input type="text" class="form-control" formControlName="facreCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="facrePremium">
+                      <input type="text" class="form-control" formControlName="facrePremium">
                     </div>
                   </div>
 
@@ -220,13 +230,13 @@
                     </div>
                     <div class="col-2"></div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="totalRiAmt">
+                      <input type="text" class="form-control" formControlName="totalRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="totalCession">
+                      <input type="text" class="form-control" formControlName="totalCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="totalPremium">
+                      <input type="text" class="form-control" formControlName="totalPremium">
                     </div>
                   </div>
 
@@ -236,13 +246,13 @@
                     </div>
                     <div class="col-2"></div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="excessRiAmt">
+                      <input type="text" class="form-control" formControlName="excessRiAmt">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="excessCession">
+                      <input type="text" class="form-control" formControlName="excessCession">
                     </div>
                     <div class="col-2">
-                      <input type="number" class="form-control" formControlName="excessPremium">
+                      <input type="text" class="form-control" formControlName="excessPremium">
                     </div>
                   </div>
                 </form>
@@ -260,8 +270,8 @@
                     [resizableColumns]="true"
                     [showCurrentPageReport]="true"
                     [rows]="pageSize || 5"
-                    [totalRecords]="risKCedingDetails?.totalElements"
-                    [value]="risKCedingDetails?.content"
+                    [totalRecords]="treatyParticipantData?.length"
+                    [value]="treatyParticipantData"
                     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                     responsiveLayout="stack"
                     [scrollable]="true"
@@ -283,14 +293,14 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-treatyParticipant>
                       <tr>
-                        <td>Section SI</td>
-                        <td>Sum insured</td>
-                        <td>600,000</td>
-                        <td>30,000.00</td>
-                        <td>FXD</td>
-                        <td>5</td>
-                        <td></td>
-                        <td>100</td>
+                        <td>{{treatyParticipant.partName}}</td>
+                        <td>{{treatyParticipant.cedingRate}}</td>
+                        <td>{{treatyParticipant.reinsurancePremiumTax}}</td>
+                        <td>{{treatyParticipant.premiumTax}}</td>
+                        <td>{{treatyParticipant.sumInsuredAmount}}</td>
+                        <td>{{treatyParticipant.premiumAmount}}</td>
+                        <td>{{treatyParticipant.previousCommision}}</td>
+                        <td>{{treatyParticipant.description}}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
@@ -337,8 +347,8 @@
                     [resizableColumns]="true"
                     [showCurrentPageReport]="true"
                     [rows]="pageSize || 5"
-                    [totalRecords]="risKCedingDetails?.totalElements"
-                    [value]="risKCedingDetails?.content"
+                    [totalRecords]="reinsuranceFacreCedingData?.length"
+                    [value]="reinsuranceFacreCedingData"
                     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                     responsiveLayout="stack"
                     [scrollable]="true"
@@ -361,14 +371,14 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-facreCeding>
                       <tr>
-                        <td>Section SI</td>
-                        <td>Sum insured</td>
-                        <td>600,000</td>
-                        <td>30,000.00</td>
-                        <td>FXD</td>
-                        <td>5</td>
+                        <td>{{facreCeding.agentReinName}}</td>
                         <td></td>
-                        <td>100</td>
+                        <td></td>
+                        <td>{{facreCeding.rate}}</td>
+                        <td>{{facreCeding.amount}}</td>
+                        <td>{{facreCeding.wef}}</td>
+                        <td>{{facreCeding.commissionRate}}</td>
+                        <td></td>
                         <td></td>
                       </tr>
                     </ng-template>
@@ -389,8 +399,8 @@
                     [resizableColumns]="true"
                     [showCurrentPageReport]="true"
                     [rows]="pageSize || 5"
-                    [totalRecords]="risKCedingDetails?.totalElements"
-                    [value]="risKCedingDetails?.content"
+                    [totalRecords]="reinsurancePoolData?.length"
+                    [value]="reinsurancePoolData"
                     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                     responsiveLayout="stack"
                     [scrollable]="true"
@@ -412,19 +422,19 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-reinsurancePool>
                       <tr>
-                        <td>Section SI</td>
-                        <td>Sum insured</td>
-                        <td>600,000</td>
-                        <td>30,000.00</td>
-                        <td>FXD</td>
-                        <td>5</td>
+                        <td>{{reinsurancePool.riskPremiumAmount}}</td>
+                        <td>{{reinsurancePool.riskTrtOwnReturnAmount}}</td>
+                        <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+                        <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
                         <td></td>
-                        <td>100</td>
+                        <td>{{reinsurancePool.reinsurancePoolCommisionRate}}</td>
+                        <td>{{reinsurancePool.reinsurancePoolCommisionAmount}}</td>
+                        <td>{{reinsurancePool.reinsurancePoolVatRate}}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                       <tr>
-                        <td colspan="9">No Treaty Participants Detail(s) Found.</td>
+                        <td colspan="9">No Reinsurance Pool Detail(s) Found.</td>
                       </tr>
                     </ng-template>
                   </p-table>
@@ -460,8 +470,55 @@
                     [resizableColumns]="true"
                     [showCurrentPageReport]="true"
                     [rows]="pageSize || 5"
-                    [totalRecords]="risKCedingDetails?.totalElements"
-                    [value]="risKCedingDetails?.content"
+                    [totalRecords]="reinsuranceXolPremiumData?.length"
+                    [value]="reinsuranceXolPremiumData"
+                    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                    responsiveLayout="stack"
+                    [scrollable]="true"
+                    scrollHeight="400px"
+                    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                  >
+
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Name</th>
+                        <th>Year</th>
+                        <th>Capacity</th>
+                        <th>Comp. own amount</th>
+                        <th>Treaty SI</th>
+                        <th>VMLP SI</th>
+                        <th>Premium rate</th>
+                        <th>Premium</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-reinsuranceXolPremium>
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td>{{reinsuranceXolPremium.arrangementCapacity}}</td>
+                        <td>{{reinsuranceXolPremium.compOwnAmount}}</td>
+                        <td>{{reinsuranceXolPremium.actualTreatySumInsured}}</td>
+                        <td>{{reinsuranceXolPremium.actualVmlpSumInsured}}</td>
+                        <td>{{reinsuranceXolPremium.premiumRate}}</td>
+                        <td>{{reinsuranceXolPremium.premium}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="8">No Reinsurance Xol Premium Detail(s) Found.</td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                <div>
+                  <p-table
+                    [autoLayout]="true"
+                    [rowHover]="true"
+                    [resizableColumns]="true"
+                    [showCurrentPageReport]="true"
+                    [rows]="pageSize || 5"
+                    [totalRecords]="reXolPremiumParticipantData?.length"
+                    [value]="reXolPremiumParticipantData"
                     [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
                     responsiveLayout="stack"
                     [scrollable]="true"
@@ -473,29 +530,27 @@
                       <tr>
                         <th>Reinsurer</th>
                         <th>Rate</th>
-                        <th>Rein prem tax</th>
                         <th>Prem tax</th>
+                        <th>Rein prem tax</th>
                         <th>Sum reinsured</th>
                         <th>Premium</th>
                         <th>Commission</th>
-                        <th>Treaty</th>
                       </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-treatyParticipant>
+                    <ng-template pTemplate="body" let-reXolPremiumParticipant>
                       <tr>
-                        <td>Section SI</td>
-                        <td>Sum insured</td>
-                        <td>600,000</td>
-                        <td>30,000.00</td>
-                        <td>FXD</td>
-                        <td>5</td>
-                        <td></td>
-                        <td>100</td>
+                        <td>{{reXolPremiumParticipant.agentName}}</td>
+                        <td>{{reXolPremiumParticipant.participantCedeRate}}</td>
+                        <td>{{reXolPremiumParticipant.participantsPremiumTax}}</td>
+                        <td>{{reXolPremiumParticipant.participantsReinPremiumTax}}</td>
+                        <td>{{reXolPremiumParticipant.participantsSIAmountPcur}}</td>
+                        <td>{{reXolPremiumParticipant.participantPremiumAmountPcur}}</td>
+                        <td>{{reXolPremiumParticipant.participantCommAmountPcur}}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                       <tr>
-                        <td colspan="9">No Treaty Participants Detail(s) Found.</td>
+                        <td colspan="7">No Reinsurance Xol Premium Participants Detail(s) Found.</td>
                       </tr>
                     </ng-template>
                   </p-table>
@@ -514,8 +569,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="previousCedingData?.length"
+            [value]="previousCedingData"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -535,14 +590,14 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-previousCeding>
-              <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
-                <td>FXD</td>
-                <td>5</td>
-                <td></td>
+              <tr (click)="selectPreviousCedingDetails(previousCeding)">
+                <td>{{ previousCeding.grossCompanyRetention | number }}</td>
+                <td>{{ previousCeding.companyRetention | number }}</td>
+                <td>{{ previousCeding.facreAmount | number }}</td>
+                <td>{{ previousCeding.companyRetentionRate | number }}</td>
+                <td>{{ previousCeding.riskPercentage | number }}</td>
+                <td>{{ previousCeding.topLocation | number }}</td>
+                <td>{{ previousCeding.reinsurancePremium | number }}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -559,8 +614,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="treatyCessionsData?.totalElements"
+            [value]="treatyCessionsData?.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -578,15 +633,15 @@
             </ng-template>
             <ng-template pTemplate="body" let-treatyCession>
               <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
+                <td>{{treatyCession.treatyShortDescription}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
               <tr>
-                <td colspan="9">No Treaty Cessions Detail(s) Found.</td>
+                <td colspan="4">No Treaty Cessions Detail(s) Found.</td>
               </tr>
             </ng-template>
           </p-table>
@@ -598,8 +653,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="previousFacreCedingData?.length"
+            [value]="previousFacreCedingData"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -618,16 +673,16 @@
             </ng-template>
             <ng-template pTemplate="body" let-facreCession>
               <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
-                <td>FXD</td>
+                <td>{{facreCession.agentReinName}}</td>
+                <td></td>
+                <td>{{facreCession.rate}}</td>
+                <td>{{facreCession.premiumAmount}}</td>
+                <td>{{facreCession.commissionAmount}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
               <tr>
-                <td colspan="9">No Facre Cessions Detail(s) Found.</td>
+                <td colspan="4">No Facre Cessions Detail(s) Found.</td>
               </tr>
             </ng-template>
           </p-table>
@@ -640,8 +695,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="treatySetupsData?.totalElements"
+            [value]="treatySetupsData?.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -664,15 +719,15 @@
             </ng-template>
             <ng-template pTemplate="body" let-treatySetup>
               <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
-                <td>FXD</td>
-                <td>5</td>
+                <td>{{treatySetup.reinsuranceTreatyTypeShortDescription}}</td>
+                <td>{{treatySetup.treatyTypeDescription}}</td>
                 <td></td>
+                <td>{{treatySetup.reinsuranceRateType}}</td>
+                <td>{{treatySetup.underWritingYear}}</td>
+                <td>{{treatySetup.reinsuranceCommissionRate}}</td>
                 <td></td>
-                <td></td>
+                <td>{{treatySetup.reinsuranceLimit}}</td>
+                <td>{{treatySetup.reinsuranceCedeRate}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -690,8 +745,8 @@
             [resizableColumns]="true"
             [showCurrentPageReport]="true"
             [rows]="pageSize || 5"
-            [totalRecords]="risKCedingDetails?.totalElements"
-            [value]="risKCedingDetails?.content"
+            [totalRecords]="policyFacreSetupsData?.totalElements"
+            [value]="policyFacreSetupsData?.content"
             [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
             responsiveLayout="stack"
             [scrollable]="true"
@@ -713,13 +768,13 @@
             </ng-template>
             <ng-template pTemplate="body" let-policyFacreCeding>
               <tr>
-                <td>Section SI</td>
-                <td>Sum insured</td>
-                <td>600,000</td>
-                <td>30,000.00</td>
-                <td>FXD</td>
-                <td>5</td>
                 <td></td>
+                <td></td>
+                <td>{{policyFacreCeding.amountOrRate}}</td>
+                <td>{{policyFacreCeding.rate}}</td>
+                <td>{{policyFacreCeding.acceptedDate}}</td>
+                <td>{{policyFacreCeding.commissionRate}}</td>
+                <td>{{policyFacreCeding.managmentType}}</td>
                 <td></td>
               </tr>
             </ng-template>
