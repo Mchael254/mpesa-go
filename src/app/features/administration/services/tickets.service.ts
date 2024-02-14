@@ -355,7 +355,7 @@ export class TicketsService {
 
   sortTickets(
     pageNo: number = 0,
-    pageSize: number = 5,
+    pageSize: number = 10,
     fromDate: string,
     toDate: string,
     type: string,

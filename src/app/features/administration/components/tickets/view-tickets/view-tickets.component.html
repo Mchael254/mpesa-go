@@ -300,6 +300,7 @@
                scrollHeight="400px"
                responsiveLayout="scroll"
                [resizableColumns]="true"
+               [globalFilterFields]="globalFilterFields"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -370,7 +371,7 @@
               {{ ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :
               ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo :
                 ticket?.ticket.sysModule === 'P' ? ticket?.ticket.policyNo : ''
-                === '' ? '' : '' }}
+                === '' ? ticket?.ticket.policyNo : '' }}
             <td class="body">{{ ticket.clientName }}</td>
             <td class="body">{{ ticket.agentName }}</td>
             <td class="body">{{ ticket.ticket.reporter }}</td>
