@@ -11,7 +11,8 @@
     "ticket_services": "turnquest",
     "lms": "lms",
     "api":"api",
-    "json":"json"
+    "json":"json",
+    "gis_reinsurance": "gis/reinsurance"
 
   },
   "organization": {
