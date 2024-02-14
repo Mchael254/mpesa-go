@@ -8,3 +8,13 @@ export interface RequiredDocumentDTO {
   organizationName: string;
   shortDescription: string;
 }
+
+export interface AssignedToDTO {
+  id: number;
+  isMandatory: string;
+  requiredDocumentCode: number;
+  requiredDocumentName: string;
+  accountType: string;
+  accountSubTypeCode: number;
+  accountSubType: string;
+}

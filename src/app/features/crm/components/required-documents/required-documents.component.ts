@@ -4,7 +4,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { RequiredDocumentsService } from '../../services/required-documents.service';
 import { untilDestroyed } from '../../../../shared/services/until-destroyed';
-import { RequiredDocumentDTO } from '../../data/required-document';
+import {
+  AssignedToDTO,
+  RequiredDocumentDTO,
+} from '../../data/required-document';
 import { Logger } from '../../../../shared/services/logger/logger.service';
 import { Table } from 'primeng/table';
 import { EntityService } from '../../../../features/entities/services/entity/entity.service';
@@ -27,12 +30,15 @@ export class RequiredDocumentsComponent implements OnInit {
   @ViewChild('assignDocumentTable') assignDocumentTable: Table;
   @ViewChild('documentConfirmationModal')
   documentConfirmationModal!: ReusableInputComponent;
+  @ViewChild('documentAssignConfirmationModal')
+  documentAssignConfirmationModal!: ReusableInputComponent;
 
   public createDocumentForm: FormGroup;
   public createAssignDocumentForm: FormGroup;
   public documentsData: RequiredDocumentDTO[];
+  public AssignDocumentData: AssignedToDTO[];
   public selectedDocument: RequiredDocumentDTO;
-  public selectedAssignDocument: any;
+  public selectedAssignDocument: AssignedToDTO;
   public accountType: any[] = [];
   public accounts: PartyTypeDto[] = [];
 
@@ -264,6 +270,37 @@ export class RequiredDocumentsComponent implements OnInit {
       });
   }
 
+  fetchRequiredDocumentAssignments(documentId: number) {
+    this.documentService
+      .getRequiredDocumentAssignments(documentId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.AssignDocumentData = data;
+            log.info(
+              'Fetched Required Documents Assignments',
+              this.AssignDocumentData
+            );
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            err?.error?.errors[0]
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
   /**
    * The function "onDocumentsRowSelect" selects a document and retrieves account data based on the
    * selected document's account type.
@@ -272,7 +309,13 @@ export class RequiredDocumentsComponent implements OnInit {
    */
   onDocumentsRowSelect(document: RequiredDocumentDTO) {
     this.selectedDocument = document;
+    this.fetchRequiredDocumentAssignments(this.selectedDocument.id);
     this.getAccountDataByAccountType(this.selectedDocument.accountType);
+  }
+
+  onDocumentAssignmentRowSelect(assignedDocument: AssignedToDTO) {
+    this.selectedAssignDocument = assignedDocument;
+    this.getAccountDataByAccountType(this.selectedAssignDocument.accountType);
   }
 
   /**
@@ -512,7 +555,7 @@ export class RequiredDocumentsComponent implements OnInit {
   confirmDocumentDelete() {
     if (this.selectedDocument) {
       const documentId = this.selectedDocument.id;
-      this.documentService.deleteRequiredDocuments(documentId).subscribe({
+      this.documentService.deleteRequiredDocument(documentId).subscribe({
         next: (data) => {
           if (data) {
             this.globalMessagingService.displaySuccessMessage(
@@ -543,9 +586,9 @@ export class RequiredDocumentsComponent implements OnInit {
 
   saveAssignDocument() {
     this.submitted = true;
-    this.createDocumentForm.markAllAsTouched();
+    this.createAssignDocumentForm.markAllAsTouched();
 
-    if (this.createDocumentForm.invalid) {
+    if (this.createAssignDocumentForm.invalid) {
       const invalidControls = Array.from(
         document.querySelectorAll('.is-invalid')
       ) as Array<HTMLInputElement | HTMLSelectElement>;
@@ -583,9 +626,162 @@ export class RequiredDocumentsComponent implements OnInit {
       }
       return;
     }
+    this.closeAssignDocumentModal();
+
+    if (!this.selectedAssignDocument) {
+      const requiredDocumentAssignFormValues =
+        this.createAssignDocumentForm.getRawValue();
+
+      const requiredDocumentId = this.selectedDocument.id;
+
+      const saveRequiredDocumentAssign: AssignedToDTO = {
+        id: null,
+        isMandatory: requiredDocumentAssignFormValues.default,
+        requiredDocumentCode: this.selectedDocument.id,
+        requiredDocumentName: this.selectedDocument.description,
+        accountType: requiredDocumentAssignFormValues.account,
+        accountSubTypeCode: null,
+        accountSubType: requiredDocumentAssignFormValues.accountType,
+      };
+      this.documentService
+        .createRequiredDocumentAssignment(
+          saveRequiredDocumentAssign,
+          requiredDocumentId
+        )
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created a Required Document Assignment'
+              );
+              this.createAssignDocumentForm.reset();
+              this.fetchRequiredDocumentAssignments(requiredDocumentId);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    } else {
+      const requiredDocumentId = this.selectedDocument.id;
+      const requiredDocAssignmentId = this.selectedAssignDocument.id;
+
+      const requiredDocumentAssignFormValues =
+        this.createAssignDocumentForm.getRawValue();
+
+      const saveRequiredDocumentAssign: AssignedToDTO = {
+        id: requiredDocAssignmentId,
+        isMandatory: requiredDocumentAssignFormValues.default,
+        requiredDocumentCode: requiredDocumentId,
+        requiredDocumentName: this.selectedAssignDocument.requiredDocumentName,
+        accountType: requiredDocumentAssignFormValues.account,
+        accountSubTypeCode: this.selectedAssignDocument.accountSubTypeCode,
+        accountSubType: requiredDocumentAssignFormValues.accountType,
+      };
+      this.documentService
+        .updateRequiredDocumentAssignment(
+          requiredDocAssignmentId,
+          saveRequiredDocumentAssign,
+          requiredDocumentId
+        )
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated a Required Document Assignment'
+              );
+              this.createAssignDocumentForm.reset();
+              this.fetchRequiredDocumentAssignments(requiredDocumentId);
+              this.selectedAssignDocument = null;
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    }
   }
 
-  editAssignDocument() {}
+  editAssignDocument() {
+    if (this.selectedAssignDocument) {
+      this.openAssignDocumentModal();
+      this.createAssignDocumentForm.patchValue({
+        account: this.selectedAssignDocument.accountType,
+        accountType: this.selectedAssignDocument.accountSubType,
+        default: this.selectedAssignDocument.isMandatory,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Required Document Assignment is selected!.'
+      );
+    }
+  }
 
-  deleteAssignDocument() {}
+  deleteAssignDocument() {
+    this.documentAssignConfirmationModal.show();
+  }
+
+  confirmDocumentAssignDelete() {
+    if (this.selectedAssignDocument) {
+      const requiredDocumentId = this.selectedDocument.id;
+      const requiredDocAssignmentId = this.selectedAssignDocument.id;
+      this.documentService
+        .deleteRequiredDocumentAssignment(
+          requiredDocAssignmentId,
+          requiredDocumentId
+        )
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deleted Required Documents'
+              );
+              this.fetchRequiredDocumentAssignments(requiredDocumentId);
+              this.selectedAssignDocument = null;
+              this.selectedDocument = null;
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.errors[0]
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    }
+  }
 }
