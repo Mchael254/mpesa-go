@@ -3,6 +3,7 @@ import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger } from 'src/app/shared/services/logger/logger.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -64,6 +65,9 @@ export class QuotationSummaryComponent {
   limitsList:any[];
   excesses:any;
   excessesList:any[];
+  subclassList:any;
+  productSubclass:any;
+  allSubclassList:any;
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -72,6 +76,7 @@ export class QuotationSummaryComponent {
     private globalMessagingService: GlobalMessagingService,
     public  agentService:IntermediaryService,
     public productService:ProductService,
+    public subclassService:SubclassesService,
     public activatedRoute:ActivatedRoute,
     public authService:AuthService,
     private messageService: GlobalMessagingService,
@@ -113,6 +118,7 @@ export class QuotationSummaryComponent {
     console.log(this.quotationDetails , "MORE DETAILS TEST")
     this.sumInsured = sessionStorage.getItem('limitAmount')
     this.createEmailForm()
+    this.loadAllSubclass();
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
@@ -501,6 +507,31 @@ internal(){
       }
     })
 
+  }
+  loadAllSubclass(){
+    return this.subclassService.getAllSubclasses().subscribe(data=>{
+      this.allSubclassList=data;
+      log.debug(this.allSubclassList," from the service All Subclass List");
+   
+    })
+  }
+  getProductSubclass(code){
+    this.productService.getProductSubclasses(code).subscribe(
+      {
+        next:(res)=>{
+          this.subclassList = res._embedded.product_subclass_dto_list;
+          log.debug(this.subclassList, 'Product Subclass List');
+    
+    
+          this.subclassList.forEach(element => {
+            const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
+            this.productSubclass  = matchingSubclasses // Merge matchingSubclasses into allMatchingSubclasses
+          });
+      
+          log.debug("Retrieved Subclasses by code", this.productSubclass);
+              }
+      }
+    )
   }
 
 }
