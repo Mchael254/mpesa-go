@@ -548,7 +548,7 @@ updateCoverToDate() {
   
       // Filter clauseList based on subClauseCodes
       this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
-  
+      sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
       log.debug('Clause hope List', this.clauseList);
       log.debug('ClauseSelectdList', this.selectedClauseList);
     });

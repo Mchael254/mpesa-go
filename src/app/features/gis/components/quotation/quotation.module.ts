@@ -19,7 +19,7 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
-
+import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
@@ -50,7 +50,8 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     InputTextModule,
     DropdownModule,
     MenuModule,
-    PanelMenuModule
+    PanelMenuModule,
+    TreeModule
   ],
   
 })
