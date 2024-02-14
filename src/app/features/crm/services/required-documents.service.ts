@@ -2,9 +2,10 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../../core/config/app-config-service';
 import { Observable, combineLatest, map, of } from 'rxjs';
-import { RequiredDocumentDTO } from '../data/required-document';
+import { AssignedToDTO, RequiredDocumentDTO } from '../data/required-document';
 import { AccountTypeDTO } from '../../entities/data/AgentDTO';
 import { ProviderTypeDto } from '../../entities/data/ServiceProviderDTO';
+import { ClientTypeDTO } from '../../entities/data/ClientDTO';
 
 interface DropdownItem {
   label: string;
@@ -73,7 +74,7 @@ export class RequiredDocumentsService {
     );
   }
 
-  deleteRequiredDocuments(documentId: number) {
+  deleteRequiredDocument(documentId: number) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -84,15 +85,80 @@ export class RequiredDocumentsService {
     );
   }
 
-  getAgentAccountType(organizationId: number): Observable<DropdownItem[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+  getRequiredDocumentAssignments(
+    requiredDocumentId: number
+  ): Observable<AssignedToDTO[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+
+    return this.http.get<AssignedToDTO[]>(
+      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments`,
+      {
+        headers: headers,
+      }
+    );
+  }
+
+  createRequiredDocumentAssignment(
+    data: AssignedToDTO,
+    requiredDocumentId: number
+  ): Observable<AssignedToDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.post<AssignedToDTO>(
+      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments`,
+      JSON.stringify(data),
+      { headers: headers }
+    );
+  }
+
+  updateRequiredDocumentAssignment(
+    requiredDocAssignmentId: number,
+    data: AssignedToDTO,
+    requiredDocumentId: number
+  ): Observable<AssignedToDTO> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.put<AssignedToDTO>(
+      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
+      data,
+      { headers: headers }
+    );
+  }
+
+  deleteRequiredDocumentAssignment(
+    requiredDocAssignmentId: number,
+    requiredDocumentId: number
+  ) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.delete<AssignedToDTO>(
+      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
+      { headers: headers }
+    );
+  }
+
+  getAgentAccountType(organizationId?: number): Observable<DropdownItem[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
     return this.http
-      .get<AccountTypeDTO[]>(`/${baseUrl}/account-types`, {
+      .get<AccountTypeDTO[]>(`/${this.baseAccUrl}/account-types`, {
         headers: headers,
         params: params,
       })
@@ -125,12 +191,32 @@ export class RequiredDocumentsService {
       );
   }
 
-  getClientsType(): Observable<DropdownItem[]> {
-    const data = [
-      { label: 'Individual', value: 'I' },
-      { label: 'Corporate', value: 'C' },
-    ];
-    return of(data);
+  getClientsType(organizationId?: number): Observable<DropdownItem[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.http
+      .get<ClientTypeDTO[]>(`/${this.baseAccUrl}/client-types`, {
+        headers: headers,
+        params: params,
+      })
+      .pipe(
+        map((data) =>
+          data.map((item) => ({
+            label: item.clientTypeName,
+            value: item.description,
+          }))
+        )
+      );
   }
 
   // Method to fetch all data based on the selected client type
@@ -141,7 +227,7 @@ export class RequiredDocumentsService {
         return this.getServiceProviderType();
       case 'A':
       case 'AGENT':
-        return this.getAgentAccountType(2);
+        return this.getAgentAccountType();
       case 'C':
       case 'CLIENT':
         return this.getClientsType();
@@ -154,7 +240,7 @@ export class RequiredDocumentsService {
   getAllCombinedData(): Observable<DropdownItem[]> {
     return combineLatest([
       this.getServiceProviderType(),
-      this.getAgentAccountType(2),
+      this.getAgentAccountType(),
       this.getClientsType(),
     ]).pipe(
       map(([serviceProviderData, agentData, clientsData]) => {
