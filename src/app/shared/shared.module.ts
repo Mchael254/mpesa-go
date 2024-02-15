@@ -223,6 +223,8 @@ const SERVICES = [
         CopyrightFooterComponent,
         DynamicChartComponent,
         SpinnerComponent,
+        VerticalStepperComponent,
+        HorizontalStepperComponent,
         DynamicFormComponent,
         DynamicBreadcrumbComponent,
         StepperComponent,

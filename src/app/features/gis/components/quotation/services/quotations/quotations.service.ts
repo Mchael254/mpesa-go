@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
-import { environment } from 'src/environments/environment';
-import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+import { environment } from '../../../../../../../environments/environment';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
 @Injectable({
   providedIn: 'root'
 })
