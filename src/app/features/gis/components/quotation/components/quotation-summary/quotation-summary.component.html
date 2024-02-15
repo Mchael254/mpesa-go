@@ -1032,10 +1032,16 @@
               <form [formGroup]="emailForm" >
 
                 <div class="mb-3 row">
-                    <label class="col-sm-3 col-form-label" id="messageLabel">Phone No.</label>
+                    <label class="col-sm-3 col-form-label" id="messageLabel">Receiver Phone No.</label>
                     <div class="col-sm-9">
-                      <input type="text" class="form-control" formControlName="address" >
+                      <input type="text" class="form-control" formControlName="recipients" >
                     </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label" id="messageLabel">Sender Phone No.</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" formControlName="sender" >
+                    </div>  
                   </div>
 
                   <div class="mb-3 row">
@@ -1050,7 +1056,7 @@
                 
               </form>
              
-              <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="emaildetails()">Send Email</button>
+              <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="sendSms()">Send SMS</button>
             </div>
         
         
