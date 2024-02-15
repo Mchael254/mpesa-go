@@ -4,7 +4,7 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import { subclassSection } from '../../data/gisDTO';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

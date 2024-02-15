@@ -114,6 +114,7 @@
 
 
 
+
 /* Your existing CSS for the stepper and steps */
 .stepper {
   display: flex;
@@ -192,3 +193,12 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;}
+/*Implementing new design for the stepper*/
+.done {
+  background-color:rgba(0, 82, 155, 0.6);
+} 
+.step-active{
+  background-color: var(--primary-color);
+  border: 2px solid #FFF;
+  box-shadow: 0 0 0 3px var(--primary-color);
+}

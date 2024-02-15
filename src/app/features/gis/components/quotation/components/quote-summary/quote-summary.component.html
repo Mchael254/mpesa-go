@@ -125,7 +125,15 @@
                                 <td>{{ productDesc}}</td>
                                 <td>{{ riskItem.propertyId }}</td>
                                 <td>{{ riskItem.covertypeShortDescription }}</td>
-                                <td><!-- Add your options here --></td>
+                                <td>
+                                    <div class="options">
+                                      <button id="ellipsis" pButton icon="pi pi-ellipsis-h" (click)="showOptions(item)"></button>
+                                      <div class="options-content" *ngIf="item.showOptions">
+                                        <button id="optionsButton" pButton icon="pi pi-pencil" pButton label="Edit" (click)="editItem(item)"></button>
+                                        <button id="optionsButton-delete" pButton icon="pi pi-trash" pButton label="Delete" (click)="deleteItem(item)"></button>
+                                      </div>
+                                    </div>
+                                  </td>
                             </tr>
                         </ng-container>
                     </ng-template>

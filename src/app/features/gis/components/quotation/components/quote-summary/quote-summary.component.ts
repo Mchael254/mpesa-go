@@ -1,22 +1,20 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import stepData from '../../data/steps.json';
 import {Logger} from '../../../../../../shared/shared.module';
 import { FormBuilder } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
+import { ProductService } from '../../../../services/product/product.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
+
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
 import { Router } from '@angular/router';
-// import { Router } from '@angular/router';
 
 const log = new Logger('QuoteSummaryComponent');
 
@@ -72,26 +70,21 @@ export class QuoteSummaryComponent {
     private clientService:ClientService,
     public sharedService:SharedQuotationsService,
     private router: Router,
+    private ngZone: NgZone
 
-    // private datePipe: DatePipe
+   
 
   ) { 
     
   }
 
   ngOnInit(): void{
-    // this.quickQuotationCode=this.sharedService.getQuickQuotationDetails();
-    // log.debug("Quick Quote Quotation Number:",this.quickQuotationCode );
+    
     const quotationNumberString = sessionStorage.getItem('quotationNumber');
     this.coverQuotationNo = JSON.parse(quotationNumberString);
 
-    // this.coverQuotationNo=this.sharedService.getSelectedCover();
-
     const riskLevelPremiumString = sessionStorage.getItem('riskLevelPremium');
     this.passedPremium = JSON.parse(riskLevelPremiumString);
-
-    // this.passedPremium=this.sharedService.getPremiumResponse();
-
     log.debug("Selected Cover Quotation Number:",this.coverQuotationNo );
     log.debug("Passed Premium :",this.passedPremium );
 
@@ -115,9 +108,7 @@ export class QuoteSummaryComponent {
       this.coverTo=this.quotationDetails.coverTo;
       log.debug("Cover To:",this.coverTo)
       
-      // Format coverFrom and coverTo using DatePipe
-      // this.formattedCoverFrom = this.formatDate(this.coverFrom);
-      // this.formattedCoverTo = this.formatDate(this.coverTo);
+      
 
       this.productInformation=this.quotationDetails.quotationProduct;
       log.debug("Product Information:",this.productInformation);
@@ -136,10 +127,7 @@ export class QuoteSummaryComponent {
 
     })
   }
-  // private formatDate(dateString: string): string {
-  //   const date = new Date(dateString);
-  //   return this.datePipe.transform(date, 'MMMM d, yyyy');
-  // }
+ 
 
  
   showOptions(item: any): void {
@@ -147,12 +135,10 @@ export class QuoteSummaryComponent {
   }
 
   editItem(item: any): void {
-    // Add your edit logic here
     console.log('Edit item clicked', item);
   }
 
   deleteItem(item: any): void {
-    // Add your delete logic here
     console.log('Delete item clicked', item);
   }
   getClient(){
@@ -184,16 +170,17 @@ export class QuoteSummaryComponent {
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
 
-    // this.sharedService.setAddAnotherRisk(this.quotationDetails,this.clientDetails);
-    // this.sharedService.setIsAddRisk(this.isAddRisk);
-
+   
     log.debug("isAddRisk:",this.isAddRisk)
     log.debug("quotation number:",this.quotationNo)
     log.debug("Quotation Details:",this.quotationDetails)
     log.debug("Selected Client Details",this.clientDetails);
 
-    this.router.navigate(['/home/gis/quotation/quick-quote'])
-    
+    // this.router.navigate(['/home/gis/quotation/quick-quote'])
+     // Use NgZone.run to execute the navigation code inside the Angular zone
+     this.ngZone.run(() => {
+      this.router.navigate(['/home/gis/quotation/quick-quote']);
+    });
   }
 
   acceptQuote(){
