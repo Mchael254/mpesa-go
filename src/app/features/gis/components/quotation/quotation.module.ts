@@ -5,8 +5,8 @@ import { QuotationRoutingModule } from './quotation-routing.module';
 import { ListQuotationsComponent } from './components/list-quotations/list-quotations.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
+import { SharedModule } from '../../../../shared/shared.module';
 import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
@@ -36,7 +36,7 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     ImportRisksComponent,
     QuoteAssigningComponent,
     RiskSectionDetailsComponent,
-    QuotationSummaryComponent
+    QuotationSummaryComponent,
   ],
   imports: [
     CommonModule,

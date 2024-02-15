@@ -5,7 +5,7 @@ import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
 import { PremiumComputationRequest, quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -148,14 +148,6 @@ export class QuotationsService {
     })
   }
   premiumComputationEngine(payload:PremiumComputationRequest):Observable<any>{
-    console.log("Premium Payload",JSON.stringify(payload))
-    console.log("Premium Payload",payload)
-    payload.risks.forEach(risk =>{
-      risk.limits.forEach(limit =>{
-        console.log("Limit",limit)
-
-      })
-    })
    return  this.http.post<any>(`/${this.computationBaseUrl}/api/v1/premium-computation`,JSON.stringify(payload),this.httpOptions)
      console.log("Premium Payload after",payload)
 

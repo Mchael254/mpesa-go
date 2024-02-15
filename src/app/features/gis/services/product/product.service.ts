@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
-import {environment} from "../../../../../environments/environment";
+import { environment } from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
