@@ -6,35 +6,33 @@ import { Logger } from '../../../../../../shared/services';
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { QuotationsService } from '../../../../services/quotations/quotations.service';
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { ClientService } from '../../../../../entities/services/client/client.service';
 import stepData from '../../data/steps.json'
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
+import { ProductService } from '../../../../services/product/product.service';
 import { Binders, Premiums, Products, Sections, Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection } from '../../../setups/data/gisDTO';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Calendar } from 'primeng/calendar';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-// import { Router } from '@angular/router';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { CountryDto } from 'src/app/shared/data/common/countryDto';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto } from '../../../../../../shared/data/common/countryDto';
 import { Table } from 'primeng/table';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
-import { finalize, forkJoin, mergeMap, switchMap, tap } from 'rxjs';
-import { ClientBranchesDto, ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import { ClientBranchesDto, ClientDTO } from '../../../../../entities/data/ClientDTO';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
+
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Limit, PremiumComputationRequest, Risk } from '../../data/quotationsDTO';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service'
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-// import { SentenceCasePipe } from 'src/app/shared/pipes/sentence-case/sentence-case.pipe';
+import { untilDestroyed } from '../../../../../../shared/services/until-destroyed';
 
+import { Observable, tap } from 'rxjs';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -50,7 +48,7 @@ export class QuickQuoteFormComponent {
 
 
   productList: Products[];
-  ProductDescriptionArray:any=[];
+  ProductDescriptionArray: any = [];
   selectedProduct: Products[];
   selectedProductCode: any;
 
@@ -126,6 +124,7 @@ export class QuickQuoteFormComponent {
   user: any;
   userDetails: any
   userBranchId: any;
+  userBranchName:any;
   branchList: OrganizationBranchDto[];
   coverFromDate: string;
   coverToDate: string;
@@ -138,9 +137,9 @@ export class QuickQuoteFormComponent {
   carRegNoHasError: boolean = false;
 
   passedQuotation: any;
-  passedQuotationNo:any;
-  passedQuotationCode:any
-  PassedClientDetails:any;
+  passedQuotationNo: any;
+  passedQuotationCode: any
+  PassedClientDetails: any;
 
   // isAddRisk:boolean=false;
   isAddRisk: boolean;
@@ -153,8 +152,12 @@ export class QuickQuoteFormComponent {
   allPremiumRate: Premiums[] = []
   additionalLimit = [];
   // addedBenefit:subclassCoverTypes;
-  addedBenefitsList:[]=[];
+  addedBenefitsList: [] = [];
   @ViewChild('dt1') dt1: Table | undefined;
+  component: { code: number; date_with_effect_from: string; date_with_effect_to: string; bind_remarks: string; };
+
+
+  passedSections: any[] = [];
 
   constructor(
     public fb: FormBuilder,
@@ -175,60 +178,26 @@ export class QuickQuoteFormComponent {
     public sectionService: SectionsService,
     public countryService: CountryService,
     private router: Router,
-    private apiService: ApiService,
     private ngxSpinner: NgxSpinnerService,
     public premiumRateService: PremiumRateService,
     public globalMessagingService: GlobalMessagingService,
-    // private sentenceCase: SentenceCasePipe
 
 
   ) { }
 
   ngOnInit(): void {
-    // this.apiService.GET('email/3/send',API_CONFIG.NOTIFICATION_BASE_URL).subscribe(data =>console.log(data)
-    // )
-    // this.quotationService.test().subscribe(res=>console.log(res))
-    // this.sharedFunctionService.getClickEvent().subscribe(()=>{
-    //   log.debug("This is who we are")
-    //   this.setLimitPremiumDto(304);
-    //   log.debug("Try it out")
-    //   })
-
     this.loadAllproducts();
     this.loadAllClients();
     this.loadAllQoutationSources();
     this.LoadAllFormFields(this.selectedProductCode);
     this.dynamicForm = this.fb.group({});
-    // this.createForm();
-    this.createRiskDetailsForm();
     this.createPersonalDetailsForm();
-
-    //   const dynamicData = sessionStorage.getItem('dynamicFormData');
-    //   if (dynamicData) {
-    //     const parsedDynamicData = JSON.parse(dynamicData);
-    //     this.dynamicForm.setValue(parsedDynamicData);
-
-    //   }
-    this.createSectionDetailsForm();
+    this.createForm();
     this.getuser();
     this.loadAllSubclass();
-    // this.getCountries();
     this.populateYears();
 
     const QuickFormDetails = sessionStorage.getItem('riskFormData');
-    // const storedData=sessionStorage.getItem("Added Benefit");
-    // const addedBenefit = storedData ? JSON.parse(storedData) : [];
-    // this.additionalLimit.push(...addedBenefit);
-    // // this.addedBenefitsList.push(this.addedBenefit);
-    // log.debug("AddedBenefit",storedData)
-    // log.debug("Test it out additional limits",this.additionalLimit)
-
-
-
-
-
-
-
 
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
     const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
@@ -236,15 +205,10 @@ export class QuickQuoteFormComponent {
 
     const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
     this.PassedClientDetails = JSON.parse(passedClientDetailsString);
-
-    // this.passedQuotation = this.sharedService.getAddAnotherRisk();
-    // Console log the values
-    // console.log("XYZ Details:", this.passedQuotation);
-
     console.log("Quotation Details:", this.passedQuotation);
-    this.passedQuotationNo=this.passedQuotation.no;
-    this.passedQuotationCode=this.passedQuotation.quotationProduct[0].quotCode
-    
+    this.passedQuotationNo = this.passedQuotation?.no;
+    this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode
+
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
 
@@ -256,9 +220,7 @@ export class QuickQuoteFormComponent {
       this.personalDetailsForm.patchValue(this.passedQuotation)
 
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
-    this.isAddRisk = JSON.parse(passedIsAddRiskString);
-
-      // this.isAddRisk = this.sharedService.getIsAddRisk();
+      this.isAddRisk = JSON.parse(passedIsAddRiskString);
       console.log("isAddRiskk Details:", this.isAddRisk);
     }
 
@@ -275,6 +237,7 @@ export class QuickQuoteFormComponent {
     this.premiumComputationRequest;
 
   }
+  ngOnDestroy(): void {}
   /**
   * Loads all products by making an HTTP GET request to the ProductService.
   * Retrieves a list of products and updates the component's productList property.
@@ -298,11 +261,11 @@ export class QuickQuoteFormComponent {
           description: capitalizedDescription
         });
       });
-    
+
       // Combine the characters back into words
       const combinedWords = productDescription.join(',');
       this.ProductDescriptionArray.push(...productDescription)
-      
+
       // Now 'combinedWords' contains the result with words instead of individual characters
       log.info("modified product description", this.ProductDescriptionArray);
 
@@ -354,19 +317,11 @@ export class QuickQuoteFormComponent {
     this.user = this.authService.getCurrentUserName()
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
-    this.userBranchId = this.userDetails.branchId;
+    this.userBranchId = this.userDetails?.branchId;
     log.debug("Branch Id", this.userBranchId);
-    this.getbranch();
+    this.fetchBranches();
 
   }
-  //  getAllBranches(){
-  //   this.clientService.getCLientBranches().subscribe(data=>{
-  //     this.branchList=data;
-  //     log.debug("Branch List",this.branchList);
-
-  //   })
-  //  }
-
 
   /**
    * Retrieves branch information by making an HTTP GET request to the BranchService.
@@ -375,13 +330,25 @@ export class QuickQuoteFormComponent {
    * @method getBranch
    * @return {void}
    */
-  getbranch() {
-    this.branchService.getBranch().subscribe(data => {
-      this.branchList = data;
-      log.debug("Branch List", this.branchList);
-      const branch= this.branchList.filter(branch =>branch.id == this.userBranchId)
-      log.debug("branch",branch)
-    })
+  // getbranch() {
+  //   this.branchService.getBranch().subscribe(data => {
+  //     this.branchList = data;
+  //     log.debug("Branch List", this.branchList);
+  //     const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
+  //     log.debug("branch", branch)
+  //   })
+  // }
+  fetchBranches(organizationId?: number, regionId?: number) {
+    this.branchService
+      .getAllBranches(organizationId, regionId)
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.branchList = data;
+        log.info('Fetched Branches', this.branchList);
+        const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
+        log.debug("branch", branch);
+        this.userBranchName= branch[0].name;
+      });
   }
   /**
    * Fetches client data via HTTP GET from ClientService.
@@ -393,6 +360,7 @@ export class QuickQuoteFormComponent {
   loadAllClients() {
     this.clientService.getClients().subscribe(data => {
       this.clientList = data;
+      log.debug("CLIENT DATA:", this.clientList)
       this.clientData = this.clientList.content
       log.debug("CLIENT DATA:", this.clientData)
     })
@@ -505,13 +473,10 @@ export class QuickQuoteFormComponent {
   loadClientDetails(id) {
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
-      // this.clientCode=this.clientDetails.id;
       this.clientType = this.clientDetails.clientType.clientTypeName
       console.log("Selected Client Details:", this.clientDetails)
-      // this.sharedService.setClientDetails(this.clientDetails)
       const clientDetailsString = JSON.stringify(this.clientDetails);
       sessionStorage.setItem('clientDetails', clientDetailsString);
-      // console.log("Selected code client:",this.clientCode)
       console.log("Selected code client:", this.clientType)
       this.selectedCountry = this.clientDetails.country;
       console.log("Selected client country:", this.selectedCountry)
@@ -531,7 +496,7 @@ export class QuickQuoteFormComponent {
     this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     this.clientEmail = this.clientDetails.emailAddress;
     this.clientPhone = this.clientDetails.phoneNumber;
-    sessionStorage.setItem('clientCode',this.clientCode);
+    sessionStorage.setItem('clientCode', this.clientCode);
   }
   /**
    * Handles the selection of a product.
@@ -544,11 +509,10 @@ export class QuickQuoteFormComponent {
    */
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue.code;
-    // const selectedProductCode = event.target.value;
     console.log("Selected Product Code:", this.selectedProductCode);
 
     this.getProductSubclass(this.selectedProductCode);
-    this.loadAllSubclass()
+    // this.loadAllSubclass()
 
     // Load the dynamic form fields based on the selected product
     this.LoadAllFormFields(this.selectedProductCode);
@@ -575,19 +539,35 @@ export class QuickQuoteFormComponent {
     }
   }
 
-  getProductExpiryPeriod() {
-    if (this.selectedProductCode && this.productList) {
-      this.selectedProduct = this.productList.filter(product => product.code == this.selectedProductCode);
-      log.debug("Selected Product", this.selectedProduct);
-      if (this.selectedProduct != null && this.selectedProduct.length > 0) {
-        this.expiryPeriod = this.selectedProduct[0].expires;
-        log.debug("Expiry period", this.expiryPeriod)
-      } else {
-        this.expiryPeriod = "N";
-      }
+  // getProductExpiryPeriod() {
+  //   if (this.selectedProductCode && this.productList) {
+  //     this.selectedProduct = this.productList.filter(product => product.code == this.selectedProductCode);
+  //     log.debug("Selected Product", this.selectedProduct);
+  //     if (this.selectedProduct != null && this.selectedProduct.length > 0) {
+  //       this.expiryPeriod = this.selectedProduct[0].expires;
+  //       log.debug("Expiry period", this.expiryPeriod)
+  //     } else {
+  //       this.expiryPeriod = "N";
+  //     }
 
-    }
+  //   }
+  // }
+
+  getProductExpiryPeriod() {
+  if (!this.selectedProductCode || !this.productList) {
+    this.expiryPeriod = "N";
+    return;
   }
+
+  this.selectedProduct = this.productList.filter(product => product.code === this.selectedProductCode);
+
+  if (this.selectedProduct.length > 0) {
+    this.expiryPeriod = this.selectedProduct[0].expires;
+  } else {
+    this.expiryPeriod = "N";
+  }
+}
+  
   /**
    * Retrieves and matches product subclasses for a given product code.
    * - Makes an HTTP GET request to GISService for product subclasses.
@@ -599,7 +579,7 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   getProductSubclass(code: number) {
-    this.gisService.getProductSubclasses(code).subscribe(data => {
+    this.productService.getProductSubclasses(code).subscribe(data => {
       this.subClassList = data._embedded.product_subclass_dto_list;
       log.debug(this.subClassList, 'Product Subclass List');
 
@@ -629,6 +609,17 @@ export class QuickQuoteFormComponent {
 
     })
   }
+
+  // loadAllSubclass(): Observable<any> {
+  //   return this.subclassService.getAllSubclasses().pipe(
+  //     tap(data => {
+  //       this.allSubclassList = data;
+  //       log.debug(this.allSubclassList, "All Subclass List");
+  //       this.cdr.detectChanges();
+  //     })
+  //   );
+  // }
+  
   /**
    * Handles the selection of a subclass.
    * - Retrieves the selected subclass code from the event.
@@ -647,7 +638,6 @@ export class QuickQuoteFormComponent {
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders();
-    // this.loadSubclassSection();
     this.loadSubclassSectionCovertype();
 
   }
@@ -800,7 +790,6 @@ export class QuickQuoteFormComponent {
           this.dynamicRegexPattern = field.regexPattern;
           log.debug("Regex", field.regexPattern);
         });
-        // this.testDynamicForm();
       });
     }
   }
@@ -833,156 +822,7 @@ export class QuickQuoteFormComponent {
       this.dynamicForm.removeControl(controlName);
     });
   }
-  /**
-   * Creates quotations with associated risks and handles the asynchronous operations.
-   * - Maps and processes each SubclassCoverType element to create a quotation.
-   * - Maps and processes risk details to create associated risks for each quotation.
-   * - Logs relevant details for debugging.
-   * - Displays success messages for created quotations, risks, and computed premiums.
-   * @method createQuotation
-   * @return {void}
-   */
-  createQuotation() {
-    this.ngxSpinner.show("quickQuoteScreen")
 
-    this.quotationNumbers = [];
-    this.quotationCodes = [];
-
-    const riskCreationObservables = this.subclassCoverType.map(element => {
-      const quickQuoteForm = this.personalDetailsForm.value;
-      quickQuoteForm.clientCode = this.clientCode;
-      quickQuoteForm.clientType = "I";
-      quickQuoteForm.agentCode = 0;
-      quickQuoteForm.agentShortDescription = "DIRECT";
-      quickQuoteForm.branchCode = this.userBranchId;
-      quickQuoteForm.currencySymbol = this.selectedCurrency;
-      quickQuoteForm.currencyCode = this.selectedCurrencyCode;
-
-      console.log('Quick Quotation Form', quickQuoteForm);
-
-      return this.quotationService.createQuotation(quickQuoteForm, this.user).pipe(
-        switchMap(data => {
-          this.quotationData = data;
-          this.quotationCode = this.quotationData._embedded[0].quotationCode;
-          this.quotationNo = this.quotationData._embedded[0].quotationNumber;
-
-          this.quotationNumbers.push(this.quotationNo);
-          this.quotationCodes.push(this.quotationCode);
-
-          console.log(this.quotationData);
-          console.log("All Quotation Numbers:", this.quotationNumbers);
-          console.log("All Quotation Codes:", this.quotationCodes);
-
-          console.log("Quotation Code:", this.quotationCode);
-          console.log("Quotation Number:", this.quotationNo);
-
-          const code = element.coverTypeCode;
-          const description = element.coverTypeShortDescription;
-          console.log('CoverType Code', code);
-
-          // create associated risks for each quotation
-
-          const risk = this.riskDetailsForm.value;
-          const dateWithEffectFromC = quickQuoteForm.withEffectiveFromDate;
-          const dateWithEffectToC = quickQuoteForm.withEffectiveToDate;
-          risk.binderCode = this.selectedBinderCode;
-          risk.coverTypeCode = code;
-          risk.coverTypeShortDescription = description;
-          risk.insuredCode = this.clientCode;
-          risk.productCode = this.selectedProductCode;
-          risk.dateWithEffectFrom = dateWithEffectFromC;
-          risk.dateWithEffectTo = dateWithEffectToC;
-          risk.subClassCode = this.selectedSubclassCode;
-          risk.itemDescription = "volvo 4e";
-          delete risk.dateRange;
-
-          // FROM DYNAMIC FORM
-          const riskIDValue = this.dynamicForm.get('carRegNo').value;
-          this.propertyId = riskIDValue;
-          risk.propertyId = riskIDValue;
-          console.log('Quick Form Risk', risk);
-          const riskArray = [risk];
-
-          return this.quotationService.createQuotationRisk(this.quotationCode, riskArray).pipe(
-            tap(data => {
-              this.quotationRiskData = data;
-              const quotationRiskCode = this.quotationRiskData._embedded[0];
-              if (quotationRiskCode) {
-                for (const key in quotationRiskCode) {
-                  if (quotationRiskCode.hasOwnProperty(key)) {
-                    const value = quotationRiskCode[key];
-                    console.log(`${value}`);
-                    this.riskCode = value;
-                  }
-                }
-              } else {
-                console.log("The quotationRiskCode object is not defined.");
-              }
-
-              console.log(this.quotationRiskData, "Quotation Risk Code Data");
-              console.log(this.riskCode, "Quotation Risk Code ");
-
-              // try {
-              //   this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created' });
-              //   this.riskDetailsForm.reset();
-              // } catch (error) {
-              //   this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-              //   this.riskDetailsForm.reset();
-              // }
-
-              this.createRiskSection();
-            })
-          );
-        })
-      );
-    });
-
-    forkJoin(riskCreationObservables).subscribe(
-      () => {
-        try {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Quotations Created' });
-
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created successfully' });
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
-
-        } catch (error) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-        }
-      },
-      error => {
-        this.ngxSpinner.hide("quickQuoteScreen")
-
-        console.error('Error creating risks:', error);
-      }
-    );
-  }
-
-  /**
-   * Creates and initializes the risk details form using Angular FormBuilder.
-   * - Defines form controls with validators for various risk details.
-   * @method createRiskDetailsForm
-   * @return {void}
-   */
-  createRiskDetailsForm() {
-    this.riskDetailsForm = this.fb.group({
-      binderCode: ['', Validators.required],
-      coverTypeCode: ['', Validators.required],
-      coverTypeShortDescription: [''],
-      dateWithEffectFrom: [''],
-      dateWithEffectTo: [''],
-      dateRange: [''],
-      insuredCode: [''],
-      isNoClaimDiscountApplicable: [''],
-      itemDescription: ['', Validators.required],
-      location: [''],
-      noClaimDiscountLevel: [''],
-      productCode: [''],
-      propertyId: [''],
-      riskPremAmount: [''],
-      subClassCode: ['', Validators.required],
-      town: [''],
-    });
-  }
   /**
    * Loads subclass sections and cover types for the selected subclass code.
    * - Subscribes to 'getSubclassCovertypeSections' from SubclassSectionCovertypeService.
@@ -1012,7 +852,6 @@ export class QuickQuoteFormComponent {
       } else {
 
       }
-      // this.sharedService.setQuickSectionDetails(this.mandatorySections);
 
       const mandatorySectionsString = JSON.stringify(this.mandatorySections);
       sessionStorage.setItem('mandatorySections', mandatorySectionsString);
@@ -1025,155 +864,9 @@ export class QuickQuoteFormComponent {
       log.debug("Section", this.section)
     })
   }
-  // loadSubclassSection(){
-  //   this.sectionService.getSubclassSections(this.selectedSubclassCode).subscribe(data =>{
-  //     this.sectionList=data;
-  //     this.filteredSectionList=this.sectionList.filter(section=>section.subclassCode == this.selectedSubclassCode);
-  //     if (this.filteredSectionList.length > 0) {
-  //       this.selectedSectionList = this.filteredSectionList[0];
-
-  //     } else {
-  //     }
-  //     log.debug("Filtered Section List  first", this.filteredSectionList)
-
-  //     log.debug("Filtered Section List", this.selectedSectionList)
-  //     this.sharedService.setQuickSectionDetails(this.filteredSectionList);
 
 
-  //   })
-  // }
 
-
-  /**
-   * Creates and initializes the section details form using Angular FormBuilder.
-   * - Defines form controls for various section details.
-   * @method createSectionDetailsForm
-   * @return {void}
-   */
-  createSectionDetailsForm() {
-    this.sectionDetailsForm = this.fb.group({
-      calcGroup: [''],
-      code: [''],
-      compute: [''],
-      description: [''],
-      freeLimit: [''],
-      limitAmount: [''],
-      multiplierDivisionFactor: [''],
-      multiplierRate: [''],
-      premiumAmount: [''],
-      premiumRate: [''],
-      quotRiskCode: [''],
-      rateDivisionFactor: [''],
-      rateType: [''],
-      rowNumber: [''],
-      sectionCode: [''],
-      sectionShortDescription: [''],
-      sectionType: [''],
-      sumInsuredLimitType: [''],
-      sumInsuredRate: ['']
-    });
-  }
-
-  /**
-   * Creates a risk section, saves it, and triggers premium computation.
-   * - Retrieves relevant values from the dynamic form.
-   * - Sets default values for section details.
-   * - Creates a section object with calculated values.
-   * - Calls 'createRiskSection' from QuotationService.
-   * - Resets the section details form after success.
-   * - Updates shared service with declared sum insured value.
-   * - Triggers premium computation.
-   * @method createRiskSection
-   * @return {void}
-   */
-  createRiskSection() {
-
-    const section = this.sectionDetailsForm.value;
-    // FROM DYNAMIC FORM
-    const riskIDValue = this.dynamicForm.get('carRegNo').value;
-    const yearOfManufactureValue = this.dynamicForm.get('yearOfManufacture').value;
-    const sumInsuredValue = this.dynamicForm.get('selfDeclaredValue').value;
-    section.calcGroup = 1;
-    section.code = this.selectedSectionList.code;
-    section.compute = null;
-    section.description = this.selectedSectionList.sectionShortDescription;
-    section.freeLimit = 0;
-    section.limitAmount = sumInsuredValue;
-    section.multiplierDivisionFactor = 0;
-    section.multiplierRate = 0;
-    // section.premiumAmount = 20000;
-    section.premiumRate = 0.5;
-    section.rateDivisionFactor = 0;
-    section.rateType = "FXD";
-    section.rowNumber = 0;
-    section.sumInsuredLimitType = null;
-    section.sumInsuredRate = 0;
-    section.sectionCode = this.selectedSectionList.sectionCode;;
-    section.sectionShortDescription = this.selectedSectionList.sectionShortDescription;
-    section.sectionType = this.selectedSectionList.sectionType;
-    this.sectionArray = [section];
-
-
-    log.debug("Section Form Array", this.sectionArray)
-    this.quotationService.createRiskSection(this.riskCode, this.sectionArray,).subscribe(data => {
-
-      try {
-        // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
-        this.sectionDetailsForm.reset()
-      } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-        this.sectionDetailsForm.reset()
-      }
-      // this.sharedService.setSumInsured(sumInsuredValue);
-      
-
-
-      // this.computePremium()
-
-    })
-  }
-  /**
- * Computes premiums for all generated quotations.
- * - Subscribes to 'computePremium' for each quotation code.
- * - Displays success or error messages accordingly.
- * - Updates shared service with quick quotation details.
- * - Navigates to the next page after successful premium computation.
- * @method computePremium
- * @return {void}
- */
-  computePremium() {
-    this.ngxSpinner.show("quickQuoteScreen")
-    const premiumComputationObservables = this.quotationCodes.map(quotationCode => {
-      return this.quotationService.computePremium(quotationCode);
-    });
-
-    forkJoin(premiumComputationObservables).subscribe(
-      (data: any[]) => {
-        try {
-          // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Premiums computed successfully' });
-        } catch (error) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, please try again later' });
-        }
-
-        // this.sharedService.setQuickQuotationDetails(this.quotationNumbers);
-
-        sessionStorage.setItem('quickQuoteFormData', JSON.stringify(this.personalDetailsForm.value));
-        this.ngxSpinner.hide("quickQuoteScreen")
-
-        this.router.navigate(['/home/gis/quotation/cover-type-details']);
-      },
-
-      error => {
-        this.ngxSpinner.hide("quickQuoteScreen")
-
-        console.error('Error computing premium:', error);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error computing premium' });
-      }
-    );
-    // sessionStorage.setItem('dynamicFormData', JSON.stringify(this.dynamicForm.value));
-
-
-  }
 
   /**
    * Applies a global filter to a DataTable.
@@ -1203,7 +896,7 @@ export class QuickQuoteFormComponent {
   }
   /***********************NEW PREMIUM COMPUTATION*******************************/
   getPremiumRates() {
-    
+
     for (let i = 0; i < this.mandatorySections.length; i++) {
       this.selectedSectionList = this.mandatorySections[i];
       const selectedSectionCode = this.selectedSectionList.sectionCode;
@@ -1218,13 +911,13 @@ export class QuickQuoteFormComponent {
       log.debug(this.allPremiumRate, "all quick quote premium List");
 
     }
-   
+
   }
-  
+
 
   setRiskPremiumDto(): Risk[] {
     log.debug("subclass cover type", this.subclassCoverType)
-   
+
     return this.subclassCoverType.map(item => {
       let risk: Risk = {
         propertyId: this.dynamicForm.get('carRegNo').value,
@@ -1237,12 +930,12 @@ export class QuickQuoteFormComponent {
         itemDescription: this.dynamicForm.get('carRegNo').value,
         noClaimDiscountLevel: 0,
         subclassCoverTypeDto: {
-          subclassCode:this.selectedSubclassCode,
-          coverTypeCode:item.coverTypeCode,
+          subclassCode: this.selectedSubclassCode,
+          coverTypeCode: item.coverTypeCode,
           minimumAnnualPremium: 0,
           minimumPremium: parseInt(item.minimumPremium, 10),
-          coverTypeShortDescription:item.description
-      
+          coverTypeShortDescription: item.description
+
         },
         enforceCovertypeMinimumPremium: "N",
         binderDto: {
@@ -1254,110 +947,16 @@ export class QuickQuoteFormComponent {
         limits: this.setLimitPremiumDto(item.coverTypeCode),
       }
       // this.riskPremiumDto.push(risk);
-     
+
       return risk
     })
 
 
   }
-  // setLimitPremiumDto(coverTypeCode: number): Limit[] {
-  //   const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '')
 
-  //   let limitItems = []
-  //   let sectionCodes = []
-  //   let sectionsForCovertype = this.mandatorySections.filter(sect => {
-  //     log.debug(sect)
-  //     log.debug(sect.coverTypeCode + " vs " + coverTypeCode)
-  //     return sect.coverTypeCode == coverTypeCode
-  //   })
-  //   // const selectedSectionCode = this.selectedSectionList.sectionCode;
-  //   // let response: Limit[] = [];
-  //   if (!this.allPremiumRate) return []
-  //   this.getPremiumRates()
-  //   log.debug("Found "  + sectionsForCovertype.length+ " Sections ")
-  //   log.debug("Premium rates "  + this.allPremiumRate)
-  //   let response: Limit[] = sectionsForCovertype.map(it =>
-  //       this.allPremiumRate
-  //         .filter(rate => {
-  //           log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
-  //           return rate.sectionCode == it.sectionCode;
-  //         })
-  //         .map(rate => {
-  //           return {
-  //             calculationGroup: 1,
-  //             declarationSection: "N",
-  //             rowNumber: 1,
-  //             rateDivisionFactor: rate.divisionFactor,
-  //             premiumRate: rate.rate,
-  //             rateType: rate.rateType,
-  //             minimumPremium: rate.premiumMinimumAmount,
-  //             annualPremium: 0,
-  //             multiplierDivisionFactor: 1,
-  //             multiplierRate: rate.multiplierRate,
-  //             description: rate.sectionShortDescription,
-  //             section: {
-  //               code: it.sectionCode
-  //             },
-  //             sectionType: rate.sectionType,
-  //             riskCode: null,
-  //             limitAmount: sumInsured,
-  //             compute: "Y",
-  //             dualBasis: "N"
-  //           }
-           
-  //         })
-
-  //   ).flatMap(item => item)
-  //   if (this.additionalLimit.length > 0) {
-  //     let additionalRisk: Limit[] = 
-  //       sectionsForCovertype.map(it =>
-  //         this.allPremiumRate
-  //           .filter(rate => {
-  //             log.debug("In limit: " + rate.sectionCode + " vs " + it.sectionCode)
-  //             return rate.sectionCode == it.sectionCode;
-  //           })
-  //           .map(rate => {
-  //             return {
-  //               calculationGroup: 1,
-  //               declarationSection: "N",
-  //               rowNumber: 1,
-  //               rateDivisionFactor: rate.divisionFactor,
-  //               premiumRate: rate.rate,
-  //               rateType: rate.rateType,
-  //               minimumPremium: rate.premiumMinimumAmount,
-  //               annualPremium: 0,
-  //               multiplierDivisionFactor: 1,
-  //               multiplierRate: rate.multiplierRate,
-  //               description: rate.sectionShortDescription,
-  //               section: {
-  //                 code: it.sectionCode
-  //               },
-  //               sectionType: rate.sectionType,
-  //               riskCode: null,
-  //               limitAmount: sumInsured,
-  //               compute: "Y",
-  //               dualBasis: "N"
-  //             }
-             
-  //           })
-  
-  //     ).flatMap(item => item)
-      
-  //     return additionalRisk
-  //   } else {
-    
-  //     return response
-  //   }
-
-  //   log.debug("Covertype", coverTypeCode)
-  //   log.debug("Section items", sectionsForCovertype)
-  //   log.debug("limit items", response)
-
-
-  // }
   setLimitPremiumDto(coverTypeCode: number): Limit[] {
     const sumInsured = this.dynamicForm.get('selfDeclaredValue').value.replace(/,/g, '');
-  
+
     let limitItems = [];
     let sectionCodes = [];
     let sectionsForCovertype = this.mandatorySections.filter(sect => {
@@ -1365,7 +964,7 @@ export class QuickQuoteFormComponent {
       log.debug(sect.coverTypeCode + " vs " + coverTypeCode)
       return sect.coverTypeCode == coverTypeCode
     });
-  
+
     if (!this.allPremiumRate) return []
     this.getPremiumRates()
     log.debug("Found " + sectionsForCovertype.length + " Sections ")
@@ -1398,16 +997,16 @@ export class QuickQuoteFormComponent {
             compute: "Y",
             dualBasis: "N"
           }
-  
+
         })
-  
+
     ).flatMap(item => item)
-  
+
     if (this.additionalLimit.length > 0) {
-      log.debug("Added Limit",this.additionalLimit)
+      log.debug("Added Limit", this.additionalLimit)
       // Adjust the existing response to include the additional risk
-      this.additionalLimit.forEach(item =>sectionsForCovertype.push(item))
-      log.debug("section for CoverType:",sectionsForCovertype)
+      this.additionalLimit.forEach(item => sectionsForCovertype.push(item))
+      log.debug("section for CoverType:", sectionsForCovertype)
       response = response.concat(
         sectionsForCovertype.map(it =>
           this.allPremiumRate
@@ -1441,16 +1040,17 @@ export class QuickQuoteFormComponent {
         ).flatMap(item => item)
       );
     }
-  
+
     log.debug("Covertype", coverTypeCode)
-    log.debug("We are testing it here", coverTypeCode)
     log.debug("Section items", sectionsForCovertype)
     log.debug("limit items", response)
-  
+
     return response;
   }
   computePremiumV2() {
-    sessionStorage.setItem('product', this.selectedProductCode); 
+    this.ngxSpinner.show()
+
+    sessionStorage.setItem('product', this.selectedProductCode);
 
     this.premiumComputationRequest = {
       dateWithEffectFrom: this.coverFromDate,
@@ -1483,19 +1083,76 @@ export class QuickQuoteFormComponent {
 
     // this.sharedService.setPremiumComputationPayload(this.premiumComputationRequest, this.subclassCoverType);
 
-    return this.quotationService.premiumComputationEngine(this.premiumComputationRequest).subscribe(
-      (data) => {
+    return this.quotationService.premiumComputationEngine(this.premiumComputationRequest).subscribe({
+      next: (data) => {
         log.debug("Data", data)
         const premiumResponseString = JSON.stringify(data);
         sessionStorage.setItem('premiumResponse', premiumResponseString);
 
         // this.sharedService.setPremiumResponse(data);
         this.router.navigate(['/home/gis/quotation/cover-type-details']);
+      },
+      error: (error: HttpErrorResponse) => {
+        log.info(error);
+        this.ngxSpinner.hide()
+
+        this.globalMessagingService.displayErrorMessage('Error', 'Premium Computation Failed');
 
       }
 
+    }
+
     )
 
+  }
+  onCreateRiskSection() {
+    console.log('Selected Sections:', this.passedSections);
+
+    // Assuming this.premiumList is an array of premium rates retrieved from the service
+    const premiumRates = this.premiumList;
+
+    if (premiumRates.length !== this.passedSections.length) {
+      // Handle the case where the number of premium rates doesn't match the number of sections
+      console.error("Number of premium rates doesn't match the number of sections");
+      return;
+    }
+
+    const payload = this.passedSections.map((section, index) => {
+      const premiumRate = premiumRates[index]; // Get the corresponding premium rate for the current section
+
+      return {
+        calcGroup: 1,
+        code: section.code,
+        compute: "Y",
+        description: premiumRate.sectionShortDescription,
+        freeLimit: 0,
+        multiplierDivisionFactor: premiumRate.multiplierDivisionFactor,
+        multiplierRate: premiumRate.multiplierRate,
+        premiumAmount: 0,
+        premiumRate: premiumRate.rate,
+        rateDivisionFactor: premiumRate.divisionFactor,
+        rateType: premiumRate.rateType,
+        rowNumber: 1,
+        sumInsuredLimitType: null,
+        sumInsuredRate: 0,
+        sectionShortDescription: section.sectionShortDescription,
+        sectionCode: section.sectionCode,
+        limitAmount: 34,
+      };
+    });
+
+    this.sectionArray = payload;
+
+    this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
+      try {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+        this.sectionDetailsForm.reset();
+      } catch (error) {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+      }
+      // this.computeQuotePremium();
+     
+    });
   }
 
 }

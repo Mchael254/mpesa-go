@@ -131,7 +131,8 @@
                             <label for="Branch" class="quote-label" id="Branch">Branch</label>
                             <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"  formControlName="branchCode"[(ngModel)]="userBranchId "  >      -->
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="branchCode" [value]="userBranchId ">
+                                formControlName="branchCode" [value]="userBranchId " [(ngModel)]="userBranchName"
+                                readonly>
 
                         </div>
                         <div class="col-sm-4 col-6">
