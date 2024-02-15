@@ -3,6 +3,7 @@ import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Logger } from 'src/app/shared/services/logger/logger.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -59,6 +60,14 @@ export class QuotationSummaryComponent {
   userDetails:any;
   emailForm: FormGroup;
   sections:any;
+  schedules:any[];
+  limits:any;
+  limitsList:any[];
+  excesses:any;
+  excessesList:any[];
+  subclassList:any;
+  productSubclass:any;
+  allSubclassList:any;
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -67,6 +76,7 @@ export class QuotationSummaryComponent {
     private globalMessagingService: GlobalMessagingService,
     public  agentService:IntermediaryService,
     public productService:ProductService,
+    public subclassService:SubclassesService,
     public activatedRoute:ActivatedRoute,
     public authService:AuthService,
     private messageService: GlobalMessagingService,
@@ -108,12 +118,13 @@ export class QuotationSummaryComponent {
     console.log(this.quotationDetails , "MORE DETAILS TEST")
     this.sumInsured = sessionStorage.getItem('limitAmount')
     this.createEmailForm()
+    this.loadAllSubclass();
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
           this.agents = res
           this.spinner.hide()
-          console.log(res)
+          console.log(res,"AGENTS")
         },
         error: (e) => {
           log.debug(e.message)
@@ -186,10 +197,12 @@ internal(){
    
       if(data===el.code){
         this.sections = el.sectionsDetails
+        this.schedules = [el.scheduleDetails.level1]
       }
       
     })
-    console.log(this.sections,"Section Details")
+    console.log(this.schedules,"schedules Details")
+    
   }
   /**
    * Navigates to the edit details page.
@@ -207,6 +220,7 @@ internal(){
   getProductDetails(code){
     this.productService.getProductByCode(code).subscribe(res=>{
       this.productDetails.push(res)
+      console.log("Product details", this.productDetails)
     })
  
 
@@ -462,6 +476,62 @@ internal(){
        
         }  })
       console.log('Submitted payload:',JSON.stringify(payload) );
+  }
+
+
+  getLimits(productCode){
+    this.quotationService.assignProductLimits(productCode).subscribe(
+      {next:(res)=>{
+        this.quotationService.getLimits(productCode,'L').subscribe(
+          {next:(res)=>{
+
+            this.limits = res
+            this.limitsList = this.limits._embedded
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+            console.log(res)
+          }
+          
+          }
+        )
+      }
+    }
+    )
+   
+  }
+  getExcesses(riskCode){
+    this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
+      next:(res)=>{
+        this.excesses = res
+            this.excessesList = this.excesses._embedded
+            this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
+      }
+    })
+
+  }
+  loadAllSubclass(){
+    return this.subclassService.getAllSubclasses().subscribe(data=>{
+      this.allSubclassList=data;
+      log.debug(this.allSubclassList," from the service All Subclass List");
+   
+    })
+  }
+  getProductSubclass(code){
+    this.productService.getProductSubclasses(code).subscribe(
+      {
+        next:(res)=>{
+          this.subclassList = res._embedded.product_subclass_dto_list;
+          log.debug(this.subclassList, 'Product Subclass List');
+    
+    
+          this.subclassList.forEach(element => {
+            const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
+            this.productSubclass  = matchingSubclasses // Merge matchingSubclasses into allMatchingSubclasses
+          });
+      
+          log.debug("Retrieved Subclasses by code", this.productSubclass);
+              }
+      }
+    )
   }
 
 }
