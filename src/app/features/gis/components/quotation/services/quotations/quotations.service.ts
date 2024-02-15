@@ -258,6 +258,9 @@ quotationUtils(transactionCode){
 sendEmail(data){
   return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
 }
+sendSms(data){
+  return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
+}
 getUserProfile(){
   const baseUrl = this.appConfig.config.contextPath.users_services;
   return this.http.get(`/${baseUrl}/administration/users/profile`)
