@@ -59,6 +59,7 @@ export class QuotationSummaryComponent {
   sumInsured:any;
   userDetails:any;
   emailForm: FormGroup;
+  smsForm:FormGroup;
   sections:any;
   schedules:any[];
   limits:any;
@@ -119,6 +120,7 @@ export class QuotationSummaryComponent {
     this.sumInsured = sessionStorage.getItem('limitAmount')
     this.createEmailForm()
     this.loadAllSubclass();
+    this.createSmsForm();
     this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
       {
         next: (res) => {
@@ -437,6 +439,14 @@ internal(){
       bcc: ['', Validators.required],  
     });
   }
+  createSmsForm(){
+    
+    this.smsForm = this.fb.group({
+      message: ['', Validators.required],
+      recipients: ['', Validators.required],
+      sender: ['', Validators.required],
+    });
+  }
 
   emaildetails(){
     const currentDate = new Date();
@@ -477,7 +487,29 @@ internal(){
         }  })
       console.log('Submitted payload:',JSON.stringify(payload) );
   }
+sendSms(){
+  const payload = {
+    recipients: [
+      this.smsForm.value.recipients
+    ],
+    message:this.smsForm.value.message,
+    sender:this.smsForm.value.sender,
+    
+    
+  };
+  this.quotationService.sendSms(payload).subscribe(
+    {
+      next:(res)=>{
+        this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully' );
+      },error : (error: HttpErrorResponse) => {
+        log.info(error);
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
+       
+        }
 
+    }
+  )
+}
 
   getLimits(productCode){
     this.quotationService.assignProductLimits(productCode).subscribe(
