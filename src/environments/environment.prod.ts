@@ -18,7 +18,8 @@ export const environment = {
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
     [API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL, '/crm/accounts'],
     [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, '/lms/underwriting'],
-    [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance']
+    [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
+    [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
 
   ]),
   TENANT_ID: API_TENANT_ID.TQV6,

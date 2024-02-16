@@ -117,3 +117,63 @@ export interface ReinsuranceRiskDetailsDTO {
   treatyCurrencySymbol: string,
   policyReinsuranceRiskDetailsCode: number
 }
+
+export interface RiskReinsurePOSTDTO {
+  allowed_commission_rate: number,
+  basic_premium: number,
+  binder_code: number,
+  commission_amount: number,
+  commission_rate: number,
+  cover_type_code: number,
+  cover_type_short_description: string,
+  currency_code: number,
+  date_cover_from: string,
+  date_cover_to: string,
+  del_sect: string,
+  gross_premium: number,
+  insureds: {
+    client: {
+      first_name: string,
+      id: number,
+      last_name: string
+    },
+    prp_code: number
+  },
+  ipu_ncd_cert_no: string,
+  loaded: string,
+  lta_commission: number,
+  net_premium: number,
+  paid_premium: number,
+  policy_batch_no: number,
+  policy_number: string,
+  policy_status: string,
+  product_code: number,
+  property_description: string,
+  property_id: string,
+  quantity: number,
+  reinsurance_endorsement_number: string,
+  renewal_area: string,
+  risk_ipu_code: number,
+  sections_details: SectionDetailsDTO[],
+  stamp_duty: number,
+  sub_class_code: number,
+  sub_class_description: string,
+  transaction_type: string,
+  underwriting_year: number,
+  value: number
+}
+
+export interface SectionDetailsDTO {
+  div_factor: number,
+  free_limit: number,
+  limit_amount: number,
+  multiplier_rate: number,
+  pil_prem_rate: number,
+  premium: number,
+  rate_type: string,
+  sect_code: number,
+  sect_ipu_code: number,
+  section_code: number,
+  section_desc: string,
+  section_short_desc: string
+}
