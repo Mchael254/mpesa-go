@@ -5,11 +5,12 @@ import {Pagination} from "../../../shared/data/common/pagination";
 import {Observable} from "rxjs";
 import {
   PreviousCedingDTO, ReinsuranceRiskDetailsDTO,
-  RiskReinsuranceRiskDetailsDTO,
+  RiskReinsuranceRiskDetailsDTO, RiskReinsurePOSTDTO,
   TreatyParticipantsDTO,
   TreatySetupsDTO
 } from "../data/reinsurance-dto";
 import {HttpParams} from "@angular/common/http";
+import {AuthService} from "../../../shared/services/auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ import {HttpParams} from "@angular/common/http";
 export class ReinsuranceService {
   // baseUrl = this.appConfig.config.contextPath.gis_services;
   baseUrl = 'reinsurance';
-    constructor(private api:ApiService,) { }
+    constructor(private api:ApiService,
+                private authService: AuthService,) { }
 
   populateTreaties(data: any): Observable<any> {
 
@@ -126,4 +128,15 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
+  reinsureRisk(policyBatchNo: number, data: RiskReinsurePOSTDTO): Observable<any> {
+
+    const assignee = this.authService.getCurrentUserName();
+    let params = new HttpParams()
+      .set('policyBatchNo', `${policyBatchNo}`)
+      .set('policyRiskDTOS', `${data}`)
+      .set('user', `${assignee}`)
+
+
+    return this.api.POST<any>(`api/v1/policy-Risks-Controller/reinsure`, params, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
 }

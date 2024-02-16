@@ -86,7 +86,7 @@
                 <td type="button" class="btn btn-outline-secondary me-2" placement="top" [ngbTooltip]="risKCedingDetail.ipuItemDesc">
                   {{risKCedingDetail.ipuItemDesc.substring(0,10)}}....
                 </td>
-                <td>{{risKCedingDetail.sclCode}}</td>
+                <td>{{subclassData?.description}}</td>
                 <td></td>
                 <td>{{risKCedingDetail.prrdExcessPct}}</td>
                 <td>{{risKCedingDetail.prrdExcessPct}}</td>
@@ -153,6 +153,24 @@
                 </p-table>
                 <form [formGroup]="treatyRISummaryForm">
                   <div class="row g-3 align-items-center mt-5">
+                    <div class="col-4">
+
+                    </div>
+                    <div class="col-2 text-center">
+                      <label class="col-form-label text-dark fw-medium">P rate</label>
+                    </div>
+                    <div class="col-2 text-center">
+                      <label class="col-form-label text-dark fw-medium">RI amount</label>
+                    </div>
+                    <div class="col-2 text-center">
+                      <label class="col-form-label text-dark fw-medium">Cession</label>
+                    </div>
+                    <div class="col-2 text-center">
+                      <label class="col-form-label text-black fw-medium">Premium</label>
+                    </div>
+                  </div>
+
+                  <div class="row g-3 align-items-center mt-1">
                     <div class="col-4 mb-2">
                       <label class="col-form-label">Company net retention</label>
                     </div>

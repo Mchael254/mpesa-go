@@ -6,7 +6,7 @@ import {Pagination} from "../../../../../shared/data/common/pagination";
 import {
   PolicyFacreSetupsDTO,
   PreviousCedingDTO, ReinsuranceRiskDetailsDTO,
-  RiskReinsuranceRiskDetailsDTO
+  RiskReinsuranceRiskDetailsDTO, RiskReinsurePOSTDTO
 } from "../../../../gis/data/reinsurance-dto";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
@@ -154,6 +154,10 @@ export class ReinsuranceAllocationsComponent implements OnInit {
 
           this.prrdCode = details?.prrdCode;
           this.prrdTranNo = details?.prrdTranNo;
+          const subclassCode = details?.sclCode;
+
+          this.getSubclasses(subclassCode);
+
           log.info('content>>',details)
 
           let inp = {
@@ -338,9 +342,13 @@ export class ReinsuranceAllocationsComponent implements OnInit {
 
     let riskSelected = this.riskReinsuranceRiskDetailsData.filter(data => data['checked'] === true);
     const riskCodes = riskSelected.map(data=> data.code);
+    if (riskSelected.length === 0) {
+      this.globalMessagingService.displayErrorMessage('Error', 'Please select a risk');
+      return;
+    }
     this.riskCode = riskCodes;
     const payload: any = {
-      batchNumber: 223462763,
+      batchNumber: this.policyDetails[0]?.policyBatchNo,
       riskIpuCodes:
         riskCodes
     }
@@ -395,7 +403,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
 
   }
 
-  /*getSubclasses(code: any) {
+  getSubclasses(code: any) {
     this.subclassService.getSubclasses(code)
       .pipe(
         untilDestroyed(this),
@@ -403,10 +411,57 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.subclassData = data;
-          log.info('subclass>>', this.subclassData)
+          log.info('subclass>>', this.subclassData.description)
         }
       )
-  }*/
+  }
+
+  reinsureRisk() {
+    const batchNo = this.policyDetails[0].policyBatchNo;
+    const reinsureRiskData: RiskReinsurePOSTDTO = {
+      allowed_commission_rate: 0,
+      basic_premium: 0,
+      binder_code: 0,
+      commission_amount: 0,
+      commission_rate: 0,
+      cover_type_code: 0,
+      cover_type_short_description: "",
+      currency_code: 0,
+      date_cover_from: "",
+      date_cover_to: "",
+      del_sect: "",
+      gross_premium: 0,
+      insureds: {client: {first_name: "", id: 0, last_name: ""}, prp_code: 0},
+      ipu_ncd_cert_no: "",
+      loaded: "",
+      lta_commission: 0,
+      net_premium: 0,
+      paid_premium: 0,
+      policy_batch_no: 0,
+      policy_number: "",
+      policy_status: "",
+      product_code: 0,
+      property_description: "",
+      property_id: "",
+      quantity: 0,
+      reinsurance_endorsement_number: "",
+      renewal_area: "",
+      risk_ipu_code: 0,
+      sections_details: [],
+      stamp_duty: 0,
+      sub_class_code: 0,
+      sub_class_description: "",
+      transaction_type: "",
+      underwriting_year: 0,
+      value: 0
+
+    };
+
+    /*this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
+      .subscribe((data) => {
+
+      })*/
+  }
 
   ngOnDestroy(): void {
   }
