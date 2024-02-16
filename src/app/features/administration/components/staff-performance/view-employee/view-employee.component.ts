@@ -146,7 +146,13 @@ export class ViewEmployeeComponent  implements OnInit {
         }
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('Error', err.message);
+        let errorMessage = '';
+        if (err?.error?.message) {
+          errorMessage = err.error.message
+        } else {
+          errorMessage = err.message
+        }
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage);
       }
     })
   }

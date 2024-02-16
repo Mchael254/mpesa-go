@@ -102,7 +102,7 @@ export class OtpComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             let errorMessage = '';
-            if (err.error.message) {
+            if (err?.error?.message) {
               errorMessage = err.error.message
             } else {
               errorMessage = err.message
