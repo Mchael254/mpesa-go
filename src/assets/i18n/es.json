@@ -30,7 +30,9 @@
     "verification": "Verificación",
     "verification_instruction": "Seleccione qué detalles de contacto deberíamos enviar el código de verificación.",
     "verify": "Verificar",
-    "via": "A través de"
+    "via": "A través de",
+    "choose_tenant": "Elija su inquilino",
+    "choose_entity": "Elija su entidad"
   },
   "base": {
     "accounts": "Cuentas",

@@ -30,7 +30,9 @@
     "verification": "验证",
     "verification_instruction": "选择我们应该发送验证代码的联系方式。",
     "verify": "验证",
-    "via": "通过"
+    "via": "通过",
+    "choose_tenant": "选择您的租户",
+    "choose_entity": "选择您的实体"
   },
   "base": {
     "accounts": "帐户",

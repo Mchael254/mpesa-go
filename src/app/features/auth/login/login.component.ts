@@ -9,7 +9,7 @@ import {LocalStorageService} from "../../../shared/services/local-storage/local-
 import {Logger, UtilService} from "../../../shared/services";
 import {AuthService} from "../../../shared/services/auth.service";
 import { SESSION_KEY } from '../../lms/util/session_storage_enum';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import { ToastService } from '../../../shared/services/toast/toast.service';
 
 const log = new Logger('LoginComponent');
 
@@ -30,6 +30,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   public rememberMe: boolean = false;
   isLoading: boolean = false;
   private tenant_id: any;
+  public tenants: Tenant[] = [];
+  public entities: string[] = [];
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -66,10 +69,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       this.tenant_id = params['id'];
       console.log('Example Param:', this.tenant_id);
-      if(this.tenant_id===null || this.tenant_id===undefined){
-        this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
-      }
-      this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
+      // if(this.tenant_id===null || this.tenant_id===undefined){
+      //   this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
+      // }
+      // this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
     });
   }
 
@@ -97,6 +100,27 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Fetches user tenants using login credentials (username & password)
+   * @returns void
+   */
+  fetchUserTenants(): void {
+    this.isLoading = true;
+    const rawData = this.loginForm.getRawValue();
+    const authenticationData: UserCredential = {
+      username: rawData.username,
+      password: rawData.password,
+    };
+    this.authService.fetchUserTenants(authenticationData, (tenants) => {
+      log.info(`user tenants >>>`, tenants);
+      this.tenants = tenants;
+      if (tenants.length <= 1) this.authAttempt();
+
+      this.isLoading = false;
+    });
+    
+  }
+
+  /**
    * Authenticates user
    * Saves login details in local storage if remember me is checked as loginDetails
    * Saves response data in local storage as extras which contains action, phone, email and username
@@ -107,8 +131,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoading = true
     this.errorOccurred = false;
     this.errorMessage = '';
-
-    
 
     const rawData = this.loginForm.getRawValue();
     const authenticationData: UserCredential = {
@@ -121,12 +143,14 @@ export class LoginComponent implements OnInit, OnDestroy {
         
         if (data.allowMultifactor === 'N') {
           log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
-          return this.authService.attemptAuth(authenticationData);
+          this.authService.attemptAuth(authenticationData);
+          this.isLoading = false;
+          return;
         }
 
         let message: string = data.message;
         this.expiryMessage = message;
-        if (data.accountStatus ===true && data.emailAddress != null) {
+        if (data.accountStatus === true && data.emailAddress != null) {
           if (this.loginForm.get('rememberMe').value) {
             // Store login details in local storage
             this.localStorageService.setItem('loginDetails', JSON.stringify(authenticationData));
@@ -222,4 +246,31 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
         });
   }
+
+  /**
+   * selects a tenant and save tenant_id in session storage
+   * If only 1 entity exist in the selected tenant, proceed to login
+   * @param tenant:Tenant
+   * @returns void
+   */
+  selectTenant(tenant: Tenant): void {
+    this.entities = tenant.authType;
+    this.tenant_id = tenant.name;
+    this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
+    if (this.entities.length === 1) this.authAttempt();
+  }
+
+  /**
+   * show list of tenants from the entities display by setting entities to empty array
+   * @returns void
+   */
+  showTenants(): void {
+    this.entities = [];
+  }
+
+}
+
+interface Tenant { 
+  name: string, 
+  authType: string[] 
 }
