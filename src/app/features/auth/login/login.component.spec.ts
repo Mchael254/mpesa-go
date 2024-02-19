@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 
 
 export class MockAuthService {
-
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated: Observable<boolean> = this.isAuthenticatedSubject.asObservable();
   public authenticateUser = jest.fn();

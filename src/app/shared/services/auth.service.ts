@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, throwError} from 'rxjs';
-import {concatMap, distinctUntilChanged} from 'rxjs/operators';
+import {concatMap, distinctUntilChanged, take} from 'rxjs/operators';
 import {untilDestroyed} from './until-destroyed';
 import {BrowserStorage} from "./storage";
 import { AccountContact } from '../data/account-contact';
@@ -21,6 +21,7 @@ import {Logger} from "./logger/logger.service";
 import {UtilService} from "./util/util.service";
 import { SessionStorageService } from './session-storage/session-storage.service';
 import {StringManipulation} from "../../features/lms/util/string_manipulation";
+import { GlobalMessagingService } from './messaging/global-messaging.service';
 
 
 const log = new Logger('AuthService');
@@ -51,7 +52,8 @@ export class AuthService implements OnDestroy {
     private router: Router,
     private browserStorage: BrowserStorage,
     private localStorageService: LocalStorageService,
-    private session_storage: SessionStorageService
+    private session_storage: SessionStorageService,
+    private globalMessagingService: GlobalMessagingService
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -274,6 +276,40 @@ export class AuthService implements OnDestroy {
     });
   }
 
+
+  /**
+   * Fetches user tenants
+   * @param credentials {UserCredential}, i.e. username & password
+   * @param AuthenticationResponse {Function}, i.e. the data response
+   */
+  fetchUserTenants(
+    userCredential: UserCredential,
+    AuthenticationResponse?: (data) => void,
+  ) {
+    const baseUrl = this.appConfigService.config.contextPath.auth_services;
+    let headers: HttpHeaders;
+    headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+
+    this.http.post(`/${baseUrl}/fetch-user-tenants`, JSON.stringify(userCredential),{
+      headers: headers,
+      withCredentials: true
+    })
+    .pipe(take(1))
+    .subscribe({
+      next: (data: AuthenticationResponse) => {
+        return AuthenticationResponse(data);
+      },
+      error: (err) => {
+        log.info(`error >>>`, err)
+      }
+    })
+
+  }
+
+
   // authenticateUser(authenticationData: UserCredential): Observable<AuthenticationResponse> {
   //   const headers = new HttpHeaders({
   //     Accept: 'application/json',
@@ -472,6 +508,8 @@ export class AuthService implements OnDestroy {
         (error) => {
           this.destroyUser();
           log.debug('Login error response:', error)
+          const errorMessage = error?.error?.message ?? error.message
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
 
           if (errorCallback && error instanceof HttpErrorResponse) {
             errorCallback(
@@ -493,8 +531,8 @@ export class AuthService implements OnDestroy {
     errorCallback?: (errMsg) => void,
   ) {
     const baseUrl = this.appConfigService.config.contextPath.auth_services;
-    this.http
-      .post(`/${baseUrl}/authenticate-user`, JSON.stringify(userCredential),{
+    this.http.post(`/${baseUrl}/authenticate-user`, JSON.stringify(userCredential),
+      {
         headers: headers,
         withCredentials: true,
       })
