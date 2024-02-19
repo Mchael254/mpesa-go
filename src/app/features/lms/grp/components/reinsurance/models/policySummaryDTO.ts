@@ -42,10 +42,35 @@ export class PolicySummaryDTO {
     total_sum_assured: number | null;
     type: string | null;
     underwriting_year: number;
+    transaction_number: number
   }
 
 export class TreatyDTO {
     ta_code: number;
     ta_desc: string;
     ta_sht_desc: string;
+}
+
+export class ReinsuranceParametersDTO {
+  atct_as_code: number;
+  atct_cede_rate: number;
+  atct_code: number;
+  atct_comm_rate: number | null;
+  atct_cvt_code: number;
+  atct_cvt_sht_desc: string;
+  atct_limit: number;
+  atct_pct_code: number;
+  atct_prod_code: number;
+  atct_rate: number | null;
+  atct_rate_div_fact: number | null;
+  atct_rei_code: number;
+  atct_ta_code: number;
+  atct_ta_sht_desc: string;
+  atct_tct_code: number;
+  atct_tprd_code: number;
+  cede_type: string;
+  cvt_desc: string;
+  rate_type: string;
+  tacr_comm_div_factr: number;
+  tacr_comm_rate: number;
 }
