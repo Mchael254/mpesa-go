@@ -16,12 +16,14 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ClientCreationComponent } from './components/client-creation/client-creation.component';
 
 @NgModule({
   declarations: [
     QuickComponent,
     CoverageDetailsComponent,
     SummaryComponent,
+    ClientCreationComponent,
     // StepperComponent
   ],
   imports: [

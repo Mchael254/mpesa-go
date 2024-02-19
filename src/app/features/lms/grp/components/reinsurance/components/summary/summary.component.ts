@@ -1,8 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import stepData from '../../data/steps.json';
+import { FormBuilder } from '@angular/forms';
+import { ReinsuranceService } from '../../service/reinsurance.service';
+import { FacultativeTreatyDTO, MemberDetailedSummaryDTO, ReinsuranceMembersDTO, SurplusTreatyDTO, SurplusTreatyTotalsDTO } from '../../models/reinsurance-summaryDTO';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-summary',
   templateUrl: './summary.component.html',
@@ -13,26 +18,28 @@ export class SummaryComponent implements OnInit, OnDestroy {
   columnOptions: SelectItem[];
   selectedColumns: string[];
   steps = stepData;
-
-  dummyData = [
-    { cvt_desc: 'Member1', dty_descriptiontitlecase: '12345', use_cvr_rate: '10000', premium_mask_short_description: 'Premium1', premium_rate: '500', rate_division_factor: 0.25 },
-    { cvt_desc: 'Member2', dty_descriptiontitlecase: '67890', use_cvr_rate: '15000', premium_mask_short_description: 'Premium2', premium_rate: '700', rate_division_factor: 0.30 },
-    { cvt_desc: 'Member2', dty_descriptiontitlecase: '67890', use_cvr_rate: '15000', premium_mask_short_description: 'Premium2', premium_rate: '700', rate_division_factor: 0.30 },
-   
-  ];
-
-  yourDataArray = [
-    { coverType: 'Cover type A', totalSumAssured: 100000, grossPremium: 5000, commission: 200, netPremium: 4800 },
-    { coverType: 'Cover type B', totalSumAssured: 150000, grossPremium: 7000, commission: 300, netPremium: 6700 },
-    { coverType: 'Cover type C', totalSumAssured: 200000, grossPremium: 9000, commission: 400, netPremium: 8600 },
-  ];
+  endorsementCode = 20231683286
+  productCode = 2021675
+  policyCode = 20231454213
+  // policyMemUniqueCode = 20231162587
+  policyMemUniqueCode: number
+  surplusTreaty: SurplusTreatyDTO[];
+  facultativeTreaty: FacultativeTreatyDTO[];
+  memDetailedSummary: MemberDetailedSummaryDTO;
+  reinsuranceMembers: ReinsuranceMembersDTO[];
+  surplusTreatyTotals: SurplusTreatyTotalsDTO;
 
   constructor (
     private router: Router,
+    private reinsurancService: ReinsuranceService,
+    private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
-    
+    this.getSurplusTreaty();
+    this.getFacultativeTreaty();
+    this.getReinsuranceMembers();
+    this.getReinsuranceTotals();
   }
 
   ngOnDestroy(): void {
@@ -47,8 +54,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/home/lms/grp/reinsurance/selection'])
   }
 
-  showMemberDetailedSummary() {
+  showMemberDetailedSummary(reinsuranceMembers) {
+    this.policyMemUniqueCode = reinsuranceMembers.polm_code
+    console.log('Selected Row Data:', reinsuranceMembers, this.policyMemUniqueCode);
     const modal = document.getElementById('memberDetailedSummary');
+    this.getDetailedMemSummary()
     if (modal) {
       modal.classList.add('show');
       modal.style.display = 'block';
@@ -63,6 +73,41 @@ export class SummaryComponent implements OnInit, OnDestroy {
       modal.style.display = 'none';
     }
 
+  }
+
+  getSurplusTreaty() {
+    this.reinsurancService.getSurplusParticipantsSummary(this.endorsementCode).subscribe((surplusTreaty: SurplusTreatyDTO[]) => {
+      console.log("surplusTreaty", surplusTreaty);
+      this.surplusTreaty = surplusTreaty;
+    })
+  }
+
+  getFacultativeTreaty() {
+    this.reinsurancService.getFacultativeParticipantsSummary(this.endorsementCode).subscribe((facultativeTreaty: FacultativeTreatyDTO[]) => {
+      console.log("facultativeTreaty", facultativeTreaty);
+      this.facultativeTreaty = facultativeTreaty;
+    })
+  }
+
+  getDetailedMemSummary() {
+    this.reinsurancService.getMemDetailedSummary(this.endorsementCode, this.policyMemUniqueCode).subscribe((MemDetailedSummary:MemberDetailedSummaryDTO) => {
+      console.log("MemDetailedSummary", MemDetailedSummary);
+      this.memDetailedSummary = MemDetailedSummary
+    })
+  }
+
+  getReinsuranceMembers() {
+    this.reinsurancService.getReinsuranceMembers(20231454304, this.endorsementCode).subscribe((reinsuranceMembers: ReinsuranceMembersDTO[]) => {
+      console.log("reinsuranceMembers", reinsuranceMembers);
+      this.reinsuranceMembers = reinsuranceMembers;
+    })
+  }
+
+  getReinsuranceTotals() {
+    this.reinsurancService.getReinsuranceTotals(this.endorsementCode).subscribe((reinsuranceTotals: SurplusTreatyTotalsDTO) => {
+      console.log("reinsuranceTotals", reinsuranceTotals);
+      this.surplusTreatyTotals = reinsuranceTotals;
+    })
   }
 
 }
