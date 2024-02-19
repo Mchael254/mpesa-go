@@ -48,7 +48,7 @@
                                     <p class="label">Client</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content" >{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
+                                    <p class="content" >{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
                                 </div>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                     <p class="label">Agent</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">{{agents.name}}</p>
+                                    <p class="content">{{agents?.name}}</p>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                                         <p class="label">Branch</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">{{branch.name}}</p>
+                                        <p class="content">{{branch?.name}}</p>
                                     </div>
                                 </div>
                               
@@ -106,7 +106,7 @@
                                             <p class="label">Currency</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content">{{quotationView.currency}}</p>
+                                            <p class="content">{{quotationView?.currency}}</p>
                                         </div>
                                     </div>
                                   
@@ -151,7 +151,7 @@
                                                 <p class="label">Status</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">{{quotationView.status}}</p>
+                                                <p class="content">{{quotationView?.status}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -161,7 +161,7 @@
                                                 <p class="label">Source</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">{{quotationView.source.description}}</p>
+                                                <p class="content">{{quotationView?.source.description}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1029,7 +1029,7 @@
             </div>
             
               <h6 class="mb-3">Message Details</h6>
-              <form [formGroup]="emailForm" >
+              <form [formGroup]="smsForm" >
 
                 <div class="mb-3 row">
                     <label class="col-sm-3 col-form-label" id="messageLabel">Receiver Phone No.</label>
@@ -1072,10 +1072,13 @@
                     <h6 class="mb-4">Documents</h6>
                     <div class="row mt-3 g-3 align-items-center">
                         <div class="col-auto">
-                          <label for="inputPassword6" class="col-form-label">Document Type</label>
+                          <label for="documentTypes" class="col-form-label">Document Type</label>
                         </div>
                         <div class="col-auto">
-                          <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                            <select class="form-select form-select-sm mb-1" id="quote-input"   placement="right" >
+                                <option [value]="" selected="true" disabled="disabled"></option> 
+                                <option *ngFor="let data of documentTypes"  [value]="data.id">{{data.description}}</option>
+                            </select>    
                         </div>
                         <div class="col-auto">
                         

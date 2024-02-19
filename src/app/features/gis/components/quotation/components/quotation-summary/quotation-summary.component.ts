@@ -17,7 +17,9 @@ import {NgxSpinnerService} from 'ngx-spinner';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-
+import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators'; 
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -69,6 +71,7 @@ export class QuotationSummaryComponent {
   subclassList:any;
   productSubclass:any;
   allSubclassList:any;
+  documentTypes:any;
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -95,13 +98,16 @@ export class QuotationSummaryComponent {
   public showSms = false;
   public showInternalClaims = false;
   public showExternalClaims = true;
+  private ngUnsubscribe = new Subject();
 
 
   ngOnInit(): void {
+
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
     
     this.moreDetails=sessionStorage.getItem('quotationFormDetails')
+   
     const storedData = sessionStorage.getItem('clientFormData');
     this.clientDetails=JSON.parse(storedData);
     this.prodCode = JSON.parse(this.moreDetails).productCode
@@ -115,25 +121,16 @@ export class QuotationSummaryComponent {
     this.getbranch()
     this.quotationDetails = JSON.parse(this.moreDetails) 
     this.spinner.show()
+    
     this.getPremiumComputationDetails()
     console.log(this.quotationDetails , "MORE DETAILS TEST")
+    this.getAgent();
     this.sumInsured = sessionStorage.getItem('limitAmount')
     this.createEmailForm()
     this.loadAllSubclass();
     this.createSmsForm();
-    this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
-      {
-        next: (res) => {
-          this.agents = res
-          this.spinner.hide()
-          console.log(res,"AGENTS")
-        },
-        error: (e) => {
-          log.debug(e.message)
-          this.messageService.displayErrorMessage('error', e.error.message)
-        }
-      }
-    )
+    this.getDocumentTypes();
+    
 
 
     this.menuItems = [
@@ -187,11 +184,26 @@ internal(){
       // this.riskInfo.push(this.riskDetails.sectionsDetails)
       this.taxDetails = this.quotationView.taxInformation
       log.debug(this.taxDetails)
-      this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(res=>{
-        this.agents = res
-        console.log(res)
-      })
+      // this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(res=>{
+      //   this.agents = res
+      //   console.log(res)
+      // })
     })
+  }
+  getAgent(){
+    this.agentService.getAgentById(this.quotationDetails.agentCode).subscribe(
+      {
+        next: (res) => {
+          this.agents = res
+          this.spinner.hide()
+          console.log(res,"AGENTS")
+        },
+        error: (e) => {
+          log.debug(e.message)
+          this.messageService.displayErrorMessage('error', e.error.message)
+        }
+      }
+    )
   }
   getSections(data){
     
@@ -566,4 +578,15 @@ sendSms(){
     )
   }
 
+  getDocumentTypes(){
+    this.quotationService.documentTypes('C').pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+        next:(res)=>{
+          this.documentTypes = res 
+         
+        }
+    })
+  }
+  ngOnDestroy() {
+    this.ngUnsubscribe.complete();
+  }
 }

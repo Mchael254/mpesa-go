@@ -20,12 +20,73 @@
             
             <div class="col-xl-4">
                 <label for=""class="quote-label">Intermediary<span class="required"></span></label>
-                <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" [filterBy]="'name'" (onChange)="agentShortDesc()" [filter]="true" ></p-dropdown>
-                <!-- <select class="form-select form-control-sm mb-1" id="quote-input" (ngModelChange)="agentShortDesc($event)" formControlName="agentCode" placement="right" >
-                    <option selected="true" disabled="disabled"></option> 
-                    <option *ngFor="let data of agents"  [value]="data.id" >{{data.name}}</option>
-                </select>  -->
+                <!-- <p-dropdown formControlName="agentCode" [options]="agents" optionLabel="name" [filterBy]="'name'" (onChange)="agentShortDesc()" [filter]="true" ></p-dropdown> -->
+                <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="agentCode" data-bs-toggle="modal" data-bs-target="#selectIntermediary">
+
             </div>
+    <!-- Modal -->
+    <div class="modal fade" id="selectIntermediary" tabindex="-1" aria-labelledby="selectIntermediaryLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            
+            <div class="modal-body">
+                <div class="float-start"></div>
+                <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="text-start mt-2 mb-4">Select Intermediary</h5>
+                <div class="input-group mb-4" id="search-input" >
+                        
+                    <span class="input-group-append" style="background-color: #F5F6F8;">
+                        <button class="btn border-end-0 "  type="button">
+                            <i class="fa fa-search" ></i>
+                        </button>
+                      </span>
+                    <!-- <input class="form-control py-2 border-start-0" pInputText  (input)="applyFilterGlobal($event, 'contains')"  style="background-color: #F5F6F8;border: 0px;" type="search" placeholder="search...">             -->
+                </div>
+             
+              
+                <p-table
+                 #dt1
+                 [value]="agents" 
+                 [tableStyle]="{ 'max-width': '100rem' }"
+                 [resizableColumns]="true" 
+                 styleClass="p-datatable-sm"
+                 class='ui-datatable' 
+                 [globalFilterFields]="['shortDesc', 'name', 'accountType']"
+                 [paginator]="true"
+                 [rows]="5"
+                 [showCurrentPageReport]="true"
+                 currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+                 selectionMode="single" 
+                 [(selection)]="selectedAgent"
+                 dataKey="shortDesc"
+                 >
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th field="shortDesc">Code</th>
+                            <th field="name">Name</th>
+                            <th field="accountType">Intermediary Type </th>
+                            
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-data  >
+                        <tr [pSelectableRow]="data" style="cursor:pointer" (click)="getAgentById(data.id)">
+                            <td>{{ data.shortDesc }}</td>
+                            <td>{{ data.name}}</td>
+                            <td>{{ data.accountType }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                
+                <div class="float-start"></div>
+                <button class="btn btn-primary float-end mt-4" data-bs-dismiss="modal">OK</button>
+            </div>
+           
+          </div>
+        </div>
+      </div>
+
+
+
             <div class="col-xl-4">
                 <label for=""class="quote-label">Branch<span class="required" ></span></label>
                 <p-dropdown formControlName="branchCode" [options]="branch" optionLabel="name" placeholder=" " [filterBy]="'name'" [filter]="true" ></p-dropdown>

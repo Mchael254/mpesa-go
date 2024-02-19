@@ -388,7 +388,9 @@
              [rows]="5"
              [showCurrentPageReport]="true"
              currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
-          
+             selectionMode="single" 
+             [(selection)]="selectedClient" 
+             dataKey="shortDescription"
              >
                 <ng-template pTemplate="header">
                     <tr>
@@ -399,7 +401,7 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-data  >
-                    <tr [pSelectableRow]="clientList" (click)="getClientDetails(data.id)">
+                    <tr [pSelectableRow]="data" (click)="getClientDetails(data.id)">
                         <td>{{ data.shortDescription }}</td>
                         <td>{{ data.firstName+" "+data.lastName }}</td>
                         <td>{{ data.emailAddress }}</td>
