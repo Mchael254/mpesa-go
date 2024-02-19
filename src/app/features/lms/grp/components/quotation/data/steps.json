@@ -1,16 +1,21 @@
 [
-    {
-      "number": 1,
+  {
+    "number": 1,
+    "title": "Client creation",
+    "link": "/home/lms/grp/quotation/client"
+  },  
+  {
+      "number": 2,
       "title": "Product details",
       "link": "/home/lms/grp/quotation/quick"
     },
     {
-      "number": 2,
+      "number": 3,
       "title": "Coverage details",
       "link": "/home/lms/grp/quotation/coverage"
     },
     {
-      "number": 3,
+      "number": 4,
       "title": "Summary details",
       "link": "/home/lms/grp/quotation/summary"
     }
