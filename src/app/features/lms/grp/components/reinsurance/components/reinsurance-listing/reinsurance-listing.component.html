@@ -13,8 +13,8 @@
           </div>
 
 <div>
-    <p-table [value]="dummyData" selectionMode="single" dataKey="code" 
-    [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+    <p-table [value]="policyListing" selectionMode="single" [(selection)]="selectedPolicy" dataKey="code" 
+    [tableStyle]="{'min-width': '50rem'}" (onRowSelect)="onRowSelect($event)" styleClass="p-datatable-striped">
         <ng-template pTemplate="header">
             <tr>
                 <th *ngIf="selectedColumns.includes('policy_number')">Policy number</th>
@@ -32,8 +32,8 @@
                 <td *ngIf="selectedColumns.includes('description')">{{ policy.description | titlecase }}</td>
                 <td *ngIf="selectedColumns.includes('status')">{{ policy.status }}</td>
                 <td *ngIf="selectedColumns.includes('effective_date')">{{ policy.effective_date }}</td>
-                <td *ngIf="selectedColumns.includes('total_premium')">{{ policy.total_premium | number }}</td>
-                <td *ngIf="selectedColumns.includes('total_sum_assured')">{{ policy.total_sum_assured | number }}</td>
+                <td *ngIf="selectedColumns.includes('total_premium')" style="text-align: right;">{{ policy.total_premium | number }}</td>
+                <td *ngIf="selectedColumns.includes('total_sum_assured')" style="text-align: right;">{{ policy.total_sum_assured | number }}</td>
             </tr>
         </ng-template>
     </p-table>

@@ -1,6 +1,6 @@
 .container {
     width: 1216px;
-    height: 656px;
+    min-height: 656px;
     flex-shrink: 0;
     background: #FFF;
 }

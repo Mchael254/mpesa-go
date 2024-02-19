@@ -1,5 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
+import { PolicySummaryService } from '../../../policy/service/policy-summary.service';
+import { PolicyListingDTO } from '../../../policy/models/policy-summary';
 
 @Component({
   selector: 'app-reinsurance-listing',
@@ -9,9 +12,19 @@ import { SelectItem } from 'primeng/api';
 export class ReinsuranceListingComponent implements OnInit, OnDestroy {
   columnOptions: SelectItem[];
   selectedColumns: string[];
+  policyListing: PolicyListingDTO[];
+  selectedPolicy!: PolicyListingDTO;
+  agentCode = 2020201235490;
+  clientProposerCode = 20231410738;
+
+  constructor(
+    private policySummaryService: PolicySummaryService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.policyListingColumns();
+    this.getReinsurancePolicyListing()
 
   }
 
@@ -32,43 +45,23 @@ export class ReinsuranceListingComponent implements OnInit, OnDestroy {
   this.selectedColumns = this.columnOptions.map(option => option.value);
   }
 
-  dummyData = [
-    {
-      code: 1,
-      policy_number: 'POL001',
-      description: 'Life Insurance',
-      status: 'Active',
-      effective_date: '2022-01-01',
-      total_premium: 1500.00,
-      total_sum_assured: 100000
-    },
-    {
-      code: 2,
-      policy_number: 'POL002',
-      description: 'Health Insurance',
-      status: 'Expired',
-      effective_date: '2022-03-15',
-      total_premium: 800.00,
-      total_sum_assured: 50000
-    },
-    {
-      code: 2,
-      policy_number: 'POL002',
-      description: 'Health Insurance',
-      status: 'Expired',
-      effective_date: '2022-03-15',
-      total_premium: 800.00,
-      total_sum_assured: 50000
-    },
-    {
-      code: 1,
-      policy_number: 'POL001',
-      description: 'Life Insurance',
-      status: 'Active',
-      effective_date: '2022-01-01',
-      total_premium: 1500.00,
-      total_sum_assured: 100000
-    },
-  ];
+  getReinsurancePolicyListing() {
+    this.policySummaryService.getPolicyListing(this.agentCode, this.clientProposerCode).subscribe((policyListing: PolicyListingDTO[]) => {
+      console.log('ReinsurancePolicyListing', policyListing)
+      this.policyListing = policyListing;
+    })
+  }
+
+  onRowSelect(event: any) {
+    this.selectedPolicy = event.data;
+    console.log('Selected Policy:', this.selectedPolicy.policy_code);
+    this.router.navigate(['/home/lms/grp/reinsurance/selection'], {
+              queryParams: {
+                policyCode: this.selectedPolicy.policy_code,
+                endorsementCode: this.selectedPolicy.endorsement_code,
+                productCode: this.selectedPolicy.product_code
+              },
+            });
+  }
   
 }
