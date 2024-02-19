@@ -30,7 +30,9 @@
     "verification": "Uthibitisho",
     "verification_instruction": "Chagua maelezo ya mawasiliano tunayopaswa kutuma nambari ya uthibitisho.",
     "verify": "Thibitisha",
-    "via": "Kupitia"
+    "via": "Kupitia",
+    "choose_tenant": "Chagua mpangaji wako",
+    "choose_entity": "Chagua kipengele chako"
   },
   "base": {
     "accounts": "Akaunti",

@@ -1,85 +1,106 @@
-<app-spinner *ngIf="isLoading"></app-spinner>
-<div>
+<div class="card-body" *ngIf="tenants.length === 0">
+  <div class="mb-3">
+    <span class="logo-lg">
+      <img src="assets/images/turnkey-logo.png" alt="hostlogo">
+    </span>
+  </div>
+  <!-- title-->
+  <h4 class="login-text mb-3">{{ 'auth.login' | translate }}</h4>
+  <p class="text-muted mb-3">{{ 'auth.enter_email_and_pass' | translate }}</p>
 
-  <div class="card-body">
-    <div class="mb-3">
-      <span class="logo-lg">
-        <img src="assets/images/turnkey-logo.png" alt="hostlogo">
-      </span>
+  <div *ngIf='errorOccurred '>
+    <app-error [message]='errorMessage'appHideMessage></app-error>
+  </div>
+  <!-- form -->
+  <form [formGroup]='loginForm' novalidate>
+    <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
+      <label for="emailAddress" class="form-label">{{ 'auth.email_address' | translate }}</label>
+      <input type="email" class="form-control" id="emailAddress" formControlName='username'>
     </div>
-    <!-- title-->
-    <h4 class="login-text mb-3">{{ 'auth.login' | translate }}</h4>
-    <p class="text-muted mb-3">{{ 'auth.enter_email_and_pass' | translate }}</p>
-
-    <div *ngIf='errorOccurred '>
-      <app-error [message]='errorMessage'appHideMessage></app-error>
-    </div>
-    <!-- form -->
-    <form [formGroup]='loginForm' novalidate>
-      <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
-        <label for="emailAddress" class="form-label">{{ 'auth.email_address' | translate }}</label>
-        <input type="email" class="form-control" id="emailAddress" formControlName='username'>
-      </div>
-      <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
-        <a class="text-muted float-end" routerLink="./forgot-password"><small>{{ 'auth.forgot_password' | translate }}</small></a>
-        <label for="password" class="form-label" i18n='Password|Auth Password Input@@authPasswordInput'>{{ 'auth.password' | translate }}</label>
-        <div class="input-group input-group-merge">
-          <input
-            type="{{ showPassword ? 'text' : 'password' }}"
-            class='form-control'
-            id='password'
-            formControlName='password'
-          />
-          <div class="input-group-append" data-password="false">
-            <div class="input-group-text border-radius-none">
-              <span>
-                <i class="fa fa-eye text-dark"
-                   [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"
-                ></i>
-              </span>
-            </div>
+    <div class="form-group mb-3" controlHasError controlRequiredAsterisk>
+      <a class="text-muted float-end" routerLink="./forgot-password"><small>{{ 'auth.forgot_password' | translate }}</small></a>
+      <label for="password" class="form-label" i18n='Password|Auth Password Input@@authPasswordInput'>{{ 'auth.password' | translate }}</label>
+      <div class="input-group input-group-merge">
+        <input
+          type="{{ showPassword ? 'text' : 'password' }}"
+          class='form-control'
+          id='password'
+          formControlName='password'
+        />
+        <div class="input-group-append" data-password="false">
+          <div class="input-group-text border-radius-none">
+            <span>
+              <i class="fa fa-eye text-dark"
+                  [class.fa-eye-slash]="showPassword" (click)="togglePasswordVisibility()"
+              ></i>
+            </span>
           </div>
         </div>
-        <ng-container *controlErrorContainer></ng-container>
       </div>
-      <div class="form-group mb-3 form-check">
-        <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" formControlName="rememberMe">
-        <label class="form-check-label form-label" for="rememberMe">{{ 'auth.remember_me' | translate }}</label>
-      </div>
-      <div class="mb-3">
-        <button [disabled]="isTenantIdPresent()" type="submit"
-                id="login-submit"
-                [ngClass]="isTenantIdPresent()? '': 'btn-primary'"
-                class="btn btn-full-width fadeIn"
-                (click)='authAttempt()'
-                i18n='Login|Auth Login Action@@authLoginActionBtn'>
-                {{ 'auth.login' | translate }}
-        </button>
-      </div>
-    </form>
-  </div> <!-- end .card-body -->
+      <ng-container *controlErrorContainer></ng-container>
+    </div>
+    <div class="form-group mb-3 form-check">
+      <input type="checkbox" class="form-check-input form-label" name="rememberMe"  id="rememberMe" formControlName="rememberMe">
+      <label class="form-check-label form-label" for="rememberMe">{{ 'auth.remember_me' | translate }}</label>
+    </div>
+    <div class="mb-3">
+      <button 
+        [disabled]="isLoading"
+        type="submit"
+        id="login-submit"
+        class="btn btn-primary btn-full-width fadeIn"
+        (click)='fetchUserTenants()'
+        i18n='Login|Auth Login Action@@authLoginActionBtn'
+      >
+        
+        <span *ngIf="!isLoading; else loading">{{ 'auth.login' | translate }}</span>
+        <ng-template #loading>
+          <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+        </ng-template>
+      </button>
+    </div>
+  </form>
+</div> 
 
-  <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header border-0">
-          <button type="button" class="close" data-ds-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <img src="assets\images\Vector.png" alt="danger" id="expiry-warning-image">
-          <p> {{ expiryMessage }} , kindly change the password
-            or cancel to continue
-          </p>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="bttn can" data-ds-dismiss="modal">Cancel</button>
-          <button id="reset-password" type="button" class="bttn res" (click)="resetPassword()">Reset Password</button>
+
+<div *ngIf="tenants.length > 0 && entities.length === 0">
+  <div class="card-body">
+    <h5 class="mb-3 text-dark text-start">{{ 'auth.choose_tenant' | translate }}</h5>
+    <ng-container *ngFor="let tenant of tenants">
+      <div class="card mb-3 tenant" (click)="selectTenant(tenant)">
+        <div class="card-body">
+          <span class="">{{ tenant?.name | sentenceCase }}</span>
         </div>
       </div>
+    </ng-container>
+  </div>
+</div>
+
+<div *ngIf="tenants.length > 0 && entities.length > 0">
+  <div class="card-body">
+    <div class="text-start mb-3">
+      <a href="javascript:void(0)" class="text-primary" (click)="showTenants()">
+        <i class="fa-solid fa-arrow-left"></i> {{ 'report.go_back' | translate }}
+      </a>
+    </div>
+    <h5 class="mb-3 text-dark text-start">{{ 'auth.choose_entity' | translate }}</h5>
+    
+    <div class="row">
+      <ng-container *ngFor="let entity of entities">
+        <div class="col-6" *ngIf="!isLoading; else loading">
+          <div class="entity text-dark" (click)="authAttempt()">
+            <i class="fa-solid fa-user" style="font-size: 3rem;"></i>
+            <p>{{ entity | uppercase }}</p>
+          </div>
+        </div>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-dark" style="font-size: 2rem"></i>
+          </ng-template>
+      </ng-container>
     </div>
   </div>
-  <app-copyright-footer></app-copyright-footer>
 </div>
+
+
+
+<app-copyright-footer></app-copyright-footer>
