@@ -91,27 +91,27 @@
 
           <div style="margin-top: 4px;">
             
-            <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }">
-                <ng-template pTemplate="header" styleClass="p-datatable-striped">
+            <p-table [value]="reinsuranceParams" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+                <ng-template pTemplate="header">
                   <tr>
-                    <th>Cover type name</th>
-                    <th>Retention limit</th>
-                    <th>Ceding limit</th>
-                    <th>Cede rate</th>
-                    <th>Rate type</th>
-                    <th>Commission rate</th>
-                    <th>Division factor</th>
+                    <th *ngIf="selectedColumns.includes('cvt_desc')">Cover type name</th>
+                    <th *ngIf="selectedColumns.includes('use_cvr_rate')">Retention limit</th>
+                    <th *ngIf="selectedColumns.includes('atct_limit')">Ceding limit</th>
+                    <th *ngIf="selectedColumns.includes('atct_cede_rate')">Cede rate</th>
+                    <th *ngIf="selectedColumns.includes('rate_type')">Rate type</th>
+                    <th *ngIf="selectedColumns.includes('tacr_comm_rate')">Commission rate</th>
+                    <th *ngIf="selectedColumns.includes('tacr_comm_div_factr')">Division factor</th>
                   </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-coverTypes >
+                <ng-template pTemplate="body" let-reinsuranceParams >
                   <tr>
-                    <td style="text-align: left; width: 14.5%;" id="tdStyle">{{ coverTypes.cvt_desc | titlecase }} </td>
-                    <td style="text-align: left; width: 10.5%;" id="tdStyle">{{ coverTypes.dty_description | titlecase }}</td>
-                    <td style="text-align: left; width: 14.5%;" id="tdStyle">{{coverTypes.use_cvr_rate }}</td>
-                    <td style="text-align: left; width: 12.5%;" id="tdStyle">{{ coverTypes.premium_mask_short_description }}</td>
-                    <td style="text-align: center; width: 10.5%;" id="tdStyle">{{ coverTypes.premium_rate }} </td>
-                    <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.rate_division_factor | number }}</td>
-                    <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.main_sumassured_percentage }}</td>
+                    <td *ngIf="selectedColumns.includes('cvt_desc')">{{ reinsuranceParams.cvt_desc | titlecase }} </td>
+                    <td *ngIf="selectedColumns.includes('use_cvr_rate')">{{ reinsuranceParams.use_cvr_rate | number }}</td>
+                    <td *ngIf="selectedColumns.includes('atct_limit')" style="text-align: right;">{{reinsuranceParams.atct_limit | number }}</td>
+                    <td *ngIf="selectedColumns.includes('atct_cede_rate')">{{ reinsuranceParams.atct_cede_rate }}</td>
+                    <td *ngIf="selectedColumns.includes('rate_type')">{{ reinsuranceParams.rate_type }} </td>
+                    <td *ngIf="selectedColumns.includes('tacr_comm_rate')">{{ reinsuranceParams.tacr_comm_rate }}</td>
+                    <td *ngIf="selectedColumns.includes('tacr_comm_div_factr')">{{ reinsuranceParams.tacr_comm_div_factr }}</td>
                     
                   </tr>
                 </ng-template>
