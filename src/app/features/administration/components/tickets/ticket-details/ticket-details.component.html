@@ -124,11 +124,12 @@
 
     <p-tabPanel header="Reinsurance allocations" >
       <app-reinsurance-allocations *ngIf="policyDetails?.riskInformation"
-        [policyDetails]="policyDetails?.riskInformation"
+        [riskDetails]="policyDetails?.riskInformation"
       ></app-reinsurance-allocations>
     </p-tabPanel>
     <p-tabPanel header="Authorization">
-      <app-authorization-tab></app-authorization-tab>
+      <app-authorization-tab *ngIf="policyDetails"
+      [policyDetails]="policyDetails"></app-authorization-tab>
     </p-tabPanel>
     <p-tabPanel header="Documents and reports">
       <label class="text-primary mb-2">Reports</label>
@@ -162,6 +163,7 @@
 <!--TODO hide reinsure button in other tabs-->
       <button
         class="btn btn-primary ms-2 reinsure-btn"
+        (click)="onClickReinsure()"
       >
         Reinsure
       </button>

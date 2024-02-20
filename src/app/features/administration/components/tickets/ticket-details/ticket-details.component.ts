@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {NewTicketDto, TicketModuleDTO, TicketsDTO} from "../../../data/ticketsDTO";
 import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
@@ -13,6 +13,7 @@ const log = new Logger('ViewTicketsComponent');
 
 import {ActivatedRoute, Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
+import {ReinsuranceAllocationsComponent} from "../reinsurance-allocations/reinsurance-allocations.component";
 
 @Component({
   selector: 'app-ticket-details',
@@ -41,6 +42,8 @@ export class TicketDetailsComponent implements OnInit {
   globalFilterFields = [''];
 
   activeIndex: number = 0;
+
+  @ViewChild(ReinsuranceAllocationsComponent) reinsuranceAllocationsComp: ReinsuranceAllocationsComponent;
 
   /*breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -286,5 +289,9 @@ export class TicketDetailsComponent implements OnInit {
 
   backToPrevious(): void {
     this.router.navigate(['/home/administration/tickets'])
+  }
+
+  onClickReinsure() {
+    this.reinsuranceAllocationsComp.reinsureRisk();
   }
 }
