@@ -301,6 +301,8 @@
                responsiveLayout="scroll"
                [resizableColumns]="true"
                [globalFilterFields]="globalFilterFields"
+               (sortFunction)="getSortKey($event)"
+               [customSort]="true"
       >
         <ng-template pTemplate="header">
           <tr>
@@ -335,25 +337,25 @@
               <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
             <th>
-              <p-columnFilter type="text" field="createdOn"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('createdOn');" (input)="getInputs($event, 'createdOn')" >
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('activityName');" (input)="getInputs($event, 'activityName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="refNo"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('referenceNo');" (input)="getInputs($event, 'referenceNo')">
             </th>
             <th>
-              <p-columnFilter type="text" field="clientName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('clientName');" (input)="getInputs($event, 'clientName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('agentName');" (input)="getInputs($event, 'agentName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('reporter');" (input)="getInputs($event, 'reporter')">
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');" (input)="getInputs($event, 'assignee')">
             </th>
             <th>
             </th>
