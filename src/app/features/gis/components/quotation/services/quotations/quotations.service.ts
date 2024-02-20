@@ -30,6 +30,7 @@ export class QuotationsService {
   baseUrl = this.appConfig.config.contextPath.gis_services;
   computationUrl = this.appConfig.config.contextPath.computation_service;
   notificationUrl = this.appConfig.config.contextPath.notification_service;
+  crmUrl = this.appConfig.config.contextPath.setup_services
   /**
    * HTTP options for making requests with JSON content type.
    * @type {any}
@@ -287,6 +288,21 @@ assignProductLimits(productCode){
   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`,
   {headers:headers})
 
+}
+documentTypes(accountType){
+  const params = new HttpParams()
+  .set('accountType', accountType)
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+  return this.http.get(`/${this.crmUrl}/setups/required-documents`,{
+    headers: headers,
+    params:params
+  })
 }
 }
 

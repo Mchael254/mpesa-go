@@ -61,7 +61,10 @@ export class QuotationDetailsComponent {
   quickQuotationDetails:any
   quickQuotationCode:any;
   quickQuotationNum:any
+  selectedAgent!:any
   @ViewChild('openModal') openModal;
+  @ViewChild('dt1') dt1: Table | undefined;
+
   constructor(
     public bankService:BankService,
     public branchService:BranchService,
@@ -347,6 +350,16 @@ export class QuotationDetailsComponent {
     } 
   }  
 }
+   /**
+   * Applies a global filter to the DataTable.
+   * @method applyFilterGlobal
+   * @param {Event} $event - The event triggering the filter application.
+   * @param {string} stringVal - The string value representing the filter criteria.
+   * @return {void}
+   */
+   applyFilterGlobal($event, stringVal) {
+    this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
 
  /**
    * Retrieves agents and populates the 'agents' property.
@@ -356,7 +369,7 @@ export class QuotationDetailsComponent {
   getAgents(){
     this.quotationService.getAgents().subscribe(data=>{
       this.agents = data.content
-     console.log(data)
+     console.log("AGENTS",data)
     })
   }
    /**
@@ -372,6 +385,17 @@ export class QuotationDetailsComponent {
      
     })
     
+  }
+  getAgentById(data){
+    this.agentService.getAgentById(data).subscribe({
+      next:(res)=>{
+        this.agentDetails = res
+
+        this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
+        this.quotationForm.controls['agentCode'].setValue(this.agentDetails.name);
+
+      }
+    })
   }
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
@@ -394,7 +418,7 @@ onResize(event: any) {
     this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
     this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
     this.quotationForm.controls['branchCode'].setValue(this.quotationForm.value.branchCode.id);
-    this.quotationForm.controls['agentCode'].setValue(this.quotationForm.value.agentCode.id);
+    this.quotationForm.controls['agentCode'].setValue(this.agentDetails.id);
     sessionStorage.setItem('coverFrom', JSON.stringify(this.quotationForm.value.withEffectiveFromDate));
     sessionStorage.setItem('coverTo', JSON.stringify(this.quotationForm.value.withEffectiveToDate));
     this.quotationService.getQuotations(clientId,fromDate,fromTo).subscribe(data=>{

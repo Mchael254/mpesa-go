@@ -38,7 +38,7 @@ export class QuotationsClientDetailsComponent {
   clientForm:FormGroup;
   textColor: string = 'black';
   clientTypeName: string
-  
+  selectedClient:any
   uploadFile:any;
   @ViewChild('dt1') dt1: Table | undefined;
 
