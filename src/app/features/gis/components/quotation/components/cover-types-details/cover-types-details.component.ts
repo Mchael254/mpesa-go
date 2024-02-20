@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ProductService } from '../../../../services/product/product.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
 import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
-import { ClientService } from '../../../../../entities/services/client/client.service';import { BinderService } from '../../../setups/services/binder/binder.service';
+import { ClientService } from '../../../../../entities/services/client/client.service'; import { BinderService } from '../../../setups/services/binder/binder.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
@@ -77,7 +77,7 @@ export class CoverTypesDetailsComponent {
   formData: any;
 
 
-  typedWord: number | null = null; 
+  typedWord: number | null = null;
   isChecked: boolean = false;
   premiumPayload: PremiumComputationRequest;
   premiumResponse: any;
@@ -120,6 +120,8 @@ export class CoverTypesDetailsComponent {
   passedQuotationCode: any;
 
   emailForm: FormGroup;
+  smsForm: FormGroup;
+
 
   constructor(
     public fb: FormBuilder,
@@ -151,7 +153,7 @@ export class CoverTypesDetailsComponent {
     const premiumComputationRequestString = sessionStorage.getItem('premiumComputationRequest');
     this.premiumPayload = JSON.parse(premiumComputationRequestString);
 
-   
+
     log.debug("PREMIUM PAYLOAD", this.premiumPayload);
     const limits = this.premiumPayload?.risks
     this.extractSectionCodes(limits);
@@ -196,12 +198,14 @@ export class CoverTypesDetailsComponent {
     this.getuser();
     this.createRiskDetailsForm();
     this.createEmailForm();
+    this.createSmsForm();
+
 
 
     this.formData = sessionStorage.getItem('quickQuoteFormDetails');
     log.debug("MY TRIAL", JSON.parse(this.formData))
 
-  
+
 
     this.createSectionDetailsForm();
 
@@ -245,7 +249,7 @@ export class CoverTypesDetailsComponent {
   // }
 
 
- 
+
 
   calculateTotalPayablePremium(quotationDetail: QuotationDetails): number {
     let totalPremium = quotationDetail.premium || 0;
@@ -285,7 +289,7 @@ export class CoverTypesDetailsComponent {
       sumInsuredRate: ['']
     });
   }
- 
+
 
   onKeyUp(event: KeyboardEvent, section: any): void {
     const inputElement = event.target as HTMLInputElement;
@@ -311,7 +315,7 @@ export class CoverTypesDetailsComponent {
     return section.isChecked || false;
 
   }
- 
+
 
 
   createRiskSection(payload: any) {
@@ -386,7 +390,7 @@ export class CoverTypesDetailsComponent {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
       }
       this.computeQuotePremium();
-     
+
     });
   }
 
@@ -399,12 +403,12 @@ export class CoverTypesDetailsComponent {
   //     this.selectedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName
   //     log.debug("Selected Client Name", this.selectedClientName);
   //     this.selectedEmail = this.clientDetails.emailAddress;
-    
+
   //     this.selectedPhoneNo=this.clientDetails.phoneNumber;
 
   //   })
   // }
- 
+
   /******************NEW PREMIUM COMPUTATION ENGINE **************/
 
   loadSubclassSectionCovertype() {
@@ -580,7 +584,7 @@ export class CoverTypesDetailsComponent {
 
     this.selectedQuotationNo = this.quotationNo;
   }
- 
+
   SelectCover() {
     if (this.passedQuotationNumber == null) {
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
@@ -607,7 +611,7 @@ export class CoverTypesDetailsComponent {
       this.createQuotationRisk();
       // this.sharedService.setSelectedCover(this.passedQuotationNumber);
       const quotationNumberString = JSON.stringify(this.passedQuotationNumber);
-        sessionStorage.setItem('quotationNumber', quotationNumberString);
+      sessionStorage.setItem('quotationNumber', quotationNumberString);
 
       this.router.navigate(['/home/gis/quotation/quote-summary']);
 
@@ -654,7 +658,7 @@ export class CoverTypesDetailsComponent {
       }
     });
   }
- 
+
   computeQuotePremium() {
     // Call the quotationUtils service for the first time
     this.callQuotationUtilsService();
@@ -702,7 +706,7 @@ export class CoverTypesDetailsComponent {
 
           log.debug("Updated Risk Level Premium:", this.riskLevelPremiums)
 
-          
+
           // Extract the cover types from the computationalDetails
           const coverTypesToReplace = this.computationDetails.risks.map((risk) => risk.subclassCoverTypeDto.coverTypeCode);
           log.debug("COVERTYPE TO REPLACE", coverTypesToReplace)
@@ -737,7 +741,7 @@ export class CoverTypesDetailsComponent {
       }
     )
   }
- 
+
   createEmailForm() {
 
     this.emailForm = this.fb.group({
@@ -793,6 +797,45 @@ export class CoverTypesDetailsComponent {
         }
       })
     console.log('Submitted payload:', JSON.stringify(emailForm));
+  }
+
+  createSmsForm() {
+
+    this.smsForm = this.fb.group({
+      message: ['', Validators.required],
+      recipients: ['', Validators.required],
+      sender: ['', Validators.required],
+    });
+  }
+  sendSms() {
+    const payload = {
+      recipients: [
+        this.selectedPhoneNo
+      ],
+      message: "Turnkey Africa",
+      sender: this.userDetails?.emailAddress,
+
+
+    };
+    this.quotationService.sendSms(payload).subscribe(
+      {
+        next: (res) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'SMS sent successfully');
+        }, error: (error: HttpErrorResponse) => {
+          log.info(error);
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+
+        }
+
+      }
+    )
+  }
+  handleShare() {
+    if (this.selectedOption === 'email') {
+      this.emaildetails();
+    } else if (this.selectedOption === 'sms') {
+      this.sendSms();
+    } 
   }
 
 }
