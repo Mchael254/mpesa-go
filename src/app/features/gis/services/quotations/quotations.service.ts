@@ -155,7 +155,9 @@ export class QuotationsService {
   sendEmail(data){
     return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
   }
-
+  sendSms(data){
+    return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
+  }
  
 
 }
