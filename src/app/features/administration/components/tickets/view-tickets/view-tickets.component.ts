@@ -16,8 +16,9 @@ import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ReplaySubject, takeUntil, tap} from "rxjs";
 import {Pagination} from "../../../../../shared/data/common/pagination";
-import {LazyLoadEvent} from "primeng/api";
+import {LazyLoadEvent, SortEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
+import {TableDetail} from "../../../../../shared/data/table-detail";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -51,6 +52,18 @@ export class ViewTicketsComponent implements OnInit {
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
   dateFrom = `${this.year-4}-${this.month}-${this.day}`;
+
+  tableDetails: TableDetail;
+
+  filterObject: {
+    createdOn:string, ticketName:string, refNo:string, clientName:string, intermediaryName:string, ticketFrom:string, ticketAssignee:string
+  } = {
+    createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+  };
+
+  isSearching = false;
+
+  searchData : Pagination<TicketsDTO> =  <Pagination<any>>{};
 
   globalFilterFields = [
     'createdOn',
@@ -198,6 +211,7 @@ export class ViewTicketsComponent implements OnInit {
     const pageIndex = event.first / event.rows;
     const queryColumn = event.sortField;
     const pageSize = event.rows;
+    // log.info('sortorder',event.sortOrder);
 
     this.getAllTickets(pageIndex, pageSize)
       .pipe(untilDestroyed(this))
@@ -562,6 +576,183 @@ export class ViewTicketsComponent implements OnInit {
       );
   }
 
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
+
+    this.springTickets = null; // Initialize with an empty array or appropriate structure
+
+    let data = this.filterObject[keyData];
+    console.log('datalog>>',data, keyData)
+
+    this.isSearching = true;
+    this.spinner.show();
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.ticketsService
+        .searchAllTickets(
+          pageIndex, pageSize,
+          this.dateFrom, this.dateToday,
+          keyData, data)
+        .subscribe((data) => {
+            this.springTickets = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.getAllTickets(pageIndex, pageSize)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Tickets>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<TicketsDTO>) => {
+
+            this.springTickets = data;
+            this.tableDetails.rows = this.springTickets?.content;
+            this.tableDetails.totalElements = this.springTickets?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => { this.spinner.hide(); }
+        );
+    }
+
+  }
+
   ngOnDestroy(): void {
   }
+
+  inputCreatedOn(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['createdOn'] = value;
+  }
+
+  inputTicketName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketName'] = value;
+  }
+
+  inputRefNo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['refNo'] = value;
+  }
+
+  inputClientName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['clientName'] = value;
+  }
+
+  inputIntermediaryName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['intermediaryName'] = value;
+  }
+
+  inputTicketFrom(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketFrom'] = value;
+  }
+
+  inputTicketAssignee(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketAssignee'] = value;
+  }
+
+  getSearchKey(key: string): filterSortEnums {
+    log.info(key);
+    switch (key) {
+      case "createdOn":
+        return filterSortEnums.DATE_FROM;
+      case "activityName":
+        return filterSortEnums.TICKET_NAME;
+      case "clientName":
+        return filterSortEnums.CLIENT_CODE;
+      case "agentName":
+        return filterSortEnums.AGENT_CODE;
+      case "referenceNo":
+        return filterSortEnums.REF_NO;
+      case "reporter":
+        return filterSortEnums.TICKET_BY;
+      default:
+        return filterSortEnums.ASSIGNED_TO;
+    }
+  }
+
+  getSortKey(event: SortEvent) {
+
+
+    event.data.sort((data1, data2) => {
+      let value1 = data1[event.field];
+      let value2 = data2[event.field];
+      let result = null;
+
+      if (value1 == null && value2 != null) result = -1;
+      else if (value1 != null && value2 == null) result = 1;
+      else if (value1 == null && value2 == null) result = 0;
+      else if (typeof value1 === 'string' && typeof value2 === 'string') result = value1.localeCompare(value2);
+      else result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
+
+      log.info('sortinfo',event.order, result);
+      return event.order * result;
+
+    });
+    /*switch (value) {
+      case "1":
+        return 'ASCENDING';
+      default:
+        return 'DESCENDING';
+    }*/
+  }
+
+  getInputs(event, filterObjName: string) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject[filterObjName] = value;
+  }
+
+  searchTickets(key: string) {
+
+    if (this.filterObject[key]) {
+      const searchKey: filterSortEnums = this.getSearchKey(key);
+
+
+      const payload = {
+        search: [
+          {
+            key: searchKey,
+            value: this.filterObject[key]
+          }
+        ],
+        sort: [
+          {
+            key: searchKey,
+            orderCriteria: "ASCENDING"
+          }
+        ]
+      };
+      log.info('searchdatapayload>>', payload);
+      this.ticketsService.searchTickets(payload)
+        .subscribe((data) =>{
+          this.springTickets = data;
+          log.info('searchdata>>', this.springTickets);
+        })
+    }
+    else {
+      this.dt.reset();
+    }
+
+
+  }
+}
+
+enum filterSortEnums {
+  TICKET_NAME = 'TICKET_NAME',
+  TICKET_TYPE = 'TICKET_TYPE',
+  ASSIGNED_TO = 'ASSIGNED_TO',
+  CLIENT_CODE = 'CLIENT_CODE',
+  AGENT_CODE = 'AGENT_CODE',
+  TICKET_BY = 'TICKET_BY',
+  REF_NO = 'REF_NO',
+  SYSTEM_MODULE = 'SYSTEM_MODULE',
+  DATE_FROM = 'DATE_FROM'
 }

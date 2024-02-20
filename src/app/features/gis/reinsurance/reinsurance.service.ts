@@ -128,15 +128,14 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  reinsureRisk(policyBatchNo: number, data: RiskReinsurePOSTDTO): Observable<any> {
+  reinsureRisk(policyBatchNo: number, data: RiskReinsurePOSTDTO[]): Observable<any> {
 
     const assignee = this.authService.getCurrentUserName();
     let params = new HttpParams()
       .set('policyBatchNo', `${policyBatchNo}`)
-      .set('policyRiskDTOS', `${data}`)
-      .set('user', `${assignee}`)
+      .set('user', `${assignee}`);
 
-
-    return this.api.POST<any>(`api/v1/policy-Risks-Controller/reinsure`, params, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+    return this.api.POST<any>(`api/v1/policy-Risks-Controller/reinsure`,
+      JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL, params);
   }
 }

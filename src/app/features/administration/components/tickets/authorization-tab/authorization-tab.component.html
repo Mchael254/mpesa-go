@@ -19,12 +19,12 @@
   [resizableColumns]="true"
   [showCurrentPageReport]="true"
   [rows]="pageSize || 5"
-  [totalRecords]="risKCedingDetails?.totalElements"
-  [value]="risKCedingDetails?.content"
+  [totalRecords]="authorizationExceptionData?.totalElements"
+  [value]="authorizationExceptionData?.content"
   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
   responsiveLayout="stack"
   [scrollable]="true"
-  [(selection)]="risKCedingDetails"
+  [(selection)]="authorizationExceptionData"
   scrollHeight="400px"
   currentPageReportTemplate="{first} - {last} of {totalRecords}"
 >
@@ -48,15 +48,19 @@
       <td class="body">
         <p-tableCheckbox [value]=""></p-tableCheckbox>
       </td>
-      <td>Section SI</td>
-      <td>Sum insured</td>
-      <td>600,000</td>
-      <td>30,000.00</td>
-      <td>FXD</td>
+      <td>{{exception.code}}</td>
+      <td>
+        <span title="{{exception.description}}">
+          {{exception.description.substring(0,10)}}...
+        </span>
+      </td>
+      <td>{{exception.remarks}}</td>
+      <td>{{exception.set_standard}}</td>
+      <td>{{exception.used_standard}}</td>
       <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+      <td>{{exception.transactions_date}}</td>
+      <td>{{exception.authorized_by}}</td>
+      <td>{{exception.authorized_date}}</td>
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage">
@@ -263,7 +267,7 @@
     </div>
   </div>
 </div>
-<button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Open first modal</button>
+<!--<button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Open first modal</button>-->
 
 
 <!--Modal for Listing all users !-->
