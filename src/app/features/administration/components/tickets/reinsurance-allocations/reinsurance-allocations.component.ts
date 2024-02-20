@@ -12,6 +12,8 @@ import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {SubclassesService} from "../../../../gis/components/setups/services/subclasses/subclasses.service";
 import {Subclasses} from "../../../../gis/components/setups/data/gisDTO";
+import {AgentDTO} from "../../../../entities/data/AgentDTO";
+import {IntermediaryService} from "../../../../entities/services/intermediary/intermediary.service";
 
 const log = new Logger('ReinsuranceAllocationsComponent');
 @Component({
@@ -21,7 +23,7 @@ const log = new Logger('ReinsuranceAllocationsComponent');
 })
 export class ReinsuranceAllocationsComponent implements OnInit {
 
-  @Input() policyDetails:any [] = [];
+  @Input() riskDetails:any [] = [];
   public pageSize: 5;
   risKCedingDetails: any;
   treatyRISummaryForm: FormGroup;
@@ -41,6 +43,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   policyFacreSetupsData: Pagination<PolicyFacreSetupsDTO> = <Pagination<PolicyFacreSetupsDTO>>{};
 
   subclassData: Subclasses;
+  intermediaryData: AgentDTO;
   prrdCode: number;
   prrdTranNo: number;
   riskCode: any[];
@@ -50,17 +53,19 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   subClassCode: any;
 
   risksForm:FormGroup;
+  reinsureRiskPOSTData: any;
 
   constructor(private fb: FormBuilder,
               private reinsuranceService: ReinsuranceService,
               private globalMessagingService: GlobalMessagingService,
-              private subclassService: SubclassesService, ){}
+              private subclassService: SubclassesService,
+              private intermediaryService: IntermediaryService, ){}
 
   ngOnInit(): void {
     this.createTreatyRiSummaryForm();
     this.createRiskPopulateForm();
     this.getRiskReinsuranceRiskDetails();
-    // log.info('batch no', this.policyDetails[0].policyBatchNo);
+    log.info('riskinfo', this.riskDetails);
 
     // this.getRiskReinsuranceDetails();
     // this.getReinsuranceRiskDetails();
@@ -129,7 +134,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   //populates risk on left card
   getRiskReinsuranceRiskDetails() {
     // this.policyDetails[0].policyBatchNo
-    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.policyDetails[0].policyBatchNo)
+    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.riskDetails[0].policyBatchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -161,28 +166,28 @@ export class ReinsuranceAllocationsComponent implements OnInit {
           log.info('content>>',details)
 
           let inp = {
-            "companyNetPRate":0,
-            "companyNetRiAmt": this.numberWithCommas(details['ipuReinsureAmt']),
-            "companyNetCession": this.numberWithCommas(details['prrdCompRetention']),
+            "companyNetPRate":details['prrdPrevRetRate'],
+            "companyNetRiAmt": this.numberWithCommas(details['prrdGrossCompRetention']),
+            "companyNetCession": details['prrdCompNetRate'],
             "companyNetPremium": this.numberWithCommas(details['prrdNetPrem']),
-            "reinsurancePRate": details[''],
-            "reinsuranceRiAmt": details[''],
-            "reinsuranceCession": details[''],
-            "reinsurancePremium": details[''],
-            "treatyPRate": details['trtsPct'],
+            "reinsurancePRate": details['riPoolPrevRate'],
+            "reinsuranceRiAmt": details['riPool'],
+            "reinsuranceCession": details['riPoolRate'],
+            "reinsurancePremium": details['riPoolPrem'],
+            "treatyPRate": details['prevTreatyRate'],
             "treatyRiAmt": details['trtsSi'],
-            "treatyCession": details['prevTreatyRate'],
+            "treatyCession": details['trtsPct'],
             "treatyPremium": details['trtsPrem'],
-            "facrePRate": details[''],
+            "facrePRate": details['prrdPrevFacreRate'],
             "facreRiAmt": this.numberWithCommas(details['prrdFacreAmount']),
             "facreCession": this.numberWithCommas(details['prrdFacreRate']),
-            "facrePremium": details[''],
-            "totalRiAmt": this.numberWithCommas(details['ipuReinsureAmt']),
-            "totalCession": this.numberWithCommas(details['prrdCompRetention']),
-            "totalPremium": this.numberWithCommas(details['prrdNetPrem']),
-            "excessRiAmt": 0,
+            "facrePremium": details['prrdFacrePremium'],
+            "totalRiAmt": details['totCededSi'],
+            "totalCession": details['totPct'],
+            "totalPremium": details['totCededPrem'],
+            "excessRiAmt": details['prrdAvailFulcBal'],
             "excessCession": details['prrdExcessPct'],
-            "excessPremium": 0,
+            "excessPremium": details['excessPrem'],
 
           };
           log.info('content patched>>',inp)
@@ -226,6 +231,11 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reinsuranceFacreCedingData = data;
+          if (this.reinsuranceFacreCedingData !== null && this.reinsuranceFacreCedingData.length > 0) {
+            let intermediaryDetails = data[0];
+            this.getIntermediaryId(intermediaryDetails?.intermediaryCode);
+          }
+
           log.info('ReinsuranceFacreCeding>>', this.reinsuranceFacreCedingData)
         }
       )
@@ -325,7 +335,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   }
 
   getPolicyFacreSetups() {
-    this.reinsuranceService.getPolicyFacreSetups(this.policyDetails[0].policyBatchNo)
+    this.reinsuranceService.getPolicyFacreSetups(this.riskDetails[0].policyBatchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -348,7 +358,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
     }
     this.riskCode = riskCodes;
     const payload: any = {
-      batchNumber: this.policyDetails[0]?.policyBatchNo,
+      batchNumber: this.riskDetails[0]?.policyBatchNo,
       riskIpuCodes:
         riskCodes
     }
@@ -416,51 +426,68 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       )
   }
 
+  getIntermediaryId(code: any) {
+    this.intermediaryService.getAgentById(code)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.intermediaryData = data;
+          log.info('intermediary>>', this.intermediaryData.name)
+        }
+      )
+  }
+
   reinsureRisk() {
-    const batchNo = this.policyDetails[0].policyBatchNo;
-    const reinsureRiskData: RiskReinsurePOSTDTO = {
-      allowed_commission_rate: 0,
-      basic_premium: 0,
-      binder_code: 0,
-      commission_amount: 0,
-      commission_rate: 0,
-      cover_type_code: 0,
+    const batchNo = this.riskDetails[0].policyBatchNo;
+    const reinsureRiskData: RiskReinsurePOSTDTO[] = []
+      /*{
+      allowed_commission_rate: null,
+      basic_premium: null,
+      binder_code: null,
+      commission_amount: null,
+      commission_rate: null,
+      cover_type_code: null,
       cover_type_short_description: "",
-      currency_code: 0,
+      currency_code: null,
       date_cover_from: "",
       date_cover_to: "",
       del_sect: "",
-      gross_premium: 0,
-      insureds: {client: {first_name: "", id: 0, last_name: ""}, prp_code: 0},
+      gross_premium: null,
+      insureds: {client: {first_name: "", id: null, last_name: ""}, prp_code: null},
       ipu_ncd_cert_no: "",
       loaded: "",
-      lta_commission: 0,
-      net_premium: 0,
-      paid_premium: 0,
-      policy_batch_no: 0,
+      lta_commission: null,
+      net_premium: null,
+      paid_premium: null,
+      policy_batch_no: null,
       policy_number: "",
       policy_status: "",
-      product_code: 0,
+      product_code: null,
       property_description: "",
       property_id: "",
-      quantity: 0,
+      quantity: null,
       reinsurance_endorsement_number: "",
       renewal_area: "",
-      risk_ipu_code: 0,
+      risk_ipu_code: null,
       sections_details: [],
-      stamp_duty: 0,
-      sub_class_code: 0,
+      stamp_duty: null,
+      sub_class_code: null,
       sub_class_description: "",
       transaction_type: "",
-      underwriting_year: 0,
-      value: 0
+      underwriting_year: null,
+      value: null
 
-    };
+    };*/
 
-    /*this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
+    this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
       .subscribe((data) => {
+        this.reinsureRiskPOSTData = data;
+        log.info('reinsure clicked>>', data);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully reinsured');
 
-      })*/
+      })
   }
 
   ngOnDestroy(): void {

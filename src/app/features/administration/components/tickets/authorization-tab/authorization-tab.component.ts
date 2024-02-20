@@ -1,6 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {StaffDto} from "../../../../entities/data/StaffDto";
+import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import {PoliciesService} from "../../../../gis/services/policies/policies.service";
+import {Logger} from "../../../../../shared/services";
+import {Pagination} from "../../../../../shared/data/common/pagination";
+
+const log = new Logger('AuthorizationTabComponent');
 
 @Component({
   selector: 'app-authorization-tab',
@@ -8,6 +14,7 @@ import {StaffDto} from "../../../../entities/data/StaffDto";
   styleUrls: ['./authorization-tab.component.css']
 })
 export class AuthorizationTabComponent implements OnInit{
+  @Input() policyDetails:any;
   public pageSize: 5;
   risKCedingDetails: any;
 
@@ -26,13 +33,17 @@ export class AuthorizationTabComponent implements OnInit{
   selectedDefaultUser: StaffDto;
   groupStaffMembers: StaffDto[] = [];
 
-  constructor(private fb: FormBuilder,) {
+  authorizationExceptionData: Pagination<any> = <Pagination<any>>{};
+
+  constructor(private fb: FormBuilder,
+              private policiesService: PoliciesService,) {
   }
 
   ngOnInit(): void {
     this.showDefaultUser = false;
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
+    this.getAuthorizationExceptionDetails();
   }
 
   createDebtOwnerTicketsForm() {
@@ -96,5 +107,21 @@ export class AuthorizationTabComponent implements OnInit{
     this.debtOwnerForm.patchValue({
       modalDefaultGroupUser: event?.name
     })
+  }
+
+  getAuthorizationExceptionDetails() {
+    this.policiesService.getListOfExceptionsByPolBatchNo(this.policyDetails?.batch_no)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.authorizationExceptionData = data;
+          log.info('AuthorizationExceptionDetails>>', this.authorizationExceptionData)
+        }
+      )
+  }
+
+  ngOnDestroy(): void {
   }
 }

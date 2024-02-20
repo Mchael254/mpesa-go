@@ -77,18 +77,18 @@
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-risKCedingDetail>
-              <tr (click)="selectTreatyRiskCeding(risKCedingDetail)">
+              <tr (click)="selectTreatyRiskCeding(risKCedingDetail)" style="cursor:pointer;">
                 <td>{{risKCedingDetail.prrdCurrent }}</td>
                 <td>{{risKCedingDetail.prrdGrossCompRetention | number}}</td>
                 <td>{{risKCedingDetail.ipuPropertyId}}</td>
-
-<!--                <td>{{risKCedingDetail.ipuItemDesc}}</td>-->
-                <td type="button" class="btn btn-outline-secondary me-2" placement="top" [ngbTooltip]="risKCedingDetail.ipuItemDesc">
-                  {{risKCedingDetail.ipuItemDesc.substring(0,10)}}....
+                <td>
+                  <span title="{{risKCedingDetail.ipuItemDesc}}">
+                    {{risKCedingDetail.ipuItemDesc.substring(0,10)}}...
+                  </span>
                 </td>
                 <td>{{subclassData?.description}}</td>
-                <td></td>
-                <td>{{risKCedingDetail.prrdExcessPct}}</td>
+                <td>{{risKCedingDetail?.ipuOverrideRiRetention}}</td>
+                <td>{{risKCedingDetail.prrdAvailFulcBal}}</td>
                 <td>{{risKCedingDetail.prrdExcessPct}}</td>
               </tr>
             </ng-template>
@@ -135,14 +135,14 @@
                     <tr (click)="selectRiskRiSummary(risKRIDetail)">
                       <td>{{risKRIDetail.treatyShortDescription}}</td>
                       <td>{{risKRIDetail.rate}}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td>{{risKRIDetail.rateType}}</td>
+                      <td>{{risKRIDetail.previousCessionRate}}</td>
+                      <td>{{risKRIDetail.treatySumInsuredPolicyCurrency}}</td>
+                      <td>{{risKRIDetail.cessionPercentage}}</td>
+                      <td>{{risKRIDetail.riskPremiumPolicyCurrency | number}}</td>
+                      <td>{{risKRIDetail.premiumTaxPolicyCurrency}}</td>
+                      <td>{{risKRIDetail.treatyCommissionPolicyCurrency}}</td>
+                      <td>{{risKRIDetail.remarks}}</td>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
@@ -390,14 +390,14 @@
                     <ng-template pTemplate="body" let-facreCeding>
                       <tr>
                         <td>{{facreCeding.agentReinName}}</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{facreCeding.rate}}</td>
+                        <td>{{intermediaryData?.name}}</td>
+                        <td>{{facreCeding.agentShtDesc}}</td>
+                        <td>{{facreCeding.amountOrRate}}</td>
                         <td>{{facreCeding.amount}}</td>
                         <td>{{facreCeding.wef}}</td>
+                        <td>{{facreCeding.rate}}</td>
                         <td>{{facreCeding.commissionRate}}</td>
-                        <td></td>
-                        <td></td>
+                        <td>{{facreCeding.commissionAmount}}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
@@ -444,7 +444,7 @@
                         <td>{{reinsurancePool.riskTrtOwnReturnAmount}}</td>
                         <td>{{reinsurancePool.reinsurancePoolRate}}</td>
                         <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
-                        <td></td>
+                        <td>{{reinsurancePool.riskOwnReturnAmount}}</td>
                         <td>{{reinsurancePool.reinsurancePoolCommisionRate}}</td>
                         <td>{{reinsurancePool.reinsurancePoolCommisionAmount}}</td>
                         <td>{{reinsurancePool.reinsurancePoolVatRate}}</td>
@@ -511,8 +511,8 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-reinsuranceXolPremium>
                       <tr>
-                        <td></td>
-                        <td></td>
+                        <td>{{reinsuranceXolPremium.arrangementVmlpName}}</td>
+                        <td>{{reinsuranceXolPremium.arrangementSetupsUnderwritingYear}}</td>
                         <td>{{reinsuranceXolPremium.arrangementCapacity}}</td>
                         <td>{{reinsuranceXolPremium.compOwnAmount}}</td>
                         <td>{{reinsuranceXolPremium.actualTreatySumInsured}}</td>
@@ -611,10 +611,10 @@
               <tr (click)="selectPreviousCedingDetails(previousCeding)">
                 <td>{{ previousCeding.grossCompanyRetention | number }}</td>
                 <td>{{ previousCeding.companyRetention | number }}</td>
-                <td>{{ previousCeding.facreAmount | number }}</td>
-                <td>{{ previousCeding.companyRetentionRate | number }}</td>
-                <td>{{ previousCeding.riskPercentage | number }}</td>
-                <td>{{ previousCeding.topLocation | number }}</td>
+                <td>{{ previousCeding.facreAmount }}</td>
+                <td>{{ previousCeding.companyRetentionRate }}</td>
+                <td>{{ previousCeding.riskPercentage }}</td>
+                <td>{{ previousCeding.topLocation }}</td>
                 <td>{{ previousCeding.reinsurancePremium | number }}</td>
               </tr>
             </ng-template>
@@ -652,9 +652,9 @@
             <ng-template pTemplate="body" let-treatyCession>
               <tr>
                 <td>{{treatyCession.treatyShortDescription}}</td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{treatyCession.cessionPolicyCovertype}}</td>
+                <td>{{treatyCession.treatyPremiumPolicyCurrency}}</td>
+                <td>{{treatyCession.treatyCommissionPolicyCurrency}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -692,7 +692,7 @@
             <ng-template pTemplate="body" let-facreCession>
               <tr>
                 <td>{{facreCession.agentReinName}}</td>
-                <td></td>
+                <td>{{facreCession.agentShtDesc}}</td>
                 <td>{{facreCession.rate}}</td>
                 <td>{{facreCession.premiumAmount}}</td>
                 <td>{{facreCession.commissionAmount}}</td>
@@ -737,14 +737,14 @@
             </ng-template>
             <ng-template pTemplate="body" let-treatySetup>
               <tr>
-                <td>{{treatySetup.reinsuranceTreatyTypeShortDescription}}</td>
                 <td>{{treatySetup.treatyTypeDescription}}</td>
-                <td></td>
+                <td>{{treatySetup.reinsuranceTreatyTypeShortDescription}}</td>
+                <td>{{treatySetup.currencySymbol}}</td>
                 <td>{{treatySetup.reinsuranceRateType}}</td>
-                <td>{{treatySetup.underWritingYear}}</td>
+                <td>{{treatySetup.reinsuranceUnderwritingYear}}</td>
                 <td>{{treatySetup.reinsuranceCommissionRate}}</td>
-                <td></td>
-                <td>{{treatySetup.reinsuranceLimit}}</td>
+                <td>{{treatySetup.classTreatyWefDate}}</td>
+                <td>{{treatySetup.reinsuranceLimit | number}}</td>
                 <td>{{treatySetup.reinsuranceCedeRate}}</td>
               </tr>
             </ng-template>
@@ -786,14 +786,14 @@
             </ng-template>
             <ng-template pTemplate="body" let-policyFacreCeding>
               <tr>
-                <td></td>
-                <td></td>
+                <td>{{policyFacreCeding.agentName}}</td>
+                <td>{{policyFacreCeding.agentShortDescription}}</td>
                 <td>{{policyFacreCeding.amountOrRate}}</td>
                 <td>{{policyFacreCeding.rate}}</td>
                 <td>{{policyFacreCeding.acceptedDate}}</td>
                 <td>{{policyFacreCeding.commissionRate}}</td>
                 <td>{{policyFacreCeding.managmentType}}</td>
-                <td></td>
+                <td>{{policyFacreCeding.managmentValue}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
