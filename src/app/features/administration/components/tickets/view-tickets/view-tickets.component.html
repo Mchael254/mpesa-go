@@ -301,34 +301,32 @@
                responsiveLayout="scroll"
                [resizableColumns]="true"
                [globalFilterFields]="globalFilterFields"
-               (sortFunction)="getSortKey($event)"
-               [customSort]="true"
       >
         <ng-template pTemplate="header">
           <tr>
             <th class="head">
               Select All
             </th>
-            <th class="head" pSortableColumn="createdOn">
-              Created On <p-sortIcon field="createdOn"></p-sortIcon>
+            <th class="head" pSortableColumn="date">
+              Created On <p-sortIcon field="date"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketName">
-              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
+            <th class="head" pSortableColumn="task.activityName ">
+              Ticket Name <p-sortIcon field="task.activityName "></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="refNo">
-              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
+            <th class="head" pSortableColumn="sysModule">
+              Ref No. <p-sortIcon field="sysModule"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="clientName">
-              Client <p-sortIcon field="clientName"></p-sortIcon>
+            <th class="head" pSortableColumn="clientCode">
+              Client <p-sortIcon field="clientCode"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="intermediaryName">
-              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
+            <th class="head" pSortableColumn="agentCode">
+              Intermediary <p-sortIcon field="agentCode"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketFrom">
-              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
+            <th class="head" pSortableColumn="reporter">
+              Ticket From <p-sortIcon field="reporter"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketAssignee">
-              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
+            <th class="head" pSortableColumn="assignee">
+              Ticket Assignee <p-sortIcon field="assignee"></p-sortIcon>
             </th>
             <th></th>
           </tr>

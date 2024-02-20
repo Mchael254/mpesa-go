@@ -50,14 +50,14 @@
       </td>
       <td>{{exception.code}}</td>
       <td>
-        <span title="{{exception.description}}">
-          {{exception.description.substring(0,10)}}...
+        <span *ngIf = "exception?.description" title="{{exception?.description}}">
+          {{exception?.description?.substring(0,10)}}...
         </span>
       </td>
       <td>{{exception.remarks}}</td>
       <td>{{exception.set_standard}}</td>
       <td>{{exception.used_standard}}</td>
-      <td></td>
+      <td>{{exception.is_authorized}}</td>
       <td>{{exception.transactions_date}}</td>
       <td>{{exception.authorized_by}}</td>
       <td>{{exception.authorized_date}}</td>
