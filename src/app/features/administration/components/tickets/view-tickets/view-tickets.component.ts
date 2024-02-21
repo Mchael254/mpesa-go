@@ -64,6 +64,8 @@ export class ViewTicketsComponent implements OnInit {
   isSearching = false;
 
   searchData : Pagination<TicketsDTO> =  <Pagination<any>>{};
+  activityName: string;
+  totalTickets: number;
 
   globalFilterFields = [
     'createdOn',
@@ -100,6 +102,15 @@ export class ViewTicketsComponent implements OnInit {
     this.createSortForm();
     this.getAllTicketTypes();
     this.getAllTicketModules();
+
+    this.route.queryParams.subscribe(params => {
+
+      this.activityName = params['activityName'];
+      this.totalTickets = params['totalTickets'];
+      log.info(`query Params >>>`, params, this.activityName, this.totalTickets);
+      this.searchTickets(this.filterObject["ticketName"]);
+      this.getAllTickets(0, 10, '', this.activityName, 'name');
+    });
   }
 
   getAllTicketsFromCubeJs() {
@@ -210,10 +221,11 @@ export class ViewTicketsComponent implements OnInit {
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event.first / event.rows;
     const queryColumn = event.sortField;
+    const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
     const pageSize = event.rows;
-    // log.info('sortorder',event.sortOrder);
+    log.info('sortorder',queryColumn);
 
-    this.getAllTickets(pageIndex, pageSize)
+    this.getAllTickets(pageIndex, pageSize,sort?.toString())
       .pipe(untilDestroyed(this))
       .subscribe((data:Pagination<TicketsDTO>) => {
         this.springTickets = data;
@@ -667,9 +679,9 @@ export class ViewTicketsComponent implements OnInit {
       case "activityName":
         return filterSortEnums.TICKET_NAME;
       case "clientName":
-        return filterSortEnums.CLIENT_CODE;
+        return filterSortEnums.CLIENT_NAME;
       case "agentName":
-        return filterSortEnums.AGENT_CODE;
+        return filterSortEnums.AGENT_NAME;
       case "referenceNo":
         return filterSortEnums.REF_NO;
       case "reporter":
@@ -679,31 +691,6 @@ export class ViewTicketsComponent implements OnInit {
     }
   }
 
-  getSortKey(event: SortEvent) {
-
-
-    event.data.sort((data1, data2) => {
-      let value1 = data1[event.field];
-      let value2 = data2[event.field];
-      let result = null;
-
-      if (value1 == null && value2 != null) result = -1;
-      else if (value1 != null && value2 == null) result = 1;
-      else if (value1 == null && value2 == null) result = 0;
-      else if (typeof value1 === 'string' && typeof value2 === 'string') result = value1.localeCompare(value2);
-      else result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
-
-      log.info('sortinfo',event.order, result);
-      return event.order * result;
-
-    });
-    /*switch (value) {
-      case "1":
-        return 'ASCENDING';
-      default:
-        return 'DESCENDING';
-    }*/
-  }
 
   getInputs(event, filterObjName: string) {
     const value = (event.target as HTMLInputElement).value;
@@ -749,8 +736,8 @@ enum filterSortEnums {
   TICKET_NAME = 'TICKET_NAME',
   TICKET_TYPE = 'TICKET_TYPE',
   ASSIGNED_TO = 'ASSIGNED_TO',
-  CLIENT_CODE = 'CLIENT_CODE',
-  AGENT_CODE = 'AGENT_CODE',
+  CLIENT_NAME = 'CLIENT_NAME',
+  AGENT_NAME = 'AGENT_NAME',
   TICKET_BY = 'TICKET_BY',
   REF_NO = 'REF_NO',
   SYSTEM_MODULE = 'SYSTEM_MODULE',
