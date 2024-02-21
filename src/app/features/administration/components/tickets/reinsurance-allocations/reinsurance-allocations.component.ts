@@ -118,7 +118,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   }
 
   getTreatyParticipant() {
-    this.reinsuranceService.getTreatyParticipant(this.reinsuranceRiskDetailsData.content[0]?.code)
+    this.reinsuranceService.getTreatyParticipant(this.reinsuranceRiskDetailsData?.content[0]?.code)
       .pipe(
         untilDestroyed(this),
       )
@@ -134,7 +134,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   //populates risk on left card
   getRiskReinsuranceRiskDetails() {
     // this.policyDetails[0].policyBatchNo
-    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.riskDetails[0].policyBatchNo)
+    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.riskDetails[0]?.policyBatchNo)
       .pipe(
         untilDestroyed(this),
       )
