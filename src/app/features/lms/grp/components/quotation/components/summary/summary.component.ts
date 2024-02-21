@@ -35,6 +35,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
   membersDetails: MembersDTO[];
   productSelected: string;
   productType: string;
+  currency: string;
+  currency_symbol: string;
   memberCoverTypeSummaryDto: MemberCoverTypeSummaryDto[];
   categoryDetailsSummary: CategoryDetailsDto[];
   selectedRowIndex: number;
@@ -131,6 +133,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     console.log("quotation code", this.quotationCode)
     this.quotationNumber = parsedQuoteDetails.quotation_number;
     console.log("quotation number", this.quotationNumber)
+    
   
   
     if (storedQuoteData) {
@@ -140,7 +143,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
       this.productCode = formData.products.value;
       this.productSelected = formData.products.label;
       this.productType = formData.products.type;
-      console.log("this.productCode", this.productCode, this.productSelected, this.productType)
+      this.currency = formData.currency.label;
+      this.currency_symbol = formData.currency.label.split('(')[1].replace(')', '');
+      console.log("this.productCode", this.productCode, this.productSelected, this.productType, this.currency, this.currency_symbol)
       this.quatationCalType = formData.quotationCalcType
       console.log("this.quatationCalType", this.quatationCalType)
     }
@@ -214,7 +219,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   getQuotationDetailsSummary() {
-    this.summaryService.quotationSummaryDetails(this.quotationNumber).subscribe((quote: QuoteSummaryDTO) => {
+    this.summaryService.quotationSummaryDetails(this.quotationCode).subscribe((quote: QuoteSummaryDTO) => {
       console.log("quoteSummary", quote)
       this.quoteSummary = quote;
     });
