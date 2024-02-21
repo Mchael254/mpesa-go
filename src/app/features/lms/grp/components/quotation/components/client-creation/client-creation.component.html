@@ -9,16 +9,16 @@
         <div>
         <h5>Client details</h5>
 
-        <form>
+        <form [formGroup]="clientDetailsForm">
             <div class="col-md-4">
                 <div class="form-group" style="color: black;">
                     <div class="row">
                         <div class="col-sm-6">
-                            <input type="radio" id="newClient" name="clientType" value="new" style="color: black;">
+                            <input type="radio" id="newClient" name="clientType" formControlName="clientType" value="new" style="color: black;">
                             <label for="newClient" style="color: black;">New Client</label>
                         </div>
                         <div class="col-sm-6">
-                            <input type="radio" id="existingClient" name="clientType" value="existing" style="color: black;">
+                            <input type="radio" id="existingClient" name="clientType" formControlName="clientType" value="existing" style="color: black;">
                             <label for="existingClient" style="color: black;">Existing Client</label>
                         </div>
                     </div>
@@ -58,8 +58,8 @@
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">Type<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="type" style="color: black;">Type<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'type'" formControlName="type">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -72,7 +72,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Incorporation date<span style="color: red;">*</span></label>
+                            <label for="incorporationDate" style="color: black;">Incorporation date<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -80,9 +80,9 @@
                                     type="date"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="incorporationDate" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="incorporationDate">
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Registration number<span style="color: red;">*</span></label>
+                            <label for="registrationNumber" style="color: black;">Registration number<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -99,9 +99,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="registrationNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="registrationNumber">
                             </div>
                         </div>
                     </div>
@@ -110,7 +110,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Occupation<span style="color: red;">*</span></label>
+                            <label for="occupation" style="color: black;">Occupation<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -118,9 +118,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="occupation" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="occupation">
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Pin number</label>
+                            <label for="pinNumber" style="color: black;">Pin number</label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -139,9 +139,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="pinNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="pinNumber">
                             </div>
                         </div>
                     </div>
@@ -153,7 +153,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                            <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -161,9 +161,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="phoneNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="phoneNumber">
                             </div>
                         </div>
                     </div>
@@ -172,7 +172,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Email<span style="color: red;">*</span></label>
+                            <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -180,9 +180,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="email" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="email">
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="clientName" style="color: black;">Physical address<span style="color: red;">*</span></label>
+                            <label for="address" style="color: black;">Physical address<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -199,9 +199,9 @@
                                     type="text"
                                     pInputText
                                     class="form-control"
-                                    id="clientName" 
+                                    id="address" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="address">
                             </div>
                         </div>
                     </div>
@@ -211,8 +211,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">Country<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="country" style="color: black;">Country<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'country'" formControlName="country">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -222,8 +222,8 @@
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">County/State<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="county" style="color: black;">County/State<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'county'" formControlName="county">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -233,8 +233,8 @@
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">City/Town<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="city" style="color: black;">City/Town<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'city'" formControlName="city">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -248,8 +248,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">Affiliated to the insurer</label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="affiliatedToInsurer" style="color: black;">Affiliated to the insurer</label>
+                        <select class="form-select" [id]="'affiliatedToInsurer'" formControlName="affiliatedToInsurer">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -259,8 +259,8 @@
 
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="clientType" style="color: black;">Representation<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'clientType'" formControlName="clientType">
+                        <label for="representation" style="color: black;">Representation<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'representation'" formControlName="representation">
                             <ng-container *ngFor="let cover of ">
                                 <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
                             </ng-container>
@@ -345,12 +345,12 @@
         (click)="closeAdminDetailsModal()"></button>
       </div>
       <div class="modal-body">
-      <form>
+      <form [formGroup]="adminDetailsForm">
         <div class="row">
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Name<span style="color: red;">*</span></label>
+                        <label for="name" style="color: black;">Name<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -358,9 +358,9 @@
                                 type="text"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="name" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="name">
                         </div>
                     </div>
                 </div>
@@ -369,7 +369,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Position<span style="color: red;">*</span></label>
+                        <label for="position" style="color: black;">Position<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -377,9 +377,9 @@
                                 type="text"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="position" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="position">
                         </div>
                     </div>
                 </div>
@@ -389,28 +389,20 @@
 
         <div class="row">
             <div class="col-md-6">
-                <div>
-                    <div>
-                        <label for="clientName" style="color: black;">Gender<span style="color: red;">*</span></label>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <input 
-                                type="text"
-                                pInputText
-                                class="form-control"
-                                id="clientName" 
-                                [style]="{ width: '100%' }"
-                                formControlName="clientName">
-                        </div>
-                    </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="gender" style="color: black;">Gender<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'gender'" formControlName="gender">
+                        <ng-container *ngFor="let cover of ">
+                            <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                        </ng-container>
+                    </select>
                 </div>
             </div>
     
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Date of birth<span style="color: red;">*</span></label>
+                        <label for="dob" style="color: black;">Date of birth<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -418,9 +410,9 @@
                                 type="date"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="dob" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="dob">
                         </div>
                     </div>
                 </div>
@@ -432,7 +424,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Identification type<span style="color: red;">*</span></label>
+                        <label for="identificationType" style="color: black;">Identification type<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -440,9 +432,9 @@
                                 type="text"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="identificationType" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="identificationType">
                         </div>
                     </div>
                 </div>
@@ -451,7 +443,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Identification number<span style="color: red;">*</span></label>
+                        <label for="IdentificationNumber" style="color: black;">Identification number<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -459,50 +451,9 @@
                                 type="text"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="IdentificationNumber" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div>
-                    <div>
-                        <label for="clientName" style="color: black;">Physical address</label>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <input 
-                                type="text"
-                                pInputText
-                                class="form-control"
-                                id="clientName" 
-                                [style]="{ width: '100%' }"
-                                formControlName="clientName">
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            <div class="col-md-6">
-                <div>
-                    <div>
-                        <label for="clientName" style="color: black;">Phone number<span style="color: red;">*</span></label>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <input 
-                                type="text"
-                                pInputText
-                                class="form-control"
-                                id="clientName" 
-                                [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="IdentificationNumber">
                         </div>
                     </div>
                 </div>
@@ -514,7 +465,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">Email<span style="color: red;">*</span></label>
+                        <label for="address" style="color: black;">Physical address</label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -522,9 +473,9 @@
                                 type="text"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="address" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="address">
                         </div>
                     </div>
                 </div>
@@ -533,7 +484,48 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">With effect from<span style="color: red;">*</span></label>
+                        <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="phoneNumber" 
+                                [style]="{ width: '100%' }"
+                                formControlName="phoneNumber">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="email" 
+                                [style]="{ width: '100%' }"
+                                formControlName="email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="wef" style="color: black;">With effect from<span style="color: red;">*</span></label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -541,9 +533,9 @@
                                 type="date"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="wef" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="wef">
                         </div>
                     </div>
                 </div>
@@ -555,7 +547,7 @@
             <div class="col-md-6">
                 <div>
                     <div>
-                        <label for="clientName" style="color: black;">With effect to</label>
+                        <label for="wet" style="color: black;">With effect to</label>
                     </div>
                     <div class="form-group">
                         <div>
@@ -563,9 +555,9 @@
                                 type="date"
                                 pInputText
                                 class="form-control"
-                                id="clientName" 
+                                id="wet" 
                                 [style]="{ width: '100%' }"
-                                formControlName="clientName">
+                                formControlName="wet">
                         </div>
                     </div>
                 </div>

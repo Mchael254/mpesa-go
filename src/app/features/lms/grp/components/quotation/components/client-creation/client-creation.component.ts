@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { SelectItem } from 'primeng/api';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-client-creation',
@@ -11,9 +12,16 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   steps = stepData;
   columnOptions: SelectItem[];
   selectedColumns: string[];
+  clientDetailsForm: FormGroup;
+  adminDetailsForm: FormGroup;
+
+  constructor(
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
-    
+    this.clientCreationForm();
+    this.adminCreationForm();
   }
 
   ngOnDestroy(): void {
@@ -110,6 +118,43 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
         toDate: '2024-12-31'
     }
 ]
+
+clientCreationForm() {
+  this.clientDetailsForm = this.fb.group({
+    clientType: [""],
+    clientName: ["", Validators.required],
+    status: ["", Validators.required],
+    type: ["", Validators.required],
+    incorporationDate: ["", Validators.required],
+    registrationNumber: ["", Validators.required],
+    occupation: ["", Validators.required],
+    pinNumber: ["", Validators.required],
+    phoneNumber: ["", Validators.required],
+    email: ["", Validators.required],
+    address: ["", Validators.required],
+    country: ["", Validators.required],
+    county: ["", Validators.required],
+    city: ["", Validators.required],
+    affiliatedToInsurer: [""],
+    representation: ["", Validators.required],
+  })
+}
+
+adminCreationForm() {
+  this.adminDetailsForm = this.fb.group({
+    name: ["", Validators.required],
+    position: ["", Validators.required],
+    gender: ["", Validators.required],
+    dob: ["", Validators.required],
+    identificationType: ["", Validators.required],
+    IdentificationNumber: ["", Validators.required],
+    address: [""],
+    phoneNumber: ["", Validators.required],
+    email: ["", Validators.required],
+    wef: ["", Validators.required],
+    wet: [""],
+  })
+}
 
 showAdminDetailsModal() {
   const modal = document.getElementById('adminDetailsModal');
