@@ -81,6 +81,7 @@ export class TicketsSummaryComponent implements OnInit {
     const totalTickets = ticketCountPerModule?.totalTickets;
     log.info('Dash ticket>>', ticketCountPerModule.activityName, ticketCountPerModule.totalTickets);
 
+    this.ticketsService.ticketFilterObject.set({...ticketCountPerModule, fromDashboardScreen: true});
     this.router.navigate(['/home/administration/tickets'],
       {queryParams: {activityName, totalTickets }}).then(r => {
     })
