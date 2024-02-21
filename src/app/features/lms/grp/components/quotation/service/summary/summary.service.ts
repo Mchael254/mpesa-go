@@ -11,8 +11,8 @@ export class SummaryService {
     private api:ApiService,
   ) { }
 
-  quotationSummaryDetails(quotationNumber: string) {
-    return this.api.GET(`quotations?quotationNumber=${quotationNumber}`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
+  quotationSummaryDetails(quotationCode: number) {
+    return this.api.GET(`quotations?quotationCode=${quotationCode}`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
 
   membersSummaryDetails(productCode, quotationCode) {
