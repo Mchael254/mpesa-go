@@ -16,7 +16,7 @@ import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {ReplaySubject, takeUntil, tap} from "rxjs";
 import {Pagination} from "../../../../../shared/data/common/pagination";
-import {LazyLoadEvent, SortEvent} from "primeng/api";
+import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
 import {TableDetail} from "../../../../../shared/data/table-detail";
 
@@ -103,14 +103,24 @@ export class ViewTicketsComponent implements OnInit {
     this.getAllTicketTypes();
     this.getAllTicketModules();
 
-    this.route.queryParams.subscribe(params => {
+    log.info("ticket obj",this.ticketsService.ticketFilterObject());
 
-      this.activityName = params['activityName'];
-      this.totalTickets = params['totalTickets'];
-      log.info(`query Params >>>`, params, this.activityName, this.totalTickets);
-      this.searchTickets(this.filterObject["ticketName"]);
-      this.getAllTickets(0, 10, '', this.activityName, 'name');
-    });
+    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+
+    if(ticketFilter?.fromDashboardScreen) {
+      this.ticketsService
+        .getAllTickets(0, ticketFilter?.totalTickets, this.dateFrom || null, this.dateToday || null, '', '', 'name', ticketFilter?.activityName)
+        .subscribe({
+          next: (data) => {
+            this.springTickets = data;
+            this.spinner.hide();
+            log.info("ticket subsc",this.ticketsService.ticketFilterObject());
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+          }
+        });
+    }
   }
 
   getAllTicketsFromCubeJs() {
@@ -211,7 +221,7 @@ export class ViewTicketsComponent implements OnInit {
     query: string = '',
     queryColumn: string = '') {
 
-    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, query, queryColumn )
+    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, '', query, queryColumn, )
       .pipe(
         takeUntil(this.destroyed$),
         tap((data) => log.info('Fetch Tickets data>> ', data))
@@ -219,27 +229,33 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
-    const pageIndex = event.first / event.rows;
-    const queryColumn = event.sortField;
-    const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-    const pageSize = event.rows;
-    log.info('sortorder',queryColumn);
 
-    this.getAllTickets(pageIndex, pageSize,sort?.toString())
-      .pipe(untilDestroyed(this))
-      .subscribe((data:Pagination<TicketsDTO>) => {
-        this.springTickets = data;
-        this.cdr.detectChanges();
-        this.ticketsService.setCurrentTickets(this.springTickets.content);
+    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+
+    if(!ticketFilter?.fromDashboardScreen) {
+      const pageIndex = event.first / event.rows;
+      const queryColumn = event.sortField;
+      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
+      const pageSize = event.rows;
+      log.info('sortorder',queryColumn);
+
+      this.getAllTickets(pageIndex, pageSize,sort?.toString())
+        .pipe(untilDestroyed(this))
+        .subscribe((data:Pagination<TicketsDTO>) => {
+          this.springTickets = data;
+          this.cdr.detectChanges();
+          this.ticketsService.setCurrentTickets(this.springTickets.content);
 
 
-        // Extracting all the code values from the tickets
-        const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+          // Extracting all the code values from the tickets
+          const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
 
-        // Passing the code values to the getCodeValue method
-        const result = codeValues.map(code => this.getTicketCode(code));
+          // Passing the code values to the getCodeValue method
+          const result = codeValues.map(code => this.getTicketCode(code));
 
-      })
+        })
+    }
+
   }
 
 /**

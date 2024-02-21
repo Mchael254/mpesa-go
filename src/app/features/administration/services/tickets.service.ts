@@ -59,6 +59,8 @@ export class TicketsService {
 })
   transanctionsRoutingData$ = this.transanctionsRouting$.asObservable();
 
+  public ticketFilterObject = signal({});
+
   constructor(
     private appConfig: AppConfigService,
     private http: HttpClient,
@@ -107,6 +109,7 @@ export class TicketsService {
     sort: string,
     module: string,
     queryColumn: string,
+    query: string
   ): Observable<Pagination<TicketsDTO>> {
 
     const assignee = this.authService.getCurrentUserName()
@@ -129,6 +132,7 @@ export class TicketsService {
       .set('sort', `${sort}`)
       .set('module', `${module}`)
       .set('queryColumn', `${queryColumn}`)
+      .set('query', `${query}`)
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
