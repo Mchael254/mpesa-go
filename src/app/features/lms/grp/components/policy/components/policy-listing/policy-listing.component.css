@@ -85,6 +85,10 @@ p-multiSelect {
       opacity: 70%;
       white-space: nowrap;
     }
+
+    .p-datatable .p-datatable-tbody>tr>td {
+      white-space: nowrap;
+  }
   
     .p-datatable-thead {
       border-radius: 4px 0px 0px 0px;

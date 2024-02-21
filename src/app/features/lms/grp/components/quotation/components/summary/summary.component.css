@@ -202,6 +202,10 @@
       opacity: 70%;
       white-space: nowrap;
     }
+
+    .p-datatable .p-datatable-tbody>tr>td {
+      white-space: nowrap;
+  }
   
     .p-datatable-thead {
       border-radius: 4px 0px 0px 0px;
@@ -307,9 +311,9 @@ p-multiSelect {
     
       .summary {
         width: 100%;
-        height: auto;
+        min-height: 200px;
         margin: 0 10px 10px;
-        position: static;
+        position: relative;
       }
     
       .view-more {

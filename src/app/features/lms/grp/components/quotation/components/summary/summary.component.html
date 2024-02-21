@@ -17,11 +17,12 @@
             <table>
               <tr>
                 <td><span class="s3Label">Premium</span></td>
-                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.currency_symbol }} {{quoteSummary?.total_premium | number}}</span></td>
+                <!-- <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.[0]?.currency_symbol }} {{quoteSummary?.[0]?.total_premium | number}}</span></td> -->
+                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ currency_symbol }} {{quoteSummary?.[0]?.total_premium | number}}</span></td>
               </tr>
               <tr>
                 <td><span class="s3Label">Sum assured</span></td>
-                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ quoteSummary?.currency_symbol }} {{quoteSummary?.sum_assured | number}}</span></td>
+                <td><span class="s3Value" style="color: black; margin-left: 15px;">{{ currency_symbol }} {{quoteSummary?.[0]?.sum_assured | number}}</span></td>
               </tr>
             </table>
           </div>
@@ -35,19 +36,19 @@
                 <table style="width: 100%; min-height: 133px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Quotation number: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.quotation_number }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.quotation_number }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Product: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.product_code }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.product | titlecase }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Currency: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.currency_symbol }}</td>
+                        <td style="width: 50%; align-items: right;">{{ currency }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Commission amount: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.commission_amount }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.commission_amount | number }}</td>
                     </tr>
                 </table>
             </div>
@@ -55,15 +56,15 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Quotation status: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.status }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.status }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Frequency of Payment: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.frequency_of_payment }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.frequency_of_payment }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.duration_type }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.duration_type }}</td>
                     </tr>
                 </table>
             </div>
@@ -71,15 +72,15 @@
                 <table style="width: 100%; min-height: 100px;">
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Effective date: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.effective_date }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.effective_date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Inception date: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.date }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.date }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Client Name: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.agent_code }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name | titlecase }}</td>
                     </tr>
                 </table>
             </div>
@@ -88,7 +89,7 @@
         <div class="summary-container col-12 mt-5" style="padding-right: 50px;">
             <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
                 <h5 class="summary-label">Cover summary</h5>
-                <div class="summary" style="width: 100%; height: 100%;">
+                <div class="summary" style="width: 100%; height: 100%; position: relative;">
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
                         <h6 style="color: black;">{{ coverTypes?.[0]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
@@ -107,7 +108,7 @@
                         </table>
                     </div>
 
-                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
+                    <div *ngIf="coverTypes?.[1]?.cvt_desc" class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
                         <h6 style="color: black;">{{ coverTypes?.[1]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
@@ -124,7 +125,7 @@
                             </tr> -->
                         </table>
                     </div>
-                    <div class="col-12 text-center">
+                    <div class="col-12 text-center view-more">
                         <a href="#" style="text-decoration: underline;"
                             (click)="showCoverSummary(); $event.preventDefault();">
                             view more <i class="fas fa-plus-circle"></i>
@@ -136,7 +137,7 @@
                 <h5 class="summary-label">Category summary</h5>
                 <div class="summary" style="width: 100%; height: 100%; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
-                    <h6 style="color: black;">{{ categorySummary?.[0]?.category_category | titlecase }}</h6>
+                    <h6 style="color: black;">{{ categoryDetailsSummary?.[0]?.category_category | titlecase }}</h6>
                     <table style="width: 100%;">
                         <!-- <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
@@ -144,13 +145,13 @@
                         </tr> -->
                         <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary?.[0]?.period }}</td>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categoryDetailsSummary?.[0]?.period }}</td>
                         </tr>
                     </table>
                 </div>
 
-                <div class="col-md-12 col-sm-12 col-xs-12 mt-4" style="padding-left: 20px;">
-                    <h6 style="color: black;">{{ categorySummary?.[1]?.category_category | titlecase }}</h6>
+                <div *ngIf="categoryDetailsSummary?.[1]?.category_category" class="col-md-12 col-sm-12 col-xs-12 mt-4" style="padding-left: 20px;">
+                    <h6 style="color: black;">{{ categoryDetailsSummary?.[1]?.category_category | titlecase }}</h6>
                     <table style="width: 100%;">
                         <!-- <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Short description: </td>
@@ -158,7 +159,7 @@
                         </tr> -->
                         <tr>
                             <td style="width: 60%; align-items: left; color: grey;">Multiple of earnings: </td>
-                            <td style="width: 40%; align-items: right; color: #000;">{{ categorySummary?.[1]?.period }}</td>
+                            <td style="width: 40%; align-items: right; color: #000;">{{ categoryDetailsSummary?.[1]?.period }}</td>
                         </tr>
                     </table>
                 </div>
@@ -173,7 +174,7 @@
             <ng-container *ngIf="quatationCalType === 'D' ">
             <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
                 <h5 class="summary-label">Members summary</h5>
-                <div class="summary" style="width: 100%; height: 100%; position: relative;">
+                <div class="summary" style="width: 100%; min-height: 170px; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
                     <table style="width: 100%;" *ngIf="memberSummary">
                         <tr>
@@ -438,7 +439,7 @@
                                 [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')">Cover Type</th>
+                                        <th *ngIf="selectedColumnsDependantLimits.includes('cvt_desc')" style="text-align: left;">Cover Type</th>
                                         <th *ngIf="selectedColumnsDependantLimits.includes('dty_sht_desc')">Dependant type</th>
                                         <th *ngIf="selectedColumnsDependantLimits.includes('maximum_type_allowed')">Lives covered</th>
                                         <th *ngIf="selectedColumnsDependantLimits.includes('minimum_amt')">Minimum amount</th>
@@ -501,10 +502,10 @@
                                 [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
                                 <ng-template pTemplate="header">
                                     <tr>
-                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_desc')">Cover types</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('cvt_desc')" style="text-align: left;">Cover types</th>
                                         <th *ngIf="selectedColumnsCovDets.includes('sum_assured')">Sum assured</th>
                                         <th *ngIf="selectedColumnsCovDets.includes('premium')">Premium</th>
-                                        <th *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')">Select rate</th>
+                                        <th *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')" style="text-align: left;">Select rate</th>
                                         <th *ngIf="selectedColumnsCovDets.includes('but_charge_premium')">Override premiums</th>
                                         <th *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')">Premium mask</th>
                                         <th *ngIf="selectedColumnsCovDets.includes('premium_rate')">Rate</th>
