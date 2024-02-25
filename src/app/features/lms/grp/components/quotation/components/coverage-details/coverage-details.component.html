@@ -223,7 +223,7 @@
                                             class="form-control"
                                             id="rate" 
                                             [style]="{ width: '100%' }" 
-                                            formControlName="rate" 
+                                            formControlName="multiplesOfEarnings" 
                                            >
                                         </div>
                                     </div>
@@ -260,9 +260,7 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12">
                                         <label for="dependantType">Dependant type</label>
                                         <select class="form-select" [id]="'dependantType'" formControlName="dependantType">
-                                            <ng-container *ngFor="let rate of SelectRateType">
-                                                <option [value]="rate['name']">{{ rate['value'] | titlecase }}</option>
-                                            </ng-container>
+                                                <option>Self</option>
                                         </select>
                                     </div>
                                     
@@ -337,7 +335,7 @@
                                 </div>
                                 <div class="mt-3">
                                     <div>
-                                        <label for="averageAnb">No of members</label>
+                                        <label for="noOfMembers">No of members</label>
                                     </div>
                                     <div class="form-group">
                                         <div>

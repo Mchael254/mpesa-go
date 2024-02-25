@@ -27,9 +27,9 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   clmNo='CLM/GLA-832/2023';
   memberCode=20221299132;
   // role: string = 'agent'
-  role: string = 'client' 
+  // role: string = 'client' 
   // client and agent see same data except reports, agent view intermediary report
-  // role: string = 'policy-holder'
+  role: string = 'policy-holder'
 
   constructor(
     private policySummaryService: PolicySummaryService,
