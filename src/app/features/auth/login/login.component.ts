@@ -69,10 +69,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       this.tenant_id = params['id'];
       console.log('Example Param:', this.tenant_id);
-      // if(this.tenant_id===null || this.tenant_id===undefined){
-      //   this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
-      // }
-      // this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
+      if(this.tenant_id===null || this.tenant_id===undefined){
+        this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
+      }
+      this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
     });
   }
 
