@@ -4,7 +4,7 @@ import {Observable, throwError} from "rxjs";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {catchError, retry} from "rxjs/operators";
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

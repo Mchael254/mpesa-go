@@ -77,13 +77,16 @@
     <ng-template pTemplate="body" let-risk>
       <tr>
         <td>{{ risk?.propertyId}}</td>
-        <td>{{ risk?.propertyDescription | titlecase }}</td>
+        <td>
+          <span title="{{ risk?.propertyDescription }}">{{ risk?.propertyDescription.substring(0,10) | titlecase }}...</span>
+        </td>
         <td>{{ risk?.dateCoverFrom }} - {{ risk?.dateCoverTo }}</td>
         <td>{{ risk?.subClassDescription }}</td>
         <td>{{ risk?.coverTypeShortDescription }}</td>
         <td>{{ risk?.value | number: '1.2-2'}}</td>
-        <td>{{ risk?.grossPremium | number: '1.2-2' }}</td>
-        <td>{{ risk?.firstName | titlecase}} {{ risk?.lastName | titlecase}}</td>
+        <td>{{ risk?.grossPremium | number: '1.2-2' }}
+          <span class="text-primary" *ngIf="risk?.riskFpOverride" title="Premium is an override">*</span></td>
+        <td>{{ risk?.insureds?.client?.firstName | titlecase}} {{ risk?.insureds?.client?.lastName | titlecase}}</td>
         <td>{{ risk?.commissionAmount | number: '1.2-2'}}</td>
         <td>
           <div class="view-more">
@@ -137,7 +140,7 @@
         <td>{{risk?.limitAmount}}</td>
         <td>{{risk?.premium}}</td>
         <td>{{risk?.rateType}}</td>
-        <td>{{risk?.pilPremiumRate}}</td>
+        <td>{{risk?.pilPremRate}}</td>
         <td>{{risk?.freeLimit}}</td>
         <td>{{risk?.divFactor}}</td>
         <td>{{risk?.multiplierRate}}</td>

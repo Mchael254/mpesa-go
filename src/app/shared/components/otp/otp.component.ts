@@ -90,6 +90,7 @@ export class OtpComponent implements OnInit, OnDestroy {
       Object.keys(this.otpForm.controls).forEach((key, index) => {
         this.otpValue = this.otpValue + this.otpForm.controls[key].value;
       });
+      
       username = extras.username;
       email = extras.email;
       
@@ -97,11 +98,11 @@ export class OtpComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (data) => {
             this.otpResponse.emit(data);
-            this.isLoading = false;
+            // this.isLoading = false;
           },
           error: (err) => {
             let errorMessage = '';
-            if (err.error.message) {
+            if (err?.error?.message) {
               errorMessage = err.error.message
             } else {
               errorMessage = err.message

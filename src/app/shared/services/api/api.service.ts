@@ -49,7 +49,7 @@ export class ApiService {
     return headers;
   }
 
-  GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
+  GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     let headers: HttpHeaders = this.getHeaders();
@@ -57,14 +57,14 @@ export class ApiService {
     //    return this.http.get<T>(url, { headers, params });
     // }
 
-    return this.http.get<T>(url, {headers});
+    return this.http.get<T>(url, {headers, params:params});
   }
 
-  POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL ): Observable<T> {
+  POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = this.getHeaders();
-    return this.http.post<T>(url, data, { headers });
+    return this.http.post<T>(url, data, { headers, params:params });
   }
 
   FILEDOWNLOAD<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<Blob> {
@@ -98,12 +98,12 @@ export class ApiService {
     }
 
     const blob = new Blob(byteArrays, { type:  fileType});
-    const url = window.URL.createObjectURL(blob);
+    const url = window['URL'].createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
     link.click();
-    window.URL.revokeObjectURL(url);
+    window['URL'].revokeObjectURL(url);
   }
 
   FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {

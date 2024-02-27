@@ -150,66 +150,63 @@
 </div>
 
 
-<div class="container">
-
-    <!-- Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header pad">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h6 class="modal-title fs-5 top" id="exampleModalLabel">Change Password</h6>
-                        </div>
-                        <div class="col-lg-12">
-                            <p class="text1">Set your preferred password</p>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header pad">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h6 class="modal-title fs-5 top" id="exampleModalLabel">Change Password</h6>
                 </div>
-                <div class="modal-body">
-                    <form [formGroup]="changePassForm">
-                        <div class="form-group mb-2">
-                            <label class="label mb-2" for="oldPassword">Old Password:</label>
-                            <input type="password" class="form-control" id="oldPassword" placeholder="******"
-                                formControlName="oldPassword">
-                            <div *ngIf="f['oldPassword'].invalid && (f['oldPassword'].dirty || f['oldPassword'].touched)"
-                                class="form-text text-danger form-error-text"
-                                [ngClass]="{ 'is-invalid': submitted && f['oldPassword'].errors }">
-                                <div *ngIf="f['oldPassword'].errors['required']">Old password is required</div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="label mb-2" for="newPassword">New Password:</label>
-                            <input type="password" class="form-control bac" id="newPassword"
-                                placeholder="Atleast 6 characters" formControlName="newPassword">
-                            <div *ngIf="f['newPassword'].invalid && (f['newPassword'].dirty || f['newPassword'].touched)"
-                                class="form-text text-danger form-error-text"
-                                [ngClass]="{ 'is-invalid': submitted && f['newPassword'].errors }">
-                                <div *ngIf="f['newPassword'].errors['required']">New Password is required</div>
-                                <div *ngIf="f['newPassword'].errors['minlength']">Password must be at least 6 characters</div>
-                            </div>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="label mb-2" for="confirmNewPassword">Confirm New Password:</label>
-                            <input type="password" class="form-control bac" id="confirmNewPassword"
-                                placeholder="Atleast 6 characters" formControlName="confirmNewPassword">
-                            <div *ngIf="f['confirmNewPassword'].invalid && (f['confirmNewPassword'].dirty || f['confirmNewPassword'].touched)"
-                                class="form-text text-danger form-error-text"
-                                [ngClass]="{ 'is-invalid': submitted && f['confirmNewPassword'].errors }">
-                                <div *ngIf="f['confirmNewPassword'].errors['required']">Confirm Password is required</div>
-                                <div *ngIf="f['confirmNewPassword'].errors['confirmedValidator']">Passwords must match</div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="saveNewPassButton" class="btn can" data-bs-dismiss="modal" (click)="onNewPassSave()">Save</button>
+                <div class="col-lg-12">
+                    <p class="text1">Set your preferred password</p>
                 </div>
             </div>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="changePassForm">
+                <div class="form-group mb-2">
+                    <label class="label mb-2" for="oldPassword">Old Password:</label>
+                    <input type="password" class="form-control" id="oldPassword" placeholder="******"
+                        formControlName="oldPassword">
+                    <div *ngIf="f['oldPassword'].invalid && (f['oldPassword'].dirty || f['oldPassword'].touched)"
+                        class="form-text text-danger form-error-text"
+                        [ngClass]="{ 'is-invalid': submitted && f['oldPassword'].errors }">
+                        <div *ngIf="f['oldPassword'].errors['required']">Old password is required</div>
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="label mb-2" for="newPassword">New Password:</label>
+                    <input type="password" class="form-control bac" id="newPassword"
+                        placeholder="Atleast 6 characters" formControlName="newPassword">
+                    <div *ngIf="f['newPassword'].invalid && (f['newPassword'].dirty || f['newPassword'].touched)"
+                        class="form-text text-danger form-error-text"
+                        [ngClass]="{ 'is-invalid': submitted && f['newPassword'].errors }">
+                        <div *ngIf="f['newPassword'].errors['required']">New Password is required</div>
+                        <div *ngIf="f['newPassword'].errors['minlength']">Password must be at least 6 characters</div>
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="label mb-2" for="confirmNewPassword">Confirm New Password:</label>
+                    <input type="password" class="form-control bac" id="confirmNewPassword"
+                        placeholder="Atleast 6 characters" formControlName="confirmNewPassword">
+                    <div *ngIf="f['confirmNewPassword'].invalid && (f['confirmNewPassword'].dirty || f['confirmNewPassword'].touched)"
+                        class="form-text text-danger form-error-text"
+                        [ngClass]="{ 'is-invalid': submitted && f['confirmNewPassword'].errors }">
+                        <div *ngIf="f['confirmNewPassword'].errors['required']">Confirm Password is required</div>
+                        <div *ngIf="f['confirmNewPassword'].errors['confirmedValidator']">Passwords must match</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="saveNewPassButton" class="btn can" data-bs-dismiss="modal" (click)="onNewPassSave()">Save</button>
         </div>
     </div>
+</div>
 </div>
 

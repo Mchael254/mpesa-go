@@ -30,7 +30,9 @@
     "verification": "Verifizierung",
     "verification_instruction": "Wählen Sie aus, an welche Kontaktinformationen wir den Bestätigungscode senden sollen.",
     "verify": "Überprüfen",
-    "via": "Via"
+    "via": "Via",
+    "choose_tenant": "Wählen Sie Ihren Mandanten",
+    "choose_entity": "Wählen Sie Ihre Entität"
   },
   "base": {
     "accounts": "Konten",

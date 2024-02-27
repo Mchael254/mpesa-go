@@ -30,7 +30,9 @@
     "verification": "Vérification",
     "verification_instruction": "Sélectionnez les coordonnées auxquelles nous devrions envoyer le code de vérification.",
     "verify": "Vérifier",
-    "via": "Via"
+    "via": "Via",
+    "choose_tenant": "Choisissez votre locataire",
+    "choose_entity": "Choisissez votre entité"
   },
   "base": {
     "accounts": "Comptes",

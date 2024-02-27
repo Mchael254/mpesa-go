@@ -326,14 +326,13 @@ export class CalendarComponent implements OnInit {
     if (today > this.selectedDate) {
       this.globalMessagingService
         .displayInfoMessage("Info", "You cannot create an event for previous date");
-
       return
     }
+
     this.calendarView = calendarView;
     const eventDate = this.newEventForm.getRawValue().eventDate;
     this.startTime = new Date(eventDate); // format: new Date("2016-05-04T00:00:00.000Z");
     this.startTime.setHours(0,0,0,0);
-    log.info('statr time>>', this.startTime);
     this.slicedTimeFrom = this.sliceTime(this.startTime);
   }
 
@@ -376,6 +375,9 @@ export class CalendarComponent implements OnInit {
         this.getEvents(todayDateString);
 
         this.newEventForm.reset();
+        this.newEventForm.patchValue({
+          eventDate: new Date()
+        });
         this.cdr.detectChanges();
         // log.info('saved event data', createdEvent)
       })
@@ -383,9 +385,6 @@ export class CalendarComponent implements OnInit {
 
   sliceTime(start) {
     const eventDate = this.newEventForm.getRawValue().eventDate;
-    // let start = new Date(eventDate); // format: new Date("2016-05-04T00:00:00.000Z");
-    // start.setHours(0,0,0,0)
-    // log.info('strt>>', start);
     let end = new Date(start.getTime() + (24 * 60 * 60 * 1000));
 
     let slices = [];

@@ -48,7 +48,7 @@
                                     <p class="label">Client</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content" >{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
+                                    <p class="content" >{{ clientDetails?.firstName+" "+clientDetails?.lastName }}</p>
                                 </div>
                             </div>
                         </div>
@@ -58,7 +58,7 @@
                                     <p class="label">Agent</p>
                                 </div>
                                 <div class="col-6">
-                                    <p class="content">{{agents.name}}</p>
+                                    <p class="content">{{agents?.name}}</p>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                                         <p class="label">Branch</p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="content">{{branch.name}}</p>
+                                        <p class="content">{{branch?.name}}</p>
                                     </div>
                                 </div>
                               
@@ -106,7 +106,7 @@
                                             <p class="label">Currency</p>
                                         </div>
                                         <div class="col-6">
-                                            <p class="content">{{quotationView.currency}}</p>
+                                            <p class="content">{{quotationView?.currency}}</p>
                                         </div>
                                     </div>
                                   
@@ -151,7 +151,7 @@
                                                 <p class="label">Status</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">{{quotationView.status}}</p>
+                                                <p class="content">{{quotationView?.status}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -161,7 +161,7 @@
                                                 <p class="label">Source</p>
                                             </div>
                                             <div class="col-6">
-                                                <p class="content">{{quotationView.source.description}}</p>
+                                                <p class="content">{{quotationView?.source.description}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -247,22 +247,22 @@
                         </div>
                         <div class="col-8 d-flex justify-content-end">
                             <div class="row">
-                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
                                     <button type="button" id="icon" class="btn btn-primary"  title="Add">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
-                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-primary"  title="Edit">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 </div>
-                                <div class="col-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                                 </div>
-                                <div class="col-4" *ngIf="!isCollapsibleOpen">
+                                <div class="col-sm-4" *ngIf="!isCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()" [attr.aria-expanded]="!isCollapsibleOpen">
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </button>
@@ -283,7 +283,7 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-data>
-                                    <tr>  
+                                    <tr (click)="getLimits(data.code);getProductSubclass(data.code)">  
                                         <!-- <td>{{data.productShortDescription}}</td>
                                 <td>{{data.wef}}</td>
                                 <td>{{data.wet}}</td>
@@ -370,21 +370,48 @@
                                     </p-table>
                             </div>
                             <div class="tab-pane fade " id="nav-limits" role="tabpanel" aria-labelledby="nav-limits" tabindex="0">
-                                <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
-                                    <ng-template pTemplate="header">
-                                        <tr>
-                                            <th>Amount</th>
-                                            <th>Description</th>
-                                            <th>Quotation Rate</th>
-                                           <th>Rate Type</th>
-                                        </tr>
-                                    </ng-template>
-                                    <ng-template pTemplate="body" let-data>
-                                        <tr>
-                                          
-                                        </tr>
-                                    </ng-template>
-                                    </p-table>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card" style="border:0px">
+                                            <div class="card-body">
+                                                <h6>Product  Subclass </h6>
+                                                <div class="listing">
+                                                <ul>
+                                                    <li
+                                                      *ngFor="let data of productSubclass"
+                                                      
+                                                    >
+                                                      {{ data.description }}
+                                                    </li>
+                                                </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col">
+                                        <div class="card" style="border:0px">
+                                            <div class="card-body">
+                                                <p-table [value]="limitsList" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                                    <ng-template pTemplate="header">
+                                                        <tr>
+                                                            <th>Narration</th>
+                                                            <th>Scl Desc</th>
+                                                            <th>Value</th>
+                                                           
+                                                        </tr>
+                                                    </ng-template>
+                                                    <ng-template pTemplate="body" let-data>
+                                                        <tr>
+                                                          <td>{{data.narration}}</td>
+                                                        </tr>
+                                                    </ng-template>
+                                                    </p-table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                               
                             </div>
                             <div class="tab-pane fade" id="nav-similarities" role="tabpanel" aria-labelledby="nav-similarities" tabindex="0">
                                 <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
@@ -455,7 +482,7 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
-                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code)">
+                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code);getExcesses(data.code)">
                                     <td>{{data.quotationRiskNo}}</td>
                                     <td>{{data.propertyId}}</td>
                                     <td>{{data.covertypeShortDescription}}</td>
@@ -534,33 +561,45 @@
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade " id="nav-schedules" role="tabpanel" aria-labelledby="nav-schedules" tabindex="0">
-                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <p-table [value]="schedules" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th>Amount</th>
-                                                <th>Description</th>
-                                                <th>Quotation Rate</th>
-                                               <th>Rate Type</th>
+                                                <th>Reg no.</th>
+                                                <th>Vehicle make</th>
+                                                <th>Cubic capacity</th>
+                                                <th>Year of manufacture</th>
+                                                <th>Seating capacity</th>
+                                                <th>Value</th>
+                                                <th>Body type</th>
+                                                <th>Cover type</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                              
+                                              <td>{{data.registrationNumber}}</td>
+                                              <td>{{data.Make}}</td>
+                                              <td>{{data.cubicCapacity}}</td>
+                                              <td>{{data.yearOfManufacture}}</td>
+                                              <td>{{data.carryCapacity}}</td>
+                                              <td>{{data.value}}</td>
+                                              <td>{{data.bodyType}}</td>
+                                              <td>{{data.coverType}}</td>
                                             </tr>
                                         </ng-template>
                                         </p-table>
                                 </div>
                                 <div class="tab-pane fade" id="nav-excesses" role="tabpanel" aria-labelledby="nav-excesses" tabindex="0">
-                                    <p-table [value]="" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
+                                    <p-table [value]="excessesList" [tableStyle]="{ 'min-width': '50rem' }"  styleClass="p-datatable-sm">
                                         <ng-template pTemplate="header">
                                             <tr>
-                                                <th>Excesses</th>
-                                               
+                                                <th>Narration</th>
+                                                <th>Value</th>
                                             </tr>
                                         </ng-template>
                                         <ng-template pTemplate="body" let-data>
                                             <tr>
-                                              
+                                              <td>{{data.narration}}</td>
+                                              <td>{{data.value}}</td>
                                             </tr>
                                         </ng-template>
                                         </p-table>
@@ -761,7 +800,7 @@
 
                     <div class="float-end mb-3">
                         <button class="btn btn-primary float-end mr-3" style="margin-right: 13px;">Cancel</button>
-                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;">Okay</button>
+                        <button class="btn btn-outline-primary float-end" style="margin-right: 10px;" data-bs-toggle="modal" data-bs-target="#smsModal">Okay</button>
                        
                     </div>
 
@@ -772,8 +811,8 @@
                     <div class="row ">
                         <div class="col-sm">
                             <div class="row mb-3">
-                                <label class="col-sm-5 col-form-label" id="communicationLabel">Email Template</label>
-                                <div class="col-sm-7">
+                                <label class="col-sm-6 col-form-label" id="communicationLabel">Email Template</label>
+                                <div class="col-sm-6">
                                   <input type="text" class="form-control" id="inputEmail3">
                                 </div>
                               </div>
@@ -922,6 +961,108 @@
                     </div>
                     </div>
                 </div>
+
+                <!--SMS  Modal -->
+<div class="modal fade" id="smsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+       
+        <div class="modal-body">
+            <h6 class="mb-3">Details</h6>
+            <!-- Client and Agent -->
+            <div class="row ">
+                <div class="col-sm">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6>Client</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="text-muted">{{ clientDetails.firstName+" "+clientDetails.lastName }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6>Agent</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="text-muted"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Quotation Code -->
+            <div class="row mb-2">
+                <div class="col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <h6>Quotation Code</h6>
+                        </div>
+                        <div class="col-sm-7">
+                            <p class="text-muted">{{quotationCode}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    
+                </div>
+
+            </div>
+            <!-- Quotation Number -->
+            <div class="row mb-2">
+                <div class="col-sm-10">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h6>Quotation Number</h6>
+                        </div>
+                        <div class="col-sm-8">
+                            <p class="text-muted">{{quotationNumber}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    
+                </div>
+
+            </div>
+            
+              <h6 class="mb-3">Message Details</h6>
+              <form [formGroup]="smsForm" >
+
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label" id="messageLabel">Receiver Phone No.</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" formControlName="recipients" >
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label" id="messageLabel">Sender Phone No.</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" formControlName="sender" >
+                    </div>  
+                  </div>
+
+                  <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label" id="messageLabel">Message</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="3" formControlName="message" ></textarea>
+                    </div>
+                  </div>
+
+                  
+
+                
+              </form>
+             
+              <button class="btn btn-primary float-end"  data-bs-dismiss="modal" (click)="sendSms()">Send SMS</button>
+            </div>
+        
+        
+      </div>
+    </div>
+  </div>
                 </div>
                 
     
@@ -931,10 +1072,13 @@
                     <h6 class="mb-4">Documents</h6>
                     <div class="row mt-3 g-3 align-items-center">
                         <div class="col-auto">
-                          <label for="inputPassword6" class="col-form-label">Document Type</label>
+                          <label for="documentTypes" class="col-form-label">Document Type</label>
                         </div>
                         <div class="col-auto">
-                          <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                            <select class="form-select form-select-sm mb-1" id="quote-input"   placement="right" >
+                                <option [value]="" selected="true" disabled="disabled"></option> 
+                                <option *ngFor="let data of documentTypes"  [value]="data.id">{{data.description}}</option>
+                            </select>    
                         </div>
                         <div class="col-auto">
                         

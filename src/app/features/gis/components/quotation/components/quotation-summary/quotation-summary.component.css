@@ -119,3 +119,12 @@
     .point{
         cursor: pointer;
     }
+
+    ul{
+        list-style-type: none;
+        cursor: pointer ;
+    }
+    ul li a.active {
+        color: #00529b;
+      }
+      
