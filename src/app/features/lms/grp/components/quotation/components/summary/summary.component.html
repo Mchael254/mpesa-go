@@ -89,17 +89,17 @@
         <div class="summary-container col-12 mt-5" style="padding-right: 50px;">
             <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
                 <h5 class="summary-label">Cover summary</h5>
-                <div class="summary" style="width: 100%; height: 100%; position: relative;">
+                <div class="summary" style="width: 100%; min-height: 170px; position: relative;">
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
                         <h6 style="color: black;">{{ coverTypes?.[0]?.cvt_desc | titlecase }}</h6>
                         <table style="width: 100%;">
                             <tr>
                                 <td style="width: 50%; align-items: left; color: grey;">Sum assured: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.sum_assured }}</td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.sum_assured | number }}</td>
                             </tr>
                             <tr>
                                 <td style="width: 50%; align-items: left; color: grey;">Premium: </td>
-                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.premium }}</td>
+                                <td style="width: 50%; align-items: right; color: #000;">{{ coverTypes?.[0]?.premium | number }}</td>
                             </tr>
                             <!-- <tr>
                                 <td style="width: 50%; align-items: left; color: grey;">Select rates: </td>
@@ -517,8 +517,10 @@
                                 <ng-template pTemplate="body" let-coverTypes>
                                     <tr>
                                         <td *ngIf="selectedColumnsCovDets.includes('cvt_desc')" id="tdStyle">{{coverTypes.cvt_desc | titlecase}}</td>
-                                        <td *ngIf="selectedColumnsCovDets.includes('sum_assured')" id="tdStyle">{{coverTypes.sum_assured }}</td>
-                                        <td *ngIf="selectedColumnsCovDets.includes('premium')" id="tdStyle">{{coverTypes.premium }}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('sum_assured')" id="tdStyle"
+                                        style="text-align: right;">{{coverTypes.sum_assured | number }}</td>
+                                        <td *ngIf="selectedColumnsCovDets.includes('premium')" id="tdStyle"
+                                        style="text-align: right;">{{coverTypes.premium | number }}</td>
                                         <td *ngIf="selectedColumnsCovDets.includes('use_cvr_rate')" id="tdStyle">{{getUseCvrRateDescription(coverTypes.use_cvr_rate)}}</td>
                                         <td *ngIf="selectedColumnsCovDets.includes('but_charge_premium')" id="tdStyle">{{coverTypes.but_charge_premium}}</td>
                                         <td *ngIf="selectedColumnsCovDets.includes('premium_mask_short_description')" id="tdStyle">{{coverTypes.premium_mask_short_description}}</td>
