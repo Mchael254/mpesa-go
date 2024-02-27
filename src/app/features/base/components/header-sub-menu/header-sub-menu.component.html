@@ -66,6 +66,16 @@
             </a>
           </li>
           <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link" href="javascript:void(0)"
+            (click)="dynamicSideBarMenu(reinsuranceSubMenuList[0])">
+              <i
+                class="fa-solid fa-handshake-angle"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.reinsurance" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link">
               <i
                 class="fa-solid fa-handshake-angle"
@@ -305,9 +315,7 @@
                 <div
                   class="col-3 d-flex justify-content-start align-items-center"
                 >
-                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">
-                    {{ 'base.policy_id' | translate }}: 
-                  </label>
+                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">Pol. ID: </label>
                 </div>
                 <div class="col-9" style="padding: 0.5rem 0">
                   <input
@@ -317,6 +325,7 @@
                     type="text"
                     class="form-control"
                     id="input2"
+                    placeholder="Search By Policy ID"
                   />
                 </div>
               </div>
@@ -325,9 +334,7 @@
                 <div
                   class="col-3 d-flex justify-content-start align-items-center"
                 >
-                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">
-                    {{ 'base.quot_id' | translate }}: 
-                  </label>
+                  <label for="input2" class="form-label .label-text-without-pointer text-black fw-medium" style="font-size: 12px;">Quot. ID: </label>
                 </div>
                 <div class="col-9" style="padding: 0.5rem 0">
                   <input
@@ -341,17 +348,6 @@
                 </div>
               </div>
               <div class="my-4"></div>
-
-              <div class="d-flex justify-content-end">
-                <label
-                  (click)="navLink('/home/lms/quotation/list')"
-                  class="text-plain"
-                  for="bottom-right"
-                  >View Quotations</label
-                >
-              </div>
-
-              <!-- Add space at the bottom -->
               <div class="mb-3"></div>
             </ul>
           </li>
