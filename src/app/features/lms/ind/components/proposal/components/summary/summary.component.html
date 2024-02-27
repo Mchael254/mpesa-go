@@ -42,7 +42,8 @@ name="summary_view"
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Cover Types</div>
               <div class="col-lg-6 col-sm-12">
-                <div class="py-2" *ngFor="let item of proposalSummaryData?.quick_quote_covers">{{ coverTypeList | coverType: item?.cover_type_code }}</div>
+                <div class="py-2" *ngFor="let item of proposalSummaryData?.quick_quote_covers">{{ coverTypeList | coverType: item?.cover_type_code }}                 {{item?.cover_type_code}}
+                </div>
                 
               </div>
               
@@ -89,7 +90,7 @@ name="summary_view"
   </div>
 
   <div class="row justify-content-end" style="padding-bottom: 2rem;">
-    <div (click)="nextPage()" class=" col-lg-1 col-sm-4 btn btn-primary btn-sm w-10" style="transform: translateX(-0.5rem) ;">
+    <div [ngClass]="proposalSummaryData.proposal_no ? 'btn-primary':'btn-danger'" (click)="nextPage()" class="col-lg-1 col-sm-4 btn  btn-sm w-10" style="transform: translateX(-0.5rem) ;">
       Proceed
     </div>
   </div>

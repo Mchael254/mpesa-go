@@ -10,6 +10,10 @@ export class QuotationService {
 
   constructor(private api: ApiService) { }
 
+  getLmsIndividualQuotationWebQuoteListByDraft(page:number=0, size:number=10, client_code=2323235976681){
+    return this.api.GET(`${this.QUOTATION_BASE_URL}/web-quote?page=${page}&size=${size}&client_code=${client_code}&client_type=C`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+  }
+
   getLmsIndividualQuotationWebQuoteList(page:number, size:number){
     return this.api.GET(`${this.QUOTATION_BASE_URL}/web-quote?page=${page}&size=${size}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }

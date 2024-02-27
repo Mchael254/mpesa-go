@@ -37,6 +37,7 @@ export class HeaderSubMenuComponent implements OnInit {
   idSearchTerm:any;
   close_modal: boolean = false;
   policySubMenuList: SidebarMenu[];
+  reinsuranceSubMenuList: SidebarMenu[];
 
   searchAccountForm: FormGroup;
 
@@ -51,6 +52,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.administationSubMenuList = this.menuService.administationSubMenuList();
     this.teamSubMenuList = this.menuService.teamSubMenuList();
     this.policySubMenuList = this.menuService.policySubMenuList();
+    this.reinsuranceSubMenuList = this.menuService.reinsuranceSubMenuList();
     this.claimSubMenuList = this.menuService.teamSubMenuList();
     this.reinsuranceubMenuList = this.menuService.teamSubMenuList();
     this.accountSubMenuList = this.menuService.accountSubMenuList();
@@ -74,6 +76,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.navLink('/home/entity/list');
   }
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
+    
     if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
     this.menuService.updateSidebarMainMenu(sidebarMenu.value)
   }

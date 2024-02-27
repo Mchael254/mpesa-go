@@ -1,107 +1,15 @@
-<div class="full-border" >
+<div class="base-content-section lms">
+  <div class="row">
+    <div class="col-sm-12">
+      <p class="transactions" style="padding-bottom: 1rem; font-size: 0.8rem">
+        {{ "Policies" | translate | uppercase }}
+      </p>
+      <div class="full-border" style="position: relative;">
 
-  <div>
-    <div class="d-flex justify-content-start text-black" style="font-size: 16px; font-weight: 500;">
-      Policy Dashboard
-    </div>
-    <div class="d-flex justify-content-between text-black pt-4">
-      <div class="d-flex">
-        <!-- <div>Filter By</div>
-        <div>b</div>
-        <div>c</div>
-        <div>d</div> -->
+      <ngx-spinner name="lms_ind_view" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
+        <app-policy-landing-screen [LMS_IND]="quotationListInd?.rows"></app-policy-landing-screen>
       </div>
-      <!-- <div>2</div> -->
     </div>
-    <div class="pt-2">
-      <ng-container *ngIf="quotationListInd?.rows.length>0; else nolength ">
-        <p-table
-          #dt1
-          [lazy]="true"
-          responsiveLayout="stack"
-          scrollHeight="flex"
-          [columns]="quotationListInd?.cols"
-          [value]="quotationListInd?.rows"
-          [paginator]="quotationListInd?.paginator"
-          [rows]="quotationListInd.rowsPerPage || 5"
-          [showCurrentPageReport]="true"
-          [totalRecords]="webQuoteTotalLength"
-          [globalFilterFields]="quotationListInd?.globalFilterFields"
-          (onPage)="paginate($event)"
-
-        >
-
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              <th pSortableColumn="{{ 'SN' }}" style="width: 4%;">
-                {{ 'SN' }}
-                <span *ngIf="quotationListInd.showSorting">
-                <p-sortIcon field="{{ 'SN'}}"></p-sortIcon>
-              </span>
-                <span *ngIf="quotationListInd.showFilter">
-                <p-columnFilter type="text" field="{{ 'SN' }}" display="menu"></p-columnFilter>
-              </span>
-              </th>
-              <th pSortableColumn="{{ col.field }}" *ngFor="let col of columns">
-                {{ col.header }}
-                <span *ngIf="quotationListInd.showSorting">
-                <p-sortIcon field="{{ col.field }}"></p-sortIcon>
-              </span>
-                <span *ngIf="quotationListInd.showFilter">
-                <p-columnFilter type="text" field="{{ col.field }}" display="menu"></p-columnFilter>
-              </span>
-              </th>
-
-              <th style="width: 4%;">
-                {{ '' }}
-
-
-              </th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowIndex="rowIndex" let-rowData let-columns="columns">
-            <tr class="change_Color"  style="font-size: 14px;" (click)="selectRow(rowData)">
-              <ng-container >
-                <td >{{rowIndex+1}}</td>
-                <td *ngFor="let col of columns">
-                  {{ rowData[col.field] }}
-                </td>
-                <td><div class="d-flex justify-content-end dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <div>
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          >Edit</a
-                        >
-                      </li>
-                      <li>
-                        <a
-                          class="dropdown-item"
-                          >Delete</a
-                        >
-                      </li>
-                    </ul>
-                  </div>
-                </div> </td>
-              </ng-container>
-            </tr>
-          </ng-template>
-        </p-table>
-      </ng-container>
-
-      <ng-template #nolength >
-        <div class="text-danger fw-medium">
-          No Policy Data Available!
-        </div>
-      </ng-template>
-
-    </div>
-
   </div>
-
 </div>

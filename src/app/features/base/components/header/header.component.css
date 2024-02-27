@@ -12,6 +12,7 @@
 .base-navbar .navbar-brand .brand-name {
   margin-left: 20px;
   font-size: 0.9em;
+  cursor: pointer;
 }
 
 .base-navbar .profile img {

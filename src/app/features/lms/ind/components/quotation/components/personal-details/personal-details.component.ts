@@ -1,15 +1,35 @@
-import { Component, ElementRef, ViewChild, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  signal,
+} from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from '../../../../../../../shared/data/common/BreadCrumbItem';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { CountryService } from '../../../../../../../shared/services/setups/country/country.service';
 import {
   CountryDto,
   StateDto,
   TownDto,
 } from '../../../../../../../shared/data/common/countryDto';
-import { Observable, finalize, map, of, switchMap } from 'rxjs';
+import {
+  Observable,
+  concatMap,
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
 import { ClientTypeService } from '../../../../../../../shared/services/setups/client-type/client-type.service';
@@ -37,6 +57,10 @@ import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormsService } from 'src/app/features/setups/components/forms/service/forms/forms.service';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
+import { Utils } from 'src/app/features/lms/util/util';
+import { Pagination } from 'src/app/shared/data/common/pagination';
+import { IdentityTypeService } from 'src/app/features/lms/service/identityType/identity-type.service';
+import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
 
 @Component({
   selector: 'app-personal-details',
@@ -44,50 +68,41 @@ import { QuotationService } from 'src/app/features/lms/service/quotation/quotati
   styleUrls: ['./personal-details.component.css'],
 })
 @AutoUnsubscribe
-export class PersonalDetailsComponent {
-  @ViewChild('NewQuoteModal') modalElement: ElementRef;
-  steps = stepData;
-  clientDetailsForm: FormGroup;
-  uploadForm: FormGroup;
-  clientTypeList: any[] = [];
+export class PersonalDetailsComponent implements OnInit {
   breadCrumbItems: BreadCrumbItem[] = [
     { label: 'Home', url: '/home/dashboard' },
     { label: 'Quotation', url: '/home/lms/quotation/list' },
     {
-      label: 'Client Details(Data Entry)',
+      label: 'Client Details',
       url: '/home/lms/ind/quotation/client-details',
     },
   ];
-  isTableOpen: boolean = false;
-  countryList: CountryDto[] = [];
-  branchList: OrganizationBranchDto[] = [];
+  steps = stepData;
+  clientType: any;
+  identifierType: any;
+  countryList: CountryDto[];
+  county: StateDto[];
+  currency: any[];
+  selected: any;
+  client: any;
+  clientList: any;
+  clientDetails: ClientDTO;
+  clientForm: FormGroup;
+  clientSearch: FormGroup;
+  textColor: string = 'black';
+  clientTypeName: string;
+  draftList: any[] = [];
   identifierTypeList: any[] = [];
+  branchList: OrganizationBranchDto[] = [];
+  validationData = [];
   stateList: StateDto[] = [];
   townList: TownDto[] = [];
   bankList: BankDTO[] = [];
   bankBranchList: BankBranchDTO[] = [];
-  showStateSpinner: boolean;
-  showTownSpinner: boolean;
-  clientList: ClientDTO[] = [];
-  beneficiaryForm: FormGroup;
-  clientTitleList$: Observable<any[]>;
-  isCLientListPresent: boolean = false;
-  _openModal: boolean = true;
-  beneficiaryList: any[] = [];
-  guardianList: any[] = [];
-  editEntity: boolean;
   currencyList: any[];
-  occupationList: OccupationDTO[] = [];
-  sectorList: SectorDTO[] = [];
-  beneficiaryTypeList: any[] = [];
-  relationTypeList: any[] = [];
-  documentList: any;
-  isBeneficiaryLoading: boolean = false;
-  loadBankBranch: boolean;
   getFormControlsNameWithErrors: string[] = [];
-  validationData = [];
-  CLIENT_LIST_SESSION = 'CLIENT_LIST_SESSION';
-  CLIENT_LIST_MAP: any[] = [];
+  identityFormatDesc: { id: number; exampleFormat: string };
+  minDate = DataManipulation.getMinDate();
 
   constructor(
     private session_storage: SessionStorageService,
@@ -108,8 +123,30 @@ export class PersonalDetailsComponent {
     private spinner_Service: NgxSpinnerService,
     private lms_client_service: LMSClientService,
     private form_service: FormsService,
-    private quotation_service: QuotationService
-  ) {
+    private quotation_service: QuotationService,
+    private identity_service: IdentityTypeService
+  ) {}
+
+  ngOnInit() {
+    this.formValidation();
+
+    this.clientForm = this.getClientDetailsForm();
+    this.clientSearch = this.fb.group({
+      client: [],
+    });
+    this.getIdentifierTypeList();
+    this.getClientList();
+    this.getCountryList();
+    this.getBranchList();
+    this.getBankList();
+    let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
+    if(quote){
+      this.getClientById(quote['client_code']);
+    }
+  }
+
+  formValidation() {
+
     this.form_service
       .getBySystemAndModuleAndScreeName(
         'LMS_INDIVIDUAL',
@@ -124,260 +161,314 @@ export class PersonalDetailsComponent {
           temp['data'] = val?.inputs.en;
           return temp;
         });
-        // console.log(this.validationData);
-
-        this.clientDetailsForm = this.getClientDetailsForm();
-
-        this.clientDetailsForm?.get('clientType')?.setValue(21);
-        let client_info = StringManipulation.returnNullIfEmpty(
-          this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
-        );
-        console.log(this.clientDetailsForm.value);
-        console.log(this.getClientDetailsForm());
-        
-        
-        if(client_info){
-          console.log(client_info);
-          
-        }
+        this.clientForm = this.getClientDetailsForm();
       });
+  }
+
+  getIdentityType() {
+    return this.identity_service.getIdentityType();
+  }
+
+  selectDraft(draft: any) {
+    this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, draft);
+    this.toast.success('successfully selected web quote', "WEB QUOTATION SELECTED");
+    this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
+
   }
 
   getFormData(name: string) {
     const foundData = this.validationData.find((data) => data['name'] === name);
+    // console.log(foundData?.data?.required);
+
     return foundData !== undefined ? foundData : null;
   }
 
-  ngOnInit() {
-    this.clientDetailsForm = this.getClientDetailsForm();
-    this.clientTitleList$ = this.crm_client_service.getClientTitles(2);
-    this.uploadForm = this.getUploadForm();
-    this.beneficiaryForm = this.getBeneficiaryForm();
-    this.getCountryList();
-    this.getBranchList();
-    this.getClientypeList();
-    this.getIdentifierTypeList();
-    this.getClientList();
-    this.getBeneficiariesByQuotationCode();
-    this.getBankList();
-    // this.getBankBranchList();
-    this.getCurrencyList();
-    this.getOccupationList();
-    this.getSectorList();
-    this.getAllBeneficiaryTypes();
-    this.getRelationTypes();
-    this.getDocumentsByClientId();
-
-    let web_quote = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+  checkIdentityType(identityType: any) {
+    let type = identityType.target.value;
+    let pattern = this.identifierTypeList.find((data) => {
+      return data?.id === StringManipulation.returnNullIfEmpty(type);
+    });
+    this.identityFormatDesc = this.identity_service.IdentityFormat.find(
+      (data) => {
+        return data?.id === StringManipulation.returnNullIfEmpty(type);
+      }
     );
-
-    
-
-    // if (web_quote) {
-    //   // let accountCode = 178565 //Number(this.session_storage.get(SESSION_KEY.ACCOUNT_CODE));
-    //   let accountCode = 178565; //web_quote['account_code'];
-    //   this.crm_client_service
-    //     .getAccountByCode(accountCode)
-    //     .subscribe((data) => {
-    //       console.log(data);
-    //     });
-    // }
-    this.getQuotationDetails();
-    
-
+    const identityNoControl = this.clientForm.get(
+      'modeOfIdentityNumber'
+    ) as FormControl;
+    identityNoControl.setValidators([
+      Validators.required,
+      (control: any) =>
+        this.identity_service.validateIdentity(
+          control,
+          pattern?.identityFormat
+        ),
+    ]);
+    identityNoControl.updateValueAndValidity();
   }
-  getRelationTypes() {
-    this.relation_type_service.getRelationTypes().subscribe((data: any[]) => {
-      this.relationTypeList = data;
-    });
+
+  checkError(formName = 'modeOfIdentityNumber', errorName = 'incorrectFormat') {
+    return (
+      this.clientForm.get(formName).touched &&
+      this.clientForm.get(formName).dirty &&
+      this.clientForm.get(formName).errors?.[errorName]
+    );
   }
-  getAllBeneficiaryTypes() {
-    this.party_service.getAllBeneficiaryTypes().subscribe((data: any[]) => {
-      this.beneficiaryTypeList = [...data];
-    });
-  }
-  getBeneficiaryForm(): FormGroup<any> {
+
+  // getClientDetailsForm(pattern: any = ''): FormGroup<any> {
+  //   return this.fb.group({
+  //     id: [],
+  //     modeOfIdentity: this.getControlConfig('CITIZENSHIP'),
+  //     countryId: this.getControlConfig('CITIZENSHIP'),
+  //     firstName: this.getControlConfig('CITIZENSHIP'),
+  //     gender: this.getControlConfig('CITIZENSHIP'),
+  //     lastName: this.getControlConfig('CITIZENSHIP'),
+  //     dateOfBirth: this.getControlConfig('CITIZENSHIP'),
+  //     modeOfIdentityNumber: this.getControlConfig('CITIZENSHIP'),
+  //     pinNumber: this.getControlConfig('CITIZENSHIP'),
+  //     branchId: this.getControlConfig('CITIZENSHIP'),
+  //     contactDetails: this.fb.group({
+  //       id: [0],
+  //       emailAddress: this.getControlConfig('CITIZENSHIP'),
+  //       phoneNumber: this.getControlConfig('CITIZENSHIP'),
+  //       preferredChannel: this.getControlConfig('CITIZENSHIP'),
+  //       smsNumber: this.getControlConfig('CITIZENSHIP'),
+  //       titleShortDescription: this.getControlConfig('CITIZENSHIP'),
+  //       branchId: this.getControlConfig('CITIZENSHIP'),
+  //     }),
+  //     address: this.fb.group({
+  //       id: [],
+  //       box_number: this.getControlConfig('CITIZENSHIP'),
+  //       country_id: this.getControlConfig('CITIZENSHIP'),
+  //       state_id: this.getControlConfig('CITIZENSHIP'),
+  //       town_id: this.getControlConfig('CITIZENSHIP'),
+  //       physical_address: this.getControlConfig('CITIZENSHIP')
+  //     }),
+  //     paymentDetails: this.fb.group({
+  //       id: [],
+  //       account_number: this.getControlConfig('CITIZENSHIP'),
+  //       bank_branch_id: this.getControlConfig('CITIZENSHIP'),
+  //       currency_id: this.getControlConfig('CITIZENSHIP'),
+  //       effective_from_date: this.getControlConfig('CITIZENSHIP'),
+  //       effective_to_date: this.getControlConfig('CITIZENSHIP'),
+  //       iban: this.getControlConfig('CITIZENSHIP'),
+  //       mpayno: this.getControlConfig('CITIZENSHIP'),
+  //       preferedChannel: this.getControlConfig('CITIZENSHIP'),
+  //     }),
+  //     wealthDetails: this.fb.group({
+  //       id: [],
+  //       citizenship_country_id: this.getControlConfig('CITIZENSHIP'),
+  //       marital_status: this.getControlConfig('CITIZENSHIP'),
+  //       funds_source: this.getControlConfig('CITIZENSHIP'),
+  //       occupation_id: this.getControlConfig('CITIZENSHIP'),
+  //       employed: this.getControlConfig('CITIZENSHIP'), //?
+  //       is_employed: ['N'],
+  //       is_self_employed: ['N'],
+  //       sector_id: this.getControlConfig('CITIZENSHIP'),
+  //       insurancePurpose: this.getControlConfig('CITIZENSHIP'),
+  //       premiumFrequency: this.getControlConfig('CITIZENSHIP'),
+  //       distributeChannel: this.getControlConfig('CITIZENSHIP'),
+  //     }),
+  //     occupationId: this.getControlConfig('CITIZENSHIP'),
+  //     organizationId: this.getControlConfig('CITIZENSHIP'),
+  //     partyId: this.getControlConfig('CITIZENSHIP'),
+  //     passportNumber: this.getControlConfig('CITIZENSHIP'),
+  //     proposerCode: this.getControlConfig('CITIZENSHIP'),
+  //     shortDescription: this.getControlConfig('CITIZENSHIP'),
+  //     stateId: this.getControlConfig('CITIZENSHIP'),
+  //     townId: this.getControlConfig('CITIZENSHIP'),
+  //     client: this.getControlConfig('CITIZENSHIP'),
+  //     status: ['A'],
+  //     system: ['LMS'],
+  //     category: ['C'],
+  //     clientTypeId: ['NEW_CLIENT'],
+  //     dateCreated: [],
+  //     effectiveDateFrom: [],
+  //     effectiveDateTo: [],
+  //     modeOfIdentityId: [],
+      
+  //   });
+  // }
+
+  //   calculateAge(dateOfBirth: string | number | Date): number {
+  //     const today = new Date();
+  //     const dob = new Date(dateOfBirth);
+  //     return today.getFullYear() - dob.getFullYear();
+  //   }
+  getClientDetailsForm(pattern: any = ''): FormGroup<any> {
     return this.fb.group({
-      code: [],
-      beneficiary_info: this.generateBeneficiaryForm(),
-      appointee_info: this.generateBeneficiaryForm(),
-      type: [''],
-      percentage_benefit: [''],
+      id: [],
+      modeOfIdentity: this.getControlConfig('MODE_OF_IDENTITY'),
+      modeOfIdentityId: this.getControlConfig('MODE_OF_IDENTITY'),  
+      countryId: this.getControlConfig('COUNTRY_ID'),
+      firstName: this.getControlConfig('FIRST_NAME'),
+      lastName: this.getControlConfig('LAST_NAME'),
+      gender: this.getControlConfig('GENDER'),
+      dateOfBirth: this.getControlConfig('DATE_OF_BIRTH'),
+      modeOfIdentityNumber: this.getControlConfig('MODE_OF_IDENTITY_NO'),
+      pinNumber: this.getControlConfig('PIN_NO'),
+      branchId: this.getControlConfig('BRANCH_ID'),
+      contactDetails: this.fb.group({
+        id: [],
+        emailAddress: this.getControlConfig('CONTACT_DETAILS_EMAIL_ADDRESS'),
+        phoneNumber: this.getControlConfig('CONTACT_DETAILS_PHONE_NO'),
+        preferredChannel: this.getControlConfig('CONTACT_DETAILS_PREFERRED_CHANNEL'),
+        smsNumber: this.getControlConfig('CONTACT_DETAILS_SMS_NO'),
+        titleShortDescription: this.getControlConfig('CONTACT_DETAILS_TITLE_SHORT_DESCRIPTION'),
+        branchId: this.getControlConfig('CONTACT_DETAILS_BRANCH_ID'),
+      }),
+      address: this.fb.group({
+        id: [],
+        box_number: this.getControlConfig('ADDRESS_BOX_NUMBER'),
+        country_id: this.getControlConfig('ADDRESS_COUNTRY_ID'),
+        state_id: this.getControlConfig('ADDRESS_STATE_ID'),
+        town_id: this.getControlConfig('ADDRESS_TOWN_ID'),
+        physical_address: this.getControlConfig('ADDRESS_PHYSICAL_ADDRESS'),
+        is_utility_address: 'N'
+      }),
+      paymentDetails: this.fb.group({
+        
+        id: [],
+        account_number: this.getControlConfig('PAYMENT_DETAILS_ACCOUNT_NUMBER'),
+        bank_branch_id: this.getControlConfig('PAYMENT_DETAILS_BANK_BRANCH_ID'),
+        currency_id: this.getControlConfig('PAYMENT_DETAILS_CURRENCY_ID'),
+        effective_from_date: this.getControlConfig('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE'),
+        effective_to_date: this.getControlConfig('PAYMENT_DETAILS_EFFECTIVE_TO_DATE'),
+        iban: this.getControlConfig('PAYMENT_DETAILS_IBAN'),
+        mpayno: this.getControlConfig('PAYMENT_DETAILS_MPAYNO'),
+        preferedChannel: this.getControlConfig('PAYMENT_DETAILS_PREFERRED_CHANNEL'),
+      }),
+      wealthDetails: this.fb.group({
+        id: [],
+        citizenship_country_id: this.getControlConfig('CITIZENSHIP_COUNTRY_ID'),
+        marital_status: this.getControlConfig('MARITAL_STATUS'),
+        funds_source: this.getControlConfig('FUNDS_SOURCE'),
+        occupation_id: this.getControlConfig('OCCUPATION_ID'),
+        employed: this.getControlConfig('EMPLOYED'), //?
+        is_employed: ['N'],
+        is_self_employed: ['N'],
+        sector_id: this.getControlConfig('SECTOR_ID'),
+        insurancePurpose: this.getControlConfig('INSURANCE_PURPOSE'),
+        premiumFrequency: this.getControlConfig('PREMIUM_FREQUENCY'),
+        distributeChannel: this.getControlConfig('DISTRIBUTE_CHANNEL'),
+      }),
+      occupationId: this.getControlConfig('OCCUPATION_ID'),
+      organizationId: this.getControlConfig('ORGANIZATION_ID'),
+      partyId: this.getControlConfig('PARTY_ID'),
+      passportNumber: this.getControlConfig('PASSPORT_NUMBER'),
+      proposerCode: this.getControlConfig('PROPOSER_CODE'),
+      shortDescription: this.getControlConfig('SHORT_DESCRIPTION'),
+      stateId: this.getControlConfig('STATE_ID'),
+      townId: this.getControlConfig('TOWN_ID'),
+      client: this.getControlConfig('CLIENT'),
+      status: ['A'],
+      system: ['LMS'],
+      category: ['I'],
+      clientTypeId: ['NEW_CLIENT'],
+      dateCreated: [],
+      effectiveDateFrom: [],
+      effectiveDateTo: [],
+        
     });
   }
-  getUploadForm(): FormGroup<any> {
-    return this.fb.group({
-      selectedUploadItem: [''],
-    });
-  }
-  getClientDetailsForm(): FormGroup<any> {
-    return this.fb.group({
-      beneficiary: this.generateBeneficiaryForm(),
-      guardian: this.generateGuardianForm(),
-      question: [''],
-      selectedUploadItem: [],
-      po_box: [''],
-      county: [''],
-      road: [''],
-      house_no: [''],
-      town: [''],
-      bank: [''],
-      countryCode: [''],
-      disChannel: [''],
-      purposeInsurance: [''],
-      p_contact_channel: [''],
-      maritalStatus: [''],
-      employmentType: [],
-      prefCahnnel: [],
-      economicSector: [''],
-      client: [''],
-      IdetifierType: [''],
-      citizenship: [
-        {
-          value: '',
-          disabled: !!this.getFormData('CITIZENSHIP')?.data?.is_disabled,
-        },
-      ],
-      date_of_birth: [],
-      emailAddress: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-          Validators.pattern(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/),
-        ],
-      ],
-      gender: ['M'],
-      title: [],
-      lastName: [
-        {
-          value: '',
-          disabled: !!this.getFormData('LAST_NAME')?.data?.is_disabled,
-        },
-      ],
-      p_address: [],
-      firstName: [
-        {
-          value: '',
-          disabled: !!this.getFormData('FIRST_NAME')?.data?.is_disabled,
-        },
-      ],
-      pinNumber: [
-        {
-          value: '',
-          disabled: !!this.getFormData('PIN_NO')?.data?.is_disabled,
-        },
-        [Validators.required],
-      ],
-      clientType: [
+  private patchClientDetailsToForm(data){
+    this.clientForm.patchValue(data);
+      this.clientForm.get('dateOfBirth').patchValue(new Date(data['dateOfBirth']));
+      this.clientForm.get('modeOfIdentityNumber').patchValue(data['idNumber']);
+      this.clientForm.get('countryId').patchValue(data['country']);
+      this.clientForm.get('pinNumber').patchValue(data['pinNumber']);
+      this.clientForm.get('modeOfIdentityId').patchValue(data['modeOfIdentity']);
+      this.clientForm.get('contactDetails').get('branchId').patchValue(data['branchCode']);
+      this.clientForm.get('contactDetails').get('emailAddress').patchValue(data['emailAddress']?.toLocaleLowerCase());
+      this.clientForm.get('contactDetails').get('phoneNumber').patchValue(data['phoneNumber']);
+      this.clientForm.get('contactDetails').get('titleShortDescription').patchValue(data['clientTitle']);
+      this.clientForm.get('address').get('country_id').patchValue(data['country']);
+      this.clientForm.get('address').get('physical_address').patchValue(data['physicalAddress']);
+      this.clientForm.get('paymentDetails').get('effective_from_date').patchValue(new Date(data['withEffectFromDate']));
+      this.clientForm.get('wealthDetails').get('citizenship_country_id').patchValue(data['country']);
 
-        {
-          value: '',
-          disabled: !!this.getFormData('CLIENT_TYPE')?.data?.is_disabled,
-        },
-        [Validators.required],
-      ],
-      phoneNumber: [],
-      occupation: [],
-      country: [{ value: '', disabled: false }, [Validators.required]],
-      branch: [
-        {
-          value: '',
-          disabled: !!this.getFormData('BRANCH')?.data?.is_disabled,
-        },
-        [Validators.required],
-      ],
-      idNumber: [
-        { value: '', disabled: !!this.getFormData('ID_NO')?.data?.is_disabled },
-        [Validators.required],
-      ],
-      with_effect_from: [],
-      with_effect_to: [],
-      beneficiaries: this.fb.array([]),
-      bank_branch: [],
-    });
+
   }
-  calculateAge(dateOfBirth: string | number | Date): number {
-    const today = new Date();
-    const dob = new Date(dateOfBirth);
-    return today.getFullYear() - dob.getFullYear();
+  private getControlConfig(form_name: string, value = null) {
+    return [
+      {
+        value: value,
+        disabled: !!this.getFormData(form_name)?.data?.is_disabled,
+      },
+      !!this.getFormData(form_name)?.data?.required
+        ? Validators.required
+        : null,
+    ];
+  }
+  getClientById(code: any){
+    this.spinner_Service.show('client_details_view');
+    this.crm_client_service.getClientById(code).subscribe(data =>{
+      this.patchClientDetailsToForm(data)
+      
+
+      this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
+      this.spinner_Service.hide('client_details_view');
+
+    },
+    err => {
+      console.log(err);
+      // this.toast.danger('Unable to Fetch Client Details', 'CLIENT DETAILS');
+      this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
+      this.spinner_Service.hide('client_details_view');
+
+      
+    })
   }
   getClientList() {
-    this.isCLientListPresent = false;
-    this.crm_client_service
-      .getClients()
-      .pipe(finalize(() => (this.isCLientListPresent = true)))
-      .subscribe((data) => {
-        this.clientList = data['content'];
+    this.crm_client_service.getClients().subscribe((data) => {
+      this.clientList = data['content']?.map((d) => {
+        d['full_name'] = `${d.firstName} ${d.lastName ? d.lastName : ''}`;
+        d['details'] = `${d.firstName} ${d.lastName ? d.lastName : ''} - ${
+          d?.emailAddress ? d?.emailAddress : ''
+        }`;
+        return d;
       });
-  }
-  openTable() {
-    this.isTableOpen = true;
-  }
-  closeTable() {
-    this.isTableOpen = false;
-  }
-  saveButton(value: any) {
-    value['webClntType'] = 'I';
-    value['webClntIdRegDoc'] = 'I';
-    // console.log(value);
-    this.router.navigate(['/home/lms/ind/quotation/quotation-details']);
-  }
-  getValue(name: string) {
-    return this.clientDetailsForm.get(name).value;
-  }
-  generateBeneficiaryForm(): FormGroup<any> {
-    return this.fb.group({
-      code: [0],
-      first_name: [''],
-      other_name: [''],
-      date_of_birth: [],
-      percentage_benefit: [''],
-      tel_no: [''],
-      gender: [''],
-      contact: [''],
-      relation_code: [''],
-      type: [''],
     });
   }
-  generateGuardianForm(): FormGroup<any> {
-    return this.fb.group({
-      code: [0],
-      first_name: [''],
-      contact: [''],
-      date_of_birth: [],
-      relation_code: [''],
-    });
+  
+  selectClient(event: any) {
+    // console.log('select client');
+    console.log(event?.value);
+    // let val = this.clientForm.get('client');
+    // this.clientForm.patchValue(event?.value);
+    this.patchClientDetailsToForm(event?.value)
+
   }
+
   selectCountry(_event: any) {
-    this.showStateSpinner = true;
+    // this.showStateSpinner = true;
     let e = +_event.target.value;
     of(e)
       .pipe(
         switchMap((data: number) => {
           return this.country_service.getMainCityStatesByCountry(data);
-        }),
-        finalize(() => {
-          this.showStateSpinner = false;
         })
+        // finalize(() => {
+        //   this.showStateSpinner = false;
+        // })
       )
       .subscribe((data) => {
         this.stateList = data;
         this.townList = [];
       });
   }
+
   selectState(_event: any) {
-    this.showTownSpinner = true;
+    // this.showTownSpinner = true;
     let e = +_event.target.value;
     of(e)
       .pipe(
         switchMap((data: number) => {
           return this.country_service.getTownsByMainCityState(data);
-        }),
-        finalize(() => {
-          this.showTownSpinner = false;
         })
+        // finalize(() => {
+        //   this.showTownSpinner = false;
+        // })
       )
       .subscribe((data) => {
         this.townList = data;
@@ -391,8 +482,11 @@ export class PersonalDetailsComponent {
           return this.returnLowerCase(data);
         })
       )
-      .subscribe((data) => {
+      .subscribe((data: any[]) => {
         this.countryList = data;
+        this.currencyList = this.countryList.filter(
+          (data) => data?.currency?.name !== null
+        );
       });
   }
   getBranchList() {
@@ -407,385 +501,43 @@ export class PersonalDetailsComponent {
         this.branchList = data;
       });
   }
-  getClientypeList() {
-    this.clientType_service
-      .getClientTypes()
-      .subscribe((data) => (this.clientTypeList = data));
-  }
+
   getIdentifierTypeList() {
     this.clientType_service.getIdentifierTypes().subscribe((data) => {
       this.identifierTypeList = data;
     });
   }
-  selectClient(client: any) {
-    let patchClient = {
-      lastName: client['lastName'],
-      firstName: client['firstName'],
-      dateOfBirth: new Date(client['dateOfBirth']),
-      gender: client['gender'],
-      emailAddress: client['emailAddress'],
-      pinNumber: client['pinNumber'],
-      idNumber: client['idNumber'],
-      clientType: client['clientType']['code'],
-      phoneNumber: client['phoneNumber'],
-    };
-    this.session_storage.set(SESSION_KEY.CLIENT_CODE, client['idNumber']);
-    this.clientDetailsForm.patchValue(patchClient);
-    this.closeModal();
-    this._openModal = false;
-  }
-  // NO UNIT TESTED
-  searchClient(event_) {
-    this.isCLientListPresent = false;
-    this.clientList = [];
-    let data = event_.target.value;
-    of(data)
-      .pipe(
-        switchMap((inputText: string) => {
-          return this.crm_client_service.searchClients(0, 5, inputText.trim());
-        }),
-        finalize(() => (this.isCLientListPresent = true))
-      )
-      .subscribe((d) => {
-        this.clientList = d['content'];
-      });
-  }
-  // NO UNIT TESTED
-  getBeneficiariesByQuotationCode() {
-    this.editEntity = true;
-    let proposal_code = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-    );
-    this.party_service
-      .getListOfBeneficariesByQuotationCode(
-        this.getQuoteCode(),
-        proposal_code ? proposal_code['proposal_code'] : null
-      )
-      .pipe(finalize(() => (this.editEntity = false)))
-      .subscribe((data) => {
-        this.beneficiaryList = data;
-      });
-  }
+
   getBankList() {
-    this.bank_service.getBanks(1100).subscribe((data) => {
+    this.bank_service.getBanks(165).subscribe((data) => {
       this.bankList = data;
     });
   }
   selectBank(d: any) {
     this.getBankBranchList2(d?.target?.value);
   }
-  getBankBranchList() {
-    let id = this.bank_service.getBankBranch().subscribe((data) => {
-      this.bankBranchList = data;
-    });
-  }
 
-  getBankBranchList2(id) {
+  getBankBranchList2(id: any) {
     this.bank_service.getBankBranchById(id).subscribe((data) => {
       this.bankBranchList = data;
     });
   }
-  getCurrencyList() {
-    this.currency_service.getAllCurrencies().subscribe((data) => {
-      this.currencyList = data;
-    });
-  }
-  getOccupationList() {
-    this.occupation_service
-      .getOccupations(2)
-      .subscribe((data) => (this.occupationList = data));
-  }
-  getSectorList() {
-    this.sector_service.getSectors(2).subscribe((data) => {
-      this.sectorList = data;
-    });
-  }
 
-  getQuoteCode() {
-    let client_info = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-    );
-    if (client_info === null) {
-      return StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      )['quote_no'];
-    }
-    return client_info['quote_code'];
-  }
-  saveBeneficiary() {
-    this.spinner_Service.show('beneficiaries_view');
-
-    this.spinner_Service.show('beneficiary_modal_screen');
-    this.isBeneficiaryLoading = true;
-    let beneficiary = { ...this.beneficiaryForm.value };
-    beneficiary['client_code'] = null
-    // StringManipulation.returnNullIfEmpty(
-    //   this.session_storage.get(SESSION_KEY.CLIENT_CODE)
-    // );
-    beneficiary['quote_code'] = this.getQuoteCode();
-    // StringManipulation.returnNullIfEmpty(
-    //   this.session_storage.get(SESSION_KEY.QUOTE_CODE)
-    // );
-    // beneficiary['proposal_no'] = StringManipulation.returnNullIfEmpty(
-    //   this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
-    // );
-    // beneficiary['proposal_code'] = StringManipulation.returnNullIfEmpty(
-    //   this.session_storage.get(SESSION_KEY.PROPOSAL_CODE)
-    // );
-    beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(
-      beneficiary['percentage_benefit']
-    );
-    beneficiary['appointee_info']['relation_code'] =
-      StringManipulation.returnNullIfEmpty(
-        beneficiary['appointee_info']['relation_code']
-      );
-    beneficiary['beneficiary_info']['relation_code'] =
-      StringManipulation.returnNullIfEmpty(
-        beneficiary['beneficiary_info']['relation_code']
-      );
-    beneficiary['code'] = StringManipulation.returnNullIfEmpty(
-      beneficiary['code']
-    );
-    let percentage_benefit = this.beneficiaryList
-      ?.map((d) => d?.percentage_benefit)
-      ?.reduce((sum, current) => sum + current, 0);
-
-    console.log(percentage_benefit);
-    if (percentage_benefit > 100) {
-      this.toast.danger(
-        'Percentage Benefits',
-        `Total Percentage Benefits is More than 100%`
-      );
-      return;
-    }
-    if (!this.checkIfGuardianIsNeeded()) {
-      beneficiary['appointee_info'] = null;
-    }
-    if (percentage_benefit <= 100) {
-      return this.party_service
-        .createBeneficiary(beneficiary)
-        .pipe(
-          finalize(() => {
-            this.isBeneficiaryLoading = false;
-            this.spinner_Service.hide('beneficiary_modal_screen');
-          })
-        )
-        .subscribe(
-          (data) => {
-            this.getBeneficiariesByQuotationCode();
-            this.closeCategoryDetstModal();
-            this.beneficiaryForm.reset();
-            this.spinner_Service.hide('beneficiary_modal_screen');
-            this.isBeneficiaryLoading = false;
-            this.toast.success(
-              'Beneficiary Details Added Successfully',
-              'Beneficiary/Trustee/Guardian'
-            );
-          },
-          (err) => {
-            this.spinner_Service.hide('beneficiary_modal_screen');
-
-            this.toast.danger(err?.error?.errors[0], 'Percentage Benefit');
-          }
-        );
-    } else {
-      this.spinner_Service.hide('beneficiary_modal_screen');
-      console.log('Greater than 100%');
-      this.toast.danger(
-        `Percentage Benefit is greater by  ${percentage_benefit - 100}`,
-        'Percentage Benefit'
-      );
+  openModal(name = 'draftModal'): void {
+    const modal = document.getElementById(name);
+    if (modal) {
+      modal.classList.add('show'); // Show the modal
+      modal.style.display = 'block'; // Ensure it's visible
     }
   }
-  deleteBeneficiary(i: number) {
-    this.editEntity = true;
-    let beneficiary: {} = this.beneficiaryList.filter((data, x) => x === i)[0];
-    this.party_service
-      .deleteBeneficiary(beneficiary['code'])
-      .subscribe((data) => {
-        this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
-        this.editEntity = false;
-      });
-  }
-  editBeneficiary(i: number) {
-    this.showCategoryDetstModal();
-    this.beneficiaryList = this.beneficiaryList.map((data, x) => {
-      if (i === x) {
-        let be_date = data?.beneficiary_info?.date_of_birth;
-        let ap_date = data?.appointee_info?.date_of_birth;
-        if (!StringManipulation.isEmpty(ap_date))
-          data['appointee_info']['date_of_birth'] = new Date(
-            data['appointee_info']['date_of_birth']
-          );
-        if (!StringManipulation.isEmpty(be_date))
-          data['beneficiary_info']['date_of_birth'] = new Date(
-            data['beneficiary_info']['date_of_birth']
-          );
-
-        this.beneficiaryForm.patchValue(data);
-        console.log(data);
-      }
-      return data;
-    });
-  }
-  getValueBeneficiaryValue(name: string = 'question1') {
-    return this.beneficiaryForm.get(name).value;
-  }
-  checkIfGuardianIsNeeded() {
-    let date_ = this.calculateAgeWithMonth(
-      this.getValueBeneficiaryValue('beneficiary_info.date_of_birth')
-    );
-    let type = this.getValueBeneficiaryValue('type');
-    return type === 'B' && date_ < 18;
-  }
-  isImage(name: any) {
-    return ['jpeg', 'png', 'jpg'].includes(name);
-  }
-  getFileChange(event: any) {
-    this.clientDetailsForm
-      .get('selectedUploadItem')
-      .setValue(event.target.value);
-  }
-  uploadFile(event: any) {
-    this.spinner_Service.show('download_view');
-    let client_info =
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-      ) ||
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      );
-    let fileName = StringManipulation.returnNullIfEmpty(
-      this.getValue('selectedUploadItem')
-    );
-    const fileList: FileList = event.target.files;
-    if (fileList.length > 0) {
-      const file = fileList[0];
-      const formData = new FormData();
-      formData.append('file', file, file.name);
-      this.dms_service
-        .saveClientDocument(client_info['client_code'], fileName, formData)
-        .pipe(
-          finalize(() => {
-            this.spinner_Service.hide('download_view');
-          })
-        )
-        .subscribe((data) => {
-          this.documentList.push(data);
-          const fileInput = document.getElementById(
-            'uploadFile'
-          ) as HTMLInputElement;
-          if (fileInput) {
-            fileInput.value = ''; // Reset the input
-          }
-          this.spinner_Service.hide('download_view');
-        });
-    }
-  }
-  deleteDocumentFileById(code: string, x: any) {
-    this.spinner_Service.show('download_view');
-
-    this.dms_service
-      .deleteDocumentById(code)
-      .pipe(
-        finalize(() => {
-          this.spinner_Service.hide('download_view');
-        })
-      )
-      .subscribe((data) => {
-        console.log(data);
-
-        this.documentList = this.documentList.filter((data, i) => i !== x);
-        this.spinner_Service.hide('download_view');
-      });
-  }
-
-  getDocumentsByClientId() {
-    this.spinner_Service.show('download_view');
-    let client_info =
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-      ) ||
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      );
-    this.dms_service
-      .getClientDocumentById(client_info['client_code'])
-      .pipe(
-        finalize(() => {
-          this.spinner_Service.hide('download_view');
-        })
-      )
-      .subscribe((data) => {
-        this.spinner_Service.hide('download_view');
-        this.documentList = data['content'];
-      });
-  }
-  downloadBase64File(url: string) {
-    this.spinner_Service.show('download_view');
-    this.dms_service
-      .downloadFileById(url)
-      .pipe(
-        finalize(() => {
-          this.spinner_Service.hide('download_view');
-        })
-      )
-      .subscribe(() => {
-        this.spinner_Service.hide('download_view');
-      });
-  }
-  closeModal() {
-    this._openModal = true;
-    const modal = document.getElementById('newClientModal');
+  closeModal(name = 'newClientModal') {
+    // this._openModal = true;
+    const modal = document.getElementById(name);
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-  }
-  showCategoryDetstModal() {
-    const modal = document.getElementById('categoryDetsModal');
-    if (modal) {
-      modal.classList.add('show');
-      modal.style.display = 'block';
-    }
-  }
-  cancelBeneficiary() {
-    this.beneficiaryForm.reset();
-    this.closeCategoryDetstModal();
-  }
-  closeCategoryDetstModal() {
-    const modal = document.getElementById('categoryDetsModal');
-    if (modal) {
-      modal.classList.remove('show');
-      modal.style.display = 'none';
-    }
-  }
-  trackByCode(index, item) {
-    return item?.code;
-  }
-  trackById(index, item) {
-    return item?.id;
-  }
-
-  selectBankBranch(event) {
-    this.loadBankBranch = true;
-    this.bank_service.getBankBranchListByBankId(event.target.value).subscribe(
-      (da) => {
-        this.loadBankBranch = false;
-        this.bankBranchList = da;
-      },
-      (err) => {
-        this.loadBankBranch = false;
-      }
-    );
-  }
-
-  isRequired(name: string) {
-    let control = this.clientDetailsForm.get(name);
-    return (
-      (control.hasError('required') || control.hasError('pattern')) &&
-      control.touched
-    );
+    this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
   }
 
   getFormControlsWithErrors(formGroup: FormGroup): string[] {
@@ -805,239 +557,236 @@ export class PersonalDetailsComponent {
     });
 
     const convertedArray = controlsWithErrors.map((str) => {
-      // Use regular expression to insert a space before each capital letter
       return str.replace(/([A-Z])/g, ' $1').trim();
     });
 
     return convertedArray;
   }
 
-  enableControlsWithErrors(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach((controlName) => {
-      const control = formGroup.get(controlName);
+  async saveClientDetails() {
+    this.spinner_Service.show('client_details_view');
+    let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
 
-      if (control && control.invalid) {
-        control.enable();
-      }
-
-      if (control instanceof FormGroup) {
-        this.enableControlsWithErrors(control);
-      }
-    });
-  }
-
-  getQuotationDetails() {
-    let quick_quote_details = this.session_storage.get(
-      SESSION_KEY.QUICK_QUOTE_DETAILS
-    );
-    if (quick_quote_details) {
-      this.quotation_service
-        .getLmsIndividualQuotationTelQuoteByCode(
-          quick_quote_details['quote_code']
-        )
-        .subscribe((data) => {
-          console.log(data);
-        });
-    }
-  }
-  async nextPage() {
-    this.spinner_Service.show('client_details_view')
-    if (!this.clientDetailsForm.valid) {
-      this.enableControlsWithErrors(this.clientDetailsForm);
+    if (!this.clientForm.valid) {
+      StringManipulation.enableControlsWithErrors(this.clientForm);
       this.getFormControlsNameWithErrors = this.getFormControlsWithErrors(
-        this.clientDetailsForm
+        this.clientForm
       );
       this.toast.danger('Fill the required forms', 'Required forms');
+      this.spinner_Service.hide('client_details_view');
+      return
+
     } else {
-      let web_quote_details = StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      );
-      let formValue = this.clientDetailsForm.value;
-      let countryData = this.countryList.find(
-        (data) =>
-          data?.id === StringManipulation.returnNullIfEmpty(formValue?.country)
-      );
-      const contactsDetails = {
-        emailAddress: StringManipulation.returnNullIfEmpty(
-          formValue.emailAddress
-        ),
-        id: 0,
-        phoneNumber: StringManipulation.returnNullIfEmpty(
-          formValue?.phoneNumber
-        ),
-        receivedDocuments: 'N',
-        smsNumber: StringManipulation.returnNullIfEmpty(formValue?.phoneNumber),
-        titleShortDescription: StringManipulation.returnNullIfEmpty(
-          formValue?.title
-        ),
-      };
-      let partyData = {
-        category: 'C',
-        country: countryData,
-        countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-        dateOfBirth: formValue?.date_of_birth,
-        effectiveDateFrom: formValue?.with_effect_from,
-        effectiveDateTo: formValue?.with_effect_to,
-        id: 0,
-        identityNumber: formValue?.idNumber,
-        modeOfIdentityId: 12,
-        name: StringManipulation.returnNullIfEmpty(
-          `${formValue?.firstName} ${formValue?.lastName}`
-        ),
-        organizationId: 2,
-        partyTypeId: 2,
-        pinNumber: formValue?.pinNumber,
-        profileImage: null,
-        profilePicture: null,
-      };
-      let accountData: any = {
-        address: null,
-        // StringManipulation.returnNullIfEmpty(formValue?.p_address),
-        agentRequestDto: null,
-        contactDetails: contactsDetails,
-        partyId: null,
-        partyTypeShortDesc: 'CLIENT',
-        createdBy: null,
-        effectiveDateFrom: formValue?.with_effect_from,
-        effectiveDateTo: formValue?.with_effect_to,
-        modeOfIdentityId: 12,
-        category: 'C',
-        // StringManipulation.returnNullIfEmpty(formValue?.clientType), clientTypeList
-        countryId: StringManipulation.returnNullIfEmpty(formValue?.country),
-        gender: StringManipulation.returnNullIfEmpty(formValue?.gender),
-        status: 'A',
-        dateCreated: new Date(),
-        pin_Number: StringManipulation.returnNullIfEmpty(formValue?.pinNumber),
-        account_type: 21,
-        // StringManipulation.returnNullIfEmpty(
-        //   formValue?.clientType
-        // ),
-        first_name: StringManipulation.returnNullIfEmpty(formValue?.firstName),
-        last_name: StringManipulation.returnNullIfEmpty(formValue?.lastName),
-        date_of_birth: formValue?.date_of_birth,
-        organization_id: 2,
-        branch_id: StringManipulation.returnNullIfEmpty(formValue?.branch),
-      };
-      let client_req = { ...partyData, ...accountData };
-      client_req['clientType'] = StringManipulation.returnNullIfEmpty(formValue?.clientType)
-      // Save Client Details to Get Client/AccountID
-      console.log(client_req);
-
-      // client_req['accountCode'] = 962479;
-      let client_sub = of(client_req);
-      // this.lms_client_service.saveClient(client_req);
-      // CHECK if Its to save or Update Client Information
-      // if(web_quote_details){
-      //   // update the code/id
-      //   client_sub = this.lms_client_service.updateClient(client_req)
-      // }
-
-      client_sub
+      let client_sub = this.generateOutObjectFromClientForm(this.clientForm);
+      // console.log(client_sub);
+      
+      // this.crm_client_service
+      //   .save(client_sub)
+        of({'code':7373638383})
         .pipe(
-          switchMap((client_res) => {
-            // After Creating and getting Client/Account ID then Get Complete Details of Tel Quote By QuoteCode
+          concatMap((client_res) => {
+            console.log(client_res);
             this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
-            return this.quotation_service.getLmsIndividualQuotationTelQuoteByCode(
-              this.getQuoteCode()
+            quote['client_code'] = client_res['code'];
+            this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
+            this.toast.success(
+              'Create Client Details Successfully!',
+              'Client Details'
             );
+            return 
+            return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['code']);
           }),
-          switchMap((tel_quote_res: any) => {
-            // Converting the Tel Quote Details Into Web Quote Information => Set ClientCode/AccountCode to All in Tel Quote Info
-            let client_data = StringManipulation.returnNullIfEmpty(
-              this.session_storage.get(SESSION_KEY.CLIENT_DETAILS)
-            );
-            let quick_quote_details = StringManipulation.returnNullIfEmpty(
-              this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-            );
-            let web_quote_req = {};
-            if (web_quote_details) {
-              web_quote_req['code'] = web_quote_details['code'];
-              web_quote_req = { ...web_quote_details };
-            }
-            web_quote_req = { ...web_quote_req, ...quick_quote_details, ...tel_quote_res,  };
-            web_quote_req['account_code'] = client_data['accountCode'];
-            web_quote_req['client_type'] = client_data['category']
-
-            web_quote_req['client_code'] = this.generateNo();
-            // web_quote_req['quick_quote_covers'] = [];
-            web_quote_req['cover_type_codes'] = [];
-            web_quote_req['quote_no'] = web_quote_req['quote_code']
-
-            return this.quotation_service.saveWebQuote(web_quote_req);
-          })
+          finalize(() =>{this.spinner_Service.hide('client_details_view');})
         )
-        .subscribe((data: any) => {
-          this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
-          this.spinner_Service.hide('client_details_view');
-          this.toast.success('Create Client Details Successfully!', 'Client Details');
-          this.router.navigate(['/home/lms/ind/quotation/insurance-history'])
+        .subscribe(
+          (data: any) => {
+            console.log(data);
+            this.spinner_Service.hide('client_details_view');
+            this.draftList =[ 
+              {}, {} 
+            ]
+            //  data['content']
+            // ?.filter((data: any)=> data?.proposal_no===null);
 
-        },
-        (err: any)=>{
-          this.spinner_Service.hide('client_details_view');
-          console.log(err);
-          
-        });
-    }
-  }
-
-  // CHECK LATER
-  mapClientDetails() {
-    let client_list: any[] =
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(this.CLIENT_LIST_SESSION)
-      ) || [];
-    let web_details = StringManipulation.returnNullIfEmpty( this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    if (web_details) {
-      if (client_list.length > 0) {
-        return client_list.find(
-          (data) => data['client_code'] === web_details['client_code']
+            if (this.draftList.length > 0) {
+              this.openModal('draft');
+              return;
+            }
+            this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+          },
+          (err: any) => {
+            // console.log(err);
+            this.spinner_Service.hide('client_details_view');
+            // console.log(err);
+            this.toast.danger('Unable to Create Client Record!', 'CLIENT CREATION')
+          }
         );
-      }
     }
-
-    return null;
   }
 
-  generateNo(): string {
-
-    return '2323235976681'
-    // const randomNumbers: string[] = [];
-    // for (let i = 0; i < 3; i++) {
-    //   const randomNumberAsString = Math.floor(Math.random() * 100).toString();
-    //   randomNumbers.push(randomNumberAsString);
-    // }
-    // return randomNumbers.join(', ').replaceAll(', ', '');
+  generateOutObjectFromClientForm(clientForm: FormGroup): any {
+    let mode = this.identifierTypeList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('modeOfIdentity').value));
+    let branch = this.branchList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('branchId').value));
+    mode = mode?mode:{'id':null, 'name': null};
+    branch = mode?mode:{'id':null, 'name': null};
+    
+    return {
+      id: clientForm.get('id').value,
+      system: clientForm.get('system').value,
+      firstName: clientForm.get('firstName').value,
+      lastName: clientForm.get('lastName').value,
+      modeOfIdentityId: StringManipulation.returnNullIfEmpty(mode?.id),
+      modeOfIdentity: mode?.name,
+      modeOfIdentityNumber: clientForm.get('modeOfIdentityNumber').value,
+      gender: clientForm.get('gender').value,
+      pinNumber: clientForm.get('pinNumber').value,
+      // clientTypeId: clientForm.get('clientTypeId').value,
+      shortDescription: clientForm.get('shortDescription').value,
+      address: {
+        id: clientForm.get('address').get('id').value,
+        box_number: clientForm.get('address').get('box_number').value,
+        country_id: clientForm.get('address').get('country_id').value,
+        state_id: clientForm.get('address').get('state_id').value,
+        town_id: clientForm.get('address').get('town_id').value,
+        physical_address: clientForm.get('address').get('physical_address')
+          .value,
+        postal_code: null,
+        residential_address: null,
+        road: null,
+        estate: null,
+        house_number: null,
+        is_utility_address: 'N',
+        utility_address_proof: null,
+        fax: null,
+        zip: null,
+        phoneNumber: null,
+        account: null,
+      },
+      passportNumber: null,
+      dateOfBirth: clientForm.get('dateOfBirth').value,
+      effectiveDateFrom: clientForm.get('paymentDetails').get('effective_from_date').value,
+      effectiveDateTo: clientForm.get('paymentDetails').get('effective_to_date').value,
+      category: clientForm.get('category').value,
+      status: clientForm.get('status').value,
+      branchId: 233,
+      // StringManipulation.returnNullIfEmpty(clientForm.get('contactDetails').get('branchId').value),
+      countryId: StringManipulation.returnNullIfEmpty(clientForm.get('countryId').value),
+      townId: StringManipulation.returnNullIfEmpty(clientForm.get('townId').value),
+      stateId: StringManipulation.returnNullIfEmpty(clientForm.get('stateId').value),
+      partyId: StringManipulation.returnNullIfEmpty(clientForm.get('partyId').value),
+      // organizationId: StringManipulation.returnNullIfEmpty(clientForm.get('organizationId').value),
+      partyAccountId: null,
+      proposerCode: StringManipulation.returnNullIfEmpty(clientForm.get('proposerCode').value),
+      dateCreated: new Date(),
+      contactDetails: {
+        id: clientForm.get('contactDetails').get('id').value,
+        emailAddress: clientForm.get('contactDetails').get('emailAddress')
+          .value,
+        phoneNumber: clientForm.get('contactDetails').get('phoneNumber').value,
+        preferredChannel: clientForm.get('contactDetails').get('preferredChannel').value,
+        smsNumber: clientForm.get('contactDetails').get('smsNumber').value,
+        title: null,
+        receivedDocuments: 'N',
+        account: null,
+        accountId: null,
+      },
+      paymentDetails: {
+        id: clientForm.get('paymentDetails').get('id').value,
+        account_number: clientForm.get('paymentDetails').get('account_number')
+          .value,
+        bank_branch_id: StringManipulation.returnNullIfEmpty(clientForm.get('paymentDetails').get('bank_branch_id')
+          .value),
+        currency_id: StringManipulation.returnNullIfEmpty(clientForm.get('paymentDetails').get('currency_id').value),
+        effective_from_date: clientForm
+          .get('paymentDetails')
+          .get('effective_from_date').value,
+        effective_to_date: clientForm
+          .get('paymentDetails')
+          .get('effective_to_date').value,
+        iban: clientForm.get('paymentDetails').get('iban').value,
+        is_default_channel: 'N',
+        mpayno: clientForm.get('paymentDetails').get('mpayno').value,
+        partyAccountId: null,
+        preferedChannel: clientForm.get('paymentDetails').get('preferedChannel')
+          .value,
+      },
+      wealthDetails: {
+        id: clientForm.get('wealthDetails').get('id').value,
+        citizenship_country_id: clientForm
+          .get('wealthDetails')
+          .get('citizenship_country_id').value,
+        marital_status: clientForm.get('wealthDetails').get('marital_status')
+          .value,
+        funds_source: clientForm.get('wealthDetails').get('funds_source').value,
+        occupation_id: clientForm.get('wealthDetails').get('occupation_id')
+          .value,
+        is_employed: clientForm.get('wealthDetails').get('is_employed').value,
+        is_self_employed: clientForm
+          .get('wealthDetails')
+          .get('is_self_employed').value,
+        sector_id: clientForm.get('wealthDetails').get('sector_id').value,
+        insurancePurpose: null,
+        premiumFrequency: null,
+        distributeChannel: null,
+        cr_form_required: 'N',
+        cr_form_year: 0,
+        partyAccountId: null,
+      },
+      nextOfKinDetailsList: null,
+      branchName: branch?.name,
+      clientTypeId: 13,
+      organizationId: 2
+    };
   }
 
-  private deleteEntity(d: any[], i: any) {
-    this.editEntity = true;
-    d = d.filter((data, x) => {
-      return i !== x;
-    });
-    this.editEntity = false;
-    return d;
-  }
-  private calculateAgeWithMonth(dateOfBirth: any) {
-    const currentDate = new Date();
-    const birthDate = new Date(dateOfBirth);
-    let age = currentDate.getFullYear() - birthDate.getFullYear();
-    // Check if the birthdate has occurred this year already.
-    if (
-      currentDate.getMonth() < birthDate.getMonth() ||
-      (currentDate.getMonth() === birthDate.getMonth() &&
-        currentDate.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  }
   private returnLowerCase(data: any) {
-    let mapData = data.map((da) => {
+    let mapData = data.map((da: any) => {
       da['name'] = da['name'].toLowerCase();
       return da;
     });
     return mapData;
+  }
+
+  searchClient() {
+    this.spinner_Service.show('client_details_view');
+    let clientTyped = this.clientForm.get('client').value || '';
+    console.log(clientTyped);
+
+    let details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
+    if(details){
+      details['client_code'] = clientTyped['id'];
+      this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, details);
+    }
+
+    this.patchClientDetailsToForm(clientTyped)
+    
+    if (clientTyped?.length > 0) {
+      this.crm_client_service
+        .searchClients(0, 5, clientTyped)
+        .pipe(
+          finalize(() => {
+            this.spinner_Service.hide('client_details_view');
+          })
+        )
+        .subscribe((data: Pagination<ClientDTO>) => {
+          this.clientList = data.content.map((client: any) => {
+            client['full_name'] = `${client.firstName} ${
+              client.lastName ? client.lastName : ''
+            }`;
+            client['details'] = `${client.firstName} ${
+              client.lastName ? client.lastName : ''
+            } - ${client?.emailAddress ? client?.emailAddress : ''}`;
+            return client;
+          });
+          this.spinner_Service.hide('search_view');
+        });
+    } else {
+      this.getClientList();
+      this.spinner_Service.hide('client_details_view');
+    }
+  }
+
+  selectClientState() {
+    let c_state = this.clientForm.get('clientTypeId').value;
   }
 }

@@ -1,0 +1,7 @@
+.accordion-flush .accordion-item .accordion-button, .accordion-flush .accordion-item .accordion-button.collapsed {
+    border-radius: 0;
+    border-bottom: 1px black solid;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px;
+}
