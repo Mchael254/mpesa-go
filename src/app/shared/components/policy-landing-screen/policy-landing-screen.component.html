@@ -1,0 +1,109 @@
+<p-tabView>
+    <p-tabPanel header="Life IND" [selected]="true">
+      <div>
+        <div>
+          <div>
+            <div class="row">
+              <div class="col-7">
+                <div>
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="input-group mb-3" style="font-size: 15px">
+                        <span class="input-group-text" id="basic-addon1">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input
+                          style="font-size: 12px !important"
+                          type="text"
+                          class="form-control"
+                          placeholder="Search by client's name or quotation no"
+                          aria-label="Username"
+                          aria-describedby="basic-addon1"
+                        />
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="input-group mb-3">
+                        <label
+                          class="input-group-text"
+                          for="inputGroupSelect01"
+                          style="font-size: 11px !important"
+                          >Sort by:</label
+                        >
+                        <select class="form-select" id="inputGroupSelect01">
+                          <option selected style="font-size: 11px !important">
+                            Status
+                          </option>
+                          <option></option>
+                          <option value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="col-5">
+                <div class="d-flex justify-content-end">
+                  <!-- <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/lms/ind/quotation/quick'">Quick Quotation</button>
+                  <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary"> Normal Quotation </button> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Quotation No.</th>
+                  <th>Client Name</th>
+                  <th>Sum Assured</th>
+                  <th>Premium</th>
+                  <th>Intermediary</th>
+                  <th>Date Created</th>
+                  <th>Cover From</th>
+                  <th>Cover To</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="LMS_IND.length > 0">
+                <tr *ngFor="let lms of LMS_IND">
+                  <td>{{ lms?.quote_no || "" }}</td>
+                  <td>{{ lms?.quote_no || "" }}</td>
+                  <td>{{ lms?.sum_insured || "" | number }}</td>
+                  <td>{{ lms?.premium || 0 | number }}</td>
+                  <td>{{ lms?.quote_no || "" }}</td>
+                  <td>{{ lms?.created_at || "" }}</td>
+                  <td>{{ lms?.quote_no || "" }}</td>
+                  <td>{{ lms?.quote_no || "" }}</td>
+                  <td>{{ lms?.quote_status || "" }}</td>
+                  <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td>
+                </tr>
+              </tbody>
+            </table>
+  
+            <div
+              *ngIf="LMS_IND.length === 0"
+              class="text-danger d-flex justify-content-center"
+            >
+              No List of Policy Available
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+    <p-tabPanel header="Life Group">
+      <p>Life Group</p>
+    </p-tabPanel>
+    <p-tabPanel header="General">
+      <p>General</p>
+    </p-tabPanel>
+    <p-tabPanel header="Pension">
+      <p>Pension</p>
+    </p-tabPanel>
+  </p-tabView>

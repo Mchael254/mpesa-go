@@ -1,1 +1,462 @@
-<p>quota-share-summary works!</p>
+<div class="container">
+    <div class="main">
+        <div style="text-align: center; padding-bottom: 30px;">
+            <span class="reisnurance-summary">Reinsurance summary</span>
+        </div>
+
+        <div><span class="reisnurance-summary">Reinsurance scheme tools</span></div>
+
+        <div class="row col-12">
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"><span class="tool-title">Retained</span>
+                <table>
+                    <tr>
+                        <td class="td-label">Sum assured</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Gross premium</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Commission</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Net premium</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12"><span class="tool-title">Surplus treaty</span>
+                <table>
+                    <tr>
+                        <td class="td-label">Sum assured</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Gross premium</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Commission</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-label">Net premium</td>
+                        <td class="td-desc">{{data}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="padding-top: 48px;">
+            <span class="reisnurance-summary">Members above retention limit</span>
+        </div>
+
+        <div class="form">
+            <i class="fa fa-search"></i>
+            <input type="text" class="form-control form-input" placeholder="Search">
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
+            </p-multiSelect>
+        </div>
+        <div style="margin-top: 4px;">
+
+            <p-table [value]="dummyData" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped"
+                [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[5, 10, 20]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Member</th>
+                        <th>Member number</th>
+                        <th>Sum assured</th>
+                        <th>Premium</th>
+                        <th>Treaty sum assured</th>
+                        <th>Treaty commission</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-dummyData>
+                    <tr>
+                        <td>{{ dummyData.cvt_desc | titlecase }}
+                        </td>
+                        <td>{{ dummyData.dty_descriptiontitlecase }}</td>
+                        <td>{{dummyData.use_cvr_rate }}</td>
+                        <td>{{dummyData.premium_mask_short_description }}</td>
+                        <td>{{ dummyData.premium_rate }} </td>
+                        <td>{{ dummyData.rate_division_factor |
+                            number }}</td>
+                        <td style="text-align: right;">
+                            <div class="ellipsis-container">
+                                <span class="pi pi-ellipsis-v"></span>
+                                <button class="details-button" (click)="showMemberDetailedSummary()"><span
+                                        class="view-dets-text">View Details</span></button>
+                            </div>
+                        </td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </div>
+
+        <div class="accordion col-12 accordion-style" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <span class="accordion-header">Quota share participants</span>
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row col-12">
+                            <div class="col-2 reinsurance-desc" style="padding-top: 70px;">
+                                <span class="reinsurance-text">Kenya Reinsurance</span>
+                            </div>
+                            <div class="col-10">
+                                <p-table [value]="yourDataArray">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th class="empty-column"></th>
+                                            <th>Total sum assured</th>
+                                            <th>Gross premium</th>
+                                            <th>Commission</th>
+                                            <th>Net premium</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                                        <tr>
+                                            <td class="horizontal-border reinsurance-text" style="text-align: left;">
+                                                {{rowData.coverType}}</td>
+                                            <td class="horizontal-border reinsurance-data">{{rowData.totalSumAssured | number}}
+                                            </td>
+                                            <td class="horizontal-border reinsurance-data">{{rowData.grossPremium | number}}</td>
+                                            <td class="horizontal-border reinsurance-data">{{rowData.commission | number}}</td>
+                                            <td class="horizontal-border reinsurance-data">{{rowData.netPremium | number}}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+
+                            </div>
+                        </div>
+
+
+                        <div style="padding-top: 50px;">
+                            <div class="row col-12">
+                                <div class="col-2 reinsurance-desc" style="padding-top: 70px;">
+                                    <span class="reinsurance-text">Africa Reinsurance</span>
+                                </div>
+                                <div class="col-10">
+                                    <p-table [value]="yourDataArray">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th class="empty-column"></th>
+                                                <th>Total sum assured</th>
+                                                <th>Gross premium</th>
+                                                <th>Commission</th>
+                                                <th>Net premium</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                                            <tr>
+                                                <td class="horizontal-border reinsurance-text"
+                                                    style="text-align: left;">{{rowData.coverType}}</td>
+                                                <td class="horizontal-border reinsurance-data">
+                                                    {{rowData.totalSumAssured  | number}}</td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.grossPremium | number}}
+                                                </td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.commission | number}}
+                                                </td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.netPremium | number}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="padding-top: 50px;">
+                            <div class="row col-12">
+                                <div class="col-2 reinsurance-desc" style="padding-top: 70px;">
+                                    <span class="reinsurance-text">Continental Reinsurance</span>
+                                </div>
+                                <div class="col-10">
+                                    <p-table [value]="yourDataArray">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th class="empty-column"></th>
+                                                <th>Total sum assured</th>
+                                                <th>Gross premium</th>
+                                                <th>Commission</th>
+                                                <th>Net premium</th>
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                                            <tr>
+                                                <td class="horizontal-border reinsurance-text"
+                                                    style="text-align: left;">{{rowData.coverType}}</td>
+                                                <td class="horizontal-border reinsurance-data">
+                                                    {{rowData.totalSumAssured  | number}}</td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.grossPremium | number}}
+                                                </td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.commission | number}}
+                                                </td>
+                                                <td class="horizontal-border reinsurance-data">{{rowData.netPremium | number}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <span class="accordion-header">Totals</span>
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="row col-12">
+                            <div class="col-lg-2 col-md-2 col-sm-0 col-xs-0">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"><span class="tool-title">Kenya
+                                    reinsurance</span>
+                                <table>
+                                    <tr>
+                                        <td class="td-label">Percentage</td>
+                                        <td class="td-desc">{{data}}%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total premiums</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Commission</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Net premium</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total sum assured</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12"><span class="tool-title">Africa
+                                    reinsurance</span>
+                                <table>
+                                    <tr>
+                                        <td class="td-label">Percentage</td>
+                                        <td class="td-desc">{{data}}%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total premiums</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Commission</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Net premium</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="td-label">Total sum assured</td>
+                                        <td class="td-desc">{{data}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div style="display: flex; justify-content: space-between;
+padding-top: 12px; padding-right: 35px; padding-left: 35px;">
+    <button class="back-button" (click)="back()">
+        <span class="back-text">
+            Back
+        </span>
+    </button>
+
+
+    <button class="finish-button" (click)="finish()">
+        <span class="finish-text">
+            Finish
+        </span>
+    </button>
+</div>
+
+<!-- modals  -->
+<!-- member detailed summary modal  -->
+<div class="modal fade" tabindex="-1" #memberDetailedSummary id="memberDetailedSummary"
+    aria-labelledby="memberDetailedSummary" aria-hidden="true" style="color: #333;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title member-title" id="memberDetailedSummary">Member detailed summary</span>
+                <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeMemberDetailedSummary()"></button>
+            </div>
+            <div class="modal-body custom-modal-body">
+
+                <div style="padding-top: 8px;">
+                    <div><span class="table-desc">Cover type A</span></div>
+                    <div class="row col-12" style="padding-top: 16px;">
+                        <div class="col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="td-label">Total sum assured</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained sum assured</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Total premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="td-label">Facultative premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus commission</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative commission</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="padding-top: 41px;"><span class="table-desc">Cover type B</span></div>
+                    <div class="row col-12" style="padding-top: 16px;">
+                        <div class="col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="td-label">Total sum assured</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained sum assured</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Total premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table>
+                                <tr>
+                                    <td class="td-label">Facultative premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus commission</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative commission</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Retained premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Surplus premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="td-label">Facultative premium</td>
+                                    <td class="td-desc">{{data}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <!-- <div class="modal-footer">
+                </div> -->
+        </div>
+    </div>
+</div>
+<!-- member detailed summary modal  -->
+<!-- modals -->

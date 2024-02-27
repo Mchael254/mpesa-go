@@ -1,12 +1,54 @@
 <div class="container">  
-    <div class="container">
+    <!-- <div class="container">
       <app-stepper></app-stepper>
-      </div>
+      </div> -->
+      <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+        </div>
   <div id="container">
-    <div class="client-details">Select Client</div>
+    <!-- <form [formGroup]="shareSummaryForm" class="black-text-form">
+        <div class="row">
+          <div class="col">
+            <div class="custom-radio-button-container">
+              <p-radioButton formControlName="communicationType" value="email" inputId="email"
+                class="custom-radio-button"></p-radioButton>
+              <label for="existingClient" class="custom-label">Existing client</label>
+            </div>
+          </div>
+      
+          <div class="col">
+            <div class="">
+              <p-radioButton formControlName="communicationType" value="sms"
+                inputId="sms"></p-radioButton>
+              <label for="newClient" class="custom-label">New client</label>
+            </div>
+          </div>
+        </div>
+      </form> -->
+      
+    <div><span class="client-details">Client</span></div>
     <form class="form" [formGroup]="quickForm">
+      <div class="row">
+        <div class="col">
+          <div class="custom-radio-button-container">
+            <p-radioButton formControlName="communicationType" value="existing" inputId="email"
+              class="custom-radio-button"></p-radioButton>
+            <label for="existingClient" class="custom-label">Existing client</label>
+          </div>
+        </div>
+    
+        <div class="col">
+          <div class="">
+            <p-radioButton formControlName="communicationType" value="new"
+              inputId="sms"></p-radioButton>
+            <label for="newClient" class="custom-label">New client</label>
+          </div>
+        </div>
+      </div>
     <div class="row col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12" id="#">
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+        <div *ngIf="quickForm.get('communicationType').value === 'existing'"
+         class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Client</label></div>
             <div>
                 <p-dropdown id='value'
@@ -21,20 +63,41 @@
                 </p-dropdown>
             </div>
         </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Branch</label></div>
-            <div>
-                <p-dropdown id='branch'
-                            [options]='branch'
-                            [optionLabel]="'name'"
-                            [dataKey]="'id'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
-                            placeholder="Select a Branch"
-                            formControlName='branch' 
-                            class="select">
-                </p-dropdown>
+        <ng-container *ngIf="quickForm.get('communicationType').value === 'new'">
+          <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="label"><label>Name</label></div>
+            <div class="form-group mx-2">
+                <input type="text"
+                           pInputText
+                           class="form-control"
+                            id='commissionRate'
+                            [style]="{ width: '85%', height: '38px' }"
+                            formControlName='commissionRate'
+                           >
             </div>
         </div>
+        <div class="col-lg-4 col-md-4 col-sm-12">
+          <div class="label"><label>Status</label></div>
+          <select class="form-select" [id]="'aggregateCoverType'" formControlName="aggregateCoverType"
+          [style]="{ width: '80%', height: '38px' }">
+              <ng-container *ngFor="let cover">
+                  <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+              </ng-container>
+          </select>
+      </div>
+        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+          <div class="label"><label>Email</label></div>
+          <div class="form-group mx-2">
+              <input type="text"
+                         pInputText
+                         class="form-control"
+                          id='commissionRate'
+                          [style]="{ width: '85%', height: '38px' }"
+                          formControlName='commissionRate'
+                         >
+          </div>
+      </div>
+        </ng-container>
     </div>
     <div class="product-details" style="padding-top: 50px;">Product details</div>
     <div class="row col-12" > 
@@ -199,6 +262,20 @@
               </p-dropdown>
           </div>
       </div>
+      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+        <div class="label"><label>Branch</label></div>
+        <div>
+            <p-dropdown id='branch'
+                        [options]='branch'
+                        [optionLabel]="'name'"
+                        [dataKey]="'id'"
+                        [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                        placeholder="Select a Branch"
+                        formControlName='branch' 
+                        class="select">
+            </p-dropdown>
+        </div>
+    </div>
       <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
           <div class="label"><label>Commission Rate</label></div>
           <div class="form-group mx-2">

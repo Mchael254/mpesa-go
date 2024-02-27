@@ -131,21 +131,20 @@
               </tr>
               </thead>
               <tbody>
-              <tr>
-                <td>Data 1</td>
-                <td> <div class="d-flex justify-content-between"> 
-                  <div> 3 Months</div>
-                  <div class = "dropdown-toggle"
+              <tr *ngFor="let test of clientMedicalTestList?.medical_tests">
+                <td>{{test['description'] | titlecase }}</td>
+                <td> 
+                  <div class="d-flex justify-content-between"> 
+                  <div> {{test['validity_period'] }} Month(s)</div>
+                  <div class = "dropdown-toggle "
+                  
                   data-bs-toggle="dropdown"
                   aria-expanded="false">
-                    <div>
+                    <div >
                       <i class="fa-solid fa-ellipsis-vertical"></i>
-                      <ul class="dropdown-menu">
+                      <ul class="dropdown-menu" style="border: 1px solid rgba(35, 62, 240, 0.59);">
                         <li>
-                          <a class="dropdown-item">Edit</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item">Delete</a>
+                          <a class="dropdown-item" (click)="deleteMedicalTest(test)">Delete</a>
                         </li>
                       </ul>
                     </div>
@@ -154,55 +153,49 @@
                </div> </td>
               </tr>
 
-              <tr>
-                <td>Data 1</td>
-                <td> <div class="d-flex justify-content-between"> 
-                  <div> 3 Months</div>
-                  <div class = "dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                    <div>
-                      <i class="fa-solid fa-ellipsis-vertical"></i>
-                      <ul class="dropdown-menu">
-                        <li>
-                          <a class="dropdown-item">Edit</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item">Delete</a>
-                        </li>
-                      </ul>
-                    </div>
+              <tr *ngIf="!isTestFormSelected" >
+                <td colspan="2">
+                  <div (click)="selectTestForm()" class="py-0 text-primary fw-medium" style="cursor: pointer;">Add Additional Test</div>
+
+                </td>
+              </tr>
+              <tr *ngIf="isTestFormSelected" >
+
+                <td colspan="2" >
+                    <div class="row">
+
+                      <!-- Dropdown -->
+                      <div class=" col-md-12">
+                        <select
+                          class="form-select"
+                          [id]="'exampleDropdown'"
+                          (change)="saveTestForm($event)"                          
+                        >
+                          <option value="" disabled selected></option>
+            
+                          <ng-container *ngFor="let med of medicalTestList">
+                            <option  [value]="med?.code">
+                              {{ med?.desc | titlecase }}
+                            </option>
+                          </ng-container>
+                        </select>
+                      </div>
+                      <!-- <div class="col-md-3 justify-content-end">
+                        <button (click)="selectTestForm(false)" type="submit" class="btn btn-primary">Save</button>
+                        </div> -->
 
                   </div>
-               </div> </td>
+            
+                    <!-- Submit button -->
+                    <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                </td>
               </tr>
-
-              <tr>
-                <td>Data 1</td>
-                <td> <div class="d-flex justify-content-between"> 
-                  <div> 3 Months</div>
-                  <div class = "dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                    <div>
-                      <i class="fa-solid fa-ellipsis-vertical"></i>
-                      <ul class="dropdown-menu">
-                        <li>
-                          <a class="dropdown-item">Edit</a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item">Delete</a>
-                        </li>
-                      </ul>
+              <tr *ngIf="isTestFormSelected">
+                <!-- <td colspan="2">
+                    <div class="d-flex justify-content-end">
+                    <button (click)="selectTestForm(false)" type="submit" class="btn btn-primary">Save Test</button>
                     </div>
-
-                  </div>
-               </div> </td>
-              </tr>
-
-              <tr>
-                <div class="py-0 text-primary fw-medium" style="cursor: pointer;">Add Test</div>
-
+                </td> -->
               </tr>
               </tbody>
             </table>

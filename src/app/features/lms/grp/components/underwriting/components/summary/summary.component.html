@@ -1,8 +1,13 @@
 <div class="main">
+    <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
     <div class="container">
         <div style="padding-top: 20px; text-align: center;"><span class="summary-text">Policy details</span></div>
         <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4 col-xs-12 col-sm-12">
                 <table style="width: 100%;">
                     <tr>
                         <td style=" align-items: left; color: grey;">Product number: </td>
@@ -22,7 +27,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4 col-xs-12 col-sm-12">
                 <table style="width: 100%;">
                     <tr>
                         <td style=" align-items: left; color: grey;">Client name: </td>
@@ -42,7 +47,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4 col-xs-12 col-sm-12">
                 <table style="width: 100%;">
                     <tr>
                         <td style=" align-items: left; color: grey;">Policy status: </td>
@@ -108,10 +113,10 @@
             </div>
         </div>
         <div class="row col-12 mt-3" style="padding-left: 25px;">
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12 col-xs-12">
                 <div>Member details</div>
-                <div class="box-shadow">
-                    <div>
+                <div class="row box-shadow col-sm-12 col-xs-12">
+                    <div class="col-sm-12 col-xs-12">
                         <table style="width: 100%; margin-left: 10px;">
                             <tr>
                                 <td style=" align-items: left; color: grey;">Members: </td>
@@ -146,9 +151,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12 col-xs-12">
                 <div>Cover types</div>
-                <div class="box-shadow">
+                <div class="row box-shadow">
                     <div>
                         <div>
                             <span class="style-text" style="margin-left: 10px; padding-top: 10px;">Cover type1</span>
@@ -186,9 +191,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12 col-xs-12">
                 <div>Accounts</div>
-                <div class="box-shadow">
+                <div class="row box-shadow">
                     <div>
                         <span class="style-text" style="margin-left: 10px;">Premium</span>
                         <table style="width: 100%; margin-left: 10px;">
@@ -595,11 +600,12 @@
         <!-- modals end -->
 
     </div>
-    <div>
-        <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
-        </button>
-
-        <div class="d-flex justify-content-end">
+    <div class="row class-buttons">
+            <!-- <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
+            </button> -->
+        <div class="flex-container">
+            <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
+            </button>
             <div class="share-button-container">
                 <button class="bottom-button-share" (click)="showShareSummaryModal()">
                     <span class="text-share">Share</span>

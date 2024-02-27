@@ -1,0 +1,576 @@
+<div class="container">
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
+
+      <div id="container">
+        <div>
+        <h5>Client details</h5>
+
+        <form [formGroup]="clientDetailsForm">
+            <div class="col-md-4">
+                <div class="form-group" style="color: black;">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <input type="radio" id="newClient" name="clientType" formControlName="clientType" value="new" style="color: black;">
+                            <label for="newClient" style="color: black;">New Client</label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="radio" id="existingClient" name="clientType" formControlName="clientType" value="existing" style="color: black;">
+                            <label for="existingClient" style="color: black;">Existing Client</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="clientName" style="color: black;">Client name<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="clientName" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="clientName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="status" style="color: black;">Status<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'status'" formControlName="status">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="type" style="color: black;">Type<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'type'" formControlName="type">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="incorporationDate" style="color: black;">Incorporation date<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="date"
+                                    pInputText
+                                    class="form-control"
+                                    id="incorporationDate" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="incorporationDate">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="registrationNumber" style="color: black;">Registration number<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="registrationNumber" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="registrationNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="occupation" style="color: black;">Occupation<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="occupation" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="occupation">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="pinNumber" style="color: black;">Pin number</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="pinNumber" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="pinNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5>Contact information</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="phoneNumber" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="phoneNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="email" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="email">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="address" style="color: black;">Physical address<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input 
+                                    type="text"
+                                    pInputText
+                                    class="form-control"
+                                    id="address" 
+                                    [style]="{ width: '100%' }"
+                                    formControlName="address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="country" style="color: black;">Country<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'country'" formControlName="country">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="county" style="color: black;">County/State<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'county'" formControlName="county">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="city" style="color: black;">City/Town<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'city'" formControlName="city">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <h5>Other details</h5>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="affiliatedToInsurer" style="color: black;">Affiliated to the insurer</label>
+                        <select class="form-select" [id]="'affiliatedToInsurer'" formControlName="affiliatedToInsurer">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="representation" style="color: black;">Representation<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'representation'" formControlName="representation">
+                            <ng-container *ngFor="let cover of ">
+                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                            </ng-container>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+
+
+      </div>
+</div>
+
+<div style="margin-top: 20px;">
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Administrators
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <div class="multiselect-add">
+                    <button class="btn btn-success rounded-circle" (click)="showAdminDetailsModal()">&plus;</button>
+                    <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
+                    </p-multiSelect>
+                  </div>
+                <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Name</th>
+                            <th>Date of birth</th>
+                            <th>ID number</th>
+                            <th>Position</th>
+                            <th>Physical address</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>With effect from</th>
+                            <th>With effect to</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td id="table-align">{{ item.name }}</td>
+                                <td id="table-align">{{ item.dob }}</td>
+                                <td id="table-align">{{ item.idNumber }}</td>
+                                <td id="table-align">{{ item.position }}</td>
+                                <td id="table-align">{{ item.address }}</td>
+                                <td id="table-align">{{ item.contact }}</td>
+                                <td id="table-align">{{ item.email }}</td>
+                                <td id="table-align">{{ item.fromDate }}</td>
+                                <td id="table-align">{{ item.toDate }}</td>
+                            </tr>
+                    </ng-template>
+                </p-table>
+                
+            </div>
+          </div>
+        </div>
+      </div>
+        
+</div>
+<div style="display: flex; justify-content: end; padding-top: 12px;">
+    <button class="finish-button">
+        <span class="finish-text">
+            Continue
+        </span>
+    </button>
+</div>
+</div>
+
+<!-- modals begin -->
+<!-- modal to capture administrator details -->
+<div class="modal fade" tabindex="-1" #adminDetailsModal id="adminDetailsModal" aria-labelledby="adminDetailsModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminDetailsModal">Capture administrator details</h5>
+        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+        (click)="closeAdminDetailsModal()"></button>
+      </div>
+      <div class="modal-body">
+      <form [formGroup]="adminDetailsForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="name" style="color: black;">Name<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="name" 
+                                [style]="{ width: '100%' }"
+                                formControlName="name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="position" style="color: black;">Position<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="position" 
+                                [style]="{ width: '100%' }"
+                                formControlName="position">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="gender" style="color: black;">Gender<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'gender'" formControlName="gender">
+                        <ng-container *ngFor="let cover of ">
+                            <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="dob" style="color: black;">Date of birth<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="date"
+                                pInputText
+                                class="form-control"
+                                id="dob" 
+                                [style]="{ width: '100%' }"
+                                formControlName="dob">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="identificationType" style="color: black;">Identification type<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="identificationType" 
+                                [style]="{ width: '100%' }"
+                                formControlName="identificationType">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="IdentificationNumber" style="color: black;">Identification number<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="IdentificationNumber" 
+                                [style]="{ width: '100%' }"
+                                formControlName="IdentificationNumber">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="address" style="color: black;">Physical address</label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="address" 
+                                [style]="{ width: '100%' }"
+                                formControlName="address">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="phoneNumber" style="color: black;">Phone number<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="phoneNumber" 
+                                [style]="{ width: '100%' }"
+                                formControlName="phoneNumber">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="email" style="color: black;">Email<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="email" 
+                                [style]="{ width: '100%' }"
+                                formControlName="email">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="wef" style="color: black;">With effect from<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="date"
+                                pInputText
+                                class="form-control"
+                                id="wef" 
+                                [style]="{ width: '100%' }"
+                                formControlName="wef">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="wet" style="color: black;">With effect to</label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="date"
+                                pInputText
+                                class="form-control"
+                                id="wet" 
+                                [style]="{ width: '100%' }"
+                                formControlName="wet">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end of modal to capture administrator details -->
+<!-- modals end -->
+

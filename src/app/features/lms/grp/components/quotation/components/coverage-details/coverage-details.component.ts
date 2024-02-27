@@ -11,6 +11,7 @@ import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
+import stepData from '../../data/steps.json';
 
 
 @AutoUnsubscribe
@@ -34,7 +35,7 @@ categoryDetails: CategoryDetailsDto[] = [];
 categoryCode: number;
 coverTypeCode: number;
 coverTypeUniqueCode: number;
-coverTypeCodeToEdit: number
+coverTypeCodeToEdit: number;
 loadingDiscount: string;
 coverTypes: CoverTypesDto[];
 isEditMode: boolean = false;
@@ -45,7 +46,7 @@ membersDetails: MembersDTO[];
 memberCode: number;
 premiumMask: PremiumMaskDTO[];
 selectedRateType: string;
-productCode: number
+productCode: number;
 productType: string;
 showStateSpinner: boolean;
 showTownSpinner: boolean;
@@ -56,6 +57,7 @@ columnOptionsCvt: SelectItem[];
 selectedColumnsMembers: string[];
 selectedColumnsAggregateCvt: string[];
 uploadProgress: number = 0;
+steps = stepData;
 
   constructor (
     private fb: FormBuilder,
@@ -206,7 +208,7 @@ detailedCoverDetails(){
       rateDivFactor: [""],
       averageAnb: [""],
       sumAssured: [""],
-  
+      multiplesOfEarnings: [""]
     });
   }
   
@@ -376,54 +378,49 @@ memberDetsForm() {
     }
   }
 
-  // handleFileChange(event) {
-  //   this.spinner_Service.show('download_view');
-  //   const selectedFile = event.target.files[0];
-  //   const formData = new FormData();
-  //   formData.append('file', selectedFile)
-  //   this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe((res) => {
-  //     this.spinner_Service.hide('download_view');
-  //     this.messageService.add({severity: 'success', summary: 'summary', detail: 'Template uploaded successfully'});
-  //     this.getMembers();
-  //     console.log('uploadTemplateResponse', res)
-  //   },
-  //   (error) => {
-  //     console.log('uploadTemplateError', error)
-  //     this.spinner_Service.hide('download_view');
-  //   });
-  // }
+handleFileChange(event) {
+  const selectedFile = event.target.files[0];
+  const formData = new FormData();
+  formData.append('file', selectedFile);
 
-  handleFileChange(event) {
-    const selectedFile = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', selectedFile);
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 100) {
+      progress += 1;
+      this.uploadProgress = progress;
+    }
+  }, 1000);
 
-    
-    let progress = 0;
-    const interval = setInterval(() => {
-        if (progress < 100) {
-            progress += 1;
-            this.uploadProgress = progress;
+  this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData)
+    .subscribe(
+      (res) => {
+        clearInterval(interval);
+        this.uploadProgress = 100;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Template uploaded successfully'
+        });
+        this.getMembers();
+        console.log('uploadTemplateResponse', res);
+      },
+      (error) => {
+        clearInterval(interval);
+        console.error('uploadTemplateError', error);
+        if (error.status === 400) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'An error occurred while uploading the template.'
+          });
         }
-    }, 1000);
-
-    this.coverageService.uploadMemberTemplate(this.productCode, this.quotationCode, formData).subscribe(
-        (res) => {
-            clearInterval(interval);
-            this.uploadProgress = 100;
-            this.spinner_Service.hide('download_view');
-            this.messageService.add({
-                severity: 'success',
-                summary: 'summary',
-                detail: 'Template uploaded successfully'
-            });
-            this.getMembers();
-            console.log('uploadTemplateResponse', res);
-        },
-        (error) => {
-            clearInterval(interval);
-            console.log('uploadTemplateError', error);
-        }
+      }
     );
 }
 
@@ -489,27 +486,28 @@ memberDetsForm() {
       const memberDetailsFormValues = this.memberDetailsForm.value;
       console.log("memberDetailsFormValues", memberDetailsFormValues);
       const memberDetails = {
-        "member_number": memberDetailsFormValues.mainMemberNumber,
-        "surname": memberDetailsFormValues.surname,
-        "other_names": memberDetailsFormValues.otherNames,
-        "sex": memberDetailsFormValues.gender,
-        "schedule_join_date": "2023-11-20",
-        "category": 'default',
-        "date_of_birth": formatDate(memberDetailsFormValues.dateOfBirth, 'yyyy-MM-dd', 'en-US'),
-        "sacco_join_date": formatDate(memberDetailsFormValues.joiningDate, 'yyyy-MM-dd', 'en-US'),
-        "group_occupation_code": memberDetailsFormValues.occupation,
-        "product_code": this.productCode,
-        "effective_date": "2023-11-20",
-        "proposer_code": 20211410718,
-        "dependent_type_code": 1000,
-        "dependent_type_short_desc": "SELF",
-        "proposer_short_desc": "string",
-        "gender": memberDetailsFormValues.gender,
-        "category_unique_code": 20233193,
-        "period": 4,
-        "multiple_earnings_period": 4,
-        "average_earnings_per_member": 30000,
-        "monthly_earnings": memberDetailsFormValues.monthlyEarning,
+        member_number: memberDetailsFormValues.mainMemberNumber,
+        surname: memberDetailsFormValues.surname,
+        other_names: memberDetailsFormValues.otherNames,
+        sex: memberDetailsFormValues.gender,
+        schedule_join_date: "2023-11-20",
+        category: 'default',
+        date_of_birth: formatDate(memberDetailsFormValues.dateOfBirth, 'yyyy-MM-dd', 'en-US'),
+        sacco_join_date: formatDate(memberDetailsFormValues.joiningDate, 'yyyy-MM-dd', 'en-US'),
+        group_occupation_code: memberDetailsFormValues.occupation,
+        product_code: this.productCode,
+        effective_date: "2023-11-20",
+        proposer_code: 20211410718,
+        dependent_type_code: 1000,
+        dependent_type_short_desc: "SELF",
+        proposer_short_desc: "string",
+        gender: memberDetailsFormValues.gender,
+        category_unique_code: 20233193,
+        period: 4,
+        multiple_earnings_period: 4,
+        average_earnings_per_member: 30000,
+        monthly_earnings: memberDetailsFormValues.monthlyEarning,
+
       }
       this.spinner_Service.show('download_view');
       console.log("memberDetails", memberDetails)
@@ -602,38 +600,29 @@ memberDetsForm() {
     console.log("categoryDetailFormData", categoryDetailFormData)
    
     const mappedCatDetails = {
-      // "category_category": categoryDetailFormData.description,
-      // "short_description": categoryDetailFormData.shortDescription,
-      // "premium_mask_code":categoryDetailFormData.premiumMask,
-      // "premium_mask_desc": "TEST",
-      // "period": categoryDetailFormData.multiplesOfEarnings,
-      // "quotation_code": this.quotationCode
+      short_description: categoryDetailFormData.shortDescription,
+      category_category: categoryDetailFormData.description,
+      period: categoryDetailFormData.multiplesOfEarnings,
+      quotation_code: this.quotationCode,
+      pmas_sht_desc: categoryDetailFormData.premiumMask,
+      school_code: 0,
+      premium_mask_code: categoryDetailFormData.premiumMask,
+      previous_category_code: 0,
+      use_cvr_rate: "string",
+      rate: 0,
+      category_rate_division_factor: 0,
+      average_earnings_per_member: 0,
+      average_anb: 0,
+      sum_assured_per_member: 0,
+      multiple_earnings_period: 4,
+      total_member_earnings: 0,
+      total_original_loan_amount: 0,
+      total_members: 0,
+      base_sum_assured: 0,
+      base_premium: 0,
+      fee_amount: 0,
+      total_students: 0,
 
-        // "category_unique_code": 0,
-        "short_description": categoryDetailFormData.shortDescription,
-        "category_category": categoryDetailFormData.description,
-        "period": categoryDetailFormData.multiplesOfEarnings,
-        "quotation_code": this.quotationCode,
-        "pmas_sht_desc": categoryDetailFormData.premiumMask,
-        "school_code": 0,
-        "premium_mask_code": categoryDetailFormData.premiumMask,
-        "previous_category_code": 0,
-        "use_cvr_rate": "string",
-        "rate": 0,
-        "category_rate_division_factor": 0,
-        "average_earnings_per_member": 0,
-        "average_anb": 0,
-        "sum_assured_per_member": 0,
-        "multiple_earnings_period": 4,
-        "total_member_earnings": 0,
-        "total_original_loan_amount": 0,
-        "total_members": 0,
-        // "sum_assured": 0,
-        // "premium": 0,
-        "base_sum_assured": 0,
-        "base_premium": 0,
-        "fee_amount": 0,
-        "total_students": 0
     };
     console.log("categoryDetailFormData", mappedCatDetails)
     if(this.categoryDetailForm.valid) {
@@ -669,50 +658,37 @@ memberDetsForm() {
       this.spinner_Service.show('download_view');
     
     console.log("categoryDetailFormData", categoryDetailFormData);
-    const mappedCatDetails = {
-      // "category_category": categoryDetailFormData.description,
-      // "short_description": categoryDetailFormData.shortDescription,
-      // "pmas_sht_desc": categoryDetailFormData.premiumMask.pmas_sht_desc,
-      // "period": categoryDetailFormData.multiplesOfEarnings,
-      // "quotation_code": this.quotationCode,
-      // "category_unique_code": this.categoryCode,
-      // "premium_mask_code": categoryDetailFormData.premiumMask,
-      "short_description": categoryDetailFormData.shortDescription,
-        "category_category": categoryDetailFormData.description,
-        "period": categoryDetailFormData.multiplesOfEarnings,
-        "quotation_code": this.quotationCode,
-        "pmas_sht_desc": categoryDetailFormData.premiumMask,
-        "school_code": 0,
-        "premium_mask_code": categoryDetailFormData.premiumMask,
-        "previous_category_code": 0,
-        "use_cvr_rate": "string",
-        "rate": 0,
-        "category_rate_division_factor": 0,
-        "average_earnings_per_member": 0,
-        "average_anb": 0,
-        "sum_assured_per_member": 0,
-        "multiple_earnings_period": 1,
-        "total_member_earnings": 0,
-        "total_original_loan_amount": 0,
-        "total_members": 0,
-        "sum_assured": 0,
-        "premium": 0,
-        "base_sum_assured": 0,
-        "base_premium": 0,
-        "fee_amount": 0,
-        "total_students": 0
-    };
+      const mappedCatDetails = {
+        short_description: categoryDetailFormData.shortDescription,
+        category_category: categoryDetailFormData.description,
+        period: categoryDetailFormData.multiplesOfEarnings,
+        quotation_code: this.quotationCode,
+        pmas_sht_desc: categoryDetailFormData.premiumMask,
+        school_code: 0,
+        premium_mask_code: categoryDetailFormData.premiumMask,
+        previous_category_code: 0,
+        use_cvr_rate: "string",
+        rate: 0,
+        category_rate_division_factor: 0,
+        average_earnings_per_member: 0,
+        average_anb: 0,
+        sum_assured_per_member: 0,
+        multiple_earnings_period: 1,
+        total_member_earnings: 0,
+        total_original_loan_amount: 0,
+        total_members: 0,
+        sum_assured: 0,
+        premium: 0,
+        base_sum_assured: 0,
+        base_premium: 0,
+        fee_amount: 0,
+        total_students: 0,
+
+      };
     this.coverageService
       .updateCategoryDetails(this.categoryCode, mappedCatDetails)
       .subscribe(
         (updatedCategory: CategoryDetailsDto) => {
-          // const index = this.categoryDetails.findIndex(
-          //   (c) => c.category_unique_code === this.categoryCode
-          // );
-  
-          // if (index !== -1) {
-          //   this.categoryDetails[index] = updatedCategory;
-          // }
           this.getCategoryDets();
           this.spinner_Service.hide('download_view');
           this.messageService.add({severity: 'success', summary: 'summary', detail: 'Edited'});
@@ -807,21 +783,21 @@ memberDetsForm() {
       const cover = this.detailedCovDetsForm.value
     const coverRaw = this.detailedCovDetsForm.getRawValue();
     console.log("cover",cover, coverRaw)
-    const coverToPost = {
-      "cvt_desc": cover.detailedCoverType,
-      // "cover_type_unique_code": this.coverTypeUniqueCode,
-      "cover_type_code": this.coverTypeCode,
-      "dty_description": cover.premiumMask,
-      "main_sumassured_percentage": cover.detailedPercentageMainYr,
-      "premium_mask_short_description": cover.premiumMask,
-      "use_cvr_rate": this.detailedCovDetsForm.get('selectRate').value,
-      "premium_rate": cover.rate,
-      "rate_division_factor": cover.rateDivFactor,
-      "product_code": this.productCode,
-      "quotation_code": this.quotationCode,
-      "loading_discount": "N",
-      "multiple_earnings_period": 4,
-    };
+      const coverToPost = {
+        cvt_desc: cover.detailedCoverType,
+        cover_type_code: this.coverTypeCode,
+        dty_description: cover.premiumMask,
+        main_sumassured_percentage: cover.detailedPercentageMainYr,
+        premium_mask_short_description: cover.premiumMask,
+        use_cvr_rate: this.detailedCovDetsForm.get('selectRate').value,
+        premium_rate: cover.rate,
+        rate_division_factor: cover.rateDivFactor,
+        product_code: this.productCode,
+        quotation_code: this.quotationCode,
+        loading_discount: "N",
+        // multiple_earnings_period: 4
+
+      };
     const coverToPostArray = [coverToPost];
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
@@ -848,45 +824,28 @@ memberDetsForm() {
       const total_member_earnings = noOfMembers * averageEarningPerMember;
 
         const coverRaw = this.detailedCovDetsForm.getRawValue();
-        const coverToPost = {
-          "cvt_desc": cover.aggregateCoverType,
-          // "cover_type_unique_code": this.coverTypeUniqueCode,
-          "cover_type_code": this.coverTypeCode,
-          "main_sumassured_percentage": cover.aggregatePercentageMainYr,
-          "premium_mask_short_description":cover.aggrgatePremiumMask,
-          "premium_mask_code": this.selectedPmasCode,
-          "total_members": cover.noOfMembers,
-          // "category_description":cover.category,
-          "use_cvr_rate": this.aggregateForm.get('aggregateSelectRate').value,
-          "premium_rate": cover.rate,
-          "average_earning_per_member":cover.averageEarningPerMember,
-          "but_charge_premium":cover.overridePremiums,
-          "rate_division_factor": cover.rateDivFactor,
-          "average_anb":cover.averageAnb,
-          // "sum_assured":cover.sumAssured,
-          "product_code": this.productCode,
-          "quotation_code": this.quotationCode,
-          "loading_discount": "N",
-          "total_member_earnings": total_member_earnings,
-          "multiple_earnings_period": 4,
-    };
-    console.log("coverToPostForNewCover", coverToPost)
+      const coverToPost = {
+        cvt_desc: cover.aggregateCoverType,
+        cover_type_code: this.coverTypeCode,
+        main_sumassured_percentage: cover.aggregatePercentageMainYr,
+        premium_mask_short_description: cover.aggrgatePremiumMask,
+        premium_mask_code: this.selectedPmasCode,
+        total_members: cover.noOfMembers,
+        category_description: cover.category,
+        use_cvr_rate: this.aggregateForm.get('aggregateSelectRate').value,
+        premium_rate: cover.rate,
+        average_earning_per_member: cover.averageEarningPerMember,
+        but_charge_premium: cover.overridePremiums,
+        rate_division_factor: cover.rateDivFactor,
+        average_anb: cover.averageAnb,
+        product_code: this.productCode,
+        quotation_code: this.quotationCode,
+        loading_discount: "N",
+        total_member_earnings: total_member_earnings,
+        multiple_earnings_period: cover.multiplesOfEarnings
 
-    const jsonToTry = {
-      "product_code": 2021675,
-      "cover_type_code": 2021750,
-      "quotation_code": 20237460,
-      "total_members": 10,
-      "loading_discount": "N",
-      "average_anb": 38,
-      "dependant_type_code": 1000,
-      "average_earning_per_member": 40000,
-      "staff_description": "DEFAULT",
-      "multiple_earnings_period": 4,
-      "premium_mask_code": 2021492,
-      "use_cvr_rate": "M"
-  
-    }
+      };
+    console.log("coverToPostForNewCover", coverToPost)
     const coverToPostArray = [coverToPost];
     
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
@@ -912,26 +871,25 @@ memberDetsForm() {
       const cover = this.detailedCovDetsForm.value
     const coverRaw = this.detailedCovDetsForm.getRawValue();
     console.log("cover",cover, coverRaw)
-    const coverToPost = {
-      "cvt_desc": cover.detailedCoverType,
-      // "cover_type_unique_code": this.coverTypeUniqueCode,
-      "cover_type_unique_code": this.coverTypeUniqueCode,
-      "cover_type_code": this.coverTypeCodeToEdit,
-      "main_sumassured_percentage": cover.detailedPercentageMainYr,
-      "premium_mask_short_description": cover.premiumMask,
-      // "premium_mask_code": this.selectedPmasCode,
-      "premium_mask_code": this.selectedPmasCode,
-      "use_cvr_rate": this.detailedCovDetsForm.get('selectRate').value,
-      "premium_rate": cover.rate,
-      "rate_division_factor": cover.rateDivFactor,
-      "quotation_code": this.quotationCode,
-      "product_code": this.productCode,
-      "loading_discount": "N",
-      "multiple_earnings_period": 4,
-      "dty_description": "DEFAULT",
-      "dependant_type_code": 1000,
-      "staff_description": "DEFAULT",
-    };
+      const coverToPost = {
+        cvt_desc: cover.detailedCoverType,
+        cover_type_unique_code: this.coverTypeUniqueCode,
+        cover_type_code: this.coverTypeCodeToEdit,
+        main_sumassured_percentage: cover.detailedPercentageMainYr,
+        premium_mask_short_description: cover.premiumMask,
+        premium_mask_code: this.selectedPmasCode,
+        use_cvr_rate: this.detailedCovDetsForm.get('selectRate').value,
+        premium_rate: cover.rate,
+        rate_division_factor: cover.rateDivFactor,
+        quotation_code: this.quotationCode,
+        product_code: this.productCode,
+        loading_discount: "N",
+        multiple_earnings_period: 4,
+        dty_description: "DEFAULT",
+        dependant_type_code: 1000,
+        staff_description: "DEFAULT",
+
+      };
     const coverToPostArray = [coverToPost];
     console.log("coverToPost edit", coverToPost)
     

@@ -2,7 +2,10 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BankDTO } from 'src/app/shared/data/common/bank-dto';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-// import { PaystackOptions } from 'angular4-paystack';
+import { PaystackOptions } from 'angular4-paystack';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 
 @Component({
@@ -21,22 +24,23 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   isBankSelected: boolean;
   bankList: BankDTO[] = [];
   reference = '';
-  title = "CodeSandbox";
+  title: string;
   // paymentInstance: PaymentInstance;
   token :string
+
   paystack_details: {key?: string, email?:string, amount?: string, reference?: string} = {};
   options: any =  {
     amount: this.payment_details?.premium * 100,
     email: 'user@mail.com',
     ref: `ref-${Math.ceil(Math.random() * 10e13)}`
-  }
-
- 
-
+  } 
+  quote: any;
 
 
-  constructor(private bank_service: BankService){  }
+
+  constructor(private bank_service: BankService, private session_storage: SessionStorageService){  }
   ngOnInit(): void {
+    this.quote = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS))
     // this.getBankList();
     console.log(this.payment_details);
     

@@ -10,6 +10,7 @@ import { QuoteSummaryDTO, MemberSummaryDTO, CategoryDTO, MemberCoverTypeSummaryD
 import { CoverageService } from '../../service/coverage/coverage.service';
 import { SummaryService } from '../../service/summary/summary.service';
 import { SelectItem } from 'primeng/api';
+import stepData from '../../data/steps.json';
 
 
 
@@ -34,6 +35,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
   membersDetails: MembersDTO[];
   productSelected: string;
   productType: string;
+  currency: string;
+  currency_symbol: string;
   memberCoverTypeSummaryDto: MemberCoverTypeSummaryDto[];
   categoryDetailsSummary: CategoryDetailsDto[];
   selectedRowIndex: number;
@@ -43,6 +46,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   selectedColumnsCovDets: string[];
   columnOptionsMemberDets: SelectItem[];
   selectedColumnsMemberDets: string[];
+  steps = stepData;
 
 
 
@@ -96,7 +100,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { label: 'Premium', value: 'premium' },
       { label: 'Select rate', value: 'use_cvr_rate' },
       { label: 'Override premiums', value: 'but_charge_premium' },
-      { label: 'Rate', value: 'rate' },
+      { label: 'Rate', value: 'premium_rate' },
       { label: 'Rate division factor', value: 'rate_division_factor' },
       { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
       { label: 'Main cover', value: 'cvt_main_cover' },
@@ -129,6 +133,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     console.log("quotation code", this.quotationCode)
     this.quotationNumber = parsedQuoteDetails.quotation_number;
     console.log("quotation number", this.quotationNumber)
+    
   
   
     if (storedQuoteData) {
@@ -138,7 +143,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
       this.productCode = formData.products.value;
       this.productSelected = formData.products.label;
       this.productType = formData.products.type;
-      console.log("this.productCode", this.productCode, this.productSelected, this.productType)
+      this.currency = formData.currency.label;
+      this.currency_symbol = formData.currency.label.split('(')[1].replace(')', '');
+      console.log("this.productCode", this.productCode, this.productSelected, this.productType, this.currency, this.currency_symbol)
       this.quatationCalType = formData.quotationCalcType
       console.log("this.quatationCalType", this.quatationCalType)
     }
@@ -212,7 +219,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   getQuotationDetailsSummary() {
-    this.summaryService.quotationSummaryDetails(this.quotationNumber).subscribe((quote: QuoteSummaryDTO) => {
+    this.summaryService.quotationSummaryDetails(this.quotationCode).subscribe((quote: QuoteSummaryDTO) => {
       console.log("quoteSummary", quote)
       this.quoteSummary = quote;
     });

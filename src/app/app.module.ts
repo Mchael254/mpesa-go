@@ -35,7 +35,7 @@ const cubejsOptions = {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    HomeComponent
   ],
   imports: [
     CommonModule,
