@@ -1,0 +1,537 @@
+<div class="container-fluid">
+    <div style="display: flex; padding-top: 1rem; justify-content: end">
+      <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+      </app-dynamic-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
+      </div>
+    </div>
+
+    <div class="full-border" >
+      <div class="text-primary fw-medium pb-2">
+        Beneficiaries & dependents</div>
+
+        <div>
+
+          <div>
+            <div class="text-black pb-4">
+              <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                <div class="text-primary">
+                  Beneficiary(ies)
+                  <span *ngIf="editEntity">
+                    <div
+                      style="width: 1.4rem; height: 1.4rem"
+                      class="spinner-border text-primary spinner-border"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </span>
+                </div>
+      
+                <div>
+                  <div
+                    (click)="showCategoryDetstModal()"
+                    class="b-r d-flex justify-content-center align-content-center"
+                  >
+                    <i class="fa-solid fa-plus"></i>
+                  </div>
+                </div>
+              </div>
+      
+              <ng-container>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr style="font-weight: 300; font-size: 12px">
+                        <th>First Name</th>
+                        <th>Other Name</th>
+                        <th>Gender</th>
+                        <th>Relationship</th>
+                        <th>Date Of Birth (Age)</th>
+                        <th>Percentage Benefit</th>
+                        <th>Name (Trustee)</th>
+                        <th>Relationship (Trustee)</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let row of beneficiaryList; let i = index; trackBy: trackById">
+                        <tr>
+                          <td>{{ row?.beneficiary_info?.first_name  | titlecase}}</td>
+                          <td>{{ row?.beneficiary_info?.other_name  | titlecase}}</td>
+                          <td>{{ row?.beneficiary_info["gender"]  | titlecase}}</td>
+                          <td>{{ relationTypeList | relationType : row?.beneficiary_info?.relation_code   | titlecase}}</td>
+                          <td>
+                            {{ row?.beneficiary_info?.date_of_birth | date : "dd/MM/yyyy" }} (
+                            {{ calculateAge(row?.beneficiary_info?.date_of_birth) }} )
+                          </td>
+                          <td>{{ row["percentage_benefit"] }}</td>
+                          <td>
+                            {{
+                              relationTypeList | relationType : row["relation_code"]  | titlecase
+                            }}
+                          </td>
+                          <td>
+                            {{ relationTypeList | relationType : row?.appointee_info?.relation_code  | titlecase }}
+                          </td>
+                          <td>
+                            <div
+                              class="d-flex justify-content-between dropdown-toggle"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              <div>
+                                {{ row["type"] === "B" ? "Beneficairy" : "Trustee" }}
+                              </div>
+                              <div>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                <ul class="dropdown-menu">
+                                  <li>
+                                    <a
+                                      class="dropdown-item"
+                                      (click)="editBeneficiary(i)"
+                                      >Edit</a
+                                    >
+                                  </li>
+                                  <li>
+                                    <a
+                                      class="dropdown-item"
+                                      (click)="deleteBeneficiary(i)"
+                                      >Delete</a
+                                    >
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+                <div
+                  *ngIf="beneficiaryList.length === 0"
+                  class="d-flex justify-content-center"
+                >
+                  No Record Capture. &nbsp;<span style="color: gray"
+                    >&nbsp; click on + icon to add record</span
+                  >
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+
+          <div>
+            <div class="text-black py-2">
+              <div class="d-flex justify-content-between" style="padding: 0 0 0 0rem">
+                <div class="text-primary">
+                  Dependent(s)
+                  <span *ngIf="editEntity">
+                    <div
+                      style="width: 1.4rem; height: 1.4rem"
+                      class="spinner-border text-primary spinner-border"
+                      role="status"
+                    >
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </span>
+                </div>
+      
+                <div>
+                  <div
+                    (click)="showCategoryDetstModal()"
+                    class="b-r d-flex justify-content-center align-content-center"
+                  >
+                    <i class="fa-solid fa-plus"></i>
+                  </div>
+                </div>
+              </div>
+      
+              <ng-container>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr style="font-weight: 300; font-size: 12px">
+                        <th>First Name</th>
+                        <th>Other Name</th>
+                        <th>Gender</th>
+                        <th>Date Of Birth (Age)</th>
+                        <th>Adopted</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngFor="let row of dependentList; let i = index; trackBy: trackByCode">
+                        <tr>
+                          <td>{{ row?.surname  | titlecase}}</td>
+                          <td>{{ row?.other_name  | titlecase}}</td>
+                          <td>{{ row?.gender==='F'?'Female':'Male'  | titlecase}}</td>
+                          <td>
+                            {{ date(row?.dob) | date : "dd/MM/yyyy" }} (
+                            {{ calculateAge(row?.dob) }} )
+                          </td>
+                          <!-- <td>{{row?.is_adopted?'ADOPTED':'NOT ADOPTED'}}</td> -->
+                          <td>
+                            <div
+                              class="d-flex justify-content-between dropdown-toggle"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              <div>
+                                {{row?.is_adopted?'ADOPTED':'NOT ADOPTED'  | titlecase}}
+                              </div>
+                              <div>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                <ul class="dropdown-menu">
+                                  <li>
+                                    <a
+                                      class="dropdown-item"
+                                      (click)="editBeneficiary(i)"
+                                      >Edit</a
+                                    >
+                                  </li>
+                                  <li>
+                                    <a
+                                      class="dropdown-item"
+                                      (click)="deleteBeneficiary(i)"
+                                      >Delete</a
+                                    >
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </td>
+                          
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+                <div
+                  *ngIf="dependentList.length === 0"
+                  class="d-flex justify-content-center"
+                >
+                  No Record Capture. &nbsp;<span style="color: gray"
+                    >&nbsp; click on + icon to add record</span
+                  >
+                </div>
+              </ng-container>
+            </div>
+          </div>
+            
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between pb-4">
+      <div>
+        <button
+        class="btn btn-sm text-primary fw-medium fs-6"
+        style="padding: 0.6em; text-decoration: underline;"
+        type="button"
+        
+        (click)="nextPage()"
+        
+      >
+        Back
+      </button>
+      </div>
+
+      <div>
+        <button
+        style="padding: 0.6em"
+        type="button"
+        class="btn btn-sm"
+        (click)="nextPage()"
+        [ngClass]="beneficiaryList.length===0? 'btn-danger': 'btn-primary'"
+      >
+        Proceed
+      </button>
+      </div>
+    </div>
+    </div>
+
+
+
+
+    <div
+  class="modal fade"
+  tabindex="-1"
+  #categoryDetsModal
+  id="categoryDetsModal"
+  aria-labelledby="categoryDetsModal"
+  aria-hidden="true"
+  style="color: #333"
+>
+  <div class="modal-dialog">
+    <div class="modal-content p-4 w-75" style="font-size: 12px; position: relative;">
+          <ngx-spinner
+      name="beneficiary_modal_screen"
+        type="ball-clip-rotate-multiple"
+
+        [fullScreen]="false"
+        color="#00529B"
+        size="medium"
+        bdColor="rgba(255, 255, 255, 0.9)"
+      ></ngx-spinner>
+      <div class="modal-body">
+        <div [formGroup]="beneficiaryForm">
+          <div class="modal-title fw-bold py-2" id="categoryDetsModal">
+            Beneficiary Details
+          </div>
+          <div >
+            <div class="row">
+              <ng-container formGroupName="beneficiary_info">
+                <div class="col-md-6 col-sm-12">
+                  <label class="label" for="description"
+                    >Last Name<span class="required"></span
+                  ></label>
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      type="text"
+                      pInputText
+                      class="form-control"
+                      formControlName="first_name"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                  <label class="label" for="description"
+                    >Other Name<span class="required"></span
+                  ></label>
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      type="text"
+                      pInputText
+                      class="form-control"
+                      formControlName="other_name"
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                  <div>
+                    <label class="required">Date of Birth</label>
+                    <div>
+                      <p-calendar
+                        ngDefaultControl
+                        formControlName="date_of_birth"
+                        dateFormat="dd/mm/yy"
+                        [showIcon]="true"
+                        [showButtonBar]="true"
+                      >
+                      </p-calendar>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12 fadeIn">
+                  <div class="w-75">
+                    <label class="required">Gender</label>
+                    <div></div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="male"
+                        formControlName="gender"
+                        value="M"
+                      />
+                      <span class="form-check-label" for="male">Male</span>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        id="female"
+                        formControlName="gender"
+                        value="F"
+                      />
+                      <span class="form-check-label" for="female">Female</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                  <div>
+                    <label class="required">Relationship</label>
+                    <select formControlName="relation_code" class="form-select">
+                      <ng-container *ngFor="let product of relationTypeList">
+                        <option [value]="product['id']">
+                          {{ product?.description | lowercase }}
+                        </option>
+                      </ng-container>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-12">
+                  <label class="label" for="description"
+                    >Contact<span class="required"></span
+                  ></label>
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      type="text"
+                      pInputText
+                      class="form-control"
+                      formControlName="tel_no"
+                    />
+                  </div>
+                </div>
+
+
+              </ng-container>
+
+              <div class="col-md-6 col-sm-12">
+                <label class="label" for="description"
+                  >Benefit Proportion<span class="required"></span
+                ></label>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    type="text"
+                    pInputText
+                    class="form-control"
+                    formControlName="percentage_benefit"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12">
+                <div>
+                  <label class="required">Type</label>
+                  <select formControlName="type" class="form-select">
+                    <ng-container *ngFor="let type of beneficiaryTypeList">
+                      <option [value]="type['name']">
+                        {{type['value'] | lowercase }}
+                      </option>
+                    </ng-container>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-2"> &nbsp;</div>
+          <ng-container *ngIf="checkIfGuardianIsNeeded()">
+            <div class="fw-bold py-1">Guardian Details</div>
+
+          <div formGroupName="appointee_info">
+            <div class="row" >
+              <div class="col-md-6 col-sm-12">
+                <label class="label" for="description"
+                  >Last Name<span class="required"></span
+                ></label>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    type="text"
+                    pInputText
+                    class="form-control"
+                    formControlName="first_name"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12">
+                <label class="label" for="description"
+                  >Other Name<span class="required"></span
+                ></label>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    type="text"
+                    pInputText
+                    class="form-control"
+                    formControlName="other_name"
+                  />
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12">
+                <div>
+                  <label class="required">Date of Birth</label>
+                  <div>
+                    <p-calendar
+                      ngDefaultControl
+                      formControlName="date_of_birth"
+                      dateFormat="dd/mm/yy"
+                      [showIcon]="true"
+                      [showButtonBar]="true"
+                    >
+                    </p-calendar>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12 fadeIn">
+                <div class="w-75">
+                  <label class="required">Gender</label>
+                  <div></div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="male"
+                      formControlName="gender"
+                      value="M"
+                    />
+                    <span class="form-check-label" for="male">Male</span>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="female"
+                      formControlName="gender"
+                      value="F"
+                    />
+                    <span class="form-check-label" for="female">Female</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12">
+                <div>
+                  <label class="required">Relationship</label>
+                  <select formControlName="relation_code" class="form-select">
+                    <ng-container *ngFor="let relationType of relationTypeList; trackBy: trackById">
+                      <option [value]="relationType['id']">
+                        {{ relationType?.description | lowercase }}
+                      </option>
+                    </ng-container>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-sm-12">
+                <label class="label" for="description"
+                  >Contact<span class="required"></span
+                ></label>
+                <div class="form-group">
+                  <input
+                    type="text"
+                    type="text"
+                    pInputText
+                    class="form-control"
+                    formControlName="contact"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          </ng-container>
+
+        </div>
+      </div>
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-danger" (click)="closeCategoryDetstModal()">Cancel</button>
+          <button type="button" class="btn btn-primary"(click)="saveBeneficiary()" >Save</button>
+  </div>
+</div>

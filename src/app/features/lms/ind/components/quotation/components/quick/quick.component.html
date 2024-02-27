@@ -20,6 +20,7 @@
     <!-- Hide on mobile -->
     <div class="container-fluid h-100">
       <div class="row h-100">
+        <div class="d-flex justify-content-center text-primary fw-medium" style="font-weight: 20px;">Quick Quote</div>
         <div [ngClass]="coverTypeList().length > 0 ? 'col-md-8' : 'col-md-12'">
           <form
             [formGroup]="quickForm"
@@ -28,7 +29,7 @@
             <div>
               <div
                   style="
-                    padding: 2rem 0 0.4rem 0.7rem;
+                    padding: 2rem 0 0.4rem 0.0rem;
                     color: #868E96;
                   "
                 >
@@ -41,7 +42,7 @@
                   <div class="w-75">
                     <label class="required">Date of Birth</label>
                     <div>
-                      <p-calendar ngDefaultControl formControlName="date_of_birth" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
+                      <p-calendar ngDefaultControl formControlName="date_of_birth" [maxDate]="minDate" [defaultDate]="minDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true" (ngModelChange)="selectDate()">
                         <ng-template pTemplate="header" >
                           <!-- <div style="color: red; font-weight: 500;">The Product Option you selected is meant for 18 and above</div> -->
                         </ng-template>
@@ -62,7 +63,7 @@
                         id="male"
                         formControlName="gender"
                         value="M"
-                        (click)="computePremium()"
+                        (change)="computePremium()"
                       />
                       <label class="form-check-label" for="male">Male</label>
                     </div>
@@ -73,7 +74,7 @@
                         id="female"
                         formControlName="gender"
                         value="F"
-                        (click)="computePremium()"
+                        (change)="computePremium()"
                       />
                       <label class="form-check-label" for="female"
                         >Female</label
@@ -151,23 +152,23 @@
                       <input
                         class="form-check-input"
                         type="radio"
-                        id="male"
+                        id="prem"
                         formControlName="sa_prem_select"
                         value="P"
-                        (click)="computePremium()"
+                        (change)="selecting_sa_prem_amount()"
                       />
-                      <label class="form-check-label" for="male">Premium</label>
+                      <label class="form-check-label" for="prem">Premium</label>
                     </div>
                     <div class="form-check form-check-inline">
                       <input
                         class="form-check-input"
                         type="radio"
-                        id="female"
+                        id="sum_assured"
                         formControlName="sa_prem_select"
                         value="SA"
-                        (click)="computePremium()"
+                        (change)="selecting_sa_prem_amount()"
                       />
-                      <label class="form-check-label" for="female"
+                      <label class="form-check-label" for="sum_assured"
                         >Sum Assured</label
                       >
                     </div>
@@ -176,7 +177,8 @@
                       type="text"
                       class="form-control"
                       formControlName="sa_prem_amount"
-                      [placeholder]="getValue('sa_prem_amount')==='P'?'Enter Premium' : 'Enter Sum Assured'"
+                      [disabled]="!getValue('sa_prem_select')"
+                      [placeholder]="getValue('sa_prem_select')==='P'?'enter premium amount' : getValue('sa_prem_select')==='SA'?'enter sum assured amount': 'select premium or sum assured'"
                       style="padding-right: 2rem"
                       (change)="computePremium()"
                     />
@@ -567,7 +569,7 @@
               </div>
             </div>
             <div class="col-3 mt-4">
-              <button class="btn btn-primary mr-4" style="margin: 0 1rem;">SEND</button>
+              <button (click)="sendNotification()" class="btn btn-primary mr-4" style="margin: 0 1rem;">SEND</button>
             </div>
           </div>
         </div>

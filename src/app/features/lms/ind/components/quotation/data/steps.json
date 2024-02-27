@@ -6,22 +6,37 @@
   },
   {
     "number": 2,
+    "title": "Documents Upload",
+    "link": "/home/lms/ind/quotation/documents-upload"
+  },
+  {
+    "number": 3,
+    "title": "Product",
+    "link": "/home/lms/ind/quotation/product"
+  },
+  {
+    "number": 4,
+    "title": "Beneficiaries & dependents",
+    "link": "/home/lms/ind/quotation/beneficiaries-dependents"
+  },
+  {
+    "number": 5,
     "title": "Insurance history",
     "link": "/home/lms/ind/quotation/insurance-history"
   },
 
   {
-    "number": 3,
+    "number": 6,
     "title": "Lifestyle details",
     "link": "/home/lms/ind/quotation/lifestyle-details"
   },
   {
-    "number": 4,
+    "number": 7,
     "title": "Medical history",
     "link": "/home/lms/ind/quotation/medical-history"
   },
   {
-    "number": 5,
+    "number": 8,
     "title": "Summary",
     "link": "/home/lms/ind/quotation/summary"
   }

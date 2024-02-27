@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { of, switchMap } from 'rxjs';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { CoverTypeService } from 'src/app/features/lms/service/cover-type/cover-type.service';
 import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { ProductOptionService } from 'src/app/features/lms/service/product-option/product-option.service';
@@ -24,6 +25,7 @@ export class SummaryComponent implements OnInit {
   coverTypeList: any[] = [];
   beneficiaryList: any[] = [];
   client_info: any;
+  util: Utils;
 
   constructor(private router:Router, 
     private session_service: SessionStorageService, 
@@ -33,18 +35,30 @@ export class SummaryComponent implements OnInit {
     private party_service: PartyService,
     private spinner_service:NgxSpinnerService,
     private cover_type_service: CoverTypeService,
-    private toast_service: ToastService){}
+    private crm_client_service: ClientService,
+    private toast_service: ToastService){
+      this.util = new Utils(this.session_service);
+    }
 
 
   ngOnInit(): void {
     this.getProposalSummaryInfo();
     this.getBeneficiariesByQuotationCode();
     this.getCoverType();
-    this.client_info = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.CLIENT_DETAILS))    
+
+    let client_code = this.util.getClientCode();
+    if(client_code){
+      this.crm_client_service.getClientById(client_code).subscribe(data => {
+        this.client_info = data;
+      })
+    }
+    
   }
 
   getCoverType(){
-    this.cover_type_service.getCoverTypeList().subscribe((cover_types:any[]) =>{
+    let web = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS));
+
+    this.cover_type_service.getCoverTypeListByProduct(web['product_code']).subscribe((cover_types:any[]) =>{
       // console.log(cover_types);
       this.coverTypeList = cover_types;
       
@@ -57,7 +71,7 @@ export class SummaryComponent implements OnInit {
     .getLmsIndividualQuotationWebQuoteByCode(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['code'])
     .pipe(
       switchMap((web_quote_res: any) =>{ 
-        // console.log(web_quote_res);
+        console.log(web_quote_res);
         
         this.proposalSummaryData = web_quote_res;
         return this.product_service.getProductByCode(web_quote_res?.product_code)
@@ -106,7 +120,11 @@ export class SummaryComponent implements OnInit {
 
 
   nextPage(){
-    this.router.navigate(['/home/lms/medicals/test'])
+    if(!!this.proposalSummaryData?.proposal_no){
+      this.router.navigate(['/home/lms/medicals/test']);
+    }else{
+      this.toast_service.danger('Proposal No. is not defined yet!', 'PROPOSAL DETAILS')
+    }
 
   }
 

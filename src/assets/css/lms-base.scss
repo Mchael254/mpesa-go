@@ -1,26 +1,41 @@
- .lms-base
-{
-  & .row{
+.lms-base {
+  & .row {
     padding: 0.3rem 0;
 
     > div {
-      padding: 0.2rem 0.7rem; 
+      padding: 0.2rem 0.7rem;
     }
-
   }
-  & .text-gray{
+  & .text-gray {
     color: gray;
   }
   & .form-select {
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
-}
-& .p-calendar {
-  border: var(--bs-border-width) solid var(--bs-border-color) !important;
+  }
+  & .p-calendar {
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
     border-radius: var(--bs-border-radius) !important;
-}
-& tr {
-  padding: 0.4rem 0.1rem;
-}
-    
+  }
+  & tr {
+    padding: 0.4rem 0.1rem;
+  }
+  & ol,
+  ul {
+    padding-left: 0;
+  }
+  & .table > thead > tr {
+    --bs-table-bg: #bad0e4;
+  }
+
+  & .input-group span {
+    background: var(--bs-border-color);
+    color: #fff;
+  }
+
+  & table tr th {
+    color: rgba(0, 0, 0, 0.6) !important;
+    font-weight: 600;
+    border-bottom: 1px solid #bad0e4;
+  }
 }

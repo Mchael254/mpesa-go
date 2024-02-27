@@ -26,12 +26,17 @@
   border: 0;
   z-index: 100000;
   cursor: pointer;
+  border-right: 4px solid #00539b67;
+  /* border: 2px solid #00539b26; */
+  background-color: #f9fbfc;
+  font-size: 12px;
+  border-radius: 0.2em;
 }
 
 .dropdown-item:hover {
   background-color: #0000000c;
   font-weight: 600;
-  border-right: var(--primary-color) solid 2px;
+  border-right: var(--primary-color) solid 4px;
 }
 
 .label-text {
