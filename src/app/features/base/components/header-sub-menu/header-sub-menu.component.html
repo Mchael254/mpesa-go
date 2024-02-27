@@ -56,6 +56,16 @@
             </a>
           </li>
           <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="nav-link" href="javascript:void(0)"
+            (click)="dynamicSideBarMenu(reinsuranceSubMenuList[0])">
+              <i
+                class="fa-solid fa-handshake-angle"
+                style="padding-right: 6px"
+              ></i>
+              {{ "base.reinsurance" | translate | uppercase }}
+            </a>
+          </li>
+          <li class="nav-item" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <a class="nav-link">
               <i
                 class="fa-solid fa-handshake-angle"
@@ -73,16 +83,6 @@
               {{ "base.team" | translate | uppercase }}
             </a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link">
-              <i
-                class="fa-solid fa-toolbox"
-                style="padding-right: 6px"
-              ></i>
-              {{ "base.administration" | translate | uppercase }}
-            </a>
-          </li> -->
-
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -262,8 +262,6 @@
             </ul>
           </li>
 
-
-
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -279,8 +277,7 @@
               style="
                 width: 300px;
                 padding: 1em 2em 1em 0.5em;
-                border-radius: 0.2em;
-                border-right: 2px solid #00539b67;
+                
               "
             >
               <div class="d-flex justify-content-between">
@@ -350,8 +347,7 @@
                   (click)="navLink('/home/lms/quotation/list')"
                   class="text-plain"
                   for="bottom-right"
-                  >{{ 'base.view_quotations' | translate }}
-                  </label
+                  >View Quotations</label
                 >
               </div>
 
@@ -385,7 +381,6 @@
               </ng-container>
             </ul>
           </li>
-
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -394,36 +389,23 @@
               aria-expanded="false"
               style="font-size: 12px"
             >
+
               <i
-                class="fa-solid fa-handshake-angle"
+                class="fa-solid fa-umbrella"
                 style="padding-right: 6px; font-size: 16px"
               ></i
               >{{ "base.reinsurance" | translate | uppercase }}
             </a>
             <ul class="dropdown-menu">
-              <ng-container *ngFor="let claim of reinsuranceubMenuList">
+              <ng-container *ngFor="let team of reinsuranceSubMenuList">
                 <li>
-                  <a
-                    class="dropdown-item"
-                    (click)="dynamicSideBarMenu(claim)"
-                    >{{ claim["name"] }}</a
-                  >
+                  <a class="dropdown-item" (click)="dynamicSideBarMenu(team)">{{
+                    team["name"]
+                  }}</a>
                 </li>
               </ng-container>
             </ul>
           </li>
-
-
-          <!-- <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Claims
-                      </a>
-                      <ul class="dropdown-menu">
-                        <ng-container *ngFor="let claim of claimSubMenuList">
-                          <li><a class="dropdown-item"  (click)="dynamicSideBarMenu(claim)">{{claim['name']}}</a></li>
-                        </ng-container>
-                      </ul>
-                  </li> -->
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle"
@@ -601,4 +583,4 @@
 
               </div>
             </div>
-          </div>
+</div>

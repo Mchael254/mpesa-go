@@ -1,6 +1,8 @@
+import { FormGroup } from "@angular/forms";
+
 export   class StringManipulation {
 
-  static returnNullIfEmpty<T extends string | number | {} | null> (value: T): T | null | Number | {} {
+  static returnNullIfEmpty<T extends string | number | {} | null> (value: T): T | null | Number | {} {  
     if (value === null) {
       return null;
     } else if (typeof value === 'string' && value.trim() === '') {
@@ -29,6 +31,24 @@ export   class StringManipulation {
     }
     return true;
   }
+
+  static formatNumberWithCommasforThousands(x): string {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+static enableControlsWithErrors(formGroup: FormGroup) {
+  Object.keys(formGroup.controls).forEach((controlName) => {
+    const control = formGroup.get(controlName);
+
+    if (control && control.invalid) {
+      control.enable();
+    }
+
+    if (control instanceof FormGroup) {
+      this.enableControlsWithErrors(control);
+    }
+  });
+}
 
 
   // static isNull(value: string | number | boolean | object | null | undefined): boolean {

@@ -20,7 +20,7 @@
             <span class="float-end">
               <img [src]="getUserImage()" class="rounded-circle" [alt]="user?.name?.substring(0, 1)+'W'">
               <!-- {{user?.name?.substring(0, 1)?.toUppercase() | uppercase}} -->
-              {{ user?.name }}
+              {{ user?.name || '' }}
             </span>
           </button>
           <ul class="dropdown-menu">

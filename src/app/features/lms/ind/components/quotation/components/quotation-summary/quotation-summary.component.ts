@@ -18,6 +18,8 @@ import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
+import { Utils } from 'src/app/features/lms/util/util';
+import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 
 @AutoUnsubscribe
 @Component({
@@ -55,6 +57,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   documentList: any[] = [];
   coverTypeList: any[];
   client_details: any;
+  util: Utils;
 
   constructor(
     private fb: FormBuilder,
@@ -68,8 +71,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     private party_service: PartyService,
     private relation_type_service: RelationTypesService,
     private spinner: NgxSpinnerService,
-    private dms_service: DmsService
+    private dms_service: DmsService,
+    private country_service: CountryService
   ) {
+    this.util = new Utils(this.session_storage_Service)
     this.contactDetailsForm = this.fb.group({
       branch: [''],
       number: [''],
@@ -104,9 +109,6 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.getBeneficiariesByQuotationCode();
     this.getRelationTypes();
     this.getDocumentsByClientId();
-    this.client_details = this.session_storage_Service.get(
-      SESSION_KEY.CLIENT_DETAILS
-    );
   }
   ngOnDestroy(): void {
     console.log('OnDestroy QuotationSummaryComponent');
@@ -149,19 +151,53 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  getClientById() {
-    let account_code = StringManipulation.returnNullIfEmpty(
-      this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS)[
-        'account_code'
-      ]
-    );
-    this.client_service
-      .getClientById(account_code)
-      .subscribe((data: ClientDTO) => {
-        console.log(data);
+  // getClientById(code: any){
+  //   this.spinner_Service.show('client_details_view');
+  //   this.crm_client_service.getClientById(code).subscribe(data =>{
+  //     this.clientForm.patchValue(data);
+  //     this.clientForm.get('dateOfBirth').patchValue(new Date(data['dateOfBirth']));
+  //     this.clientForm.get('modeOfIdentityNumber').patchValue(data['idNumber']);
+  //     this.clientForm.get('countryId').patchValue(data['country']);
+  //     this.clientForm.get('pinNumber').patchValue(data['pinNumber']);
+  //     this.clientForm.get('modeOfIdentityId').patchValue(data['modeOfIdentity']);
+  //     this.clientForm.get('contactDetails').get('branchId').patchValue(data['branchCode']);
+  //     this.clientForm.get('contactDetails').get('emailAddress').patchValue(data['emailAddress']?.toLocaleLowerCase());
+  //     this.clientForm.get('contactDetails').get('phoneNumber').patchValue(data['phoneNumber']);
+  //     this.clientForm.get('contactDetails').get('titleShortDescription').patchValue(data['clientTitle']);
+  //     this.clientForm.get('address').get('physical_address').patchValue(data['physicalAddress']);
+  //     this.clientForm.get('paymentDetails').get('effective_from_date').patchValue(new Date(data['withEffectFromDate']));
 
-        this.clientRecord = data;
-      });
+
+  //     this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
+  //     this.spinner_Service.hide('client_details_view');
+
+  //   },
+  //   err => {
+  //     console.log(err);
+  //     // this.toast.danger('Unable to Fetch Client Details', 'CLIENT DETAILS');
+  //     this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
+  //     this.spinner_Service.hide('client_details_view');
+
+      
+  //   })
+  // }
+
+  getClientById() {
+    this.client_service
+      .getClientById(this.util.getClientCode())
+      .pipe(switchMap((data) => {
+        console.log(data);
+        this.client_details = data;
+        return this.client_details
+      }),
+      switchMap((data: any) =>{
+        return this.country_service.getCountryById(data['country']).pipe(switchMap((data_r: any) => {
+          console.log(data_r);
+          return data
+          
+        }))
+        // return data
+      })).subscribe();
   }
 
   getProductList() {
@@ -228,7 +264,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   getCoverType() {
-    return this.cover_type_service.getCoverTypeList();
+    let web = StringManipulation.returnNullIfEmpty(this.session_storage_Service.get(SESSION_KEY.WEB_QUOTE_DETAILS));
+    return this.cover_type_service.getCoverTypeListByProduct(web['product_code']);
   }
 
   nextPage() {
@@ -268,10 +305,9 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
           },
           (err: any) => {
             this.toast.danger(
-              'Unable to Convert Quotation to Proposal',
+              err['error']['errors'][0],
               'WARNING'
             );
-            console.log(err);
             this.spinner.hide('summary_screen');
           }
         );
