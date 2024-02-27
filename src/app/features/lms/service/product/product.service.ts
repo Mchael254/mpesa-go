@@ -84,6 +84,9 @@ export class ProductService {
     }),
     );
   }
+  getProductOptionByCode(product_option: number){
+    return this.api.GET(`product-options/${product_option}`, API_CONFIG.SETUPS_SERVICE_BASE_URL);
+  }
 
   premium_computation(prem_obj: { lead: {}; quote: {}; }): Observable<any> {
     return this.api.POST('quotations/quick-quote', prem_obj, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)

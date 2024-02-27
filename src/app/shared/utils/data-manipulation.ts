@@ -79,6 +79,12 @@ public static getKeysFromObjects(object: any) {
 
   return Object.keys(object);
 }
+
+
+public static getMinDate(years = 18): Date{
+  let currentDate: Date = new Date();
+  return new Date(currentDate.getFullYear() - years, currentDate.getMonth(), currentDate.getDate());
+}
   
 //   // Example usage:
 //   const listOfObjects = [

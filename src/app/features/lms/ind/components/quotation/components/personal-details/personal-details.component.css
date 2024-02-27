@@ -90,6 +90,37 @@ tr.ng-star-inserted {
   color: black;
   font-weight: 800;
 }
+
+.btn-card-icon {
+  background: #00539b42;
+  color: #fff;
+  margin-right: 5px;
+  border-radius: 2rem;
+  height: 2.1rem;
+  width: 2.1rem;
+
+}
+
+.fa-chevron-down {
+  color: #06063b;
+}
+.text-start  {
+  font-size: 14px;
+    font-weight: 600;
+}
+
+.draft:hover{
+  color: var(--primary-color);
+  background-color: white;
+  font-weight: 500;
+
+}
+
+div > label {
+  margin-top: 0.2rem;
+  padding-right: 1rem;
+}
+
 @media (min-width: 768px) {
   .justify-md {
     justify-content: start;
@@ -97,4 +128,5 @@ tr.ng-star-inserted {
   .doc-file-notif {
     width: 33%;
   }
+
 }
