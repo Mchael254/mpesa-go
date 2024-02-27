@@ -11,6 +11,9 @@ import { QuotationSummaryComponent } from './components/quotation-summary/quotat
 import { InsuranceHistoryComponent } from './components/insurance-history/insurance-history.component';
 import { LifestyleDetailsComponent } from './components/lifestyle-details/lifestyle-details.component';
 import { MedicalHistoryComponent } from './components/medical-history/medical-history.component';
+import { ProductComponent } from './components/product/product.component';
+import { BeneficiariesDependentsComponent } from './components/beneficiaries-dependents/beneficiaries-dependents.component';
+import { DocumentsUploadComponent } from './components/documents-upload/documents-upload.component';
 
 const components = [
   QuotationListComponent,
@@ -24,7 +27,7 @@ const components = [
 ];
 
 @NgModule({
-  declarations: [...components],
+  declarations: [...components, ProductComponent, BeneficiariesDependentsComponent, DocumentsUploadComponent],
   imports: [CommonModule, QuotationRoutingModule, SharedModule],
 })
 export class QuotationModule {}

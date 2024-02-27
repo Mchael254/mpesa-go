@@ -18,7 +18,7 @@
         <div class="d-flex justify-content-start pt-3 fs-6">
           Capture Medical Test Results
         </div>
-        <div class="row pt-0">
+        <div class="row pt-0" *ngIf="diseases?.length>0">
           <div class="accordion accordion-flush" [id]="dynamicAccordionId">
             <div
               class="accordion-item"
@@ -33,7 +33,7 @@
                   aria-expanded="false"
                   [attr.aria-controls]="'flush-collapse' + i"
                 >
-                  {{ disease.name }}
+                  {{ disease.description | titlecase}}
                 </button>
               </h2>
               <div
@@ -183,6 +183,9 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="row pt-2 px-3 text-danger" *ngIf="diseases?.length===0">
+          No Medical Test Results Available
         </div>
       </div>
 

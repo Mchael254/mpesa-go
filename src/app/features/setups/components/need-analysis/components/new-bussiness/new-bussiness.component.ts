@@ -62,7 +62,7 @@ export class NewBussinessComponent implements OnInit {
   }
 
   fetchNeedAnalysisData() {
-    let TENANT_ID = environment?.TENANT_ID?.toUpperCase();
+    let TENANT_ID = StringManipulation.returnNullIfEmpty(this.session_storage_service.get(SESSION_KEY.API_TENANT_ID))?.toUpperCase(); //environment?.TENANT_ID?.toUpperCase();
     let NEED_ANALYSIS_PROCESS_TYPE = this.session_storage_service.get(
       SESSION_KEY.NEED_ANALYSIS_PROCESS_TYPE
     );

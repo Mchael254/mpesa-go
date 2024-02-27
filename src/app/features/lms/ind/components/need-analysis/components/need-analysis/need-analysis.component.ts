@@ -34,8 +34,8 @@ export class NeedAnalysisComponent implements OnInit {
         NEED_ANALYSIS_SYSTEM_NAME
       ).pipe(finalize(() => {
       this.spinner_service.hide('analysis_view')
-    })).subscribe(data =>{
-      this.questionData = data['data']['question'];
+    })).subscribe((data:any) =>{
+      this.questionData = data?.data?.question;
       this.questionSelected.push(this.questionData);
       this.spinner_service.hide('analysis_view')
 

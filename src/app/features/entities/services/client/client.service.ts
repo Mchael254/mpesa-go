@@ -31,7 +31,6 @@ export class ClientService {
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-TenantId': environment.TENANT_ID,
       })
       const params = new HttpParams()
         .set('page', `${page}`)
@@ -129,6 +128,10 @@ export class ClientService {
     return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id, {headers:this.headers});
   }
 
+  getclientRequiredDocuments(){
+    return this.api.GET('required-documents?accountType=C', API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
+  }
+
   // getAccountByCode(code: number): Observable<ClientDTO> {
   //   let params = new HttpParams().set('accountCode', code)
   //   // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
@@ -165,6 +168,11 @@ export class ClientService {
         headers:this.headers,
         params:params
       });
+  }
+
+  save(clientData: any): Observable<any> {
+    return this.api.POST<any>(`clients`, clientData, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+
   }
 
 

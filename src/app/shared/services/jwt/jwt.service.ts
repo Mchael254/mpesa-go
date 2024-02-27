@@ -77,12 +77,12 @@ export class JwtService {
      * Save the session token
      * @param token OauthToken - the token to be saved
      */
-    saveToken(token: OauthToken) {
+    saveToken(token: OauthToken) {        
         if (this.utilService.isEmpty(token)) {
             this.destroyToken();
         } else {
-            const path = this.tokenPath;
 
+            const path = this.tokenPath;
             const expiryInDays = token.expires_in / 60;
             log.info(
                 `EXPIRES IN ${token.expires_in}, EXXPIRY ${expiryInDays}`
@@ -160,6 +160,7 @@ export class JwtService {
         const path = this.tokenPath;
 
         this.sessionStorage.removeItem(REFRESH_TOKEN);
+        
         // this.cookieService.delete(REFRESH_TOKEN, path, domain);
     }
 

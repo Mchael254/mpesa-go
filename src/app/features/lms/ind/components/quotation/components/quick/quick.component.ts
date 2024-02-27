@@ -1,19 +1,17 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  signal
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/internal/operators/finalize';
-import { first, mergeMap, tap, debounceTime, switchMap, of, timer} from 'rxjs';
+import { first, mergeMap, tap, debounceTime, switchMap, of, timer, Observable } from 'rxjs';
 import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
 import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubscribe';
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
 import { ProductService } from '../../../../../../../features/lms/service/product/product.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { NotificationService } from 'src/app/features/lms/service/notification/notification.service';
 
 @Component({
   selector: 'app-quick',
@@ -24,11 +22,11 @@ import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 export class QuickComponent implements OnInit, OnDestroy {
   quickQuoteSummaryDefault = {
     isSummaryReady: false,
-    product: -1,
-    option: -1,
-    policy_term: 0,
+    product: null,
+    option: null,
+    policy_term: null,
     coverTypeList: [],
-    prem_result: -1,
+    prem_result: null,
   };
   quickQuoteSummary_: {} = { ...this.quickQuoteSummaryDefault };
   quickQuoteSummary = signal({ ...this.quickQuoteSummaryDefault });
@@ -46,6 +44,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   isPremAssuredReady: boolean = false;
   isSummaryReady: boolean = false;
   option_product_code: number = 0;
+  minDate = DataManipulation.getMinDate();
 
   constructor(
     private session_storage: SessionStorageService,
@@ -53,19 +52,17 @@ export class QuickComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private spinner: NgxSpinnerService,
     private product_service: ProductService,
+    private notification_service: NotificationService,
     private toast: ToastService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(): void {
-
     this.quickForm = this.fb.group({
       date_of_birth: [''],
       gender: [],
-      product: [-1],
-      option: [-1],
-      term: [-1],
+      product: [],
+      option: [],
+      term: [],
       sa_prem_select: [],
       sa_prem_amount: [],
     });
@@ -78,12 +75,10 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.product_service
       .getListOfProduct()
       .pipe(finalize(() => this.spinner.hide('whole')))
-      .subscribe(
-        (products) =>
-          (this.productList = [
-            ...products,
-          ])
-      );
+      .subscribe((products) => {
+        this.productList = [...products];
+        this.spinner.show('whole');
+      });
   }
 
   getValue(name: string = 'sa_prem_select') {
@@ -99,9 +94,9 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   selectProduct(event) {
     this.quickQuoteSummary_ = { ...this.quickQuoteSummaryDefault };
-    this.quickForm.get('option').setValue(-1);
-    this.quickForm.get('term').setValue(-1);
-    this.quickForm.get('sa_prem_amount').setValue(0);
+    this.quickForm.get('option').setValue(null);
+    this.quickForm.get('term').setValue(null);
+    this.quickForm.get('sa_prem_amount').setValue(null);
 
     let productCode = +event.target.value;
     if (productCode > 0) {
@@ -114,7 +109,7 @@ export class QuickComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe((productOptions) => {
-          this.productOptionList = [ ...productOptions];
+          this.productOptionList = [...productOptions];
           this.isOptionReady = true;
           let prod;
           prod = this.productList.filter((m) => {
@@ -126,7 +121,7 @@ export class QuickComponent implements OnInit, OnDestroy {
               data['product'] = prod[0];
               data['isSummaryReady'] = false;
               data['coverTypeList'] = [];
-              data['option'] = -1;
+              data['option'] = null;
               data['policy_term'] = 0;
               data['prem_result'] = 0;
               return data;
@@ -146,8 +141,8 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   selectProductOption(pCode: any) {
-    this.quickForm.get('term').setValue(-1);
-    this.quickForm.get('sa_prem_amount').setValue(0);
+    this.quickForm.get('term').setValue(null);
+    this.quickForm.get('sa_prem_amount').setValue(null);
     let pPopItem = +pCode.target.value;
     if (pPopItem > 0) {
       this.spinner.show('whole');
@@ -214,22 +209,49 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   private checkifAllFieldsAreNotEmpty() {
-    let date = this.getValue('date_of_birth');
-    let product = +this.getValue('product');
-    let option = +this.getValue('option');
-    let term = +this.getValue('term');
-    let premium_amt = +this.getValue('sa_prem_amount');
-    return (
-      date !== '' &&
-      product !== -1 &&
-      option !== -1 &&
-      term !== -1 &&
-      premium_amt !== 0
+    let date = StringManipulation.returnNullIfEmpty(
+      this.getValue('date_of_birth')
     );
+    let product = StringManipulation.returnNullIfEmpty(
+      this.getValue('product')
+    );
+    let option = StringManipulation.returnNullIfEmpty(this.getValue('option'));
+    let term = StringManipulation.returnNullIfEmpty(this.getValue('term'));
+    let premium_amt = StringManipulation.returnNullIfEmpty(
+      this.getValue('sa_prem_amount')
+    );
+    premium_amt = premium_amt === 0 ? null : premium_amt;
+    console.log('HERE');
+
+    return (
+      date !== null &&
+      product !== null &&
+      option !== null &&
+      term !== null &&
+      premium_amt !== null
+    );
+  }
+
+  selecting_sa_prem_amount() {
+    this.quickForm.get('sa_prem_amount').setValue(null);
+    this.computePremium();
   }
 
   computePremium() {
     if (this.checkifAllFieldsAreNotEmpty()) {
+      let gender = this.getValue('gender');
+      let sa_prem_select = this.getValue('sa_prem_select');
+      if (gender === null) {
+        this.toast.danger('Gender is required!!', 'Quick Quote');
+        return;
+      }
+      if (sa_prem_select === null) {
+        this.toast.danger(
+          'selecting either premium or sum assured is required!!',
+          'Quick Quote'
+        );
+        return;
+      }
       this.spinner.show('prem_view');
       let summaryQuote = { ...this.quickQuoteSummary() };
       let prem_obj = { lead: {}, quote: {} };
@@ -270,12 +292,12 @@ export class QuickComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          (prem) => {
-            this.session_storage.set(SESSION_KEY.QUICK_QUOTE_DETAILS, prem)
+          (prem) => {            
+            this.session_storage.set(SESSION_KEY.QUICK_QUOTE_DETAILS, prem);
 
             this.quickQuoteSummary.mutate((da: any) => {
               da['prem_result'] = prem['premium'];
-              da['quote_code'] = prem['quote_code']
+              da['quote_code'] = prem['quote_code'];
               return da;
             });
             this.quickQuoteSummary_ = { ...this.quickQuoteSummary() };
@@ -289,6 +311,7 @@ export class QuickComponent implements OnInit, OnDestroy {
             this.spinner.hide('prem_view');
           },
           (err) => {
+            this.toast.danger(err['error']['message'], 'Quick Quote')
             this.spinner.hide('prem_view');
           }
         );
@@ -327,19 +350,71 @@ export class QuickComponent implements OnInit, OnDestroy {
     }
   }
 
-  nextPage(){
+  nextPage() {
     this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
     timer(1000).subscribe(() => {
-      this.route.navigate(["/home/lms/ind/quotation/client-details"]);
-    })
-
+      this.route.navigate(['/home/lms/ind/quotation/client-details']);
+    });
   }
 
-  closePage(){
+  closePage() {
     // this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
     timer(100).subscribe(() => {
-      this.route.navigate(["/home/lms/quotation/list"]);
-    })
+      this.route.navigate(['/home/lms/quotation/list']);
+    });
+  }
+
+  sendNotification() {
+    if(this.shareForm.get('name').value===null || this.shareForm.get('name').value===''){
+      let data = this.shareInputType==='email'?'Email':'Phone No';
+      this.toast.info(`Provide ${data}!!`, 'Notification');
+      return;
+    }
+
+    
+
+    let sub: Observable<any> = null;
+    if(this.shareInputType==='email'){
+      let payload = {
+        address: ['example@gmail.com', 'example2@gmail.com'],
+        agentCode: 0,
+        attachments: [
+          {
+            content: 'string',
+            contentId: 'string',
+            disposition: 'string',
+            name: 'string',
+            type: 'string',
+          },
+        ],
+        clientCode: 0,
+        code: '524L',
+        emailAggregator: 'N',
+        from: 'string',
+        fromName: 'string',
+        message: 'Happy Birthday',
+        response: '524L',
+        sendOn: '2024-02-08T11:32:40.261Z',
+        status: 'D',
+        subject: 'Birthday Wishes',
+        systemCode: '0 for CRM, 1 for FMS',
+        systemModule: 'NB for New Business',
+      };
+      sub = this.notification_service.sendEmail(payload);
+    }else{
+      let payload = 
+        {
+          "message": "string",
+          "recipients": [
+            "string"
+          ],
+          "sender": "string"
+        
+        
+      }
+      sub = this.notification_service.sendPhone(payload);
+
+    }
 
   }
 
