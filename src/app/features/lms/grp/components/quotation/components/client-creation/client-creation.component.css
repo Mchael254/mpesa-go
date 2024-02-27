@@ -1,0 +1,135 @@
+.container {
+    background: #F5F6F8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 20px;
+  }
+
+  #container {
+    background: #FFF;
+    border: 1px solid rgba(220, 220, 220, 0.85);
+    border-radius: 5px;
+    flex: 1;
+    padding: 48px;
+  }
+
+  :host ::ng-deep {
+    .p-datatable .p-datatable-thead>tr>th {
+      color: #000000;
+      font-family: Roboto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      opacity: 70%;
+      white-space: nowrap;
+    }
+
+    .p-datatable .p-datatable-tbody>tr>td {
+        white-space: nowrap;
+    }
+  
+    .p-datatable-thead {
+      border-radius: 4px 0px 0px 0px;
+      background: #BAD0E4;
+    }
+  }
+
+  #table-align {
+    padding: 10px;
+  }
+
+  .multiselect-add {
+    position: relative;
+    width: 100%;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+p-multiSelect {
+    margin-left: 15px;
+    margin-top: 15px;
+}
+
+:host ::ng-deep .p-multiselect-label-container {
+    display: none;
+}
+
+:host ::ng-deep .p-multiselect {
+    height: auto;
+}
+
+:host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+}
+
+.rounded-circle {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #E4E7EB;
+    --bs-btn-border-color: #D9D9D9;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #c0c2c3;
+    --bs-btn-hover-border-color: #b8bbb9;
+    --bs-btn-focus-shadow-rgb: 60, 153, 110;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #00529B;
+    --bs-btn-active-border-color: #00529B;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    color: #00529B;
+  }
+
+  .custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+  }
+  
+  .custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    
+  }
+
+  .finish-button {
+    display: inline-flex;
+    height: 40px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #00529B;
+}
+
+.finish-text {
+    color: #FFF;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.finish-button:hover {
+    background: #70b7f4;
+}
+
+  

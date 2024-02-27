@@ -89,11 +89,19 @@ import { ReusableInputComponent } from './components/reusable-input/reusable-inp
 import { DiseasePipe } from '../features/lms/pipe/disease/disease.pipe';
 import { TenantIdInterceptor } from './services/http/tenant-id.interceptor';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
+import { QuotationLandingScreenComponent } from './components/quotation-landing-screen/quotation-landing-screen.component';
+import { TabViewModule } from 'primeng/tabview';
+import { ProposalLandingScreenComponent } from './components/proposal-landing-screen/proposal-landing-screen.component';
+import { PolicyLandingScreenComponent } from './components/policy-landing-screen/policy-landing-screen.component';
+import { SortPipe } from './pipes/sort/sort.pipe';
+import { FileUploadModule } from 'primeng/fileupload';
+
+
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
-const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe];
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe, SortPipe];
 const SERVICES = [
   // services
   { provide: HttpClient, useClass: HttpService },
@@ -186,7 +194,10 @@ const SERVICES = [
     CommaformatDirective,
     ...lms_pipes,
     ReusableInputComponent,
-    LanguageSelectorComponent
+    LanguageSelectorComponent,
+    QuotationLandingScreenComponent,
+    ProposalLandingScreenComponent,
+    PolicyLandingScreenComponent,
 
   ],
     imports: [
@@ -208,8 +219,8 @@ const SERVICES = [
         HttpClientModule,
         NgbModule,
         Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
-
-
+        TabViewModule,
+        FileUploadModule
     ],
     exports: [
         ErrorComponent,
@@ -250,6 +261,11 @@ const SERVICES = [
         ReusableInputComponent,
         Angular4PaystackModule,
         LanguageSelectorComponent,
+        QuotationLandingScreenComponent,
+        TabViewModule,
+        PolicyLandingScreenComponent,
+        ProposalLandingScreenComponent,
+        FileUploadModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

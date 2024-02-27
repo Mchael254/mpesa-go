@@ -23,6 +23,7 @@ import { QuotationCovers, DurationTypes, UnitRate, FacultativeType } from '../..
 import { GrpQuoteDetails } from '../../models/quoteDetails';
 import { PayFrequencyService } from '../../service/pay-frequency/pay-frequency.service';
 import { QuickService } from '../../service/quick/quick.service';
+import stepData from '../../data/steps.json';
 
 
 @AutoUnsubscribe
@@ -50,6 +51,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   showStateSpinner: boolean;
   showTownSpinner: boolean;
   quotationCode: number;
+  steps = stepData;
 
 
   constructor (
@@ -92,6 +94,7 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   quickQuoteForm() {
     this.quickForm = this.fb.group({
+      communicationType: [""],
       clients: ["", [Validators.required] ],
       branch: [""],
       products: ["", [Validators.required] ],
@@ -108,6 +111,11 @@ export class QuickComponent implements OnInit, OnDestroy {
 
     });
   }
+
+  shareSummaryForm = this.fb.group({
+    communicationType: ['', Validators.required],
+  });
+  
 
   capitalizeFirstLetterOfEachWord(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
@@ -254,23 +262,24 @@ export class QuickComponent implements OnInit, OnDestroy {
       const formData = this.quickForm.value;
 
       const apiRequest = {
-        "effective_date": formatDate(formData.effectiveDate, 'yyyy-MM-dd', 'en-US'),
-        "product_code": formData.products.value,
-        "client_code": formData.clients.value,
-        // "client_code": 232120913975,
-        // "proposer_code": 20231411811,
-        "facultative_type": formData.facultativeType.name,
-        "cover_type_dependant": formData.quotationCovers.name,
-        "calculation_type": formData.quotationCalcType,
-        "duration_type": formData.durationType.name,
-        "frequency_of_payment": formData.frequencyOfPayment.value,
-        "unit_rate": formData.unitRateOption.value,
-        "agent_code": formData.intermediary.id,
-        "branch_code": formData.branch.id,
-        // "branch_code": formData.branch.id !== null ? formData.branch.id : 410,
-        "currency_code": formData.currency.value,
-        "commission_rate": formData.commissionRate,
-        "product_type": formData.products.type,
+        effective_date: formatDate(formData.effectiveDate, 'yyyy-MM-dd', 'en-US'),
+        product_code: formData.products.value,
+        client_code: formData.clients.value,
+        // client_code: 232120913975,
+        // proposer_code: 20231411811,
+        facultative_type: formData.facultativeType.name,
+        cover_type_dependant: formData.quotationCovers.name,
+        calculation_type: formData.quotationCalcType,
+        duration_type: formData.durationType.name,
+        frequency_of_payment: formData.frequencyOfPayment.value,
+        unit_rate: formData.unitRateOption.value,
+        agent_code: formData.intermediary.id,
+        branch_code: formData.branch.id,
+        // branch_code: formData.branch.id !== null ? formData.branch.id : 410,
+        currency_code: formData.currency.value,
+        commission_rate: formData.commissionRate,
+        product_type: formData.products.type,
+
       };
       console.log("apiRequest", apiRequest)
 

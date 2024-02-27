@@ -22,6 +22,16 @@ export class PartyService {
     );
   }
 
+  getListOfDependentByQuotationCode(tel_quote:number, proposal_code:number){
+    return this.api.GET(`parties/dependents?page=0&size=5&tquo_code=${tel_quote}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    // return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}&proposal_code=${proposal_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    // .pipe(
+    //   map((data: any) => {
+    //     return data['content'];
+    // }),
+    // );
+  }
+
   getListPolicyDependents(endr_code = 2023618118){
 
     return this.api.GET(`${this.POLICY_PARTY_BASE_URL}/dependents?endr_code=${endr_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);

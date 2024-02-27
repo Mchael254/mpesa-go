@@ -48,6 +48,13 @@ const routes: Routes = [
               ),
           },
           {
+            path: 'reinsurance',
+            loadChildren: () =>
+              import('./ind/components/reinsurance/reinsurance.module').then(
+                (m) => m.ReinsuranceModule
+              ),
+          },
+          {
             path: 'claim',
             loadChildren: () =>
               import('./ind/components/claims/claims.module').then(

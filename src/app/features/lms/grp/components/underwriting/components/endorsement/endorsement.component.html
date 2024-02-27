@@ -1,4 +1,9 @@
 <div class="main">
+    <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
     <div class="container">
         <div style="padding-left: 25px; padding-top: 20px;"><span class="quote-text">Policy details</span></div>
         <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
@@ -1012,7 +1017,7 @@
 
         <!-- modals -->
     </div>
-    <div>
+    <div class="col-12">
         <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
         </button>
         <div class="col-12 policy-button-container">

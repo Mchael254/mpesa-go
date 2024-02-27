@@ -136,3 +136,25 @@
 td {
   padding-left: 20px;
 }
+
+:host ::ng-deep {
+  .p-datatable .p-datatable-thead>tr>th {
+    color: #000000;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    opacity: 70%;
+    white-space: nowrap;
+  }
+
+  .p-datatable .p-datatable-tbody>tr>td {
+    white-space: nowrap;
+}
+
+  .p-datatable-thead {
+    border-radius: 4px 0px 0px 0px;
+    background: #BAD0E4;
+  }
+}

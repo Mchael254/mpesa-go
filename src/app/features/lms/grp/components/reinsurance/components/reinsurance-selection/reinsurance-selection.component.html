@@ -1,1 +1,129 @@
-<p>reinsurance-selection works!</p>
+<div class="container">
+    <div class="row stepper">
+        <div class="col-md-12">
+          <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+        </div>
+      </div>
+    <span class="reinsurance-title">Reinsurance</span>
+    <div class="main">
+
+        <div>
+            <span class="policy-summary">Policy summary</span>
+        </div>
+
+        <div class="row col-12">
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Client: </td>
+                        <td class="td-desc">{{ policySummary[0]?.client | titlecase }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Effective date: </td>
+                        <td class="td-desc">{{ policySummary[0]?.effective_date }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Coverage duration: </td>
+                        <td class="td-desc">{{ policySummary[0]?.duration_type }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Total sum assured: </td>
+                        <td class="td-desc">{{ policySummary[0]?.basic_sum_assured | number }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Product: </td>
+                        <td class="td-desc">{{ policySummary[0]?.product_name | titlecase }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Cover from: </td>
+                        <td class="td-desc">{{ policySummary[0]?.cover_from_date }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Occupation: </td>
+                        <td class="td-desc">{{ policySummary[0]?.occupation_of_holder }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-4 col-xs-12">
+                <table style="width: 100%;">
+                    <tr class="tr-class">
+                        <td class="td-label">Policy number: </td>
+                        <td class="td-desc">{{ policySummary[0]?.policy_number }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Cover to: </td>
+                        <td class="td-desc">{{ policySummary[0]?.cover_to_date }}</td>
+                    </tr>
+                    <tr class="tr-class">
+                        <td class="td-label">Total premium: </td>
+                        <td class="td-desc">{{ policySummary[0]?.total_premium | number }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <div class="treaty">Please select a treaty below</div>
+            <div class="treaty-label">Treaty</div>
+            <form [formGroup]="treatyForm">
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                    <select class="form-select" id="treaty" formControlName="treaty"> 
+                        <ng-container *ngFor="let treatyItems of treaty">
+                            <option [value]="treatyItems['ta_code']">{{ treatyItems['ta_desc'] | titlecase }}</option>
+                        </ng-container>
+                    </select>
+            </div>
+        </form>
+        </div>
+
+        <div class="reinsurance-params">Reinsurance parameters</div>
+
+          <div class="form">
+            <i class="fa fa-search"></i>
+            <input type="text" class="form-control form-input" placeholder="Search">
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
+            </p-multiSelect>
+          </div>
+
+          <div style="margin-top: 4px;">
+            
+            <p-table [value]="reinsuranceParams" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th *ngIf="selectedColumns.includes('cvt_desc')">Cover type name</th>
+                    <th *ngIf="selectedColumns.includes('use_cvr_rate')">Retention limit</th>
+                    <th *ngIf="selectedColumns.includes('atct_limit')">Ceding limit</th>
+                    <th *ngIf="selectedColumns.includes('atct_cede_rate')">Cede rate</th>
+                    <th *ngIf="selectedColumns.includes('rate_type')">Rate type</th>
+                    <th *ngIf="selectedColumns.includes('tacr_comm_rate')">Commission rate</th>
+                    <th *ngIf="selectedColumns.includes('tacr_comm_div_factr')">Division factor</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-reinsuranceParams >
+                  <tr>
+                    <td *ngIf="selectedColumns.includes('cvt_desc')">{{ reinsuranceParams.cvt_desc | titlecase }} </td>
+                    <td *ngIf="selectedColumns.includes('use_cvr_rate')">{{ reinsuranceParams.use_cvr_rate | number }}</td>
+                    <td *ngIf="selectedColumns.includes('atct_limit')" style="text-align: right;">{{reinsuranceParams.atct_limit | number }}</td>
+                    <td *ngIf="selectedColumns.includes('atct_cede_rate')">{{ reinsuranceParams.atct_cede_rate }}</td>
+                    <td *ngIf="selectedColumns.includes('rate_type')">{{ reinsuranceParams.rate_type }} </td>
+                    <td *ngIf="selectedColumns.includes('tacr_comm_rate')">{{ reinsuranceParams.tacr_comm_rate }}</td>
+                    <td *ngIf="selectedColumns.includes('tacr_comm_div_factr')">{{ reinsuranceParams.tacr_comm_div_factr }}</td>
+                    
+                  </tr>
+                </ng-template>
+              </p-table> 
+            
+          </div>
+
+    </div>
+
+</div>
+<div style="display: flex; justify-content: flex-end; padding-top: 12px; padding-right: 35px;">
+    <button class="proceed-button" (click)="proceed()">
+        <span class="button-text">Proceed</span>
+    </button>
+</div>
