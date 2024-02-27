@@ -1,0 +1,182 @@
+<div></div>
+
+<div class="base-content-section lms">
+    <div style="display: flex; padding-top: 1rem; justify-content: end">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+      </div>
+  <div class="row">
+    <div >
+      <div class="transactions d-flex justify-content-center" style="padding-bottom: 1rem; font-size: 0.8rem">
+        {{ "Reinsurance"  | uppercase }}
+      </div>
+      <div class="full-border" style="position: relative;">
+        <div
+        class="fw-medium d-flex justify-content-center"
+        style="font-size: 0.8rem"
+      >
+        {{ "Summary" | uppercase }}
+      </div>
+
+      <ngx-spinner name="lms_ind_view" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
+      <div class="py-2">
+        
+      <div style="padding-bottom: 1rem; font-size: 0.8rem">
+        <div class="row">
+         <div class="col-2 fw-medium">{{ "Risk retention parameters"  | titlecase }}</div>
+         <div class="col-1">
+            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+            <option selected>2024</option>
+            <option value="1">2025</option>
+            <option value="2">2026</option>
+            <option value="3">2027</option>
+          </select></div>
+        </div>
+       </div>
+       <div class="table-responsive">
+         <table class="table table-striped">
+           <thead>
+             <tr>
+               <th>Cover Type</th>
+               <th>Retained Sum Assured</th>
+               <th>Excess</th>
+               <th>Retention Limit</th>
+               <th>Gross Retention Limit</th>
+               <th>Net retention limit</th>
+               <th>Policy sum assured</th>
+             </tr>
+           </thead>
+           <tbody *ngIf="[].length > 0">
+             <tr *ngFor="let lms of []">
+               <td>{{ lms?.quote_no || "" }}</td>
+               <td>{{ lms?.quote_no || "" }}</td>
+               <td>{{ lms?.sum_insured || "" | number }}</td>
+               <td>{{ lms?.premium || 0 | number }}</td>
+               <td>{{ lms?.quote_no || "" }}</td>
+               <td>{{ lms?.created_at || "" | date:'short' }}</td>
+               <td>{{ lms?.quote_no || "" }}</td>
+               <!-- <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td> -->
+             </tr>
+           </tbody>
+         </table>
+ 
+         <div
+           *ngIf="[].length === 0"
+           class="text-danger d-flex justify-content-center"
+         >
+           No List of Risk retention parameters Available
+         </div>
+       </div>   
+      </div>
+        
+      <div class="py-2">
+        <div class="fw-medium" style="padding-bottom: 1rem; font-size: 0.8rem">
+            <div class="row">
+             <div class="col-3">{{ "Treaty details"  | titlecase }}</div>
+            </div>
+           </div>
+           <div class="table-responsive">
+             <table class="table table-striped">
+               <thead>
+                 <tr>
+                   <th>Reinsurer</th>
+                   <th>Cover Type</th>
+                   <th>Treaty ID</th>
+                   <th>Treaty sum assured</th>
+                   <th>Cession rate</th>
+                   <th>Reinsurance premium rate</th>
+                   <th>Premium</th>
+                   <th>Treaty commission</th>
+                   <th>Treaty VAT amount</th>
+                 </tr>
+               </thead>
+               <tbody *ngIf="[].length > 0">
+                 <tr *ngFor="let lms of []">
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.sum_insured || "" | number }}</td>
+                   <td>{{ lms?.premium || 0 | number }}</td>
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.created_at || "" | date:'short' }}</td>
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.quote_status || "" }}</td>
+                   <!-- <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td> -->
+                 </tr>
+               </tbody>
+             </table>
+     
+             <div
+               *ngIf="[].length === 0"
+               class="text-danger d-flex justify-content-center"
+             >
+               No List of Treaty details Available
+             </div>
+           </div> 
+      </div>  
+
+
+      <div class="py-2">
+        <div class="fw-medium" style="padding-bottom: 1rem; font-size: 0.8rem">
+            <div class="row">
+             <div class="col-3">{{ "Excess coverage"  | titlecase }}</div>
+            </div>
+           </div>
+           <div class="table-responsive">
+             <table class="table table-striped">
+               <thead>
+                 <tr>
+                    <th>Reinsurer</th>
+                    <th>Treaty sum assured</th>
+                    <th>Treaty commission</th>
+                    <th>Treaty VAT amount</th>
+                    <th>Treaty percentage</th>
+                    <th>Treaty commission rate</th>                   
+                 </tr>
+               </thead>
+               <tbody *ngIf="[].length > 0">
+                 <tr *ngFor="let lms of []">
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.quote_no || "" }}</td>
+                   <td>{{ lms?.sum_insured || "" | number }}</td>
+                   <td>{{ lms?.premium || 0 | number }}</td>
+                 </tr>
+               </tbody>
+             </table>
+     
+             <div
+               *ngIf="[].length === 0"
+               class="text-danger d-flex justify-content-center"
+             >
+               No List of Excess Coverage Available
+             </div>
+           </div> 
+      </div>  
+    
+    
+    </div>
+
+
+
+
+
+    <div class="d-flex justify-content-between pb-4">
+        <div></div>
+        <div>
+          <button
+            class="btn"
+            type="button"
+            [ngClass]="{
+              'btn-danger': false,
+              'btn-primary': true
+            }"
+            class="btn btn-sm"
+          >
+            Finish
+          </button>
+        </div>
+      </div>      
+    </div>
+  </div>
+</div>

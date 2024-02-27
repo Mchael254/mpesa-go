@@ -13,6 +13,7 @@ import { StringManipulation } from 'src/app/features/lms/util/string_manipulatio
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { switchMap } from 'rxjs';
+import { MedicalsService } from 'src/app/features/lms/service/medicals/medicals.service';
 
 
 @Component({
@@ -39,6 +40,9 @@ export class TestsComponent  implements OnInit{
   quotation_details: any;
   product: any;
   date_full = new Date();
+  isTestFormSelected: boolean;
+  medicalTestList: any[];
+  clientMedicalTestList: any;
 
   constructor(private router:Router,  
     private session_service: SessionStorageService, 
@@ -48,11 +52,15 @@ export class TestsComponent  implements OnInit{
     private party_service: PartyService,
     private spinner_service:NgxSpinnerService,
     private cover_type_service: CoverTypeService,
-    private toast_service: ToastService){}
+    private medical_service: MedicalsService,
+    private toast_service: ToastService
+    ){}
 
   ngOnInit(): void {
     this.quotation_details = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS));
     this.medicalSummaryResults();
+    this.getClientMedicalTest();
+    this.getPolMedicalTest()
   }
 
 
@@ -77,6 +85,62 @@ export class TestsComponent  implements OnInit{
     }, (err: any) =>{})
   }
 
+  getClientMedicalTest(){
+    this.medical_service.getListOfClientMedicalTests().subscribe((data:any[]) =>{
+      this.clientMedicalTestList = data[0]
+      console.log(data);
+      
+    })
+  }
+
+  getPolMedicalTest(){
+    this.medical_service.getListOfTests(1).subscribe((data:any[]) =>{
+      this.medicalTestList = data
+      console.log(data);
+      
+    })
+  }
+
+  deleteMedicalTest(test: any){
+    let cml_code = test?.cml_code===undefined? 0 : test?.cml_code;
+    this.medical_service.deleteClientMedicalTest(cml_code).subscribe(data => {
+      console.log(data);
+      
+    })
+  }
+
+  selectTestForm(status=true){
+    console.log(status);
+    
+    this.isTestFormSelected = status
+  }
+
+  saveTestForm(status: any){
+    let mtl_code = StringManipulation.returnNullIfEmpty(status.target.value);
+    let pol_code = StringManipulation.returnNullIfEmpty(status.target.value);
+    let endr_code = StringManipulation.returnNullIfEmpty(status.target.value); 
+
+    console.log(pol_code);
+
+    let testValue = {
+      "pol_code": pol_code,
+      "endr_code": endr_code,
+      "mtl_code": mtl_code,
+      "type": "A"
+    }
+
+    this.medical_service.saveClientMedicalTest(testValue).subscribe(data =>{
+
+      console.log(data);
+      
+
+    },
+    err =>{
+      this.toast_service.danger(err?.message, 'Data Not Found')
+    })
+    
+    this.isTestFormSelected = true;
+  }
   nextPage(){
     this.router.navigate(['/home/lms/medicals/result-processing'])
   }

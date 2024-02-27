@@ -429,11 +429,21 @@ policySubMenuList() : SidebarMenu[]{
   return [
     {
       name:"Policies",
-      // link: "/home/lms/policy/list",
-      link: "/home/lms/grp/policy/policyListing",
+      link: "/home/lms/policy/list",
+      // link: "/home/lms/grp/policy/policyListing",
       value: "POLICY"
     }
   ];
+}
+reinsuranceSubMenuList(){
+  return [
+    {
+      name:"Reinsurance",
+      link: "/home/lms/ind/reinsurance/initiation",
+      value: "REINSURANCE"
+    }
+  ];
+
 }
 claimSubMenuList(): SidebarMenu[]{
   return [

@@ -22,6 +22,9 @@ export class Error401Interceptor implements HttpInterceptor {
     return next.handle(request).pipe( tap(() => {},
       (err: any) => {
         let session = StringManipulation.returnNullIfEmpty(this.session_storage.getItem('SESSION_TOKEN'));
+        console.log("RRRRRR");
+        console.log(session);
+        
         let tenantId = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID));
       if (err instanceof HttpErrorResponse) {
         if (err.status !== 401) {return;}
