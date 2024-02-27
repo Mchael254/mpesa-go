@@ -118,9 +118,25 @@
                   [class.selected]="selectedRegion === region"
                 >
                   <td class="body">{{ region.name }}</td>
-                  <td class="body">{{ region.overrideCommissionEarned }}</td>
+                  <td class="body">
+                    {{
+                      region.overrideCommissionEarned === "Y"
+                        ? "Yes"
+                        : region.overrideCommissionEarned === "N"
+                        ? "No"
+                        : region.overridrCommisionEarned
+                    }}
+                  </td>
                   <td class="body">{{ region.manager }}</td>
-                  <td class="body">{{ region.managerAllowed }}</td>
+                  <td class="body">
+                    {{
+                      region.managerAllowed === "Y"
+                        ? "Yes"
+                        : region.managerAllowed === "N"
+                        ? "No"
+                        : region.managerAllowed
+                    }}
+                  </td>
                   <td class="body">{{ region.dateFrom }}</td>
                   <td class="body">{{ region.dateTo }}</td>
                 </tr>

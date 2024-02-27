@@ -300,32 +300,33 @@
                scrollHeight="400px"
                responsiveLayout="scroll"
                [resizableColumns]="true"
+               [globalFilterFields]="globalFilterFields"
       >
         <ng-template pTemplate="header">
           <tr>
             <th class="head">
               Select All
             </th>
-            <th class="head" pSortableColumn="createdOn">
-              Created On <p-sortIcon field="createdOn"></p-sortIcon>
+            <th class="head" pSortableColumn="date">
+              Created On <p-sortIcon field="date"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketName">
-              Ticket Name <p-sortIcon field="ticketName"></p-sortIcon>
+            <th class="head" pSortableColumn="task.activityName ">
+              Ticket Name <p-sortIcon field="task.activityName "></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="refNo">
-              Ref No. <p-sortIcon field="refNo"></p-sortIcon>
+            <th class="head" pSortableColumn="sysModule">
+              Ref No. <p-sortIcon field="sysModule"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="clientName">
-              Client <p-sortIcon field="clientName"></p-sortIcon>
+            <th class="head" pSortableColumn="clientCode">
+              Client <p-sortIcon field="clientCode"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="intermediaryName">
-              Intermediary <p-sortIcon field="intermediaryName"></p-sortIcon>
+            <th class="head" pSortableColumn="agentCode">
+              Intermediary <p-sortIcon field="agentCode"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketFrom">
-              Ticket From <p-sortIcon field="ticketFrom"></p-sortIcon>
+            <th class="head" pSortableColumn="reporter">
+              Ticket From <p-sortIcon field="reporter"></p-sortIcon>
             </th>
-            <th class="head" pSortableColumn="ticketAssignee">
-              Ticket Assignee <p-sortIcon field="ticketAssignee"></p-sortIcon>
+            <th class="head" pSortableColumn="assignee">
+              Ticket Assignee <p-sortIcon field="assignee"></p-sortIcon>
             </th>
             <th></th>
           </tr>
@@ -334,25 +335,25 @@
               <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
             <th>
-              <p-columnFilter type="text" field="createdOn"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('createdOn');" (input)="getInputs($event, 'createdOn')" >
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('activityName');" (input)="getInputs($event, 'activityName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="refNo"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('referenceNo');" (input)="getInputs($event, 'referenceNo')">
             </th>
             <th>
-              <p-columnFilter type="text" field="clientName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('clientName');" (input)="getInputs($event, 'clientName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="intermediaryName"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('agentName');" (input)="getInputs($event, 'agentName')">
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketFrom"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('reporter');" (input)="getInputs($event, 'reporter')">
             </th>
             <th>
-              <p-columnFilter type="text" field="ticketAssignee"></p-columnFilter>
+              <input type="text" class="form-control w-75" (keyup.enter)="searchTickets('assignee');" (input)="getInputs($event, 'assignee')">
             </th>
             <th>
             </th>
@@ -370,7 +371,7 @@
               {{ ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :
               ticket?.ticket.sysModule === 'C' ? ticket?.ticket.claimNo :
                 ticket?.ticket.sysModule === 'P' ? ticket?.ticket.policyNo : ''
-                === '' ? '' : '' }}
+                === '' ? ticket?.ticket.policyNo : '' }}
             <td class="body">{{ ticket.clientName }}</td>
             <td class="body">{{ ticket.agentName }}</td>
             <td class="body">{{ ticket.ticket.reporter }}</td>

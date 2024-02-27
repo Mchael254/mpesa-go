@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDTO';
 import {Pagination} from '../../../../shared/data/common/pagination'
 import {AppConfigService} from "../../../../core/config/app-config-service";
-import { environment } from 'src/environments/environment';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import { environment } from '../../../../../environments/environment';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 import {UtilService} from "../../../../shared/services";
 
 @Injectable({

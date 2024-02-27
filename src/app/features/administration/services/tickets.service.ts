@@ -19,6 +19,8 @@ import {GeneralTicketApiResponse} from "../data/generalTicketApiResponse";
 import {Logger} from "../../../shared/services/logger/logger.service";
 import {UtilService} from "../../../shared/services/util/util.service";
 import {environment} from "../../../../environments/environment";
+import {API_CONFIG} from "../../../../environments/api_service_config";
+import {ApiService} from "../../../shared/services/api/api.service";
 
 const log = new Logger('TicketsService');
 
@@ -57,11 +59,14 @@ export class TicketsService {
 })
   transanctionsRoutingData$ = this.transanctionsRouting$.asObservable();
 
+  public ticketFilterObject = signal({});
+
   constructor(
     private appConfig: AppConfigService,
     private http: HttpClient,
     private authService: AuthService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private api:ApiService,
   ) { }
 
   setTransactionsRoutingData(transactionsRouting: TransactionsRoutingDTO){
@@ -104,14 +109,10 @@ export class TicketsService {
     sort: string,
     module: string,
     queryColumn: string,
+    query: string
   ): Observable<Pagination<TicketsDTO>> {
 
     const assignee = this.authService.getCurrentUserName()
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
 
     // const params = new HttpParams()
     //   .set('pageNo', `${pageNo}`)
@@ -131,15 +132,47 @@ export class TicketsService {
       .set('sort', `${sort}`)
       .set('module', `${module}`)
       .set('queryColumn', `${queryColumn}`)
+      .set('query', `${query}`)
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.http.get<Pagination<TicketsDTO>>(`/${this.baseUrl}/workflow/api/v1/tickets`,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
+  }
+
+  searchAllTickets(
+    pageNo: number = 0,
+    pageSize: number,
+    fromDate: string,
+    toDate: string,
+    queryColumn: string,
+    query: string,
+  ): Observable<Pagination<TicketsDTO>> {
+
+    const assignee = this.authService.getCurrentUserName()
+
+    let params = new HttpParams()
+      .set('pageNo', `${pageNo}`)
+      .set('pageSize', `${pageSize}`)
+      .set('assignee', `${assignee}`)
+      .set('fromDate', `${fromDate}`)
+      .set('toDate', `${toDate}`)
+      .set('queryColumn', `${queryColumn}`)
+      .set('query', `${query}`)
+
+    // Call the removeNullValuesFromQueryParams method from the UtilsService
+    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
+
+    return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
+  }
+
+  searchTickets(request): Observable<Pagination<TicketsDTO>> {
+
+    let params = new HttpParams()
+
+      .set('request', `${request}`)
+
+    return this.api.POST<Pagination<TicketsDTO>>(`api/v1/tickets/filterTickets`, JSON.stringify(request) , API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   reassignTickets(ticketsToReassign: TicketReassignDto[]): Observable<GeneralTicketApiResponse> {
@@ -355,7 +388,7 @@ export class TicketsService {
 
   sortTickets(
     pageNo: number = 0,
-    pageSize: number = 5,
+    pageSize: number = 10,
     fromDate: string,
     toDate: string,
     type: string,

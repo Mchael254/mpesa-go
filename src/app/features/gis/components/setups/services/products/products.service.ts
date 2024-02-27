@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError, forkJoin, map } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Products, Product_group, SubclassesDTO } from '../../data/gisDTO';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../../../../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
@@ -156,5 +157,12 @@ export class ProductsService {
       retry(1),
       catchError(this.errorHandl)
     )
+  }
+  getProductSubclasses (productCode): Observable<SubclassesDTO>{
+
+    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`, this.httpOptions).pipe(
+      retry(1),
+      catchError(this.errorHandl) 
+    );
   }
 }

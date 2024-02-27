@@ -18,10 +18,13 @@ export const environment = {
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
     [API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL, '/crm/accounts'],
     [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, '/lms/underwriting'],
+    [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
+    [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
+    [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
 
   ]),
   TENANT_ID: API_TENANT_ID.TQV6,
-  
+
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']
 

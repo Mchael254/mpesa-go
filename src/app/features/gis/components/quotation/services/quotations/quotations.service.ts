@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
 import { Observable } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
-import { environment } from 'src/environments/environment';
-import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
-import { Pagination } from 'src/app/shared/data/common/pagination';
+import { environment } from '../../../../../../../environments/environment';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { Pagination } from '../../../../../../shared/data/common/pagination';
 @Injectable({
   providedIn: 'root'
 })
@@ -28,9 +28,9 @@ export class QuotationsService {
    * @type {string}
    */ 
   baseUrl = this.appConfig.config.contextPath.gis_services;
-  testBase = this.appConfig.config.contextPath.notification_service;
   computationUrl = this.appConfig.config.contextPath.computation_service;
   notificationUrl = this.appConfig.config.contextPath.notification_service;
+  crmUrl = this.appConfig.config.contextPath.setup_services
   /**
    * HTTP options for making requests with JSON content type.
    * @type {any}
@@ -259,11 +259,51 @@ quotationUtils(transactionCode){
 sendEmail(data){
   return this.http.post(`/${this.notificationUrl}/email/send`, JSON.stringify(data),this.httpOptions)
 }
+sendSms(data){
+  return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
+}
 getUserProfile(){
   const baseUrl = this.appConfig.config.contextPath.users_services;
   return this.http.get(`/${baseUrl}/administration/users/profile`)
 }
+getLimits(productCode,type,quotRiskCode?){
+  let url = `/${this.baseUrl}/quotation/api/v1/quotation/scheduleValues?pageSize=100&pageNo=0&quotationProductCode=${productCode}&scheduleValueType=${type}`;
 
+  if (quotRiskCode) {
+    url += `&quotRiskCode=${quotRiskCode}`;
+  }
+
+  return this.http.get(url);
+}
+assignProductLimits(productCode){
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+
+
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/scheduleValues/auto-populate?quotationProductCode=${productCode}`,
+  {headers:headers})
+
+}
+documentTypes(accountType){
+  const params = new HttpParams()
+  .set('accountType', accountType)
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+  return this.http.get(`/${this.crmUrl}/setups/required-documents`,{
+    headers: headers,
+    params:params
+  })
+}
 }
 
   

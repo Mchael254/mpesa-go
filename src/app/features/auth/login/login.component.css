@@ -36,3 +36,18 @@
   background: #00529b;
 }
 
+
+.entity {
+  padding: 3rem 0 0;
+  margin: 1rem 2rem;
+  border-bottom: solid 1px;
+  border-radius: 20px;
+}
+
+.tenant:hover, .entity:hover {
+  cursor: pointer;
+  border: solid 1px gray;
+  border-radius: 20px;
+  font-weight: bold;
+  transition: border-radius 500ms;
+}

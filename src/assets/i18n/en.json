@@ -30,7 +30,9 @@
         "verification": "Verification",
         "verification_instruction": "Select which contact details we should send verification code.",
         "verify": "Verify",
-        "via": "Via"
+        "via": "Via",
+        "choose_tenant": "Choose your tenant",
+        "choose_entity": "Choose your entity"
     },
     "base": {
         "accounts":"Accounts",

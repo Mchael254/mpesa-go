@@ -52,7 +52,8 @@
           <tbody>
           <tr *ngFor="let ticketCountPerModule of ticketCount">
             <td>{{ticketCountPerModule.activityName}}</td>
-            <td style="text-align: center;">{{ticketCountPerModule.totalTickets}}</td>
+            <td class="ticketCount" style="text-align: center;"
+                (click)="displayTicketDetails(ticketCountPerModule)">{{ticketCountPerModule.totalTickets}}</td>
           </tr>
           </tbody>
         </table>

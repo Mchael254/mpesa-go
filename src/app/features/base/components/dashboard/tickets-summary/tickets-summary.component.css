@@ -23,3 +23,9 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #2885d5;
 }
+
+.ticketCount:hover {
+  cursor: pointer;
+  color: #00529b;
+  text-decoration: underline;
+}

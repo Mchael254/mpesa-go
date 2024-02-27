@@ -18,6 +18,7 @@ import {ReplaySubject, takeUntil, tap} from "rxjs";
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
+import {TableDetail} from "../../../../../shared/data/table-detail";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -36,7 +37,7 @@ export class ViewTicketsComponent implements OnInit {
   public filteredSpringTickets: TicketsDTO[] = [];
   private allSpringTickets: TicketsDTO[] = [];
 
-  pageSize: 5;
+  pageSize: 10;
   ticketModules: TicketModuleDTO[] = [];
 
   showReassignTicketsModal: boolean;
@@ -51,6 +52,20 @@ export class ViewTicketsComponent implements OnInit {
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
   dateFrom = `${this.year-4}-${this.month}-${this.day}`;
+
+  tableDetails: TableDetail;
+
+  filterObject: {
+    createdOn:string, ticketName:string, refNo:string, clientName:string, intermediaryName:string, ticketFrom:string, ticketAssignee:string
+  } = {
+    createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+  };
+
+  isSearching = false;
+
+  searchData : Pagination<TicketsDTO> =  <Pagination<any>>{};
+  activityName: string;
+  totalTickets: number;
 
   globalFilterFields = [
     'createdOn',
@@ -86,7 +101,26 @@ export class ViewTicketsComponent implements OnInit {
     // this.getAllTicketsFromCubeJs();
     this.createSortForm();
     this.getAllTicketTypes();
-    // this.getAllTicketModules();
+    this.getAllTicketModules();
+
+    log.info("ticket obj",this.ticketsService.ticketFilterObject());
+
+    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+
+    if(ticketFilter?.fromDashboardScreen) {
+      this.ticketsService
+        .getAllTickets(0, ticketFilter?.totalTickets, this.dateFrom || null, this.dateToday || null, '', '', 'name', ticketFilter?.activityName)
+        .subscribe({
+          next: (data) => {
+            this.springTickets = data;
+            this.spinner.hide();
+            log.info("ticket subsc",this.ticketsService.ticketFilterObject());
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage('Error', err.message);
+          }
+        });
+    }
   }
 
   getAllTicketsFromCubeJs() {
@@ -187,7 +221,7 @@ export class ViewTicketsComponent implements OnInit {
     query: string = '',
     queryColumn: string = '') {
 
-    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, query, queryColumn )
+    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, '', query, queryColumn, )
       .pipe(
         takeUntil(this.destroyed$),
         tap((data) => log.info('Fetch Tickets data>> ', data))
@@ -195,25 +229,33 @@ export class ViewTicketsComponent implements OnInit {
   }
 
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
-    const pageIndex = event.first / event.rows;
-    const queryColumn = event.sortField;
-    const pageSize = event.rows;
 
-    this.getAllTickets(pageIndex, pageSize)
-      .pipe(untilDestroyed(this))
-      .subscribe((data:Pagination<TicketsDTO>) => {
-        this.springTickets = data;
-        this.cdr.detectChanges();
-        this.ticketsService.setCurrentTickets(this.springTickets.content);
+    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+
+    if(!ticketFilter?.fromDashboardScreen) {
+      const pageIndex = event.first / event.rows;
+      const queryColumn = event.sortField;
+      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
+      const pageSize = event.rows;
+      log.info('sortorder',queryColumn);
+
+      this.getAllTickets(pageIndex, pageSize,sort?.toString())
+        .pipe(untilDestroyed(this))
+        .subscribe((data:Pagination<TicketsDTO>) => {
+          this.springTickets = data;
+          this.cdr.detectChanges();
+          this.ticketsService.setCurrentTickets(this.springTickets.content);
 
 
-        // Extracting all the code values from the tickets
-        const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+          // Extracting all the code values from the tickets
+          const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
 
-        // Passing the code values to the getCodeValue method
-        const result = codeValues.map(code => this.getTicketCode(code));
+          // Passing the code values to the getCodeValue method
+          const result = codeValues.map(code => this.getTicketCode(code));
 
-      })
+        })
+    }
+
   }
 
 /**
@@ -260,7 +302,7 @@ export class ViewTicketsComponent implements OnInit {
  */
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
-      const selectedTickets = this.selectedTickets;
+      const selectedTickets = this.selectedSpringTickets;
 
     // Check if any products are selected
       if (selectedTickets.length === 0) {
@@ -268,7 +310,7 @@ export class ViewTicketsComponent implements OnInit {
       return;
       }
 
-      const selectedTicketCodes = this.selectedTickets.map(ticket => ticket.systemModule);
+      const selectedTicketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.sysModule);
       this.otpRequestCheck(selectedTicketCodes)
         .then((results) => {
 
@@ -319,14 +361,14 @@ export class ViewTicketsComponent implements OnInit {
       log.info('Value from selectedTickets:', ticketCodes);
 
       const ticketPromises = ticketCodes.map((sysModule) => {
-        const ticket = this.allTickets.find(t => t.systemModule === sysModule);
+        const ticket = this.allSpringTickets.find(t => t.ticket.sysModule === sysModule);
         if (!ticket) {
           return Promise.resolve(null);
         }
 
         if (sysModule === 'Q') {
           log.info('Calling quotation method...');
-          const quotationNo = ticket?.quotationNumber;
+          const quotationNo = ticket?.ticket.quotationNo;
           return this.ticketsService.getQuotation(quotationNo)
             .toPromise()
             .then((response) => {
@@ -335,7 +377,7 @@ export class ViewTicketsComponent implements OnInit {
             });
         } else if (sysModule === 'C') {
           log.info('Calling claim Method...');
-          const claimNo = ticket?.claimNumber;
+          const claimNo = ticket?.ticket.claimNo;
           return this.ticketsService.getClaims(claimNo)
             .toPromise()
             .then((response) => {
@@ -344,7 +386,7 @@ export class ViewTicketsComponent implements OnInit {
             });
         } else {
           log.info('Calling default method...');
-          const policyCode = ticket?.policyCode.toString();
+          const policyCode = ticket?.ticket.policyCode.toString();
           return this.ticketsService.getUnderWriting(policyCode)
             .toPromise()
             .then((response) => {
@@ -365,7 +407,7 @@ export class ViewTicketsComponent implements OnInit {
   authorizeTickets() {
     this.cdr.detectChanges();
 
-    const ticketCodes = this.selectedTickets.map(ticket => ticket.ticketID);
+    const ticketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.code);
     const username = this.authService.getCurrentUserName();
 
     const ticket = { ticketIds: ticketCodes }; // Format the data as an object with an array of ticket ids
@@ -411,7 +453,7 @@ export class ViewTicketsComponent implements OnInit {
               this.globalMessagingService.displayErrorMessage('Failed', `All ${totalCount} tickets have failed to be authorized`);
             }
             // Clear the selected tickets after authorizing
-          this.selectedTickets = [];
+          this.selectedSpringTickets = [];
           this.cdr.detectChanges();
 
         } else {
@@ -469,7 +511,7 @@ export class ViewTicketsComponent implements OnInit {
 
   checkSelectedTickets(): boolean {
     // Get the selected tickets from the table
-    const selectedTickets = this.selectedTickets;
+    const selectedTickets = this.selectedSpringTickets;
 
     // Check if any ticket is selected
     if (selectedTickets.length === 0) {
@@ -516,10 +558,9 @@ export class ViewTicketsComponent implements OnInit {
       ticketTypes: sortValues.ticketTypes ? sortValues.ticketTypes : '',
       ticketModules: sortValues.ticketModules ? sortValues.ticketModules : ''
     }
-
-    if (payload.ticketModules === '') {
+    /*if (payload.ticketModules === '') {
       return this.filteredSpringTickets =  this.allSpringTickets;
-    }
+    }*/
 
     this.filteredSpringTickets = this.allSpringTickets.filter((t) => {
       return payload.ticketModules === t.ticket.sysModule;
@@ -563,6 +604,158 @@ export class ViewTicketsComponent implements OnInit {
       );
   }
 
+  filter(event, pageIndex: number = 0, pageSize: number = event.rows, keyData: string) {
+
+    this.springTickets = null; // Initialize with an empty array or appropriate structure
+
+    let data = this.filterObject[keyData];
+    console.log('datalog>>',data, keyData)
+
+    this.isSearching = true;
+    this.spinner.show();
+
+    if (data.trim().length > 0 || data === undefined || data === null) {
+      this.ticketsService
+        .searchAllTickets(
+          pageIndex, pageSize,
+          this.dateFrom, this.dateToday,
+          keyData, data)
+        .subscribe((data) => {
+            this.springTickets = data;
+            this.spinner.hide();
+          },
+          error => {
+            this.spinner.hide();
+          });
+    }
+    else {
+      this.getAllTickets(pageIndex, pageSize)
+        .pipe(
+          untilDestroyed(this),
+          tap((data) => log.info(`Fetching Tickets>>>`, data))
+        )
+        .subscribe(
+          (data: Pagination<TicketsDTO>) => {
+
+            this.springTickets = data;
+            this.tableDetails.rows = this.springTickets?.content;
+            this.tableDetails.totalElements = this.springTickets?.totalElements;
+            this.cdr.detectChanges();
+            this.spinner.hide();
+          },
+          error => { this.spinner.hide(); }
+        );
+    }
+
+  }
+
   ngOnDestroy(): void {
   }
+
+  inputCreatedOn(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['createdOn'] = value;
+  }
+
+  inputTicketName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketName'] = value;
+  }
+
+  inputRefNo(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['refNo'] = value;
+  }
+
+  inputClientName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['clientName'] = value;
+  }
+
+  inputIntermediaryName(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['intermediaryName'] = value;
+  }
+
+  inputTicketFrom(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketFrom'] = value;
+  }
+
+  inputTicketAssignee(event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['ticketAssignee'] = value;
+  }
+
+  getSearchKey(key: string): filterSortEnums {
+    log.info(key);
+    switch (key) {
+      case "createdOn":
+        return filterSortEnums.DATE_FROM;
+      case "activityName":
+        return filterSortEnums.TICKET_NAME;
+      case "clientName":
+        return filterSortEnums.CLIENT_NAME;
+      case "agentName":
+        return filterSortEnums.AGENT_NAME;
+      case "referenceNo":
+        return filterSortEnums.REF_NO;
+      case "reporter":
+        return filterSortEnums.TICKET_BY;
+      default:
+        return filterSortEnums.ASSIGNED_TO;
+    }
+  }
+
+
+  getInputs(event, filterObjName: string) {
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject[filterObjName] = value;
+  }
+
+  searchTickets(key: string) {
+
+    if (this.filterObject[key]) {
+      const searchKey: filterSortEnums = this.getSearchKey(key);
+
+
+      const payload = {
+        search: [
+          {
+            key: searchKey,
+            value: this.filterObject[key]
+          }
+        ],
+        sort: [
+          {
+            key: searchKey,
+            orderCriteria: "ASCENDING"
+          }
+        ]
+      };
+      log.info('searchdatapayload>>', payload);
+      this.ticketsService.searchTickets(payload)
+        .subscribe((data) =>{
+          this.springTickets = data;
+          log.info('searchdata>>', this.springTickets);
+        })
+    }
+    else {
+      this.dt.reset();
+    }
+
+
+  }
+}
+
+enum filterSortEnums {
+  TICKET_NAME = 'TICKET_NAME',
+  TICKET_TYPE = 'TICKET_TYPE',
+  ASSIGNED_TO = 'ASSIGNED_TO',
+  CLIENT_NAME = 'CLIENT_NAME',
+  AGENT_NAME = 'AGENT_NAME',
+  TICKET_BY = 'TICKET_BY',
+  REF_NO = 'REF_NO',
+  SYSTEM_MODULE = 'SYSTEM_MODULE',
+  DATE_FROM = 'DATE_FROM'
 }

@@ -5,8 +5,8 @@ import { QuotationRoutingModule } from './quotation-routing.module';
 import { ListQuotationsComponent } from './components/list-quotations/list-quotations.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
+import { SharedModule } from '../../../../shared/shared.module';
 import { QuickQuoteDetailsComponent } from './components/quick-quote-details/quick-quote-details.component';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { QuickQuoteFormComponent } from './components/quick-quote-form/quick-quote-form.component';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
@@ -19,7 +19,7 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
 import { QuoteAssigningComponent } from './components/quote-assigning/quote-assigning.component';
 import { RiskSectionDetailsComponent } from './components/risk-section-details/risk-section-details.component';
 import { QuotationSummaryComponent } from './components/quotation-summary/quotation-summary.component';
-
+import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
@@ -36,7 +36,7 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     ImportRisksComponent,
     QuoteAssigningComponent,
     RiskSectionDetailsComponent,
-    QuotationSummaryComponent
+    QuotationSummaryComponent,
   ],
   imports: [
     CommonModule,
@@ -50,7 +50,8 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     InputTextModule,
     DropdownModule,
     MenuModule,
-    PanelMenuModule
+    PanelMenuModule,
+    TreeModule
   ],
   
 })

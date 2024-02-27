@@ -29,7 +29,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   token :string
 
   paystack_details: {key?: string, email?:string, amount?: string, reference?: string} = {};
-  options: PaystackOptions =  {
+  options: any =  {
     amount: this.payment_details?.premium * 100,
     email: 'user@mail.com',
     ref: `ref-${Math.ceil(Math.random() * 10e13)}`

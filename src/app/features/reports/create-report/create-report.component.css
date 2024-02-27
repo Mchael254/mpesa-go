@@ -145,7 +145,7 @@
 ::ng-deep .p-datatable .p-datatable-thead > tr > th {
   padding: 0.5em;
   font-size: 0.9em;
-  color: var(--primary-color)!important;
+  /* color: var(--primary-color)!important; */
 }
 
 .sub-category:hover,

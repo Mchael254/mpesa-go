@@ -74,4 +74,16 @@ export class TicketsSummaryComponent implements OnInit {
   ngOnDestroy(): void {
 
   }
+
+  displayTicketDetails(ticketCountPerModule: any) {
+
+    const activityName = ticketCountPerModule?.activityName.replace(/\s/g, '');
+    const totalTickets = ticketCountPerModule?.totalTickets;
+    log.info('Dash ticket>>', ticketCountPerModule.activityName, ticketCountPerModule.totalTickets);
+
+    this.ticketsService.ticketFilterObject.set({...ticketCountPerModule, fromDashboardScreen: true});
+    this.router.navigate(['/home/administration/tickets'],
+      {queryParams: {activityName, totalTickets }}).then(r => {
+    })
+  }
 }

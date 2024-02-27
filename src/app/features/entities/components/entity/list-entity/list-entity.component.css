@@ -1,9 +1,9 @@
-::ng-deep tr.ng-star-inserted {
-  border: 0;
+/* ::ng-deep tr.ng-star-inserted {
+  border-bottom: solid 1px #eee;
   font-size: 12px;
-}
+} */
 
-.page-header {
+/* .page-header {
   font-size: 14px;
   font-weight: 900;
-}
+} */

@@ -11,11 +11,12 @@ export interface ContextPath {
   setup_services: string;
   chart_services: string;
   gis_services: string;
-  notification_service:string;  
+  notification_service:string;
   computation_service:string;
   ticket_services: string;
   api: string;
   lms: string;
+  gis_reinsurance: string;
 
 }
 

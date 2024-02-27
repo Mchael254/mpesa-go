@@ -221,8 +221,6 @@ const SERVICES = [
         Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
         TabViewModule,
         FileUploadModule
-
-
     ],
     exports: [
         ErrorComponent,
@@ -236,6 +234,8 @@ const SERVICES = [
         CopyrightFooterComponent,
         DynamicChartComponent,
         SpinnerComponent,
+        VerticalStepperComponent,
+        HorizontalStepperComponent,
         DynamicFormComponent,
         DynamicBreadcrumbComponent,
         StepperComponent,
