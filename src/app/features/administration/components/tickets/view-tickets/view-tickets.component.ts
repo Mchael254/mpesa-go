@@ -19,6 +19,7 @@ import {Pagination} from "../../../../../shared/data/common/pagination";
 import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
 import {TableDetail} from "../../../../../shared/data/table-detail";
+import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -93,6 +94,7 @@ export class ViewTicketsComponent implements OnInit {
     private localStorageService: LocalStorageService,
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
+    private policiesService: PoliciesService,
   )
   {
 
@@ -361,7 +363,7 @@ export class ViewTicketsComponent implements OnInit {
       log.info('Value from selectedTickets:', ticketCodes);
 
       const ticketPromises = ticketCodes.map((sysModule) => {
-        const ticket = this.allSpringTickets.find(t => t.ticket.sysModule === sysModule);
+        const ticket = this.selectedSpringTickets.find(t => t.ticket.sysModule === sysModule);
         if (!ticket) {
           return Promise.resolve(null);
         }
@@ -387,7 +389,7 @@ export class ViewTicketsComponent implements OnInit {
         } else {
           log.info('Calling default method...');
           const policyCode = ticket?.ticket.policyCode.toString();
-          return this.ticketsService.getUnderWriting(policyCode)
+          return this.policiesService.getPolicyByBatchNo(policyCode)
             .toPromise()
             .then((response) => {
               log.info('Default Method Response:', response);
@@ -652,41 +654,6 @@ export class ViewTicketsComponent implements OnInit {
   ngOnDestroy(): void {
   }
 
-  inputCreatedOn(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['createdOn'] = value;
-  }
-
-  inputTicketName(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['ticketName'] = value;
-  }
-
-  inputRefNo(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['refNo'] = value;
-  }
-
-  inputClientName(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['clientName'] = value;
-  }
-
-  inputIntermediaryName(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['intermediaryName'] = value;
-  }
-
-  inputTicketFrom(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['ticketFrom'] = value;
-  }
-
-  inputTicketAssignee(event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['ticketAssignee'] = value;
-  }
-
   getSearchKey(key: string): filterSortEnums {
     log.info(key);
     switch (key) {
@@ -725,12 +692,6 @@ export class ViewTicketsComponent implements OnInit {
             key: searchKey,
             value: this.filterObject[key]
           }
-        ],
-        sort: [
-          {
-            key: searchKey,
-            orderCriteria: "ASCENDING"
-          }
         ]
       };
       log.info('searchdatapayload>>', payload);
@@ -741,7 +702,7 @@ export class ViewTicketsComponent implements OnInit {
         })
     }
     else {
-      this.dt.reset();
+      this.dt?.reset();
     }
 
 
