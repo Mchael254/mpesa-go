@@ -166,7 +166,16 @@
     "Create Quick Quote": "创建快速报价",
     "View Quotations": "查看报价"
   },
-  "crm": {},
+  "crm": {
+    "name": "名称",
+    "no_service_provider_type_found": "未找到服务提供者类型",
+    "search": "搜索",
+    "service_provider_type": "服务提供者类型",
+    "short_description": "简短描述",
+    "status": "状态",
+    "vat_rate": "增值税率",
+    "withholding_tax_rate": "代扣税率"
+  },
   "entities": {
     "account_number": "帐号",
     "account_number_required": "帐号是必需的",
@@ -495,9 +504,9 @@
   },
   "gis": {},
   "lms": {
-      "common": {},
-      "ind": {},
-      "grp": {}
+    "common": {},
+    "ind": {},
+    "grp": {}
   },
   "report": {
     "action": "操作",

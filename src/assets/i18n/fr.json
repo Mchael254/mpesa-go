@@ -75,7 +75,7 @@
     "title_subject": "Titre / Sujet",
     "location": "Lieu",
     "time_from": "De",
-    "time_to": "À", 
+    "time_to": "À",
     "status": "Statut",
     "description_details": "Description / Détails",
     "back": "Retour",
@@ -166,7 +166,16 @@
     "Create Quick Quote": "Créer un devis rapide",
     "View Quotations": "Voir les devis"
   },
-  "crm": {},
+  "crm": {
+    "name": "Nom",
+    "no_service_provider_type_found": "Aucun type de fournisseur de services trouvé",
+    "search": "Rechercher",
+    "service_provider_type": "Types de Prestataires de Services",
+    "short_description": "Description Courte",
+    "status": "Statut",
+    "vat_rate": "Taux de TVA",
+    "withholding_tax_rate": "Taux de retenue à la source"
+  },
   "entities": {
     "account_number": "Numéro de compte",
     "account_number_required": "Numéro de compte requis",
@@ -495,9 +504,9 @@
   },
   "gis": {},
   "lms": {
-      "common": {},
-      "ind": {},
-      "grp": {}
+    "common": {},
+    "ind": {},
+    "grp": {}
   },
   "report": {
     "action": "Action",

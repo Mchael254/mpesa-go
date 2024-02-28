@@ -75,7 +75,7 @@
     "title_subject": "Jina / Mada",
     "location": "Mahali",
     "time_from": "Wakati kutoka",
-    "time_to": "Wakati hadi", 
+    "time_to": "Wakati hadi",
     "status": "Hali",
     "description_details": "Maelezo",
     "back": "Nyuma",
@@ -166,7 +166,16 @@
     "Create Quick Quote": "Unda Nukuu Haraka",
     "View Quotations": "Angalia Nukuu"
   },
-  "crm": {},
+  "crm": {
+    "name": "Jina",
+    "no_service_provider_type_found": "Hakuna Aina ya Mtoa Huduma iliyopatikana",
+    "search": "Tafuta",
+    "service_provider_type": "Aina za Watoa Huduma",
+    "short_description": "Maelezo Mafupi",
+    "status": "Hali",
+    "vat_rate": "Kiwango cha VAT",
+    "withholding_tax_rate": "Kiwango cha Uthibitisho wa Kodi"
+  },
   "entities": {
     "account_number": "Nambari ya Akaunti",
     "account_number_required": "Nambari ya Akaunti inahitajika",
@@ -492,12 +501,12 @@
     "withholding_tax_required": "Ushuru wa Kutoza ni lazima",
     "yes": "Ndio",
     "zero": "Sifuri"
-},
+  },
   "gis": {},
   "lms": {
-      "common": {},
-      "ind": {},
-      "grp": {}
+    "common": {},
+    "ind": {},
+    "grp": {}
   },
   "report": {
     "action": "Hatua",
