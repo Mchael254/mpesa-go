@@ -92,7 +92,7 @@ export class ListPoliciesComponent {
                           dateTo: string,
                        accountCode: number) {
     return this.policiesServices
-      .getPolicies(pageIndex, dateFrom, dateTo, accountCode)
+      .getPoliciesByClientId(pageIndex, dateFrom, dateTo, accountCode)
       .pipe(
         untilDestroyed(this),
         tap((data) => log.info(`Fetching Policies>>>`, data))
