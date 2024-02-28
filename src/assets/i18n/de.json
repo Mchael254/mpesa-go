@@ -75,7 +75,7 @@
     "title_subject": "Titel / Thema",
     "location": "Ort",
     "time_from": "Startzeit",
-    "time_to": "Endzeit", 
+    "time_to": "Endzeit",
     "status": "Status",
     "description_details": "Beschreibung / Details",
     "back": "Zurück",
@@ -98,7 +98,7 @@
     "thu": "Do",
     "fri": "Fr",
     "sat": "Sa",
-      "My Tasks": "Meine Aufgaben",
+    "My Tasks": "Meine Aufgaben",
     "My Dashboard": "Mein Dashboard",
     "My Transactions": "Meine Transaktionen",
     "My Policies": "Meine Richtlinien",
@@ -166,7 +166,16 @@
     "Create Quick Quote": "Schnelles Angebot erstellen",
     "View Quotations": "Angebote anzeigen"
   },
-  "crm": {},
+  "crm": {
+    "name": "Naam",
+    "no_service_provider_type_found": "Geen type dienstverlener gevonden",
+    "search": "Zoeken",
+    "service_provider_type": "Soort Dienstverlener",
+    "short_description": "Korte Beschrijving",
+    "status": "Status",
+    "vat_rate": "BTW-tarief",
+    "withholding_tax_rate": "Bronbelastingtarief"
+  },
   "entities": {
     "account_number": "Kontonummer",
     "account_number_required": "Kontonummer ist erforderlich",
@@ -495,9 +504,9 @@
   },
   "gis": {},
   "lms": {
-      "common": {},
-      "ind": {},
-      "grp": {}
+    "common": {},
+    "ind": {},
+    "grp": {}
   },
   "report": {
     "action": "Aktion",

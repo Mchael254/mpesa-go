@@ -12,6 +12,7 @@ import { BankComponent } from './components/bank/bank.component';
 import { PaymentModesComponent } from './components/payment-modes/payment-modes.component';
 import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
 import { ChannelComponent } from './components/channel/channel.component';
+import { ServiceProviderTypesComponent } from './components/service-provider-types/service-provider-types.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,10 @@ const routes: Routes = [
   {
     path: 'channel',
     component: ChannelComponent,
+  },
+  {
+    path: 'service-provider-types',
+    component: ServiceProviderTypesComponent,
   },
 ];
 

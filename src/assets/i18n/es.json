@@ -75,7 +75,7 @@
     "title_subject": "Título / Asunto",
     "location": "Ubicación",
     "time_from": "Hora de inicio",
-    "time_to": "Hora de finalización", 
+    "time_to": "Hora de finalización",
     "status": "Estado",
     "description_details": "Descripción / Detalles",
     "back": "Volver",
@@ -165,8 +165,17 @@
     "Create Account": "Crear cuenta",
     "Create Quick Quote": "Crear cotización rápida",
     "View Quotations": "Ver cotizaciones"
-},
-  "crm": {},
+  },
+  "crm": {
+    "name": "Nombre",
+    "no_service_provider_type_found": "No se encontró ningún tipo de proveedor de servicios",
+    "search": "Buscar",
+    "service_provider_type": "Tipos de Proveedores de Servicios",
+    "short_description": "Descripción Corta",
+    "status": "Estado",
+    "vat_rate": "Tasa de IVA",
+    "withholding_tax_rate": "Tasa de Retención de Impuestos"
+  },
   "entities": {
     "account_number": "Número de cuenta",
     "account_number_required": "Número de cuenta requerido",
@@ -495,9 +504,9 @@
   },
   "gis": {},
   "lms": {
-      "common": {},
-      "ind": {},
-      "grp": {}
+    "common": {},
+    "ind": {},
+    "grp": {}
   },
   "report": {
     "action": "Acción",
