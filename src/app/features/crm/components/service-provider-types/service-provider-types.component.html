@@ -1,0 +1,469 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card col-md-12 col-lg-12 col-xxl-12 mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">{{
+            "crm.service_provider_type" | translate
+          }}</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-4 col-6">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                aria-label="search"
+                aria-describedby="search"
+                (input)="filterServiceProviderTypes($event)"
+              />
+            </div>
+            <div class="col-md-8 col-6">
+              <div class="float-end">
+                <span class="icon-circle"
+                  ><i
+                    class="fa-solid fa-plus"
+                    (click)="openServiceProviderTypeModal()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="pi pi-pencil"
+                    (click)="editServiceProviderType()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="fa-regular fa-trash-can"
+                    (click)="deleteServiceProviderType()"
+                  ></i
+                ></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-md-12 col-6">
+              <p-table
+                #serviceProviderTypeTable
+                [value]="serviceProviderTypesData"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                [scrollable]="true"
+                scrollHeight="400px"
+                class="ui-datatable"
+                [globalFilterFields]="['shortDescription', 'name']"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">
+                      {{ "crm.short_description" | translate }}
+                    </th>
+                    <th class="head">{{ "crm.name" | translate }}</th>
+                    <th class="head">{{ "crm.status" | translate }}</th>
+                    <th class="head">
+                      {{ "crm.withholding_tax_rate" | translate }}
+                    </th>
+                    <th class="head">{{ "crm.vat_rate" | translate }}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-provider>
+                  <tr
+                    class="custom-table"
+                    (click)="onServiceProviderTypeRowSelect(provider)"
+                    [class.selected]="selectedServiceProviderType === provider"
+                  >
+                    <td class="body">{{ provider.shortDescription }}</td>
+                    <td class="body">{{ provider.name }}</td>
+                    <td class="body">
+                      {{ provider.status === "A" ? "Active" : "Inactive" }}
+                    </td>
+                    <td class="body">{{ provider.witholdingTaxRate }}</td>
+                    <td class="body">{{ provider.vatTaxRate }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">
+                      {{ "crm.no_service_provider_type_found" | translate }}
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="me-4">
+    <div class="row">
+      <div class="card col-md-12 col-lg-12 col-xxl-12 mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">Service Provider Activities</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-4 col-6">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                aria-label="search"
+                aria-describedby="search"
+                (input)="filterServiceProviderTypes($event)"
+              />
+            </div>
+            <div class="col-md-8 col-6">
+              <div class="float-end">
+                <span class="icon-circle"
+                  ><i
+                    class="fa-solid fa-plus"
+                    (click)="openServiceProviderTypeModal()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="pi pi-pencil"
+                    (click)="editServiceProviderType()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="fa-regular fa-trash-can"
+                    (click)="deleteServiceProviderType()"
+                  ></i
+                ></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-md-12 col-6">
+              <p-table
+                #channelTable
+                [value]="serviceProviderActivitiesData"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                [scrollable]="true"
+                scrollHeight="400px"
+                class="ui-datatable"
+                [globalFilterFields]="['channelName', 'channelDesc']"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">Activity ID</th>
+                    <th class="head">Activity</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-provider>
+                  <tr
+                    class="custom-table"
+                    (click)="onServiceProviderTypeRowSelect(provider)"
+                    [class.selected]="selectedServiceProviderType === provider"
+                  >
+                    <td class="body">{{ provider.id }}</td>
+                    <td class="body">{{ provider.channelName }}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">No Service Provider Activities found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="serviceProviderTypeModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Define a Service Provide Type
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeServiceProviderTypeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createServiceProviderTypeForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="shortDescription" class="form-label"
+                >Short Description</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="shortDescription"
+                placeholder="Short Description"
+                formControlName="shortDescription"
+                [ngClass]="{
+                  'is-invalid':
+                    f['shortDescription']?.invalid &&
+                    (f['shortDescription']?.dirty ||
+                      f['shortDescription']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['shortDescription']?.invalid &&
+                  (f['shortDescription']?.dirty ||
+                    f['shortDescription']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['shortDescription']?.errors
+                }"
+              >
+                <div *ngIf="f['shortDescription']?.errors['required']">
+                  Short Description is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="Name"
+                formControlName="name"
+                [ngClass]="{
+                  'is-invalid':
+                    f['name']?.invalid &&
+                    (f['name']?.dirty || f['name']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['name']?.invalid && (f['name']?.dirty || f['name']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['name']?.errors
+                }"
+              >
+                <div *ngIf="f['name']?.errors['required']">
+                  Name is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option value="">Select Status</option>
+                <option
+                  *ngFor="let status of statusesData"
+                  [value]="status.value"
+                >
+                  {{ status.name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="withHoldingTaxRate" class="form-label"
+                >Withholding Tax Rate</label
+              >
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="withHoldingTaxRate"
+                  style="width: 70px; height: 42px; border-right: none"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['withHoldingTaxRate']?.invalid &&
+                      (f['withHoldingTaxRate']?.dirty ||
+                        f['withHoldingTaxRate']?.touched)
+                  }"
+                />
+                <div class="input-group-append">
+                  <span
+                    class="d-block"
+                    (click)="
+                      updateRound(
+                        1,
+                        createServiceProviderTypeForm,
+                        'withHoldingTaxRate'
+                      )
+                    "
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      display: inline-block;
+                      text-align: center;
+                      background: none;
+                      border-top: 1px solid #e5e5e7;
+                      border-right: 1px solid #e5e5e7;
+                    "
+                  >
+                    <i
+                      class="fa-solid fa-chevron-up"
+                      style="background-color: white; color: black"
+                    ></i>
+                  </span>
+                  <span
+                    (click)="
+                      updateRound(
+                        -1,
+                        createServiceProviderTypeForm,
+                        'withHoldingTaxRate'
+                      )
+                    "
+                    style="
+                      width: 20px;
+                      height: 22px;
+                      display: inline-block;
+                      text-align: center;
+                      background: none;
+                      border-bottom: 1px solid #e5e5e7;
+                      border-right: 1px solid #e5e5e7;
+                    "
+                  >
+                    <i
+                      class="fa-solid fa-chevron-down"
+                      style="background-color: white; color: black"
+                    ></i>
+                  </span>
+                </div>
+                <div
+                  *ngIf="
+                    f['withHoldingTaxRate']?.invalid &&
+                    (f['withHoldingTaxRate']?.dirty ||
+                      f['withHoldingTaxRate']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid':
+                      ['submitted'] && f['withHoldingTaxRate']?.errors
+                  }"
+                >
+                  <div *ngIf="f['withHoldingTaxRate']?.errors['required']">
+                    Withholding Tax Rate is required
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="vatTaxRate" class="form-label">VAT Rate</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="vatTaxRate"
+                  style="width: 70px; height: 42px; border-right: none"
+                  [ngClass]="{
+                    'is-invalid':
+                      f['vatTaxRate']?.invalid &&
+                      (f['vatTaxRate']?.dirty || f['vatTaxRate']?.touched)
+                  }"
+                />
+                <div class="input-group-append">
+                  <span
+                    class="d-block"
+                    (click)="
+                      updateRound(
+                        1,
+                        createServiceProviderTypeForm,
+                        'vatTaxRate'
+                      )
+                    "
+                    style="
+                      width: 20px;
+                      height: 20px;
+                      display: inline-block;
+                      text-align: center;
+                      background: none;
+                      border-top: 1px solid #e5e5e7;
+                      border-right: 1px solid #e5e5e7;
+                    "
+                  >
+                    <i
+                      class="fa-solid fa-chevron-up"
+                      style="background-color: white; color: black"
+                    ></i>
+                  </span>
+                  <span
+                    (click)="
+                      updateRound(
+                        -1,
+                        createServiceProviderTypeForm,
+                        'vatTaxRate'
+                      )
+                    "
+                    style="
+                      width: 20px;
+                      height: 22px;
+                      display: inline-block;
+                      text-align: center;
+                      background: none;
+                      border-bottom: 1px solid #e5e5e7;
+                      border-right: 1px solid #e5e5e7;
+                    "
+                  >
+                    <i
+                      class="fa-solid fa-chevron-down"
+                      style="background-color: white; color: black"
+                    ></i>
+                  </span>
+                </div>
+                <div
+                  *ngIf="
+                    f['vatTaxRate']?.invalid &&
+                    (f['vatTaxRate']?.dirty || f['vatTaxRate']?.touched)
+                  "
+                  class="form-text text-danger"
+                  [ngClass]="{
+                    'is-invalid': ['submitted'] && f['vatTaxRate']?.errors
+                  }"
+                >
+                  <div *ngIf="f['vatTaxRate']?.errors['required']">
+                    VAT Rate is required
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveServiceProviderType()"
+        >
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-reusable-input
+  [modalId]="'serviceProviderTypeConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this service provider type?'"
+  (confirmed)="confirmServiceProviderTypeDelete()"
+  #serviceProviderTypeConfirmationModal
+></app-reusable-input>

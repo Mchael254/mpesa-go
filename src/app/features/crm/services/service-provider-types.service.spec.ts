@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { StatusService } from './status.service';
+import { ServiceProviderTypesService } from './service-provider-types.service';
 import { AppConfigService } from '../../../core/config/app-config-service';
 
 export class MockAppConfigService {
   get config() {
     return {
       contextPath: {
-        setup_services: 'crm',
+        accounts_services: 'crm',
         users_services: 'user',
         auth_services: 'oauth',
       },
@@ -16,8 +16,8 @@ export class MockAppConfigService {
   }
 }
 
-describe('StatusService', () => {
-  let service: StatusService;
+describe('ServiceProviderTypesService', () => {
+  let service: ServiceProviderTypesService;
   let appConfigServiceStub: AppConfigService;
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('StatusService', () => {
         { provide: AppConfigService, useClass: MockAppConfigService },
       ],
     });
-    service = TestBed.inject(StatusService);
+    service = TestBed.inject(ServiceProviderTypesService);
     appConfigServiceStub = TestBed.inject(AppConfigService);
   });
 
