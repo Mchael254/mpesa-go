@@ -148,7 +148,6 @@ export class NewClientComponent implements OnInit{
     private sectorService: SectorService,
     private occupationService: OccupationService,
     private accountService: AccountService,
-
     private router: Router,
     private clientsService: ClientService,
     private fb: FormBuilder,
@@ -169,16 +168,11 @@ export class NewClientComponent implements OnInit{
  *   client titles, identity types, occupations, client types, and client branches.
  */
   ngOnInit(): void {
-    // Fetch entity details and set user form values
-    const entityDetails = JSON.parse(sessionStorage.getItem("entityDetails"));
+    this.createClientRegistrationForm();
+    const partyId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    this.getPartyDetails(partyId)
 
-    this.clientRegForm();
-    // this.toggleData();
-
-    this.clientID = this.activatedRoute.snapshot.params['id'];
-    // this.clientsService.getClientById(this.clientID)
     this.fetchCountries();
-
     // this.getCountries();
     this.getSectors(2);
     this.getCurrencies();
@@ -188,6 +182,173 @@ export class NewClientComponent implements OnInit{
     this.getClientType(2);
     this.getClientBranch();
   }
+
+  /**
+   * This method gets party from DB  to auto-populate Primary Identity
+   * @param id 
+   * @returns void
+   */
+  getPartyDetails(id: number): void {
+    this.entityService.getEntityById(id)
+    .subscribe({
+      next: (party) => {
+        this.entityDetails = {
+          categoryName: party.categoryName,
+          countryId: party.countryId,
+          dateOfBirth: party.dateOfBirth,
+          effectiveDateFrom: party.effectiveDateFrom,
+          effectiveDateTo: party.effectiveDateTo,
+          id: party.id,
+          modeOfIdentity: party.modeOfIdentity,
+          identityNumber: party.identityNumber,
+          name: party.name,
+          organizationId: party.organizationId,
+          pinNumber: party.pinNumber,
+          profilePicture: party.profilePicture,
+          profileImage: party.profileImage
+        };
+        this.patchClientEntityFormValues()
+      },
+      error: (e) => {
+        log.error(`error fetching parties >>>`, e)
+      }
+    })
+  }
+
+  /**
+   * Creates client registration form with default values and validators.
+   *  * This method sets up a complex nested form structure for capturing client information.   * @returns void
+   */
+  createClientRegistrationForm(): void {
+    this.clientRegistrationForm = this.fb.group({
+      partyTypeShtDesc: "CLIENT",
+      partyId: 16673590,
+      identity_type: new FormControl({value: '', disabled: true}),
+      citizenship: [''],
+      surname: new FormControl({value: '', disabled: true}),
+      certRegNo: [''],
+      regName: [''],
+      tradeName: [''],
+      regDate: [''],
+      countryOfIncorporation: [''],
+      parentCompany: [''],
+      otherName: new FormControl({value: '', disabled: true}),
+      dateOfBirth: new FormControl({value: '', disabled: true}),
+      idNumber: new FormControl({value: '', disabled: true}),
+      pinNumber: new FormControl({value: '', disabled: true}),
+      gender: [''],
+      clientTypeId: [''],
+
+      contact_details: this.fb.group(
+        {
+          clientBranch: [''],
+          clientTitle: [''],
+          smsNumber: [''],
+          phoneNumber: [''],
+          email: [''],
+          channel: [''],
+          pinNo: [''],
+          eDocuments: [''],
+          countryCodeSms: [''],
+          countryCodeTel: ['']
+        },
+      ),
+
+      address: this.fb.group(
+        {
+          box_number: [''],
+          country: [''],
+          county: [''],
+          town: [''],
+          physical_address: [''],
+          road: [''],
+          house_number: [''],
+          utility_address_proof: [''],
+          is_utility_address: [''],
+        },
+      ),
+
+      payment_details: this.fb.group(
+        {
+          bank: [''],
+          branch: [''],
+          account_number: [''],
+          currency: [''],
+          effective_to_date: [''],
+          effective_from_date: [''],
+          mpayNo: [''],
+          Iban: [''],
+          is_default_channel: [''],
+        },
+      ),
+
+      next_of_kin_details: this.fb.group(
+        {
+          mode_of_identity: [''],
+          identity_number: [''],
+          full_name: [''],
+          relationship: [''],
+          phone_number: [''],
+          email_address: [''],
+          dateofbirth: [''],
+        },
+      ),
+
+      wealth_details: this.fb.group(
+        {
+          wealth_citizenship: [''],
+          marital_status: [''],
+          funds_source: [''],
+          typeOfEmployment: [''],
+          economic_sector: [''],
+          occupation: [''],
+          purposeinInsurance: [''],
+          premiumFrequency: [''],
+          distributeChannel: [''],
+        },
+      ),
+    });
+    this.defineSmsNumberFormat();
+  }
+
+
+  /**
+   * Gets the SMS number regex format from DB and apply to phone number in client form
+   * @returns void
+   */
+  defineSmsNumberFormat(): void {
+    this.setupsParameterService.getParameters('SMS_NO_FORMAT')
+    .subscribe({
+      next: (param) => {
+        const phoneNumberRegex = param[0].value;
+        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+        this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
+        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(phoneNumberRegex)]);
+        this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+        log.info(`from sms number format >>>`, param);
+      },
+      error: (e) => {
+        log.error(`Error fetching SMS number format >>>`, e);
+      }
+    })
+  }
+
+  /**
+   * Patch values to primary identity form details
+   * @returns void
+   */
+  patchClientEntityFormValues(): void {
+    this.clientRegistrationForm.patchValue({
+      surname: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
+      otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
+      pinNumber: this.entityDetails?.pinNumber,
+      dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
+      idNumber: this.entityDetails?.identityNumber,
+      identity_type: this.entityDetails?.modeOfIdentity?.name,
+    });
+  }
+  
+
 /**
  * After the view has been initialized, this method retrieves mandatory field data
  * and updates the visibility and validation of form fields based on the received data.
@@ -308,133 +469,6 @@ export class NewClientComponent implements OnInit{
         })
         this.cdr.detectChanges();
       });
-  }
-/**
- * Initializes and configures the client registration form with default values and validators.
- * This method sets up a complex nested form structure for capturing client information.
- * You can also use it to patch values from entityDetails, if needed.
- */
-  clientRegForm() {
-    this.clientRegistrationForm = this.fb.group({
-      partyTypeShtDesc: "CLIENT",
-      partyId: 16673590,
-      identity_type: new FormControl({value: '', disabled: true}),
-      citizenship: [''],
-      surname: new FormControl({value: '', disabled: true}),
-      certRegNo: [''],
-      regName: [''],
-      tradeName: [''],
-      regDate: [''],
-      countryOfIncorporation: [''],
-      parentCompany: [''],
-      otherName: new FormControl({value: '', disabled: true}),
-      dateOfBirth: new FormControl({value: '', disabled: true}),
-      idNumber: new FormControl({value: '', disabled: true}),
-      pinNumber: new FormControl({value: '', disabled: true}),
-      gender: [''],
-      clientTypeId: [''],
-
-      contact_details: this.fb.group(
-        {
-          clientBranch: [''],
-          clientTitle: [''],
-          smsNumber: [''],
-          phoneNumber: [''],
-          email: [''],
-          channel: [''],
-          pinNo: [''],
-          eDocuments: [''],
-          countryCodeSms: [''],
-          countryCodeTel: ['']
-        },
-      ),
-
-      address: this.fb.group(
-        {
-          box_number: [''],
-          country: [''],
-          county: [''],
-          town: [''],
-          physical_address: [''],
-          road: [''],
-          house_number: [''],
-          utility_address_proof: [''],
-          is_utility_address: [''],
-        },
-      ),
-
-      payment_details: this.fb.group(
-        {
-          bank: [''],
-          branch: [''],
-          account_number: [''],
-          currency: [''],
-          effective_to_date: [''],
-          effective_from_date: [''],
-          mpayNo: [''],
-          Iban: [''],
-          is_default_channel: [''],
-        },
-      ),
-
-      next_of_kin_details: this.fb.group(
-        {
-          mode_of_identity: [''],
-          identity_number: [''],
-          full_name: [''],
-          relationship: [''],
-          phone_number: [''],
-          email_address: [''],
-          dateofbirth: [''],
-        },
-      ),
-
-      wealth_details: this.fb.group(
-        {
-          wealth_citizenship: [''],
-          marital_status: [''],
-          funds_source: [''],
-          typeOfEmployment: [''],
-          economic_sector: [''],
-          occupation: [''],
-          purposeinInsurance: [''],
-          premiumFrequency: [''],
-          distributeChannel: [''],
-        },
-      ),
-
-    });
-    this.entityService
-    .currentEntity$
-    .pipe(
-      takeUntil(this.destroyed$),
-    )
-    .subscribe(
-      currentEntity => this.entityDetails = currentEntity
-    );
-  let name = 'SMS_NO_FORMAT';
-  this.setupsParameterService.getParameters(name)
-    .subscribe((data) => {
-      data.forEach((field) => {
-        if (field.name === 'SMS_NO_FORMAT') {
-          this.phoneNumberRegex = field.value;
-          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
-          this.clientRegistrationForm.controls['contact_details'].get('smsNumber')?.updateValueAndValidity();
-
-          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
-          this.clientRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
-        }
-        log.info('parameters>>>', this.phoneNumberRegex)
-      });
-    });
-    this.clientRegistrationForm.patchValue({
-      surname: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
-      otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
-      pinNumber: this.entityDetails?.pinNumber,
-      dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
-      idNumber: this.entityDetails?.identityNumber,
-      identity_type: this.entityDetails?.modeOfIdentity?.name,
-    });
   }
 
 
