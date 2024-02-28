@@ -15,7 +15,7 @@ import {GlobalMessagingService} from "../../../../../shared/services/messaging/g
 })
 export class ReassignTicketModalComponent implements OnInit, OnDestroy{
   @Input() reassignModalVisible: boolean;
-  @Input() selectedTickets: NewTicketDto[] = [];
+  @Input() selectedTickets: TicketsDTO[] = [];
   @Output() reassignedTickets = new EventEmitter<true>();
   @Output() actionReassignEmitter:  EventEmitter<void> = new EventEmitter<void>();
 
@@ -147,7 +147,7 @@ export class ReassignTicketModalComponent implements OnInit, OnDestroy{
       let reassignForm = this.reassignTicketForm.value;
       let ticketsToReassign: TicketReassignDto[] = this.selectedTickets.map(item => {
         return {
-          ticketCode: item?.ticketID,
+          ticketCode: item?.ticket?.code,
           groupUser: this.selectedDefaultUser?.username,
           remarks: reassignForm.modalTicketComments,
           userCodeToAssignFrom: null,
