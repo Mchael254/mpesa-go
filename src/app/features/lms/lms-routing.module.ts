@@ -95,6 +95,13 @@ const routes: Routes = [
                 (m) => m.ReinsuranceModule
               ),
           },
+          {
+            path: 'dashboard',
+            loadChildren: () =>
+              import('./grp/components/dashboard/dashboard.module').then(
+                (m) => m.DashboardModule
+              ),
+          },
         ],
       },
 
