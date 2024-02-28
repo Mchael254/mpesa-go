@@ -30,6 +30,7 @@ export const environment = {
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
+    [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
   ]),
 
 };
