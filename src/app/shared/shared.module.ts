@@ -95,6 +95,7 @@ import { ProposalLandingScreenComponent } from './components/proposal-landing-sc
 import { PolicyLandingScreenComponent } from './components/policy-landing-screen/policy-landing-screen.component';
 import { SortPipe } from './pipes/sort/sort.pipe';
 import { FileUploadModule } from 'primeng/fileupload';
+import { PolicyModule } from '../features/lms/grp/components/policy/policy.module';
 
 
 
@@ -220,7 +221,8 @@ const SERVICES = [
         NgbModule,
         Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
         TabViewModule,
-        FileUploadModule
+        FileUploadModule,
+        PolicyModule,
     ],
     exports: [
         ErrorComponent,
