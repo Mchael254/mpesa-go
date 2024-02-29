@@ -101,7 +101,6 @@ export class NewEntityComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private entityService: EntityService,
-    private entityDetails: EntityDetails,
     private globalMessagingService: GlobalMessagingService,
     private mandatoryFieldsService: MandatoryFieldsService,
     private router: Router,
@@ -147,7 +146,6 @@ export class NewEntityComponent implements OnInit {
       entity_name: [''],
       identity_number: ['', Validators.pattern(this.nationalIDRegex)],
       pin_number: ['', Validators.pattern(this.pinNumberRegex)],
-      // assign_role: [''],
       assign_role: [{ value: '', disabled: true }],
       profilePiture: [''],
     });
@@ -347,8 +345,8 @@ export class NewEntityComponent implements OnInit {
          }
         },
         error: (err) => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
-          log.info(`error >>>`, err);
+          const errorMessage = err?.error?.message ?? err.message + `: ${err?.error?.errors[0]}`
+          this.globalMessagingService.displayErrorMessage('Error', `${errorMessage} ::: ${err?.error?.errors[0]}`);
         }
        })
   }
