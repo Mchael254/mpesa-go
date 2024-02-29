@@ -128,11 +128,6 @@
                     </div>
                     <div class="row">
                         <ng-container *ngIf="visibleStatus.assign_role === 'Y'">
-                            <!-- <div class="col-md-4">
-                                <label for="assign_role">Assign Role (Optional)</label>
-                                <input type="text" class="form-control" id="assign_role" placeholder="selected Role"
-                                    value="{{ selectedRole.partyTypeName }}" formControlName="assign_role" [disabled]="true">
-                            </div> -->
                             <div class="col-md-4 col-6 pad-1">
                                 <label for="assign_role">{{ 'entities.assign_role' | translate | titlecase }} ({{ 'entities.optional' | translate }})</label>
                                 <input type="text" class="form-control" id="assign_role" placeholder="selected Role" formControlName="assign_role"
@@ -238,12 +233,3 @@
 </form>
 
 <div class="mobile-bottom"></div>
-
-<!-- <app-dynamic-form
-    [formFields]="fieldsets"
-    [fieldsPerRow]="3"
-    [title]="'New Entity'"
-    [actionButtonConfig]="buttonConfig"
-    (formSubmitted)="submitForm($event)"
-    (goBackButton)="goBack()">
-</app-dynamic-form> -->
