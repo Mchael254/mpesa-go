@@ -14,6 +14,8 @@ const log = new Logger('ViewTicketsComponent');
 import {ActivatedRoute, Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {ReinsuranceAllocationsComponent} from "../reinsurance-allocations/reinsurance-allocations.component";
+import {PoliciesService} from "../../../../gis/services/policies/policies.service";
+import {AuthorizationTabComponent} from "../authorization-tab/authorization-tab.component";
 
 @Component({
   selector: 'app-ticket-details',
@@ -44,6 +46,7 @@ export class TicketDetailsComponent implements OnInit {
   activeIndex: number = 0;
 
   @ViewChild(ReinsuranceAllocationsComponent) reinsuranceAllocationsComp: ReinsuranceAllocationsComponent;
+  @ViewChild(AuthorizationTabComponent) authorizationTabComponent: AuthorizationTabComponent;
 
   /*breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -71,7 +74,8 @@ export class TicketDetailsComponent implements OnInit {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private policiesService: PoliciesService,
   ) {
   }
 
@@ -181,7 +185,7 @@ export class TicketDetailsComponent implements OnInit {
       } else {
         log.info('Calling default method...');
         const policyCode = ticket?.policyCode.toString();
-        return this.ticketService.getUnderWriting(policyCode)
+        return this.policiesService.getPolicyByBatchNo(policyCode)
           .toPromise()
           .then((response) => {
             log.info('Default Method Response:', response);
@@ -293,5 +297,9 @@ export class TicketDetailsComponent implements OnInit {
 
   onClickReinsure() {
     this.reinsuranceAllocationsComp.reinsureRisk();
+  }
+
+  onClickAuthorize() {
+    this.authorizationTabComponent.openDebtOwnerModal();
   }
 }

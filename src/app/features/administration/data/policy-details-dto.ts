@@ -15,6 +15,7 @@ export interface PolicyDetailsDTO {
   premium: number;
   insureds: {first_name: string; last_name: string}[];
   total_premium: number;
+  authorizedStatus: string;
   riskInformation: RiskInformation[];
   taxInformation: TaxInformation[];
 }
