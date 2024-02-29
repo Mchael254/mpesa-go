@@ -282,7 +282,7 @@ export class AuthorizationTabComponent implements OnInit{
 
   saveDebitOwnerAndPromiseDate() {
     const debtOwnerFormValues = this.debtOwnerForm.getRawValue();
-  
+
     const debitOwnerPromiseDate: any = {
       debit_owner: debtOwnerFormValues.modalUserAssignTo,
       policy_batch_no: this.policyDetails?.batch_no,
@@ -294,7 +294,7 @@ export class AuthorizationTabComponent implements OnInit{
         this.debitOwnerPromiseDateData = data;
         log.info('save promise date>>', data);
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully saved debt owner & promise date');
-
+        this.openScheduleModal();
       })
   }
 

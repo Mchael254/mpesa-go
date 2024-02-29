@@ -55,6 +55,15 @@
       <th>Authorized date</th>
       <th>Created By</th>
     </tr>
+    <tr>
+      <th></th>
+      <th>
+        <input type="text" class="form-control w-75">
+      </th>
+      <th>
+        <input type="text" class="form-control w-75">
+      </th>
+    </tr>
   </ng-template>
   <ng-template pTemplate="body" let-exception>
     <tr>
@@ -76,7 +85,7 @@
           [filter]="true"
           filterBy="remark"
           [showClear]="true"
-          [style]="{ width: '100%', height: '15%' }"
+          [style]="{ width: '100%', height: '55%' }"
           placeholder="Select remark"
         >
         </p-dropdown>
@@ -271,7 +280,7 @@
           <button class="btn btn-primary cancelBtn" id="cancelDebtOwnerBtn"
                   #cancelDebtOwner (click)="closeDebtOwnerModal()">Cancel</button>
           <button class="btn btn-outline-primary float-right" id="scheduleBtn"
-                  (click)="openScheduleModal(); saveDebitOwnerAndPromiseDate()">Next</button>
+                  (click)="saveDebitOwnerAndPromiseDate()">Next</button>
         </div>
       </form>
     </div>
@@ -297,21 +306,23 @@
               <label class="form-label" for="scheduleReadyAuth">No</label>
             </div>
 
-            <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
-              <label class="form-label" for="dispatchDocuments">Yes</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
-              <label class="form-label" for="dispatchDocuments">No</label>
+            <div *ngIf="scheduleCheckForm.get('scheduleReadyAuth').value === 'Y'">
+              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
+                <label class="form-label" for="dispatchDocuments">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
+                <label class="form-label" for="dispatchDocuments">No</label>
+              </div>
             </div>
           </form>
         </div>
       </div>
-      <div class="modal-footer">
+      <!--<div class="modal-footer">
         <button class="btn btn-primary" data-bs-target="#debtOwnerToggle" data-bs-toggle="modal">Back to debt owner</button>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>
