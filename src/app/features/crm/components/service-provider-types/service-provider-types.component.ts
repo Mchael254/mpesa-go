@@ -63,6 +63,11 @@ export class ServiceProviderTypesComponent implements OnInit {
     },
   ];
 
+  public statusData = [
+    { name: 'Active', value: 'A' },
+    { name: 'Inactive', value: 'I' },
+  ];
+
   constructor(
     private fb: FormBuilder,
     private serviceProviderTypeService: ServiceProviderTypesService,
