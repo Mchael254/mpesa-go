@@ -5,10 +5,17 @@
 
   <div class="col-6 d-flex justify-content-end">
     <button
-      class="btn btn-outline-primary me-2" style="font-size: 12px;">Undo make ready
+      class="btn btn-outline-primary me-2" style="font-size: 12px;"
+    (click)="undoMakeReady()"
+      *ngIf = "policyDetails?.authorizedStatus=== 'A' || policyDetails?.authorizedStatus=== 'R'">Undo make ready
     </button>
     <button
-      class="btn btn-primary" style="font-size: 12px;">Authorise exceptions
+      class="btn btn-primary me-2" style="font-size: 12px;"
+    (click)="makeReady()"
+    *ngIf = "policyDetails?.authorizedStatus=== 'N'" >Make ready
+    </button>
+    <button
+      class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()">Authorise exceptions
     </button>
 
   </div>
@@ -24,14 +31,19 @@
   [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
   responsiveLayout="stack"
   [scrollable]="true"
-  [(selection)]="authorizationExceptionData"
+  [(selection)]="selectedAuthorizationException"
+  selectionMode="single"
+  dataKey="code"
   scrollHeight="400px"
   currentPageReportTemplate="{first} - {last} of {totalRecords}"
 >
 
   <ng-template pTemplate="header">
     <tr>
-      <th>Select</th>
+      <th>
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+<!--        Select-->
+      </th>
       <th>ID</th>
       <th>Description</th>
       <th>Remarks</th>
@@ -41,12 +53,22 @@
       <th>Submission date</th>
       <th>Authorized by</th>
       <th>Authorized date</th>
+      <th>Created By</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>
+        <input type="text" class="form-control w-75">
+      </th>
+      <th>
+        <input type="text" class="form-control w-75">
+      </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-exception>
     <tr>
-      <td class="body">
-        <p-tableCheckbox [value]=""></p-tableCheckbox>
+      <td>
+        <p-tableCheckbox [value]="exception"></p-tableCheckbox>
       </td>
       <td>{{exception.code}}</td>
       <td>
@@ -54,13 +76,27 @@
           {{exception?.description?.substring(0,10)}}...
         </span>
       </td>
-      <td>{{exception.remarks}}</td>
-      <td>{{exception.set_standard}}</td>
-      <td>{{exception.used_standard}}</td>
-      <td>{{exception.is_authorized}}</td>
-      <td>{{exception.transactions_date}}</td>
-      <td>{{exception.authorized_by}}</td>
-      <td>{{exception.authorized_date}}</td>
+      <td>
+<!--        {{exception?.remarks}}-->
+        <p-dropdown
+          [options]="completionRemarksData"
+          optionLabel="remark"
+          id="id"
+          [filter]="true"
+          filterBy="remark"
+          [showClear]="true"
+          [style]="{ width: '100%', height: '55%' }"
+          placeholder="Select remark"
+        >
+        </p-dropdown>
+      </td>
+      <td>{{exception?.set_standard}}</td>
+      <td>{{exception?.used_standard}}</td>
+      <td>{{exception?.is_authorized}}</td>
+      <td>{{exception?.transactions_date}}</td>
+      <td>{{exception?.authorized_by}}</td>
+      <td>{{exception?.authorized_date}}</td>
+      <td>{{exception?.exception_by}}</td>
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage">
@@ -70,120 +106,131 @@
   </ng-template>
 </p-table>
 
-<div class="row mt-5 mb-2">
-  <div class="col-6">
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Receipts</label>
+
+    <span class="icon-circle float-end"
+          data-bs-toggle="collapse" href="#collapseReceipts" role="button" aria-expanded="false" aria-controls="collapseReceipts"
+    ><i class="pi pi-chevron-down"></i
+    ></span>
   </div>
 
-  <div class="col-6 d-flex justify-content-end">
-    <button
-      class="btn btn-primary" style="font-size: 12px;">Transmittal report
-    </button>
+  <div class="collapse" id="collapseReceipts">
+    <div class="col-12 d-flex justify-content-end mt-2 mb-2">
+      <button
+        class="btn btn-primary" style="font-size: 12px;">Transmittal report
+      </button>
+    </div>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="receiptsData?.length"
+      [value]="receiptsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
 
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Receipt no</th>
+          <th>Receipt date</th>
+          <th>Receipt amount</th>
+          <th>Receipt balance</th>
+          <th>Receipt settlement</th>
+          <th>Debit/credit</th>
+          <th>Receipt by</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount | number}}</td>
+          <td>{{receipt.master_transaction_balance | number}}</td>
+          <td>{{receipt.master_transaction_settlement | number}}</td>
+          <td>{{receipt.master_transaction_dc}}</td>
+          <td>{{receipt.transmital_trans_auth_by}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9">No Receipt Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>
 
-<p-table
-  [autoLayout]="true"
-  [rowHover]="true"
-  [resizableColumns]="true"
-  [showCurrentPageReport]="true"
-  [rows]="pageSize || 5"
-  [totalRecords]="risKCedingDetails?.totalElements"
-  [value]="risKCedingDetails?.content"
-  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-  responsiveLayout="stack"
-  [scrollable]="true"
-  scrollHeight="400px"
-  currentPageReportTemplate="{first} - {last} of {totalRecords}"
->
-
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Receipt no</th>
-      <th>Receipt date</th>
-      <th>Receipt amount</th>
-      <th>Receipt balance</th>
-      <th>Receipt settlement</th>
-      <th>Debit/credit</th>
-      <th>Receipt by</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-receipt>
-    <tr>
-      <td>Section SI</td>
-      <td>Sum insured</td>
-      <td>600,000</td>
-      <td>30,000.00</td>
-      <td>FXD</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="9">No Receipt Detail(s) Found.</td>
-    </tr>
-  </ng-template>
-</p-table>
-
-<div class="row mt-5 mb-2">
-  <div class="col-6">
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Authorization levels</label>
+
+    <span class="icon-circle float-end"
+          data-bs-toggle="collapse" href="#collapseAuth" role="button" aria-expanded="false" aria-controls="collapseAuth"
+    ><i class="pi pi-chevron-down"></i
+    ></span>
   </div>
 
-  <div class="col-6 d-flex justify-content-end">
-    <button
-      class="btn btn-primary" style="font-size: 12px;">Authorize level
-    </button>
+  <div class="collapse" id="collapseAuth">
+    <div class="col-12 d-flex justify-content-end mt-2 mb-2">
+      <button
+        class="btn btn-primary" style="font-size: 12px;" (click)="authorizeAuthorizationLevels()">Authorize level
+      </button>
+    </div>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="risKCedingDetails?.totalElements"
+      [value]="risKCedingDetails?.content"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      [(selection)]="selectedAuthorizationLevel"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
 
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Level</th>
+          <th>Authorized</th>
+          <th>Role name</th>
+          <th>Authorize date</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-authlevels>
+        <tr>
+          <td>{{authlevels.level}}</td>
+          <td>{{authlevels.authorized}}</td>
+          <td>{{authlevels.user_name}}</td>
+          <td>{{authlevels.authorized_date}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9">No Authorization Levels Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
 </div>
 
-<p-table
-  [autoLayout]="true"
-  [rowHover]="true"
-  [resizableColumns]="true"
-  [showCurrentPageReport]="true"
-  [rows]="pageSize || 5"
-  [totalRecords]="risKCedingDetails?.totalElements"
-  [value]="risKCedingDetails?.content"
-  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-  responsiveLayout="stack"
-  [scrollable]="true"
-  scrollHeight="400px"
-  currentPageReportTemplate="{first} - {last} of {totalRecords}"
->
-
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Level</th>
-      <th>Authorized</th>
-      <th>Role name</th>
-      <th>Authorize date</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-authlevels>
-    <tr>
-      <td>Section SI</td>
-      <td>Sum insured</td>
-      <td>600,000</td>
-      <td>30,000.00</td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="9">No Authorization Levels Detail(s) Found.</td>
-    </tr>
-  </ng-template>
-</p-table>
-
-<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+<div class="modal fade" id="debtOwnerToggle" aria-hidden="true" aria-labelledby="debtOwnerToggleLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6 text-primary" id="exampleModalToggleLabel">Debt owner and promise date</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title fs-6 text-primary" id="debtOwnerToggleLabel">Debt owner and promise date</h1>
+        <button type="button" class="btn-close" (click)="closeDebtOwnerModal()"></button>
       </div>
       <form [formGroup]="debtOwnerForm" class="clearfix">
         <div class="modal-body">
@@ -195,7 +242,7 @@
               <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
             </div>
             <div class="col-2">
-              <button class="btn btn-outline-primary"  (click)="openAllUsersModal()">
+              <button class="btn btn-outline-primary" (click)="openAllUsersModal()">
                 <i class="fa fa-angle-down"></i>
               </button>
             </div>
@@ -224,27 +271,27 @@
               <label class="text-dark">Promise date</label>
             </div>
             <div class="col-12">
-              <input type="date" name="" class="form-control">
+              <input type="date" name="" class="form-control" formControlName="promiseDate">
             </div>
           </div>
         </div>
 
         <div class="modal-footer d-block float-end" style="border-top:0">
-          <button class="btn btn-primary cancelBtn" id="cancelReassignBtn"
-                  #cancelReassign>Cancel</button>
-          <button class="btn btn-outline-primary float-right reassign" id="reassignTktBtn"
-                  data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Select schedule</button>
+          <button class="btn btn-primary cancelBtn" id="cancelDebtOwnerBtn"
+                  #cancelDebtOwner (click)="closeDebtOwnerModal()">Cancel</button>
+          <button class="btn btn-outline-primary float-right" id="scheduleBtn"
+                  (click)="saveDebitOwnerAndPromiseDate()">Next</button>
         </div>
       </form>
     </div>
   </div>
 </div>
-<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+<div class="modal fade" id="scheduleModalToggle" aria-hidden="true" aria-labelledby="scheduleModalToggleLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered" style="width: 350px">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6 text-primary" id="exampleModalToggleLabel2">Schedule check</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="modal-title fs-6 text-primary" id="scheduleModalToggleLabel">Schedule check</h1>
+        <button type="button" class="btn-close" (click)="closeScheduleModal()"></button>
       </div>
       <div class="modal-body">
         <div class="col-12 mb-3">
@@ -258,16 +305,28 @@
               <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="N">
               <label class="form-label" for="scheduleReadyAuth">No</label>
             </div>
+
+            <div *ngIf="scheduleCheckForm.get('scheduleReadyAuth').value === 'Y'">
+              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
+                <label class="form-label" for="dispatchDocuments">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
+                <label class="form-label" for="dispatchDocuments">No</label>
+              </div>
+            </div>
           </form>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Back to debt owner</button>
-      </div>
+      <!--<div class="modal-footer">
+        <button class="btn btn-primary" data-bs-target="#debtOwnerToggle" data-bs-toggle="modal">Back to debt owner</button>
+      </div>-->
     </div>
   </div>
 </div>
-<!--<button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Open first modal</button>-->
+<!--<button class="btn btn-primary" data-bs-target="#debtOwnerToggle" data-bs-toggle="modal">Open first modal</button>-->
 
 
 <!--Modal for Listing all users !-->

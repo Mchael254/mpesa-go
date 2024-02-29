@@ -5,6 +5,10 @@ import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 import {Logger} from "../../../../../shared/services";
 import {Pagination} from "../../../../../shared/data/common/pagination";
+import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {
+  CompletionRemarksService
+} from "../../../../gis/components/setups/services/completion-remarks/completion-remarks.service";
 
 const log = new Logger('AuthorizationTabComponent');
 
@@ -34,9 +38,25 @@ export class AuthorizationTabComponent implements OnInit{
   groupStaffMembers: StaffDto[] = [];
 
   authorizationExceptionData: Pagination<any> = <Pagination<any>>{};
+  selectedAuthorizationException: any[] = [];
+
+  authorizationLevelsData: any[];
+  selectedAuthorizationLevel: any[] = [];
+  receiptsData: any[];
+
+  authoriseExceptionsData: any;
+
+  makeReadyData: any;
+  undoMakeReadyData: any;
+
+  debitOwnerPromiseDateData: any;
+
+  completionRemarksData: any[];
 
   constructor(private fb: FormBuilder,
-              private policiesService: PoliciesService,) {
+              private policiesService: PoliciesService,
+              private globalMessagingService: GlobalMessagingService,
+              private completionRemarksService: CompletionRemarksService,) {
   }
 
   ngOnInit(): void {
@@ -44,6 +64,10 @@ export class AuthorizationTabComponent implements OnInit{
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
     this.getAuthorizationExceptionDetails();
+    this.getAuthorizationLevels();
+    this.getReceipts();
+    this.getCompletionRemarks();
+    log.info('policy', this.policyDetails?.authorizedStatus)
   }
 
   createDebtOwnerTicketsForm() {
@@ -51,7 +75,8 @@ export class AuthorizationTabComponent implements OnInit{
     this.debtOwnerForm = this.fb.group({
       modalUserAssignTo: ['', Validators.required],
       modalDefaultGroupUser: [''] ,
-      scheduleReadyAuth: ['']
+      scheduleReadyAuth: [''],
+      promiseDate: ['']
     });
 
     this.debtOwnerForm.controls['modalUserAssignTo'].disable();
@@ -62,9 +87,71 @@ export class AuthorizationTabComponent implements OnInit{
 
   createScheduleCheckForm() {
     this.scheduleCheckForm = this.fb.group({
-      scheduleReadyAuth: ['']
+      scheduleReadyAuth: [''],
+      dispatchDocuments: ['']
     })
   }
+
+  openDebtOwnerModal() {
+    if (this.policyDetails?.product?.interfaceType === 'ACCRUAL') {
+      const modal = document.getElementById('debtOwnerToggle');
+      if (modal) {
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+        if (modalBackdrop) {
+          modalBackdrop.classList.add('show');
+        }
+      }
+    } else {
+      const modal = document.getElementById('scheduleModalToggle');
+      if (modal) {
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+        if (modalBackdrop) {
+          modalBackdrop.classList.add('show');
+        }
+      }
+    }
+  }
+
+  openScheduleModal() {
+    const modal = document.getElementById('scheduleModalToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
+  }
+
+  closeDebtOwnerModal() {
+    const modal = document.getElementById('debtOwnerToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+  }
+
+  closeScheduleModal() {
+    const modal = document.getElementById('scheduleModalToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+  }
+
   openAllUsersModal() {
     this.zIndex  = -1;
     this.toggleAllUsersModal(true);
@@ -88,7 +175,7 @@ export class AuthorizationTabComponent implements OnInit{
     this.selectedMainUser = event;
     this.showDefaultUser = this.selectedMainUser?.userType === 'G';
     this.debtOwnerForm.patchValue({
-      modalUserAssignTo: event?.name
+      modalUserAssignTo: event?.username
     });
   }
 
@@ -122,6 +209,103 @@ export class AuthorizationTabComponent implements OnInit{
       )
   }
 
+  getAuthorizationLevels() {
+    this.policiesService.getPolicyAuthorizationLevels(this.policyDetails?.batch_no)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.authorizationLevelsData = data.embedded && data.embedded.length > 0 ? data.embedded[0] : [];
+          log.info('AuthorizationLevels>>', this.authorizationLevelsData);
+        }
+      )
+  }
+
+  getReceipts() {
+
+    this.policiesService.getPolicyReceipts(this.policyDetails?.batch_no)
+
+      .subscribe(
+        (data) => {
+          this.receiptsData = data.embedded && data.embedded.length > 0 ? data.embedded[0] : [];
+          log.info('Receipts>>', this.receiptsData);
+        }
+      )
+  }
+
   ngOnDestroy(): void {
+  }
+
+  authoriseExceptions() {
+    const selectedExceptions = this.selectedAuthorizationException;
+
+    log.info('selected exceptions', selectedExceptions);
+
+    this.policiesService.authoriseExceptions(selectedExceptions[0]?.code)
+      .subscribe((data) => {
+        this.authoriseExceptionsData = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized exception');
+      })
+  }
+
+  makeReady() {
+    this.policiesService.policyMakeReady(this.policyDetails?.batch_no)
+      .subscribe((data) => {
+        this.makeReadyData = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Success');
+      })
+  }
+
+  undoMakeReady() {
+    this.policiesService.policyUndoMakeReady(this.policyDetails?.batch_no)
+      .subscribe((data) => {
+        this.undoMakeReadyData = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Success');
+      })
+  }
+
+  authorizeAuthorizationLevels() {
+    const selectedAuthLevel = this.selectedAuthorizationLevel;
+    log.info("select", this.selectedAuthorizationLevel);
+
+    this.policiesService.authorizeAuthorizationLevels(selectedAuthLevel[0]?.code)
+      .subscribe((data) => {
+        this.authorizationLevelsData = data;
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized level');
+      })
+  }
+
+  authorizePolicy() {
+    this.globalMessagingService.displaySuccessMessage('Success', 'Authorize policy clicked');
+  }
+
+  saveDebitOwnerAndPromiseDate() {
+    const debtOwnerFormValues = this.debtOwnerForm.getRawValue();
+
+    const debitOwnerPromiseDate: any = {
+      debit_owner: debtOwnerFormValues.modalUserAssignTo,
+      policy_batch_no: this.policyDetails?.batch_no,
+      promise_date: debtOwnerFormValues.promiseDate
+    }
+
+    this.policiesService.debtOwnerPromiseDate(debitOwnerPromiseDate)
+      .subscribe((data) => {
+        this.debitOwnerPromiseDateData = data;
+        log.info('save promise date>>', data);
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully saved debt owner & promise date');
+        this.openScheduleModal();
+      })
+  }
+
+  getCompletionRemarks() {
+
+    this.completionRemarksService.getCompletionRemarks()
+      .subscribe(
+        (data) => {
+          this.completionRemarksData = data._embedded;
+          log.info('completionRemarks>>', this.completionRemarksData);
+        }
+      )
   }
 }
