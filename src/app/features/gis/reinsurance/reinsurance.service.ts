@@ -16,8 +16,7 @@ import {AuthService} from "../../../shared/services/auth.service";
   providedIn: 'root'
 })
 export class ReinsuranceService {
-  // baseUrl = this.appConfig.config.contextPath.gis_services;
-  baseUrl = 'reinsurance';
+
     constructor(private api:ApiService,
                 private authService: AuthService,) { }
 
@@ -85,7 +84,6 @@ export class ReinsuranceService {
       .set('policyReinsuranceRiskDetailsCode', `${policyReinsuranceRiskDetailsCode}`)
       .set('riskCode', `${riskCode}`)
 
-
     return this.api.GET<any[]>(`api/v1/reinsurance-xol-premium?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
@@ -94,7 +92,6 @@ export class ReinsuranceService {
 
     let params = new HttpParams()
       .set('policyReinsuranceXolRiskDetailsCode', `${policyReinsuranceXolRiskDetailsCode}`)
-
 
     return this.api.GET<any[]>(`api/v1/reinsurance-xol-premium/participants?${params}`,
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
@@ -118,8 +115,7 @@ export class ReinsuranceService {
       API_CONFIG.GIS_REINSURANCE_BASE_URL);
   }
 
-  getPolicyFacreSetups(batchNo: number):
-    Observable<Pagination<any>> {
+  getPolicyFacreSetups(batchNo: number): Observable<Pagination<any>> {
 
     let params = new HttpParams()
       .set('batchNo', `${batchNo}`)

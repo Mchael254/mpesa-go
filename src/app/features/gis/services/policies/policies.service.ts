@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {HttpParams} from "@angular/common/http";
-import {AppConfigService} from '../../../../core/config/app-config-service'
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { PoliciesDTO } from '../../data/policies-dto';
@@ -14,14 +13,11 @@ import {AuthService} from "../../../../shared/services/auth.service";
 export class PoliciesService {
 
   constructor(
-    private appConfig: AppConfigService,
     private api:ApiService,
     private authService: AuthService,
   ) { }
 
   getPolicyByBatchNo(batchNo: string) {
-
-
     return this.api.GET<any[]>(`api/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
 
@@ -46,18 +42,14 @@ export class PoliciesService {
     return this.api.GET<Pagination<any>>(`api/v2/policies/exceptions?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
 
-  authoriseExceptions(exceptionsCode: number): Observable<any> {
-
-    const assignee = this.authService.getCurrentUserName();
-
+  authoriseExceptions(data: any): Observable<any> {
     return this.api.POST<any>(
-      `api/v1/policies/authoriseExceptions/${exceptionsCode}?user=${assignee}`, null,
+      `api/v1/policies/authoriseExceptions`, JSON.stringify(data),
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
 
   policyMakeReady(batchNo: number): Observable<any> {
-
     const assignee = this.authService.getCurrentUserName();
 
     return this.api.POST<any>(
@@ -67,7 +59,6 @@ export class PoliciesService {
   }
 
   policyUndoMakeReady(batchNo: number): Observable<any> {
-
     const assignee = this.authService.getCurrentUserName();
 
     return this.api.POST<any>(
@@ -77,17 +68,14 @@ export class PoliciesService {
   }
 
   getPolicyAuthorizationLevels(batchNo: number): Observable<any> {
-
     return this.api.GET<any>(`api/v1/policies/authorization-levels?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
 
   getPolicyReceipts(batchNo: number): Observable<any> {
-
     return this.api.GET<any>(`api/v1/receipts?PolBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
 
   authorizeAuthorizationLevels(authLevelCode: number): Observable<any> {
-
     return this.api.POST<any>(
       `api/v1/policies/authorize-authorization-levels/${authLevelCode}`, null,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
@@ -95,7 +83,6 @@ export class PoliciesService {
   }
 
   debtOwnerPromiseDate(data: any): Observable<any> {
-
     return this.api.POST<any>(
       `api/v1/assignDebitOwnerAndPromiseDate`, JSON.stringify(data),
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
