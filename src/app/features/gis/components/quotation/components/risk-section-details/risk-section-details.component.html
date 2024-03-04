@@ -1206,7 +1206,7 @@
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
-                    <tr [pEditableRow]="selectedClauseList">
+                    <tr (click)="onSelectRiskClauses(selectedClauseList)" [pEditableRow]="selectedClauseList">
                           <td>
                               <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
                           </td>

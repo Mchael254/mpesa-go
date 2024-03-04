@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import { QuotationsDTO } from 'src/app/features/gis/data/quotations-dto';
 import { quotationDTO, quotationRisk, riskSection, scheduleDetails } from '../../data/quotationsDTO';
-import { Observable } from 'rxjs';
+import { Observable, catchError, retry, throwError } from 'rxjs';
 import { introducersDTO } from '../../data/introducersDTO';
 import { environment } from '../../../../../../../environments/environment';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
+import { riskClauses } from '../../../setups/data/gisDTO';
 @Injectable({
   providedIn: 'root'
 })
@@ -42,6 +43,19 @@ export class QuotationsService {
       'X-TenantId': environment.TENANT_ID,
 
     })
+  }
+  // Error handling
+errorHandl(error: HttpErrorResponse) {
+  let errorMessage = '';
+  if(error.error instanceof ErrorEvent) {
+    // Get client-side error
+    errorMessage = error.error.message;
+  } else {
+    // Get server-side error
+    errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+  }
+  console.log(errorMessage);
+  return throwError(errorMessage);
   }
     /**
    * Retrieves quotation sources using an HTTP GET request.
@@ -304,6 +318,30 @@ documentTypes(accountType){
     params:params
   })
 }
+getRiskClauses(code:number): Observable<riskClauses[]>{
+  let page = 0;
+  let size = 1000
+ const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  
+  })
+  const params = new HttpParams()
+  .set('page', `${page}`)
+    .set('pageSize', `${size}`)
+  return this.http.get<riskClauses[]>(`/${this.baseUrl}/quotation/api/v1/riskClauses/?riskCode=${code}`,{
+    headers:headers,
+    params:params
+  }).pipe(
+    retry(1),
+    catchError(this.errorHandl)
+  ) 
+}
+captureRiskClauses(clauseCode:number, productCode:number,quoteCode:number,riskCode :number){
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/riskClauses?clauseCode=${clauseCode}&productCode=${productCode}&quoteCode=${quoteCode}&riskCode=${riskCode}`,this.httpOptions)
+  
+}
+ 
 }
 
   
