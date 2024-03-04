@@ -1,10 +1,10 @@
-import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, signal, ViewChild} from '@angular/core';
 import {NewTicketDto, TicketModuleDTO, TicketsDTO, TicketTypesDTO} from "../../../data/ticketsDTO";
 import {AuthService} from "../../../../../shared/services/auth.service";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {TicketsService} from "../../../services/tickets.service";
 import cubejs, {Query} from "@cubejs-client/core";
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import {Table} from "primeng/table/table";
 import {LocalStorageService} from "../../../../../shared/services/local-storage/local-storage.service";
@@ -67,6 +67,7 @@ export class ViewTicketsComponent implements OnInit {
   searchData : Pagination<TicketsDTO> =  <Pagination<any>>{};
   activityName: string;
   totalTickets: number;
+  filterPayload: any[]= [];
 
   globalFilterFields = [
     'createdOn',
@@ -83,6 +84,7 @@ export class ViewTicketsComponent implements OnInit {
     apiUrl: this.appConfig.config.cubejsDefaultUrl
   });
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private filterKey: string = '';
   constructor(
     private authService: AuthService,
     private ticketsService: TicketsService,
@@ -117,12 +119,22 @@ export class ViewTicketsComponent implements OnInit {
             this.springTickets = data;
             this.spinner.hide();
             log.info("ticket subsc",this.ticketsService.ticketFilterObject());
+            this.ticketsService.ticketFilterObject = signal({});
           },
           error: (err) => {
             this.globalMessagingService.displayErrorMessage('Error', err.message);
           }
         });
     }
+    const queryParams = this.router.parseUrl(this.router.url).queryParams;
+    /*if (Object.keys(queryParams).length > 0) {
+      // Remove query parameters
+      const navigationExtras: NavigationExtras = {
+        queryParams: {}  // Empty object to clear all query parameters
+      };
+      // Navigate to the same route without query parameters
+      this.router.navigate([], navigationExtras);
+    }*/
   }
 
   getAllTicketsFromCubeJs() {
@@ -222,12 +234,19 @@ export class ViewTicketsComponent implements OnInit {
     sort: string = '',
     query: string = '',
     queryColumn: string = '') {
+    this.spinner.show();
+    if (this.filterObject[this.filterKey]) {
+        return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
+    }
+    else {
+      return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, '', query, queryColumn, )
+        .pipe(
+          takeUntil(this.destroyed$),
+          tap((data) => log.info('Fetch Tickets data>> ', data))
+        );
+    }
+    log.info('>>',this.filterObject[this.filterKey])
 
-    return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, '', query, queryColumn, )
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap((data) => log.info('Fetch Tickets data>> ', data))
-      );
   }
 
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
@@ -247,7 +266,7 @@ export class ViewTicketsComponent implements OnInit {
           this.springTickets = data;
           this.cdr.detectChanges();
           this.ticketsService.setCurrentTickets(this.springTickets.content);
-
+          this.spinner.hide();
 
           // Extracting all the code values from the tickets
           const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
@@ -255,7 +274,10 @@ export class ViewTicketsComponent implements OnInit {
           // Passing the code values to the getCodeValue method
           const result = codeValues.map(code => this.getTicketCode(code));
 
-        })
+        },
+          error => {
+            this.spinner.hide();
+          })
     }
 
   }
@@ -632,10 +654,6 @@ export class ViewTicketsComponent implements OnInit {
     }
     else {
       this.getAllTickets(pageIndex, pageSize)
-        .pipe(
-          untilDestroyed(this),
-          tap((data) => log.info(`Fetching Tickets>>>`, data))
-        )
         .subscribe(
           (data: Pagination<TicketsDTO>) => {
 
@@ -674,28 +692,42 @@ export class ViewTicketsComponent implements OnInit {
     }
   }
 
-
   getInputs(event, filterObjName: string) {
     const value = (event.target as HTMLInputElement).value;
     this.filterObject[filterObjName] = value;
   }
 
-  searchTickets(key: string) {
+  searchTickets(key: string, pageNo = 0) {
+    let filterValue = {
+      createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+    };
 
+    let temp = this.filterObject[key];
+    this.filterObject = {
+      ...filterValue
+    }
+
+    this.filterObject[key] = temp;
+    this.filterKey = key;
+    log.info(this.filterObject)
+    const assignee = this.authService.getCurrentUserName();
     if (this.filterObject[key]) {
       const searchKey: filterSortEnums = this.getSearchKey(key);
-
 
       const payload = {
         search: [
           {
             key: searchKey,
             value: this.filterObject[key]
+          },
+          {
+            key: filterSortEnums.ASSIGNED_TO,
+            value: assignee
           }
         ]
       };
       log.info('searchdatapayload>>', payload);
-      this.ticketsService.searchTickets(payload)
+      this.ticketsService.searchTickets(pageNo, 10, payload)
         .subscribe((data) =>{
           this.springTickets = data;
           log.info('searchdata>>', this.springTickets);
@@ -704,8 +736,47 @@ export class ViewTicketsComponent implements OnInit {
     else {
       this.dt?.reset();
     }
+  }
 
+  searchTicketsDup(key: string, pageNo = 0, pageSize: number) {
+    let filterValue = {
+      createdOn:'', ticketName:'', refNo:'', clientName:'' , intermediaryName:'', ticketFrom:'', ticketAssignee:''
+    };
 
+    let temp = this.filterObject[key];
+    this.filterObject = {
+      ...filterValue
+    }
+
+    this.filterObject[key] = temp;
+    this.filterKey = key;
+    log.info(this.filterObject)
+    const assignee = this.authService.getCurrentUserName();
+
+    const searchKey: filterSortEnums = this.getSearchKey(key);
+
+    const payload = {
+      search: [
+        {
+          key: searchKey,
+          value: this.filterObject[key]
+        },
+        {
+          key: filterSortEnums.ASSIGNED_TO,
+          value: assignee
+        }
+      ]
+    };
+    if (this.filterObject[key]) {
+
+      log.info('searchdatapayload>>', payload);
+      return this.ticketsService.searchTickets(pageNo, pageSize, payload)
+    }
+    else {
+      this.dt?.reset();
+      payload.search[0].key = null;
+      return this.ticketsService.searchTickets(pageNo, pageSize, payload)
+    }
   }
 }
 
