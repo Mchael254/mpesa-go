@@ -1037,3 +1037,13 @@ export interface subclassCoverTypeSection{
     subClassCode: number,
     subClassCoverTypeCode: number
 }
+export interface riskClauses{
+    clause_code: number,
+    clause_description: string,
+    clause_type: string,
+    editable: string,
+    heading: string,
+    sub_class_code: number,
+    sub_class_description: string,
+    wording: string
+}

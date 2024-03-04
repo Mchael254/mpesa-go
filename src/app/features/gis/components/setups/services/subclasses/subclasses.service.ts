@@ -99,7 +99,7 @@ createSubClass(data:Subclasses[]) {
       catchError(this.errorHandl)
     )
   }
-  getSubclassClauses():Observable<subclassClauses[]>{
+  getSubclassClauses(code:any):Observable<subclassClauses[]>{
     let page = 0;
     let size = 1000;
    const headers = new HttpHeaders({
@@ -110,7 +110,7 @@ createSubClass(data:Subclasses[]) {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses`, {
+    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses?subclassCode=${code}`, {
       headers:headers,
       params:params
     }).pipe(
