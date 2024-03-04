@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import {Logger} from '../../../../../../shared/shared.module'
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
-import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, subclassClauses, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, riskClauses, subclassClauses, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductService } from '../../../../../gis/services/product/product.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
@@ -21,6 +21,9 @@ import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicl
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+
 const log = new Logger('RiskSectionDetailsComponent');
 
 @Component({
@@ -134,6 +137,9 @@ export class RiskSectionDetailsComponent {
   coverFrom:any;
   coverTo:any;
 
+  riskClausesList:riskClauses[];
+  selectedRiskClause:Clause;
+  selectedRiskClauseCode:any;
   constructor(
     private router: Router,
     private messageService:MessageService,
@@ -150,6 +156,8 @@ export class RiskSectionDetailsComponent {
     public vehicleModelService:VehicleModelService,
     public producSetupService: ProductsService,
     public premiumRateService: PremiumRateService,
+    public riskClauseService:RiskClausesService,
+    public globalMessagingService: GlobalMessagingService,
 
 
     public fb:FormBuilder,
@@ -498,15 +506,15 @@ updateCoverToDate() {
  * Also initiates the 'loadAllClauses()' method.
  */
   loadSubclassClauses(code:any){
-    this.subclassService.getSubclassClauses().subscribe(data =>{
+    this.subclassService.getSubclassClauses(code).subscribe(data =>{
       this.SubclauseList=data;
-      this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
-      this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
+      // this.selectedSubClauseList=this.SubclauseList.filter(clause=>clause.subClassCode == code);
+      // this.selectedClauseCode=this.selectedSubClauseList[0].clauseCode;
 
-      log.debug('subclass ClauseList',this.SubclauseList)
+      log.debug('subclass ClauseList#####',this.SubclauseList)
 
-      log.debug('ClauseList',this.selectedSubClauseList)
-      log.debug('ClauseCode',this.selectedClauseCode)
+      // log.debug('ClauseList',this.selectedSubClauseList)
+      // log.debug('ClauseCode********',this.selectedClauseCode)
       this.loadAllClauses();
     })
   }
@@ -534,8 +542,9 @@ updateCoverToDate() {
   // }
   loadAllClauses() {
     // Extract clause codes from selectedSubClauseList
-    const subClauseCodes = this.selectedSubClauseList.map(subClause => subClause.clauseCode);
-  
+    const subClauseCodes = this.SubclauseList.map(subClause => subClause.clauseCode);
+    log.debug('Retrived Clause Codes',subClauseCodes)
+
     // Check if there are any subClauseCodes before making the request
     if (subClauseCodes.length === 0) {
       // Handle the case when there are no subClauseCodes
@@ -549,7 +558,7 @@ updateCoverToDate() {
       // Filter clauseList based on subClauseCodes
       this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
       sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
-      log.debug('Clause hope List', this.clauseList);
+      log.debug('All ClauseList', this.clauseList);
       log.debug('ClauseSelectdList', this.selectedClauseList);
     });
   }
@@ -709,7 +718,7 @@ updateCoverToDate() {
       // this.loadRiskSubclassSection();
       // this.loadSubclassSectionCovertype();
       this.createSchedule();
-
+      this.loadRiskClauses();
     })
 
   }
@@ -1120,5 +1129,30 @@ updateCoverToDate() {
       // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
     });
   }
-  
+  loadRiskClauses(){
+    this.quotationService.getRiskClauses(this.riskCode).subscribe(data =>{
+      this.riskClausesList=data;
+      log.debug("Risk Clauses List:",this.riskClausesList)
+    })
+  }
+   
+  onSelectRiskClauses(event: any){
+    this.selectedRiskClause=event;
+    log.info("Patched Risk Section",this.selectedRiskClause);
+    this.selectedRiskClauseCode=this.selectedRiskClause.code;
+    log.debug("SELECTED RISK CLAUSE CODE:",this.selectedRiskClauseCode);
+    log.debug("SELECTED PRODUCT CODE:",this.selectProductCode);
+    log.debug("SELECTED RISK CODE:",this.riskCode);
+    log.debug("SELECTED Quote CODE:",this.quotationCode);
+    
+    this.captureRiskClause();
+  }
+  captureRiskClause(){
+    this.quotationService.captureRiskClauses(this.selectedRiskClauseCode,this.selectProductCode,this.quotationCode, this.riskCode).subscribe(data =>{
+      log.debug("Response from capture risk endpont:",data);
+      this.globalMessagingService.displaySuccessMessage('Success', 'Risk Clauses successfully captured');
+
+
+    })
+  }
 }
