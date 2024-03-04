@@ -166,13 +166,13 @@ export class TicketsService {
     return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
-  searchTickets(request): Observable<Pagination<TicketsDTO>> {
+  searchTickets(pageNo: number = 0, pageSize: number,request): Observable<Pagination<TicketsDTO>> {
 
     let params = new HttpParams()
 
       .set('request', `${request}`)
 
-    return this.api.POST<Pagination<TicketsDTO>>(`api/v1/tickets/filterTickets`, JSON.stringify(request) , API_CONFIG.MNGT_WORKFLOW_BASE_URL);
+    return this.api.POST<Pagination<TicketsDTO>>(`api/v1/tickets/filterTickets?pageNo=${pageNo}&pageSize=${pageSize}`, JSON.stringify(request) , API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   reassignTickets(ticketsToReassign: TicketReassignDto[]): Observable<GeneralTicketApiResponse> {

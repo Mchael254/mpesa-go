@@ -146,24 +146,25 @@
     </div>
     <div class="col-sm-7">
       <button
-        class="btn btn-success authorize-btn"
-        (click)="onClickAuthorize()"
-        *ngIf="activeIndex === 2"
-      >
-        Authorize
-      </button>
-
-      <button
         class="btn btn-outline-primary reassign-btn"
         data-toggle="modal"
         data-target="#reassignModal"
       >
         Reassign
       </button>
+
+      <button
+        class="btn btn-success ms-2"
+        (click)="onClickAuthorize()"
+        *ngIf="activeIndex === 2"
+      >
+        Authorize
+      </button>
 <!--TODO hide reinsure button in other tabs-->
       <button
         class="btn btn-primary ms-2 reinsure-btn"
         (click)="onClickReinsure()"
+        *ngIf="activeIndex === 1"
       >
         Reinsure
       </button>
