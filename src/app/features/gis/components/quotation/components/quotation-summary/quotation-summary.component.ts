@@ -72,6 +72,9 @@ export class QuotationSummaryComponent {
   productSubclass:any;
   allSubclassList:any;
   documentTypes:any;
+  riskClauses:any;
+  modalHeight: number = 200; // Initial height
+
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -586,6 +589,20 @@ sendSms(){
         }
     })
   }
+  getRiskClauses(riskCode){
+    this.quotationService.getRiskClauses(riskCode).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next:(res)=>{
+        this.riskClauses = res
+      }
+    })
+  }
+  openHelperModal(selectedClause: any) {
+    // Set the showHelperModal property of the selectedClause to true
+    selectedClause.showHelperModal = true;
+}
+onResize(event: any) {
+  this.modalHeight = event.height;
+}
   ngOnDestroy() {
     this.ngUnsubscribe.complete();
   }

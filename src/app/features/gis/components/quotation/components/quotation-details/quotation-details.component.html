@@ -223,15 +223,22 @@
                 [tableStyle]="{'min-width': '50rem'}"
                 styleClass="p-datatable-sm"
                 responsiveLayout="scroll" 
+                [(selection)]="selectedClause" 
                 class='ui-datatable'
+                selectionMode="multiple"
                 [autoLayout]="true"
                 [paginator]="true"
-             [rows]="5"
-             [showCurrentPageReport]="true"
-             currentPageReportTemplate="{first} to {last} of {totalRecords} entries">
+                [rows]="5"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+                
+            
+               >
                 <ng-template pTemplate="header">
                   <tr>
-                            <th style="width: 5%;padding-right: 50px;">Select</th>
+                            <th style="width: 5%;padding-right: 50px;">
+                                select
+                            </th>
                             <th style="width: 25%;padding-right: 50px;">Heading</th>
                             <th style="width: 40%;">Wording</th>
                             <th style="width: 5%;"></th>
@@ -241,7 +248,7 @@
                 <ng-template pTemplate="body" let-selectedClauseList let-editing="editing" let-ri="rowIndex">
                     <tr [pEditableRow]="selectedClauseList">
                           <td>
-                              <p-tableCheckbox [value]="selectedClauseList"></p-tableCheckbox>
+                              <p-tableCheckbox [value]="selectedClauseList" (onChange)="selectedProductClauses($event)" ></p-tableCheckbox>
                           </td>
                       
                           <td  

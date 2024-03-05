@@ -17,10 +17,10 @@
                 </div>
                 <div class="col-md-5 mt-3">
                     <label for="inputProfileImg" style="margin-right: 15px;margin-left: 20px;">Upload File</label>
-                    <input type="file" id="inputProfileImg" formControlName="uploadFile" hidden />
+                    <input type="file" id="inputProfileImg" (change)="onFileChange($event)" formControlName="uploadFile" hidden />
                     <label  for="inputProfileImg" class="img_upload"  style="margin-right: 15px;margin-top: 5px;">Choose File</label>
                                     
-                    <button class="btn btn-outline-primary ">Export template</button>
+                    <button class="btn btn-outline-primary" (click)="exportTemplate()">Export template</button>
                   
                 </div>
                 <div class="col-md-3">
@@ -31,7 +31,7 @@
 
         <p class="title">Imported risks</p>
         <p-table 
-        [value]=""
+        [value]="data"
         [resizableColumns]="true" 
         styleClass="p-datatable-sm"
         class='ui-datatable' 
@@ -44,23 +44,25 @@
                     <th>Client names</th>
                     <th>WEF</th>
                     <th>WET</th>
-                    <th>Risk Duplicated</th>
-                    <th>Class</th>
+                    <th>Premium Band</th>
+                    <th>Risk Id</th>
+                    <th>Risk description</th>
                     <th>Cover </th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-clause>
+            <ng-template pTemplate="body" let-data>
                 <tr>
                     <td>
-                        <p-tableCheckbox [value]="clause"></p-tableCheckbox>
+                        <p-tableCheckbox [value]="data"></p-tableCheckbox>
                     </td>        
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
-                    <td>{{ clause.is_editable }}</td>
+                    <td>{{ data.ClientCode }}</td>
+                    <td>{{ data.ClientName }}</td>
+                    <td>{{ data.WEF }}</td>
+                    <td>{{ data.WET }}</td>
+                    <td>{{ data.PremiumBind }}</td>
+                    <td>{{data.PropertyId}}</td>
+                    <td>{{ data.ItemDesc }}</td>
+                    <td>{{ data.CoverTypeShortDesc }}</td>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
