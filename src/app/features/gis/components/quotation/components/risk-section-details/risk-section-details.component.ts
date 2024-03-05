@@ -682,7 +682,7 @@ updateCoverToDate() {
     delete risk.dateRange;
     const riskArray = [risk];
     // const propertyIdValue = this.riskDetailsForm.get('propertyId').value;
-
+    console.log(riskArray)
     this.quotationService.createQuotationRisk(this.quotationCode,riskArray).subscribe(data =>{
       this.quotationRiskData=data;
 

@@ -342,6 +342,25 @@ captureRiskClauses(clauseCode:number, productCode:number,quoteCode:number,riskCo
   
 }
  
+
+addProductClause(clauseCode,productCode,quotationCode){
+  const params = new HttpParams()
+  .set('clauseCode', clauseCode)
+  .set('productCode', productCode)
+  .set('quotationCode', quotationCode)
+
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-TenantId': environment.TENANT_ID,
+  });
+
+  return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`,{
+    headers: headers,
+    params:params
+  })
+}
+
 }
 
   

@@ -586,6 +586,13 @@ sendSms(){
         }
     })
   }
+  getRiskClauses(riskCode){
+    this.quotationService.getRiskClauses(riskCode).pipe(takeUntil(this.ngUnsubscribe)).subscribe({
+      next:(res)=>{
+        console.log(res)
+      }
+    })
+  }
   ngOnDestroy() {
     this.ngUnsubscribe.complete();
   }
