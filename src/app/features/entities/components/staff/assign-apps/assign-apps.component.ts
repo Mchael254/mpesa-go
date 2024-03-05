@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AssignAppsRequest, CreateStaffDto} from "../../../data/StaffDto";
-import {AppService} from "../../../../../shared/services/setups/system-apps/app.service";
+import {App, AppService} from "../../../../../shared/services/setups/system-apps/app.service";
 import {Logger} from "../../../../../shared/services";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {StaffService} from "../../../services/staff/staff.service";
@@ -22,21 +22,45 @@ export class AssignAppsComponent  implements OnInit{
   newlyCreatedStaff: CreateStaffDto;
 
   assignedApps: number[] = [];
-  apps: any[] = [];
+  apps: App[] = [];
 
-  constructor(private appService: AppService,
-              private globalMessagingService: GlobalMessagingService,
-              public staffService: StaffService) {
-  }
+  appImages: {id: number, imageSrc: string} [] = [
+    { id: 37, imageSrc: 'surface1.png' },
+    { id: 26, imageSrc: 'Page.png' },
+    { id: 43, imageSrc: 'portal.png' },
+    { id: 1, imageSrc: 'fms.png' },
+  ]
+
+  constructor(
+    private appService: AppService,
+    private globalMessagingService: GlobalMessagingService,
+    public staffService: StaffService
+    ) {}
 
 
   /**
    * Fetch apps list
    */
   fetchSystemApps(){
-    this.apps = this.appService.getApps();
-    this.apps.forEach(app =>  {
-      app.clicked = false;
+    this.appService.getApps()
+    .subscribe({
+      next: (data) => {
+        data.forEach(el => {
+          const imageSrc = this.appImages.filter((x) => x.id === el.id )[0]?.imageSrc;
+          const app = {
+            id: el?.id,
+            systemName: el?.systemName,
+            shortDesc: el?.shortDesc,
+            imageSrc: imageSrc ? imageSrc : 'surface1.png',
+            clicked: false,
+          }
+          this.apps.push(app)
+        })
+      },
+      error: (err) => {
+        const errorMessage = err?.error?.message ?? err.message;
+        this.globalMessagingService.displayErrorMessage('Error', errorMessage + ` || ${err?.error?.errors[0]}` )
+      }
     });
   }
 
