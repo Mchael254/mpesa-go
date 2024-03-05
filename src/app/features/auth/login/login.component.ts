@@ -68,11 +68,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.subscribe((params) => {
       this.tenant_id = params['id'];
-      console.log('Example Param:', this.tenant_id);
-      if(this.tenant_id===null || this.tenant_id===undefined){
-        this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
-      }
-      this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
+      // if(this.tenant_id===null || this.tenant_id===undefined){
+      //   this.toast_service.info('Provide a TENANT ID', 'TENANT ID IS REQUIRED')
+      // }
+      // this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id)
     });
   }
 
@@ -144,7 +143,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (data.allowMultifactor === 'N') {
           log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
           this.authService.attemptAuth(authenticationData);
-          this.isLoading = false;
+          setTimeout(() => {this.isLoading = false}, 2000)
           return;
         }
 
@@ -175,15 +174,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.localStorageService.setItem('details', JSON.stringify(loginDetails));
           this.localStorageService.setItem('detailsM', loginDetails.password);
           this.localStorageService.setItem('extras', JSON.stringify(extras));
-          //
-          // localStorage.setItem('details', JSON.stringify(loginDetails));
-          // localStorage.setItem('extras', JSON.stringify(extras));
 
           if(message.includes('will expire')){
             this.expiryMessage = message;
-
-            // $("#passwordModal").modal('show');
-            // log.info('Show Reset Password Modal')
           }
           else{
             this.router.navigate(['/auth/verify'])
