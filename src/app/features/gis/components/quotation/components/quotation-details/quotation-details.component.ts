@@ -22,6 +22,7 @@ import { WebAdmin } from 'src/app/shared/data/web-admin';
 import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
 import { Table } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
+
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import {NgxSpinnerService} from 'ngx-spinner';
 const log = new Logger('QuotationDetails');
@@ -61,7 +62,9 @@ export class QuotationDetailsComponent {
   quickQuotationDetails:any
   quickQuotationCode:any;
   quickQuotationNum:any
+  selectedClause!:any;
   selectedAgent!:any
+  productCode:any;
   @ViewChild('openModal') openModal;
   @ViewChild('dt1') dt1: Table | undefined;
 
@@ -334,7 +337,7 @@ export class QuotationDetailsComponent {
         sessionStorage.setItem('quotationNum',this.quotationNum );
         sessionStorage.setItem('quotationCode',this.quotationCode );
         sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-    
+        this.selectedProductClauses(this.quotationCode)
         this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
     
         this.router.navigate(['/home/gis/quotation/risk-section-details']);
@@ -524,9 +527,31 @@ updateQuotationExpiryDate(e){
    * @return {void}
    */
 getProductClause(){
+  this.productCode = this.quotationForm.value.productCode.code
   this.quotationService.getProductClauses(this.quotationForm.value.productCode.code).subscribe(res=>{
     this.clauses= res
-  
   })
+}
+selectedProductClauses(quotationCode){
+
+  if(this.selectedClause){
+    this.selectedClause.forEach(el=>{
+      this.quotationService.addProductClause(el.code,this.productCode,quotationCode).subscribe(res=>{
+        console.log(res)
+      })
+      console.log(el.code)
+    })
+  }
+
+  // this.clauseService.getSingleClause(code).subscribe(
+  //   {
+  //     next:(res)=>{
+  //       console.log(res)
+  //     }
+  //   }
+  // )
+}
+unselectClause(event){
+  console.log(this.selectedClause)
 }
 }
