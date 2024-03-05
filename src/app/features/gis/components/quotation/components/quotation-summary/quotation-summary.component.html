@@ -482,7 +482,7 @@
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-data>
-                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code);getExcesses(data.code)">
+                                <tr [pSelectableRow]="riskDetails" class="point" (click)="getSections(data.code);getExcesses(data.code);getRiskClauses(data.code)">
                                     <td>{{data.quotationRiskNo}}</td>
                                     <td>{{data.propertyId}}</td>
                                     <td>{{data.covertypeShortDescription}}</td>
