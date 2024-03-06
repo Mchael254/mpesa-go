@@ -282,7 +282,66 @@ export class ViewTicketsComponent implements OnInit {
 
   }
 
-/**
+  /*lazyLoadTickets(event: LazyLoadEvent | TableLazyLoadEvent) {
+    const ticketFilter: any = this.ticketsService.ticketFilterObject();
+
+    if (!ticketFilter?.fromDashboardScreen) {
+      const pageIndex = event.first / event.rows;
+      const queryColumn = event.sortField;
+      const sortDirection = event.sortOrder === -1 ? 'DESCENDING' : 'ASCENDING';
+      const pageSize = event.rows;
+
+      // Determine sortItem based on queryColumn and sortDirection
+      let sortItem = '';
+      if (queryColumn === 'agentName' || queryColumn === 'clientName') {
+        sortItem = sortDirection;
+      }
+
+      // Remove agentName and clientName from the parameters if they are empty
+      const params: any = {
+        pageIndex,
+        pageSize,
+        sort: queryColumn === 'agentName' || queryColumn === 'clientName' ? '' : queryColumn,
+        query: '',
+        queryColumn: '',
+        agentName: queryColumn === 'agentName' ? event.multiSortMeta : '',
+        clientName: queryColumn === 'clientName' ? event.multiSortMeta : '',
+        sortItem: sortItem
+      };
+
+      this.getAllTickets(pageIndex,
+        pageSize,
+        params.sort,
+        params.query,
+        params.queryColumn,
+        params.agentName,
+        params.clientName,
+        params.sortItem)
+        .pipe(untilDestroyed(this))
+        .subscribe(
+          (data: Pagination<TicketsDTO>) => {
+            this.springTickets = data;
+            this.cdr.detectChanges();
+            this.ticketsService.setCurrentTickets(this.springTickets.content);
+            this.spinner.hide();
+
+            // Extracting all the code values from the tickets
+            const codeValues = this.springTickets.content.map(ticket => ticket.ticket.sysModule);
+
+            // Passing the code values to the getCodeValue method
+            const result = codeValues.map(code => this.getTicketCode(code));
+
+          },
+          error => {
+            this.spinner.hide();
+          }
+        );
+    }
+  }*/
+
+
+
+  /**
  * The function `getTicketCode` takes a code as input and returns the corresponding ticket code based
  * on the system module.
  * @param {string} code - The code parameter is a string that represents the system module code of a
@@ -577,8 +636,8 @@ export class ViewTicketsComponent implements OnInit {
     const sortValues = this.sortingForm.getRawValue();
     log.info('form value', sortValues);
     const payload: any = {
-      fromDate: sortValues.fromDate ? sortValues.fromDate : this.dateFrom,
-      toDate: sortValues.toDate ? sortValues.toDate : this.dateToday,
+      fromDate: sortValues.fromDate ? sortValues.fromDate : '',
+      toDate: sortValues.toDate ? sortValues.toDate : '',
       ticketTypes: sortValues.ticketTypes ? sortValues.ticketTypes : '',
       ticketModules: sortValues.ticketModules ? sortValues.ticketModules : ''
     }

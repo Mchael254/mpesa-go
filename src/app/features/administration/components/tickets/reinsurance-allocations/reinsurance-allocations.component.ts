@@ -160,45 +160,50 @@ export class ReinsuranceAllocationsComponent implements OnInit {
         (data) => {
           this.riskReinsuranceDetails = data;
           log.info('riskReinsuranceDetails>>', this.riskReinsuranceDetails)
-          let details = data[0];
+          if (data && data.length > 0) {
+            let details = data[0];
 
-          this.prrdCode = details?.prrdCode;
-          this.prrdTranNo = details?.prrdTranNo;
-          const subclassCode = details?.sclCode;
+            this.prrdCode = details?.prrdCode;
+            this.prrdTranNo = details?.prrdTranNo;
+            const subclassCode = details?.sclCode;
 
-          this.getSubclasses(subclassCode);
+            this.getSubclasses(subclassCode);
 
-          log.info('content>>',details)
+            log.info('content>>',details)
 
-          let inp = {
-            "companyNetPRate":details['prrdPrevRetRate'],
-            "companyNetRiAmt": this.numberWithCommas(details['prrdGrossCompRetention']),
-            "companyNetCession": details['prrdCompNetRate'],
-            "companyNetPremium": this.numberWithCommas(details['prrdNetPrem']),
-            "reinsurancePRate": details['riPoolPrevRate'],
-            "reinsuranceRiAmt": details['riPool'],
-            "reinsuranceCession": details['riPoolRate'],
-            "reinsurancePremium": details['riPoolPrem'],
-            "treatyPRate": details['prevTreatyRate'],
-            "treatyRiAmt": details['trtsSi'],
-            "treatyCession": details['trtsPct'],
-            "treatyPremium": details['trtsPrem'],
-            "facrePRate": details['prrdPrevFacreRate'],
-            "facreRiAmt": this.numberWithCommas(details['prrdFacreAmount']),
-            "facreCession": this.numberWithCommas(details['prrdFacreRate']),
-            "facrePremium": details['prrdFacrePremium'],
-            "totalRiAmt": details['totCededSi'],
-            "totalCession": details['totPct'],
-            "totalPremium": details['totCededPrem'],
-            "excessRiAmt": details['prrdAvailFulcBal'],
-            "excessCession": details['prrdExcessPct'],
-            "excessPremium": details['excessPrem'],
+            let inp = {
+              "companyNetPRate":details['prrdPrevRetRate'],
+              "companyNetRiAmt": this.numberWithCommas(details['prrdGrossCompRetention']),
+              "companyNetCession": details['prrdCompNetRate'],
+              "companyNetPremium": this.numberWithCommas(details['prrdNetPrem']),
+              "reinsurancePRate": details['riPoolPrevRate'],
+              "reinsuranceRiAmt": details['riPool'],
+              "reinsuranceCession": details['riPoolRate'],
+              "reinsurancePremium": details['riPoolPrem'],
+              "treatyPRate": details['prevTreatyRate'],
+              "treatyRiAmt": details['trtsSi'],
+              "treatyCession": details['trtsPct'],
+              "treatyPremium": details['trtsPrem'],
+              "facrePRate": details['prrdPrevFacreRate'],
+              "facreRiAmt": this.numberWithCommas(details['prrdFacreAmount']),
+              "facreCession": this.numberWithCommas(details['prrdFacreRate']),
+              "facrePremium": details['prrdFacrePremium'],
+              "totalRiAmt": details['totCededSi'],
+              "totalCession": details['totPct'],
+              "totalPremium": details['totCededPrem'],
+              "excessRiAmt": details['prrdAvailFulcBal'],
+              "excessCession": details['prrdExcessPct'],
+              "excessPremium": details['excessPrem'],
 
-          };
-          log.info('content patched>>',inp)
-          // details = {...details, ...inp};
+            };
+            log.info('content patched>>',inp)
+            // details = {...details, ...inp};
 
-          this.treatyRISummaryForm.patchValue(inp);
+            this.treatyRISummaryForm.patchValue(inp);
+          } else {
+            log.info('No Treaty risk ceding details');
+          }
+
         }
       )
   }
