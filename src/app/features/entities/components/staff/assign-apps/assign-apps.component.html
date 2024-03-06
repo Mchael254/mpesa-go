@@ -12,14 +12,14 @@
       </div>
 
       <div class="row">
-        <div class="col-md-3 col-sm-12 my-4" *ngFor="let app of apps;let i = index">
+        <div class="col-md-3 col-sm-12 my-4" *ngFor="let app of apps; let i = index">
           <div class="card user-app-card">
             <div class="card-body text-center user-app-card-body">
               <input type="checkbox" [checked]="app?.clicked" (click)="selectApp(i)" class="float-start user-app-checked"/>
               <div class="d-flex justify-content-center user-app-card-info">
-                <img src='assets/images/{{app?.imageSrc}}' alt="{{app?.systemName}}" class="group"> </div>
-                <h2 class="my-1">{{app?.systemName}}</h2>
-                <p class="my-1">{{app.desc}}</p>
+                <img src='assets/images/{{ app?.imageSrc}}' alt="{{app?.systemName}}" class="group"> </div>
+                <h2 class="my-1">{{app?.shortDesc}}</h2>
+                <p class="my-1" style="font-size: 0.8em;">{{app.systemName | titlecase }}</p>
             </div>
           </div>
         </div>
