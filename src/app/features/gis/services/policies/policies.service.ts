@@ -53,7 +53,7 @@ export class PoliciesService {
     const assignee = this.authService.getCurrentUserName();
 
     return this.api.POST<any>(
-      `api/v1/policies/make-ready/${batchNo}?user=${assignee}`, null,
+      `api/v1/policies/make-ready/${batchNo}?user=${assignee}&reinTransactionParam=Y`, null,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
@@ -62,7 +62,7 @@ export class PoliciesService {
     const assignee = this.authService.getCurrentUserName();
 
     return this.api.POST<any>(
-      `api/v1/policies/undo-make-ready/${batchNo}?user=${assignee}`, null,
+      `api/v1/policies/undo-make-ready/${batchNo}?user=${assignee}&reinTransactionParam=N`, null,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
@@ -85,6 +85,15 @@ export class PoliciesService {
   debtOwnerPromiseDate(data: any): Observable<any> {
     return this.api.POST<any>(
       `api/v1/assignDebitOwnerAndPromiseDate`, JSON.stringify(data),
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  authorisePolicy(batchNo: number, scheduleStatus: string, dateToday: string): Observable<any> {
+    const assignee = this.authService.getCurrentUserName();
+
+    return this.api.POST<any>(
+      `api/v1/policies/authorise/${batchNo}?user=${assignee}&scheduleStatus=${scheduleStatus}&authDate=${dateToday}`, null,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
