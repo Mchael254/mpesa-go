@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "Naam",
+    "no-occupation_found": "Geen beroep gevonden.",
+    "no_sector_found": "Geen sector gevonden.",
     "no_service_provider_type_found": "Geen type dienstverlener gevonden",
+    "occupation": "Beroepen",
     "search": "Zoeken",
+    "sector": "Sectoren",
     "service_provider_type": "Soort Dienstverlener",
     "short_description": "Korte Beschrijving",
     "status": "Status",

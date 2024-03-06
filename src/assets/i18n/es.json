@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "Nombre",
+    "no-occupation_found": "No se encontró ninguna ocupación.",
+    "no_sector_found": "No se encontró ningún sector.",
     "no_service_provider_type_found": "No se encontró ningún tipo de proveedor de servicios",
+    "occupation": "Ocupaciones",
     "search": "Buscar",
+    "sector": "Sectores",
     "service_provider_type": "Tipos de Proveedores de Servicios",
     "short_description": "Descripción Corta",
     "status": "Estado",
