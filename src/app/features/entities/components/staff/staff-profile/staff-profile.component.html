@@ -58,7 +58,7 @@
             <ng-container *ngIf="visibleStatus.userType === 'Y'">
               <div class="col-sm-4">
                 <label for="userType" class="label col-form-label">{{ 'entities.user_type' | translate }}</label>
-                <select  id="userType" name="userType" class="form-control" formControlName="userType"
+                <select  id="userType" name="userType" class="form-select" formControlName="userType"
                          [ngClass]="{ 'is-invalid': f['userType']?.invalid && (f['userType']?.dirty || f['userType']?.touched) }">
                   <option value="" selected disabled>{{ 'entities.user_type' | translate }}</option>
                   <option value="U" aria-selected="true">{{ 'entities.individual' | translate }}</option>
@@ -87,7 +87,7 @@
             <ng-container *ngIf="visibleStatus.gender === 'Y'">
               <div class="col-sm-4">
                 <label for="gender" class="label col-form-label">{{ 'entities.gender' | translate }}</label>
-                <select id="gender" class="form-control" formControlName="gender" name="gender"
+                <select id="gender" class="form-select" formControlName="gender" name="gender"
                         [ngClass]="{ 'is-invalid': f['gender']?.invalid && (f['gender']?.dirty || f['gender']?.touched) }">
                   <option value="" selected disabled>{{ 'entities.gender' | translate }}</option>
                   <option value="M" aria-selected="true">{{ 'entities.male' | translate }}</option>
@@ -283,7 +283,7 @@
             <ng-container *ngIf="visibleStatus.departmentCode === 'Y'">
               <div class="col-sm-4">
                 <label for="departmentCode" class="label col-form-label">{{ 'entities.department' | translate }}</label>
-                <select id="departmentCode" class="form-control" formControlName="departmentCode"
+                <select id="departmentCode" class="form-select" formControlName="departmentCode"
                         [ngClass]="{ 'is-invalid': f['employment_details'].get('departmentCode')?.invalid && (f['employment_details'].get('departmentCode')?.dirty || f['employment_details'].get('departmentCode')?.touched) }">
                   <option value="" selected disabled>{{ 'entities.department' | translate }}</option>
                   <option *ngFor="let dep of departments " value="{{ dep.id }}">{{ dep.departmentName }}</option>

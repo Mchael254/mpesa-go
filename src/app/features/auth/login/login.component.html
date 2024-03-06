@@ -49,7 +49,7 @@
         type="submit"
         id="login-submit"
         class="btn btn-primary btn-full-width fadeIn"
-        (click)='authAttempt()'
+        (click)='fetchUserTenants()'
         i18n='Login|Auth Login Action@@authLoginActionBtn'
       >
         
@@ -86,17 +86,19 @@
     <h5 class="mb-3 text-dark text-start">{{ 'auth.choose_entity' | translate }}</h5>
     
     <div class="row">
-      <ng-container *ngFor="let entity of entities">
-        <div class="col-6" *ngIf="!isLoading; else loading">
-          <div class="entity text-dark" (click)="authAttempt()">
-            <i class="fa-solid fa-user" style="font-size: 3rem;"></i>
-            <p>{{ entity | uppercase }}</p>
+      <ng-container *ngIf="!isLoading; else loading">
+        <ng-container *ngFor="let entity of entities">
+          <div class="col-6">
+            <div class="entity text-dark" (click)="authAttempt()">
+              <i class="fa-solid fa-user" style="font-size: 3rem;"></i>
+              <p>{{ entity | uppercase }}</p>
+            </div>
           </div>
-        </div>
-          <ng-template #loading>
-            <i class="pi pi-spin pi-spinner text-dark" style="font-size: 2rem"></i>
-          </ng-template>
+        </ng-container>
       </ng-container>
+      <ng-template #loading>
+        <i class="pi pi-spin pi-spinner text-dark" style="font-size: 2rem"></i>
+      </ng-template>
     </div>
   </div>
 </div>

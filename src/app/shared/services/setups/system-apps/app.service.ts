@@ -1,4 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AppConfigService } from 'src/app/core/config/app-config-service';
 
 /**
  * Service class to get the list of apps/systems
@@ -84,12 +87,27 @@ export class AppService {
     // },
   ];
 
-  constructor() { }
+  constructor(
+    private appConfig: AppConfigService,
+    private http: HttpClient
+  ) { }
 
   /**
    * Returns the list of apps/systems
    */
-  getApps(): any{
-      return this.apps;
+  getApps(): Observable<App[]>{
+      // return this.apps;
+      const baseUrl =  this.appConfig.config.contextPath.setup_services;
+      return this.http.get<App[]>(`/${baseUrl}/setups/systems?organizationId=2`)
   }
+
+}
+
+export interface App {
+  id: number,
+  shortDesc: string,
+  systemName: string,
+  desc?: string,
+  imageSrc?: string,
+  clicked?: boolean,
 }

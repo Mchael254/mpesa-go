@@ -31,6 +31,7 @@ import {AuthService} from "../../../../../shared/services/auth.service";
 import {Logger} from "../../../../../shared/services/logger/logger.service";
 import {UtilService} from "../../../../../shared/services/util/util.service";
 import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
+import { ActivatedRoute } from '@angular/router';
 
 const log = new Logger('StaffProfileComponent');
 
@@ -122,28 +123,34 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
     this.searchUsers(value);
   }
 
-  constructor(private fb: FormBuilder,
-              private staffService: StaffService,
-              private entityService: EntityService,
-              private countryService: CountryService,
-              private mandatoryFieldsService: MandatoryFieldsService,
-              private departmentService: DepartmentService,
-              private globalMessagingService: GlobalMessagingService,
-              private cdr: ChangeDetectorRef,
-              private utilService: UtilService,
-              private branchService: BranchService,
-              private formStateService: FormStateService,
-              private authService: AuthService,
-              private setupsParameterService: SetupsParametersService,) {
-  }
+  constructor(
+    private fb: FormBuilder,
+    private staffService: StaffService,
+    private entityService: EntityService,
+    private countryService: CountryService,
+    private mandatoryFieldsService: MandatoryFieldsService,
+    private departmentService: DepartmentService,
+    private globalMessagingService: GlobalMessagingService,
+    private cdr: ChangeDetectorRef,
+    private utilService: UtilService,
+    private branchService: BranchService,
+    private formStateService: FormStateService,
+    private authService: AuthService,
+    private setupsParameterService: SetupsParametersService,
+    private activatedRoute: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    this.createStaffCreationForm()
+    const entityId = parseInt(this.activatedRoute.snapshot.queryParamMap.get('id'));
+
     this.fetchFormStateValues();
-    this.fetchEntityById();
+    this.fetchEntityById(entityId);
     this.fetchCountries();
     this.fetchDepartments();
     this.fetchBranches();
-    this.createUserRegForm();
+    // this.createUserRegForm();
+    
   }
 
   /**
@@ -159,59 +166,17 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
   /**
    * This method is used to fetch the entity by id
    */
-  fetchEntityById(){
-    if(!!this.entityService.currentEntity$){
-      this.entityService.currentEntity$
-        .subscribe( data => {
-            this.entityDetails = data;
-          }
-        );
-    }
-  }
+  // fetchEntityById(){
+  //   if(!!this.entityService.currentEntity$){
+  //     this.entityService.currentEntity$
+  //       .subscribe( data => {
+  //           this.entityDetails = data;
+  //         }
+  //       );
+  //   }
+  // }
 
-  /**
-   * This method is used to fetch the countries
-   */
-  fetchCountries(){
-    this.countryService.getCountries()
-      .pipe(untilDestroyed(this))
-      .subscribe( (data) => {
-        this.countries = data;
-      });
-  }
-
-  /**
-   * This method is used to fetch the departments
-   */
-  fetchDepartments(){
-    this.departmentService.getDepartments(2)
-      .pipe(untilDestroyed(this))
-      .subscribe(
-        (departmentList) => {
-          this.departments = departmentList;
-        }
-      )
-  }
-
-  /**
-   * This method is used to fetch the organization branches
-   */
-  fetchBranches() {
-    this.branchService
-      .getBranches(2)
-      .pipe(untilDestroyed(this)
-      )
-      .subscribe( (branches) => {
-        this.branches = branches;
-      });
-  }
-
-  /**
-   * This method is used to create the user registration form
-   * It sets the mandatory fields as required
-   * It also patches the form with the values from the temp data stored in the form state service or the entity details from the entity service
-   */
-  createUserRegForm() {
+  createStaffCreationForm(): void {
     this.staffRegistrationForm = this.fb.group({
       firstName: [{value: '', disabled: true}],
       lastName: [{value: '', disabled: true}],
@@ -243,12 +208,13 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
       dateOfBirth: [''],
       idNumber: ['']
     });
-    this.profileDetails = JSON.parse(sessionStorage.getItem('partyProfileDetails'));
 
-    let staffProfileFormValue = this.formStateService.getFormState(this.staffProfileFormStateKey);
+    this.defineSmsNumberFormat();
+    
+  }
 
-    let name = 'SMS_NO_FORMAT';
-    this.setupsParameterService.getParameters(name)
+  defineSmsNumberFormat(): void {
+    this.setupsParameterService.getParameters('SMS_NO_FORMAT')
       .subscribe((data) => {
         data.forEach((field) => {
           if (field.name === 'SMS_NO_FORMAT') {
@@ -261,8 +227,12 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
           }
           log.info('parameters>>>', this.phoneNumberRegex)
         });
-      });
+        this.setMandatoryFields();
+      });      
+  }
 
+
+  setMandatoryFields(): void {
     this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId)
       .pipe(untilDestroyed(this)
       )
@@ -320,13 +290,20 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
               }
             }
           }
-        })
+        });
+        // this.patchStaffFormValues();
         this.cdr.detectChanges();
       });
+  }
 
-    if(staffProfileFormValue){
-      this.patchStaffTempData(staffProfileFormValue.data);
-      log.info('>>>>> staffProfileFormValue: ', staffProfileFormValue);
+
+  patchStaffFormValues() {
+    this.profileDetails = JSON.parse(sessionStorage.getItem('partyProfileDetails'));
+
+    // let staffProfileFormValue = this.formStateService.getFormState(this.staffProfileFormStateKey);
+    if(this.entityDetails){
+      this.patchStaffTempData(this.entityDetails);
+      // log.info('>>>>> staffProfileFormValue: ', staffProfileFormValue);
     }
     else{
       this.staffRegistrationForm.patchValue({
@@ -356,6 +333,228 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
       this.staffProfileFormState.uniqueKey = this.entityDetails?.id;
       this.formStateService.saveFormState(this.staffProfileFormStateKey, this.staffProfileFormState);
     })
+  }
+
+  /**
+   * This method gets party from DB  to auto-populate Primary Identity
+   * @param id 
+   * @returns void
+   */
+  fetchEntityById(id: number): void {
+    this.entityService.getEntityById(id)
+    .subscribe({
+      next: (party) => {
+        log.info(`enitity details: `, party)
+        this.entityDetails = {
+          categoryName: party.categoryName,
+          countryId: party.countryId,
+          dateOfBirth: party.dateOfBirth,
+          effectiveDateFrom: party.effectiveDateFrom,
+          effectiveDateTo: party.effectiveDateTo,
+          id: party.id,
+          modeOfIdentity: party.modeOfIdentity,
+          identityNumber: party.identityNumber,
+          name: party.name,
+          organizationId: party.organizationId,
+          pinNumber: party.pinNumber,
+          profilePicture: party.profilePicture,
+          profileImage: party.profileImage
+        };
+        this.patchStaffFormValues()
+      },
+      error: (e) => {
+        log.error(`error fetching parties >>>`, e)
+      }
+    })
+  }
+
+  /**
+   * This method is used to fetch the countries
+   */
+  fetchCountries(){
+    this.countryService.getCountries()
+      .pipe(untilDestroyed(this))
+      .subscribe( (data) => {
+        this.countries = data;
+      });
+  }
+
+  /**
+   * This method is used to fetch the departments
+   */
+  fetchDepartments(){
+    this.departmentService.getDepartments(2)
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        (departmentList) => {
+          this.departments = departmentList;
+        }
+      )
+  }
+
+  /**
+   * This method is used to fetch the organization branches
+   */
+  fetchBranches() {
+    this.branchService
+      .getBranches(2)
+      .pipe(untilDestroyed(this)
+      )
+      .subscribe( (branches) => {
+        this.branches = branches;
+      });
+  }
+
+  /**
+   * This method is used to create the user registration form
+   * It sets the mandatory fields as required
+   * It also patches the form with the values from the temp data stored in the form state service or the entity details from the entity service
+   */
+  createUserRegForm() {
+    // this.staffRegistrationForm = this.fb.group({
+    //   firstName: [{value: '', disabled: true}],
+    //   lastName: [{value: '', disabled: true}],
+    //   username: [''],
+    //   userType: [''],
+    //   contact_details: this.fb.group(
+    //     {
+    //       countryCode: [''],
+    //       townCode: [''],
+    //       city: [''],
+    //       physicalAddress: [''],
+    //       phoneNumber: [''],
+    //       otherPhone: [''],
+    //       email: ['', Validators.email],
+    //       countryCodePrimary: [''],
+    //       countryCodeSecondary: ['']
+    //     },
+    //   ),
+    //   employment_details: this.fb.group({
+    //     departmentCode: [''],
+    //     manager: [{value: '', disabled: true}],
+    //     branch: [''],
+    //     personelRank: ['']
+    //   }),
+    //   telNo: [''],
+    //   postalCode: [''],
+    //   pinNumber: [{value: '', disabled: true}],
+    //   gender: [''],
+    //   dateOfBirth: [''],
+    //   idNumber: ['']
+    // });
+    // this.profileDetails = JSON.parse(sessionStorage.getItem('partyProfileDetails'));
+
+    // let staffProfileFormValue = this.formStateService.getFormState(this.staffProfileFormStateKey);
+
+    // let name = 'SMS_NO_FORMAT';
+    // this.setupsParameterService.getParameters(name)
+    //   .subscribe((data) => {
+    //     data.forEach((field) => {
+    //       if (field.name === 'SMS_NO_FORMAT') {
+    //         this.phoneNumberRegex = field.value;
+    //         this.staffRegistrationForm.controls['contact_details'].get('phoneNumber')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+    //         this.staffRegistrationForm.controls['contact_details'].get('phoneNumber')?.updateValueAndValidity();
+
+    //         this.staffRegistrationForm.controls['contact_details'].get('otherPhone')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
+    //         this.staffRegistrationForm.controls['contact_details'].get('otherPhone')?.updateValueAndValidity();
+    //       }
+    //       log.info('parameters>>>', this.phoneNumberRegex)
+    //     });
+    //   });
+
+    // this.mandatoryFieldsService.getMandatoryFieldsByGroupId(this.groupId)
+    //   .pipe(untilDestroyed(this)
+    //   )
+    //   .subscribe((response) =>{
+    //     response.forEach((field) =>{
+    //       for (const key of Object.keys(this.staffRegistrationForm.controls)) {
+    //         this.visibleStatus[field.frontedId] = field.visibleStatus;
+    //         if (field.visibleStatus === 'Y') {
+    //           if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+    //             this.staffRegistrationForm.controls[key].addValidators(Validators.required);
+    //             this.staffRegistrationForm.controls[key].updateValueAndValidity();
+    //             const label = document.querySelector(`label[for=${field.frontedId}]`);
+    //             if (label) {
+    //               const asterisk = document.createElement('span');
+    //               asterisk.innerHTML = ' *';
+    //               asterisk.style.color = 'red';
+    //               label.appendChild(asterisk);
+    //             }
+    //           }
+    //         }
+    //       }
+
+    //       const contactDetailsControls = this.staffRegistrationForm.get('contact_details') as FormGroup;
+    //       for (const key of Object.keys(contactDetailsControls.controls)) {
+    //         this.visibleStatus[field.frontedId] = field.visibleStatus;
+    //         if (field.visibleStatus === 'Y') {
+    //           if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+    //             this.staffRegistrationForm.get(`contact_details.${key}`).addValidators(Validators.required);
+    //             this.staffRegistrationForm.get(`contact_details.${key}`).updateValueAndValidity();
+    //             const label = document.querySelector(`label[for=${field.frontedId}]`);
+    //             if (label) {
+    //               const asterisk = document.createElement('span');
+    //               asterisk.innerHTML = ' *';
+    //               asterisk.style.color = 'red';
+    //               label.appendChild(asterisk);
+    //             }
+    //           }
+    //         }
+    //       }
+
+    //       const employmentDetailsControls = this.staffRegistrationForm.get('employment_details') as FormGroup;
+    //       for (const key of Object.keys(employmentDetailsControls.controls)) {
+    //         this.visibleStatus[field.frontedId] = field.visibleStatus;
+    //         if (field.visibleStatus === 'Y') {
+    //           if (key === field.frontedId && field.mandatoryStatus === 'Y'){
+    //             this.staffRegistrationForm.get(`employment_details.${key}`).setValidators(Validators.required);
+    //             this.staffRegistrationForm.get(`employment_details.${key}`).updateValueAndValidity();
+    //             const label = document.querySelector(`label[for=${field.frontedId}]`);
+    //             if (label) {
+    //               const asterisk = document.createElement('span');
+    //               asterisk.innerHTML = ' *';
+    //               asterisk.style.color = 'red';
+    //               label.appendChild(asterisk);
+    //             }
+    //           }
+    //         }
+    //       }
+    //     })
+    //     this.cdr.detectChanges();
+    //   });
+
+    // if(staffProfileFormValue){
+    //   this.patchStaffTempData(staffProfileFormValue.data);
+    //   log.info('>>>>> staffProfileFormValue: ', staffProfileFormValue);
+    // }
+    // else{
+    //   this.staffRegistrationForm.patchValue({
+    //     userType: this.entityDetails.categoryName == 'Individual' ? 'U' :
+    //       (this.entityDetails.categoryName == 'Corporate' ? 'G' : ''),
+    //     firstName: this.entityDetails.name.substring(0, this.entityDetails.name.indexOf(' ')),
+    //     lastName: this.entityDetails.name.substring(this.entityDetails.name.indexOf(' ') + 1),
+    //     pinNumber: this.entityDetails.pinNumber
+    //   });
+
+    //   if(this.entityDetails.identityNumber){
+    //     this.staffRegistrationForm.get('idNumber').disable();
+    //     this.staffRegistrationForm.get('idNumber').patchValue(this.entityDetails.identityNumber);
+    //   }
+
+    //   if(this.entityDetails?.dateOfBirth){
+    //     this.staffRegistrationForm.get('dateOfBirth').disable();
+    //     // this.staffRegistrationForm.get('dateOfBirth').patchValue(this.entityDetails?.dateOfBirth);
+    //     const datePipe = new DatePipe('en-GB'); //TODO: Proper way to fetch locales via constructor injection token
+    //     this.staffRegistrationForm.get('dateOfBirth').patchValue(datePipe.transform(this.entityDetails?.dateOfBirth, 'yyyy-MM-dd'));
+    //   }
+    // }
+
+    // this.staffRegistrationForm.valueChanges.subscribe( newValues => {
+    //   this.staffProfileTempData = this.staffRegistrationForm.getRawValue();
+    //   this.staffProfileFormState.data = {formData: this.staffRegistrationForm.getRawValue(), entityDetails: this.entityDetails};
+    //   this.staffProfileFormState.uniqueKey = this.entityDetails?.id;
+    //   this.formStateService.saveFormState(this.staffProfileFormStateKey, this.staffProfileFormState);
+    // })
   }
 
   /**
@@ -504,10 +703,11 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
         gender: staffFormValues.gender ? staffFormValues.gender : null
       }
       this.savedStaff = staff;
-
       this.savedStaffDetails = true;
+
       this.staffService.createUserAccount(accountDto)
-        .subscribe( data => {
+      .subscribe({
+        next: (data) => {
           this.globalMessagingService.displaySuccessMessage('success', 'Successfully Created Staff');
 
           let savedUser: NewAccountCreatedResponse = data;
@@ -521,7 +721,12 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
           this.formStateService.destroyFormState(this.staffProfileFormStateKey);
 
           this.saved.emit(true);
-        });
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message ?? err.message;
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage + ` || ${err?.error?.status}` )
+        }
+      });
     });
   }
 
@@ -550,9 +755,11 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
    * @param sortList - The sort list
    * @param order -  The sort order as desc or asc
    */
-  getIndividualUsers(pageIndex: number,
-                     sortList: any = 'dateCreated',
-                     order: string = 'desc') {
+  getIndividualUsers(
+    pageIndex: number,
+    sortList: any = 'dateCreated',
+    order: string = 'desc'
+  ) {
     return this.staffService.getStaff(pageIndex, this.staffSize, 'U', sortList, order, null)
       .pipe(untilDestroyed(this));
   }
@@ -597,40 +804,42 @@ export class StaffProfileComponent implements OnInit, OnDestroy{
 
   /**
    * This method is used to patch the form with the values from the temp data stored in the form state service
-   * @param staffProfileValues
+   * @param 
    * @private
    */
 
   private patchStaffTempData(staffProfileValues: any) {
+    log.info(`patching values >>>`, staffProfileValues)
     this.staffRegistrationForm.patchValue({
-      userType: staffProfileValues.formData.userType,
-      firstName: staffProfileValues.formData.firstName,
-      lastName: staffProfileValues.formData.lastName,
-      pinNumber: staffProfileValues.formData.pinNumber,
-      username: staffProfileValues.formData.username,
-      contact_details: {
-        countryCode: staffProfileValues.formData.contact_details.countryCode,
-        townCode: staffProfileValues.formData.contact_details.townCode,
-        city: staffProfileValues.formData.contact_details.city,
-        physicalAddress: staffProfileValues.formData.contact_details.physicalAddress,
-        phoneNumber: staffProfileValues.formData.contact_details.phoneNumber,
-        otherPhone: staffProfileValues.formData.contact_details.otherPhone,
-        email: staffProfileValues.formData.contact_details.email
-        },
-      employment_details: {
-        departmentCode: staffProfileValues.formData.employment_details.departmentCode,
-        manager: staffProfileValues.formData.employment_details.manager,
-        branch: staffProfileValues.formData.employment_details.branch,
-        personelRank: staffProfileValues.formData.employment_details.personelRank
-      },
-      telNo: staffProfileValues.formData.telNo,
-      postalCode: staffProfileValues.formData.postalCode,
-      gender: staffProfileValues.formData.gender,
-      dateOfBirth: staffProfileValues.formData.dateOfBirth,
-      idNumber: staffProfileValues.formData.idNumber
+      userType: this.entityDetails?.categoryName === 'Individual' ? 'U' : 'G',
+      firstName: this.entityDetails?.name,
+      lastName: this.entityDetails?.name,
+      pinNumber: this.entityDetails?.pinNumber,
+      username: '',
+      // contact_details: {
+      //   countryCode: staffProfileValues.formData.contact_details.countryCode,
+      //   townCode: staffProfileValues.formData.contact_details.townCode,
+      //   city: staffProfileValues.formData.contact_details.city,
+      //   physicalAddress: staffProfileValues.formData.contact_details.physicalAddress,
+      //   phoneNumber: staffProfileValues.formData.contact_details.phoneNumber,
+      //   otherPhone: staffProfileValues.formData.contact_details.otherPhone,
+      //   email: staffProfileValues.formData.contact_details.email
+      //   },
+      // employment_details: {
+      //   departmentCode: staffProfileValues.formData.employment_details.departmentCode,
+      //   manager: staffProfileValues.formData.employment_details.manager,
+      //   branch: staffProfileValues.formData.employment_details.branch,
+      //   personelRank: staffProfileValues.formData.employment_details.personelRank
+      // },
+
+      telNo: '',
+      // postalCode: staffProfileValues.formData.postalCode,
+      // gender: staffProfileValues.formData.gender,
+      dateOfBirth: this.entityDetails?.dateOfBirth,
+      idNumber: this.entityDetails?.identityNumber
     });
 
-    this.entityDetails = staffProfileValues.entityDetails;
+    // this.entityDetails = staffProfileValues.entityDetails;
 
     // if(!this.entityDetails){
     //   this.entityDetails.id = this.staffProfileFormState.uniqueKey;
