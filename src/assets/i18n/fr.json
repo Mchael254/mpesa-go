@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "Nom",
+    "no-occupation_found": "Aucune profession trouvée.",
+    "no_sector_found": "Aucun secteur trouvé.",
     "no_service_provider_type_found": "Aucun type de fournisseur de services trouvé",
+    "occupation": "Métiers",
     "search": "Rechercher",
+    "sector": "Secteurs",
     "service_provider_type": "Types de Prestataires de Services",
     "short_description": "Description Courte",
     "status": "Statut",

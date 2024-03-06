@@ -166,6 +166,10 @@ export class MenuService {
             name: 'Channels',
             link: '/home/crm/channel',
           },
+          {
+            name: 'Sectors n Occupation',
+            link: '/home/crm/sectors-occupations',
+          },
         ],
         collapsed: true,
       },

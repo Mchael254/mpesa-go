@@ -13,6 +13,7 @@ import { PaymentModesComponent } from './components/payment-modes/payment-modes.
 import { RequiredDocumentsComponent } from './components/required-documents/required-documents.component';
 import { ChannelComponent } from './components/channel/channel.component';
 import { ServiceProviderTypesComponent } from './components/service-provider-types/service-provider-types.component';
+import { SectorOccupationComponent } from './components/sector-occupation/sector-occupation.component';
 
 const routes: Routes = [
   {
@@ -66,6 +67,10 @@ const routes: Routes = [
   {
     path: 'service-provider-types',
     component: ServiceProviderTypesComponent,
+  },
+  {
+    path: 'sectors-occupations',
+    component: SectorOccupationComponent,
   },
 ];
 

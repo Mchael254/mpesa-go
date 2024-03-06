@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "Name",
+    "no-occupation_found": "No Occupation found.",
+    "no_sector_found": "No Sector found.",
     "no_service_provider_type_found": "No Service Provider Type found",
+    "occupation": "Occupations",
     "search": "Search",
+    "sector": "Sectors",
     "service_provider_type": "Service Provider Types",
     "short_description": "Short Description",
     "status": "Status",
