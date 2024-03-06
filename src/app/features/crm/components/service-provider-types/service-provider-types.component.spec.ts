@@ -14,6 +14,7 @@ import { ServiceProviderTypeDTO } from '../../data/service-provider-type';
 import { SharedModule } from '../../../../shared/shared.module';
 import { StatusDTO } from '../../../../shared/data/common/systemsDto';
 import { StatusService } from '../../../../shared/services/system-definitions/status.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 const mockServiceProviderTypesData: ServiceProviderTypeDTO[] = [
   {
@@ -125,6 +126,7 @@ describe('ServiceProviderTypesComponent', () => {
         FormsModule,
         TableModule,
         SharedModule,
+        TranslateModule.forRoot(),
       ],
       providers: [
         {

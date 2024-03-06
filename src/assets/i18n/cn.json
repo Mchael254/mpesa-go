@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "名称",
+    "no-occupation_found": "未找到职业。",
+    "no_sector_found": "未找到行业。",
     "no_service_provider_type_found": "未找到服务提供者类型",
+    "occupation": "职业",
     "search": "搜索",
+    "sector": "行业",
     "service_provider_type": "服务提供者类型",
     "short_description": "简短描述",
     "status": "状态",

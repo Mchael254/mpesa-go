@@ -168,8 +168,12 @@
   },
   "crm": {
     "name": "Jina",
+    "no-occupation_found": "Hakuna Kazi iliyopatikana.",
+    "no_sector_found": "Hakuna Sekta iliyopatikana.",
     "no_service_provider_type_found": "Hakuna Aina ya Mtoa Huduma iliyopatikana",
+    "occupation": "Kazi",
     "search": "Tafuta",
+    "sector": "Sekta",
     "service_provider_type": "Aina za Watoa Huduma",
     "short_description": "Maelezo Mafupi",
     "status": "Hali",
