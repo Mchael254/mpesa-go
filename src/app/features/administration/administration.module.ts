@@ -20,6 +20,7 @@ import { TicketDocumentsComponent } from './components/tickets/ticket-details/ti
 import {DialogModule} from "primeng/dialog";
 import { ReinsuranceAllocationsComponent } from './components/tickets/reinsurance-allocations/reinsurance-allocations.component';
 import { AuthorizationTabComponent } from './components/tickets/authorization-tab/authorization-tab.component';
+import { ClaimDetailsComponent } from './components/tickets/ticket-details/claim-details/claim-details.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { AuthorizationTabComponent } from './components/tickets/authorization-ta
     TicketReportsComponent,
     TicketDocumentsComponent,
     ReinsuranceAllocationsComponent,
-    AuthorizationTabComponent
+    AuthorizationTabComponent,
+    ClaimDetailsComponent
   ],
   imports: [
     CommonModule,

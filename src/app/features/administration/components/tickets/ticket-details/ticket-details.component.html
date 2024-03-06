@@ -25,120 +25,131 @@
       <span class="text-primary">{{selectedSpringTickets?.task?.activityName}}</span>
     </label>
 
+    <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'P' || selectedSpringTickets?.ticket?.sysModule === 'RT'">
+      <p-tabPanel header="Policy details">
 
-    <p-tabPanel header="Policy details">
+        <label class="text-primary mb-3">Policy details</label>
+        <div class="row">
+          <div class="col-sm-3">
+            <p>
+              <label class="ticketLabel">Client:</label>
+              <span class="ticketDesc">{{ selectedSpringTickets?.clientName }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Currency:</label>
+              <span class="ticketDesc">{{ policyDetails?.currency }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Agency:</label>
+              <span class="ticketDesc">{{ selectedSpringTickets?.agentName }}</span>
+            </p>
+          </div>
 
-      <label class="text-primary mb-3">Policy details</label>
-      <div class="row">
-        <div class="col-sm-3">
-          <p>
-            <label class="ticketLabel">Client:</label>
-            <span class="ticketDesc">{{ selectedSpringTickets?.clientName }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Currency:</label>
-            <span class="ticketDesc">{{ policyDetails?.currency }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Agency:</label>
-            <span class="ticketDesc">{{ selectedSpringTickets?.agentName }}</span>
-          </p>
+          <div class="col-sm-3">
+            <p *ngIf="selectedSpringTickets?.ticket.policyCode">
+              <label class="ticketLabel">Policy No:</label>
+              <span class="ticketDesc">{{ policyDetails?.policy_no }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Total S.I.:</label>
+              <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Transaction type:</label>
+              <span class="ticketDesc">{{ policyDetails?.policy_status }}</span>
+            </p>
+          </div>
+          <div class="col-sm-4">
+            <p>
+              <label class="ticketLabel">Endorse. No:</label>
+              <span class="ticketDesc">{{ policyDetails?.endorsement_no }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Premium:</label>
+              <span class="ticketDesc">{{ policyDetails?.premium }}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Ticket Remarks:</label>
+              <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <p>
+              <label class="ticketLabel">Cover From:</label>
+              <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
+            </p>
+            <p>
+              <label class="ticketLabel">Cover To:</label>
+              <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
+            </p>
+          </div>
+
         </div>
 
-        <div class="col-sm-3">
-          <p *ngIf="selectedSpringTickets?.ticket.policyCode">
-            <label class="ticketLabel">Policy No:</label>
-            <span class="ticketDesc">{{ policyDetails?.policy_no }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Total S.I.:</label>
-            <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Transaction type:</label>
-            <span class="ticketDesc">{{ policyDetails?.policy_status }}</span>
-          </p>
-        </div>
-        <div class="col-sm-4">
-          <p>
-            <label class="ticketLabel">Endorse. No:</label>
-            <span class="ticketDesc">{{ policyDetails?.endorsement_no }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Premium:</label>
-            <span class="ticketDesc">{{ policyDetails?.premium }}</span>
-          </p>
-          <p>
-            <label class="ticketLabel">Ticket Remarks:</label>
-            <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
-          </p>
-        </div>
-        <div class="col-sm-2">
-          <p>
-            <label class="ticketLabel">Cover From:</label>
-            <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
-          </p>
-          <p>
-            <label class="ticketLabel">Cover To:</label>
-            <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
-          </p>
+        <div class="risks mt-5" >
+          <ng-container>
+            <!--preloader goes here-->
+          </ng-container>
+          <app-risk-details
+            [risk]="policyDetails?.riskInformation"
+            [sectionDetails]="[]"
+          ></app-risk-details>
+          <!--<div class="view-more">
+            <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()" >View more</button>
+          </div>-->
         </div>
 
-      </div>
+        <div class="total-premium">
+          <table class="table table-borderless">
+            <thead>
+            <tr *ngIf="policyDetails?.premium">
+              <td>Total premium on {{ policyDetails?.riskInformation.length }} risk(s)</td>
+              <td style="text-align: right">{{ policyDetails?.premium | number: '1.2-2' }}</td>
+            </tr>
+            </thead>
+          </table>
+        </div>
 
-      <div class="risks mt-5" >
-        <ng-container>
-          <!--preloader goes here-->
-        </ng-container>
-        <app-risk-details
-          [risk]="policyDetails?.riskInformation"
-          [sectionDetails]="[]"
-        ></app-risk-details>
-        <!--<div class="view-more">
-          <button class="btn btn-link fw-bold text-primary" (click)="showViewMoreDialog()" >View more</button>
-        </div>-->
-      </div>
+        <div class="taxes" *ngIf="policyDetails?.taxInformation">
+          <ng-container>
+            <!--preloader goes here-->
+          </ng-container>
+          <app-tax-details
+            [taxInformation]="policyDetails?.taxInformation"
+            [totalPremium]="policyDetails?.total_premium"
+          ></app-tax-details>
+        </div>
 
-      <div class="total-premium">
-        <table class="table table-borderless">
-          <thead>
-          <tr *ngIf="policyDetails?.premium">
-            <td>Total premium on {{ policyDetails?.riskInformation.length }} risk(s)</td>
-            <td style="text-align: right">{{ policyDetails?.premium | number: '1.2-2' }}</td>
-          </tr>
-          </thead>
-        </table>
-      </div>
+      </p-tabPanel>
 
-      <div class="taxes" *ngIf="policyDetails?.taxInformation">
-        <ng-container>
-          <!--preloader goes here-->
-        </ng-container>
-        <app-tax-details
-          [taxInformation]="policyDetails?.taxInformation"
-          [totalPremium]="policyDetails?.total_premium"
-        ></app-tax-details>
-      </div>
+      <p-tabPanel header="Reinsurance allocations" >
+        <app-reinsurance-allocations *ngIf="policyDetails?.riskInformation"
+                                     [riskDetails]="policyDetails?.riskInformation"
+        ></app-reinsurance-allocations>
+      </p-tabPanel>
+      <p-tabPanel header="Authorization" [selected]="true">
+        <app-authorization-tab
+          *ngIf="policyDetails"
+          [policyDetails]="policyDetails"
+          (undoOrMakeReady)="fetchPolicyDetails(policyDetails?.batch_no)">
+        </app-authorization-tab>
+      </p-tabPanel>
+      <p-tabPanel header="Documents and reports">
+        <label class="text-primary mb-2">Reports</label>
+        <app-ticket-reports></app-ticket-reports>
 
-    </p-tabPanel>
+        <label class="text-primary mb-2">Documents</label>
+        <app-ticket-documents [currentTicket]="currentTicket">
+        </app-ticket-documents>
+      </p-tabPanel>
+    </ng-container>
 
-    <p-tabPanel header="Reinsurance allocations" >
-      <app-reinsurance-allocations *ngIf="policyDetails?.riskInformation"
-        [riskDetails]="policyDetails?.riskInformation"
-      ></app-reinsurance-allocations>
-    </p-tabPanel>
-    <p-tabPanel header="Authorization">
-      <app-authorization-tab *ngIf="policyDetails"
-      [policyDetails]="policyDetails"></app-authorization-tab>
-    </p-tabPanel>
-    <p-tabPanel header="Documents and reports">
-      <label class="text-primary mb-2">Reports</label>
-      <app-ticket-reports></app-ticket-reports>
+    <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'C'">
+      <p-tabPanel header="Claim details">
+        <app-claim-details></app-claim-details>
+      </p-tabPanel>
+    </ng-container>
 
-      <label class="text-primary mb-2">Documents</label>
-      <app-ticket-documents [currentTicket]="currentTicket">
-      </app-ticket-documents>
-    </p-tabPanel>
   </p-tabView>
   <div class="row action-buttons my-2 p-1">
     <div class="col-sm-5">
@@ -167,6 +178,13 @@
         *ngIf="activeIndex === 1"
       >
         Reinsure
+      </button>
+
+      <button
+        class="btn btn-primary ms-2 reinsure-btn"
+        *ngIf="selectedSpringTickets?.ticket?.sysModule === 'C' && activeIndex === 0"
+      >
+        Authorize claim
       </button>
     </div>
   </div>
