@@ -106,7 +106,7 @@ export class QuotationsService {
       
   }
   createQuotationRisk(quotationCode ,data:quotationRisk[]){
-    console.log(JSON.stringify(data),"Data from the service")
+    // console.log(JSON.stringify(data),"Data from the service")
     return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),this.httpOptions)
   }
   getRiskSection(quotationRiskCode):Observable<riskSection[]>{
