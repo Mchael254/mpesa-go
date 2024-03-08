@@ -309,7 +309,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reXolPremiumParticipantData = data;
-          log.info('ReinsuranceXOLPremium>>', this.reXolPremiumParticipantData)
+          log.info('ReinsuranceXOLPremiumPart>>', this.reXolPremiumParticipantData)
         }
       )
   }
@@ -529,44 +529,6 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   reinsureRisk() {
     const batchNo = this.riskDetails[0].policyBatchNo;
     const reinsureRiskData: RiskReinsurePOSTDTO[] = []
-      /*{
-      allowed_commission_rate: null,
-      basic_premium: null,
-      binder_code: null,
-      commission_amount: null,
-      commission_rate: null,
-      cover_type_code: null,
-      cover_type_short_description: "",
-      currency_code: null,
-      date_cover_from: "",
-      date_cover_to: "",
-      del_sect: "",
-      gross_premium: null,
-      insureds: {client: {first_name: "", id: null, last_name: ""}, prp_code: null},
-      ipu_ncd_cert_no: "",
-      loaded: "",
-      lta_commission: null,
-      net_premium: null,
-      paid_premium: null,
-      policy_batch_no: null,
-      policy_number: "",
-      policy_status: "",
-      product_code: null,
-      property_description: "",
-      property_id: "",
-      quantity: null,
-      reinsurance_endorsement_number: "",
-      renewal_area: "",
-      risk_ipu_code: null,
-      sections_details: [],
-      stamp_duty: null,
-      sub_class_code: null,
-      sub_class_description: "",
-      transaction_type: "",
-      underwriting_year: null,
-      value: null
-
-    };*/
 
     this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
       .subscribe((data) => {
