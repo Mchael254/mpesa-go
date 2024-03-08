@@ -22,6 +22,7 @@ export const environment = {
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
+    [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
 
   ]),
   TENANT_ID: API_TENANT_ID.TQV6,

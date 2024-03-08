@@ -87,6 +87,7 @@ export class TicketDetailsComponent implements OnInit {
     this.ticketModule = this.activatedRoute.snapshot.params['module'];
     this.currentTicket = this.ticketService.currentTicketDetail();
 
+    this.activeIndex = this.selectedSpringTickets?.ticket?.sysModule === 'P' ? 2 : 0;
   }
 
   fetchPolicyDetails(batchNumber: number) {
@@ -287,8 +288,6 @@ export class TicketDetailsComponent implements OnInit {
         modalBackdrop.classList.add('show');
       }
     }
-
-
   }
 
   backToPrevious(): void {

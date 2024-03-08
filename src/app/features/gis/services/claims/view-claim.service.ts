@@ -4,6 +4,8 @@ import {Pagination} from "../../../../shared/data/common/pagination";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {AppConfigService} from '../../../../core/config/app-config-service'
 import { ClaimsDTO } from '../../data/claims-dto';
+import {API_CONFIG} from "../../../../../environments/api_service_config";
+import {ApiService} from "../../../../shared/services/api/api.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,8 @@ export class ViewClaimService {
   baseUrl = this.appConfig.config.contextPath.gis_services;
   constructor(
     private http: HttpClient,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    private api:ApiService,
   ) { }
 
   getClaims(
@@ -37,5 +40,9 @@ export class ViewClaimService {
         headers: headers,
         params: params,
       });
+  }
+
+  getClaimByClaimNo(claimNo: string): Observable<Pagination<ClaimsDTO>> {
+    return this.api.GET<Pagination<ClaimsDTO>>(`api/v2/claims/view?claimNo=${claimNo}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 }

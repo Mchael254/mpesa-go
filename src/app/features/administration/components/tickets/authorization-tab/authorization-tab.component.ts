@@ -25,7 +25,6 @@ export class AuthorizationTabComponent implements OnInit{
   @ViewChild('exceptionsTable') exceptionsTable: Table;
   @Output() undoOrMakeReady: EventEmitter<any> = new EventEmitter<any>();
   public pageSize: 5;
-  risKCedingDetails: any;
 
   debtOwnerForm: FormGroup;
   scheduleCheckForm: FormGroup;
@@ -59,7 +58,6 @@ export class AuthorizationTabComponent implements OnInit{
 
   completionRemarksData: any[];
   selectedRemark: string = '';
-  showDropdown: boolean = true;
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -67,6 +65,7 @@ export class AuthorizationTabComponent implements OnInit{
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
+  isLoading: boolean = false;
 
   constructor(private fb: FormBuilder,
               private policiesService: PoliciesService,
@@ -87,14 +86,6 @@ export class AuthorizationTabComponent implements OnInit{
     this.getCompletionRemarks();
     log.info('policy', this.policyDetails?.authorizedStatus)
   }
-
-  /*ngAfterViewInit() {
-    // Ensure ticketDetailsComponent is initialized before calling methods on it
-    if (this.ticketDetailsComponent) {
-      this.ticketDetailsComponent.fetchPolicyDetails(this.policyDetails?.batch_no);
-      log.info('ticketdetails viewinit')
-    }
-  }*/
 
   /**
    * The function creates a form for debt owner tickets with specific form controls and disables some of them.
@@ -276,6 +267,7 @@ export class AuthorizationTabComponent implements OnInit{
    * the data.
    */
   getAuthorizationExceptionDetails() {
+    this.authorizationExceptionData = null;
     this.spinner.show();
     this.policiesService.getListOfExceptionsByPolBatchNo(this.policyDetails?.batch_no)
       .pipe(
@@ -286,6 +278,7 @@ export class AuthorizationTabComponent implements OnInit{
           this.authorizationExceptionData = data;
           this.spinner.hide();
           log.info('AuthorizationExceptionDetails>>', this.authorizationExceptionData)
+          this.cdr.detectChanges();
         }
       })
   }
@@ -371,7 +364,7 @@ export class AuthorizationTabComponent implements OnInit{
             this.cdr.detectChanges();
           },
           error: err => {
-            this.globalMessagingService.displayErrorMessage('Error', err.message);
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
           }
         });
     }
@@ -392,7 +385,7 @@ export class AuthorizationTabComponent implements OnInit{
           this.cdr.detectChanges();
         },
         error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
         }
       })
 }
@@ -412,7 +405,7 @@ export class AuthorizationTabComponent implements OnInit{
         this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized level');
         },
         error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
         }
       })
   }
@@ -439,7 +432,7 @@ export class AuthorizationTabComponent implements OnInit{
         this.openScheduleModal();
         },
         error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
         }
       })
   }
@@ -466,6 +459,7 @@ export class AuthorizationTabComponent implements OnInit{
   }
 
   onAuthorize() {
+    this.isLoading = true;
     const scheduleFormValues = this.scheduleCheckForm.getRawValue();
 
     log.info('schedule>>', scheduleFormValues);
@@ -476,15 +470,43 @@ export class AuthorizationTabComponent implements OnInit{
           this.scheduleData = data;
           log.info('save schedule>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized policy');
+          this.isLoading = false;
+          this.closeScheduleModal();
+          this.closeDebtOwnerModal();
 
         },
         error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoading = false;
         }
       })
   }
 
-  onDropdownChange() {
-    this.showDropdown = false;
+  onDropdownChange(event, exception) {
+    log.info('>>>>', event.value, exception.code)
+
+    if (event.value) {
+      const payload: any = {
+        exceptionCode: exception?.code,
+        exceptionUnderwritingDecision: event.value
+      }
+      this.policiesService.saveExceptionRemark(payload)
+        .subscribe({
+          next: (data) => {
+            this.authoriseExceptionsData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully saved remark');
+            this.getAuthorizationExceptionDetails();
+            this.cdr.detectChanges();
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Exception remark not selected.'
+      );
+    }
   }
 }
