@@ -465,8 +465,13 @@ describe('CoverTypesDetailsComponent', () => {
   let subclassSectionCovertypeService: SubClassCoverTypesSectionsService;
   let sectionService: SectionsService;
   let premiumRateService: PremiumRateService;
+  let messageService: MessageService
 
   beforeEach(() => {
+    messageService = {
+      add: jest.fn(),
+    } as unknown as jest.Mocked<MessageService>;
+
     TestBed.configureTestingModule({
       declarations: [CoverTypesDetailsComponent],
       imports: [HttpClientTestingModule, SharedModule, FormsModule, RouterTestingModule],
@@ -1074,6 +1079,63 @@ describe('CoverTypesDetailsComponent', () => {
     expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Error, try again later');
   });
 
+ 
+  it('should create risk section successfully', async () => {
+    // Mock data
+    const premiumRates = [
+      // ... mock premium rates data
+    ];
+
+    const passedSections = [
+      // ... mock passed sections data
+    ];
+
+    component.passedSections = passedSections;
+    component.premiumList = premiumRates;
+    component.sumInsuredValue = 1000; // Set a sample value for sumInsuredValue
+
+    // Mock the response from the createRiskSection API call
+    const mockApiResponse = {}; // You can customize this based on your API response structure
+    (quotationService.createRiskSection as jest.Mock).mockReturnValueOnce(of(mockApiResponse));
+
+    // Call the method
+    await component.onCreateRiskSection();
+
+    // Assert that the necessary methods were called
+    expect(quotationService.createRiskSection).toHaveBeenCalledWith(
+      component.riskCode,
+      passedSections.map((section, index) => expect.objectContaining([
+        { 
+          calcGroup: 1,
+          code: 1, // Change to number
+          compute: 'Y',
+          description: 'Mock Description 1',
+          freeLimit: 0,
+          multiplierDivisionFactor: 1,
+          multiplierRate: 1,
+          premiumAmount: 0,
+          premiumRate: 1,
+          rateDivisionFactor: 1,
+          rateType: 'MockRateType1',
+          rowNumber: 1,
+          sumInsuredLimitType: 'MockLimitType1',
+          sumInsuredRate: 0,
+          sectionShortDescription: 'Mock Section 1',
+          sectionCode: 101, // Change to number
+          limitAmount: 1000,
+          quotRiskCode: 23456,
+          sectionType: 'MockSectionType1',
+        }      ])
+    );
+
+    expect(messageService.add).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Section Created',
+    });
+
+    // Add more assertions as needed based on the behavior of your method
+  });
 
 
 
