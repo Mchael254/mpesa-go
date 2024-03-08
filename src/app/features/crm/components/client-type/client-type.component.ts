@@ -14,6 +14,8 @@ import { Logger } from '../../../../shared/services/logger/logger.service';
 
 const log = new Logger('ClientTypeComponent');
 
+/* The `ClientTypeComponent` class in TypeScript manages client type data, form submission, modal
+interactions, and error handling within an Angular application. */
 @Component({
   selector: 'app-client-type',
   templateUrl: './client-type.component.html',
@@ -106,6 +108,39 @@ export class ClientTypeComponent implements OnInit {
     return this.createClientTypeForm.controls;
   }
 
+  /**
+   * The fetchClientTypes function in TypeScript fetches client type data based on specified parameters
+   * and handles success and error responses accordingly.
+   * @param {string} [name] - The `name` parameter is used to filter client types by their name. If you
+   * provide a value for this parameter, the function will fetch client types that match the specified
+   * name. If you don't provide a value, all client types will be fetched without filtering by name.
+   * @param {string} [shortDescription] - The `shortDescription` parameter in the `fetchClientTypes`
+   * function is used to filter client types based on a brief description or summary of the client
+   * type. This parameter allows you to search for client types that have a specific short description
+   * associated with them.
+   * @param {string} [status] - The `status` parameter in the `fetchClientTypes` function is used to
+   * filter client types based on their status. This could be used to retrieve client types that are
+   * active, inactive, pending, etc. The `status` parameter allows you to specify the status of the
+   * client types you want to
+   * @param {string} [category] - The `category` parameter in the `fetchClientTypes` function is used
+   * to filter client types based on a specific category. When calling the `getClientType` method from
+   * the `clientTypeService`, you can pass the `category` parameter to retrieve client types belonging
+   * to that particular category. This helps
+   * @param {string} [clientTypeName] - The `clientTypeName` parameter in the `fetchClientTypes`
+   * function is used to filter the client types based on a specific name or identifier assigned to
+   * each client type. This parameter allows you to retrieve client types that match the specified
+   * `clientTypeName`.
+   * @param {string} [description] - The `description` parameter in the `fetchClientTypes` function is
+   * used to filter client types based on a description provided as a search criteria. This parameter
+   * allows you to search for client types that have a specific description associated with them.
+   * @param {number} [organizationId] - The `organizationId` parameter in the `fetchClientTypes`
+   * function is used to specify the ID of the organization for which you want to fetch client types.
+   * This parameter helps in filtering the client types based on the organization to which they belong.
+   * @param {string} [type] - The `type` parameter in the `fetchClientTypes` function is used to
+   * specify the type of client. It is one of the parameters that can be passed to the `getClientType`
+   * method of the `clientTypeService`. This parameter helps in filtering and fetching client types
+   * based on a specific type
+   */
   fetchClientTypes(
     name?: string,
     shortDescription?: string,
@@ -154,15 +189,32 @@ export class ClientTypeComponent implements OnInit {
       });
   }
 
+  /**
+   * The function `filterClientType` filters a table based on the input value from an HTML input
+   * element.
+   * @param {Event} event - The `event` parameter is an object that represents an event that occurs in
+   * the browser, such as a click, keypress, or input event. In this context, it is used to capture the
+   * event triggered by an HTML input element, allowing you to access the value entered by the user in
+   * the
+   */
   filterClientType(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.clientTypeTable.filterGlobal(filterValue, 'contains');
   }
 
+  /**
+   * The function `onClientTypeRowSelect` sets the selected client type based on the provided client
+   * object.
+   * @param {ClientTypeDTO} client - ClientTypeDTO
+   */
   onClientTypeRowSelect(client: ClientTypeDTO) {
     this.selectedClientType = client;
   }
 
+  /**
+   * The function `openClientTypeModal` displays a modal by adding a 'show' class and setting its
+   * display property to 'block'.
+   */
   openClientTypeModal() {
     const modal = document.getElementById('clientTypeModal');
     if (modal) {
@@ -171,6 +223,10 @@ export class ClientTypeComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeClientTypeModal` hides the client type modal by removing the 'show' class and
+   * setting the display style to 'none'.
+   */
   closeClientTypeModal() {
     const modal = document.getElementById('clientTypeModal');
     if (modal) {
@@ -179,6 +235,13 @@ export class ClientTypeComponent implements OnInit {
     }
   }
 
+  /**
+   * The `saveClientType` function in TypeScript handles the submission of a form for creating or
+   * updating a client type, displaying success or error messages accordingly.
+   * @returns The function `saveClientType()` returns either nothing (undefined) or exits early if the
+   * form is invalid and there are unfilled controls. If the form is valid and all controls are filled,
+   * the function proceeds to create or update a client type based on the conditions provided.
+   */
   saveClientType() {
     this.submitted = true;
     this.createClientTypeForm.markAllAsTouched();
@@ -310,6 +373,10 @@ export class ClientTypeComponent implements OnInit {
     }
   }
 
+  /**
+   * The `editClientType` function opens a modal and populates a form with the details of a selected
+   * client type for editing.
+   */
   editClientType() {
     if (this.selectedClientType) {
       this.openClientTypeModal();
@@ -326,10 +393,17 @@ export class ClientTypeComponent implements OnInit {
     }
   }
 
+  /**
+   * The `deleteClientType` function displays a confirmation modal for deleting a client type.
+   */
   deleteClientType() {
     this.clientTypeConfirmationModal.show();
   }
 
+  /**
+   * The function `confirmClientTypeDelete` deletes a selected client type and displays success or
+   * error messages accordingly.
+   */
   confirmClientTypeDelete() {
     if (this.selectedClientType) {
       const clientCode = this.selectedClientType.code;
