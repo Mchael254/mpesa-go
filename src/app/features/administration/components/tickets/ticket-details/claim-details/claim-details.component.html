@@ -3,15 +3,15 @@
   <div class="col-sm-4">
     <p>
       <label class="ticketLabel">Claim no.:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimNo}}</span>
     </p>
     <p>
       <label class="ticketLabel">Insured:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.clientName}}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk WEF:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.product?.withEffectFrom}}</span>
     </p>
     <p>
       <label class="ticketLabel">Next review date:</label>
@@ -19,14 +19,14 @@
     </p>
     <p>
       <label class="ticketLabel">Intermediary:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.agentName}}</span>
     </p>
   </div>
 
   <div class="col-sm-4">
     <p >
       <label class="ticketLabel">Client name:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.clientName}}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk:</label>
@@ -34,7 +34,7 @@
     </p>
     <p>
       <label class="ticketLabel">Risk WET:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.product?.withEffectTo}}</span>
     </p>
     <p>
       <label class="ticketLabel">Loss description:</label>
@@ -42,13 +42,13 @@
     </p>
     <p>
       <label class="ticketLabel">Claim remarks:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
     </p>
   </div>
   <div class="col-sm-4">
     <p>
       <label class="ticketLabel">Product:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.product?.description | titlecase}}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk value:</label>
@@ -81,7 +81,7 @@
     <div class="col-sm-4">
       <p>
         <label class="ticketLabel">Transaction type:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimTransactionType }}</span>
       </p>
       <p>
         <label class="ticketLabel">Voucher no.:</label>

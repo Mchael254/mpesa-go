@@ -97,4 +97,11 @@ export class PoliciesService {
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
+
+  saveExceptionRemark(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `api/v1/policies/exception-remarks`, JSON.stringify(data),
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
 }
