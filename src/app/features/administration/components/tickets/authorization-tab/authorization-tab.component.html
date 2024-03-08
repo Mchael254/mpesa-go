@@ -75,23 +75,18 @@
         <td>
           <p-tableCheckbox [value]="exception"></p-tableCheckbox>
         </td>
-        <td>{{exception.gexceptions_code}}</td>
+        <td>{{exception.exceptions_remark_code}}</td>
         <td>
         <span *ngIf = "exception?.description" title="{{exception?.description}}">
           {{exception?.description?.substring(0,10) | titlecase }}...
         </span>
         </td>
         <td>
-          <ng-container *ngIf="!showDropdown">
-            <span title="{{selectedRemark}}" (click)="showDropdown = true">
-              {{ selectedRemark.substring(0, 28) | titlecase }}
-            </span>
-          </ng-container>
+          {{exception.underwriting_decision | titlecase}}
 
-          <ng-container *ngIf="showDropdown">
+          <ng-container *ngIf="!exception.underwriting_decision">
             <p-dropdown
               [options]="completionRemarksData"
-              [(ngModel)]="selectedRemark"
               optionLabel="remark"
               optionValue="remark"
               id="code"
@@ -101,7 +96,7 @@
               [style]="{ 'width': '130px', 'height': '40px' }"
               placeholder="Select remark"
               appendTo="body"
-              (onChange)="onDropdownChange()"
+              (onChange)="onDropdownChange($event, exception)"
             >
               <ng-template let-remark pTemplate="item">
                 <div title="{{remark.remark}}">{{ remark.remark.length > 10 ? remark.remark.substring(0, 28) + '...' : remark.remark }}</div>
@@ -212,8 +207,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="risKCedingDetails?.totalElements"
-      [value]="risKCedingDetails?.content"
+      [totalRecords]="authorizationLevelsData?.length"
+      [value]="authorizationLevelsData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -269,9 +264,6 @@
               </button>
             </div>
 
-            <!--<div  *ngIf="f['modalUserAssignTo'].invalid && (f['modalUserAssignTo'].dirty || f['modalUserAssignTo'].touched)" class="form-text text-danger form-error-text" [ngClass]="{ 'is-invalid': f['modalUserAssignTo'].errors }">
-              <div *ngIf="f['modalUserAssignTo'].errors['required']">Main user is required</div>
-            </div>-->
           </div>
 
           <div *ngIf="showDefaultUser" class="row mt-2">
@@ -343,12 +335,16 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" (click)="onAuthorize()">Authorize</button>
+        <button class="btn btn-primary" (click)="onAuthorize()" [disabled]="isLoading">
+          <span *ngIf="!isLoading; else loading">Authorize</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
       </div>
     </div>
   </div>
 </div>
-<!--<button class="btn btn-primary" data-bs-target="#debtOwnerToggle" data-bs-toggle="modal">Open first modal</button>-->
 
 
 <!--Modal for Listing all users !-->
