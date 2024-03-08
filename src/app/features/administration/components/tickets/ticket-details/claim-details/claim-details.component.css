@@ -10,3 +10,10 @@
   margin-right: 10px;
   cursor: pointer;
 }
+.ticketLabel {
+  margin-right: 10px;
+}
+
+.ticketDesc {
+  font-weight: bold;
+}
