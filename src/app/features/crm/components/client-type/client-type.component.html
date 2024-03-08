@@ -1,0 +1,225 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">{{
+            "crm.client_type" | translate
+          }}</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-sm-4 col-6">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                aria-label="search"
+                aria-describedby="search"
+                (input)="filterClientType($event)"
+              />
+            </div>
+            <div class="col-sm-8 col-6">
+              <div class="float-end">
+                <span class="icon-circle"
+                  ><i
+                    class="fa-solid fa-plus"
+                    (click)="openClientTypeModal()"
+                  ></i
+                ></span>
+                <span class="icon-circle"
+                  ><i class="pi pi-pencil" (click)="editClientType()"></i
+                ></span>
+                <span class="icon-circle"
+                  ><i
+                    class="fa-regular fa-trash-can"
+                    (click)="deleteClientType()"
+                  ></i
+                ></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col-sm-12 col-12">
+              <p-table
+                #clientTypeTable
+                [value]="clientTypeData"
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                [scrollable]="true"
+                scrollHeight="400px"
+                class="ui-datatable"
+                [globalFilterFields]="['channelName', 'channelDesc']"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th class="head">{{ "crm.category" | translate }}</th>
+                    <th class="head">{{ "crm.client_type" | translate }}</th>
+                    <th class="head">{{ "crm.description" | translate }}</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-client>
+                  <tr
+                    class="custom-table"
+                    (click)="onClientTypeRowSelect(client)"
+                    [class.selected]="selectedClientType === client"
+                  >
+                    <td class="body">{{ client.category }}</td>
+                    <td class="body">{{ client.clientTypeName }}</td>
+                    <td class="body">
+                      {{ client.description }}
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8">{{ "crm.no_client_found" | translate }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="clientTypeModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define a Client Type</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeClientTypeModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createClientTypeForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="category" class="form-label">Client Category</label>
+              <select
+                class="form-select"
+                id="category"
+                formControlName="category"
+                [ngClass]="{
+                  'is-invalid':
+                    f['category']?.invalid &&
+                    (f['category']?.dirty || f['category']?.touched)
+                }"
+              >
+                <option value="">Select Client Category</option>
+                <option value="I">Individual</option>
+                <option value="C">Corporate</option>
+              </select>
+              <div
+                *ngIf="
+                  f['category']?.invalid &&
+                  (f['category']?.dirty || f['category']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['category']?.errors
+                }"
+              >
+                <div *ngIf="f['category']?.errors['required']">
+                  Client Category is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="clientTypeName" class="form-label">Client Type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="clientTypeName"
+                placeholder="Client Type"
+                formControlName="clientTypeName"
+                [ngClass]="{
+                  'is-invalid':
+                    f['clientTypeName']?.invalid &&
+                    (f['clientTypeName']?.dirty || f['clientTypeName']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['clientTypeName']?.invalid &&
+                  (f['clientTypeName']?.dirty || f['clientTypeName']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['clientTypeName']?.errors
+                }"
+              >
+                <div *ngIf="f['clientTypeName']?.errors['required']">
+                  Client Type is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="description" class="form-label">Description</label>
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                placeholder="Description"
+                formControlName="description"
+                [ngClass]="{
+                  'is-invalid':
+                    f['description']?.invalid &&
+                    (f['description']?.dirty || f['description']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['description']?.invalid &&
+                  (f['description']?.dirty || f['description']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['description']?.errors
+                }"
+              >
+                <div *ngIf="f['description']?.errors['required']">
+                  Description is required
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveClientType()"
+        >
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-reusable-input
+  [modalId]="'clientTypeConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this client type?'"
+  (confirmed)="confirmClientTypeDelete()"
+  #clientTypeConfirmationModal
+></app-reusable-input>

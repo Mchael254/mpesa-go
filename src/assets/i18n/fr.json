@@ -164,11 +164,20 @@
     "View Account": "Voir le compte",
     "Create Account": "Créer un compte",
     "Create Quick Quote": "Créer un devis rapide",
-    "View Quotations": "Voir les devis"
+    "View Quotations": "Voir les devis",
+    "Channels": "Canaux",
+    "Client Type": "Type de client",
+    "Sectors & Occupation": "Secteurs et métiers",
+    "Required Documents": "Documents requis",
+    "Service Provider Type": "Type de prestataire de services"
   },
   "crm": {
+    "category": "Catégorie",
+    "client_type": "Type de client",
+    "description": "Description",
     "name": "Nom",
-    "no-occupation_found": "Aucune profession trouvée.",
+    "no_client_found": "Aucun type de client trouvé.",
+    "no_occupation_found": "Aucune profession trouvée.",
     "no_sector_found": "Aucun secteur trouvé.",
     "no_service_provider_type_found": "Aucun type de fournisseur de services trouvé",
     "occupation": "Métiers",
