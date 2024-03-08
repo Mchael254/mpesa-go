@@ -1,0 +1,403 @@
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Perils</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapsePerils" role="button"
+          aria-expanded="false" aria-controls="collapsePerils">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+    <div class="float-end">
+      <span class="icon-circle">
+        <i class="fa-solid fa-plus" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="pi pi-pencil" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="fa-regular fa-trash-can"></i>
+      </span>
+    </div>
+  </div>
+
+  <div class="collapse" id="collapsePerils">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Claimant</th>
+          <th>Description</th>
+          <th>Peril type</th>
+          <th>Claim amt</th>
+          <th>Adj amt</th>
+          <th>Limit amount</th>
+          <th>Excess amt</th>
+          <th>Novice excess amt</th>
+          <th>Depreciation %</th>
+          <th>Retained</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount | number}}</td>
+          <td>{{receipt.master_transaction_balance | number}}</td>
+          <td>{{receipt.master_transaction_settlement | number}}</td>
+          <td>{{receipt.master_transaction_dc}}</td>
+          <td>{{receipt.transmital_trans_auth_by}}</td>
+          <td>{{receipt.master_transaction_settlement | number}}</td>
+          <td>{{receipt.master_transaction_dc}}</td>
+          <td>{{receipt.transmital_trans_auth_by}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Peril Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <span class="icon-circle mt-3 mb-2 float-start" data-bs-toggle="collapse" href="#collapsePerils" role="button"
+          aria-expanded="false" aria-controls="collapsePerils">
+      <i class="pi pi-chevron-up"></i>
+    </span>
+  </div>
+
+
+</div>
+
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Treaty ceding</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseTreatyCeding" role="button"
+          aria-expanded="false" aria-controls="collapseTreatyCeding">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseTreatyCeding">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Treaty</th>
+          <th>Rate</th>
+          <th>Treaty amount</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount}}</td>
+
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">No Treaty Ceding Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Facultative ceding</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseFacultativeCeding" role="button"
+          aria-expanded="false" aria-controls="collapseFacultativeCeding">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseFacultativeCeding">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Reinsurer ID</th>
+          <th>Reinsurer</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Submission status</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount}}</td>
+          <td>{{receipt.master_transaction_balance}}</td>
+          <td>{{receipt.master_transaction_settlement}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Facultative Ceding Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Non-proportional treaties</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseProportional" role="button"
+          aria-expanded="false" aria-controls="collapseProportional">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseProportional">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Layer</th>
+          <th>Comp ret</th>
+          <th>Amt to reserve</th>
+          <th>Excess amount</th>
+          <th>Recovered</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount}}</td>
+          <td>{{receipt.master_transaction_balance}}</td>
+          <td>{{receipt.master_transaction_settlement}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Non-proportional Treaties Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Penalties</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapsePenalties" role="button"
+          aria-expanded="false" aria-controls="collapsePenalties">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+    <div class="float-end">
+      <span class="icon-circle">
+        <i class="fa-solid fa-plus" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="pi pi-pencil" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="fa-regular fa-trash-can"></i>
+      </span>
+    </div>
+  </div>
+
+  <div class="collapse" id="collapsePenalties">
+
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Code</th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Amount</th>
+          <th>Remarks</th>
+          <th>Peril</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount}}</td>
+          <td>{{receipt.master_transaction_balance}}</td>
+          <td>{{receipt.master_transaction_settlement}}</td>
+          <td>{{receipt.master_transaction_dc}}</td>
+          <td>{{receipt.transmital_trans_auth_by}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">No Penalty Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Reinsurance pool</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseReinsurancePool" role="button"
+          aria-expanded="false" aria-controls="collapseReinsurancePool">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseReinsurancePool">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Pool rate</th>
+          <th>Pool amt</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="2">No Reinsurance Pool Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Remarks</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseRemarks" role="button"
+          aria-expanded="false" aria-controls="collapseRemarks">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseRemarks">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsData?.length"
+      [value]="perilsData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Short Description</th>
+          <th>Reason for pending</th>
+          <th>Description</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-receipt>
+        <tr>
+          <td>{{receipt.transmital_trans_receipt_no}}</td>
+          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{receipt.transmital_trans_amount}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">No Remarks Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
