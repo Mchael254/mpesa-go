@@ -164,11 +164,20 @@
     "View Account": "View Account",
     "Create Account": "Create Account",
     "Create Quick Quote": "Create Quick Quote",
-    "View Quotations": "View Quotations"
+    "View Quotations": "View Quotations",
+    "Channels": "Channels",
+    "Client Type": "Client Type",
+    "Sectors & Occupation": "Sectors & Occupation",
+    "Required Documents": "Required Documents",
+    "Service Provider Type": "Service Provider Type"
   },
   "crm": {
+    "category": "Category",
+    "client_type": "Client Type",
+    "description": "Description",
     "name": "Name",
-    "no-occupation_found": "No Occupation found.",
+    "no_client_found": "No Client Type found.",
+    "no_occupation_found": "No Occupation found.",
     "no_sector_found": "No Sector found.",
     "no_service_provider_type_found": "No Service Provider Type found",
     "occupation": "Occupations",

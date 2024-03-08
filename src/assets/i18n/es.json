@@ -164,11 +164,20 @@
     "View Account": "Ver cuenta",
     "Create Account": "Crear cuenta",
     "Create Quick Quote": "Crear cotización rápida",
-    "View Quotations": "Ver cotizaciones"
+    "View Quotations": "Ver cotizaciones",
+    "Channels": "Canales",
+    "Client Type": "Tipo de cliente",
+    "Sectors & Occupation": "Sectores y Ocupación",
+    "Required Documents": "Documentos requeridos",
+    "Service Provider Type": "Tipo de proveedor de servicios"
   },
   "crm": {
+    "category": "Categoría",
+    "client_type": "Tipo de cliente",
+    "description": "Descripción",
     "name": "Nombre",
-    "no-occupation_found": "No se encontró ninguna ocupación.",
+    "no_client_found": "No se encontró ningún tipo de cliente.",
+    "no_occupation_found": "No se encontró ninguna ocupación.",
     "no_sector_found": "No se encontró ningún sector.",
     "no_service_provider_type_found": "No se encontró ningún tipo de proveedor de servicios",
     "occupation": "Ocupaciones",
