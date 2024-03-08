@@ -70,9 +70,9 @@
                         <tr>
                             <th style="width: 100px;">Product</th>
                             <th class="text-end" style="width: 100px;">Sum Insured</th>
-                            <th class="text-end" style="width: 100px;">Policyholders fund</th>
-                            <th class="text-end" style="width: 100px;">Training levy</th>
-                            <th class="text-end" style="width: 100px;">Stamp duty</th>
+                            <!-- Loop through taxInformation and display each tax type in the header -->
+                            <th *ngFor="let tax of quotationDetails.taxInformation" class="text-end"
+                                style="width: 100px;">{{ tax.description }}</th>
                             <th class="text-end" style="width: 100px;">Premium</th>
                             <th class="text-end" style="width: 100px;">Total premium</th>
                         </tr>
@@ -80,18 +80,17 @@
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
                         <tr>
                             <td style="width: 100px;">{{ productDesc}}</td>
-                            <td class="text-end" style="width: 100px;"> {{ quotationDetails.riskInformation.sectionsDetails?.[0]?.limitAmount | number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
+                            <td class="text-end" style="width: 100px;"> {{
+                                quotationDetails.quotationProduct[0].totalSumInsured |
                                 number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
-                                number }}</td>
-                            <td class="text-end" style="width: 100px;">{{ quotationDetails.taxInformation[0]?.amount |
-                                number }}</td>
+                            <!-- Loop through taxInformation and display each tax amount in the corresponding column -->
+                            <td *ngFor="let tax of quotationDetails.taxInformation" class="text-end"
+                                style="width: 100px;">{{ tax.quotationRate | number }}</td>
                             <td class="text-end" style="width: 100px;">{{passedPremium | number}}</td>
                             <td class="text-end" style="width: 100px;">{{ quotationDetails.quotationProduct[0].premium |
                                 number}}</td>
                         </tr>
-                        
+
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
@@ -127,13 +126,16 @@
                                 <td>{{ riskItem.covertypeShortDescription }}</td>
                                 <td>
                                     <div class="options">
-                                      <button id="ellipsis" pButton icon="pi pi-ellipsis-h" (click)="showOptions(item)"></button>
-                                      <div class="options-content" *ngIf="item.showOptions">
-                                        <button id="optionsButton" pButton icon="pi pi-pencil" pButton label="Edit" (click)="editItem(item)"></button>
-                                        <button id="optionsButton-delete" pButton icon="pi pi-trash" pButton label="Delete" (click)="deleteItem(item)"></button>
-                                      </div>
+                                        <button id="ellipsis" pButton icon="pi pi-ellipsis-h"
+                                            (click)="showOptions(item)"></button>
+                                        <div class="options-content" *ngIf="item.showOptions">
+                                            <button id="optionsButton" pButton icon="pi pi-pencil" pButton label="Edit"
+                                                (click)="editItem(item)"></button>
+                                            <button id="optionsButton-delete" pButton icon="pi pi-trash" pButton
+                                                label="Delete" (click)="deleteItem(item)"></button>
+                                        </div>
                                     </div>
-                                  </td>
+                                </td>
                             </tr>
                         </ng-container>
                     </ng-template>
@@ -178,7 +180,8 @@
                                         data-bs-dismiss="modal">Close</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
-                                    <button type="button" class="btn btn-primary" id="cancelQoute">Cancel Quote</button>
+                                    <button type="button" class="btn btn-primary" id="cancelQoute"
+                                        (click)="cancelQuote()">Cancel Quote</button>
                                 </div>
                             </div>
                         </div>

@@ -138,7 +138,7 @@ export class QuickQuoteFormComponent {
 
   passedQuotation: any;
   passedQuotationNo: any;
-  passedQuotationCode: any
+  passedQuotationCode: string
   PassedClientDetails: any;
 
   // isAddRisk:boolean=false;
@@ -206,11 +206,14 @@ export class QuickQuoteFormComponent {
     const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
     this.PassedClientDetails = JSON.parse(passedClientDetailsString);
     console.log("Quotation Details:", this.passedQuotation);
-    this.passedQuotationNo = this.passedQuotation?.no;
-    this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode
+    this.passedQuotationNo = this.passedQuotation?.no ?? null;
+    log.debug("passed QUOYTATION number",this.passedQuotationNo)
 
+    this.passedQuotationCode = this.passedQuotation?.quotationProduct[0].quotCode ?? null
+    log.debug("passed QUOYTATION CODE",this.passedQuotationCode)
     sessionStorage.setItem('passedQuotationNumber', this.passedQuotationNo);
     sessionStorage.setItem('passedQuotationCode', this.passedQuotationCode);
+    // sessionStorage.setItem('passedQuotationDetails', this.passedQuotation);
 
     console.log("Client Details:", this.PassedClientDetails);
     if (this.passedQuotation) {

@@ -187,4 +187,8 @@ export class QuoteSummaryComponent {
     this.router.navigate(['/home/gis/quotation/quotations-client-details'])
   }
 
+  cancelQuote(){
+    this.router.navigate(['/home/gis/quotation/quick-quote']);
+
+  }
 }

@@ -88,7 +88,7 @@ export class CoverTypesDetailsComponent {
   userDetails: any
   userBranchId: any;
 
-  quotationCode: any;
+  quotationCode:string;
   quotationData: any;
   quotationNo: any;
   passedQuotationSource: any;
@@ -116,9 +116,9 @@ export class CoverTypesDetailsComponent {
   covertypeSpecificSection: any;
   sectionCodesArray: number[] = [];
   premiumList: Premiums[] = [];
-  passedQuotationNumber: any;
-  passedQuotationCode: any;
-
+  passedNumber: string;
+  passedQuotationCode: string;
+  passedQuotationDetails:any;
   emailForm: FormGroup;
   smsForm: FormGroup;
 
@@ -146,10 +146,12 @@ export class CoverTypesDetailsComponent {
   ) { }
 
   ngOnInit(): void {
-    this.passedQuotationNumber = sessionStorage.getItem('passedQuotationNumber');
-    log.debug("Passed Quotation Number:", this.passedQuotationNumber);
+    this.passedNumber = sessionStorage.getItem('passedQuotationNumber');
+    log.debug("Passed Quotation Number:", this.passedNumber);
     this.passedQuotationCode = sessionStorage.getItem('passedQuotationCode');
     log.debug("Passed Quotation code:", this.passedQuotationCode);
+  
+
     const premiumComputationRequestString = sessionStorage.getItem('premiumComputationRequest');
     this.premiumPayload = JSON.parse(premiumComputationRequestString);
 
@@ -553,9 +555,22 @@ export class CoverTypesDetailsComponent {
     risk.propertyId = this.premiumPayload?.risks[0].propertyId;
     console.log('Quick Form Risk', risk);
     const riskArray = [risk];
+    log.debug("quotation code:",this.quotationCode)
+    log.debug("passed quotation code:",this.passedQuotationCode)
+    let defaultCode 
+    if(this.quotationCode ){
+      defaultCode=this.quotationCode;
+      log.debug("IF STATEMENT QUOTE CODE",defaultCode)
+    }else{
+      defaultCode=this.passedQuotationCode
+      log.debug("IF STATEMENT PASSED QUOTE CODE",defaultCode)
 
-    return this.quotationService.createQuotationRisk(this.passedQuotationCode == null ? this.quotationCode : this.passedQuotationCode, riskArray).subscribe(data => {
+    }
+    log.debug("default code:",defaultCode)
+
+    return this.quotationService.createQuotationRisk(defaultCode, riskArray).subscribe(data => {
       this.quotationRiskData = data;
+      log.debug("This is the quotation risk data",data)
       const quotationRiskCode = this.quotationRiskData._embedded[0];
       if (quotationRiskCode) {
         for (const key in quotationRiskCode) {
@@ -586,7 +601,9 @@ export class CoverTypesDetailsComponent {
   }
 
   SelectCover() {
-    if (this.passedQuotationNumber == null) {
+    log.debug("PASSED QUOTATION NUMBER:",this.passedNumber)
+    log.debug("PASSED QUOTATION DATA:",this.quotationData)
+    if ( this.passedNumber == null || this.passedNumber.trim()==='') {
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
         // Quotation data is not empty
         console.log("QUOTATION DATA IS NOT EMPTY")
@@ -604,13 +621,12 @@ export class CoverTypesDetailsComponent {
         // Quotation data is empty, call createQuotation method
         this.createQuotation();
         this.getQuotationNumber();
-
-      }
+    }
 
     } else {
       this.createQuotationRisk();
       // this.sharedService.setSelectedCover(this.passedQuotationNumber);
-      const quotationNumberString = JSON.stringify(this.passedQuotationNumber);
+      const quotationNumberString = JSON.stringify(this.passedNumber);
       sessionStorage.setItem('quotationNumber', quotationNumberString);
 
       this.router.navigate(['/home/gis/quotation/quote-summary']);
@@ -618,6 +634,20 @@ export class CoverTypesDetailsComponent {
     }
 
   }
+
+  // selectQuote(){
+  //   if(this.passedQuotationNumber == null){
+  //         this.SelectCover();
+  //   }else{
+  //     this.createQuotationRisk();
+  //     // this.sharedService.setSelectedCover(this.passedQuotationNumber);
+  //     const quotationNumberString = JSON.stringify(this.passedQuotationNumber);
+  //     sessionStorage.setItem('quotationNumber', quotationNumberString);
+
+  //     this.router.navigate(['/home/gis/quotation/quote-summary']);
+
+  //   }
+  // }
   getQuotationNumber(): Promise<String> {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -634,7 +664,17 @@ export class CoverTypesDetailsComponent {
     })
   }
   callQuotationUtilsService() {
-    this.quotationService.quotationUtils(this.passedQuotationCode == null ? this.quotationCode : this.passedQuotationCode).subscribe({
+    let defaultCode 
+    if(this.quotationCode ){
+      defaultCode=this.quotationCode;
+      log.debug("IF STATEMENT QUOTE CODE",defaultCode)
+    }else{
+      defaultCode=this.passedQuotationCode
+      log.debug("IF STATEMENT PASSED QUOTE CODE",defaultCode)
+
+    }
+    log.debug("default code:",defaultCode)
+    this.quotationService.quotationUtils(defaultCode).subscribe({
       next: (res) => {
         this.computationDetails = res;
 

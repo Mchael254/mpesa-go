@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Renderer2, ViewChild } from '
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { Router } from '@angular/router';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import {Logger} from '../../../../../../shared/shared.module'
+import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { Binder, Binders, Clause, Clauses, Products, Subclass, Subclasses, SubclassesDTO, riskClauses, subclassClauses, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductService } from '../../../../../gis/services/product/product.service';
@@ -237,6 +237,8 @@ export class RiskSectionDetailsComponent {
 
       
   }
+  ngOnDestroy(): void {}
+
   openHelperModal(selectedClause: any) {
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
@@ -1147,12 +1149,37 @@ updateCoverToDate() {
     
     this.captureRiskClause();
   }
-  captureRiskClause(){
-    this.quotationService.captureRiskClauses(this.selectedRiskClauseCode,this.selectProductCode,this.quotationCode, this.riskCode).subscribe(data =>{
-      log.debug("Response from capture risk endpont:",data);
-      this.globalMessagingService.displaySuccessMessage('Success', 'Risk Clauses successfully captured');
+  // captureRiskClause(){
+  //   this.quotationService.captureRiskClauses(this.selectedRiskClauseCode,this.selectProductCode,this.quotationCode, this.riskCode).subscribe(data =>{
+  //     log.debug("Response from capture risk endpont:",data);
+  //     this.globalMessagingService.displaySuccessMessage('Success', 'Risk Clauses successfully captured');
 
-
-    })
+  //   })
+  // }
+  captureRiskClause() {
+    this.quotationService
+      .captureRiskClauses(this.selectedRiskClauseCode,this.selectProductCode,this.quotationCode, this.riskCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            log.info(`Response from capture risk endpont`, data);
+          } else {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        // error: (err) => {
+         
+        //   this.globalMessagingService.displayErrorMessage(
+        //     'Error',
+        //     this.errorMessage
+        //   );
+        //   log.info(`error >>>`, err);
+        // },
+      });
   }
+
 }
