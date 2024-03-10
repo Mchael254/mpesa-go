@@ -74,7 +74,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.quickQuoteForm();
     this.getPayFrequencies();
-    this.getClientList();
+    // this.getClientList();
     this.getProducts();
     this.getAllCurrencies();
     this.getDurationTypes();
@@ -82,7 +82,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.getUnitRate();
     this.getFacultativeTypes();
     this.getIntermediaries();
-    this.searchClient();
+    // this.searchClient();
     this.searchAgent();
     this.getBranch();
     this.retrievQuoteDets();
@@ -131,34 +131,34 @@ export class QuickComponent implements OnInit, OnDestroy {
     });
   }
 
-  searchClient() {
-    this.quickForm.get('clients').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
-    .subscribe((clientTyped) => {
-      if(clientTyped.length > 0) {
-        this.client_service.searchClients(0, 5, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
-          this.clientList = data.content.map(client =>({
-            // label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}-${client.id}`),
-            label: this.capitalizeFirstLetterOfEachWord(
-              `${client.firstName} ${client.lastName ? client.lastName : ''}-${client.id}`),
-            value: client.id
-          }));
-        })
-      }
-      else {
-        this.getClientList();
-      }
-    });
-  }
+  // searchClient() {
+  //   this.quickForm.get('clients').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
+  //   .subscribe((clientTyped) => {
+  //     if(clientTyped.length > 0) {
+  //       this.client_service.searchClients(0, 5, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
+  //         this.clientList = data.content.map(client =>({
+  //           // label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}-${client.id}`),
+  //           label: this.capitalizeFirstLetterOfEachWord(
+  //             `${client.firstName} ${client.lastName ? client.lastName : ''}-${client.id}`),
+  //           value: client.id
+  //         }));
+  //       })
+  //     }
+  //     else {
+  //       this.getClientList();
+  //     }
+  //   });
+  // }
 
-  getClientList() {
-    this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
-      console.log("clients", data)
-      this.clientList = data.content.map(client => ({
-        label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
-        value: client.id
-      }));
-    });
-  }
+  // getClientList() {
+  //   this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+  //     console.log("clients", data)
+  //     this.clientList = data.content.map(client => ({
+  //       label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
+  //       value: client.id
+  //     }));
+  //   });
+  // }
 
   searchAgent() {
     this.quickForm.get('intermediary').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
@@ -242,7 +242,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   }
 
   getBranch() {
-    this.branchService.getBranches(2).subscribe((branch: OrganizationBranchDto[]) => {
+    this.branchService.getBranches(1).subscribe((branch: OrganizationBranchDto[]) => {
       this.branch = branch;
       console.log("this.branch", this.branch)
       const id = this.branch.map((branchId) => branchId.id)
