@@ -303,6 +303,15 @@ p-multiSelect {
 /* form and select column dropdown end */
 
   @media screen and (max-width:1088px) and (min-width:992px) {
+    .container {
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      padding: 20px;
+      background: #f5f6f8;
+    }
+  
     .summary-container {
         height: auto;
         display: flex;
@@ -329,6 +338,16 @@ p-multiSelect {
   }
 
 @media (max-width: 767px) {
+  .container {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    background: #f5f6f8;
+  }
+
     .summary-container {
       height: auto;
       display: flex;

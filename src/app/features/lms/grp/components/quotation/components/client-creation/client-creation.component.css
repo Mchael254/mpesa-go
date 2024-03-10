@@ -119,8 +119,6 @@ p-multiSelect {
 
 .finish-text {
     color: #FFF;
-    leading-trim: both;
-    text-edge: cap;
     font-family: Roboto;
     font-size: 16px;
     font-style: normal;
@@ -132,4 +130,52 @@ p-multiSelect {
     background: #70b7f4;
 }
 
+.accordion-button {
+  background-color: white;
+}
+
+.accordion-button:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.accordion-button::after {
+  display: inline-block;
+  /* background-color: #d1d4d3; */
+  border-radius: 50%;
+  height: 22px;
+  width: 22px;
+}
+
+label {
+  color: black;
+  padding-bottom: 8px;
+}
+
+.row-spacing {
+  padding-top: 30px;
+}
+
+
+@media screen and (max-width: 768px) {
+  .container {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  #container {
+    height: 100%;
+    width: 100%;
+  }
+
+  .row-spacing {
+    padding-top: unset;
+  }
+
+  .cont-button {
+    width: 100%;
+  }
   
+}

@@ -1,7 +1,16 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { SelectItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
+import { map, of, switchMap } from 'rxjs';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { debounceTime } from 'rxjs/internal/operators/debounceTime';
+import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
+import { Pagination } from 'src/app/shared/data/common/pagination';
+import { ClientDTO, ClientTypeDTO } from 'src/app/features/entities/data/ClientDTO';
+import { Dropdown } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-client-creation',
@@ -14,14 +23,30 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   selectedColumns: string[];
   clientDetailsForm: FormGroup;
   adminDetailsForm: FormGroup;
+  countryList: CountryDto[];
+  currencyList: any[];
+  stateList: StateDto[] = [];
+  townList: TownDto[] = [];
+  clientList: { label: string, value: number }[] = [];
+  clientId: number;
+  OrganizationClientType: ClientTypeDTO[];
+
+  @ViewChild('clientDropdown') clientDropdown: Dropdown;
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private country_service: CountryService,
+    private client_service: ClientService,
   ) {}
 
   ngOnInit(): void {
     this.clientCreationForm();
     this.adminCreationForm();
+    this.getCountryList();
+    this.searchClient();
+    this.getClientList();
+    this.clientTypeChanges();
+    this.getClntTypes();
   }
 
   ngOnDestroy(): void {
@@ -171,6 +196,232 @@ closeAdminDetailsModal() {
     modal.classList.remove('show')
     modal.style.display = 'none';
   }
+}
+
+clientTypeChanges() {
+  this.clientDetailsForm.get('clientType').valueChanges.subscribe((value: string) => {
+    const emailControl = this.clientDetailsForm.get('email');
+    const phoneControl = this.clientDetailsForm.get('phoneNumber');
+    if (value === 'existingClient') {
+      emailControl.disable();
+      phoneControl.disable();
+    } else {
+      emailControl.enable();
+      phoneControl.enable();
+    }
+  });
+}
+
+capitalizeFirstLetterOfEachWord(str) {
+  return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+}
+
+// Function to patch data into the form
+patchClientData(client: ClientDTO) {
+  this.clientDetailsForm.patchValue({
+    clientName: `${client.firstName} ${client.lastName}`,
+    status: client.status,
+    type: client.clientType,
+    incorporationDate: client.withEffectFromDate,
+    registrationNumber: client.idNumber,
+    occupation: client.physicalAddress,
+    pinNumber: client.pinNumber,
+    phoneNumber: client.phoneNumber,
+    email: client.emailAddress,
+    address: client.physicalAddress,
+    country: client.country,
+    county: client.country,
+    city: client.country,
+    affiliatedToInsurer: client.country,
+    representation: client.country,
+  });
+}
+
+openDropdown() {
+  if (this.clientDropdown) {
+    this.clientDropdown.overlayVisible = true;
+  }
+}
+
+onDropdownClear() {
+  Object.keys(this.clientDetailsForm.controls).forEach(controlName => {
+    if (controlName !== 'clientType') {
+      this.clientDetailsForm.get(controlName).reset();
+      this.getClientList();
+    }
+  });
+}
+
+
+searchClient() {
+  this.clientDetailsForm.get('clientName').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
+  .subscribe((clientTyped) => {
+    this.clientId = clientTyped.value;
+    
+    console.log("clientSelectedID", this.clientId)
+    if(this.clientId !== null || this.clientId !== undefined) {
+      this.getClientById(this.clientId);
+    }
+
+    if(clientTyped.length > 0) {
+      this.client_service.searchClients(0, 10, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
+        this.clientList = data.content.map(client =>({
+          label: this.capitalizeFirstLetterOfEachWord(
+            `${client.firstName} ${client.lastName ? client.lastName : ''}  - ${client.emailAddress}`),
+          value: client.id
+        }));
+        this.openDropdown();
+      })
+    }
+    else {
+      this.getClientList();
+    }
+  });
+}
+
+
+getClientList() {
+  this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+    console.log("clients", data)
+    this.clientList = data.content.map(client => ({
+      label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
+      value: client.id
+    }));
+  });
+}
+
+getClientById(clientId){
+    this.client_service.getClientById(this.clientId).subscribe(data =>{
+      console.log("searchedByClientId", data)
+      this.patchClientData(data);
+    },
+    err => {
+      console.log(err);
+    })
+}
+
+
+private returnLowerCase(data: any) {
+  let mapData = data.map((da: any) => {
+    da['name'] = da['name'].toLowerCase();
+    return da;
+  });
+  return mapData;
+}
+
+
+getCountryList() {
+  this.country_service
+    .getCountries()
+    .pipe(
+      map((data) => {
+        return this.returnLowerCase(data);
+      })
+    )
+    .subscribe((data: any[]) => {
+      this.countryList = data;
+      console.log("countryList", this.countryList)
+      this.currencyList = this.countryList.filter(
+        (data) => data?.currency?.name !== null
+      );
+    });
+}
+
+selectCountry(_event: any) {
+  let e = +_event.target.value;
+  of(e)
+    .pipe(
+      switchMap((data: number) => {
+        return this.country_service.getMainCityStatesByCountry(data);
+      })
+    )
+    .subscribe((data) => {
+      this.stateList = data;
+      this.townList = [];
+    });
+}
+
+selectState(_event: any) {
+  let e = +_event.target.value;
+  of(e)
+    .pipe(
+      switchMap((data: number) => {
+        return this.country_service.getTownsByMainCityState(data);
+      })
+    )
+    .subscribe((data) => {
+      this.townList = data;
+    });
+}
+
+getClntTypes() {
+  this.client_service.getClientType(1).subscribe((clntType: ClientTypeDTO[]) => {
+console.log("clntType", clntType)
+this.OrganizationClientType = clntType;
+  })
+}
+
+  onContinue() {
+    const formValues = this.clientDetailsForm.value;
+    if (this.clientDetailsForm.get('clientType').value === 'existingClient') {
+      console.log("updating Existing client")
+
+      if (this.clientDetailsForm.get('clientName').value === null || this.clientDetailsForm.get('clientName').value === ''
+        || this.clientDetailsForm.get('clientName').value === undefined) {
+        console.log("Select client to update")
+        return;
+      } else {
+        console.log("Client to updateID", this.clientId)
+        this.client_service.updateClient(this.clientId, formValues).subscribe((updateClnt) => {
+          console.log("client successfully updated", updateClnt)
+        },
+        (error) => {
+          console.log("error updating client", error)
+        })
+      }
+    } else {
+      console.log('ClientFormValues', formValues);
+      return;
+      if (this.clientDetailsForm.invalid) {
+        alert("Fill all the fields")
+      }
+
+      else {
+        console.log('ClientFormValues', formValues);
+      }
+      // const payload = {
+      //   country:  formValues.country,
+      //   dateOfBirth: formValues.incorporationDate,
+      //   emailAddress: formValues.email,
+      //   firstName: formValues.clientName,
+      //   id: 0,
+      //   gender: formValues.gender,
+      //   idNumber: formValues.registrationNumber,
+      //   // lastName: 
+      //   occupation: {
+      //     name: formValues.occupation
+      //   },
+      //   phoneNumber: formValues.phoneNumber,
+      //   physicalAddress: formValues.address,
+      //   pinNumber: formValues.pinNumber,
+      //   status: formValues.status,
+      //   clientTypeName: formValues.type,
+      //   clientFullName: formValues.clientName
+      // };
+
+      this.client_service.save(formValues).subscribe((clientPayload) => {
+        console.log("clientPAyload", clientPayload)
+      },
+        (error) => {
+          console.log("error saving client", error)
+        });
+    }
+  }
+
+onSaveAdminDets() {
+  const formValues = this.adminDetailsForm.value;
+    console.log('AdminFormValues', formValues);
+
 }
 
 
