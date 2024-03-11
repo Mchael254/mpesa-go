@@ -1,0 +1,96 @@
+<div class="container ">
+    <p class="titleMain mt-3">{{ 'gis.policy.underwriting_new_transaction' | translate }}</p>
+    <div class="container mx-2 mt-n1">
+        <div class="card mb-3" style=" position: relative;">
+            <div class="card-body">
+                <p class="subTitle">{{'gis.policy.type_of_transaction' | translate}}</p>
+                <div class="d-flex flex-wrap">
+                    <div class="form-check col-6 col-md-2 me-3">
+                        <input class="form-check-input" type="radio" [(ngModel)]="selectedOption" value="new-business"
+                            id="flexRadioDefault1">
+                        <label class="form-check-label" for="flexRadioDefault1"> {{'gis.policy.new_business' | translate}} </label>
+                    </div>
+
+                    <div class="form-check col-6 col-md-2 me-3">
+                        <input class="form-check-input" type="radio" [(ngModel)]="selectedOption" value="endorsement"
+                            id="flexRadioDefault2">
+                        <label class="form-check-label" for="flexRadioDefault2"> {{'gis.policy.endorsement' | translate}} </label>
+                    </div>
+
+                    <div class="form-check col-6 col-md-2 me-3">
+                        <input class="form-check-input" type="radio" [(ngModel)]="selectedOption"
+                            value="contra-transaction" id="flexRadioDefault3">
+                        <label class="form-check-label" for="flexRadioDefault3">{{'gis.policy.contra_transaction' | translate}} </label>
+                    </div>
+
+                    <div class="form-check col-6 col-md-3">
+                        <input class="form-check-input" type="radio" [(ngModel)]="selectedOption"
+                            value="mid-term-transaction" id="flexRadioDefault4">
+                        <label class="form-check-label" for="flexRadioDefault4"> {{'gis.policy.mid_term_endorsement' | translate}} </label>
+                    </div>
+                </div>
+
+                <div class="mt-3" *ngIf="selectedOption === 'new-business'">
+                    <!-- New Business Content -->
+                    <p class="questions-text"> {{'gis.policy.is_the_policy_short_period' | translate}}</p>
+                    <div class="d-flex ">
+                        <div class="form-check  me-3">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault5">
+                            <label class="form-check-label" for="flexRadioDefault5">{{'gis.policy.yes' | translate}} </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault6">
+                            <label class="form-check-label" for="flexRadioDefault6">{{'gis.policy.no' | translate}} </label>
+                        </div>
+                    </div>
+                    <p class="mt-4 questions-text">{{'gis.policy.is_the_policy_renewable' | translate}}</p>
+                    <div class="d-flex ">
+                        <div class="form-check  me-3">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault7">
+                            <label class="form-check-label" for="flexRadioDefault7">{{'gis.policy.yes' | translate}} </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault8">
+                            <label class="form-check-label" for="flexRadioDefault8">{{'gis.policy.no' | translate}} </label>
+                        </div>
+
+                    </div>
+                    <p class="mt-4 questions-text">{{'gis.policy.is_it_a_new_client' | translate}}</p>
+                    <div class="d-flex ">
+                        <div class="form-check  me-3">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault7">
+                            <label class="form-check-label" for="flexRadioDefault5">{{'gis.policy.yes' | translate}} </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault7">
+                            <label class="form-check-label" for="flexRadioDefault6">{{'gis.policy.no' | translate}} </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-2" *ngIf="selectedOption === 'endorsement'">
+                    <!-- Endorsement Content -->
+
+                </div>
+                <div class="mt-2" *ngIf="selectedOption === 'contra-transaction'">
+                    <!-- Contra-transaction Content -->
+
+                </div>
+                <div class="mt-2" *ngIf="selectedOption === 'mid-term-transaction'">
+                    <!-- Mid-term Transaction Content -->
+
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-primary me-2">{{'gis.policy.cancel' | translate}}</button>
+            <button type="button" class="btn btn-primary">{{'gis.policy.next' | translate}}</button>
+        </div>
+
+    </div>
+
+
+</div>

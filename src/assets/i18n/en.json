@@ -544,6 +544,21 @@
       "add_another_risk":"Add another risk",
       "cancel_quote":"Cancel quote",
       "accept_quote":"Accept quote"
+    },
+    "policy":{
+      "underwriting_new_transaction":"Underwriting: New transaction",
+      "type_of_transaction":"Type of transaction",
+      "new_business": "New business",
+      "endorsement": "Endorsement",
+      "contra_transaction": "Contra-transaction",
+      "mid_term_endorsement": "Mid-term endorsements",
+      "is_the_policy_short_period": "Is the policy short period",
+      "is_the_policy_renewable":"Is the policy renewable",
+      "is_it_a_new_client":"Is it a new Client",
+      "cancel": "Cancel",
+      "next": "Next",
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "lms": {

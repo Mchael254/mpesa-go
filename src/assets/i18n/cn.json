@@ -544,7 +544,23 @@
       "add_another_risk": "添加另一项风险",
       "cancel_quote": "取消报价",
       "accept_quote": "接受报价"
+    },
+    "policy":{
+      "underwriting_new_transaction": "承保:新交易",
+      "type_of_transaction": "交易类型",
+      "new_business": "新业务",
+      "endorsement": "背书",
+      "contra_transaction": "对冲交易",
+      "mid_term_endorsement": "中期背书",
+      "is_the_policy_short_period": "保单是否短期",
+      "is_the_policy_renewable": "保单是否可续期",
+      "is_it_a_new_client": "是否新客户",
+      "cancel": "取消",
+      "next": "下一步",
+      "yes": "是",
+      "no": "否"
     }
+    
     
   },
   "lms": {

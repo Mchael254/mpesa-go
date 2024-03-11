@@ -544,7 +544,23 @@
       "add_another_risk": "Ajouter un Autre Risque",
       "cancel_quote": "Annuler la Cotation",
       "accept_quote": "Accepter la Cotation"
+    },
+    "policy":{
+      "underwriting_new_transaction": "Souscription:Nouvelle transaction",
+      "type_of_transaction": "Type de transaction",
+      "new_business": "Nouvelle entreprise",
+      "endorsement": "Avenant",
+      "contra_transaction": "Transaction contraire",
+      "mid_term_endorsement": "Avenant à mi-parcours",
+      "is_the_policy_short_period": "La police est-elle à court terme",
+      "is_the_policy_renewable": "La police est-elle renouvelable",
+      "is_it_a_new_client": "Est-ce un nouveau client",
+      "cancel": "Annuler",
+      "next": "Suivant",
+      "yes": "Oui",
+      "no": "Non"
     }
+    
     
   },
   "lms": {
