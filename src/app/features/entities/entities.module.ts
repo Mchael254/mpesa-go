@@ -29,6 +29,9 @@ import { DatePipe } from '@angular/common';
 import { RelatedAccountsComponent } from './components/entity/related-accounts/related-accounts.component';
 import { SelectStatusComponent } from './components/entity/select-status/select-status.component';
 import { StaffModalComponent } from './components/staff/staff-modal/staff-modal.component';
+import { EntityBasicInfoComponent } from './components/entity/view-entity/entity-basic-info/entity-basic-info.component';
+import { EntityOtherDetailsComponent } from './components/entity/view-entity/entity-other-details/entity-other-details.component';
+import { EntityTransactionsComponent } from './components/entity/view-entity/entity-transactions/entity-transactions.component';
 @NgModule({
     declarations: [
         NewClientComponent,
@@ -47,7 +50,10 @@ import { StaffModalComponent } from './components/staff/staff-modal/staff-modal.
         AssignAppsComponent,
         RelatedAccountsComponent,
         SelectStatusComponent,
-        StaffModalComponent
+        StaffModalComponent,
+        EntityBasicInfoComponent,
+        EntityOtherDetailsComponent,
+        EntityTransactionsComponent
     ],
     imports: [
         CommonModule,

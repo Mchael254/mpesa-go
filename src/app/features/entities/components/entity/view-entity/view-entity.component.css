@@ -1,3 +1,10 @@
+.entity-container {
+    background: #fff;
+    margin: 2rem;
+    padding: 1rem;
+    font-size: 0.9em;
+}
+
 .nav-link {
     color: rgba(0, 0, 0, 0.85);
     text-decoration: none;
