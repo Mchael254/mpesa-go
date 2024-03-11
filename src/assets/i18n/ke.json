@@ -518,7 +518,7 @@
   "gis": {
     "quotation": {
       "new_client": "Mteja Mpya",
-      "existing_client": "Mteja Mdogo",
+      "existing_client": "Mteja Aliyepo",
       "name": "Jina",
       "year_of_manufacture": "Mwaka wa Kutengeneza",
       "value": "Thamani",
@@ -544,8 +544,22 @@
       "add_another_risk": "Ongeza Hatari Nyingine",
       "cancel_quote": "Ghairi Pendekezo",
       "accept_quote": "Kubali Pendekezo"
+    },
+    "policy": {
+      "underwriting_new_transaction": "Uwekaji Bima:Miamala Mpya",
+      "type_of_transaction": "Aina ya Miamala",
+      "new_business": "Biashara Mpya",
+      "endorsement": "Kuidhinisha",
+      "contra_transaction": "Miamala Dhidi",
+      "mid_term_endorsement": "Kuidhinisha Kati ya Kipindi",
+      "is_the_policy_short_period": "Je, bima ni kwa kipindi kifupi",
+      "is_the_policy_renewable": "Je, bima inaweza kurejeshwa",
+      "is_it_a_new_client": "Je, ni mteja mpya",
+      "cancel": "Ghairi",
+      "next": "Ifuatayo",
+      "yes": "Ndiyo",
+      "no": "Hapana"
     }
-    
   },
   "lms": {
     "common": {},
