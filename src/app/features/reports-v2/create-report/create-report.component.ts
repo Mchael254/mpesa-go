@@ -11,8 +11,8 @@ import {GlobalMessagingService} from "../../../shared/services/messaging/global-
 import {ActivatedRoute, Router} from "@angular/router";
 import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 import {ReportServiceV2} from "../services/report.service";
-import { ReportV2 } from 'src/app/shared/data/reports/report';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { ReportV2 } from '../../../shared/data/reports/report';
+import { AuthService } from '../../../shared/services/auth.service';
 import { tap } from 'rxjs';
 import { ChatBotComponent } from '../chat-bot/chat-bot.component';
 
@@ -45,10 +45,12 @@ export class CreateReportComponent implements OnInit {
   public criteria: Criteria[] = [];
   public measures: string[] = [];
   public dimensions = [];
+  public filteredDimensions = [];
   public isCriteriaButtonActive: boolean = true;
   reportName: string = '';
   reportNameRec: string = '';
-  metrics: any = {};
+  metrics: any = {}; 
+  filteredMetrics: any = [];
   filters: any = [];
   sort: any = [];
   subCategoryCategoryAreas: any[] = [];
@@ -151,10 +153,12 @@ export class CreateReportComponent implements OnInit {
           const metrics = res.filter((item) => item.name === 'Metrics');
           // log.info('metrics >>>>',metrics[0]);
           this.metrics = metrics[0];
+          this.filteredMetrics = this.metrics?.subCategory;
 
           const dimensions = res.filter((item) => item.name !== 'Metrics');
           // log.info('dimensions >>>', dimensions);
           this.dimensions = dimensions;
+          this.filteredDimensions = this.dimensions;
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
@@ -425,6 +429,23 @@ export class CreateReportComponent implements OnInit {
    */
   showAIBot(): void {
     this.chatBot.showAIBot()
+  }
+
+  /**
+   * Filters the metrics and dimensions and returns filtered result
+   * returns the filtered value (metrics || dimensions)
+   * @param event: HTML event
+   * @param arr: event to be filtered (metrics || dimensions)
+   * @param filterType the array type that is being filtered (metrics || dimensions)
+   * @returns void
+   */
+  filterMetricsAndDimensions(event: any, arr: any, filterType: string): void {
+    const filterValue = event.target.value;
+    const subCategory = arr;
+    const filteredResult = subCategory.filter(s => (
+      s.name.toLowerCase()).includes(filterValue.toLowerCase()) ? s : null);
+
+    filterType === 'metrics' ? this.filteredMetrics = filteredResult : this.filteredDimensions = filteredResult;
   }
 
 }
