@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { StaffDto } from '../../../data/StaffDto';
 import { AgentDTO } from '../../../data/AgentDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReplaySubject, finalize, takeUntil, tap } from 'rxjs';
+import { Observable, ReplaySubject, finalize, takeUntil, tap } from 'rxjs';
 import { ChartOptions, ChartType } from 'chart.js';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,8 +29,8 @@ const log = new Logger("ViewEntityComponent")
 
 @Component({
   selector: 'app-view-entity',
-  templateUrl: './view-entity.component.html',
-  styleUrls: ['./view-entity.component.css']
+  templateUrl: './entity.component.html',
+  styleUrls: ['./view-entity.component.css'],
 })
 export class ViewEntityComponent implements OnInit {
   @ViewChild('closebutton') closebutton;
@@ -102,7 +102,6 @@ export class ViewEntityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
@@ -219,7 +218,7 @@ export class ViewEntityComponent implements OnInit {
         this.entityService.setCurrentEntityAccounts(data);
 
         console.log('>>>>>>>>>>> Fetch entity accounts details by entity id', this.entityAccountIdDetails)
-        this.fetchAllPartyAccountsDetails();
+        // this.fetchAllPartyAccountsDetails();
       }
     )
 
@@ -397,7 +396,7 @@ export class ViewEntityComponent implements OnInit {
         log.info('Assigned party types: ', assignedPartyTypes);
         log.info('Unassigned party types: ', this.unAssignedPartyTypes);
 
-        this.unAssignedPartyTypes = this.unAssignedPartyTypes.length ? this.unAssignedPartyTypes : allPartyTypes;
+        // this.unAssignedPartyTypes = this.unAssignedPartyTypes.length ? this.unAssignedPartyTypes : allPartyTypes;
       });
   }
 

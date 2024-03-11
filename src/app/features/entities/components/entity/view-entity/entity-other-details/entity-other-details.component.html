@@ -1,0 +1,221 @@
+<p-tabView>
+  <p-tabPanel header="Contact Details">
+      <div class="row">
+          <div class="col-sm-3">
+              <table class="table table-borderless">
+                  <tbody>
+                    <tr>
+                      <td>Mobile number</td>
+                      <th>xxx</th>
+                    </tr>
+                    <tr>
+                      <td>Country</td>
+                      <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                    </tr>
+                  </tbody>
+              </table>
+          </div>
+          <div class="col-sm-3 offset-1">
+              <table class="table table-borderless">
+                  <tbody>
+                    <tr>
+                      <td>Email address</td>
+                      <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                    </tr>
+                    <tr>
+                      <td>Physical address</td>
+                      <th>xxx</th>
+                    </tr>
+                  </tbody>
+              </table> 
+          </div>
+          <div class="col-sm-3 offset-1">
+              <table class="table table-borderless">
+                  <tbody>
+                    <tr>
+                      <td>Country</td>
+                      <th>xxx</th>
+                    </tr>
+                  </tbody>
+              </table> 
+          </div>
+      </div>
+  </p-tabPanel>
+
+    <p-tabPanel header="Bank Details">
+        <div class="row">
+            <div class="col-sm-3">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Bank</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Branch</td>
+                        <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Account no.</td>
+                        <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                      </tr>
+                      <tr>
+                        <td>Payment method</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Account type</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Wealth Details">
+        <div class="row">
+            <div class="col-sm-3">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Nationality</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Citizenship</td>
+                        <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Source of funds</td>
+                        <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                      </tr>
+                      <tr>
+                        <td>Sectory</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Type of employment</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="AML Details">
+        <div class="row">
+            <div class="col-sm-3">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Trading names</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Operation country</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Parent country</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Entities company</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Cert. reg. no.</td>
+                        <th>xxx</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+            <div class="col-sm-3 offset-1">
+                <table class="table table-borderless">
+                    <tbody>
+                      <tr>
+                        <td>Cert. reg. year</td>
+                        <th>xxx</th>
+                      </tr>
+                      <tr>
+                        <td>Source of wealth</td>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
+                      </tr>
+                    </tbody>
+                </table> 
+            </div>
+        </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Next of kin">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Identity type</th>
+                    <th>Identifier no</th>
+                    <th>Full names</th>
+                    <th>Relation</th>
+                    <th>Date of birth</th>
+                    <th>Mobile no.</th>
+                    <th>Email address</th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>xxx</td>
+                <td>xxx</td>
+                <td>xxx</td>
+                <td>xxx</td>
+                <td>xxx</td>
+                <td>xxx</td>
+                <td>xxx</td>
+              </tr>
+            </tbody>
+        </table>
+    </p-tabPanel>
+</p-tabView>
+
+<div class="row">
+    <h5>
+      Documents Attached
+      <button class="btn btn-light btn-sm ms-4"> Upload file</button>
+      <button class="btn btn-primary btn-sm ms-4"> Choose file</button>
+    </h5>
+    <ul>
+        <li>ID Card</li>
+        <li>Birth Certificate</li>
+        <li>Passport</li>
+    </ul>
+</div>
