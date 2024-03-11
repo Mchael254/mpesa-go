@@ -1,6 +1,6 @@
 <div class="container">
-      <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
         </div>
       </div>
@@ -10,23 +10,24 @@
         <h5>Client details</h5>
 
         <form [formGroup]="clientDetailsForm">
-            <div class="col-md-4">
-                <div class="form-group" style="color: black;">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <input type="radio" id="newClient" name="clientType" formControlName="clientType" value="new" style="color: black;">
-                            <label for="newClient" style="color: black;">New Client</label>
-                        </div>
-                        <div class="col-sm-6">
-                            <input type="radio" id="existingClient" name="clientType" formControlName="clientType" value="existing" style="color: black;">
-                            <label for="existingClient" style="color: black;">Existing Client</label>
-                        </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="newClient" formControlName="clientType"
+                            id="inlineRadio1" name="clientType" />
+                        <label class="form-check-label" for="inlineRadio1">New Client</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" value="existingClient" formControlName="clientType"
+                            id="inlineRadio2" name="clientType" checked />
+                        <label class="form-check-label" for="inlineRadio2">Existing Client</label>
                     </div>
                 </div>
             </div>
             
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-4"  *ngIf="clientDetailsForm.get('clientType').value === 'newClient'">
                     <div>
                         <div>
                             <label for="clientName" style="color: black;">Client name<span style="color: red;">*</span></label>
@@ -44,15 +45,22 @@
                         </div>
                     </div>
                 </div>
-        
-                <div class="col-md-4">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-                        <label for="status" style="color: black;">Status<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'status'" formControlName="status">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
-                        </select>
+
+                <div class="col-md-4"  *ngIf="clientDetailsForm.get('clientType').value === 'existingClient'">
+                    <div>
+                        <div>
+                            <label for="clientName" style="color: black;">Client name<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <div>
+                                    <p-dropdown id='value' [options]='clientList' [optionLabel]="'label'" [dataKey]="'value'" [editable]="true"
+                                                [style]="{width: '100%', height: '37px', 'line-height': '10px' }" placeholder="Select or Type Client name"
+                                                formControlName='clientName' class="select" #clientDropdown [showClear]="true"  (onClear)="onDropdownClear()">
+                                    </p-dropdown>
+                                </div>
+                            </div>
+                        </div> 
                     </div>
                 </div>
         
@@ -60,30 +68,42 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="type" style="color: black;">Type<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'type'" formControlName="type">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let clientType of OrganizationClientType" [value]="clientType.code">{{ clientType.category }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="status" style="color: black;">Status<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'status'" formControlName="status">
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="A">Active</option>
+                            <option value="I">Inactive</option>
+                            <option value="P">Prospect</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row row-spacing">
                 <div class="col-md-4">
                     <div>
                         <div>
                             <label for="incorporationDate" style="color: black;">Incorporation date<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
-                            <div>
-                                <input 
-                                    type="date"
-                                    pInputText
-                                    class="form-control"
-                                    id="incorporationDate" 
-                                    [style]="{ width: '100%' }"
-                                    formControlName="incorporationDate">
-                            </div>
+                            <div >
+                                <p-calendar formControlName="incorporationDate" 
+                                            dateFormat="dd/mm/yy" 
+                                            [showIcon]="true" 
+                                            [showButtonBar]="true"
+                                            placeholder="dd/mm/yy"
+                                            >
+                                </p-calendar>
+                              </div>
                         </div>
                     </div>
                 </div>
@@ -127,7 +147,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row row-spacing">
                 <div class="col-md-4">
                     <div>
                         <div>
@@ -148,7 +168,7 @@
                 </div>
             </div>
 
-            <h5>Contact information</h5>
+            <div style="padding-top: 60px;"><h5>Contact information</h5></div>
             <div class="row">
                 <div class="col-md-4">
                     <div>
@@ -208,14 +228,14 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row row-spacing">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="country" style="color: black;">Country<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'country'" formControlName="country">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                        <select class="form-select" [id]="'country'" formControlName="country" (change)="selectCountry($event)">
+                            <option *ngFor="let data of countryList | sort : 'asc' : 'name'" [value]="data?.id">
+                                {{ data?.name | titlecase }}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -223,10 +243,10 @@
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="county" style="color: black;">County/State<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'county'" formControlName="county">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                        <select class="form-select" [id]="'county'" formControlName="county" (change)="selectState($event)">
+                            <option *ngFor="let data of stateList | sort : 'asc' : 'name'" [value]="data?.id">
+                                {{ data?.name | titlecase }}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -235,24 +255,24 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="city" style="color: black;">City/Town<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'city'" formControlName="city">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                            <option *ngFor="let data of townList | sort : 'asc' : 'name'" [value]="data.id">
+                                {{ data?.name | titlecase }}
+                            </option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <h5>Other details</h5>
+            <div style="padding-top: 60px;"><h5>Other details</h5></div>
 
             <div class="row">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="affiliatedToInsurer" style="color: black;">Affiliated to the insurer</label>
                         <select class="form-select" [id]="'affiliatedToInsurer'" formControlName="affiliatedToInsurer">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
                         </select>
                     </div>
                 </div>
@@ -261,9 +281,9 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="representation" style="color: black;">Representation<span style="color: red;">*</span></label>
                         <select class="form-select" [id]="'representation'" formControlName="representation">
-                            <ng-container *ngFor="let cover of ">
-                                <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                            </ng-container>
+                            <option selected="true" disabled="disabled"></option>
+                            <option value="C">Direct</option>
+                            <option value="I">Indirect</option>
                         </select>
                     </div>
                 </div>
@@ -275,7 +295,7 @@
       </div>
 </div>
 
-<div style="margin-top: 20px;">
+<div class="col-12" style="margin-top: 20px;">
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
@@ -325,8 +345,8 @@
       </div>
         
 </div>
-<div style="display: flex; justify-content: end; padding-top: 12px;">
-    <button class="finish-button">
+<div class="cont-button" style="display: flex; justify-content: end; padding-top: 12px;">
+    <button class="finish-button" (click)="onContinue()">
         <span class="finish-text">
             Continue
         </span>
@@ -392,9 +412,9 @@
                 <div class="col-lg-12 col-md-12 col-sm-12">
                     <label for="gender" style="color: black;">Gender<span style="color: red;">*</span></label>
                     <select class="form-select" [id]="'gender'" formControlName="gender">
-                        <ng-container *ngFor="let cover of ">
-                            <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-                        </ng-container>
+                        <option selected="true" disabled="disabled"></option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
                     </select>
                 </div>
             </div>
@@ -566,7 +586,7 @@
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" (click)="onSaveAdminDets()">Save</button>
       </div>
     </div>
   </div>

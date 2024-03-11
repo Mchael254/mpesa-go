@@ -1,35 +1,14 @@
 <div class="container">  
-    <!-- <div class="container">
-      <app-stepper></app-stepper>
-      </div> -->
-      <div class="row stepper">
-        <div class="col-md-12">
-          <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
-        </div>
+  <div class="row">
+    <div class="col-12">
+      <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+    </div>
+  </div>
   <div id="container">
-    <!-- <form [formGroup]="shareSummaryForm" class="black-text-form">
-        <div class="row">
-          <div class="col">
-            <div class="custom-radio-button-container">
-              <p-radioButton formControlName="communicationType" value="email" inputId="email"
-                class="custom-radio-button"></p-radioButton>
-              <label for="existingClient" class="custom-label">Existing client</label>
-            </div>
-          </div>
       
-          <div class="col">
-            <div class="">
-              <p-radioButton formControlName="communicationType" value="sms"
-                inputId="sms"></p-radioButton>
-              <label for="newClient" class="custom-label">New client</label>
-            </div>
-          </div>
-        </div>
-      </form> -->
-      
-    <div><span class="client-details">Client</span></div>
+    <!-- <div><span class="client-details">Client</span></div> -->
     <form class="form" [formGroup]="quickForm">
-      <div class="row">
+      <!-- <div class="row">
         <div class="col">
           <div class="custom-radio-button-container">
             <p-radioButton formControlName="communicationType" value="existing" inputId="email"
@@ -98,8 +77,8 @@
           </div>
       </div>
         </ng-container>
-    </div>
-    <div class="product-details" style="padding-top: 50px;">Product details</div>
+    </div> -->
+    <div class="product-details">Product details</div>
     <div class="row col-12" > 
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Product</label></div>
