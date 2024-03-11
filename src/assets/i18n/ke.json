@@ -546,20 +546,38 @@
       "accept_quote": "Kubali Pendekezo"
     },
     "policy": {
-      "underwriting_new_transaction": "Uwekaji Bima:Miamala Mpya",
-      "type_of_transaction": "Aina ya Miamala",
+      "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
+      "type_of_transaction": "Aina ya Biashara",
       "new_business": "Biashara Mpya",
       "endorsement": "Kuidhinisha",
-      "contra_transaction": "Miamala Dhidi",
-      "mid_term_endorsement": "Kuidhinisha Kati ya Kipindi",
-      "is_the_policy_short_period": "Je, bima ni kwa kipindi kifupi",
-      "is_the_policy_renewable": "Je, bima inaweza kurejeshwa",
+      "contra_transaction": "Biashara ya Kinyume",
+      "mid_term_endorsement": "Kuidhinisha Kati ya Muda",
+      "is_the_policy_short_period": "Je, sera ni ya muda mfupi",
+      "is_the_policy_renewable": "Je, sera inaweza kufanyiwa upya",
       "is_it_a_new_client": "Je, ni mteja mpya",
       "cancel": "Ghairi",
       "next": "Ifuatayo",
-      "yes": "Ndiyo",
-      "no": "Hapana"
-    }
+      "yes": "Ndio",
+      "no": "Hapana",
+      "underwriting_product_details": "Maelezo ya Bidhaa ya Sera",
+      "client": "Mteja",
+      "joint_account": "Akaunti ya Pamoja",
+      "product": "Bidhaa",
+      "policy_interface_type": "Aina ya Interface ya Sera",
+      "policy_type": "Aina ya Sera",
+      "branch": "Tawi",
+      "source": "Chanzo",
+      "marketer": "Muuzaji",
+      "introducer": "Mwanzilishi",
+      "contract_name": "Jina la Mkataba",
+      "cash_applicable": "Inayoweza Kurudishiwa Kwa Fedha",
+      "scheme_policy": "Sera ya Mpango",
+      "policy_level_debit": "Deni la Sera",
+      "open_policy": "Sera Wazi",
+      "coinsurance_policy": "Sera ya Kushirikiana Bima",
+      "more_details": "Maelezo Zaidi"
+  }
+  
   },
   "lms": {
     "common": {},

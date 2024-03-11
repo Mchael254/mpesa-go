@@ -545,8 +545,8 @@
       "cancel_quote": "Angebot abbrechen",
       "accept_quote": "Angebot annehmen"
     },
-    "policy":{
-      "underwriting_new_transaction": "Unterzeichnung:Neue Transaktion",
+    "policy": {
+      "underwriting_new_transaction": "Unterzeichnung: Neue Transaktion",
       "type_of_transaction": "Transaktionsart",
       "new_business": "Neues Geschäft",
       "endorsement": "Beglaubigung",
@@ -558,9 +558,26 @@
       "cancel": "Abbrechen",
       "next": "Weiter",
       "yes": "Ja",
-      "no": "Nein"
-    }
-    
+      "no": "Nein",
+      "underwriting_product_details": "Police Produktinformation",
+      "client": "Kunde",
+      "joint_account": "Gemeinschaftskonto",
+      "product": "Produkt",
+      "policy_interface_type": "Police Schnittstellentyp",
+      "policy_type": "Police Typ",
+      "branch": "Filiale",
+      "source": "Quelle",
+      "marketer": "Vermarkter",
+      "introducer": "Vorsteller",
+      "contract_name": "Vertragsname",
+      "cash_applicable": "Bargeld anwendbar",
+      "scheme_policy": "Schema Police",
+      "policy_level_debit": "Police Level Soll",
+      "open_policy": "Offene Police",
+      "coinsurance_policy": "Mitversicherungspolice",
+      "more_details": "Weitere Details"
+}
+
     
   },
   "lms": {
