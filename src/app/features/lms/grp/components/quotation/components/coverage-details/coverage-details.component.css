@@ -403,6 +403,15 @@ p-multiSelect {
   .col-lg-1 {
     width: 100%;
   }
+
+  .container {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+  }
+
 }
 
 .search {
@@ -457,13 +466,21 @@ p-multiSelect {
 
 @media screen and (max-width:1400px) and (min-width:280px),
 (max-width:280px) {
-  .container {
+  /* .container {
     background: #f5f6f8;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
     padding: 20px;
+  } */
+  .container {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    background: #f5f6f8;
   }
 
   #container {

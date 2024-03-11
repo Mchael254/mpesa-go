@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class PolicySummaryComponent implements OnInit, OnDestroy {
   members: MembersDTO[];
-  policyDetails: PolicyDetailsDTO[];
+  policyDetails: PolicyDetailsDTO;
   partiwalWithdrawal: PartialWithdrawalsDTO[];
   annualValuations: AnnualValuationsDTO[];
   policyClaims: PolicyClaimsDTO[];
@@ -79,7 +79,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
   }
 
   getPolicyDetails() {
-    this.policySummaryService.getPolicyDetails(this.policyCode, this.productCode, this.endorsementCode).subscribe((policyDetails: PolicyDetailsDTO[]) => {
+    this.policySummaryService.getPolicyDetails(this.policyCode, this.productCode, this.endorsementCode).subscribe((policyDetails: PolicyDetailsDTO) => {
       console.log('policiDetails', policyDetails)
       this.policyDetails = policyDetails
     },
