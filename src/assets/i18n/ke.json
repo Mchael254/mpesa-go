@@ -515,7 +515,38 @@
     "yes": "Ndio",
     "zero": "Sifuri"
   },
-  "gis": {},
+  "gis": {
+    "quotation": {
+      "new_client": "Mteja Mpya",
+      "existing_client": "Mteja Mdogo",
+      "name": "Jina",
+      "year_of_manufacture": "Mwaka wa Kutengeneza",
+      "value": "Thamani",
+      "basic_premium": "Malipo ya Msingi",
+      "levies_and_taxes": "Kodi na Tozo",
+      "total_payable_premium": "Jumla ya Malipo ya Bima",
+      "value_of_vehicle": "Thamani ya Gari",
+      "premium": "Malipo ya Bima",
+      "add_more_benefits": "Ongeza Faida Zaidi",
+      "view_cover_details": "Angalia Maelezo ya Bima",
+      "share_quote": "Shiriki Pendekezo",
+      "select_cover": "Chagua Bima",
+      "additional_benefits": "Faida Nyingine",
+      "excess_applicable_under_the_cover": "Zidi Inayofaa Chini ya Bima",
+      "cover_details": "Maelezo ya Bima",
+      "details": "Maelezo",
+      "benefits": "Faida",
+      "close": "Funga",
+      "quote-details": "Maelezo ya Pendekezo",
+      "quote-number": "Nambari ya Pendekezo",
+      "name_of_insured": "Jina la Mhifadhi",
+      "intermediary": "Mpatanishi",
+      "add_another_risk": "Ongeza Hatari Nyingine",
+      "cancel_quote": "Ghairi Pendekezo",
+      "accept_quote": "Kubali Pendekezo"
+    }
+    
+  },
   "lms": {
     "common": {},
     "ind": {},
