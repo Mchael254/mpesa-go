@@ -515,7 +515,38 @@
     "yes": "Ja",
     "zero": "Null"
   },
-  "gis": {},
+  "gis": {
+    "quotation": {
+      "new_client": "Neuer Kunde",
+      "existing_client": "Bestehender Kunde",
+      "name": "Name",
+      "year_of_manufacture": "Herstellungsjahr",
+      "value": "Wert",
+      "basic_premium": "Grundprämie",
+      "levies_and_taxes": "Abgaben und Steuern",
+      "total_payable_premium": "Gesamtfällige Prämie",
+      "value_of_vehicle": "Fahrzeugwert",
+      "premium": "Prämie",
+      "add_more_benefits": "Weitere Vorteile hinzufügen",
+      "view_cover_details": "Deckungsdetails anzeigen",
+      "share_quote": "Angebot teilen",
+      "select_cover": "Deckung auswählen",
+      "additional_benefits": "Zusätzliche Vorteile",
+      "excess_applicable_under_the_cover": "Selbstbeteiligung unter der Deckung",
+      "cover_details": "Deckungsdetails",
+      "details": "Details",
+      "benefits": "Vorteile",
+      "close": "Schließen",
+      "quote-details": "Angebotsdetails",
+      "quote-number": "Angebotsnummer",
+      "name_of_insured": "Name des Versicherten",
+      "intermediary": "Vermittler",
+      "add_another_risk": "Weitere Risiken hinzufügen",
+      "cancel_quote": "Angebot abbrechen",
+      "accept_quote": "Angebot annehmen"
+    }
+    
+  },
   "lms": {
     "common": {},
     "ind": {},

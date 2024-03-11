@@ -515,7 +515,38 @@
     "yes": "Oui",
     "zero": "Zéro"
   },
-  "gis": {},
+  "gis": {
+    "quotation": {
+      "new_client": "Nouveau Client",
+      "existing_client": "Client Existant",
+      "name": "Nom",
+      "year_of_manufacture": "Année de Fabrication",
+      "value": "Valeur",
+      "basic_premium": "Prime de Base",
+      "levies_and_taxes": "Taxes et Prélèvements",
+      "total_payable_premium": "Prime Totale à Payer",
+      "value_of_vehicle": "Valeur du Véhicule",
+      "premium": "Prime",
+      "add_more_benefits": "Ajouter Plus d'Avantages",
+      "view_cover_details": "Voir les Détails de la Couverture",
+      "share_quote": "Partager la Cotation",
+      "select_cover": "Sélectionner la Couverture",
+      "additional_benefits": "Avantages Supplémentaires",
+      "excess_applicable_under_the_cover": "Franchise applicable sous la couverture",
+      "cover_details": "Détails de la Couverture",
+      "details": "Détails",
+      "benefits": "Avantages",
+      "close": "Fermer",
+      "quote-details": "Détails de la Cotation",
+      "quote-number": "Numéro de Cotation",
+      "name_of_insured": "Nom de l'Assuré",
+      "intermediary": "Intermédiaire",
+      "add_another_risk": "Ajouter un Autre Risque",
+      "cancel_quote": "Annuler la Cotation",
+      "accept_quote": "Accepter la Cotation"
+    }
+    
+  },
   "lms": {
     "common": {},
     "ind": {},
