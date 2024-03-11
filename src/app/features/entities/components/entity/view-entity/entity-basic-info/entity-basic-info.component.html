@@ -1,0 +1,157 @@
+<div class="row">
+    <div class="col-sm-4">
+        <div class="row profile">
+            <div class="col-sm-3">
+                <img 
+                  class="profile-image" 
+                  src="{{entityPartyIdDetails?.profileImage || '../../../../../../../assets/images/headshot.png'}}" 
+                  alt="{{entityPartyIdDetails?.name | titlecase}}"
+                >
+            </div>
+            <div class="col-sm-9">
+                <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>
+                <ng-container *ngFor="let role of entityAccountIdDetails">
+                  <button 
+                    class="btn btn-sm"
+                    [ngClass]="{
+                      'btn-primary': partyAccountDetails?.partyType?.id === role?.partyType?.id,
+                      'btn-outline-primary': partyAccountDetails?.partyType?.id !== role?.partyType?.id
+                    }"
+                    (click)="selectPartyTypeRole(role)"
+                  >
+                    {{ role?.partyType.partyTypeName }}
+                  </button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2 p-2">
+        <button class="btn btn-primary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#assignRole">
+            {{ 'entities.assign_role' | translate }}
+        </button>
+    </div>
+    <div class="col-sm-2 mt-4">
+        <p>WEF 
+          <span class="ms-4 fw-bold">
+          {{ entityPartyIdDetails?.effectiveDateFrom | date }}
+        </span>
+        </p>
+    </div>
+    <div class="col-sm-2 mt-4">
+        <p>WET 
+          <span class="ms-4 fw-bold">
+            {{ entityPartyIdDetails?.effectiveDateTo | date }}
+          </span>
+        </p>
+    </div>
+    <div class="col-sm-2 mt-4">
+        <p *ngIf="partyAccountDetails?.status">
+            Status
+            <span class="badge text-bg-success ms-4 px-3 py-1">
+              {{ partyAccountDetails?.status === 'A' ? 'Active' : 'Inactive' }}
+            </span>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h5 class=" mt-5">
+            Basic Information
+            <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%;">
+                <i 
+                    class="fa fa-pencil" 
+                    style="color:#00529B; font-size: 0.8em;"
+                ></i>
+            </button>
+        </h5>
+    </div>
+    <div class="col-sm-3">
+        <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Primary party type</td>
+                <th>{{ partyAccountDetails?.partyType?.partyTypeName  }}</th>
+              </tr>
+              <tr>
+                <td>Primary ID type</td>
+                <th>{{ entityPartyIdDetails?.modeOfIdentity?.name }}</th>
+              </tr>
+              <tr>
+                <td>Passport no.</td>
+                <th>xxx</th>
+              </tr>
+              <tr>
+                <td>Occupation</td>
+                <th>xxx</th>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Date of birth</td>
+                <th>{{ partyAccountDetails?.dateOfBirth | date }}</th>
+              </tr>
+              <tr>
+                <td>ID no.</td>
+                <th>{{ entityPartyIdDetails?.identityNumber }}</th>
+              </tr>
+              <tr>
+                <td>Mobile no.</td>
+                <th>{{ partyAccountDetails?.contactDetails?.phoneNumber }}</th>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-3 offset-1">
+        <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <td>Title</td>
+                <th>{{ partyAccountDetails?.contactDetails?.title?.shortDescription }}</th>
+              </tr>
+              <tr>
+                <td>PIN no.</td>
+                <th>{{ partyAccountDetails?.pinNumber }}</th>
+              </tr>
+              <tr>
+                <td>Email address</td>
+                <th>{{ partyAccountDetails?.contactDetails?.emailAddress }}</th>
+              </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Assign Role Modal -->
+<div class="modal fade" id="assignRole" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Assign roles</h1>
+        <button type="button" #closebutton class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ng-container *ngFor="let role of unAssignedPartyTypes">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" (click)="onAssignRole(role)">
+            <label class="form-check-label" for="inlineRadio1">
+              {{ role.partyTypeName }}
+            </label>
+          </div>
+        </ng-container>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" 
+        class="btn btn-secondary" data-bs-dismiss="modal"
+        (click)="getUnAssignedRoles()"
+        >Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+
+p, th, td, li {
+    font-size: 0.9em;
+}
+
+ul li {
+    list-style-type: none;
+    color: #00529B;
+    font-weight: 500;
+    line-height: 2;
+}
