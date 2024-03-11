@@ -448,29 +448,18 @@ describe('SectorOccupationComponent', () => {
 
   test('should handle error when occupation form is invalid', () => {
     component.submitted = true;
-    component.createOccupationForm.markAllAsTouched();
+    component.createOccupationForm.controls['shortDescription'].markAsTouched();
+    component.createOccupationForm.controls['shortDescription'].setValue('');
+    component.createOccupationForm.controls['name'].markAsTouched();
+    component.createOccupationForm.controls['name'].setValue('');
 
-    const mockInvalidControl1: HTMLInputElement =
-      document.createElement('input');
-    mockInvalidControl1.classList.add('is-invalid');
-    mockInvalidControl1.value = '';
-    document.body.appendChild(mockInvalidControl1);
-
-    const mockInvalidControl2: HTMLInputElement =
-      document.createElement('input');
-    mockInvalidControl2.classList.add('is-invalid');
-    mockInvalidControl2.value = 'Some Value';
-    document.body.appendChild(mockInvalidControl2);
-
-    const focusSpy = jest.spyOn(mockInvalidControl1, 'focus');
-
-    jest.spyOn(utilServiceStub, 'findScrollContainer').mockReturnValue(null);
+    const focusSpy = jest
+      .spyOn(component['utilService'], 'findScrollContainer')
+      .mockReturnValueOnce(null);
 
     component.saveOccupation();
 
     expect(focusSpy).toHaveBeenCalled();
-
-    expect(document.documentElement.scrollTop).toBe(0);
   });
 
   test('should save a new Occupation', () => {

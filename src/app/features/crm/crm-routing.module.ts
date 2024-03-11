@@ -14,6 +14,7 @@ import { RequiredDocumentsComponent } from './components/required-documents/requ
 import { ChannelComponent } from './components/channel/channel.component';
 import { ServiceProviderTypesComponent } from './components/service-provider-types/service-provider-types.component';
 import { SectorOccupationComponent } from './components/sector-occupation/sector-occupation.component';
+import { ClientTypeComponent } from './components/client-type/client-type.component';
 
 const routes: Routes = [
   {
@@ -71,6 +72,10 @@ const routes: Routes = [
   {
     path: 'sectors-occupations',
     component: SectorOccupationComponent,
+  },
+  {
+    path: 'client-type',
+    component: ClientTypeComponent,
   },
 ];
 

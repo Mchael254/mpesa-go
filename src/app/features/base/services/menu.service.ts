@@ -167,7 +167,11 @@ export class MenuService {
             link: '/home/crm/channel',
           },
           {
-            name: 'Sectors n Occupation',
+            name: 'Client Type',
+            link: '/home/crm/client-type',
+          },
+          {
+            name: 'Sectors & Occupation',
             link: '/home/crm/sectors-occupations',
           },
         ],

@@ -164,11 +164,20 @@
     "View Account": "Konto anzeigen",
     "Create Account": "Konto erstellen",
     "Create Quick Quote": "Schnelles Angebot erstellen",
-    "View Quotations": "Angebote anzeigen"
+    "View Quotations": "Angebote anzeigen",
+    "Channels": "Kanalen",
+    "Client Type": "Klanttype",
+    "Sectors & Occupation": "Sectoren & Beroepen",
+    "Required Documents": "Vereiste documenten",
+    "Service Provider Type": "Soort dienstverlener"
   },
   "crm": {
+    "category": "Categorie",
+    "client_type": "Klanttype",
+    "description": "Omschrijving",
     "name": "Naam",
-    "no-occupation_found": "Geen beroep gevonden.",
+    "no_client_found": "Geen klanttype gevonden.",
+    "no_occupation_found": "Geen beroep gevonden.",
     "no_sector_found": "Geen sector gevonden.",
     "no_service_provider_type_found": "Geen type dienstverlener gevonden",
     "occupation": "Beroepen",

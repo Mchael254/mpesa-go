@@ -164,11 +164,20 @@
     "View Account": "查看账户",
     "Create Account": "创建账户",
     "Create Quick Quote": "创建快速报价",
-    "View Quotations": "查看报价"
+    "View Quotations": "查看报价",
+    "Channels": "渠道",
+    "Client Type": "客户类型",
+    "Sectors & Occupation": "行业和职业",
+    "Required Documents": "所需文件",
+    "Service Provider Type": "服务提供者类型"
   },
   "crm": {
+    "category": "类别",
+    "client_type": "客户类型",
+    "description": "描述",
     "name": "名称",
-    "no-occupation_found": "未找到职业。",
+    "no_client_found": "未找到客户类型。",
+    "no_occupation_found": "未找到职业。",
     "no_sector_found": "未找到行业。",
     "no_service_provider_type_found": "未找到服务提供者类型",
     "occupation": "职业",

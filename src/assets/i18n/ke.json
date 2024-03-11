@@ -164,11 +164,20 @@
     "View Account": "Angalia Akaunti",
     "Create Account": "Unda Akaunti",
     "Create Quick Quote": "Unda Nukuu Haraka",
-    "View Quotations": "Angalia Nukuu"
+    "View Quotations": "Angalia Nukuu",
+    "Channels": "Njia",
+    "Client Type": "Aina ya Mteja",
+    "Sectors & Occupation": "Sekta & Kazi",
+    "Required Documents": "Hati za Kuhitajika",
+    "Service Provider Type": "Aina za Watoa Huduma"
   },
   "crm": {
+    "category": "Jamii",
+    "client_type": "Aina ya Mteja",
+    "description": "Maelezo",
     "name": "Jina",
-    "no-occupation_found": "Hakuna Kazi iliyopatikana.",
+    "no_client_found": "Hakuna Aina ya Mteja iliyopatikana.",
+    "no_occupation_found": "Hakuna Kazi iliyopatikana.",
     "no_sector_found": "Hakuna Sekta iliyopatikana.",
     "no_service_provider_type_found": "Hakuna Aina ya Mtoa Huduma iliyopatikana",
     "occupation": "Kazi",
