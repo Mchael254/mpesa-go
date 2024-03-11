@@ -48,7 +48,9 @@
             </div>
           </form>
 
-          <div class="text-center" *ngIf="subjectAreaCategories === null; else showSubjectAreaCategories" style="padding: 4rem 0;">
+          <div class="text-center" *ngIf="subjectAreaCategories === null; 
+            else showSubjectAreaCategories" style="padding: 4rem 0;"
+          >
             <p-progressSpinner
               styleClass="w-0.5em h-0.5em "
               strokeWidth="3"
@@ -61,11 +63,16 @@
             <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
               <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
               <div class="content">
-                <input type="search" class="form-control m-2" placeholder="Search"
-                       style="width: 94%; border-radius: 8px;">
-                <div *ngFor="let subCategory of metrics?.subCategory" class="btn-group dropend">
+                <input 
+                  type="search" 
+                  class="form-control m-2" 
+                  placeholder="Search"
+                  style="width: 94%; border-radius: 8px;"
+                  (keyup)="filterMetricsAndDimensions($event, metrics.subCategory, 'metrics')"
+                >
+                <div *ngFor="let subCategory of filteredMetrics" class="btn-group dropend">
                   <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ subCategory.name }}
+                    {{ subCategory.name }} 
                   </button>
                   <ul class="dropdown-menu">
                     <li *ngFor="let categoryAreas of subCategory.categoryAreas"
@@ -79,9 +86,14 @@
           <div *ngIf="dimensions.length > 0">
             <span class="fw-medium ms-1 my-1">{{ 'report.filters' | translate }}</span>
             <div style="border: solid 1px #eee; border-radius: 5px;">
-              <input type="search" class="form-control m-2" placeholder="Search"
-                     style="width: 94%; border-radius: 8px;">
-              <ng-container *ngFor="let filterName of dimensions">
+              <input 
+                type="search" 
+                class="form-control m-2" 
+                placeholder="Search"
+                style="width: 94%; border-radius: 8px;"
+                (keyup)="filterMetricsAndDimensions($event, dimensions, 'dimensions')"
+              >
+              <ng-container *ngFor="let filterName of filteredDimensions">
                 <p
                   data-bs-toggle="collapse"
                   [attr.data-bs-target]="'#'+filterName.description"
