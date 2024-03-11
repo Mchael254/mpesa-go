@@ -515,7 +515,38 @@
     "yes": "是",
     "zero": "零"
   },
-  "gis": {},
+  "gis": {
+    "quotation": {
+      "new_client": "新客户",
+      "existing_client": "现有客户",
+      "name": "姓名",
+      "year_of_manufacture": "制造年份",
+      "value": "价值",
+      "basic_premium": "基本保费",
+      "levies_and_taxes": "征费和税费",
+      "total_payable_premium": "总应付保费",
+      "value_of_vehicle": "车辆价值",
+      "premium": "保费",
+      "add_more_benefits": "添加更多福利",
+      "view_cover_details": "查看保单详情",
+      "share_quote": "分享报价",
+      "select_cover": "选择保险",
+      "additional_benefits": "附加福利",
+      "excess_applicable_under_the_cover": "保单中适用的免赔额",
+      "cover_details": "保单详情",
+      "details": "详细信息",
+      "benefits": "福利",
+      "close": "关闭",
+      "quote-details": "报价详情",
+      "quote-number": "报价编号",
+      "name_of_insured": "被保险人姓名",
+      "intermediary": "中介",
+      "add_another_risk": "添加另一项风险",
+      "cancel_quote": "取消报价",
+      "accept_quote": "接受报价"
+    }
+    
+  },
   "lms": {
     "common": {},
     "ind": {},
