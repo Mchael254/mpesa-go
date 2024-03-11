@@ -5,14 +5,16 @@ import { PolicyRoutingModule } from './policy-routing.module';
 import { ListPoliciesComponent } from './components/list-policies/list-policies.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
-import { NewBusinessComponent } from './components/new-business/new-business.component';
+import { UnderwritingComponent } from './components/underwriting/underwriting.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { PolicyProductComponent } from './components/policy-product/policy-product.component';
 
 
 @NgModule({
   declarations: [
     ListPoliciesComponent,
-    NewBusinessComponent
+    UnderwritingComponent,
+    PolicyProductComponent
   ],
   imports: [
     CommonModule,
