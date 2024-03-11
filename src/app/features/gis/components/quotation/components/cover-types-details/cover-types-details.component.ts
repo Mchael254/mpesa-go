@@ -602,8 +602,16 @@ export class CoverTypesDetailsComponent {
 
   SelectCover() {
     log.debug("PASSED QUOTATION NUMBER:",this.passedNumber)
+      // Log the type of this.passedNumber
+      log.debug("TYPE OF PASSED QUOTATION NUMBER:", typeof this.passedNumber);
+
+      // Log the truthiness of this.passedNumber
+      log.debug("IS PASSED QUOTATION NUMBER TRUTHY:", Boolean(this.passedNumber));
+  
+      // Check for the string literal "null" specifically
+      log.debug("IS PASSED QUOTATION NUMBER 'null':", this.passedNumber === "null");
     log.debug("PASSED QUOTATION DATA:",this.quotationData)
-    if ( this.passedNumber == null || this.passedNumber.trim()==='') {
+    if ( this.passedNumber === null || this.passedNumber.trim() === '' || this.passedNumber.toLowerCase() === 'null') {
       if (this.quotationData != null && this.quotationData._embedded.length > 0) {
         // Quotation data is not empty
         console.log("QUOTATION DATA IS NOT EMPTY")
@@ -648,21 +656,31 @@ export class CoverTypesDetailsComponent {
 
   //   }
   // }
-  getQuotationNumber(): Promise<String> {
+  getQuotationNumber(): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(this.quotationNo)
-        log.debug("Quotation Number has been generated", this.quotationNo)
-        // this.sharedService.setSelectedCover(this.quotationNo);
-        const quotationNumberString = JSON.stringify(this.quotationNo);
-        sessionStorage.setItem('quotationNumber', quotationNumberString);
-
-        sessionStorage.setItem('quickQuotationNum', this.quotationNo);
-        sessionStorage.setItem('quickQuotationCode', this.quotationCode);
-        this.router.navigate(['/home/gis/quotation/quote-summary']);
-      }, 2000)
-    })
+        if (this.quotationNo !== undefined) {
+          resolve(this.quotationNo);
+          log.debug("Quotation Number has been generated", this.quotationNo);
+  
+          // Check if this.quotationNo is not undefined before stringifying
+          if (this.quotationNo !== undefined) {
+            const quotationNumberString = JSON.stringify(this.quotationNo);
+            sessionStorage.setItem('quotationNumber', quotationNumberString);
+  
+            sessionStorage.setItem('quickQuotationNum', this.quotationNo);
+            sessionStorage.setItem('quickQuotationCode', this.quotationCode);
+            this.router.navigate(['/home/gis/quotation/quote-summary']);
+          }
+        } else {
+          // Handle the case when this.quotationNo is undefined
+          // You might want to log an error or handle it appropriately
+          log.error("Quotation Number is undefined");
+        }
+      }, 2000);
+    });
   }
+  
   callQuotationUtilsService() {
     let defaultCode 
     if(this.quotationCode ){
