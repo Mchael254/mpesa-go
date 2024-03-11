@@ -1,0 +1,23 @@
+<div class="entity-container">
+    <div class="p-2">
+        <p-tabView>
+            <p-tabPanel header="Overview">
+                <app-entity-basic-info 
+                    *ngIf="entityPartyIdDetails && partyAccountDetails && unAssignedPartyTypes"
+                    [entityPartyIdDetails]="entityPartyIdDetails"
+                    [partyAccountDetails]="partyAccountDetails"
+                    [unAssignedPartyTypes]="unAssignedPartyTypes"
+                    [entityAccountIdDetails]="entityAccountIdDetails"
+                ></app-entity-basic-info>
+
+                <app-entity-other-details 
+                    *ngIf="partyAccountDetails"
+                    [partyAccountDetails]="partyAccountDetails"
+                ></app-entity-other-details>
+            </p-tabPanel>
+            <p-tabPanel header="Transactions">
+                <app-entity-transactions></app-entity-transactions>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>
