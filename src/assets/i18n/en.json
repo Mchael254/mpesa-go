@@ -558,7 +558,24 @@
       "cancel": "Cancel",
       "next": "Next",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "underwriting_product_details":"Policy product details",
+      "client":"Client",
+      "joint_account":"Joint account",
+      "product":"Product",
+      "policy_interface_type":"Policy interface type",
+      "policy_type":"Policy type",
+      "branch":"Branch",
+      "source":"Source",
+      "marketer":"Marketer",
+      "introducer":"Introducer",
+      "contract_name":"Contract name",
+      "cash_applicable":"Cashback applicable",
+      "scheme_policy":"Scheme policy ",
+      "policy_level_debit":"Policy level debit",
+      "open_policy":"Open policy",
+      "coinsuarance_policy":"Coinsurance policy",
+      "more_details":"More Details"
     }
   },
   "lms": {

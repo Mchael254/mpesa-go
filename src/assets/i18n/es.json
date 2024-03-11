@@ -545,21 +545,39 @@
       "cancel_quote": "Cancelar Cotización",
       "accept_quote": "Aceptar Cotización"
     },
-    "policy": {
-      "underwriting_new_transaction": "Suscripción:Nueva transacción",
-      "type_of_transaction": "Tipo de transacción",
+    "policy":{
+      "underwriting_new_transaction":"Suscripción: Nueva transacción",
+      "type_of_transaction":"Tipo de transacción",
       "new_business": "Nuevo negocio",
       "endorsement": "Endoso",
-      "contra_transaction": "Transacción contra",
+      "contra_transaction": "Transacción contraria",
       "mid_term_endorsement": "Endoso a medio plazo",
-      "is_the_policy_short_period": "¿Es la póliza de corto período?",
-      "is_the_policy_renewable": "¿Es renovable la póliza?",
-      "is_it_a_new_client": "¿Es un cliente nuevo?",
+      "is_the_policy_short_period": "¿Es el seguro a corto plazo?",
+      "is_the_policy_renewable":"¿Es renovable la póliza?",
+      "is_it_a_new_client":"¿Es un nuevo cliente?",
       "cancel": "Cancelar",
       "next": "Siguiente",
       "yes": "Sí",
-      "no": "No"
+      "no": "No",
+      "underwriting_product_details":"Detalles del producto de la póliza",
+      "client":"Cliente",
+      "joint_account":"Cuenta conjunta",
+      "product":"Producto",
+      "policy_interface_type":"Tipo de interfaz de póliza",
+      "policy_type":"Tipo de póliza",
+      "branch":"Sucursal",
+      "source":"Fuente",
+      "marketer":"Comercializador",
+      "introducer":"Presentador",
+      "contract_name":"Nombre del contrato",
+      "cash_applicable":"Reembolso en efectivo aplicable",
+      "scheme_policy":"Póliza de esquema",
+      "policy_level_debit":"Débito a nivel de póliza",
+      "open_policy":"Póliza abierta",
+      "coinsurance_policy":"Póliza de coaseguro",
+      "more_details":"Más detalles"
     }
+
   },
   "lms": {
     "common": {},
