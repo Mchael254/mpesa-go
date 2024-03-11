@@ -517,7 +517,7 @@
   },
   "gis": {
     "quotation": {
-      "new_client": "Neuer Kunde",
+      "new_client": "Neuer Kunde:",
       "existing_client": "Bestehender Kunde",
       "name": "Name",
       "year_of_manufacture": "Herstellungsjahr",
@@ -544,7 +544,23 @@
       "add_another_risk": "Weitere Risiken hinzufügen",
       "cancel_quote": "Angebot abbrechen",
       "accept_quote": "Angebot annehmen"
+    },
+    "policy":{
+      "underwriting_new_transaction": "Unterzeichnung:Neue Transaktion",
+      "type_of_transaction": "Transaktionsart",
+      "new_business": "Neues Geschäft",
+      "endorsement": "Beglaubigung",
+      "contra_transaction": "Gegen-Transaktion",
+      "mid_term_endorsement": "Beglaubigung während der Laufzeit",
+      "is_the_policy_short_period": "Ist die Police kurzfristig",
+      "is_the_policy_renewable": "Ist die Police verlängerbar",
+      "is_it_a_new_client": "Ist es ein neuer Kunde",
+      "cancel": "Abbrechen",
+      "next": "Weiter",
+      "yes": "Ja",
+      "no": "Nein"
     }
+    
     
   },
   "lms": {
