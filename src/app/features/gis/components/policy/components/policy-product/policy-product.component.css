@@ -1,0 +1,40 @@
+
+.titleMain {
+    font-family: Lato;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: rgba(0, 0, 0, 1);
+}.subheading {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: black;
+}
+.product-label{
+    font-family: Roboto;
+font-size: 16px;
+font-weight: 500;
+line-height: 19px;
+letter-spacing: 0em;
+text-align: left;
+
+}
+#product-input{
+    height: 30px;
+    border-radius: 4px;
+}
+.more{
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-decoration-line: underline;
+    }
