@@ -22,56 +22,48 @@
           </div>
         </div>
         <div class="row">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Quotation no.</th>
-                <th>Client name</th>
-                <th>Sum insured</th>
-                <th>Premium</th>
-                <th>Intermediary</th>
-                <th>Dated created</th>
-                <th>Cover from</th>
-                <th>Cover to</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-        </table>
+          <p-table
+            [value]="gis_quotations"
+            [paginator]="true"
+            [rows]="5"
+            [showCurrentPageReport]="true"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [rowsPerPageOptions]="[5, 10, 20]"
+          >
+            <ng-template pTemplate="header">
+                <tr>
+                  <th>Quotation no.</th>
+                  <th>Client name</th>
+                  <th>Sum insured</th>
+                  <th>Premium</th>
+                  <th>Intermediary</th>
+                  <th>Dated created</th>
+                  <th>Cover from</th>
+                  <th>Cover to</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-quot>
+                <tr>
+                  <td>{{ quot?.no }}</td>
+                  <td>{{ quot?.clientCode }}</td>
+                  <td>xxx</td>
+                  <td>{{ quot?.premium | currency : ' ' }}</td>
+                  <td>{{ quot?.agentCode }}</td>
+                  <td>xxx</td>
+                  <td>{{ quot?.coverFrom }}</td>
+                  <td>{{ quot?.coverTo }}</td>
+                  <td>{{ quot?.status }}</td>
+                  <td>
+                    <button type="button" class="btn btn-link text-primary">
+                      <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
+                    </button>
+                  </td>
+                </tr>
+            </ng-template>
+          </p-table>
         </div>
     </p-tabPanel>
     <p-tabPanel header="Life Ind">
@@ -113,56 +105,50 @@
           </div>
         </div>
         <div class="row">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Quotation no.</th>
-                <th>Client name</th>
-                <th>Sum insured</th>
-                <th>Premium</th>
-                <th>Intermediary</th>
-                <th>Dated created</th>
-                <th>Cover from</th>
-                <th>Cover to</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-        </table>
+
+          <p-table
+            [value]="gis_policies?.content"
+            [paginator]="true"
+            [rows]="5"
+            [showCurrentPageReport]="true"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [rowsPerPageOptions]="[5, 10, 20]"
+          >
+            <ng-template pTemplate="header">
+                <tr>
+                  <th>Policy no.</th>
+                  <th>Client name</th>
+                  <th>Sum insured</th>
+                  <th>Premium</th>
+                  <th>Intermediary</th>
+                  <th>Dated created</th>
+                  <th>Cover from</th>
+                  <th>Cover to</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-policy>
+                <tr>
+                  <td>{{ policy?.policy_no }}</td>
+                  <td>{{ policy?.total_sum_insured | currency: ' ' }}</td>
+                  <td>{{ policy?.premium | currency: ' ' }}</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>{{ policy?.wef_dt }}</td>
+                  <td>{{ policy?.wet_dt }}</td>
+                  <td>{{ policy?.authorizedStatus }}</td>
+                  <td>
+                    <button type="button" class="btn btn-link text-primary">
+                      <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
+                    </button>
+                  </td>
+                </tr>
+            </ng-template>
+          </p-table>
+
         </div>
     </p-tabPanel>
     <p-tabPanel header="Life Ind">
@@ -204,56 +190,49 @@
           </div>
         </div>
         <div class="row">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Quotation no.</th>
-                <th>Client name</th>
-                <th>Sum insured</th>
-                <th>Premium</th>
-                <th>Intermediary</th>
-                <th>Dated created</th>
-                <th>Cover from</th>
-                <th>Cover to</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>
-                  <button type="button" class="btn btn-link text-primary">
-                    <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-        </table>
+
+          <p-table
+            [value]="gis_claims?.content"
+            [paginator]="true"
+            [rows]="5"
+            [showCurrentPageReport]="true"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [rowsPerPageOptions]="[5, 10, 20]"
+          >
+            <ng-template pTemplate="header">
+                <tr>
+                  <th>Claim no.</th>
+                  <th>Client name</th>
+                  <th>Sum insured</th>
+                  <th>Premium</th>
+                  <th>Intermediary</th>
+                  <th>Dated created</th>
+                  <th>Cover from</th>
+                  <th>Cover to</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-claim>
+                <tr>
+                  <td>{{ claim?.claim_no }}</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>{{ claim?.booked_date }}</td>
+                  <td>{{ claim?.product.withEffectFrom }}</td>
+                  <td>{{ claim?.product.withEffectTo }}</td>
+                  <td>{{ claim?.claim_status }}</td>
+                  <td>
+                    <button type="button" class="btn btn-link text-primary">
+                      <i class="pi pi-eye" style="padding: 0 2px 0 0;"> </i>
+                    </button>
+                  </td>
+                </tr>
+            </ng-template>
+          </p-table>
         </div>
     </p-tabPanel>
     <p-tabPanel header="Life Ind">
