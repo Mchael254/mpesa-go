@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
 import { AccountReqPartyId, EntityDto } from 'src/app/features/entities/data/entityDto';
@@ -19,6 +19,7 @@ export class EntityBasicInfoComponent {
 
   @ViewChild('closebutton') closebutton;
 
+  @Output('fetchTransactions') fetchTransactions: EventEmitter<any> = new EventEmitter();
   @Input() entityPartyIdDetails;
   @Input() entityAccountIdDetails;
   @Input() partyAccountDetails;
@@ -85,13 +86,12 @@ export class EntityBasicInfoComponent {
     const accountId = role?.id;
     const  accountType =  this.entityAccountIdDetails.find(account =>  account.id == accountId);
     this.selectedAccount = accountType;
-    console.log(`selected role >>>`, role, accountType);
     this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
     .subscribe({
       next: (data) => {
         this.partyAccountDetails = data;
-        console.log(`active party >>>`, role, accountType);
         this.accountService.setCurrentAccounts(this.partyAccountDetails);
+        this.fetchTransactions.emit(this.partyAccountDetails);
       },
       error: (err) => {}
     })
