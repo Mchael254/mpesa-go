@@ -1,0 +1,36 @@
+export interface Policy {
+    action_type: string;
+    add_edit: string;
+    agent_code: number;
+    agent_short_description: string;
+    batch_number: number;
+    bdiv_code: number;
+    bind_code: number;
+    branch_code: number;
+    branch_short_description: string;
+    client_code: number;
+    client_type: string;
+    coin_leader_combined: string;
+    coinsurance_facultative_cession: string;
+    comments: string;
+    cons_code: string;
+    currency_code: number;
+    currency_symbol: string;
+    fequency_of_payment: string;
+    internal_comments: string;
+    introducer_code: number;
+    is_admin_fee_allowed: string;
+    is_binder_policy: string;
+    is_cashback_applicable: string;
+    is_coinsurance: string;
+    is_commission_allowed: string;
+    is_exchange_rate_fixed: string;
+    is_open_cover: string;
+    payment_mode: string;
+    pro_interface_type: string;
+    product_code: number;
+    source: string;
+    transaction_type: string;
+    with_effective_from_date: string;
+    with_effective_to_date: string;
+}

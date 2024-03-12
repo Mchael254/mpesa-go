@@ -1,4 +1,3 @@
-
 .titleMain {
     font-family: Lato;
     font-size: 12px;
@@ -7,7 +6,9 @@
     letter-spacing: 0em;
     text-align: left;
     color: rgba(0, 0, 0, 1);
-}.subheading {
+}
+
+.subheading {
     font-family: Roboto;
     font-size: 16px;
     font-weight: 600;
@@ -16,20 +17,27 @@
     text-align: left;
     color: black;
 }
-.product-label{
+
+.product-label {
     font-family: Roboto;
-font-size: 16px;
-font-weight: 500;
-line-height: 19px;
-letter-spacing: 0em;
-text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
 
 }
-#product-input{
+
+#product-input {
     height: 30px;
     border-radius: 4px;
 }
-.more{
+
+#quote-input {
+    height: 33px;
+}
+
+.more {
     color: #00529B;
     font-family: Roboto;
     font-size: 16px;
@@ -37,4 +45,19 @@ text-align: left;
     font-weight: 600;
     line-height: normal;
     text-decoration-line: underline;
-    }
+}
+
+.flex .search-input {
+    /* padding-bottom: 6px; */
+    padding-left: 30px;
+    border: 1px solid #ccc;
+    background: rgba(245, 246, 248, 1);
+    border-radius: 5px;
+    height: 40px;
+    width: 100% !important;
+    font-size: 13px;
+}
+
+.search-icon {
+    margin-top: -12px
+}
