@@ -12,7 +12,8 @@
     "lms": "lms",
     "api":"api",
     "json":"json",
-    "gis_reinsurance": "gis/reinsurance"
+    "gis_reinsurance": "gis/reinsurance",
+    "gis_quotation_service": "quotation"
 
   },
   "organization": {

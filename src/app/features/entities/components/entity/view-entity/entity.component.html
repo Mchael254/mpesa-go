@@ -8,6 +8,7 @@
                     [partyAccountDetails]="partyAccountDetails"
                     [unAssignedPartyTypes]="unAssignedPartyTypes"
                     [entityAccountIdDetails]="entityAccountIdDetails"
+                    (fetchTransactions)="fetchTransactions($event)"
                 ></app-entity-basic-info>
 
                 <app-entity-other-details 
@@ -16,7 +17,9 @@
                 ></app-entity-other-details>
             </p-tabPanel>
             <p-tabPanel header="Transactions">
-                <app-entity-transactions></app-entity-transactions>
+                <app-entity-transactions
+                    
+                ></app-entity-transactions>
             </p-tabPanel>
         </p-tabView>
     </div>

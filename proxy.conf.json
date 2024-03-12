@@ -69,6 +69,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/quotation": {
+    "target": "http://10.176.18.211:4002/api/v2/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 
 }
