@@ -5,10 +5,13 @@ import {AppConfigService} from "../../../../core/config/app-config-service";
 import {ClientTitleDTO} from "../../../../shared/data/common/client-title-dto";
 
 import { Pagination } from '../../../../shared/data/common/pagination';
-import { AccountReqPartyId, EntityDto, EntityResDTO, IdentityModeDTO, ReqPartyById } from '../../data/entityDto';
+import { AccountReqPartyId, EntityDto, EntityResDTO, IdentityModeDTO, PoliciesDTO, ReqPartyById } from '../../data/entityDto';
 import { PartyTypeDto } from '../../data/partyTypeDto';
 import { PartyAccountsDetails } from '../../data/accountDTO';
 import {UtilService} from "../../../../shared/services/util/util.service";
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ClaimsDTO } from 'src/app/features/gis/data/claims-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -80,7 +83,8 @@ export class EntityService {
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private api: ApiService
   ) { }
 
   setSearchTerm(searchTerm: string) {
@@ -235,5 +239,37 @@ export class EntityService {
     });
     return this.http.get<AccountReqPartyId[]>(`/${baseUrl}/parties/`+ id +`/accounts`, {headers:headers});
   }
+
+  fetchGisQuotationsByClientId(id: number):Observable<any[]> {
+    const baseUrl = this.appConfig.config.contextPath.gis_quotation_service;
+    console.log(`gis base url >>>`, baseUrl);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<any[]>(`/${baseUrl}/view/clientCode?clientId=${id}`, { headers });
+  }
+
+  // fetchGisQuotationsByClientId_test(id: number) {
+  //   return this.api.GET<any>(
+  //     `api/v2/view/clientCode?clientId=${id}`, 
+  //     API_CONFIG.GIS_QUOTATIONS_BASE_URL
+  //   )
+  // }
+
+  fetchGisPoliciesByClientId(id: number) {
+    return this.api.GET<Pagination<PoliciesDTO>>(
+      `api/v2/policies/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`, 
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  fetchGisClaimsByClientId(id: number): Observable<Pagination<ClaimsDTO>> {
+    return this.api.GET<Pagination<ClaimsDTO>>(
+      `api/v2/claims/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`, 
+      API_CONFIG.GIS_CLAIMS_BASE_URL
+    );
+  }
+
 
 }

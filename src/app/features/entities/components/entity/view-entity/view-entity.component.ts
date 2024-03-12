@@ -25,6 +25,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { QuotationsDTO } from '../../../../../features/gis/data/quotations-dto';
 import { ClaimsDTO } from '../../../../../features/gis/data/claims-dto';
 
+import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
+
 const log = new Logger("ViewEntityComponent")
 
 @Component({
@@ -35,6 +37,7 @@ const log = new Logger("ViewEntityComponent")
 export class ViewEntityComponent implements OnInit {
   @ViewChild('closebutton') closebutton;
   @ViewChild('rolesDropDown') rolesDropdown;
+  @ViewChild(EntityTransactionsComponent) entityTransactions: EntityTransactionsComponent;
 
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
@@ -496,6 +499,19 @@ export class ViewEntityComponent implements OnInit {
         )
 
     this.entityService.setCurrentPartyAcounts(fetchedAccounts);
+  }
+
+  /**
+   * fetch all transactions based on the logged in client
+   * @param partyAccountDetails required to get account id
+   * @returns void
+   */
+  fetchTransactions(partyAccountDetails): void {
+    log.info(`party account details from view entity >>> `, partyAccountDetails);
+    const id = partyAccountDetails?.accountCode
+    this.entityTransactions.fetchGisQuotationsByClientId(id);
+    this.entityTransactions.fetchGisClaimsByClientId(id);
+    this.entityTransactions.fetchGisPoliciesByClientId(id);
   }
 
   // getPoliciesByClientId(

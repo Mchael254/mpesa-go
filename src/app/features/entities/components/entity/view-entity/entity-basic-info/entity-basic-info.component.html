@@ -81,9 +81,9 @@
                 <td>Passport no.</td>
                 <th>xxx</th>
               </tr>
-              <tr>
+              <tr *ngIf="partyAccountDetails?.clientDto?.occupation?.name">
                 <td>Occupation</td>
-                <th>xxx</th>
+                <th>{{ partyAccountDetails?.clientDto?.occupation?.name }}</th>
               </tr>
             </tbody>
         </table>
@@ -99,7 +99,7 @@
                 <td>ID no.</td>
                 <th>{{ entityPartyIdDetails?.identityNumber }}</th>
               </tr>
-              <tr>
+              <tr *ngIf="partyAccountDetails?.contactDetails?.phoneNumber">
                 <td>Mobile no.</td>
                 <th>{{ partyAccountDetails?.contactDetails?.phoneNumber }}</th>
               </tr>
