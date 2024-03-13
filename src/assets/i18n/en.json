@@ -580,7 +580,9 @@
       "policy_level_debit":"Policy level debit",
       "open_policy":"Open policy",
       "coinsuarance_policy":"Coinsurance policy",
-      "more_details":"More Details"
+      "more_details":"More Details",
+      "cash":"Cash",
+      "accrual":"Accrual"
     }
   },
   "lms": {
