@@ -133,7 +133,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
 
     // this.session_storage_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)?.client_code;
     this.dms_service
-      .getClientDocumentById(client_code?.client_code)
+      .getClientDocumentById(this.util.getClientCode())
       .subscribe((data) => {
         this.documentList = data['content'];
       });

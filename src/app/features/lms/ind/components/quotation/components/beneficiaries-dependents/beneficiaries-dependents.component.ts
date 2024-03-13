@@ -287,6 +287,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
       )
       .pipe(finalize(() => (this.editEntity = false)))
       .subscribe((data: any) => {
+        // console.log(data)
         this.dependentList = data;
       });
   }

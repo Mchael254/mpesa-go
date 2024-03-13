@@ -164,7 +164,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <ng-container *ngFor="let row of dependentList; let i = index; trackBy: trackByCode">
+                      <ng-container *ngFor="let row of dependentList; let i = index;">
                         <tr>
                           <td>{{ row?.surname  | titlecase}}</td>
                           <td>{{ row?.other_name  | titlecase}}</td>

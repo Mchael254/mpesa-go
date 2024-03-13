@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
-import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-quotation-landing-screen',
   templateUrl: './quotation-landing-screen.component.html',
-  styleUrls: ['./quotation-landing-screen.component.css'],
+  styleUrls: ['./quotation-landing-screen.component.css']
 })
 export class QuotationLandingScreenComponent implements OnInit {
 
@@ -37,6 +37,8 @@ export class QuotationLandingScreenComponent implements OnInit {
 
   selectNormalQuotation(){
     let quote={};
+    quote['page'] = 'NEW';
+    this.session_service.set(SESSION_KEY.QUOTE_DETAILS, quote);
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
 
   }

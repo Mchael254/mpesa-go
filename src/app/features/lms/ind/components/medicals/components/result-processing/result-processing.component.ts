@@ -31,6 +31,7 @@ export class ResultProcessingComponent implements OnInit {
   dynamicAccordionId: any;
   diseases: any[] = [];
   diseaseForms: FormGroup[] = [];
+  // medicalResultForm : FormGroup;
   medicalReports:any[] = [];
 
   constructor(
@@ -41,12 +42,27 @@ export class ResultProcessingComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
-  ngOnInit(): void { this.getClientMedicalTest();};
+  ngOnInit(): void { 
+    this.getClientMedicalTest();
+    // this.medicalResultForm = this.fb.group({
+    //   checked: [],
+    //   cheque_date: [],
+    //   facilitator: [],
+    //   limit: [],
+    //   claim_amt: [], //invoiceAmount
+    //   payable_amt: [],
+    //   invoice_no: [],
+    //   invoice_date: [],
+    //   remarks: [],
+    // });
+  };
 
   private initForms(): void {
+
     this.diseaseForms = this.diseases.map((disease) =>
       { return this.createForm(disease);}
     );
+
   }
 
   getListOfMedicalDocuments() : any[]{
@@ -126,8 +142,10 @@ export class ResultProcessingComponent implements OnInit {
     });
   }
 
-  onSubmit(index: number): void {
+  saveMedicalResult(index: number): void {
     const form = this.diseaseForms[index];
+    console.log(form.value);
+    
     if (form.valid) {
       const formData = form.value;
       // Update disease object with form data
@@ -144,6 +162,10 @@ export class ResultProcessingComponent implements OnInit {
 
       // Call your save method here, passing the updated disease object
       console.log('Disease updated:', this.diseases[index]);
+      // this.medical_service.updateClientMedicalTest(form.value).subscribe((data: any)=> {
+      //   console.log(data);
+        
+      // })
     } else {
       // Mark all fields as touched to display validation messages
       form.markAllAsTouched();
