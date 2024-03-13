@@ -45,7 +45,7 @@
               </div>
             </div>
 
-            <div class="row">
+            <div class="row" *ngIf="isTelQuoteOrWebQuote()">
               <div class="col-md-4">
                 <br />
                 <div class="form-check form-check-inline">
@@ -231,7 +231,7 @@
                   class="form-control form-control mb-1"
                   formControlName="modeOfIdentityNumber"
                 />
-                <div *ngIf="checkError()" class="text-danger">
+                <div *ngIf="checkErrorThatsTouchedAndDirty() || checkError()" class="text-danger">
                   Incorrect ID No Format
                 </div>
               </div>
@@ -708,7 +708,7 @@
                     class="form-control form-control mb-1"
                     formControlName="effective_from_date"
                   /> -->
-                  <p-calendar [maxDate]="minDate" [defaultDate]="minDate" [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE')?.data?.label" ngDefaultControl formControlName="effective_from_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                  <p-calendar  [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_FROM_DATE')?.data?.label" ngDefaultControl formControlName="effective_from_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
                   </p-calendar>
                 </div>
                 <div class="col-md-4">
@@ -721,7 +721,7 @@
                     formControlName="effective_to_date"
                     class="form-control form-control mb-1"
                   /> -->
-                  <p-calendar [maxDate]="minDate" [defaultDate]="minDate" [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_TO_DATE')?.data?.label" ngDefaultControl formControlName="effective_to_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                  <p-calendar  [id]="getFormData('PAYMENT_DETAILS_EFFECTIVE_TO_DATE')?.data?.label" ngDefaultControl formControlName="effective_to_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
                   </p-calendar>
                 </div>
               </div>
@@ -1040,22 +1040,22 @@
             class="text-black fw-medium"
             style="font-size: 70%; padding-bottom: 1rem"
           >
-            Client’s Already Existing Quotations
+            Client’s Existing(Draft) Quotations
           </div>
           <div>
             <div class="table-responsive" style="font-size: 70%">
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th>Quotation No.</th>
-                    <th>Client Name</th>
+                    <!-- <th>Quotation No.</th> -->
+                    <th>Payment Status</th>
                     <th>Sum Assured</th>
                   </tr>
                 </thead>
                 <tbody *ngIf="draftList.length > 0">
-                  <tr class="draft" *ngFor="let draft of draftList" (click)="selectDraft(draft)">
-                    <td>{{ draft?.quote_no || "" }}</td>
-                    <td>{{ draft?.quote_no || "" }}</td>
+                  <tr style="cursor: pointer;" class="draft" *ngFor="let draft of draftList" (click)="selectDraft(draft)">
+                    <!-- <td>{{ draft?.quote_no || "" }}</td> -->
+                    <td>{{ draft?.payment_status || "" }}</td>
                     <td>{{ draft?.sum_insured || "" | number }}</td>
                   </tr>
                 </tbody>
@@ -1068,10 +1068,10 @@
             <div>
               <button
                 (click)="closeModal('draft')"
-                class="btn btn-primary mt-4"
+                class="btn btn-danger mt-4"
                 data-bs-dismiss="modal"
               >
-                Creating a new Quotation
+                Close
               </button>
             </div>
           </div>
