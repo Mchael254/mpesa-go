@@ -1,0 +1,140 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-header bg-transparent border-bottom-0">
+        <span class="justify-content-center mt-3 text-primary">Cheque authorization</span>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <label for="paymentType" class="form-label text-black">Please select the payment type</label>
+            <p-dropdown
+              [options]=""
+              optionLabel="name"
+              optionValue="id"
+              id="paymentType"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              [style]="{ width: '100%', height: '45%' }"
+              placeholder="Select payment type"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="row col-sm-12 col-lg-8">
+            <div class="col-sm-6 col-lg-2 position-relative" style="top: 8px">
+              <span>Filter by</span>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <select class="form-select">
+                <option value="">Sorting Options</option>
+                <option value="refno">Ref no</option>
+                <option value="date">Date</option>
+                <option value="amt">Amount</option>
+              </select>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <select class="form-select">
+                <option value="">Sorting Options</option>
+                <option value="asc">greater than</option>
+                <option value="desc">equals</option>
+              </select>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter value"
+                aria-label="search"
+                aria-describedby="search"
+
+              />
+            </div>
+
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="float-lg-end">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                aria-label="search"
+                aria-describedby="search"
+
+              />
+            </div>
+          </div>
+        </div>
+        <div >
+          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          <p-table
+            #chequeAuthTable
+            [autoLayout]="true"
+            [rowHover]="true"
+            [resizableColumns]="true"
+            [showCurrentPageReport]="true"
+            [rows]="pageSize || 5"
+            [totalRecords]=""
+            [value]=""
+            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+            responsiveLayout="stack"
+            [scrollable]="true"
+
+            selectionMode="single"
+            dataKey="code"
+            scrollHeight="400px"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [globalFilterFields]="['description', 'code']"
+          >
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width:0.5rem;">
+                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th>Ref No</th>
+                <th>Date</th>
+                <th>Request date</th>
+                <th>Type</th>
+                <th>Payment method</th>
+                <th>Narrative</th>
+                <th>Bank account</th>
+                <th>Cheque number</th>
+                <th>Amount</th>
+                <th>Payee</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-chequeAuth>
+              <tr>
+                <td>
+                  <p-tableCheckbox [value]="chequeAuth"></p-tableCheckbox>
+                </td>
+                <td>{{chequeAuth.exceptions_remark_code}}</td>
+                <td>
+                  {{chequeAuth?.description?.substring(0,10) | titlecase }}
+                </td>
+                <td>
+                  {{chequeAuth?.underwriting_decision?.substring(0,20) | titlecase }}
+                </td>
+                <td>{{chequeAuth?.set_standard}}</td>
+                <td>{{chequeAuth?.used_standard}}</td>
+                <td>{{chequeAuth?.is_authorized}}</td>
+                <td>{{chequeAuth?.transactions_date}}</td>
+                <td>{{chequeAuth?.authorized_by}}</td>
+                <td>{{chequeAuth?.authorized_date}}</td>
+                <td>{{chequeAuth?.exception_by}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="11">No Cheque Authorization Detail(s) Found.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

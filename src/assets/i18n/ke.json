@@ -169,7 +169,12 @@
     "Client Type": "Aina ya Mteja",
     "Sectors & Occupation": "Sekta & Kazi",
     "Required Documents": "Hati za Kuhitajika",
-    "Service Provider Type": "Aina za Watoa Huduma"
+    "Service Provider Type": "Aina za Watoa Huduma",
+    "FMS": "FMS",
+    "General ledger": "Ledger Kuu",
+    "Cashbook": "Kitabu cha Fedha",
+    "Cheques": "Hundi",
+    "Cheque signing": "Kusaini hundi"
   },
   "crm": {
     "category": "Jamii",

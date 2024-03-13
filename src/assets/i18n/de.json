@@ -169,7 +169,12 @@
     "Client Type": "Klanttype",
     "Sectors & Occupation": "Sectoren & Beroepen",
     "Required Documents": "Vereiste documenten",
-    "Service Provider Type": "Soort dienstverlener"
+    "Service Provider Type": "Soort dienstverlener",
+    "FMS": "FMS",
+    "General ledger": "Hauptbuch",
+    "Cashbook": "Kassenbuch",
+    "Cheques": "Schecks",
+    "Cheque signing": "Unterzeichnung von Schecks"
   },
   "crm": {
     "category": "Categorie",
