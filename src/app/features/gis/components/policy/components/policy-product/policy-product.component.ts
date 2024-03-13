@@ -1,10 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
 import { ClientService } from '../../../../../entities/services/client/client.service';
 import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { ProductsService } from '../../../setups/services/products/products.service';
+import { Products } from '../../../setups/data/gisDTO';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -22,6 +24,12 @@ export class PolicyProductComponent {
   clientName: any;
   clientCode:any;
 
+  
+  productList: Products[];
+  ProductDescriptionArray: any = [];
+  selectedProduct: Products[];
+  selectedProductCode: any;
+
   policyProductForm: FormGroup;
 
   errorMessage: string;
@@ -37,7 +45,9 @@ export class PolicyProductComponent {
   constructor(
     public fb: FormBuilder,
     private clientService: ClientService,
+    public productService: ProductsService,
     public globalMessagingService: GlobalMessagingService,
+    public cdr: ChangeDetectorRef,
 
 
   ){}
@@ -45,6 +55,8 @@ export class PolicyProductComponent {
   ngOnInit(): void {
     this.loadAllClients();
     this.createPolicyProductForm();
+    this.loadAllproducts();
+
   }
   ngOnDestroy(): void {}
 
@@ -133,8 +145,6 @@ export class PolicyProductComponent {
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
       console.log("Selected Client Details:", this.clientDetails)
-      const clientDetailsString = JSON.stringify(this.clientDetails);
-      sessionStorage.setItem('clientDetails', clientDetailsString);
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
@@ -162,5 +172,66 @@ export class PolicyProductComponent {
    */
   applyFilterGlobal($event, stringVal) {
     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  loadAllproducts() {
+    const productDescription = [];
+    const modifiedArray = [];
+
+    this.productService
+      .getAllProducts()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          
+          if (data) {
+            this.productList = data;
+            log.info(this.productList, "this is a product list")
+            this.productList.forEach(product => {
+              // Access each product inside the callback function
+              let capitalizedDescription = product.description.charAt(0).toUpperCase() + product.description.slice(1).toLowerCase();
+              productDescription.push({
+                code: product.code,
+                description: capitalizedDescription
+              });
+            });
+      
+            // Combine the characters back into words
+            const combinedWords = productDescription.join(',');
+            this.ProductDescriptionArray.push(...productDescription)
+      
+            // Now 'combinedWords' contains the result with words instead of individual characters
+            log.info("modified product description", this.ProductDescriptionArray);
+      
+            this.cdr.detectChanges();
+
+          } else {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+         
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+    }
+   /**
+   * Handles the selection of a product.
+   * - Retrieves the selected product code from the event.
+   * - Fetches and loads product subclasses.
+   * - Loads dynamic form fields based on the selected product.
+   * @method onProductSelected
+   * @param {any} event - The event triggered by product selection.
+   * @return {void}
+   */
+   onProductSelected(selectedValue: any) {
+    this.selectedProductCode = selectedValue.code;
+    console.log("Selected Product Code:", this.selectedProductCode);
   }
 }
