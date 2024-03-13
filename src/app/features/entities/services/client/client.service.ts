@@ -45,7 +45,33 @@ export class ClientService {
           params: params,
         });
     }
-    searchClients(
+
+  getAgents(
+      page: number | null = 0,
+      size: number | null = 10,
+      sortField: string = 'createdDate',
+      order: string = 'desc'
+    ): Observable<Pagination<any>> {
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      })
+      const params = new HttpParams()
+        .set('page', `${page}`)
+        .set('size', `${size}`)
+        .set('organizationId', 2)
+        .set('sortListFields', `${sortField}`)
+        .set('order', `${order}`);
+
+      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/agents`,
+
+        {
+          headers: headers,
+          params: params,
+        });
+  }
+  searchClients(
       page: number,
       size: number = 5,
       name: string,
@@ -72,7 +98,7 @@ export class ClientService {
         headers: header,
         params: paramObject,
       });
-    }
+  }
   getIdentityType(): Observable<any[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

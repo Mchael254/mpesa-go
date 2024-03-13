@@ -15,18 +15,18 @@ import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Utils } from 'src/app/features/lms/util/util';
 import { of } from 'rxjs/internal/observable/of';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
-  styleUrls: ['./product.component.css']
+  styleUrls: ['./product.component.css'],
 })
 export class ProductComponent implements OnInit {
-
   steps = stepData;
   validationData: any[];
   productForm: FormGroup;
-  productList:any[] =[];
+  productList: any[] = [];
   coverTypeList = signal([]);
   productOptionList: any[];
   isOptionReady: boolean;
@@ -45,8 +45,7 @@ export class ProductComponent implements OnInit {
   paymentOfFrequencyList: any[];
   util: any;
   web_quote: any = null;
-
-
+  getQuotationSubscribe: Observable<any>;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -59,78 +58,136 @@ export class ProductComponent implements OnInit {
     private quotation_service: QuotationService,
     private crm_client_service: ClientService
   ) {
-     this.util = new Utils(this.session_storage);
-
-
+    this.util = new Utils(this.session_storage);
   }
   ngOnInit(): void {
-    let quote  = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS))
-    this.getProduct().pipe(switchMap(
-      (products) => {
-        console.log(products);
+    let quote = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    );
+    if (!quote) {
+      this.getQuotationSubscribe = this.getProduct().pipe(
+        switchMap((products) => {
+          console.log(products);
 
-         this.productList = [
-          ...products,
-        ]
-        return this.getWebQuote();
+          this.productList = [...products];
+          return this.getTelQuote();
+        }),
+        finalize(() => this.spinner.hide('product_view'))
+      );
+    } else {
+      this.getQuotationSubscribe = this.getProduct().pipe(
+        switchMap((products) => {
+          // console.log(products);
 
+          this.productList = [...products];
+          return this.getWebQuote();
+        }),
+        finalize(() => this.spinner.hide('product_view'))
+      );
+    }
+    this.getQuotationSubscribe.subscribe((final_quote) => {
+      console.log(final_quote);
+      this.productForm
+        .get('freq_payment')
+        .patchValue(final_quote['payment_frequency']);
+      this.productForm.get('term').patchValue(final_quote['policy_term']);
+      this.productForm.get('agent').patchValue(final_quote['agent_code']);
+
+      if (quote['sum_insured']) {
+        this.productForm.get('sa_prem_select').patchValue('P');
+        this.productForm
+          .get('sa_prem_amount')
+          .patchValue(final_quote['sum_insured']);
       }
-    ),
-      finalize(() => this.spinner.hide('product_view')))
-      .subscribe(data =>{
-        console.log(quote);
-        this.productForm.get('term').patchValue(quote['policy_term']);
-        this.productForm.get('freq_payment').patchValue(quote['payment_frequency']);
-        this.productForm.get('term').patchValue(quote['policy_term']);
-        this.productForm.get('term').patchValue(quote['policy_term']);
-
-      })
-    this.productForm = this.getproductForm()
+    });
+    this.productForm = this.getproductForm();
     this.getPayFrequencies();
-    
+    this.getAgentList();
   }
 
+  getWebQuote() {
+    let quote = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    );
+    if (quote) {
+      return this.quotation_service
+        .getLmsIndividualQuotationWebQuoteByCode(quote['code'])
+        .pipe(
+          switchMap((web_quote: any) => {
+            console.log(web_quote);
 
-  getWebQuote(){
-    let quote  = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    if(quote){
-      return this.quotation_service.getLmsIndividualQuotationWebQuoteByCode(quote['code'])
-      .pipe(
-        switchMap((web_quote :any) =>{
-          console.log(web_quote);
+            this.web_quote = web_quote;
+            let product = web_quote['product_code'];
+            this.productForm.patchValue(web_quote);
+            this.productForm.get('product').patchValue(product);
+            this.selectProduct({ target: { value: product } });
+            return of(web_quote);
+          }),
+          switchMap((web_quote) => {
+            this.product_service
+              .getProductOptionByCode(web_quote['pop_code'])
+              .pipe(
+                switchMap((product_option) => {
+                  let option = product_option['code'];
+                  this.productForm.get('option').patchValue(option);
+                  this.selectProductOption({
+                    target: { value: product_option['code'] },
+                  });
 
-        this.web_quote = web_quote
-        let product = web_quote['product_code'];
-        this.productForm.patchValue(web_quote);
-        this.productForm.get('product').patchValue(product);
-        this.selectProduct({target: {value: product}})
-        return of(web_quote)
-      }),
-      switchMap((web_quote) =>{
-        return this.product_service.getProductOptionByCode(web_quote['pop_code']).pipe(
-          switchMap((data) =>
+                  return of(product_option);
+                })
+              );
 
-        {
-          let option = data['code']
-          this.productForm.get('option').patchValue(option);
-          this.selectProductOption({target: {value: data['code']}});
-          
-          return of(data)
-        }))
-      })
-      )
-    }else {
-      return of(null)
+            return of(web_quote);
+          })
+        );
+    } else {
+      return of(null);
     }
   }
 
-  getClientList() {
-    this.crm_client_service.getClients().subscribe((data) => {
+  getTelQuote() {
+    let quote = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.QUOTE_DETAILS)
+    );
+    if (quote) {
+      return this.quotation_service
+        .getLmsIndividualQuotationTelQuoteByCode(quote['tel_quote_code'])
+        .pipe(
+          switchMap((tel_quote: any) => {
+            console.log(tel_quote);
+
+            this.web_quote = tel_quote;
+            let product = tel_quote['product_code'];
+            this.productForm.patchValue(tel_quote);
+            this.productForm.get('product').patchValue(product);
+            this.selectProduct({ target: { value: product } });
+            return of(tel_quote);
+          }),
+          switchMap((tel_quote) => {
+            this.product_service
+              .getProductOptionByCode(tel_quote['pop_code'])
+              .pipe(
+                switchMap((data) => {
+                  let option = data['code'];
+                  this.productForm.get('option').patchValue(option);
+                  this.selectProductOption({ target: { value: data['code'] } });
+                  return of(tel_quote);
+                })
+              );
+
+            return of(tel_quote);
+          })
+        );
+    } else {
+      return of(null);
+    }
+  }
+
+  getAgentList() {
+    this.crm_client_service.getAgents().subscribe((data) => {
       this.agentList = data['content']?.map((d) => {
-        d['full_name'] = `${d.firstName} ${d.lastName ? d.lastName : ''}`;
-        d['details'] = `${d.firstName} ${d.lastName ? d.lastName : ''} - ${
-          d?.emailAddress ? d?.emailAddress : ''
-        }`;
+        d['details'] = `${d?.name} - ${d?.emailAddress ? d?.emailAddress : ''}`;
         return d;
       });
     });
@@ -158,7 +215,7 @@ export class ProductComponent implements OnInit {
     this.spinner.hide('whole');
   }
 
-  getproductForm(){
+  getproductForm() {
     return this.fb.group({
       product: [],
       option: [],
@@ -170,16 +227,13 @@ export class ProductComponent implements OnInit {
       proposal_sign_date: [],
       agent: [],
       escalation_question: [],
-      coinsurance_question: []
+      coinsurance_question: [],
     });
   }
 
-  getProduct(){
+  getProduct() {
     this.spinner.show('product_view');
-    return this.product_service
-      .getListOfProduct()
-      
-      
+    return this.product_service.getListOfProduct();
   }
 
   selectProduct(event) {
@@ -199,7 +253,7 @@ export class ProductComponent implements OnInit {
           })
         )
         .subscribe((productOptions) => {
-          this.productOptionList = [ ...productOptions];
+          this.productOptionList = [...productOptions];
           this.isOptionReady = true;
           let prod;
           prod = this.productList.filter((m) => {
@@ -222,8 +276,8 @@ export class ProductComponent implements OnInit {
     if (pPopItem > 0) {
       this.spinner.show('product_view');
       let age = 30;
-        // new Date().getFullYear() -
-        // new Date(this.productForm.get('date_of_birth').value).getFullYear();
+      // new Date().getFullYear() -
+      // new Date(this.productForm.get('date_of_birth').value).getFullYear();
       let option;
       option = this.productOptionList.filter((m) => {
         return m['code'] === pPopItem;
@@ -253,13 +307,15 @@ export class ProductComponent implements OnInit {
             this.isTermReady = true;
           })
         )
-        .subscribe((covers) => {
-          this.coverTypeList.set(covers);
-          this.spinner.hide('product_view');
-        },
-        (err: any)=>{
-          this.spinner.hide('product_view');
-        });
+        .subscribe(
+          (covers) => {
+            this.coverTypeList.set(covers);
+            this.spinner.hide('product_view');
+          },
+          (err: any) => {
+            this.spinner.hide('product_view');
+          }
+        );
     }
   }
 
@@ -280,8 +336,8 @@ export class ProductComponent implements OnInit {
     );
   }
 
-  getValue(name="prem"){
-    return ''
+  getValue(name = 'prem') {
+    return '';
   }
   selectClient(event: any) {
     // console.log('select client');
@@ -290,52 +346,67 @@ export class ProductComponent implements OnInit {
     // this.productForm.patchValue(event?.value);
   }
 
-  nextPage(){
+  nextPage() {
+    if (!this.util.getClientCode()) {
+      this.toast.danger('ÍNCOMPLETE DATA', 'INCOMPLETE_DATA');
+    }
     this.spinner.show('product_view');
     let quote = {};
-    let quote_details = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
+    let quote_details = StringManipulation.returnNullIfEmpty(
+      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    );
     let formValue = this.productForm.value;
     // if(formValue['sa_prem_select']===null){
     //   this.toast.danger('select either PREMIUM or SUM ASSURED', 'PRODUCT DETAILS')
     // }
-    let cover_list = this.coverTypeList().filter(data => data?.selected ===true).map(data => data?.id);    
-
-    // if(this.web_quote){
-    //   quote = {...this.web_quote}
-    // }
-
-     quote = {
-      "code":  this.web_quote===null ? null: this.web_quote['code'],   
-      "quote_no": this.util.getTelQuoteCode(),
-      "proposal_no": this.util.getProposalCode(),
-      "premium": formValue['sa_prem_select'] === 'P'? formValue['sa_prem_amount']: null,
-      "sum_insured": formValue['sa_prem_select']==='SA'? formValue['sa_prem_amount']: null,
-      "client_code": this.util.getClientCode(),
-      "client_type": "C",
-      "policy_term": formValue['term'],
-      "product_code": formValue['product'],
-      "agent_code": 0,
-      // formValue['agent'],
-      "payment_frequency": formValue['freq_payment'],
-      "pop_code": formValue['option'],
-      "quote_type": "PR",
-      "quote_status": "DR",
-      "payout_frequency": "D",
-      "payment_status": "PENDING",
-      "life_cover": "Y",
-      "auto_esc": "Y",
-      "cover_type_codes": cover_list,
-      "created_at": new Date(),
-      "updated_at": new Date(),
-    }
-    this.quotation_service.saveWebQuote(quote).subscribe(data =>{
-      this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data)
-      this.toast.success('succesfully create/update quote', 'QUOTATION CREATION/UPDATE');
-      this.route.navigate(['/home/lms/ind/quotation/beneficiaries-dependents'])
-      console.log(data);
-      this.spinner.hide('product_view');
-      
-    })
+    let cover_list = this.coverTypeList()
+      .filter((data) => data?.selected === true)
+      .map((data) => data?.id);
+    quote = {
+      code: this.web_quote === null ? null : this.web_quote['code'],
+      quote_no: this.util.getTelQuoteCode(),
+      proposal_no: this.util.getProposalCode(),
+      premium:
+        formValue['sa_prem_select'] === 'P'
+          ? formValue['sa_prem_amount']
+          : null,
+      sum_insured:
+        formValue['sa_prem_select'] === 'SA'
+          ? formValue['sa_prem_amount']
+          : null,
+      client_code: this.util.getClientCode(),
+      client_type: 'C',
+      policy_term: formValue['term'],
+      product_code: formValue['product'],
+      agent_code: formValue?.agent?.id | 0,
+      payment_frequency: formValue['freq_payment'],
+      pop_code: formValue['option'],
+      quote_type: 'PR',
+      quote_status: 'DR',
+      payout_frequency: 'D',
+      payment_status: 'PENDING',
+      life_cover: 'Y',
+      auto_esc: 'Y',
+      cover_type_codes: cover_list,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+    this.quotation_service.saveWebQuote(quote).subscribe(
+      (data) => {
+        this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, data);
+        this.toast.success(
+          'succesfully create/update quote',
+          'QUOTATION CREATION/UPDATE'
+        );
+        this.route.navigate(['/home/lms/ind/quotation/beneficiaries-dependents'])
+        console.log(data);
+        this.spinner.hide('product_view');
+      },
+      (err) => {
+        console.log(err);
+        this.spinner.hide('product_view');
+        this.toast.danger(err?.error?.errors[0], 'QUOTATION CREATION/UPDATE');
+      }
+    );
   }
-
 }

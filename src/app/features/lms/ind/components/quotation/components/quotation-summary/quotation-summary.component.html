@@ -74,7 +74,6 @@
             </div>
           </div>
         </div>
-
         <div>
           <div
             class="accordion accordion-flush py-5"
@@ -105,7 +104,7 @@
                       <div class="m-4">
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700">Name: </span>
-                          <span class="fw-light">{{client_details?.firstName || ''  }} {{client_details?.lastName || '' }}</span>
+                          <span class="fw-light">{{client_details?.firstName || ''  | titlecase }} {{client_details?.lastName || '' | titlecase }}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
@@ -115,15 +114,15 @@
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
-                            >Occupation:
+                            >Physical Address:
                           </span>
-                          <span class="fw-light">{{ '-' }}</span>
+                          <span class="fw-light">{{ client_details?.physicalAddress | titlecase}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
                             >Nationality:
                           </span>
-                          <span class="fw-light">{{ '-'}}</span>
+                          <span class="fw-light">{{countryList | nationality: client_details?.country | titlecase}}</span>
                         </div>
                       </div>
                     </div>
@@ -134,7 +133,7 @@
                           <span class="font-grey__font-eight__700"
                             >Country of Residence:
                           </span>
-                          <span class="fw-light">{{ "Kenya" }}</span>
+                          <span class="fw-light">{{countryList | country: client_details?.country | titlecase}}</span>
                         </div>
                         <div class="d-flex justify-content-between">
                           <span class="font-grey__font-eight__700"
