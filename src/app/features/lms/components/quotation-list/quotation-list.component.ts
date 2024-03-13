@@ -43,7 +43,7 @@ export class QuotationListComponent implements OnInit {
     this.getListOfWebQuote(page, pageObj['rows']);
   }
 
-  getListOfWebQuote(page = 0, size = 5) {
+  getListOfWebQuote(page = 0, size = 10) {
     this.spinner.show('lms_ind_view');
     this.product_service
       .getListOfProduct()

@@ -49,6 +49,8 @@ export class SummaryComponent implements OnInit {
     let client_code = this.util.getClientCode();
     if(client_code){
       this.crm_client_service.getClientById(client_code).subscribe(data => {
+        console.log(data);
+        
         this.client_info = data;
       })
     }
@@ -72,13 +74,14 @@ export class SummaryComponent implements OnInit {
     .pipe(
       switchMap((web_quote_res: any) =>{ 
         console.log(web_quote_res);
-        
+        let quote  = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.QUOTE_DETAILS));
+        quote['endr_code']= web_quote_res['proposal_details']['endr_code'];
+        quote['pol_code']= web_quote_res['proposal_details']['pol_code'];
+        this.session_service.set(SESSION_KEY.QUOTE_DETAILS, quote);
         this.proposalSummaryData = web_quote_res;
         return this.product_service.getProductByCode(web_quote_res?.product_code)
       }),
-      switchMap((product_res : any) =>{ 
-        // console.log(product_res);
-        
+      switchMap((product_res : any) =>{        
         this.proposalSummaryData['product'] = product_res
         return this.product_option_service.getProductOptionByCode(this.proposalSummaryData?.pop_code)
       }),
@@ -104,11 +107,10 @@ export class SummaryComponent implements OnInit {
 
 
   getBeneficiariesByQuotationCode() {
-    let quote_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.QUOTE_CODE));
-    let proposal_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.PROPOSAL_CODE));
+    let quote_code: any = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.QUOTE_DETAILS));
+    // let proposal_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.PROPOSAL_CODE));
     this.party_service
-      // .getListOfBeneficariesByQuotationCode(20235318, proposal_code)
-      .getListOfBeneficariesByQuotationCode(quote_code, proposal_code)
+      .getListOfBeneficariesByQuotationCode(quote_code?.tel_quote_code, quote_code?.proposal_no)
       .subscribe((data: any[] ) => {
         this.beneficiaryList = data;
       });

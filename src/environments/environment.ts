@@ -15,10 +15,10 @@ export const environment = {
   dmsDefaultUrl: 'http://10.176.18.101:9080/alfrescoServices',
   TENANT_ID: API_TENANT_ID.MUTUAL,
   API_URLS: new Map<API_CONFIG, string>([
-    [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
-    [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
-    [API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, 'http://localhost:5002'],
-    [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, 'http://localhost:5003'],
+    [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://10.176.18.211:5000'],
+    [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://10.176.18.211:5001'],
+    [API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, 'http://10.176.18.211:5002'],
+    [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, 'http://10.176.18.211:5003'],
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
 
     
@@ -30,6 +30,8 @@ export const environment = {
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
+    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
+
   ]),
 
 };

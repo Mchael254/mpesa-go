@@ -69,6 +69,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-  }
+  },
+  "/reports": {
+    "target": "http://10.176.18.211:9991/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+    }
 
 }
