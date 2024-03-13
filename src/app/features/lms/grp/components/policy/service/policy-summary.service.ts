@@ -11,8 +11,8 @@ export class PolicySummaryService {
     private api:ApiService,
   ) { }
 
-  getPolicyDetails(policyCode: number, productCode: number, endorsementCode: number) {
-    return this.api.GET(`group/policies/policydetails?policy_code=${policyCode}&product_code=${productCode}&endorsement_code=${endorsementCode}`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  getPolicyDetails(policy_code: number, productCode: number, endorsementCode: number) {
+    return this.api.GET(`group/policies/${policy_code}?product_code=${productCode}&endorsement_code=${endorsementCode}`,  API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
   getMembers(policyCode) {

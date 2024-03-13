@@ -13,228 +13,297 @@
     <div class="d-flex justify-content-center fw-bold fs-6 pt-4">Medical</div>
     <div>
       <div>
-        <div class="d-flex justify-content-center pt-3 fs-6">Policy Details</div>
+        <div class="d-flex justify-content-center pt-3 fs-6">
+          Policy Details
+        </div>
 
-        <div class="d-flex justify-content-start px-4" style="font-size: 13px; font-weight: 500;">Policy summary</div>
-        <div style="font-size: 13px; padding: 0rem 2rem; ">
-          <div class="row px-4">
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-3 col-sm-6">Client:</span>
-                <span class="text-black col-md- col-sm-6 fw-medium">{{'Agnes Njoronge' | titlecase}}</span>
-              </div>
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-3 col-sm-6">Product:</span>
-                <span class="text-black col-md-9 col-sm-6 fw-medium">{{product?.description | titlecase}}</span>
-              </div>
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-4 col-sm-6">Proposal No:</span>
-                <span class="text-black col-md-8 col-sm-6 fw-medium">{{quotation_details['proposal_no']}}</span>
-              </div>
-            </div>
+        <div  style="position: relative">
+          <ngx-spinner [name]="'medical_view'" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+            bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
+
+          <div
+            class="d-flex justify-content-start px-4"
+            style="font-size: 13px; font-weight: 500"
+          >
+            Policy summary
           </div>
-          <div class="row px-4">
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-5 col-sm-6">Effective date:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{date_full | date:'short'}}</span>
+          <div style="font-size: 13px; padding: 0rem 2rem">
+            <div class="row px-4">
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6">Life Assured:</span>
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.life_assured | titlecase
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-4 col-sm-6">Product:</span>
+                  <span class="text-black col-md-8 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.product_description | titlecase
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-4 col-sm-6">Proposal No:</span>
+                  <span class="text-black col-md-8 col-sm-6 fw-medium">{{
+                    quotation_details["proposal_no"]
+                  }}</span>
+                </div>
               </div>
             </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-5 col-sm-6">Cover From:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{date_full | date:'short'}}</span>
+            <div class="row px-4">
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6"
+                    >Effective date:</span
+                  >
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.effective_date | date : "dd/MM/yyyy"
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6">Cover From:</span>
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.endr_cover_to_date | date : "dd/MM/yyyy"
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6">Cover To:</span>
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.endr_cover_to_date | date : "dd/MM/yyyy"
+                  }}</span>
+                </div>
               </div>
             </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-5 col-sm-6 ">Cover To:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{date_full | date:'short'}}</span>
-              </div>
-            </div>
-          </div>
-          <div class="row px-4">
-            <div class="col-md-4 col-sm-12">
+            <div class="row px-4">
+              <!-- <div class="col-md-4 col-sm-12">
               <div class="row">
                 <span class="text-gray col-md-5 col-sm-6">Coverage duration:</span>
                 <span class="text-black col-md-7 col-sm-6 fw-medium" >{{date_full | date:'short'}}</span>
               </div>
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-5 col-sm-6">Occupation:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{date_full | date:'short'}}</span>
+            </div> -->
+
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6">Occupation:</span>
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.occupation | titlecase
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6"
+                    >Total sum assured:</span
+                  >
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.tot_sa | number
+                  }}</span>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-12">
+                <div class="row">
+                  <span class="text-gray col-md-5 col-sm-6"
+                    >Total Premium:</span
+                  >
+                  <span class="text-black col-md-7 col-sm-6 fw-medium">{{
+                    policySummaryDetails?.endr_tot_premium | number
+                  }}</span>
+                </div>
               </div>
             </div>
-            <div class="col-md-4 col-sm-12">
-              <div class="row">
-                <span class="text-gray col-md-5 col-sm-6">Total Premium:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{quotation_details?.premium | number}}</span>
-              </div>
-            </div>
-          </div>
-          <div class="row px-4">
-            <div class="col-md-4 col-sm-12">
+            <div class="row px-4">
+              <!-- <div class="col-md-4 col-sm-12">
               <div class="row">
                 <span class="text-gray col-md-5 col-sm-6">Total sum assured:</span>
-                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{quotation_details?.sum_insured | number}}</span>
+                <span class="text-black col-md-7 col-sm-6 fw-medium" >{{policySummaryDetails?.tot_sa | number}}</span>
+              </div>
+            </div> -->
+            </div>
+          </div>
+
+          <div class="row px-4" [formGroup]=testForm>
+            <div
+              class="d-flex justify-content-start fs-7 fw-medium text-black pt-2"
+            >
+              Lien Option
+            </div>
+            <div class="col-md-4 col-sm-12">
+              <div class="row p-0">
+                <div class="w-75">
+                  <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      formControlName="lien"
+                      type="radio"
+                      id="yes"
+                      value="Y"
+                    />
+                    <label class="form-check-label text-black" for="yes"
+                      >Yes</label
+                    >
+                  </span>
+                  <span class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      id="no"
+                      value="N"
+                      formControlName="lien"
+                    />
+                    <label class="form-check-label text-black" for="no"
+                      >No</label
+                    >
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-          
-        </div>
 
-        <div class="row px-4">
-          <div class="d-flex justify-content-start fs-7 fw-medium text-black pt-2">
-            Lien Option
-          </div>
-          <div class="col-md-4 col-sm-12">
-            <div class="row p-0">
+          <div class="row col-4 px-4">
+            <div class="d-flex justify-content-start pt-2">Medical Tests</div>
 
-              <div class="w-75">
-                <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="yes"
-                    value="Y"
-                  />
-                  <label class="form-check-label text-black" for="yes">Yes</label>
-                </span>
-                <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="no"
-                    value="N"
-                  />
-                  <label class="form-check-label text-black" for="no">No</label>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+            <div class="container mt-4" style="position: relative">
+              <ngx-spinner [name]="'test_view'" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
-        <div class="row col-4 px-4">
-          <div class="d-flex justify-content-start pt-2">Medical Tests</div>
-
-          <div class="container mt-4">
-            <table class="table table-bordered">
-              <thead>
-              <tr>
-                <th>Test</th>
-                <th>Validity Period</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let test of clientMedicalTestList?.medical_tests">
-                <td>{{test['description'] | titlecase }}</td>
-                <td> 
-                  <div class="d-flex justify-content-between"> 
-                  <div> {{test['validity_period'] }} Month(s)</div>
-                  <div class = "dropdown-toggle "
-                  
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                    <div >
-                      <i class="fa-solid fa-ellipsis-vertical"></i>
-                      <ul class="dropdown-menu" style="border: 1px solid rgba(35, 62, 240, 0.59);">
-                        <li>
-                          <a class="dropdown-item" (click)="deleteMedicalTest(test)">Delete</a>
-                        </li>
-                      </ul>
-                    </div>
-
-                  </div>
-               </div> </td>
-              </tr>
-
-              <tr *ngIf="!isTestFormSelected" >
-                <td colspan="2">
-                  <div (click)="selectTestForm()" class="py-0 text-primary fw-medium" style="cursor: pointer;">Add Additional Test</div>
-
-                </td>
-              </tr>
-              <tr *ngIf="isTestFormSelected" >
-
-                <td colspan="2" >
-                    <div class="row">
-
-                      <!-- Dropdown -->
-                      <div class=" col-md-12">
-                        <select
-                          class="form-select"
-                          [id]="'exampleDropdown'"
-                          (change)="saveTestForm($event)"                          
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Test</th>
+                    <th>Validity Period</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let test of clientMedicalTestList?.medical_tests">
+                    <td>{{ test["description"] | titlecase }}</td>
+                    <td>
+                      <div class="d-flex justify-content-between">
+                        <div>{{ test["validity_period"] }} Month(s)</div>
+                        <div
+                          class="dropdown-toggle"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
                         >
-                          <option value="" disabled selected></option>
-            
-                          <ng-container *ngFor="let med of medicalTestList">
-                            <option  [value]="med?.code">
-                              {{ med?.desc | titlecase }}
-                            </option>
-                          </ng-container>
-                        </select>
+                          <div>
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <ul
+                              class="dropdown-menu"
+                              style="border: 1px solid rgba(35, 62, 240, 0.59)"
+                            >
+                              <li>
+                                <a
+                                  class="dropdown-item"
+                                  (click)="deleteMedicalTest(test)"
+                                  >Delete</a
+                                >
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
-                      <!-- <div class="col-md-3 justify-content-end">
+                    </td>
+                  </tr>
+
+                  <tr *ngIf="!isTestFormSelected">
+                    <td colspan="2">
+                      <div
+                        (click)="selectTestForm()"
+                        class="py-0 text-primary fw-medium"
+                        style="cursor: pointer"
+                      >
+                        Add Additional Test
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="isTestFormSelected">
+                    <td colspan="2">
+                      <div class="row">
+                        <!-- Dropdown -->
+                        <div class="col-md-12">
+                          <select
+                            class="form-select"
+                            [id]="'exampleDropdown'"
+                            (change)="saveTestForm($event)"
+                          >
+                            <option value="" disabled selected></option>
+
+                            <ng-container *ngFor="let med of medicalTestList">
+                              <option [value]="med?.code">
+                                {{ med?.desc | titlecase }}
+                              </option>
+                            </ng-container>
+                          </select>
+                        </div>
+                        <!-- <div class="col-md-3 justify-content-end">
                         <button (click)="selectTestForm(false)" type="submit" class="btn btn-primary">Save</button>
                         </div> -->
+                      </div>
 
-                  </div>
-            
-                    <!-- Submit button -->
-                    <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
-                </td>
-              </tr>
-              <tr *ngIf="isTestFormSelected">
-                <!-- <td colspan="2">
+                      <!-- Submit button -->
+                      <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                    </td>
+                  </tr>
+                  <tr *ngIf="isTestFormSelected">
+                    <!-- <td colspan="2">
                     <div class="d-flex justify-content-end">
                     <button (click)="selectTestForm(false)" type="submit" class="btn btn-primary">Save Test</button>
                     </div>
                 </td> -->
-              </tr>
-              </tbody>
-            </table>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       <div>
-        <div class="d-flex justify-content-start pt-3 fs-6">Medical Reports</div>
+        <div class="d-flex justify-content-start pt-3 fs-6">
+          Medical Reports
+        </div>
         <div class="row px-4 pt-2">
           <div class="col-md-4 col-sm-12">
             <div class="row py-0">
               <span class="col-md-6 col-sm-12">Medical Test Questionaire</span>
               <span class="text-black col-md-3 col-sm-12 fw-medium"
-                >Share <i class="fa-solid fa-share-nodes"></i></span
-              >
+                >Share <i class="fa-solid fa-share-nodes"></i
+              ></span>
               <span class="text-black col-md-3 col-sm-12 fw-medium"
-                >Preview <i class="fa-regular fa-eye"></i></span
-              >
+                >Preview <i class="fa-regular fa-eye"></i
+              ></span>
             </div>
             <div class="row py-0">
               <span class="col-md-6 col-sm-12">Medical Letter</span>
               <span class="text-black col-md-3 col-sm-12 fw-medium"
-                >Share <i class="fa-solid fa-share-nodes"></i></span
-              >
+                >Share <i class="fa-solid fa-share-nodes"></i
+              ></span>
               <span class="text-black col-md-3 col-sm-12 fw-medium"
-                >Preview <i class="fa-regular fa-eye"></i></span
-              >
+                >Preview <i class="fa-regular fa-eye"></i
+              ></span>
             </div>
           </div>
         </div>
       </div>
-
-
-
     </div>
   </div>
 
   <div class="d-flex justify-content-end pb-4">
-    <button (click)="nextPage()" type="button" class="btn btn-primary " style="font-size: 12px;">Proceed</button>
-</div>
+    <button
+      (click)="nextPage()"
+      type="button"
+      class="btn btn-primary"
+      style="font-size: 12px"
+    >
+      Proceed
+    </button>
+  </div>
 </div>

@@ -1,5 +1,5 @@
 <p-tabView>
-  <p-tabPanel header="Life IND" [selected]="true">
+  <p-tabPanel header="IND Life" [selected]="true">
     <div>
       <div>
         <div>
@@ -48,7 +48,7 @@
             <div class="col-5">
               <div class="d-flex justify-content-end">
                 <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/lms/ind/quotation/quick'">Quick Quotation</button>
-                <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/lms/need-analysis'"> Normal Quotation </button>
+                <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" (click)="selectNormalQuotation()"> Normal Quotation </button>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
               </tr>
             </thead>
             <tbody *ngIf="LMS_IND.length > 0">
-              <tr *ngFor="let lms of LMS_IND">
+              <tr *ngFor="let lms of LMS_IND" style="cursor:pointer" (click)="selectLmsIndRow(lms)">
                 <td>{{ lms?.quote_no || "" }}</td>
                 <td>{{ lms?.quote_no || "" }}</td>
                 <td>{{ lms?.sum_insured || "" | number }}</td>
@@ -97,7 +97,7 @@
       </div>
     </div>
   </p-tabPanel>
-  <p-tabPanel header="Life Group">
+  <p-tabPanel header="Group Life">
     <p>Life Group</p>
   </p-tabPanel>
   <p-tabPanel header="General">

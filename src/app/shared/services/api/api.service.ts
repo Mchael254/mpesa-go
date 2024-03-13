@@ -62,9 +62,40 @@ export class ApiService {
 
   POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null ): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
-    const url = `${this.baseURL}/${endpoint}`;
+    let url = '';
+    if(endpoint===null){
+       url = `${this.baseURL}`;
+    }else{
+       url = `${this.baseURL}/${endpoint}`;
+    }
     const headers = this.getHeaders();
     return this.http.post<T>(url, data, { headers, params:params });
+  }
+
+  public POSTBYTE(endpoint: string, data: any, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params = null): Observable<ArrayBuffer> {
+     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
+    let url = '';
+    if(endpoint===null){
+       url = `${this.baseURL}`;
+    }else{
+       url = `${this.baseURL}/${endpoint}`;
+    }
+    const headers = this.getHeaders();
+    
+    return this.http.post(url, data, { headers, params, responseType: 'arraybuffer' });
+  }
+
+
+  public downloadFile(endpoint: string, data: any): void {
+    this.POST(endpoint, data).subscribe((response: any) => {
+      const blob = new Blob([response], { type: 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'file.pdf'; // Change the file name if needed
+      link.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 
   FILEDOWNLOAD<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<Blob> {
@@ -105,6 +136,16 @@ export class ApiService {
     link.click();
     window['URL'].revokeObjectURL(url);
   }
+
+  public DOWNLOADFROMBYTES(bytes: Uint8Array, fileName='file.pdf', fileType='application/pdf'): void {
+    const blob = new Blob([bytes], { type: fileType });
+    const url = window['URL'].createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window['URL'].revokeObjectURL(url);
+}
 
   FILEUPLOAD<T>(endpoint: string, data: FormData, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);

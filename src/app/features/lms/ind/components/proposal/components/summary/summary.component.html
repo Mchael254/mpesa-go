@@ -25,7 +25,7 @@ name="summary_view"
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Client Name</div>
-              <div class="col-lg-6 col-sm-12">{{ client_info?.name || '-' }}</div>
+              <div class="col-lg-6 col-sm-12">{{ client_info?.firstName | titlecase}} {{ client_info?.lastName| titlecase }}</div>
             </div>
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Product</div>
@@ -39,15 +39,15 @@ name="summary_view"
               <div class="col-lg-6 col-sm-12">Proposal Number</div>
               <div class="col-lg-6 col-sm-12">{{ "AK2569000" }}</div>
             </div> -->
-            <div class="row e">
+            <!-- <div class="row e">
               <div class="col-lg-6 col-sm-12">Cover Types</div>
               <div class="col-lg-6 col-sm-12">
-                <div class="py-2" *ngFor="let item of proposalSummaryData?.quick_quote_covers">{{ coverTypeList | coverType: item?.cover_type_code }}                 {{item?.cover_type_code}}
+                <div class="py-2" *ngFor="let item of proposalSummaryData?.quick_quote_covers">{{ coverTypeList | coverType: item?.cover_type_code }} {{item?.cover_type_code}}
                 </div>
                 
               </div>
               
-            </div>
+            </div> -->
             <div class="row e">
               <div class="col-lg-6 col-sm-12">Term</div>
               <div class="col-lg-6 col-sm-12">{{proposalSummaryData?.policy_term || 0 | number }}</div>

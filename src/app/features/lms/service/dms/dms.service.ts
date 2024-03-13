@@ -28,7 +28,7 @@ export class DmsService {
     return this.api.DELETE(`${this.DMS_BASE_URL}/${code}`,  API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
 
-  private downloadFile(base64Data: string, fileName: string) {
+  downloadFile(base64Data: string, fileName: string) {
     const byteCharacters = atob(base64Data);
     const byteNumbers = new Array(byteCharacters.length);
 

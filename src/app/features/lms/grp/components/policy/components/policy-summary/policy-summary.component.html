@@ -3,24 +3,24 @@
             <div style="padding-top: 20px; text-align: center;"><span class="summary-text">Policy summary</span></div>
             <div style="padding-left: 25px;">Policy details</div>
             <div class="row col-12 mt-1" style="color: black; padding-left: 25px;"
-            *ngFor="let polDets of policyDetails">
+            >
                 <div class="col-md-4 col-xs-12">
                     <table style="width: 100%;">
                         <tr>
                             <td style=" align-items: left; color: grey;">Policy number: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.policy_number }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.policy_number }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Product: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.product_name | titlecase }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.product_name | titlecase }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Status: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.status }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.status }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Effective date: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.effective_date }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.effective_date }}</td>
                         </tr>
                     </table>
                 </div>
@@ -29,20 +29,20 @@
                         <ng-container *ngIf="role !== 'policy-holder' ">
                         <tr>
                             <td style=" align-items: left; color: grey;">Sum assured: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.basic_sum_assured | number }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.basic_sum_assured | number }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Total premium: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.total_premium | number }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.total_premium | number }}</td>
                         </tr>
                     </ng-container>
                         <tr>
                             <td style=" align-items: left; color: grey;">Branch: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.branch_description | titlecase }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.branch_description | titlecase }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Client: </td>
-                            <td class="style-text" style="align-items: right;">{{ polDets.client | titlecase }}</td>
+                            <td class="style-text" style="align-items: right;">{{ policyDetails?.client | titlecase }}</td>
                         </tr>
                     </table>
                 </div>
@@ -50,15 +50,15 @@
                     <table style="width: 100%;">
                         <tr>
                             <td style=" align-items: left; color: grey;">Intermediary: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.agent | titlecase }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.agent | titlecase }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">UW year: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.underwriting_year }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.underwriting_year }}</td>
                         </tr>
                         <tr>
                             <td style=" align-items: left; color: grey;">Currency: </td>
-                            <td class="style-text" style=" align-items: right;">{{ polDets.currency_symbol }}</td>
+                            <td class="style-text" style=" align-items: right;">{{ policyDetails?.currency_symbol }}</td>
                         </tr>
                     </table>
                 </div>
@@ -273,24 +273,24 @@
                 <p-tabPanel header="Members">
                     <ng-container *ngIf="role === 'policy-holder' ">
                         <div class="row col-12 mt-1" style="color: black; padding-left: 25px;"
-                        *ngFor="let polDets of policyDetails">
+                        >
                             <div class="col-md-4 col-xs-12">
                                 <table style="width: 100%;">
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Member number: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.policy_number }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.policy_number }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Main Member number: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.product_name | titlecase }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.product_name | titlecase }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Client: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.status }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.status }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Occupation: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.branch_description | titlecase }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.branch_description | titlecase }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -298,19 +298,19 @@
                                 <table style="width: 100%;">
                                     <tr>
                                         <td style=" align-items: left; color: grey;">ANB: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.basic_sum_assured | number }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.basic_sum_assured | number }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Joint member?: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.total_premium | number }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.total_premium | number }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Dependant type: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.effective_date }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.effective_date }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Member status: </td>
-                                        <td class="style-text" style="align-items: right;">{{ polDets.client | titlecase }}</td>
+                                        <td class="style-text" style="align-items: right;">{{ policyDetails?.client | titlecase }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -318,15 +318,15 @@
                                 <table style="width: 100%;">
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Shedule number: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.agent | titlecase }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.agent | titlecase }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Join Date: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.underwriting_year }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.underwriting_year }}</td>
                                     </tr>
                                     <tr>
                                         <td style=" align-items: left; color: grey;">Category: </td>
-                                        <td class="style-text" style=" align-items: right;">{{ polDets.currency_symbol }}</td>
+                                        <td class="style-text" style=" align-items: right;">{{ policyDetails?.currency_symbol }}</td>
                                     </tr>
                                 </table>
                             </div>

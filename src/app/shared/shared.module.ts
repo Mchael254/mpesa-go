@@ -78,6 +78,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProductPipe } from '../features/lms/pipe/product/product.pipe';
 import { BeneficiaryPipe } from '../features/lms/pipe/beneficiary/beneficiary.pipe';
 import { CoverTypePipe } from '../features/lms/pipe/cover-type/cover-type.pipe';
+import { CountryPipe } from '../features/lms/pipe/country/country.pipe';
 import { RelationTypePipe } from '../features/lms/pipe/relation-type/relation-type.pipe';
 import { Error401Interceptor } from './services/http/error-404.interceptor';
 import { Angular4PaystackModule } from 'angular4-paystack';
@@ -95,13 +96,15 @@ import { ProposalLandingScreenComponent } from './components/proposal-landing-sc
 import { PolicyLandingScreenComponent } from './components/policy-landing-screen/policy-landing-screen.component';
 import { SortPipe } from './pipes/sort/sort.pipe';
 import { FileUploadModule } from 'primeng/fileupload';
+import { PolicyModule } from '../features/lms/grp/components/policy/policy.module';
+import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pipe';
 
 
 
 export function getBaseHref(platformLocation: PlatformLocation): string {
   return platformLocation.getBaseHrefFromDOM();
 }
-const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe, SortPipe];
+const lms_pipes = [BeneficiaryPipe, RelationTypePipe, ProductPipe, CoverTypePipe, DiseasePipe, SortPipe, CountryPipe, NationalityPipe];
 const SERVICES = [
   // services
   { provide: HttpClient, useClass: HttpService },
@@ -220,7 +223,8 @@ const SERVICES = [
         NgbModule,
         Angular4PaystackModule.forRoot('pk_test_0a4f9771cb31dca0d30080264605a86ca6f8e0a2'),
         TabViewModule,
-        FileUploadModule
+        FileUploadModule,
+        PolicyModule,
     ],
     exports: [
         ErrorComponent,
