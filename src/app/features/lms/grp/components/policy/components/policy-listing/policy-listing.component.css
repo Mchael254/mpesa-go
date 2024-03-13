@@ -1,8 +1,12 @@
+.main {
+  padding: 40px;
+  height: 100%;
+}
 .container {
-    width: 1216px;
-    height: 584px;
-    flex-shrink: 0;
-    background: #FFF;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  background: #FFF;
 }
 
 /* search form and select column dropdown begins */

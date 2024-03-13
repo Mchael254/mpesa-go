@@ -14,6 +14,9 @@ import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { switchMap } from 'rxjs';
 import { MedicalsService } from 'src/app/features/lms/service/medicals/medicals.service';
+import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
+import { Utils } from 'src/app/features/lms/util/util';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -42,7 +45,10 @@ export class TestsComponent  implements OnInit{
   date_full = new Date();
   isTestFormSelected: boolean;
   medicalTestList: any[];
-  clientMedicalTestList: any;
+  clientMedicalTestList: any = {};
+  util: Utils;
+  policySummaryDetails: any = {};
+  testForm: FormGroup;
 
   constructor(private router:Router,  
     private session_service: SessionStorageService, 
@@ -53,60 +59,86 @@ export class TestsComponent  implements OnInit{
     private spinner_service:NgxSpinnerService,
     private cover_type_service: CoverTypeService,
     private medical_service: MedicalsService,
-    private toast_service: ToastService
-    ){}
+    private toast_service: ToastService,
+    private policies_service: PoliciesService,
+    private fb:FormBuilder
+    ){
+      this.util = new Utils(this.session_service);
+    }
 
   ngOnInit(): void {
     this.quotation_details = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS));
     this.medicalSummaryResults();
     this.getClientMedicalTest();
-    this.getPolMedicalTest()
+    this.getPolMedicalTest();
+
+    this.testForm = this.fb.group({
+      lien:['N']
+    })
   }
 
 
 
   medicalSummaryResults(){
+    this.spinner_service.show('medical_view');
+    
     this.product_service
     .getProductByCode(this.quotation_details['product_code'])
     .pipe(switchMap((product_res:any)=>{
+      // this.spinner_service.hide('medical_view');
       this.product = product_res
       console.log(this.product);
+      let pol_code = this.util.getPolCode();
+      let endr_code = this.util.getEndrCode();
       
-      return this.quotation_service
-      .getLmsIndividualQuotationWebQuoteByCode(this.quotation_details['code'])
+      // return this.quotation_service
+      // .getLmsIndividualQuotationWebQuoteByCode(this.quotation_details['code'])
+      return this.policies_service.listPolicySummaryByPolCodeAndEndrCode(pol_code, endr_code)
     }))
     
-    .subscribe((web_quote_res:any) => {
-      this.quotation_details = web_quote_res
+    .subscribe((policy_summary:any) => {
+      // this.quotation_details = web_quote_res
+      this.policySummaryDetails = policy_summary
+      console.log(policy_summary);
+      this.spinner_service.hide('medical_view');
+    }, (err: any) =>{
+      this.spinner_service.hide('medical_view');
 
-      console.log(web_quote_res);
-      
-
-    }, (err: any) =>{})
+    })
   }
 
   getClientMedicalTest(){
+    this.spinner_service.show('test_view');
     this.medical_service.getListOfClientMedicalTests().subscribe((data:any[]) =>{
-      this.clientMedicalTestList = data[0]
-      console.log(data);
+      this.clientMedicalTestList = data[0];
+      this.spinner_service.hide('test_view');
+      this.toast_service.success('Fetch Record Successfully', 'MEDICAL TESTS');
+
+
+      // console.log(data);
       
     })
   }
 
   getPolMedicalTest(){
     this.medical_service.getListOfTests(1).subscribe((data:any[]) =>{
-      this.medicalTestList = data
+      this.medicalTestList = data;
+      this.toast_service.success('Fetch Record Successfully', 'MEDICAL TESTS');
+
       console.log(data);
       
     })
   }
 
   deleteMedicalTest(test: any){
+    this.spinner_service.show('test_view');
     let cml_code = test?.cml_code===undefined? 0 : test?.cml_code;
     this.medical_service.deleteClientMedicalTest(cml_code).subscribe(data => {
-      console.log(data);
-      
-    })
+      this.toast_service.success('Delete Record Successfully', 'MEDICAL TESTS');
+      this.clientMedicalTestList['medical_tests'] = this.clientMedicalTestList?.medical_tests.filter((data: any) => data['cml_code']!=cml_code); 
+      this.spinner_service.hide('test_view');
+     
+    });
   }
 
   selectTestForm(status=true){
@@ -116,11 +148,13 @@ export class TestsComponent  implements OnInit{
   }
 
   saveTestForm(status: any){
+    this.spinner_service.show('test_view');
     let mtl_code = StringManipulation.returnNullIfEmpty(status.target.value);
-    let pol_code = StringManipulation.returnNullIfEmpty(status.target.value);
-    let endr_code = StringManipulation.returnNullIfEmpty(status.target.value); 
+    let pol_code = this.util.getPolCode();
+    let endr_code = this.util.getEndrCode(); 
 
     console.log(pol_code);
+    console.log(status);
 
     let testValue = {
       "pol_code": pol_code,
@@ -132,17 +166,27 @@ export class TestsComponent  implements OnInit{
     this.medical_service.saveClientMedicalTest(testValue).subscribe(data =>{
 
       console.log(data);
-      
+      this.isTestFormSelected = false;
+      this.toast_service.success('Save Record Successfully', 'MEDICAL TESTS');
 
+      // this.toast_service.success('Delete Record Successfully', 'MEDICAL TESTS');
+      // this.clientMedicalTestList['medical_tests'] = this.clientMedicalTestList?.medical_tests.filter((data: any) => data['cml_code']!=cml_code);      
+
+      this.getClientMedicalTest();
     },
     err =>{
       this.toast_service.danger(err?.message, 'Data Not Found')
     })
     
-    this.isTestFormSelected = true;
   }
   nextPage(){
+    
+    if(this.testForm.get('lien').value==='Y'){
+      this.router.navigate(['/home/lms/ind/policy/underwriting']);
+      return;
+    }
     this.router.navigate(['/home/lms/medicals/result-processing'])
+
   }
 
 }

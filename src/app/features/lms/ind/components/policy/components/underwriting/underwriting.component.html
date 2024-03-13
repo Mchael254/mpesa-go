@@ -105,7 +105,7 @@
         <p-tabMenu [model]="items" [activeItem]="activeItem">
           <ng-template pTemplate="item" let-item>
             <div>
-              <span style="color: black"> {{ item.label }}</span>
+              <span style="color: black; padding-right:1rem; cursor: pointer;"> {{ item.label }}</span>
             </div>
           </ng-template>
         </p-tabMenu>
@@ -270,22 +270,62 @@
               Beneficiary(ies) & trustee(s)
               </div>
               <div class="row">
+                <div *ngFor="let item of policyBeneficiaries" class="row col-6">
+                  <!-- {{item | json}} -->
+                  <div class="row pt-2">
+                    <div class="col-6 text-black-50">Name:</div>
+                    <div class="col-6 text-black fw-medium"> {{item?.beneficiary_info['first_name'] +' '+ item?.beneficiary_info['other_name'] | titlecase }} </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 text-black-50">Benefit proportion:</div>
+                    <div class="col-6 text-black fw-medium">{{item['percentage_benefit'] || 0 | number}}% </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 text-black-50">Date of birth:</div>
+                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['date_of_birth'] | date: 'dd/mm/YYYY'}}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 text-black-50">Relation:</div>
+                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['relation_code'] }}</div>
+                  </div>
+                  <!-- <div class="row">
+                    <div class="col-6 text-black-50">Gender:</div>
+                    <div class="col-6 text-black fw-medium">{{item['gender']==='M'?'Male': 'Female' | titlecase}}</div>
+                  </div> -->
+                  <div class="row">
+                    <div class="col-6 text-black-50">Type:</div>
+                    <div class="col-6 text-black fw-medium"> {{item['type']==='B'? 'Beneficiary':'Trustee' | titlecase}}</div>
+                  </div>
+                </div>
+
+                <div class=" pt-2" *ngIf="policyDependents?.length===0" style="color: red;">
+                  No Beneficiary(ies) Or trustee(s) Available!!
+                </div>
+              </div>
+
+
+            </div>
+            <div>
+              <div class="col-12">
+              <div
+                class="col-12"
+                style="
+                  color: var(--primary-color);
+                  font-weight: 500;
+                  border-bottom: solid 2px var(--primary-color);
+                "
+              >
+              Dependant(s)
+              </div>
+              <div class="row">
                 <div *ngFor="let item of policyDependents" class="row col-6">
                   <div class="row pt-2">
                     <div class="col-6 text-black-50">Name:</div>
                     <div class="col-6 text-black fw-medium"> {{item['surname'] +' '+ item['other_names'] | titlecase }} </div>
                   </div>
                   <div class="row">
-                    <div class="col-6 text-black-50">Benefit proportion:</div>
-                    <div class="col-6 text-black fw-medium">{{item['percentage'] || 0 | number}}% </div>
-                  </div>
-                  <div class="row">
                     <div class="col-6 text-black-50">Date of birth:</div>
                     <div class="col-6 text-black fw-medium">{{item['date_of_birth'] | date: 'dd/mm/YYYY'}}</div>
-                  </div>
-                  <div class="row">
-                    <div class="col-6 text-black-50">Relation:</div>
-                    <div class="col-6 text-black fw-medium">{{'-'}}</div>
                   </div>
                   <div class="row">
                     <div class="col-6 text-black-50">Gender:</div>
@@ -303,7 +343,8 @@
               </div>
 
 
-            </div></div>
+            </div>
+          </div>
           </div>
           <div class="pt-2">
             <div>

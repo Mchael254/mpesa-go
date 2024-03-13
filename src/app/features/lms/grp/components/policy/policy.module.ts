@@ -31,6 +31,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     RadioButtonModule,
     AccordionModule,
     MultiSelectModule,
-  ]
+  ],
+  exports: [PolicyListingComponent]
 })
 export class PolicyModule { }

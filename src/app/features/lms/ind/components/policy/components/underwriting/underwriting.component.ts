@@ -8,7 +8,9 @@ import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { Utils } from 'src/app/features/lms/util/util';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-underwriting',
@@ -28,6 +30,9 @@ export class UnderwritingComponent implements OnInit {
   documentList: any[] = [];
   endorsementCoverTypeList: any[] = [];
   policyDependents: any[];
+  policyBeneficiaries: any[];
+
+  util: Utils;
 
   constructor(private policies_service: PoliciesService, 
     private spinner_service: NgxSpinnerService, 
@@ -36,7 +41,10 @@ export class UnderwritingComponent implements OnInit {
     private endorsement_service: EndorsementService,
     private dms_service: DmsService,
     private party_service: PartyService,
-    private session_storage_service: SessionStorageService) {}
+    private toast_service: ToastService,
+    private session_storage_service: SessionStorageService) {
+      this.util = new Utils(this.session_storage_service);
+    }
 
   ngOnInit() {
     this.items = [
@@ -67,13 +75,16 @@ export class UnderwritingComponent implements OnInit {
     this.getDocumentsByClientId();
     this.listCoverTypesByEndrCode();
     this.getListPolicyDependents();
+    this.getListPolicyBeneficiaries();
 
   }
 
   listPolicySummaryByPolCodeAndEndrCode() {
     this.spinner_service.show('underwriting');
+    let pol_code = this.util.getPolCode();
+      let endr_code = this.util.getEndrCode();
     this.policies_service
-      .listPolicySummaryByPolCodeAndEndrCode()
+      .listPolicySummaryByPolCodeAndEndrCode(pol_code, endr_code)
       .subscribe((data) => {        
         this.policyUnderwritingSummary = data
         this.policyUnderwritingSummary['endr_pay_method'] = this.getPaymentMethod(this.policyUnderwritingSummary['endr_pay_method']);
@@ -89,7 +100,7 @@ export class UnderwritingComponent implements OnInit {
   listCoverTypesByEndrCode() {
     // this.spinner_service.show('underwriting');
     this.endorsement_service
-      .listCoverTypesByEndrCode()
+      .listCoverTypesByEndrCode(this.util.getEndrCode())
       .subscribe((data: any[]) => {
         this.endorsementCoverTypeList = data;
         
@@ -111,20 +122,31 @@ export class UnderwritingComponent implements OnInit {
   }
   
   getListPolicyDependents(){
-    this.party_service.getListPolicyDependents().subscribe((data: any[]) =>{
+    this.party_service.getListPolicyDependents(this.util.getEndrCode()).subscribe((data: any[]) =>{
       this.policyDependents = data;
+      console.log(data);
+      
+    })
+  }
+  getListPolicyBeneficiaries(){
+    this.party_service.getListOfDependentByQuotationCode(this.util.getPolCode(), this.util.getEndrCode()).subscribe((data: any[]) =>{
+      this.policyBeneficiaries = data;
       console.log(data);
       
     })
   }
 
   authorizePolicy(){
-    let end_code =this.session_storage_service.getItem(SESSION_KEY.ENDR_CODE);
-    this.endorsement_service.authorizePolicy(end_code)
-    // .subscribe(data =>{
-    //   console.log(data);
+    this.endorsement_service.authorizePolicy(this.util.getEndrCode())
+    .subscribe(data =>{
+      console.log(data);
       
-    // })
+    }, 
+    err => {
+      console.log(err['error']['errors'][0]);
+      
+      this.toast_service.danger(err['error']['errors'][0], 'POLICY UNDERWRITING AUTORIZATION')
+    })
   }
   rejectQuote(){
     let val = {...this.rejectForm.value};
@@ -137,8 +159,7 @@ export class UnderwritingComponent implements OnInit {
   }
 
   getDocumentsByClientId(){
-    let client_code = this.session_storage_service.get(SESSION_KEY.CLIENT_CODE);
-    this.dms_service.getClientDocumentById(client_code)
+    this.dms_service.getClientDocumentById(this.util.getClientCode())
     .subscribe(data =>{
       this.documentList = data['content']
     });

@@ -1,0 +1,117 @@
+.main {
+    padding: 40px;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 200px;
+    background-color: white;
+    padding: 40px;
+}
+
+.progress-btn:hover {
+    background: #9ecbf2;
+}
+
+.centered-table {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.info-box {
+    width: calc(35% - 100px);
+    min-height: 200px;
+    background-color: white;
+    box-sizing: border-box;
+    margin-right: 150px;
+    border: 1px solid #ebeaea;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.rounded-btn {
+    display: inline-block;
+    border: none;
+    border-radius: 50%;
+    background-color: #eae8e8;
+    padding: 20px;
+}
+
+.progress-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #00529B;
+    border-radius: 4px;
+    height: 40px;
+}
+
+.button-text {
+    color: #FFF;
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    font-size: 14px;
+}
+
+.info-label {
+    font-size: 16px;
+    color: black;
+}
+
+.info-number {
+    font-size: 50px;
+    color: black;
+    font-weight: 500;
+}
+
+.dashboard-title {
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+@media screen and (max-width: 1200px) {
+    .info-box {
+         width: 100%;
+        
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+        padding: 10px 10px 20px 10px;
+    }
+
+    .main {
+        padding: 10px;
+        height: auto;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .info-box {
+        width: 100%;
+    }
+
+    .container {
+        padding: 10px 10px 20px 10px;
+        width: 100%;
+        height: auto;
+    }
+
+    .main {
+        padding: 10px;
+        height: auto;
+    }
+}
