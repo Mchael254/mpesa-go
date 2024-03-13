@@ -45,9 +45,7 @@ import {
 import { BankService } from '../../../../../../../shared/services/setups/bank/bank.service';
 import { CurrencyService } from '../../../../../../../shared/services/setups/currency/currency.service';
 import { OccupationService } from '../../../../../../../shared/services/setups/occupation/occupation.service';
-import { OccupationDTO } from '../../../../../../../shared/data/common/occupation-dto';
 import { SectorService } from '../../../../../../../shared/services/setups/sector/sector.service';
-import { SectorDTO } from '../../../../../../../shared/data/common/sector-dto';
 import { ToastService } from '../../../../../../../shared/services/toast/toast.service';
 import { PartyService } from '../../../../../service/party/party.service';
 import { RelationTypesService } from '../../../../../service/relation-types/relation-types.service';
@@ -103,6 +101,7 @@ export class PersonalDetailsComponent implements OnInit {
   getFormControlsNameWithErrors: string[] = [];
   identityFormatDesc: { id: number; exampleFormat: string };
   minDate = DataManipulation.getMinDate();
+  util: Utils;
 
   constructor(
     private session_storage: SessionStorageService,
@@ -140,9 +139,11 @@ export class PersonalDetailsComponent implements OnInit {
     this.getBranchList();
     this.getBankList();
     let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
-    if(quote){
+    if(quote&&quote['client_code']){
       this.getClientById(quote['client_code']);
     }
+
+    this.util = new Utils(this.session_storage);
   }
 
   formValidation() {
@@ -165,13 +166,30 @@ export class PersonalDetailsComponent implements OnInit {
       });
   }
 
+  isTelQuoteOrWebQuote(){
+    let type = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
+    if(type){
+      return this.util.isTelQuoteOrWebQuote(type['page'])
+    }else{
+      this.toast.danger('Invalid route', 'ROUTE GUARD')
+      this.router.navigate(['home/lms/quotation/list']);
+    }
+  }
+
   getIdentityType() {
     return this.identity_service.getIdentityType();
   }
 
   selectDraft(draft: any) {
     this.session_storage.set(SESSION_KEY.WEB_QUOTE_DETAILS, draft);
-    this.toast.success('successfully selected web quote', "WEB QUOTATION SELECTED");
+    let quote= this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
+    quote['client_code'] = draft['client_code'];
+    quote['account_code'] =draft['account_code'];
+    quote['web_quote_code'] = draft['code'];
+    quote['proposal_no'] = draft['proposal_no'];
+    quote['tel_quote_code'] = draft['quote_no'];
+    this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
+    this.toast.success('Quote successfully selected', "WEB QUOTATION SELECTED");
     this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
 
   }
@@ -205,12 +223,19 @@ export class PersonalDetailsComponent implements OnInit {
         ),
     ]);
     identityNoControl.updateValueAndValidity();
+    this.checkError();
+  }
+
+  checkErrorThatsTouchedAndDirty(formName = 'modeOfIdentityNumber', errorName = 'incorrectFormat') {
+    return (
+      this.clientForm.get(formName).touched &&
+      this.clientForm.get(formName).dirty &&
+      this.clientForm.get(formName).errors?.[errorName]
+    );
   }
 
   checkError(formName = 'modeOfIdentityNumber', errorName = 'incorrectFormat') {
     return (
-      this.clientForm.get(formName).touched &&
-      this.clientForm.get(formName).dirty &&
       this.clientForm.get(formName).errors?.[errorName]
     );
   }
@@ -299,7 +324,7 @@ export class PersonalDetailsComponent implements OnInit {
     return this.fb.group({
       id: [],
       modeOfIdentity: this.getControlConfig('MODE_OF_IDENTITY'),
-      modeOfIdentityId: this.getControlConfig('MODE_OF_IDENTITY'),  
+      modeOfIdentityId: [],  
       countryId: this.getControlConfig('COUNTRY_ID'),
       firstName: this.getControlConfig('FIRST_NAME'),
       lastName: this.getControlConfig('LAST_NAME'),
@@ -377,7 +402,7 @@ export class PersonalDetailsComponent implements OnInit {
       this.clientForm.get('modeOfIdentityNumber').patchValue(data['idNumber']);
       this.clientForm.get('countryId').patchValue(data['country']);
       this.clientForm.get('pinNumber').patchValue(data['pinNumber']);
-      this.clientForm.get('modeOfIdentityId').patchValue(data['modeOfIdentity']);
+      // this.clientForm.get('modeOfIdentityId').patchValue(data['modeOfIdentity']);
       this.clientForm.get('contactDetails').get('branchId').patchValue(data['branchCode']);
       this.clientForm.get('contactDetails').get('emailAddress').patchValue(data['emailAddress']?.toLocaleLowerCase());
       this.clientForm.get('contactDetails').get('phoneNumber').patchValue(data['phoneNumber']);
@@ -537,7 +562,7 @@ export class PersonalDetailsComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
-    this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
+    // this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
   }
 
   getFormControlsWithErrors(formGroup: FormGroup): string[] {
@@ -578,47 +603,55 @@ export class PersonalDetailsComponent implements OnInit {
 
     } else {
       let client_sub = this.generateOutObjectFromClientForm(this.clientForm);
-      // console.log(client_sub);
+      console.log(client_sub);
       
-      // this.crm_client_service
-      //   .save(client_sub)
-        of({'code':7373638383})
+      this.crm_client_service
+        .save(client_sub)
+        // of({'code':7373638383})
+        // of({'code':2323235976681})
         .pipe(
           concatMap((client_res) => {
             console.log(client_res);
             this.session_storage.set(SESSION_KEY.CLIENT_DETAILS, client_res);
-            quote['client_code'] = client_res['code'];
+            quote['client_code'] = client_res['id'];
             this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
             this.toast.success(
               'Create Client Details Successfully!',
               'Client Details'
             );
-            return 
-            return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['code']);
+            // return 
+            return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['id']);
           }),
           finalize(() =>{this.spinner_Service.hide('client_details_view');})
         )
         .subscribe(
           (data: any) => {
             console.log(data);
+            this.toast.success(
+              'fetch Existing Drafts Successfully!',
+              'Client Details'
+            );
             this.spinner_Service.hide('client_details_view');
-            this.draftList =[ 
-              {}, {} 
-            ]
-            //  data['content']
-            // ?.filter((data: any)=> data?.proposal_no===null);
+            this.draftList =
+            // [ 
+            //   {}, {} 
+            // ]
+             data['content']
+            ?.filter((data: any)=> data?.proposal_no===null);
 
-            if (this.draftList.length > 0) {
+            if (this.draftList.length > 0&&this.util.returnTelQuoteOrWebQuote()==='NEW') {
               this.openModal('draft');
               return;
             }
-            this.router.navigate(['/home/lms/ind/quotation/insurance-history']);
+            this.router.navigate(['/home/lms/ind/quotation/documents-upload']);
           },
           (err: any) => {
             // console.log(err);
             this.spinner_Service.hide('client_details_view');
             // console.log(err);
-            this.toast.danger('Unable to Create Client Record!', 'CLIENT CREATION')
+            // this.toast.danger('Unable to Create Client Record!', 'CLIENT CREATION');
+            this.toast.danger(err?.error?.errors[0], 'QUOTATION CREATION/UPDATE');
+
           }
         );
     }
@@ -626,7 +659,12 @@ export class PersonalDetailsComponent implements OnInit {
 
   generateOutObjectFromClientForm(clientForm: FormGroup): any {
     let mode = this.identifierTypeList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('modeOfIdentity').value));
-    let branch = this.branchList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('branchId').value));
+    console.log(clientForm.get('contactDetails').get('branchId').value);
+    
+    let branch = this.branchList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(
+      clientForm.get('contactDetails').get('branchId').value
+      ));
+
     mode = mode?mode:{'id':null, 'name': null};
     branch = mode?mode:{'id':null, 'name': null};
     
@@ -668,8 +706,7 @@ export class PersonalDetailsComponent implements OnInit {
       effectiveDateTo: clientForm.get('paymentDetails').get('effective_to_date').value,
       category: clientForm.get('category').value,
       status: clientForm.get('status').value,
-      branchId: 233,
-      // StringManipulation.returnNullIfEmpty(clientForm.get('contactDetails').get('branchId').value),
+      branchId: StringManipulation.returnNullIfEmpty(clientForm.get('contactDetails').get('branchId').value),
       countryId: StringManipulation.returnNullIfEmpty(clientForm.get('countryId').value),
       townId: StringManipulation.returnNullIfEmpty(clientForm.get('townId').value),
       stateId: StringManipulation.returnNullIfEmpty(clientForm.get('stateId').value),
@@ -679,7 +716,7 @@ export class PersonalDetailsComponent implements OnInit {
       proposerCode: StringManipulation.returnNullIfEmpty(clientForm.get('proposerCode').value),
       dateCreated: new Date(),
       contactDetails: {
-        id: clientForm.get('contactDetails').get('id').value,
+        id: clientForm.get('contactDetails').get('id').value | 0,
         emailAddress: clientForm.get('contactDetails').get('emailAddress')
           .value,
         phoneNumber: clientForm.get('contactDetails').get('phoneNumber').value,
@@ -691,7 +728,7 @@ export class PersonalDetailsComponent implements OnInit {
         accountId: null,
       },
       paymentDetails: {
-        id: clientForm.get('paymentDetails').get('id').value,
+        id: clientForm.get('paymentDetails').get('id').value | 0,
         account_number: clientForm.get('paymentDetails').get('account_number')
           .value,
         bank_branch_id: StringManipulation.returnNullIfEmpty(clientForm.get('paymentDetails').get('bank_branch_id')
@@ -711,7 +748,7 @@ export class PersonalDetailsComponent implements OnInit {
           .value,
       },
       wealthDetails: {
-        id: clientForm.get('wealthDetails').get('id').value,
+        id: clientForm.get('wealthDetails').get('id').value | 0,
         citizenship_country_id: clientForm
           .get('wealthDetails')
           .get('citizenship_country_id').value,
@@ -734,7 +771,7 @@ export class PersonalDetailsComponent implements OnInit {
       },
       nextOfKinDetailsList: null,
       branchName: branch?.name,
-      clientTypeId: 13,
+      clientTypeId: 21,
       organizationId: 2
     };
   }

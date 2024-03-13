@@ -22,11 +22,43 @@ export class MedicalsService {
     return this.api.GET<any>(`${this.MEDICALS_BASE_URL}/clients-medicals?pol_code=${pol_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
+
+
   deleteClientMedicalTest(cml_code=2024462214){
-    return this.api.DELETE<any>(`${this.MEDICALS_BASE_URL}/client-medical-test/${cml_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+    return this.api.DELETE<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests/${cml_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+
 
   saveClientMedicalTest(test:{}){
     return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  updateClientMedicalTest(test:{}){
+    return this.api.PUT<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  downloadMedicalTestFile(rpt_code: number){
+    let payload = {
+      "rpt_code": 329560,
+      "system": "ORD",
+      "report_format": "PDF",
+      "encode_format": "RAW",
+      "params": [
+          {
+              "name": "V_USER",
+              "value": "LMSADMIN"
+          },
+          {
+              "name": "V_ENDR_CODE",
+              "value": "2024618146"
+          },
+          {
+              "name": "V_PRP_CODE",
+              "value": "2023317740"
+          }
+      ]
+  }
+    return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
   }
 }

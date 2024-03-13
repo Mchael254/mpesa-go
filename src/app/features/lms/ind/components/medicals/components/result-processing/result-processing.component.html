@@ -14,16 +14,17 @@
       Medical Underwriting
     </div>
     <div>
-      <div>
+      <div style="position: relative">
+        <ngx-spinner [name]="'medical_test_results_view'" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
+          bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
         <div class="d-flex justify-content-start pt-3 fs-6">
           Capture Medical Test Results
         </div>
-        <div class="row pt-0" *ngIf="diseases?.length>0">
+        <div class="row pt-0" *ngIf="diseases?.length > 0" >
+
+
           <div class="accordion accordion-flush" [id]="dynamicAccordionId">
-            <div
-              class="accordion-item"
-              *ngFor="let disease of diseases; let i = index"
-            >
+            <div class="accordion-item" *ngFor="let form of diseaseForms; let i = index">
               <h2 class="accordion-header" [id]="'flush-heading' + i">
                 <button
                   class="accordion-button collapsed fs-7 fw-medium text-black"
@@ -33,7 +34,7 @@
                   aria-expanded="false"
                   [attr.aria-controls]="'flush-collapse' + i"
                 >
-                  {{ disease.description | titlecase}}
+                  {{ diseases[i].description | titlecase }}
                 </button>
               </h2>
               <div
@@ -43,147 +44,101 @@
                 data-bs-parent="#accordionFlushExample"
               >
                 <div class="accordion-body">
-                  <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <div class="row p-0">
-                        <div class="w-75">
-                          <div><label for="yes">Checked?</label></div>
-                          <span class="form-check form-check-inline">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              id="yes"
-                              value="Y"
-                            />
-                            <label class="form-check-label text-black" for="yes"
-                              >Yes</label
-                            >
-                          </span>
-                          <span class="form-check form-check-inline">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              id="no"
-                              value="N"
-                            />
-                            <label class="form-check-label text-black" for="no"
-                              >No</label
-                            >
-                          </span>
-                          <span class="form-check form-check-inline">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              id="exempted"
-                              value="E"
-                            />
-                            <label
-                              class="form-check-label text-black"
-                              for="exempted"
-                              >Exempted</label
-                            >
-                          </span>
+                  <form [formGroup]="form" (ngSubmit)="onSubmit(i)">
+                    <div class="row">
+                      <!-- <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="checked">Checked?</label>
+                        <input type="checkbox" formControlName="checked" />
+                      </div> -->
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="row p-0">
+                          <div class="w-75">
+                            <div><label for="yes">Checked?</label></div>
+                            <span class="form-check form-check-inline">
+                              <input
+                                class="form-check-input"
+                                type="radio"
+                                id="yes"
+                                formControlName="checked"
+                                value="Y"
+                              />
+                              <label class="form-check-label text-black" for="yes"
+                                >Yes</label
+                              >
+                            </span>
+                            <span class="form-check form-check-inline">
+                              <input
+                                class="form-check-input"
+                                type="radio"
+                                id="no"
+                                formControlName="checked"
+                                value="N"
+                              />
+                              <label class="form-check-label text-black" for="no"
+                                >No</label
+                              >
+                            </span>
+                            <span class="form-check form-check-inline">
+                              <input
+                                class="form-check-input"
+                                type="radio"
+                                id="exempted"
+                                formControlName="checked"
+                                value="E"
+                              />
+                              <label
+                                class="form-check-label text-black"
+                                for="exempted"
+                                >Exempted</label
+                              >
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="false">
-                      <label for="email" class="required">Remarks</label>
-                      <input type="text" class="form-control" [id]="'email'" />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <div>
-                        <label class="required">Checked Date</label>
-                        <div>
-                          <p-calendar
-                            ngDefaultControl
-                            dateFormat="dd/mm/yy"
-                            [showIcon]="true"
-                            [showButtonBar]="true"
-                          >
-                          </p-calendar>
-                        </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="checkedDate">Checked Date</label>
+                        <input type="text" class="form-control" formControlName="cheque_date" />
                       </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="facilitator" class="required"
-                        >Facilitator</label
-                      >
-                      <select class="form-select" [id]="'facilitator'">
-                        <option value="" disabled selected>
-                          Select Facilitator
-                        </option>
-
-                        <!-- <ng-container *ngFor="let title of clientTitleList$ | async">
-                                <option [value]="title['id']">
-                                  {{ title["shortDescription"] | titlecase }}
-                                </option>
-                              </ng-container> -->
-                      </select>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="limit_amount" class="required"
-                        >Limit amount</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        [id]="'limit_amount'"
-                      />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="invoice_amount" class="required"
-                        >Invoice amount</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        [id]="'invoice_amount'"
-                      />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="payable_amount" class="required"
-                        >Payable amount</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        [id]="'payable_amount'"
-                      />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="invoice_no" class="required"
-                        >Invoice No.</label
-                      >
-                      <input
-                        type="text"
-                        class="form-control"
-                        [id]="'invoice_no'"
-                      />
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <div>
-                        <label class="required">Invoice Date</label>
-                        <div>
-                          <p-calendar
-                            ngDefaultControl
-                            dateFormat="dd/mm/yy"
-                            [showIcon]="true"
-                            [showButtonBar]="true"
-                          >
-                          </p-calendar>
-                        </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="facilitator">Facilitator</label>
+                        <input type="text" class="form-control" formControlName="facilitator" />
                       </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="limitAmount">Limit Amount</label>
+                        <input type="text" class="form-control" formControlName="limit" />
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="invoiceAmount">Invoice Amount</label>
+                        <input type="text" class="form-control" formControlName="claim_amt" />
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="payableAmount">Payable Amount</label>
+                        <input type="text" class="form-control" formControlName="payable_amt" />
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="invoiceNo">Invoice No.</label>
+                        <input type="text" class="form-control" formControlName="invoice_no" />
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="invoiceDate">Invoice Date</label>
+                        <input type="text" class="form-control" formControlName="invoice_date" />
+                      </div>
+                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        <label for="remarks">Remarks</label>
+                        <input type="text" class="form-control" formControlName="remarks" />
+                      </div>
+                      <!-- Add more input fields for other form controls -->
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12">
-                      <label for="email" class="required">Remarks</label>
-                      <input type="text" class="form-control" [id]="'email'" />
+                    <div class="d-flex justify-content-end">
+                      <button type="submit" class="btn btn-primary">Save</button>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        
         <div class="row pt-2 px-3 text-danger" *ngIf="diseases?.length===0">
           No Medical Test Results Available
         </div>
@@ -193,16 +148,11 @@
         <div class="d-flex justify-content-start pt-3 fs-6">Documents</div>
         <div class="row px-4 pt-2">
           <div class="col-lg-7 col-md-6 col-sm-12 w-50">
-            <div class="row py-0">
-              <span class="col-lg-6 col-md-12 col-sm-12 col-xs-12">Medical Test Questionaire</span>
-              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" >Share <i class="fa-solid fa-share-nodes"></i></span>
-              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" >Preview <i class="fa-regular fa-eye"></i></span>
+            <div class="row py-2" *ngFor="let item of getListOfMedicalDocuments()">
+              <span class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
+              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Share <i class="fa-solid fa-share-nodes"></i></span>
+              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Preview <i class="fa-regular fa-eye"></i></span>
             </div>
-            <div class="row py-0">
-                <span class="col-lg-6 col-md-12 col-sm-12 col-xs-12">Medical Letter</span>
-                <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" >Share <i class="fa-solid fa-share-nodes"></i></span>
-                <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" >Preview <i class="fa-regular fa-eye"></i></span>
-              </div>
           </div>
         </div>
       </div>

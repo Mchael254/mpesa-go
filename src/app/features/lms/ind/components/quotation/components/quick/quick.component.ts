@@ -57,6 +57,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.session_storage.clear_store();
     this.quickForm = this.fb.group({
       date_of_birth: [''],
       gender: [],
@@ -292,9 +293,14 @@ export class QuickComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          (prem) => {            
-            this.session_storage.set(SESSION_KEY.QUICK_QUOTE_DETAILS, prem);
+          (prem) => {     
+            console.log(prem);
 
+            let quote: {} = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
+            quote = quote===null?{}:quote;
+            quote['quick_quote_code'] = prem?.quote_code;
+            quote['page'] = 'TEL';
+            this.session_storage.set(SESSION_KEY.QUOTE_DETAILS, quote);
             this.quickQuoteSummary.mutate((da: any) => {
               da['prem_result'] = prem['premium'];
               da['quote_code'] = prem['quote_code'];
@@ -348,13 +354,6 @@ export class QuickComponent implements OnInit, OnDestroy {
       modal.classList.remove('show');
       modal.setAttribute('aria-hidden', 'true');
     }
-  }
-
-  nextPage() {
-    this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
-    timer(1000).subscribe(() => {
-      this.route.navigate(['/home/lms/ind/quotation/client-details']);
-    });
   }
 
   closePage() {
@@ -416,6 +415,13 @@ export class QuickComponent implements OnInit, OnDestroy {
 
     }
 
+  }
+
+  nextPage() {
+    this.toast.success('QUOTATION (DATA ENTRY)', 'NEXT SCREEN');
+    timer(1000).subscribe(() => {
+      this.route.navigate(['/home/lms/ind/quotation/client-details']);
+    });
   }
 
   ngOnDestroy(): void {
