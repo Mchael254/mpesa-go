@@ -76,7 +76,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No currency detail's found.</td>
+                  <td colspan="8">No currency detail found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -163,7 +163,13 @@
                   </td>
                   <td class="body">{{ formatDate(rate.withEffectToDate) }}</td>
                   <td class="body">{{ rate.preparedBy }}</td>
-                  <td class="body">{{ rate.date }}</td>
+                  <td
+                    class="body"
+                    pTooltip="{{ rate.date }}"
+                    tooltipPosition="top"
+                  >
+                    {{ sliceString(rate.date) }}
+                  </td>
                   <td class="body">{{ rate.authorizedBy }}</td>
                   <td class="body">{{ formatDate(rate.authorizedDate) }}</td>
                   <td class="body">{{ rate.authorized }}</td>
@@ -171,7 +177,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No exchange rate's found.</td>
+                  <td colspan="8">No exchange rate found.</td>
                 </tr>
               </ng-template>
             </p-table>

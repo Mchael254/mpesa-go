@@ -167,57 +167,6 @@
                 </div>
               </div>
             </ng-container>
-            <!-- <ng-container *ngIf="visibleStatus.administrativeUnit === 'Y'">
-              <div class="col-sm-4 mb-4">
-                <div class="form-group mb-4">
-                  <label for="administrativeUnit" class="form-label"
-                    >Administrative Unit</label
-                  >
-                  <select
-                    #adminSelect
-                    id="administrativeUnit"
-                    class="form-select mb-1"
-                    formControlName="administrativeUnit"
-                    (change)="onCityChange($event)"
-                  >
-                    <option value="" selected>
-                      Select Administrative Unit
-                    </option>
-                    <option
-                      *ngFor="let admin of adminstrativeData"
-                      [value]="admin.id"
-                    >
-                      {{ admin.name | uppercase }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="visibleStatus.subadminstrativeUnit === 'Y'">
-              <div class="col-sm-4 mb-4">
-                <div class="form-group mb-4">
-                  <label for="subadminstrativeUnit" class="form-label"
-                    >Sub-administrative Units</label
-                  >
-                  <select
-                    #subadminSelect
-                    id="subadminstrativeUnit"
-                    class="form-select mb-1"
-                    formControlName="subadminstrativeUnit"
-                  >
-                    <option value="" selected>
-                      Select Sub-administrative Unit
-                    </option>
-                    <option
-                      *ngFor="let subadmin of subadminstrativeData"
-                      [value]="subadmin.id"
-                    >
-                      {{ subadmin.name | uppercase }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </ng-container> -->
             <ng-container *ngIf="visibleStatus.unSactionWEF === 'Y'">
               <div class="col-sm-4 mb-4">
                 <div class="form-group mb-3">
@@ -431,7 +380,9 @@
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="8">No Counties found.</td>
+                      <td colspan="8">
+                        No {{ adminCardTitle.innerText }} found.
+                      </td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -522,7 +473,9 @@
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="8">No sub-counties found.</td>
+                      <td colspan="8">
+                        No {{ subadminCardTitle.innerText }} found.
+                      </td>
                     </tr>
                   </ng-template>
                 </p-table>
@@ -605,7 +558,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No town's found.</td>
+                  <td colspan="8">No towns found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -688,7 +641,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No Holiday's found.</td>
+                  <td colspan="8">No Holiday found.</td>
                 </tr>
               </ng-template>
             </p-table>
