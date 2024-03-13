@@ -32,6 +32,7 @@ export class HeaderSubMenuComponent implements OnInit {
   accountSubMenuList: SidebarMenu[];
   quotationSubMenuList: SidebarMenu[];
   analyticsSubMenuList: SidebarMenu[];
+  fmsSubMenuList: SidebarMenu[];
   searchTerm: any;
   nameSearchTerm:any;
   idSearchTerm:any;
@@ -58,6 +59,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.accountSubMenuList = this.menuService.accountSubMenuList();
     this.quotationSubMenuList = this.menuService.quotationSubMenuList();
     this.analyticsSubMenuList = this.menuService.analyticsSubMenuList();
+    this.fmsSubMenuList = this.menuService.fmsSubMenuList();
     this.createSearchAccountForm();
   }
 
@@ -76,7 +78,7 @@ export class HeaderSubMenuComponent implements OnInit {
     this.navLink('/home/entity/list');
   }
   dynamicSideBarMenu(sidebarMenu: SidebarMenu) {
-    
+
     if(sidebarMenu.link.length > 0){this.router.navigate([sidebarMenu.link])}
     this.menuService.updateSidebarMainMenu(sidebarMenu.value)
   }

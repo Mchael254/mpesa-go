@@ -66,6 +66,8 @@ export class AuthorizationTabComponent implements OnInit{
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
   isLoading: boolean = false;
+  isLoadingMakeUndo: boolean = false;
+  isLoadingAuthExc: boolean = false;
 
   constructor(private fb: FormBuilder,
               private policiesService: PoliciesService,
@@ -320,6 +322,7 @@ export class AuthorizationTabComponent implements OnInit{
    * displays success or error messages accordingly.
    */
   authoriseExceptions() {
+    this.isLoadingAuthExc = true;
     const selectedExceptions = this.selectedAuthorizationException.map(data=> data.code);
 
     log.info('selected exceptions', selectedExceptions);
@@ -334,9 +337,11 @@ export class AuthorizationTabComponent implements OnInit{
           next: (data) => {
             this.authoriseExceptionsData = data;
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized exception');
+            this.isLoadingAuthExc = false;
           },
           error: err => {
             this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+            this.isLoadingAuthExc = false;
           }
         })
     } else {
@@ -344,6 +349,7 @@ export class AuthorizationTabComponent implements OnInit{
         'Error',
         'No exception is selected.'
       );
+      this.isLoading = false;
     }
   }
 
@@ -353,6 +359,7 @@ export class AuthorizationTabComponent implements OnInit{
    */
   makeReady() {
     if (this.policyDetails) {
+      this.isLoadingMakeUndo = true;
       this.policiesService.policyMakeReady(this.policyDetails?.batch_no)
         .subscribe({
           next: (data) => {
@@ -362,9 +369,11 @@ export class AuthorizationTabComponent implements OnInit{
             this.getAuthorizationExceptionDetails();
 
             this.cdr.detectChanges();
+            this.isLoadingMakeUndo = false;
           },
           error: err => {
             this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+            this.isLoadingMakeUndo = false;
           }
         });
     }
@@ -375,6 +384,7 @@ export class AuthorizationTabComponent implements OnInit{
    * messages, and fetches updated policy details.
    */
   undoMakeReady() {
+    this.isLoading = true;
     this.policiesService.policyUndoMakeReady(this.policyDetails?.batch_no)
       .subscribe({
         next: (data) => {
@@ -383,9 +393,11 @@ export class AuthorizationTabComponent implements OnInit{
           this.undoOrMakeReady.emit(data);
 
           this.cdr.detectChanges();
+          this.isLoading = false;
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoading = false;
         }
       })
 }
