@@ -169,7 +169,12 @@
     "Client Type": "Type de client",
     "Sectors & Occupation": "Secteurs et métiers",
     "Required Documents": "Documents requis",
-    "Service Provider Type": "Type de prestataire de services"
+    "Service Provider Type": "Type de prestataire de services",
+    "FMS": "FMS",
+    "General ledger": "Grand livre",
+    "Cashbook": "Livre de caisse",
+    "Cheques": "Chèques",
+    "Cheque signing": "Signature de chèque"
   },
   "crm": {
     "category": "Catégorie",

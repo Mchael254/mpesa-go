@@ -169,7 +169,12 @@
     "Client Type": "客户类型",
     "Sectors & Occupation": "行业和职业",
     "Required Documents": "所需文件",
-    "Service Provider Type": "服务提供者类型"
+    "Service Provider Type": "服务提供者类型",
+    "FMS": "FMS",
+    "General ledger": "总账",
+    "Cashbook": "现金账簿",
+    "Cheques": "支票",
+    "Cheque signing": "支票签署"
   },
   "crm": {
     "category": "类别",

@@ -169,7 +169,12 @@
     "Client Type": "Client Type",
     "Sectors & Occupation": "Sectors & Occupation",
     "Required Documents": "Required Documents",
-    "Service Provider Type": "Service Provider Type"
+    "Service Provider Type": "Service Provider Type",
+    "FMS": "FMS",
+    "General ledger": "General ledger",
+    "Cashbook": "Cashbook",
+    "Cheques": "Cheques",
+    "Cheque signing": "Cheque signing"
   },
   "crm": {
     "category": "Category",

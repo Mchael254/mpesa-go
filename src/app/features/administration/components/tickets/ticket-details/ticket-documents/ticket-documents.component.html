@@ -1,7 +1,21 @@
-<app-dynamic-table
-  [tableDetails]="tableDetails"
-  (showCustomModalEmitter)="showModal($event)">
-</app-dynamic-table>
+<ng-container
+  *ngIf="
+  currentTicket?.ticket?.sysModule === 'P' ||
+  currentTicket?.ticket?.sysModule === 'RT' ||
+  currentTicket?.ticket?.sysModule === 'Q'">
+  <app-dynamic-table
+    [tableDetails]="tableDetails"
+    (showCustomModalEmitter)="showModal($event)">
+  </app-dynamic-table>
+</ng-container>
+
+<ng-container *ngIf="currentTicket?.ticket?.sysModule === 'C'">
+  <app-dynamic-table
+    [tableDetails]="tableClaimantDocs"
+    (showCustomModalEmitter)="showModal($event)">
+  </app-dynamic-table>
+</ng-container>
+
 
 <app-dynamic-simple-modal
   [modalVisible]="documentModalVisible"

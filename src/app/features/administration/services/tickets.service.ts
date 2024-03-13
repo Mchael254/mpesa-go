@@ -35,7 +35,7 @@ export class TicketsService {
   private selectedTicket: TicketsDTO | null = null;
 
   currentTicket$ = this.ticketsDetail$.asObservable();
-  currentTicketDetail = signal<NewTicketDto>({});
+  currentTicketDetail = signal<TicketsDTO>({} as TicketsDTO);
 
   setSelectedTicket(ticket: TicketsDTO) {
     this.selectedTicket = ticket;

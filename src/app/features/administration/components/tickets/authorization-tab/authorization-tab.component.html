@@ -17,15 +17,27 @@
     <button
       class="btn btn-outline-primary me-2" style="font-size: 12px;"
     (click)="undoMakeReady()"
-      *ngIf = "policyDetails?.authorizedStatus=== 'A' || policyDetails?.authorizedStatus=== 'R'">Undo make ready
+      *ngIf = "policyDetails?.authorizedStatus=== 'A' || policyDetails?.authorizedStatus=== 'R'" [disabled]="isLoadingMakeUndo">
+      <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Undo make ready</span>
+      <ng-template #loadingMakeUndo>
+        <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+      </ng-template>
     </button>
     <button
       class="btn btn-primary me-2" style="font-size: 12px;"
     (click)="makeReady()"
-    *ngIf = "policyDetails?.authorizedStatus=== 'N'" >Make ready
+    *ngIf = "policyDetails?.authorizedStatus=== 'N'" [disabled]="isLoadingMakeUndo">
+      <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Make ready</span>
+      <ng-template #loadingMakeUndo>
+        <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+      </ng-template>
     </button>
     <button
-      class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()">Authorise exceptions
+      class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()" [disabled]="isLoadingAuthExc">
+      <span *ngIf="!isLoadingAuthExc; else loadingAuthExc">Authorise exceptions</span>
+      <ng-template #loadingAuthExc>
+        <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+      </ng-template>
     </button>
 
   </div>
@@ -82,7 +94,9 @@
         </span>
         </td>
         <td>
-          {{exception.underwriting_decision | titlecase}}
+          <span title="{{exception?.underwriting_decision}}">
+            {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
+          </span>
 
           <ng-container *ngIf="!exception.underwriting_decision">
             <p-dropdown
@@ -185,7 +199,7 @@
   </div>
 </div>
 
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card" *ngIf="authorizationLevelsData?.length > 0">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Authorization levels</label>
 

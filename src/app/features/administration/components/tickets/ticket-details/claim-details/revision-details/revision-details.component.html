@@ -47,7 +47,13 @@
           <th>Excess amt</th>
           <th>Novice excess amt</th>
           <th>Depreciation %</th>
-          <th>Retained</th>
+          <th>Reserve amount</th>
+          <th>Recoveries</th>
+          <th>Salvages</th>
+          <th>Payments</th>
+          <th>Net paid</th>
+          <th>Remarks</th>
+          <th>Underwriting rate</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-receipt>
@@ -62,11 +68,18 @@
           <td>{{receipt.master_transaction_settlement | number}}</td>
           <td>{{receipt.master_transaction_dc}}</td>
           <td>{{receipt.transmital_trans_auth_by}}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="10">No Peril Detail(s) Found.</td>
+          <td colspan="17">No Peril Detail(s) Found.</td>
         </tr>
       </ng-template>
     </p-table>
