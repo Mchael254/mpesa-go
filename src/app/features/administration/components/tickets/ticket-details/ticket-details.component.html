@@ -151,6 +151,22 @@
       <p-tabPanel header="Revision details">
         <app-revision-details></app-revision-details>
       </p-tabPanel>
+      <p-tabPanel header="Documents and reports">
+        <label class="text-primary mb-2">Reports</label>
+        <app-ticket-reports></app-ticket-reports>
+
+        <label class="text-primary mb-2 mt-2">Claimant Documents</label>
+        <app-ticket-documents [currentTicket]="currentTicket">
+        </app-ticket-documents>
+
+        <label class="text-primary mb-2 mt-2">Service Providers</label>
+        <app-ticket-documents [currentTicket]="currentTicket">
+        </app-ticket-documents>
+
+        <label class="text-primary mb-2 mt-2">Claim Documents</label>
+        <app-ticket-documents [currentTicket]="currentTicket">
+        </app-ticket-documents>
+      </p-tabPanel>
     </ng-container>
 
   </p-tabView>

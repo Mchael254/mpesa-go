@@ -25,7 +25,7 @@ import {AuthorizationTabComponent} from "../authorization-tab/authorization-tab.
 export class TicketDetailsComponent implements OnInit {
   ticketId: any;
   ticketModule: any;
-  currentTicket: NewTicketDto;
+  currentTicket: TicketsDTO;
 
   selectedTicket: NewTicketDto;
   public policyDetails: PolicyDetailsDTO;
