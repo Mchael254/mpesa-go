@@ -580,10 +580,10 @@
       "policy_level_debit": "Police Level Soll",
       "open_policy": "Offene Police",
       "coinsurance_policy": "Mitversicherungspolice",
-      "more_details": "Weitere Details"
-}
-
-    
+      "more_details": "Weitere Details",
+      "cash": "Bargeld",
+      "accrual": "Zufluss"
+    }
   },
   "lms": {
     "common": {},
