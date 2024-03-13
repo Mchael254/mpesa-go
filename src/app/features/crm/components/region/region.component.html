@@ -30,21 +30,6 @@
             >
             </p-dropdown>
           </div>
-          <!-- <div class="col-sm-4">
-              <div class="form-group mb-4">
-                <label for="organization" class="form-label">Select an Organization</label>
-                <select id="organization" class="form-select  mb-1" formControlName="organization" (change)="onOrganizationChange($event)"
-                  [ngClass]="{ 'is-invalid': f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched) }">
-                  <option value="" selected>Select organization</option>
-                  <option *ngFor="let organization of organizationsData" [value]="organization.id">{{ organization.name }}
-                  </option>
-                </select>
-                <div *ngIf="f['organization']?.invalid && (f['organization']?.dirty || f['organization']?.touched)"
-                  class="form-text text-danger" [ngClass]="{ 'is-invalid': ['submitted'] && f['organization']?.errors }">
-                  <div *ngIf="f['organization']?.errors['required']">Organization is required</div>
-                </div>
-              </div>
-            </div> -->
         </div>
       </div>
     </div>
@@ -143,7 +128,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No region's found.</td>
+                  <td colspan="8">No region found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -229,7 +214,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No bank's found.</td>
+                  <td colspan="8">No bank found.</td>
                 </tr>
               </ng-template>
             </p-table>

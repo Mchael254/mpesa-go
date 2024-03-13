@@ -15,7 +15,7 @@ import {
   PostOrganizationRegionDTO,
   YesNoDTO,
 } from '../data/organization-dto';
-import {UtilService} from "../../../shared/services";
+import { UtilService } from '../../../shared/services';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +33,11 @@ export class OrganizationService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
   accountsBaseUrl = this.appConfig.config.contextPath.accounts_services;
 
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private utilService: UtilService) {}
+  constructor(
+    private http: HttpClient,
+    private appConfig: AppConfigService,
+    private utilService: UtilService
+  ) {}
 
   setSelectedOrganizationId(organizationId: number) {
     this.selectedOrganizationIdSource.next(organizationId);
@@ -332,6 +336,19 @@ export class OrganizationService {
     });
     return this.http.get<BranchDivisionDTO[]>(
       `/${this.baseUrl}/setups/branches/${branchId}/divisions`,
+      { headers: headers }
+    );
+  }
+
+  getOrganizationUnassignedBranchDivision(
+    branchId: number
+  ): Observable<OrganizationDivisionDTO[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    });
+    return this.http.get<OrganizationDivisionDTO[]>(
+      `/${this.baseUrl}/setups/branches/${branchId}/unassigned-divisions`,
       { headers: headers }
     );
   }

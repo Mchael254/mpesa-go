@@ -135,7 +135,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No branch detail's found.</td>
+                  <td colspan="8">No branch detail found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -201,7 +201,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No branch division's found.</td>
+                  <td colspan="8">No branch division found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -296,7 +296,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="8">No branch contact's found.</td>
+                  <td colspan="8">No branch contact found.</td>
                 </tr>
               </ng-template>
             </p-table>
@@ -865,7 +865,7 @@
       <div class="modal-body">
         <form [formGroup]="createBranchDivisionForm">
           <div class="row">
-            <div class="form-group mb-3">
+            <!-- <div class="form-group col-6 mb-3">
               <label for="division" class="form-label">Select a Division</label>
               <select
                 id="division"
@@ -874,12 +874,63 @@
               >
                 <option value="" selected>Select Division</option>
                 <option
-                  *ngFor="let division of branchDivisionData"
+                  *ngFor="let division of branchUnassignedDivisionData"
                   [value]="division.id"
                 >
-                  {{ division.divisionName | titlecase }}
+                  {{ division.name | titlecase }}
                 </option>
               </select>
+            </div> -->
+            <div class="form-group col-6 mb-3">
+              <label for="division" class="form-label">Select a Division</label>
+              <select
+                id="division"
+                class="form-select mb-1"
+                formControlName="division"
+              >
+                <option value="" selected>Select Division</option>
+                <ng-container *ngIf="isEditing; else createDivision">
+                  <option
+                    *ngFor="let division of branchDivisionData"
+                    [value]="division.divisionId"
+                  >
+                    {{ division.divisionName | titlecase }}
+                  </option>
+                </ng-container>
+                <ng-template #createDivision>
+                  <option
+                    *ngFor="let division of branchUnassignedDivisionData"
+                    [value]="division.id"
+                  >
+                    {{ division.name | titlecase }}
+                  </option>
+                </ng-template>
+              </select>
+            </div>
+
+            <div class="form-group col-6 mb-3">
+              <label for="wef" class="form-label">WEF</label>
+              <input
+                type="text"
+                class="form-control"
+                name="wef"
+                placeholder="WEF"
+                onfocus="(this.type='date')"
+                onblur="(this.type='text')"
+                formControlName="wef"
+              />
+            </div>
+            <div class="form-group col-6 mb-3">
+              <label for="wet" class="form-label">WET</label>
+              <input
+                type="text"
+                class="form-control"
+                name="wet"
+                placeholder="WET"
+                onfocus="(this.type='date')"
+                onblur="(this.type='text')"
+                formControlName="wet"
+              />
             </div>
           </div>
         </form>
@@ -1020,7 +1071,9 @@
 <app-reusable-input
   [modalId]="'branchDivisionConfirmationModal'"
   [title]="'Delete Confirmation'"
-  [message]="'Are you sure you want to delete this branch Division?'"
+  [message]="
+    'Are you sure you want to unassign this Division from this Branch?'
+  "
   (confirmed)="confirmBranchDivisionDelete()"
   #branchDivisionConfirmationModal
 ></app-reusable-input>

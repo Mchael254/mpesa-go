@@ -121,6 +121,22 @@ export class CurrenciesComponent implements OnInit {
     form.get(formControlName).setValue(newValue);
   }
 
+  /**
+   * The function `sliceString` takes a string as input and returns a sliced version of the string if
+   * it is longer than 35 characters, otherwise it returns the original string.
+   * @param {string} str - The parameter `str` is a string that represents the input string that needs
+   * to be sliced.
+   * @returns The function `sliceString` returns a string.
+   */
+  sliceString(str: string): string {
+    if (str) {
+      const slicedString = str.length > 10 ? str.slice(0, 10) + '...' : str;
+      return slicedString;
+    } else {
+      return '';
+    }
+  }
+
   currencyCreateForm() {
     this.createCurrencyForm = this.fb.group({
       symbol: [''],

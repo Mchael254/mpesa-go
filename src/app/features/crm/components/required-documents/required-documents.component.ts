@@ -445,7 +445,7 @@ export class RequiredDocumentsComponent implements OnInit {
         description: requiredDocumentFormValues.description,
         id: null,
         isMandatory: null,
-        organizationId: null,
+        organizationId: 2,
         organizationName: null,
         shortDescription: requiredDocumentFormValues.shortDescription,
       };

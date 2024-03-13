@@ -104,12 +104,14 @@ export interface PostCountryDTO {
   nationality: string;
   risklevel: string;
   short_description: string;
+  subAdministrativeUnit: string;
   telephoneMaximumLength: number;
   telephoneMinimumLength: number;
   unSanctionWefDate: string;
   unSanctionWetDate: string;
   unSanctioned: string;
   zipCode: number;
+  zipCodeString: string;
 }
 
 // export interface StateDTO {

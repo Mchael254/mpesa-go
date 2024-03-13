@@ -196,6 +196,28 @@ export class OrganizationComponent implements OnInit {
     return this.createOrganizationForm.controls;
   }
 
+  getStateLabel(): string {
+    if (this.countriesData && this.selectedCountry) {
+      const countrySelect = this.countriesData.find(
+        (country) => country.id === this.selectedCountry
+      );
+
+      if (countrySelect && countrySelect.adminRegType) {
+        const adminRegTypeMap = {
+          S: 'State',
+          C: 'County',
+          R: 'Region',
+          P: 'Province',
+        };
+        const adminRegTypeInitial = countrySelect.adminRegType;
+        if (adminRegTypeMap.hasOwnProperty(adminRegTypeInitial)) {
+          return adminRegTypeMap[adminRegTypeInitial] + ' Name';
+        }
+      }
+    }
+    return 'State Name';
+  }
+
   onOrganizationChange() {
     const selectedOrganizationId = this.selectedOrganization;
     this.selectedOrg = this.organizationsData.find(
