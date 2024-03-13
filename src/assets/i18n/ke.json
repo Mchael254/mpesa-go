@@ -580,9 +580,10 @@
       "policy_level_debit": "Deni la Sera",
       "open_policy": "Sera Wazi",
       "coinsurance_policy": "Sera ya Kushirikiana Bima",
-      "more_details": "Maelezo Zaidi"
-  }
-  
+      "more_details": "Maelezo Zaidi",
+      "cash": "Fedha",
+      "accrual": "Kujumuishwa"
+    }
   },
   "lms": {
     "common": {},
