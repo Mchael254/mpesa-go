@@ -8,6 +8,13 @@ import { TableModule } from 'primeng/table';
 import { UnderwritingComponent } from './components/underwriting/underwriting.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PolicyProductComponent } from './components/policy-product/policy-product.component';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { TreeModule } from 'primeng/tree';
 
 
 @NgModule({
@@ -22,7 +29,16 @@ import { PolicyProductComponent } from './components/policy-product/policy-produ
     TableModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    DropdownModule,
+    TableModule,
+    CalendarModule,
+    DialogModule,
+    InputTextModule,
+    MenuModule,
+    PanelMenuModule,
+    TreeModule
+
   ]
 })
 export class PolicyModule { }
