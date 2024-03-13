@@ -44,7 +44,7 @@
                 data-bs-parent="#accordionFlushExample"
               >
                 <div class="accordion-body">
-                  <form [formGroup]="form" (ngSubmit)="onSubmit(i)">
+                  <form [formGroup]="form">
                     <div class="row">
                       <!-- <div class="col-lg-4 col-md-6 col-sm-12">
                         <label for="checked">Checked?</label>
@@ -130,7 +130,7 @@
                       <!-- Add more input fields for other form controls -->
                     </div>
                     <div class="d-flex justify-content-end">
-                      <button type="submit" class="btn btn-primary">Save</button>
+                      <button type="submit" class="btn btn-primary" (click)="saveMedicalResult(i)">Save</button>
                     </div>
                   </form>
                 </div>

@@ -23,11 +23,11 @@ export class PartyService {
   }
 
   getListOfDependentByQuotationCode(pol_code:number, endr_code:number){
-    return this.api.GET(`parties/beneficiaries?pol_code=${pol_code}&endr_code=${endr_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    return this.api.GET(`parties/dependents?pol_code=${pol_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
     // return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}&proposal_code=${proposal_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
     .pipe(
       map((data: any) => {
-        return data['content'];
+        return data;
     }),
     );
   }
