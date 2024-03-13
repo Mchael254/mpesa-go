@@ -350,7 +350,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
       this.createCountryForm.patchValue({
         name: this.countrySelected?.name,
         shortDescription: this.countrySelected?.short_description,
-        baseCurrency: this.countrySelected?.currency.id,
+        baseCurrency: this.countrySelected?.currency?.id,
         nationality: this.countrySelected?.nationality,
         zipCode: this.countrySelected?.zipCode,
         administrativeUnit: this.countrySelected?.adminRegType,
@@ -385,35 +385,6 @@ export class CountryComponent implements OnInit, AfterViewInit {
     this.subadminCardTitle.nativeElement.innerText =
       subadminValue || 'Sub-Counties';
   }
-
-  // onSort(event: Event): void {
-  //   const target = event.target as HTMLSelectElement;
-  //   const selectedValue = target.value;
-
-  //   switch (selectedValue) {
-  //     case 'shortDescriptionAsc':
-  //       this.sortByShortDescriptionAsc();
-  //       break;
-  //     case 'shortDescriptionDesc':
-  //       this.sortByShortDescriptionDesc();
-  //       break;
-  //     default:
-  //       // Handle default case or no sorting
-  //       break;
-  //   }
-  // }
-
-  // sortByShortDescriptionAsc(): void {
-  //   this.townData.sort((a, b) =>
-  //     a.shortDescription.localeCompare(b.shortDescription)
-  //   );
-  // }
-
-  // sortByShortDescriptionDesc(): void {
-  //   this.townData.sort((a, b) =>
-  //     b.shortDescription.localeCompare(a.shortDescription)
-  //   );
-  // }
 
   onSort(event: Event, dataArray: any[], sortKey: string): void {
     const target = event.target as HTMLSelectElement;
@@ -653,12 +624,14 @@ export class CountryComponent implements OnInit, AfterViewInit {
         nationality: countryFormValues.nationality,
         risklevel: null,
         short_description: countryFormValues.shortDescription,
+        subAdministrativeUnit: countryFormValues.subadminstrativeUnit,
         telephoneMaximumLength: null,
         telephoneMinimumLength: null,
         unSanctionWefDate: countryFormValues.unSactionWEF,
         unSanctionWetDate: countryFormValues.unSactionWET,
         unSanctioned: null,
         zipCode: countryFormValues.zipCode,
+        zipCodeString: null,
       };
       // Create a new country
       this.countryService.createCountry(saveCountry).subscribe((data) => {
@@ -689,12 +662,14 @@ export class CountryComponent implements OnInit, AfterViewInit {
         nationality: countryFormValues.nationality,
         risklevel: null,
         short_description: countryFormValues.shortDescription,
+        subAdministrativeUnit: countryFormValues.subadminstrativeUnit,
         telephoneMaximumLength: null,
         telephoneMinimumLength: null,
         unSanctionWefDate: countryFormValues.unSactionWEF,
         unSanctionWetDate: countryFormValues.unSactionWET,
         unSanctioned: null,
         zipCode: countryFormValues.zipCode,
+        zipCodeString: null,
       };
       // Update an existing country
       this.countryService

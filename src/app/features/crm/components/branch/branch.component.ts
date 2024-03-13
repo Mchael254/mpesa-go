@@ -16,6 +16,7 @@ import {
   BranchDivisionDTO,
   OrganizationBranchDTO,
   OrganizationDTO,
+  OrganizationDivisionDTO,
   OrganizationRegionDTO,
 } from '../../data/organization-dto';
 import { Logger } from '../../../../shared/services/logger/logger.service';
@@ -70,6 +71,7 @@ export class BranchComponent implements OnInit {
   public regionData: OrganizationRegionDTO[] = [];
   public branchesData: OrganizationBranchDTO[] = [];
   public branchDivisionData: BranchDivisionDTO[] = [];
+  public branchUnassignedDivisionData: OrganizationDivisionDTO[] = [];
   public branchContacts: BranchContactDTO[] = [];
   public countriesData: CountryDto[];
   public stateData: StateDto[] = [];
@@ -97,6 +99,7 @@ export class BranchComponent implements OnInit {
   public submitted = false;
   public errorOccurred = false;
   public errorMessage: string = '';
+  isEditing: boolean = false;
 
   organizationBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -235,6 +238,8 @@ export class BranchComponent implements OnInit {
   branchDivisionCreateForm() {
     this.createBranchDivisionForm = this.fb.group({
       division: [''],
+      wef: [''],
+      wet: [''],
     });
   }
 
@@ -279,6 +284,7 @@ export class BranchComponent implements OnInit {
   onBranchRowSelect(branch: OrganizationBranchDTO) {
     this.selectedBranch = branch;
     this.fetchOrganizationBranchDivision(this.selectedBranch.id);
+    this.fetchOrganizationUnassignedBranchDivision(this.selectedBranch.id);
     this.fetchOrganizationBranchContact(this.selectedBranch.id);
   }
 
@@ -444,6 +450,19 @@ export class BranchComponent implements OnInit {
       .subscribe((data) => {
         this.branchDivisionData = data;
         log.info('Branch Division Data', this.branchDivisionData);
+      });
+  }
+
+  fetchOrganizationUnassignedBranchDivision(branchId: number) {
+    this.organizationService
+      .getOrganizationUnassignedBranchDivision(branchId)
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.branchUnassignedDivisionData = data;
+        log.info(
+          'Branch Unassigned Division Data',
+          this.branchUnassignedDivisionData
+        );
       });
   }
 
@@ -739,16 +758,18 @@ export class BranchComponent implements OnInit {
     this.closeBranchDivisionModal();
     if (!this.selectedBranchDivision) {
       const divisionFormValues = this.createBranchDivisionForm.getRawValue();
+
+      console.log('Form values', divisionFormValues);
       const branchId = this.selectedBranch.id;
 
       const saveBranchDivision: BranchDivisionDTO = {
         branchId: branchId,
         branchName: this.selectedBranch.name,
-        divisionId: null,
-        divisionName: divisionFormValues.division,
+        divisionId: divisionFormValues.division,
+        divisionName: divisionFormValues.division.name,
         id: null,
-        withEffectiveFrom: '',
-        withEffectiveTo: '',
+        withEffectiveFrom: divisionFormValues.wef,
+        withEffectiveTo: divisionFormValues.wet,
       };
       this.organizationService
         .createOrganizationBranchDivision(branchId, saveBranchDivision)
@@ -786,11 +807,11 @@ export class BranchComponent implements OnInit {
       const saveBranchDivision: BranchDivisionDTO = {
         branchId: branchId,
         branchName: this.selectedBranch.name,
-        divisionId: branchDivisionId,
+        divisionId: divisionFormValues.division,
         divisionName: divisionFormValues.division,
         id: branchDivisionId,
-        withEffectiveFrom: this.selectedBranchDivision.withEffectiveFrom,
-        withEffectiveTo: this.selectedBranchDivision.withEffectiveTo,
+        withEffectiveFrom: divisionFormValues.wef,
+        withEffectiveTo: divisionFormValues.wet,
       };
       this.organizationService
         .updateOrganizationBranchDivision(
@@ -826,14 +847,19 @@ export class BranchComponent implements OnInit {
         });
     }
   }
+
   editBranchDivision() {
     if (this.selectedBranchDivision) {
+      this.isEditing = true;
       this.openBranchDivisionModal();
       this.createBranchDivisionForm.patchValue({
-        division: this.selectedBranchDivision.id,
+        division: this.selectedBranchDivision.divisionId,
+        wef: this.selectedBranchDivision.withEffectiveFrom,
+        wet: this.selectedBranchDivision.withEffectiveTo,
       });
     }
   }
+
   deleteBranchDivision() {
     this.branchDivisionConfirmationModal.show();
   }
@@ -841,15 +867,15 @@ export class BranchComponent implements OnInit {
   confirmBranchDivisionDelete() {
     if (this.selectedBranchDivision) {
       const branchId = this.selectedBranch.id;
-      const branchDivisionId = this.selectedBranchDivision.id;
+      const divisionId = this.selectedBranchDivision.divisionId;
       this.organizationService
-        .deleteOrganizationBranchDivision(branchDivisionId, branchId)
+        .deleteOrganizationBranchDivision(divisionId, branchId)
         .subscribe({
           next: (data) => {
             if (data) {
               this.globalMessagingService.displaySuccessMessage(
                 'success',
-                'Successfully deleted an Organizatio Branch Division'
+                'Successfully unassigned an Organizatio Branch Division'
               );
               this.selectedBranchDivision = null;
               this.fetchOrganizationBranchDivision(branchId);
@@ -865,7 +891,7 @@ export class BranchComponent implements OnInit {
           error: (err) => {
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              err?.error?.errors[0]
+              err?.error?.error?.message
             );
             log.info(`error >>>`, err);
           },
