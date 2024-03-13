@@ -203,10 +203,10 @@ export class DivisionComponent implements OnInit {
     const selectedValue = organizationFormValues.default;
 
     const existingDefault = this.divisionData.find(
-      (division) => division.is_default_division === 'YES'
+      (division) => division.is_default_division === 'Y'
     );
 
-    if (selectedValue === 'YES' && existingDefault) {
+    if (selectedValue === 'Y' && existingDefault) {
       this.openConfirmationModal();
     } else {
       this.finalizeDivisionSave(organizationFormValues, selectedValue);
@@ -219,13 +219,13 @@ export class DivisionComponent implements OnInit {
 
     const organizationFormValues = this.createDivisionForm.getRawValue();
 
-    if (selectedValue === 'Yes') {
+    if (selectedValue === 'Y') {
       const existingDefault = this.divisionData.find(
-        (division) => division.is_default_division === 'Yes'
+        (division) => division.is_default_division === 'Y'
       );
 
       if (existingDefault) {
-        existingDefault.is_default_division = 'No';
+        existingDefault.is_default_division = 'N';
       }
     }
 
@@ -349,8 +349,8 @@ export class DivisionComponent implements OnInit {
                 'success',
                 'Successfully deactivated a Division'
               );
-              this.fetchOrganizationDivision(this.selectedOrg.id);
               this.selectedDivision = null;
+              this.fetchOrganizationDivision(this.selectedOrg.id);
             } else {
               this.errorOccurred = true;
               this.errorMessage = 'Something went wrong. Please try Again';
