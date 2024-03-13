@@ -52,6 +52,10 @@ const routes: Routes = [
       path: 'setups',
       loadChildren: () => import('../setups/setups.module').then(m => m.SetupsModule)
     },
+    {
+      path: 'fms',
+      loadChildren: () => import('../fms/fms.module').then(m => m.FmsModule)
+    },
   ],
 }];
 

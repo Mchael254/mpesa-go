@@ -1,0 +1,9 @@
+::ng-deep .p-dropdown .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+::ng-deep .p-dropdown .p-dropdown-filter {
+  height: 30px;
+}
