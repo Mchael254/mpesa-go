@@ -413,6 +413,24 @@ export class MenuService {
         collapsed: true,
       },
     ],
+    FMS: [
+      {
+        name: 'Cheques',
+        nameSlug: 'cheques',
+        icon: 'fa-solid fa-money-check',
+        link: 'home/fms/cheque-authorization',
+        collapsed: true,
+      },
+      {
+        name: 'Actions',
+        nameSlug: 'actions',
+        icon: 'fa-solid fa-gears',
+        menuItems: [
+          { name: 'Cheque signing', link: '' },
+        ],
+        collapsed: true,
+      },
+    ],
   };
 
   public _sidebarMainMenu = new BehaviorSubject<SidebarMenu[]>([
@@ -572,6 +590,36 @@ export class MenuService {
         name: 'Dashboard',
         link: '/home/reportsv2',
         value: 'ANALYTICS',
+      },
+    ];
+  }
+
+  fmsSubMenuList(): SidebarMenu[] {
+    return [
+      {
+        name: 'General ledger',
+        link: '/home/fms/cheque-authorization',
+        value: 'FMS',
+        menuItems: [
+          { name: 'Parameters', link: '' },
+          { name: 'Transactions', link: '' },
+          { name: 'Inquiries', link: '' },
+          { name: 'Reports', link: '' },
+        ],
+      },
+      {
+        name: 'Cashbook',
+        link: '',
+        value: 'FMS',
+        menuItems: [
+          { name: 'Parameters', link: '' },
+          { name: 'Transactions', link: '' },
+          { name: 'Requisitions', link: '' },
+          { name: 'Cheques', link: '' },
+          { name: 'Receipts', link: '' },
+          { name: 'Reconciliations', link: '' },
+          { name: 'Inquiries', link: '' },
+        ],
       },
     ];
   }

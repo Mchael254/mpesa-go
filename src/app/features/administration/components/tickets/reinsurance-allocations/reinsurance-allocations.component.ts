@@ -14,6 +14,7 @@ import {SubclassesService} from "../../../../gis/components/setups/services/subc
 import {Subclasses} from "../../../../gis/components/setups/data/gisDTO";
 import {AgentDTO} from "../../../../entities/data/AgentDTO";
 import {IntermediaryService} from "../../../../entities/services/intermediary/intermediary.service";
+import {NgxSpinnerService} from "ngx-spinner";
 
 const log = new Logger('ReinsuranceAllocationsComponent');
 @Component({
@@ -54,12 +55,14 @@ export class ReinsuranceAllocationsComponent implements OnInit {
 
   risksForm:FormGroup;
   reinsureRiskPOSTData: any;
+  isLoadingReinsure: boolean = false;
 
   constructor(private fb: FormBuilder,
               private reinsuranceService: ReinsuranceService,
               private globalMessagingService: GlobalMessagingService,
               private subclassService: SubclassesService,
-              private intermediaryService: IntermediaryService, ){}
+              private intermediaryService: IntermediaryService,
+              private spinner: NgxSpinnerService,){}
 
   ngOnInit(): void {
     this.createTreatyRiSummaryForm();
@@ -115,6 +118,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function `getTreatyParticipant` retrieves treaty participant data using a code from reinsurance risk details.
    */
   getTreatyParticipant() {
+    this.spinner.show();
     this.reinsuranceService.getTreatyParticipant(this.reinsuranceRiskDetailsData?.content[0]?.code)
       .pipe(
         untilDestroyed(this),
@@ -122,6 +126,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.treatyParticipantData = data;
+          this.spinner.hide();
           log.info('treatyParticipant>>', this.treatyParticipantData);
         }
       )
@@ -135,6 +140,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    */
   getRiskReinsuranceRiskDetails() {
     // this.policyDetails[0].policyBatchNo
+    this.spinner.show();
     this.reinsuranceService.getRiskReinsuranceRiskDetails(this.riskDetails[0]?.policyBatchNo)
       .pipe(
         untilDestroyed(this),
@@ -142,6 +148,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.riskReinsuranceRiskDetailsData = data;
+          this.spinner.hide();
           log.info('RiskReinsuranceRiskDetails>>', this.riskReinsuranceRiskDetailsData)
         }
       )
@@ -152,6 +159,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * with the retrieved data.
    */
   getRiskReinsuranceDetails() {
+    this.spinner.show();
     this.reinsuranceService.getRiskReinsurance('Y', this?.riskCode[0])
       .pipe(
         untilDestroyed(this),
@@ -159,6 +167,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.riskReinsuranceDetails = data;
+          this.spinner.hide();
           log.info('riskReinsuranceDetails>>', this.riskReinsuranceDetails)
           if (data && data.length > 0) {
             let details = data[0];
@@ -224,6 +233,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * This function retrieves reinsurance risk details for a given code and stores the data in the component.
    */
   getReinsuranceRiskDetails(code:any) {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceRiskDetails(code)
       .pipe(
         untilDestroyed(this),
@@ -237,6 +247,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
             this.subClassCode = riskReinsurance.subclassCode;
           });
           this.reinsuranceRiskDetailsData = data;
+          this.spinner.hide();
 
           log.info('ReinsuranceRiskDetail>>', this.reinsuranceRiskDetailsData, this.currencyCode)
 
@@ -248,6 +259,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function `getReinsuranceFacreCeding` retrieves reinsurance facre ceding data and logs it.
    */
   getReinsuranceFacreCeding() {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceFacreCeding(this.prrdCode)
       .pipe(
         untilDestroyed(this),
@@ -255,6 +267,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reinsuranceFacreCedingData = data;
+          this.spinner.hide();
           if (this.reinsuranceFacreCedingData !== null && this.reinsuranceFacreCedingData.length > 0) {
             let intermediaryDetails = data[0];
             this.getIntermediaryId(intermediaryDetails?.intermediaryCode);
@@ -269,6 +282,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The `getReinsurancePool` function retrieves reinsurance pool data using the `reinsuranceService` and logs the data.
    */
   getReinsurancePool() {
+    this.spinner.show();
     this.reinsuranceService.getReinsurancePool(this.riskCode[0], this.prrdTranNo)
       .pipe(
         untilDestroyed(this),
@@ -276,6 +290,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reinsurancePoolData = data;
+          this.spinner.hide();
           log.info('ReinsurancePool>>', this.reinsurancePoolData)
         }
       )
@@ -286,6 +301,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * code and risk code.
    */
   getReinsuranceXolPremium() {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceXolPremium(this.prrdCode, this.riskCode[0])
       .pipe(
         untilDestroyed(this),
@@ -293,6 +309,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reinsuranceXolPremiumData = data;
+          this.spinner.hide();
           log.info('ReinsuranceXOLPremium>>', this.reinsuranceXolPremiumData)
         }
       )
@@ -302,6 +319,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function `getReinsuranceXolPremiumParticipants` retrieves reinsurance XOL premium participants data and logs it.
    */
   getReinsuranceXolPremiumParticipants() {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceXolPremiumParticipants(this.prrdCode)
       .pipe(
         untilDestroyed(this),
@@ -309,6 +327,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.reXolPremiumParticipantData = data;
+          this.spinner.hide();
           log.info('ReinsuranceXOLPremiumPart>>', this.reXolPremiumParticipantData)
         }
       )
@@ -318,6 +337,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function `getPreviousCeding` retrieves previous ceding data for a specific risk code using a service call
    */
   getPreviousCeding() {
+    this.spinner.show();
     this.reinsuranceService.getPreviousCeding(this.riskCode[0])
       .pipe(
         untilDestroyed(this),
@@ -325,6 +345,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.previousCedingData = data;
+          this.spinner.hide();
           log.info('previousCeding>>', this.previousCedingData);
         }
       )
@@ -335,6 +356,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * `treatyCessionsData`.
    */
   getTreatyCessions() {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceRiskDetails(this.prrdCode)
       .pipe(
         untilDestroyed(this),
@@ -342,6 +364,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.treatyCessionsData = data;
+          this.spinner.hide();
           log.info('treatyCessionsData>>', this.treatyCessionsData)
         }
       )
@@ -351,6 +374,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function `getPreviousFacreCeding` retrieves reinsurance facre ceding data for a specific code and logs the result.
    */
   getPreviousFacreCeding() {
+    this.spinner.show();
     this.reinsuranceService.getReinsuranceFacreCeding(this.prrdCode)
       .pipe(
         untilDestroyed(this),
@@ -358,6 +382,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.previousFacreCedingData = data;
+          this.spinner.hide();
           log.info('previousFacreCedingData>>', this.previousFacreCedingData)
         }
       )
@@ -367,6 +392,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * The function retrieves treaty setups data using the reinsurance service.
    */
   getTreatySetups() {
+    this.spinner.show();
     this.reinsuranceService.getTreatySetups(this.currencyCode,
       this.UWYear, this.subClassCode)
       .pipe(
@@ -375,6 +401,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.treatySetupsData = data;
+          this.spinner.hide();
           log.info('treatySetups>>', this.treatySetupsData)
         }
       )
@@ -385,6 +412,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * class property.
    */
   getPolicyFacreSetups() {
+    this.spinner.show();
     this.reinsuranceService.getPolicyFacreSetups(this.riskDetails[0].policyBatchNo)
       .pipe(
         untilDestroyed(this),
@@ -392,6 +420,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.policyFacreSetupsData = data;
+          this.spinner.hide();
           log.info('policyFacreSetups>>', this.policyFacreSetupsData)
         }
       )
@@ -527,15 +556,22 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    * then calls a service to reinsure the risk with the provided data.
    */
   reinsureRisk() {
+    this.isLoadingReinsure = true;
     const batchNo = this.riskDetails[0].policyBatchNo;
     const reinsureRiskData: RiskReinsurePOSTDTO[] = []
 
     this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
-      .subscribe((data) => {
-        this.reinsureRiskPOSTData = data;
-        log.info('reinsure clicked>>', data);
-        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully reinsured');
-
+      .subscribe({
+          next: (data) => {
+            this.reinsureRiskPOSTData = data;
+            log.info('reinsure clicked>>', data);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully reinsured');
+            this.isLoadingReinsure = false;
+          },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoadingReinsure = false;
+        }
       })
   }
 
