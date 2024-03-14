@@ -10,6 +10,8 @@ import { StringManipulation } from 'src/app/features/lms/util/string_manipulatio
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
 import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import { Util } from 'leaflet';
+import { Utils } from 'src/app/features/lms/util/util';
 
 @Component({
   selector: 'app-insurance-history',
@@ -42,6 +44,10 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   policyListOne: any[] = [];
   editEntity: boolean;
   coverStatusTypeList: any[] = [];
+  coverStatusTypeListOne: any[] = [];
+  coverStatusTypeListTwo: any[] = [];
+
+  util: Utils;
   // insuranceHistoryForm: FormGroup;
 
   constructor(
@@ -51,6 +57,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     private spinner_service: NgxSpinnerService,
     private toast: ToastService
   ) {
+    this.util = new Utils(this.session_storage)
     this.insuranceHistoryForm = this.fb.group({
       question1: ['N'],
       responseOne: [],
@@ -81,13 +88,18 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   addResponseOne(x) {
+    this.spinner_service.show('ins_view');
+
     let pol_data = this.policyListOne.filter((data, i) => {
       return i === x;
     })[0];
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormOne.value,
-    }).subscribe((pol_sub_data) => {
+    })
+    .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
+    ))
+    .subscribe((pol_sub_data) => {
       this.policyListOne = this.policyListOne.map((data, i) => {
         if (i === x) {
           let temp = this.insuranceHistoryFormOne.value;
@@ -96,18 +108,23 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
         }
         return data;
       });
+      this.spinner_service.hide('ins_view');
 
       this.insuranceHistoryFormOne.reset();
     });
   }
   addResponseTwo(x) {
+    this.spinner_service.show('ins_view');
     let pol_data = this.policyListTwo.filter((data, i) => {
       return i === x;
     })[0];
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormTwo.value,
-    }).subscribe((pol_sub_data) => {
+    })
+    .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
+    ))
+    .subscribe((pol_sub_data) => {
       this.policyListTwo = this.policyListTwo.map((data, i) => {
         if (i === x) {
           let temp = this.insuranceHistoryFormTwo.value;
@@ -116,6 +133,8 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
         }
         return data;
       });
+      this.spinner_service.hide('ins_view');
+
 
       this.insuranceHistoryFormTwo.reset();
     });
@@ -154,13 +173,19 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   deletePolicyListOne(i: number) {
+    this.spinner_service.show('ins_view')
     let deleted_pol = this.policyListOne.find((data, x) => {
       return i === x;
     });
-    this.client_history_service.deleteInsuranceHistory(deleted_pol['code']).subscribe(data =>{
+    this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
+    .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
+    ))
+    .subscribe(data =>{
       this.policyListOne = this.policyListOne.filter((data, x) => {
         return i !== x;
       });
+      this.spinner_service.hide('ins_view')
+
     })
   }
 
@@ -174,15 +199,21 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
 
   deletepolicyListTwo(i: number) {
+    this.spinner_service.show('ins_view');
     let deleted_pol = this.policyListTwo.find((data, x) => {
       return i === x;
     });
-    this.client_history_service.deleteInsuranceHistory(deleted_pol['code']).subscribe(data =>{
+    this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
+    .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
+    ))
+    .subscribe(data =>{
       this.policyListTwo = this.policyListTwo.filter((data, x) => {
         return i !== x;
       });
+      this.spinner_service.hide('ins_view');
     })
   }
+
   cancelPolicyListTwo(i: number) {
     this.policyListTwo = this.policyListTwo.map((data, x) => {
       data['isEdit'] = false
@@ -207,9 +238,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   getLmsInsHistList() {
     this.spinner_service.show('ins_view');
-    let clientCode = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
+    // let clientCode = this.session_storage.get(SESSION_KEY.CLIENT_CODE);
     this.client_history_service
-      .getLmsInsHistList(clientCode)
+      .getLmsInsHistList(this.util.getClientCode())
       .pipe(finalize(() => this.spinner_service.hide('ins_view')))
       .subscribe((data: any) => {
         if(data['data']!==null){
@@ -240,11 +271,24 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       });
   }
 
+  
+
   getAllCoverStatusTypes() {
     this.client_history_service
       .getAllCoverStatusTypes()
       .subscribe((data: any[]) => {
         this.coverStatusTypeList = [...data];
+        this.coverStatusTypeListOne = this.coverStatusTypeList.filter(data => {
+          if(data['name']==='A' ||data['name']==='S'||data['name']==='L'||data['name']==='PU'){
+            return data
+          }
+        })
+
+        this.coverStatusTypeListTwo = this.coverStatusTypeList.filter(data => {
+          if(data['name']==='J' ||data['name']==='V'||data['name']==='W'){
+            return data
+          }
+        })
       });
   }
 
@@ -255,13 +299,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   saveInsuranceHistory(data: any) {
-    let client_code = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.CLIENT_CODE)
-    );
-
     let ins = { ...data };
-    ins['clnt_code'] = client_code;
-    ins['prp_code'] = client_code;
+    ins['clnt_code'] = this.util.getClientCode();
+    ins['prp_code'] = this.util.getClientCode();
     ins['prp_code'] = null;
     console.log(ins);
     return this.client_history_service.saveInsuranceHistory(ins);
@@ -274,6 +314,26 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         console.log(insCode);
       });
+  }
+
+  selectFirstQuestion(){
+    if(this.policyListOne.length>0){
+      this.policyListOne.forEach((m, i)=>{
+        this.deletePolicyListOne(i)
+  
+      });  
+    }
+      
+  }
+
+  selectSecondQuestion(){
+    if(this.policyListTwo.length>0){
+
+    this.policyListTwo.forEach((m, i)=>{
+      this.deletepolicyListTwo(i)
+
+    });  
+  }  
   }
 
   // private addEntity(d: FormGroup) {

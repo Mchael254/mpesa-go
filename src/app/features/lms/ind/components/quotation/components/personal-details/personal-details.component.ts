@@ -59,6 +59,7 @@ import { Utils } from 'src/app/features/lms/util/util';
 import { Pagination } from 'src/app/shared/data/common/pagination';
 import { IdentityTypeService } from 'src/app/features/lms/service/identityType/identity-type.service';
 import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
+import { SectorOccupationComponent } from 'src/app/features/crm/components/sector-occupation/sector-occupation.component';
 
 @Component({
   selector: 'app-personal-details',
@@ -101,6 +102,7 @@ export class PersonalDetailsComponent implements OnInit {
   getFormControlsNameWithErrors: string[] = [];
   identityFormatDesc: { id: number; exampleFormat: string };
   minDate = DataManipulation.getMinDate();
+  occupationsData: any[] = [];
   util: Utils;
 
   constructor(
@@ -123,7 +125,8 @@ export class PersonalDetailsComponent implements OnInit {
     private lms_client_service: LMSClientService,
     private form_service: FormsService,
     private quotation_service: QuotationService,
-    private identity_service: IdentityTypeService
+    private identity_service: IdentityTypeService,
+    // private occu_service: SectorOccupationComponent
   ) {}
 
   ngOnInit() {
@@ -144,6 +147,24 @@ export class PersonalDetailsComponent implements OnInit {
     }
 
     this.util = new Utils(this.session_storage);
+
+
+    this.fetchOccupations(2)
+  }
+
+
+  fetchOccupations(organizationId: number) {
+    this.occupation_service
+      .getOccupations(organizationId)
+      .subscribe( (data) => {
+          // if (data) {
+            this.occupationsData = data;
+            // log.info(`Fetched Occuption Data`, this.occupationsData);
+          
+          }
+        
+        
+      );
   }
 
   formValidation() {

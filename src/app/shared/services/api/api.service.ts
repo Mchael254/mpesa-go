@@ -72,7 +72,7 @@ export class ApiService {
     return this.http.post<T>(url, data, { headers, params:params });
   }
 
-  public POSTBYTE(endpoint: string, data: any, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params = null): Observable<ArrayBuffer> {
+  public POSTBYTE(endpoint: string, data: any, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params = null): Observable<any> {
      this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     let url = '';
     if(endpoint===null){
@@ -82,7 +82,7 @@ export class ApiService {
     }
     const headers = this.getHeaders();
     
-    return this.http.post(url, data, { headers, params, responseType: 'arraybuffer' });
+    return this.http.post(url, data, { headers, params, responseType: 'blob' });
   }
 
 

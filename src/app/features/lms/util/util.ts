@@ -49,6 +49,11 @@ export class Utils {
     return quote_code===null?null:quote_code['quote_no'];  
   }
 
+  public getWebQuoteCode(){
+    let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
+    return quote_code===null?null:quote_code['code'];  
+  }
+
   public getEndrCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
     return quote_code?quote_code?.endr_code:null;  

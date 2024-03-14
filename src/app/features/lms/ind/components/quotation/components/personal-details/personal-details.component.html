@@ -858,12 +858,25 @@
                   <label for="occupation_id" class="quote-label">
                     Occupation</label
                   >
-                  <input
+                  <!-- <input
                     type="text"
                     id="occupation_id"
                     class="form-control form-control mb-1"
                     formControlName="occupation_id"
-                  />
+                  /> -->
+                  <select
+                    id="marital_status"
+                    class="form-select form-select mb-1"
+                    id="quote-input"
+                    placement="right"
+                    formControlName="occupation_id"
+                  >
+                    <option selected="true" disabled="disabled"></option>
+                    <ng-container *ngFor="let item of occupationsData">
+                      <option [value]="item.id" >{{item?.name}}</option>
+                    </ng-container>
+                    
+                  </select>
                 </div>
               </div>
               <div class="row mb-4">

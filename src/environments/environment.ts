@@ -18,6 +18,7 @@ export const environment = {
     // [API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, '/lms/grp/quotation'],
     // [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, '/lms/ind/marketing'],
     // [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, '/lms/underwriting'],
+    // [API_CONFIG.SETUPS_SERVICE_BASE_URL, '/lms/setups'],
     [API_CONFIG.SETUPS_SERVICE_BASE_URL, 'http://localhost:5000'],
     [API_CONFIG.IND_MARKETING_SERVICE_BASE_URL, 'http://localhost:5001'],
     [API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, 'http://localhost:5002'],

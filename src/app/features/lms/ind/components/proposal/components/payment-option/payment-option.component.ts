@@ -41,6 +41,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   constructor(private bank_service: BankService, private session_storage: SessionStorageService){  }
   ngOnInit(): void {
     this.quote = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS))
+    this.quote['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS))?.proposal_no
     // this.getBankList();
     console.log(this.payment_details);
     

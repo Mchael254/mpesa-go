@@ -95,43 +95,64 @@
                           </div>
                         </div>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                        
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="checkedDate">Checked Date</label>
-                        <input type="text" class="form-control" formControlName="cheque_date" />
+                        <!-- <input type="text" class="form-control" formControlName="cheque_date" /> -->
+                        <p-calendar ngDefaultControl formControlName="cheque_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                        </p-calendar>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
-                        <label for="facilitator">Facilitator</label>
-                        <input type="text" class="form-control" formControlName="facilitator" />
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                        <label for="facilitator">Facilitator</label>                
+                  <select
+                    id="facilitator"
+                    class="form-select form-select mb-1"
+                    id="quote-input"
+                    placement="right"
+                    formControlName="facilitator"
+                  >
+                    <option selected="true" disabled="disabled"></option>
+                    <ng-container *ngFor="let item of facilitatorList">
+                      <option [value]="item?.code">{{item?.name | titlecase}}</option>
+
+
+                    </ng-container>
+                    
+                  </select>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="limitAmount">Limit Amount</label>
                         <input type="text" class="form-control" formControlName="limit" />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="invoiceAmount">Invoice Amount</label>
                         <input type="text" class="form-control" formControlName="claim_amt" />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="payableAmount">Payable Amount</label>
                         <input type="text" class="form-control" formControlName="payable_amt" />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="invoiceNo">Invoice No.</label>
                         <input type="text" class="form-control" formControlName="invoice_no" />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="invoiceDate">Invoice Date</label>
-                        <input type="text" class="form-control" formControlName="invoice_date" />
+                        <!-- <input type="text" class="form-control" formControlName="invoice_date" /> -->
+                        <p-calendar ngDefaultControl formControlName="invoice_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                          </p-calendar>
+
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12">
+                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
                         <label for="remarks">Remarks</label>
                         <input type="text" class="form-control" formControlName="remarks" />
                       </div>
-                      <!-- Add more input fields for other form controls -->
                     </div>
-                    <div class="d-flex justify-content-end">
+                      <!-- Add more input fields for other form controls -->
+                    <div class="d-flex justify-content-end" *ngIf="form.get('checked').value==='Y'">
                       <button type="submit" class="btn btn-primary" (click)="saveMedicalResult(i)">Save</button>
                     </div>
+                      
                   </form>
                 </div>
               </div>
@@ -149,6 +170,7 @@
         <div class="row px-4 pt-2">
           <div class="col-lg-7 col-md-6 col-sm-12 w-50">
             <div class="row py-2" *ngFor="let item of getListOfMedicalDocuments()">
+
               <span class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
               <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Share <i class="fa-solid fa-share-nodes"></i></span>
               <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Preview <i class="fa-regular fa-eye"></i></span>

@@ -6,6 +6,10 @@ import { MedicalsService } from 'src/app/features/lms/service/medicals/medicals.
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { Utils } from 'src/app/features/lms/util/util';
+import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 
 @Component({
   selector: 'app-result-processing',
@@ -33,17 +37,29 @@ export class ResultProcessingComponent implements OnInit {
   diseaseForms: FormGroup[] = [];
   // medicalResultForm : FormGroup;
   medicalReports:any[] = [];
+  facilitatorList: any[] = [];
+  util: Utils;
 
   constructor(
     private router: Router,
     private medical_service: MedicalsService,
     private dmsService: DmsService,
     private spinner_service:NgxSpinnerService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private storage_service:SessionStorageService,
+    private toast_service: ToastService,
+
+  ) {
+    this.util = new Utils(this.storage_service);
+  }
 
   ngOnInit(): void { 
     this.getClientMedicalTest();
+    this.medical_service.serviceProvider().subscribe(data =>{
+      console.log(data);
+      this.facilitatorList = data;
+      
+    })
     // this.medicalResultForm = this.fb.group({
     //   checked: [],
     //   cheque_date: [],
@@ -60,7 +76,15 @@ export class ResultProcessingComponent implements OnInit {
   private initForms(): void {
 
     this.diseaseForms = this.diseases.map((disease) =>
-      { return this.createForm(disease);}
+    
+      { 
+        disease['checked'] = disease['received'];
+        disease['invoice_date'] = new Date(disease['invoice_date']);
+        disease['cheque_date'] = new Date(disease['date_received']);
+        disease['limit'] = disease['limit'];
+        disease['facilitator'] = disease['spr_code'];
+        
+        return this.createForm(disease);}
     );
 
   }
@@ -95,9 +119,32 @@ export class ResultProcessingComponent implements OnInit {
   }
 
   downloadReport(item: any){
+    console.log(item);
     this.medical_service.downloadMedicalTestFile(item.rpt_code)
-    .subscribe(data =>{
-      // this.dmsService.downloadFile(data, item.document);
+    .subscribe(
+      (response: Blob) => {
+        // Create a blob from the response data
+        const blob = new Blob([response], { type: 'application/pdf' });
+
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link element and set its href to the URL of the blob
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Set the filename for the downloaded file
+        link.download = `${item.document}.pdf`;
+
+        // Append the link to the document body and click it to trigger the download
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up by revoking the URL
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+    // .subscribe(data =>{
+    //   // this.dmsService.downloadFile(data, item.document);
     },
     err=>{
       console.log(err);
@@ -105,6 +152,7 @@ export class ResultProcessingComponent implements OnInit {
     })
 
   }
+
 
   private createForm(disease: any): FormGroup {
     console.log(disease);
@@ -117,6 +165,7 @@ export class ResultProcessingComponent implements OnInit {
       claim_amt: [disease.claim_amt], //invoiceAmount
       payable_amt: [disease.payable_amt],
       invoice_no: [disease.invoice_no],
+      cml_code: [disease.cml_code],
       invoice_date: [disease.invoice_date],
       remarks: [disease.remarks],
     });
@@ -127,6 +176,8 @@ export class ResultProcessingComponent implements OnInit {
     this.medical_service
       .getListOfClientMedicalTests()
       .subscribe((data: any[]) => {
+        // console.log(data);
+        
         this.diseases = data[0]?.medical_tests;
         this.initForms();
         this.spinner_service.hide('medical_test_results_view');
@@ -136,13 +187,15 @@ export class ResultProcessingComponent implements OnInit {
       });
   }
 
-  updateClientMedicalTest(payload: any) {
-    this.medical_service.updateClientMedicalTest(payload).subscribe((data) => {
-      console.log(data);
-    });
-  }
+  // updateClientMedicalTest(payload: any) {
+  //   this.medical_service.updateClientMedicalTest(payload).subscribe((data) => {
+  //     console.log(data);
+  //   });
+  // }
 
   saveMedicalResult(index: number): void {
+    this.spinner_service.show('medical_test_results_view');
+
     const form = this.diseaseForms[index];
     console.log(form.value);
     
@@ -161,14 +214,53 @@ export class ResultProcessingComponent implements OnInit {
       this.diseases[index].remarks = formData.remarks;
 
       // Call your save method here, passing the updated disease object
-      console.log('Disease updated:', this.diseases[index]);
-      // this.medical_service.updateClientMedicalTest(form.value).subscribe((data: any)=> {
-      //   console.log(data);
+      // console.log('Disease updated:', this.diseases[index]);
+    //   let val = {
+    //     "cml_code": formData?.cml_code,
+    //     // "description": formData?.remarks,
+    //     "limit": formData?.limitAmount,
+    //     // "request_date": formData,
+    //     // "spr_name": null,
+    //     // "claim_amt": formData,
+    //     "payable_amt": formData?.payableAmount,
+    //     "received": formData?.checked,
+    //     "date_received": formData?.checkedDate,
+    //     "invoice_no": formData?.invoiceNo,
+    //     "invoice_date": formData?.invoiceDate,
+    //     // "cheque_no": formData,
+    //     "cheque_date": formData?.checkedDate,
+    //     "remarks": formData?.remarks,
+    //     // "spr_code": null,
+    //     // "validity_period": 24,
+    //     "endr_code": this.util.getEndrCode()
+    // }
+
+      let val = {
         
-      // })
+        "claim_amt": formData?.payable_amt,
+        "received": formData?.checked,
+        "date_received": formData?.cheque_date,
+        "invoice_no": formData?.invoice_no,
+        "invoice_date": formData?.invoice_date,
+        "request_date": formData?.invoice_date,
+        "remarks": formData?.remarks,
+        "spr_code": StringManipulation.returnNullIfEmpty(formData?.facilitator),
+        "endr_code": this.util.getEndrCode()
+    }
+      this.medical_service.updateClientMedicalTest(val, formData?.cml_code).subscribe((data: any)=> {
+        console.log(data);
+        this.spinner_service.hide('medical_test_results_view');
+        this.toast_service.success('Save Record Successfully','Capture Medical Test Results'.toUpperCase())
+      },
+      (err: any)=>{
+        this.toast_service.danger(err?.error?.errors[0], 'Capture Medical Test Results'.toUpperCase() )
+        this.spinner_service.hide('medical_test_results_view');
+      })
     } else {
       // Mark all fields as touched to display validation messages
       form.markAllAsTouched();
+      this.spinner_service.hide('medical_test_results_view');
+
     }
   }
 
