@@ -17,7 +17,7 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Search"
+                placeholder="Search by name"
                 aria-label="search"
                 aria-describedby="search"
                 (input)="filterServiceProviderTypes($event)"
@@ -116,7 +116,7 @@
                 placeholder="Search"
                 aria-label="search"
                 aria-describedby="search"
-                (input)="filterServiceProviderTypes($event)"
+                (input)="filterServiceProviderTypeActivity($event)"
               />
             </div>
             <div class="col-sm-8 col-6">
@@ -124,19 +124,19 @@
                 <span class="icon-circle"
                   ><i
                     class="fa-solid fa-plus"
-                    (click)="openServiceProviderTypeModal()"
+                    (click)="openServiceProviderTypeActivityModal()"
                   ></i
                 ></span>
                 <span class="icon-circle"
                   ><i
                     class="pi pi-pencil"
-                    (click)="editServiceProviderType()"
+                    (click)="editServiceProviderTypeActivity()"
                   ></i
                 ></span>
                 <span class="icon-circle"
                   ><i
                     class="fa-regular fa-trash-can"
-                    (click)="deleteServiceProviderType()"
+                    (click)="deleteServiceProviderTypeActivity()"
                   ></i
                 ></span>
               </div>

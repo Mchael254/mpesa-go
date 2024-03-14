@@ -151,7 +151,7 @@ export class MenuService {
             link: '/home/crm/user-parameters',
           },
           {
-            name: 'Currencies',
+            name: 'Currencies & Currency Rates',
             link: '/home/crm/currencies',
           },
           {
@@ -425,9 +425,7 @@ export class MenuService {
         name: 'Actions',
         nameSlug: 'actions',
         icon: 'fa-solid fa-gears',
-        menuItems: [
-          { name: 'Cheque signing', link: '' },
-        ],
+        menuItems: [{ name: 'Cheque signing', link: '' }],
         collapsed: true,
       },
     ],

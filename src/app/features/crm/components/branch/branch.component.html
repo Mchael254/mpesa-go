@@ -219,7 +219,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Search by name, home or email address"
+              placeholder="Search by name or email address"
               aria-label="search"
               aria-describedby="search"
               (input)="filterBranchContact($event)"
@@ -965,7 +965,7 @@
         <button
           type="button"
           class="btn-close"
-          data-bs-dismiss="modal"
+          (click)="closeBranchContactModal()"
           aria-label="Close"
         ></button>
       </div>
