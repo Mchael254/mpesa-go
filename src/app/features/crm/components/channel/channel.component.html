@@ -15,7 +15,7 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Search"
+                placeholder="Search by name"
                 aria-label="search"
                 aria-describedby="search"
                 (input)="filterChannels($event)"
@@ -48,11 +48,11 @@
                 [scrollable]="true"
                 scrollHeight="400px"
                 class="ui-datatable"
-                [globalFilterFields]="['channelName', 'channelDesc']"
+                [globalFilterFields]="['channelName']"
               >
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="head">Code</th>
+                    <!-- <th class="head">Code</th> -->
                     <th class="head">Name</th>
                     <th class="head">Description</th>
                   </tr>
@@ -63,7 +63,7 @@
                     (click)="onChannelRowSelect(channel)"
                     [class.selected]="selectedChannel === channel"
                   >
-                    <td class="body">{{ channel.id }}</td>
+                    <!-- <td class="body">{{ channel.id }}</td> -->
                     <td class="body">{{ channel.channelName }}</td>
                     <td class="body">
                       {{ channel.channelDesc }}
