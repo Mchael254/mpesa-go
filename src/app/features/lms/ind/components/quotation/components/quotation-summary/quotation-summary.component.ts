@@ -322,12 +322,14 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             );
             let quote = this.session_storage_service.get(
               SESSION_KEY.QUOTE_DETAILS
-            );
+            );            
             if (quote) {
               quote['endr_code'] = data?.proposal_details?.endr_code;
               quote['pol_code'] = data?.proposal_details?.pol_code;
               quote['pol_status'] = data?.proposal_details?.pol_status;
               quote['ppr_code'] = data?.proposal_details?.ppr_code;
+              quote['proposal_no'] = data?.proposal_details?.proposal_no;
+
               this.session_storage_service.set(
                 SESSION_KEY.QUOTE_DETAILS,
                 quote
@@ -343,9 +345,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             this.session_storage_service.set(
               SESSION_KEY.WEB_QUOTE_DETAILS,
               web_quote
-            );
-            console.log(web_quote);
-            
+            );            
           },
           (err: any) => {
             this.toast.danger(err['error']['errors'][0], 'WARNING');

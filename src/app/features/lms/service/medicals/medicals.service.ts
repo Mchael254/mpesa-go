@@ -34,8 +34,12 @@ export class MedicalsService {
     return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
-  updateClientMedicalTest(test:{}){
-    return this.api.PUT<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  updateClientMedicalTest(test: any, cml_code:number){
+    return this.api.PUT<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests/${cml_code}`,test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  serviceProvider(){
+    return this.api.GET<any>(`service-provider-types`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
   }
 
   downloadMedicalTestFile(rpt_code: number){

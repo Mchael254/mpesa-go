@@ -24,7 +24,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
   steps = stepData;
   editEntity: boolean;
   beneficiaryForm: FormGroup;
-
+  dependentForm: FormGroup;
 
   breadCrumbItems: BreadCrumbItem[] = [
     { label: 'Home', url: '/home/dashboard' },
@@ -40,6 +40,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
   beneficiaryTypeList: any[] = [];
   dependentList: any[] = [];
   util: Utils;
+  editDepEntity: boolean;
 
 
 
@@ -61,6 +62,24 @@ export class BeneficiariesDependentsComponent implements OnInit{
     this.getDependentListByQuotationCode();
     this.getAllBeneficiaryTypes();
     this.getRelationTypes();
+    this.dependentForm = this.fb.group(
+      {
+        // "ppr_code": this.util.getClientCode(),
+        "surname": [],
+        "other_name": [],
+        // "id_no": "string",
+        "dob": [],
+        "code":[],
+        "gender": [],
+        "dty_code": 0,
+        "co_code": 0,
+        "is_adopted": [],
+        "pol_code": this.util.getTelQuoteCode(),
+        "tquo_code": this.util.getTelQuoteCode(),
+        // "pod_unique_code_number": 0,
+        // "monthly_income": 0
+      }
+    )
 
   }
 
@@ -106,7 +125,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
     this.spinner_service.show('beneficiary_modal_screen');
     this.isBeneficiaryLoading = true;
     let beneficiary = { ...this.beneficiaryForm.value };
-    beneficiary['client_code'] = null;
+    beneficiary['client_code'] = this.util.getClientCode();
     beneficiary['quote_code'] = this.getQuoteCode();
     beneficiary['percentage_benefit'] = StringManipulation.returnNullIfEmpty(
       beneficiary['percentage_benefit']
@@ -173,6 +192,42 @@ export class BeneficiariesDependentsComponent implements OnInit{
       );
     }
   }
+  saveDependent() {
+    this.spinner_service.show('beneficiaries_view');
+
+    this.spinner_service.show('dependent_modal_screen');
+    let dep = { ...this.dependentForm.value };
+    dep['dty_code']=1001;
+    console.log(dep);
+    
+
+    return this.party_service.saveDependent(dep)
+        .pipe(
+          finalize(() => {
+            // this.isBeneficiaryLoading = false;
+            this.spinner_service.hide('dependent_modal_screen');
+          })
+        ).subscribe(
+          (data) => {
+            this.getDependentListByQuotationCode();
+            this.closeCategoryDetstModal('categoryDetsModalTwo');
+            this.dependentForm.reset();
+            this.spinner_service.hide('dependent_modal_screen');
+            // this.isBeneficiaryLoading = false;
+            this.toast.success(
+              'Dependent Details Added Successfully',
+              'Dependent'
+            );
+          },
+          (err) => {
+            this.spinner_service.hide('dependent_modal_screen');
+
+            this.toast.danger(err?.error?.errors[0], 'SAVE DEPENDENT ');
+          }
+        );
+    
+  }
+
   deleteBeneficiary(i: number) {
     this.editEntity = true;
     let beneficiary: {} = this.beneficiaryList.filter((data, x) => x === i)[0];
@@ -181,6 +236,19 @@ export class BeneficiariesDependentsComponent implements OnInit{
       .subscribe((data) => {
         this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
         this.editEntity = false;
+      });
+  }
+  deleteDependent(i: number) {
+    this.editDepEntity = true;
+    let dep: {} = this.dependentList.filter((data, x) => x === i)[0];
+    this.party_service
+      .deleteDependent(dep['code'])
+      .subscribe((data) => {
+        this.beneficiaryList = this.deleteEntity(this.dependentList, i);
+        this.editDepEntity = false;
+      },
+      err=>{
+        this.editDepEntity = false;
       });
   }
   editBeneficiary(i: number) {
@@ -205,17 +273,20 @@ export class BeneficiariesDependentsComponent implements OnInit{
     });
   }
 
+  editDependent(i: number) {
+    this.showCategoryDetstModalTwo();
+    this.dependentList = this.dependentList.map((data, x) => {
+      if (i === x) {
+        data['dob'] = new Date(data['dob']);
+        console.log(data);
+        this.dependentForm.patchValue(data);
+      }
+      return data;
+    });
+  }
 
   getQuoteCode() {
-    let client_info = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-    );
-    if (client_info === null) {
-      return StringManipulation.returnNullIfEmpty(
-        this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      )['quote_no'];
-    }
-    return client_info['quote_code'];
+    return this.util.getTelQuoteCode();
   }
 
   checkIfGuardianIsNeeded() {
@@ -233,6 +304,15 @@ export class BeneficiariesDependentsComponent implements OnInit{
       modal.style.display = 'block';
     }
   }
+
+  showCategoryDetstModalTwo() {
+    const modal = document.getElementById('categoryDetsModalTwo');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
   cancelBeneficiary() {
     this.beneficiaryForm.reset();
     this.closeCategoryDetstModal();
@@ -262,14 +342,13 @@ export class BeneficiariesDependentsComponent implements OnInit{
     return age;
   }
 
-  closeCategoryDetstModal() {
-    const modal = document.getElementById('categoryDetsModal');
+  closeCategoryDetstModal(name='categoryDetsModal') {
+    const modal = document.getElementById(name);
     if (modal) {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
   }
-  
 
   getValueBeneficiaryValue(name: string = 'question1') {
     return this.beneficiaryForm.get(name).value;
@@ -282,7 +361,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
     );
     this.party_service
       .getListOfDependentByQuotationCode(
-        this.util.getTelQuoteCode(),
+        this.getQuoteCode(),
         this.util.getProposalCode()
       )
       .pipe(finalize(() => (this.editEntity = false)))
@@ -307,6 +386,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
         this.beneficiaryList = data;
       });
   }
+  
   calculateAge(dateOfBirth: string | number | Date): number {
     const today = new Date();
     const dob = new Date(dateOfBirth);
@@ -325,19 +405,23 @@ export class BeneficiariesDependentsComponent implements OnInit{
   }
 
   nextPage(){
-    let perc = this.beneficiaryList.map(data => data['percentage_benefit']);
-    let total = perc.reduce((prev, cur) => prev + cur, 0);
+    let total = this.beneficiaryList.map(data => data['percentage_benefit']).reduce((prev, cur) => prev + cur, 0);
+    // let total = perc.reduce((prev, cur) => prev + cur, 0);
 
     if(this.beneficiaryList.length===0){
       this.toast.danger('Provide at least a beneficiary', 'BENEFICIARY DETAIL');
       return;
     }
 
-    if(total!==100){
-      this.toast.danger('percentage benefit is less than 100%', 'PERCENTAGE BENEFIT');
+    if(total<100){
+      this.toast.danger('Percentage Benefit is less than 100%', 'PERCENTAGE BENEFIT');
       return;
     }
     this.router.navigate(['/home/lms/ind/quotation/insurance-history'])
+  }
+
+  get total(){
+    return this.beneficiaryList.map(data => data['percentage_benefit']).reduce((prev, cur) => prev + cur, 0)
   }
 
 

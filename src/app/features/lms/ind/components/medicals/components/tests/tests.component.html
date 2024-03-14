@@ -272,8 +272,8 @@
         </div>
         <div class="row px-4 pt-2">
           <div class="col-md-4 col-sm-12">
-            <div class="row py-0">
-              <span class="col-md-6 col-sm-12">Medical Test Questionaire</span>
+            <div class="row py-0" *ngFor="let item of getListOfMedicalDocuments()">
+              <span class="col-md-6 col-sm-12" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
               <span class="text-black col-md-3 col-sm-12 fw-medium"
                 >Share <i class="fa-solid fa-share-nodes"></i
               ></span>

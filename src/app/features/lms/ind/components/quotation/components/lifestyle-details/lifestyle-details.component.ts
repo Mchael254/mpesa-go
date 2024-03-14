@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { PayFrequency } from 'src/app/features/lms/grp/components/quotation/models/payFrequency';
 import { PayFrequencyService } from 'src/app/features/lms/grp/components/quotation/service/pay-frequency/pay-frequency.service';
+import { Utils } from 'src/app/features/lms/util/util';
 
 
 @Component({
@@ -48,10 +49,12 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   bmi: {} = {};
   bmiNotReady: boolean = false;
   isLoading: boolean = false;
+  util: Utils;
 
   constructor(private fb: FormBuilder, private spinner_service: NgxSpinnerService, private router: Router, private session_service: SessionStorageService,
               private country_service: CountryService, private payFrequenciesService: PayFrequencyService, private lifestyle_service: LifestyleService,
               private toast: ToastService) {
+                this.util = new Utils(this.session_service);
     this.clientLifestyleForm = this.fb.group({
       code: [],
       isClientHazardous: ['N'],
@@ -151,9 +154,8 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   saveClientLifeStyle() {
     this.spinner_service.show("lifestyle_screen");
     this.isLoading = true;
-    let client_code = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.CLIENT_CODE));
     let payload = {...this.clientLifestyleForm.value, ...this.bmiForm.value};
-    payload['webClientCode'] = client_code;
+    payload['webClientCode'] = this.util.getClientCode();
     payload['clientBmi'] = payload['bmi'];
     let life_style_base_service: Observable<any>;
 

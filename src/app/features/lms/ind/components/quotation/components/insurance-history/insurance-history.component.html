@@ -50,6 +50,7 @@
                     id="question1No"
                     formControlName="question1"
                     value="N"
+                    (click)="selectFirstQuestion()"
                   />
                   <label class="form-check-label" for="question1No">No</label>
                 </span>
@@ -147,7 +148,7 @@
                                         </option>
                                         <ng-container
                                           *ngFor="
-                                            let type of coverStatusTypeList
+                                            let type of coverStatusTypeListOne
                                           "
                                         >
                                           <option [value]="type['name']">
@@ -268,6 +269,7 @@
                   id="female"
                   formControlName="question2"
                   value="N"
+                  (click)="selectSecondQuestion()"
                 />
                 <label class="form-check-label" for="female">No</label>
               </span>
@@ -361,7 +363,7 @@
                                         Status
                                       </option>
                                       <ng-container
-                                        *ngFor="let type of coverStatusTypeList"
+                                        *ngFor="let type of coverStatusTypeListTwo"
                                       >
                                         <option [value]="type['name']">
                                           {{ type["value"] | titlecase }}

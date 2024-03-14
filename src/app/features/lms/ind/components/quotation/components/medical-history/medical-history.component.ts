@@ -13,6 +13,8 @@ import { environment } from '../../../../../../../../environments/environment';
 import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
 import {StringManipulation} from "../../../../../util/string_manipulation";
 import {RelationTypesService} from "../../../../../service/relation-types/relation-types.service";
+import { Utils } from 'src/app/features/lms/util/util';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
 
 @Component({
   selector: 'app-medical-history',
@@ -49,6 +51,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   diseaseList: any[] =[]
   relationTypeList: any[] =[];
   gender: string ='';
+  util: Utils;
   constructor(
     private fb: FormBuilder,
     private medical_history_service: MedicalHistoryService,
@@ -56,8 +59,10 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     private spinner_service: NgxSpinnerService,
     private router: Router,
     private relation_type_service: RelationTypesService,
-    private toast: ToastService
+    private toast: ToastService,
+    private crm_client_service: ClientService
   ) {
+    this.util = new Utils(this.session_service);
     this.medicalHistoryForm = this.fb.group({
       question1: [],
       question2: [],
@@ -95,8 +100,9 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     })
   }
   ngOnInit(): void {
-        let client_info = StringManipulation.returnNullIfEmpty(SESSION_KEY.CLIENT_DETAILS);
-    this.gender = client_info?client_info['gender']:'';
+        // let client_info = StringManipulation.returnNullIfEmpty(SESSION_KEY.CLIENT_DETAILS);
+    // this.gender = client_info?client_info['gender']:'';
+    this.getClientById(this.util.getClientCode());
     this.relation_type_service.getRelationTypes()
     .pipe(switchMap((data: any) => {
       this.relationTypeList = data;
@@ -109,16 +115,34 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
 
   }
 
+  getClientById(code: any){
+    this.spinner_service.show('medical_history_screen');
+    this.crm_client_service.getClientById(code).subscribe(data =>{
+      this.gender=data['gender'];
+            
+      this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
+      this.spinner_service.hide('medical_history_screen');
+
+    },
+    err => {
+      console.log(err);
+      // this.toast.danger('Unable to Fetch Client Details', 'CLIENT DETAILS');
+      this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
+      this.spinner_service.hide('medical_history_screen');
+
+      
+    })
+  }
+
   getValue(name: string = 'question1') {
     return this.medicalHistoryForm.get(name).value;
   }
 
   getMedicalHistoryByClientId() {
     this.spinner_service.show('medical_history_screen');
-    let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
     let tenant_id = environment.TENANT_ID;
     this.medical_history_service
-      .getMedicalHistoryByTenantIdAndClientCode(tenant_id, client_code)
+      .getMedicalHistoryByTenantIdAndClientCode(tenant_id, this.util.getClientCode())
       .pipe(finalize(() => this.spinner_service.hide('medical_history_screen')))
       .subscribe(
         (data) => {
@@ -237,8 +261,9 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
       return i === x;
     })[0];
     
-    let record  = {...pol_data, ...this.medicalHistoryTableOne.value};
-    let medical_record = {...record, meh_code: {...this.medicalHistoryForm.value}['code']};
+    let record  = {...pol_data, ...this.medicalHistoryTableOne.value};    
+    
+    let medical_record = {...record, meh_code: {...this.medicalHistoryTableOne.value}['code']};
     this.saveMedicalHistoryDependant(medical_record).subscribe((pol_sub_data) => {
       console.log(pol_sub_data);
       
@@ -300,12 +325,8 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   }
 
   saveMedicalHistory(data: any) {
-    let client_code = StringManipulation.returnNullIfEmpty(
-      this.session_service.get(SESSION_KEY.CLIENT_CODE)
-    );
-    //
     let ins = { ...data};    
-    // ins['clnt_code'] = client_code;
+    ins['clnt_code'] = this.util.getClientCode();
     // ins['prp_code'] = client_code;
     // ins['prp_code'] = null;
     // console.log(ins);
@@ -319,7 +340,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   nextPage() {
     let val = {...this.medicalHistoryForm.value};
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
-    val['client_code'] = this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['client_code'];
+    val['client_code'] = this.util.getClientCode();
     val['tenant_id'] = environment.TENANT_ID;    
     if(this.medicalListOne?.length>0){
       val = {...val, dependants_info:[...this.medicalListOne]}

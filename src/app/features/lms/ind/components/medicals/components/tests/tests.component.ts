@@ -48,6 +48,7 @@ export class TestsComponent  implements OnInit{
   clientMedicalTestList: any = {};
   util: Utils;
   policySummaryDetails: any = {};
+  medicalReports: any[]  = [];
   testForm: FormGroup;
 
   constructor(private router:Router,  
@@ -75,6 +76,70 @@ export class TestsComponent  implements OnInit{
     this.testForm = this.fb.group({
       lien:['N']
     })
+  }
+
+  getListOfMedicalDocuments() : any[]{
+
+    return this.medicalReports = [
+      {
+        rpt_code:329560,
+        document:'MEDICAL LETTER'
+      },
+      {
+        rpt_code:3926,
+        document:'MEDICAL FORM'
+      },
+      {
+        rpt_code:789053,
+        document:'MEDICAL SENT LIST'
+      },
+      {
+        rpt_code:789187,
+        document:'MEDICAL LETTER TO CLIENT'
+      },
+      {
+        rpt_code:789188 ,
+        document:'MEDICAL LETTER TO DOCTOR'
+      }
+
+
+  ]
+
+  }
+
+  downloadReport(item: any){
+    console.log(item);
+    this.medical_service.downloadMedicalTestFile(item.rpt_code)
+    .subscribe(
+      (response: Blob) => {
+        // Create a blob from the response data
+        const blob = new Blob([response], { type: 'application/pdf' });
+
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link element and set its href to the URL of the blob
+        const link = document.createElement('a');
+        link.href = url;
+
+        // Set the filename for the downloaded file
+        link.download = `${item.document}.pdf`;
+
+        // Append the link to the document body and click it to trigger the download
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up by revoking the URL
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+    // .subscribe(data =>{
+    //   // this.dmsService.downloadFile(data, item.document);
+    },
+    err=>{
+      console.log(err);
+      
+    })
+
   }
 
 

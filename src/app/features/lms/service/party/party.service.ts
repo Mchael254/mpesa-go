@@ -51,4 +51,15 @@ export class PartyService {
     // return of(code)
     return this.api.DELETE(`parties/beneficiaries/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
   }
+
+  
+  saveDependent(deps: any){
+    let save_beneficiary_api: Observable<any>;
+    save_beneficiary_api =  deps?.code ===null?this.api.POST(`parties/dependents`, deps, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL):
+      this.api.PUT(`parties/dependents/${deps?.code}`, deps, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    return save_beneficiary_api;
+  }
+  deleteDependent(code: number){
+    return this.api.DELETE(`parties/dependents/${code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL);
+  }
 }
