@@ -201,6 +201,8 @@ export class ServiceProviderTypesComponent implements OnInit {
     this.serviceProviderTypeTable.filterGlobal(filterValue, 'contains');
   }
 
+  filterServiceProviderTypeActivity(event: Event) {}
+
   /**
    * The function `onServiceProviderTypeRowSelect` assigns the selected `ServiceProviderTypeDTO` to the
    * `selectedServiceProviderType` variable.
@@ -236,6 +238,10 @@ export class ServiceProviderTypesComponent implements OnInit {
       modal.style.display = 'none';
     }
   }
+
+  openServiceProviderTypeActivityModal() {}
+
+  closeServiceProviderTypeActivityModal() {}
 
   /**
    * The `saveServiceProviderType` function handles the saving and updating of service provider types,
@@ -460,4 +466,8 @@ export class ServiceProviderTypesComponent implements OnInit {
       );
     }
   }
+
+  editServiceProviderTypeActivity() {}
+
+  deleteServiceProviderTypeActivity() {}
 }

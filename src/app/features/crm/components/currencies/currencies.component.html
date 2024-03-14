@@ -14,7 +14,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Search by name"
+              placeholder="Search by Description"
               aria-label="search"
               aria-describedby="search"
               (input)="filterCurrencies($event)"
@@ -90,17 +90,19 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <!-- <label for="filterBy" class="col-1 col-form-label">Filter by:</label> -->
           <div class="form-group col-3">
-            <select class="form-select">
+            <select class="form-select" (change)="onFilterChange($event)">
               <option value="">Select Filter</option>
+              <option value="wef">WEF Date</option>
+              <option value="wet">WET Date</option>
             </select>
           </div>
+
           <div class="form-group col-3">
             <input
               type="text"
               class="form-control"
-              placeholder="Search"
+              placeholder="Search by currency"
               aria-label="search"
               aria-describedby="search"
               (input)="filterExchangeCurrency($event)"
@@ -136,6 +138,7 @@
               [scrollable]="true"
               scrollHeight="400px"
               class="ui-datatable"
+              [globalFilterFields]="['targetCurrency']"
             >
               <ng-template pTemplate="header">
                 <tr>
@@ -156,7 +159,7 @@
                   (click)="onCurrencyRateRowSelect(rate)"
                   [class.selected]="selectedCurrencyRate === rate"
                 >
-                  <td class="body">{{ rate.rateCurrency }}</td>
+                  <td class="body">{{ rate.targetCurrency }}</td>
                   <td class="body">{{ rate.rate }}</td>
                   <td class="body">
                     {{ formatDate(rate.withEffectFromDate) }}
@@ -195,17 +198,12 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Search by name or description"
+              placeholder="Search by name"
               aria-label="search"
               aria-describedby="search"
               (input)="filterCurrencyDenomination($event)"
             />
           </div>
-          <!-- <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
-          <div class="form-group col-3">
-            <input type="text" class="form-control" name="filterByDay" placeholder="Date" onfocus="(this.type='date')"
-              onblur="(this.type='text')">
-          </div> -->
           <div class="col-8">
             <div class="float-end">
               <span class="icon-circle"
@@ -623,15 +621,13 @@
       <div class="modal-body">
         <form [formGroup]="createCurrencyRateForm">
           <div class="row">
-            <div class="col-6 mb-3">
+            <div class="form-group col-6 mb-3">
               <label for="exchangeCurrency" class="form-label"
                 >Exchange Currency</label
               >
-              <input
-                type="text"
-                class="form-control"
+              <select
                 id="exchangeCurrency"
-                placeholder="Exchange Currency"
+                class="form-select mb-1"
                 formControlName="exchangeCurrency"
                 [ngClass]="{
                   'is-invalid':
@@ -639,7 +635,15 @@
                     (c['exchangeCurrency']?.dirty ||
                       c['exchangeCurrency']?.touched)
                 }"
-              />
+              >
+                <option value="" selected>Select Exchange Currency</option>
+                <option
+                  *ngFor="let currency of currenciesData"
+                  [value]="currency.id"
+                >
+                  {{ currency.name }}
+                </option>
+              </select>
               <div
                 *ngIf="
                   c['exchangeCurrency']?.invalid &&
@@ -726,23 +730,20 @@
             <div class="col-6 mb-3">
               <label for="date" class="form-label">Date</label>
               <input
-                type="text"
+                type="date"
                 class="form-control"
                 name="filterByDay"
                 placeholder="Date"
-                onfocus="(this.type='date')"
-                onblur="(this.type='text')"
+                formControlName="date"
               />
             </div>
             <div class="col-6 mb-3">
               <label for="wef" class="form-label">WEF Date</label>
               <input
-                type="text"
+                type="datetime-local"
                 class="form-control"
-                name="filterByDay"
+                name="wef"
                 placeholder="WEF Date"
-                onfocus="(this.type='date')"
-                onblur="(this.type='text')"
                 formControlName="wef"
                 [ngClass]="{
                   'is-invalid':
@@ -766,12 +767,10 @@
             <div class="col-6 mb-3">
               <label for="wet" class="form-label">WET Date</label>
               <input
-                type="text"
+                type="datetime-local"
                 class="form-control"
-                name="filterByDay"
+                name="wet"
                 placeholder="WET Date"
-                onfocus="(this.type='date')"
-                onblur="(this.type='text')"
                 formControlName="wet"
                 [ngClass]="{
                   'is-invalid':

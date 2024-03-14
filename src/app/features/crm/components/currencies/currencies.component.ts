@@ -90,6 +90,7 @@ export class CurrenciesComponent implements OnInit {
     this.currencyCreateForm();
     this.denominationCreateForm();
     this.currencyExchangeForm();
+    this.setTodayDate();
     this.fetchCurrencies();
   }
 
@@ -245,6 +246,13 @@ export class CurrenciesComponent implements OnInit {
     return this.createCurrencyRateForm.controls;
   }
 
+  setTodayDate() {
+    const todayDate = new Date().toISOString().substr(0, 10); // Get today's date in YYYY-MM-DD format
+    this.createCurrencyRateForm.patchValue({
+      date: todayDate,
+    });
+  }
+
   /**
    * The function fetches currency data from a bank service and logs the data.
    */
@@ -394,6 +402,24 @@ export class CurrenciesComponent implements OnInit {
   filterCurrencyDenomination(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.currencyDenominationTable.filterGlobal(filterValue, 'contains');
+  }
+
+  onFilterChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const filterValue = target.value;
+    if (filterValue === 'wef' || filterValue === 'wet') {
+      this.currencyRatesData.sort((a, b) => {
+        const dateA = new Date(a[filterValue]);
+        const dateB = new Date(b[filterValue]);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      if (filterValue === 'wet') {
+        this.currencyRatesData.reverse();
+      }
+
+      this.currencyRateTable.reset();
+    }
   }
 
   /**
@@ -631,9 +657,9 @@ export class CurrenciesComponent implements OnInit {
         baseCurrencyId: baseCurrencyId,
         date: currencyRateFormValues.date,
         id: null,
-        organizationId: null,
+        organizationId: 2,
         rate: currencyRateFormValues.rate,
-        targetCurrencyId: currencyRateFormValues.exchange,
+        targetCurrencyId: currencyRateFormValues.exchangeCurrency,
         withEffectFromDate: currencyRateFormValues.wef,
         withEffectToDate: currencyRateFormValues.wet,
       };
@@ -656,7 +682,7 @@ export class CurrenciesComponent implements OnInit {
         id: currencyRateId,
         organizationId: this.selectedCurrencyRate.organizationId,
         rate: currencyRateFormValues.rate,
-        targetCurrencyId: currencyRateFormValues.exchange,
+        targetCurrencyId: currencyRateFormValues.exchangeCurrency,
         withEffectFromDate: currencyRateFormValues.wef,
         withEffectToDate: currencyRateFormValues.wet,
       };
@@ -680,12 +706,22 @@ export class CurrenciesComponent implements OnInit {
   editCurrencyRate() {
     if (this.selectedCurrencyRate) {
       this.openCurrencyExchangeModal();
+      // Ensure dates are in proper format for datetime-local input field
+      const date = new Date(this.selectedCurrencyRate.date)
+        .toISOString()
+        .substr(0, 10);
+      const wefDate = new Date(this.selectedCurrencyRate.withEffectFromDate)
+        .toISOString()
+        .substr(0, 16);
+      const wetDate = new Date(this.selectedCurrencyRate.withEffectToDate)
+        .toISOString()
+        .substr(0, 16);
       this.createCurrencyRateForm.patchValue({
         exchangeCurrency: this.selectedCurrencyRate.targetCurrencyId,
         rate: this.selectedCurrencyRate.rate,
-        date: this.selectedCurrencyRate.date,
-        wef: this.selectedCurrencyRate.withEffectFromDate,
-        wet: this.selectedCurrencyRate.withEffectToDate,
+        date: date,
+        wef: wefDate,
+        wet: wetDate,
       });
     }
   }
