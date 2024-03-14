@@ -564,7 +564,8 @@
       "next": "Ifuatayo",
       "yes": "Ndio",
       "no": "Hapana",
-      "underwriting_product_details": "Maelezo ya Bidhaa ya Sera",
+      "underwriting_product_details": "Uthibitishaji: Maelezo ya Bidhaa",
+      "policy_product_details": "Maelezo ya Bidhaa ya Sera",
       "client": "Mteja",
       "joint_account": "Akaunti ya Pamoja",
       "product": "Bidhaa",
@@ -582,7 +583,20 @@
       "coinsurance_policy": "Sera ya Kushirikiana Bima",
       "more_details": "Maelezo Zaidi",
       "cash": "Fedha",
-      "accrual": "Kujumuishwa"
+      "accrual": "Kujumuishwa",
+      "direct_business": "Biashara Moja kwa Moja",
+      "intermediary_business": "Biashara ya Kati",
+      "facultative_inward": "Kujiunga Kwa Hiari",
+      "agent": "Wakala",
+      "underwriters_only": "Kwa Wachukuzi Pekee",
+      "intermediary_comm_allowed": "Ruhusu Tume ya Kati",
+      "admin_fee_allowed": "Ruhusu Ada ya Utawala",
+      "ceding_company": "Kampuni Inayouza Bima",
+      "ri_agent": "Wakala wa Kujihakikishia",
+      "select_client": "Chagua Mteja",
+      "id_no": "Nambari ya Kitambulisho",
+      "name": "Jina",
+      "email": "Barua pepe"
     }
   },
   "lms": {
