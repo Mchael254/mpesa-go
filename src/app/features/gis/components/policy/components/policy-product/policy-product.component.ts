@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
 import { ClientService } from '../../../../../entities/services/client/client.service';
-import {Logger, untilDestroyed} from '../../../../../../shared/shared.module'
+import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
@@ -16,15 +16,15 @@ const log = new Logger("QuickQuoteFormComponent");
   styleUrls: ['./policy-product.component.css']
 })
 export class PolicyProductComponent {
- 
+
   clientData: ClientDTO[];
   clientDetails: ClientDTO;
   clientType: any;
   clientList: any;
   clientName: any;
-  clientCode:any;
+  clientCode: any;
 
-  
+
   productList: Products[];
   ProductDescriptionArray: any = [];
   selectedProduct: Products[];
@@ -33,11 +33,13 @@ export class PolicyProductComponent {
   policyProductForm: FormGroup;
 
   errorMessage: string;
+  errorOccurred: boolean;
+
+  showIntermediaryFields: boolean = false;
+  showFacultativeFields: boolean = false;
 
 
-
-
-  show:boolean=true;
+  show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('closebutton') closebutton;
@@ -50,7 +52,7 @@ export class PolicyProductComponent {
     public cdr: ChangeDetectorRef,
 
 
-  ){}
+  ) { }
 
   ngOnInit(): void {
     this.loadAllClients();
@@ -58,9 +60,9 @@ export class PolicyProductComponent {
     this.loadAllproducts();
 
   }
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
-  createPolicyProductForm(){
+  createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
       action_type: [''],
       add_edit: [''],
@@ -97,20 +99,24 @@ export class PolicyProductComponent {
       with_effective_from_date: [''],
       with_effective_to_date: ['']
     });
-  
+
   }
+  get f() {
+    return this.policyProductForm.controls;
+  }
+
   loadAllClients() {
     this.clientService
       .getClients(0, 100)
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
-          
+
           if (data) {
             this.clientList = data;
             log.debug("CLIENT DATA:", this.clientList)
             this.clientData = this.clientList.content
-      log.debug("CLIENT DATA:", this.clientData)
+            log.debug("CLIENT DATA:", this.clientData)
 
           } else {
             this.globalMessagingService.displayErrorMessage(
@@ -120,7 +126,7 @@ export class PolicyProductComponent {
           }
         },
         error: (err) => {
-         
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
             this.errorMessage
@@ -128,20 +134,20 @@ export class PolicyProductComponent {
           log.info(`error >>>`, err);
         },
       });
-    }
+  }
 
-   /**
-   * - Get A specific client's details on select.
-   * - populate the relevant fields with the client details.
-   * - Retrieves and logs client type and country.
-   * - Invokes 'getCountries()' to fetch countries data.
-   * - Calls 'saveClient()' and closes the modal.
-   * @method loadClientDetails
-   * @param {number} id - ID of the client to load.
-   * @return {void}
-   */
-   loadClientDetails(id) {
-    log.info("Client Id:",id)
+  /**
+  * - Get A specific client's details on select.
+  * - populate the relevant fields with the client details.
+  * - Retrieves and logs client type and country.
+  * - Invokes 'getCountries()' to fetch countries data.
+  * - Calls 'saveClient()' and closes the modal.
+  * @method loadClientDetails
+  * @param {number} id - ID of the client to load.
+  * @return {void}
+  */
+  loadClientDetails(id) {
+    log.info("Client Id:", id)
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
       console.log("Selected Client Details:", this.clientDetails)
@@ -182,7 +188,7 @@ export class PolicyProductComponent {
       .pipe(untilDestroyed(this))
       .subscribe({
         next: (data) => {
-          
+
           if (data) {
             this.productList = data;
             log.info(this.productList, "this is a product list")
@@ -194,17 +200,19 @@ export class PolicyProductComponent {
                 description: capitalizedDescription
               });
             });
-      
+
             // Combine the characters back into words
             const combinedWords = productDescription.join(',');
             this.ProductDescriptionArray.push(...productDescription)
-      
+
             // Now 'combinedWords' contains the result with words instead of individual characters
             log.info("modified product description", this.ProductDescriptionArray);
-      
+
             this.cdr.detectChanges();
 
           } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
             this.globalMessagingService.displayErrorMessage(
               'Error',
               'Something went wrong. Please try Again'
@@ -212,7 +220,7 @@ export class PolicyProductComponent {
           }
         },
         error: (err) => {
-         
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
             this.errorMessage
@@ -220,18 +228,41 @@ export class PolicyProductComponent {
           log.info(`error >>>`, err);
         },
       });
-    }
-   /**
-   * Handles the selection of a product.
-   * - Retrieves the selected product code from the event.
-   * - Fetches and loads product subclasses.
-   * - Loads dynamic form fields based on the selected product.
-   * @method onProductSelected
-   * @param {any} event - The event triggered by product selection.
-   * @return {void}
-   */
-   onProductSelected(selectedValue: any) {
+  }
+  /**
+  * Handles the selection of a product.
+  * - Retrieves the selected product code from the event.
+  * - Fetches and loads product subclasses.
+  * - Loads dynamic form fields based on the selected product.
+  * @method onProductSelected
+  * @param {any} event - The event triggered by product selection.
+  * @return {void}
+  */
+  onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue.code;
     console.log("Selected Product Code:", this.selectedProductCode);
+  }
+  onPolicyInterfaceTypeChange(value: string): void {
+    log.info('SELECTED VALUE:', value)
+
+    this.showIntermediaryFields = value === 'N';
+    this.showFacultativeFields = value === 'F';
+
+
+    if (!this.showIntermediaryFields) {
+      this.policyProductForm.get('agent_code').reset();
+      // this.policyProductForm.get('underwritersOnly').reset(false);
+      this.policyProductForm.get('is_commission_allowed').reset(false);
+      this.policyProductForm.get('is_admin_fee_allowed').reset(false);
+    }
+
+    if (!this.showFacultativeFields) {
+      this.policyProductForm.get('agent_code').reset();
+      // this.policyProductForm.get('selectRiAgent').reset();
+      // this.policyProductForm.get('underwritersOnlyFacultative').reset(false);
+      this.policyProductForm.get('is_commission_allowed').reset(false);
+      this.policyProductForm.get('is_admin_fee_allowed').reset(false);
+      // ... reset other fields for facultative business
+    }
   }
 }

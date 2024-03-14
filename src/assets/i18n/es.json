@@ -564,7 +564,8 @@
       "next": "Siguiente",
       "yes": "Sí",
       "no": "No",
-      "underwriting_product_details": "Detalles del producto de la póliza",
+      "underwriting_product_details": "Suscripción: Detalles del producto",
+      "policy_product_details": "Detalles del producto de la póliza",
       "client": "Cliente",
       "joint_account": "Cuenta conjunta",
       "product": "Producto",
@@ -582,7 +583,20 @@
       "coinsurance_policy": "Póliza de coaseguro",
       "more_details": "Más detalles",
       "cash": "Efectivo",
-      "accrual": "Devengo"
+      "accrual": "Devengo",
+      "direct_business": "Negocio directo",
+      "intermediary_business": "Negocio intermediario",
+      "facultative_inward": "Admisión facultativa",
+      "agent": "Agente",
+      "underwriters_only": "Solo aseguradoras",
+      "intermediary_comm_allowed": "Comisión de intermediario permitida",
+      "admin_fee_allowed": "Tarifa de administración permitida",
+      "ceding_company": "Compañía cedente",
+      "ri_agent": "Agente de reaseguro",
+      "select_client": "Seleccionar Cliente",
+      "id_no": "Número de Identificación",
+      "name": "Nombre",
+      "email": "Correo Electrónico"
     }
   },
   "lms": {
