@@ -549,6 +549,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
 
   createCountry() {
     this.createCountryForm.reset();
+    this.selectedCountry = null;
     this.countrySelected = null;
     this.stateData = null;
     this.districtData = null;
