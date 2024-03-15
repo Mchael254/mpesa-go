@@ -167,11 +167,17 @@
                         <div class="row mb-4">
                             <div class=" mb-1 col-sm-4 col-12">
                                 <label for="source" class=" product-label" id="source">{{'gis.policy.source' | translate}}</label>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="source">
                                     <option value=""></option>
 
-                                </select>
+                                </select> -->
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                                formControlName="source" (change)="onSourceSelected($event)">
+                                <option value=""></option>
+                                <option *ngFor="let source of sourceDetail" [value]="source.code">{{ source.description
+                                    | sentenceCase}}</option>
+                            </select>
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
                                 <label for="marketer" class=" product-label" id="marketer">{{'gis.policy.marketer' | translate}}</label>
