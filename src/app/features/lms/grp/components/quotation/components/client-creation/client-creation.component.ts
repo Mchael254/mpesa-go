@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { SelectItem } from 'primeng/api';
+import { MessageService, SelectItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
@@ -11,6 +11,8 @@ import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChang
 import { Pagination } from 'src/app/shared/data/common/pagination';
 import { ClientDTO, ClientTypeDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Dropdown } from 'primeng/dropdown';
+import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-client-creation',
@@ -30,6 +32,8 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   clientList: { label: string, value: number }[] = [];
   clientId: number;
   OrganizationClientType: ClientTypeDTO[];
+  clientCode: number;
+  patchedClientId: number
 
   @ViewChild('clientDropdown') clientDropdown: Dropdown;
 
@@ -37,6 +41,9 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private country_service: CountryService,
     private client_service: ClientService,
+    private router: Router,
+    private spinner_Service: NgxSpinnerService,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +60,7 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     
   }
 
+  // dummy data for administrator details table
   data = [
     { 
         name: 'John Doe',
@@ -198,6 +206,7 @@ closeAdminDetailsModal() {
   }
 }
 
+// Helps enable or disbale phone number and email fields based on client type chosen
 clientTypeChanges() {
   this.clientDetailsForm.get('clientType').valueChanges.subscribe((value: string) => {
     const emailControl = this.clientDetailsForm.get('email');
@@ -216,12 +225,12 @@ capitalizeFirstLetterOfEachWord(str) {
   return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
 }
 
-// Function to patch data into the form
+// Function to patch data into the clientDetailsForm
 patchClientData(client: ClientDTO) {
   this.clientDetailsForm.patchValue({
     clientName: `${client.firstName} ${client.lastName}`,
     status: client.status,
-    type: client.clientType,
+    type: client.clientType.code,
     incorporationDate: client.withEffectFromDate,
     registrationNumber: client.idNumber,
     occupation: client.physicalAddress,
@@ -235,14 +244,21 @@ patchClientData(client: ClientDTO) {
     affiliatedToInsurer: client.country,
     representation: client.country,
   });
+  this.patchedClientId = client.id
+  console.log("IdOfPAtched", this.patchedClientId)
 }
 
+/* Method to show searched clients names in dropdown 
+that match typed letters in existing client search field. 
+It oauto opens dropdown
+*/
 openDropdown() {
   if (this.clientDropdown) {
     this.clientDropdown.overlayVisible = true;
   }
 }
 
+// Method to clear all other form fields when selected client is removed
 onDropdownClear() {
   Object.keys(this.clientDetailsForm.controls).forEach(controlName => {
     if (controlName !== 'clientType') {
@@ -355,66 +371,197 @@ selectState(_event: any) {
 }
 
 getClntTypes() {
-  this.client_service.getClientType(1).subscribe((clntType: ClientTypeDTO[]) => {
+  this.client_service.getClientType(2).subscribe((clntType: ClientTypeDTO[]) => {
 console.log("clntType", clntType)
 this.OrganizationClientType = clntType;
   })
 }
 
+// highlights a touched/clicked/dirtified field that is not filled or option not selected
+highlightInvalid(field: string): boolean {
+  const control = this.clientDetailsForm.get(field);
+  return control.invalid && (control.dirty || control.touched);
+}
+
   onContinue() {
     const formValues = this.clientDetailsForm.value;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailControl = this.clientDetailsForm.get('email');
+    const emailValue = emailControl.value;
+
+    const payload = {
+      "id": null,
+      "system": "LMS",
+      "firstName": null,
+      "lastName": formValues.clientName,
+      "modeOfIdentityId": 1,
+      "modeOfIdentity": "NATIONAL_ID",
+      "modeOfIdentityNumber": formValues.registrationNumber,
+      "gender": formValues.gender,
+      "pinNumber": formValues.pinNumber,
+      "clientTypeId": formValues.type,
+      "shortDescription": null,
+      "address": {
+        "id": null,
+        "box_number": null,
+        "postal_code": "00100",
+        "town_id": formValues.city,
+        "state_id": formValues.county,
+        "country_id": formValues.country,
+        "physical_address": formValues.address,
+        "residential_address": null,
+        "road": null,
+        "estate": null,
+        "house_number": null,
+        "is_utility_address": "N",
+        "utility_address_proof": null,
+        "fax": null,
+        "zip": null,
+        "phoneNumber": formValues.phoneNumber,
+        "account": null
+      },
+      "passportNumber": null,
+      "dateOfBirth": "1985-05-20",
+      "effectiveDateFrom": "2024-03-01T08:00:00.000Z",
+      "effectiveDateTo": "2024-03-01T08:00:00.000Z",
+      "category": "I",
+      "status": formValues.status,
+      "branchId": 410,
+      "branchName": null,
+      "countryId": formValues.country,
+      "townId": formValues.city,
+      "stateId": formValues.county,
+      "partyId": null,
+      "organizationId": 2,
+      "partyAccountId": null,
+      "proposerCode": 0,
+      "dateCreated": formValues.incorporationDate,
+      "contactDetails": {
+        "id": 0,
+        "title": null,
+        "receivedDocuments": "N",
+        "emailAddress": formValues.email,
+        "smsNumber": null,
+        "phoneNumber": formValues.phoneNumber,
+        "preferredChannel": "EMAIL",
+        "account": null,
+        "accountId": null
+      }
+    };
+
+    if (this.clientDetailsForm.get('clientType').value === null || this.clientDetailsForm.get('clientType').value === ''
+        || this.clientDetailsForm.get('clientType').value === undefined) {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Information',
+            detail: 'Select New or Existing client'
+          });
+          return;
+        }
+
     if (this.clientDetailsForm.get('clientType').value === 'existingClient') {
       console.log("updating Existing client")
 
       if (this.clientDetailsForm.get('clientName').value === null || this.clientDetailsForm.get('clientName').value === ''
         || this.clientDetailsForm.get('clientName').value === undefined) {
-        console.log("Select client to update")
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Warning',
+            detail: 'Select Client to update'
+          });
         return;
       } else {
-        console.log("Client to updateID", this.clientId)
-        this.client_service.updateClient(this.clientId, formValues).subscribe((updateClnt) => {
+        console.log("Client to updateID", this.patchedClientId)
+        this.client_service.updateClient(this.patchedClientId, payload).subscribe((updateClnt) => {
           console.log("client successfully updated", updateClnt)
+          // move activated router below here once the PUT method works.
         },
-        (error) => {
-          console.log("error updating client", error)
-        })
+          (error) => {
+            let errorMessage = 'Unknown error'; // Default message
+            if (error.error && error.error.errors && error.error.errors.length > 0) {
+              errorMessage = error.error.errors[0]; // Extract the first error message
+            } else if (error.error && typeof error.error === 'string') {
+              errorMessage = error.error; // If the error is a string, use it as the message
+            }
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorMessage
+            });
+          });
+
+          // to be moved after update method above is fixed
+          this.router.navigate(['/home/lms/grp/quotation/quick'], {
+            queryParams: {
+              clientCode: this.patchedClientId,
+            },
+          });
+
       }
     } else {
-      console.log('ClientFormValues', formValues);
-      return;
+
       if (this.clientDetailsForm.invalid) {
-        alert("Fill all the fields")
+
+        /*
+        together with the method -highlightInvalid(field: string), it helps 
+         highlight all invalid form fields on click of Continue button 
+         */
+        Object.keys(this.clientDetailsForm.controls).forEach(field => {
+          const control = this.clientDetailsForm.get(field);
+          control.markAsTouched({ onlySelf: true });
+        });
+
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Fill all the mandatory fields!'
+        });
+        return;
+      } else if(emailValue && !emailPattern.test(emailValue)) {
+        emailControl.setErrors({ 'invalidEmail': true });
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Warning',
+          detail: 'Email is invalid'
+        });
+        return;
       }
 
       else {
-        console.log('ClientFormValues', formValues);
-      }
-      // const payload = {
-      //   country:  formValues.country,
-      //   dateOfBirth: formValues.incorporationDate,
-      //   emailAddress: formValues.email,
-      //   firstName: formValues.clientName,
-      //   id: 0,
-      //   gender: formValues.gender,
-      //   idNumber: formValues.registrationNumber,
-      //   // lastName: 
-      //   occupation: {
-      //     name: formValues.occupation
-      //   },
-      //   phoneNumber: formValues.phoneNumber,
-      //   physicalAddress: formValues.address,
-      //   pinNumber: formValues.pinNumber,
-      //   status: formValues.status,
-      //   clientTypeName: formValues.type,
-      //   clientFullName: formValues.clientName
-      // };
 
-      this.client_service.save(formValues).subscribe((clientPayload) => {
-        console.log("clientPAyload", clientPayload)
-      },
-        (error) => {
-          console.log("error saving client", error)
-        });
+        this.client_service.save(payload).subscribe(
+          (clientPayload) => {
+            this.clientCode = clientPayload?.id;
+            console.log("clientProposerCode", this.clientCode);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'New client successfully created'
+            });
+        
+            this.router.navigate(['/home/lms/grp/quotation/quick'], {
+              queryParams: {
+                clientCode: this.clientCode,
+              },
+            });
+          },
+          (error) => {
+            let errorMessage = 'Unknown error'; // Default message
+            if (error.error && error.error.errors && error.error.errors.length > 0) {
+              errorMessage = error.error.errors[0]; // Extract the first error message
+            } else if (error.error && typeof error.error === 'string') {
+              errorMessage = error.error; // If the error is a string, use it as the message
+            }
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorMessage
+            });
+          }
+        );
+        
+      }
+
     }
   }
 
