@@ -1,7 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { NeedAnalysisService } from 'src/app/features/setups/service/need-analysis/need-analysis.service';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -15,7 +18,7 @@ export class NeedAnalysisComponent implements OnInit {
   questions: any[] = [];
   optionSelected: any[] = [];
   questionSelected: any[] = [];
-  constructor( private spinner_service: NgxSpinnerService, private cdr: ChangeDetectorRef, private need_analysis_service: NeedAnalysisService){}
+  constructor( private spinner_service: NgxSpinnerService, private cdr: ChangeDetectorRef, private need_analysis_service: NeedAnalysisService, private session_service: SessionStorageService){}
 
   ngOnInit(): void {
     this.getQuestions();
@@ -23,7 +26,8 @@ export class NeedAnalysisComponent implements OnInit {
 
   getQuestions(){
     this.spinner_service.show('analysis_view')
-    let TENANT_ID = environment?.TENANT_ID?.toUpperCase();
+    let ten = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID));
+    let TENANT_ID = ten===null ? null : new String(ten).toUpperCase();
     let NEED_ANALYSIS_PROCESS_TYPE = 'NEW_BUSINESS'
     let NEED_ANALYSIS_SYSTEM_NAME = 'LMS_INDIVIDUAL'
 

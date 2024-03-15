@@ -21,6 +21,9 @@ import {UtilService} from "../../../shared/services/util/util.service";
 import {environment} from "../../../../environments/environment";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {ApiService} from "../../../shared/services/api/api.service";
+import { StringManipulation } from '../../lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from '../../lms/util/session_storage_enum';
 
 const log = new Logger('TicketsService');
 
@@ -67,6 +70,7 @@ export class TicketsService {
     private authService: AuthService,
     private utilService: UtilService,
     private api:ApiService,
+    private session_storage: SessionStorageService
   ) { }
 
   setTransactionsRoutingData(transactionsRouting: TransactionsRoutingDTO){
@@ -488,7 +492,7 @@ export class TicketsService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     return this.http.get<any>(`/${baseUrl}/underwriting/api/v2/policies?batchNo=${batchNumber}`, { headers })
   }

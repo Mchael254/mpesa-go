@@ -4,6 +4,9 @@ import { Observable, catchError, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { vehicleMake } from '../../data/gisDTO';
 import { environment } from 'src/environments/environment';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +18,8 @@ export class VehicleMakeService {
   
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    private session_storage: SessionStorageService
     ) { }
 
     httpOptions = {
@@ -45,7 +49,7 @@ getAllVehicleMake(): Observable<vehicleMake[]>{
  const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID   
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),   
   })
   const params = new HttpParams()
   .set('page', `${page}`)

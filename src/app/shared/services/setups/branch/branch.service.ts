@@ -4,6 +4,9 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrganizationBranchDto } from '../../../data/common/organization-branch-dto';
 import { environment } from '../../../../../environments/environment';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../session-storage/session-storage.service';
 
 /**
  * This service is used to manage branches
@@ -13,7 +16,7 @@ import { environment } from '../../../../../environments/environment';
 })
 export class BranchService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
 
   /**
    * Get all branches for an organization
@@ -27,7 +30,7 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams().set('organizationId', organizationId);
     // .set('regionId', regionId);
@@ -48,7 +51,7 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
     // Create an object to hold parameters only if they are provided
@@ -80,7 +83,7 @@ export class BranchService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams().set('organizationId', 2);
 

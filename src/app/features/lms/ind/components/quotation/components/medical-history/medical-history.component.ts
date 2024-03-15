@@ -140,7 +140,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
 
   getMedicalHistoryByClientId() {
     this.spinner_service.show('medical_history_screen');
-    let tenant_id = environment.TENANT_ID;
+    let tenant_id = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID)); 
     this.medical_history_service
       .getMedicalHistoryByTenantIdAndClientCode(tenant_id, this.util.getClientCode())
       .pipe(finalize(() => this.spinner_service.hide('medical_history_screen')))
@@ -341,7 +341,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let val = {...this.medicalHistoryForm.value};
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
     val['client_code'] = this.util.getClientCode();
-    val['tenant_id'] = environment.TENANT_ID;    
+    val['tenant_id'] = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID));    
     if(this.medicalListOne?.length>0){
       val = {...val, dependants_info:[...this.medicalListOne]}
     };

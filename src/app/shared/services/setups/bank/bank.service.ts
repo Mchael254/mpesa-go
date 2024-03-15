@@ -11,6 +11,9 @@ import {
 } from '../../../data/common/bank-dto';
 import { Logger } from '../../logger/logger.service';
 import {environment} from "../../../../../environments/environment";
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../session-storage/session-storage.service';
 // import { environment } from 'src/environments/environment';
 
 const log = new Logger('BankService');
@@ -24,7 +27,7 @@ const log = new Logger('BankService');
 export class BankService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
 
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
 
   /**
    * Get all banks
@@ -36,7 +39,7 @@ export class BankService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams().set('countryId', `${countryId}`);
 
@@ -116,7 +119,7 @@ export class BankService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
     });
 
