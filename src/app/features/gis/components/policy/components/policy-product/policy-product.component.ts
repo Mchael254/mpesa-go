@@ -10,6 +10,7 @@ import { Products } from '../../../setups/data/gisDTO';
 import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -49,6 +50,10 @@ export class PolicyProductComponent {
   selectedBranchCode: any;
   selectedBranchDescription: any;
 
+  sourceList: any;
+  sourceDetail: any;
+  selectedSourceCode: any;
+  selectedSource: any;
 
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
@@ -61,6 +66,7 @@ export class PolicyProductComponent {
     public productService: ProductsService,
     public branchService: BranchService,
     public authService: AuthService,
+    public quotationService: QuotationsService,
 
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
@@ -74,7 +80,7 @@ export class PolicyProductComponent {
     this.loadAllproducts();
     // this.fetchBranches();
     this.getuser();
-    //  this.defaultBranchCode = 'DEFAULT_BRANCH_CODE';
+    this.loadPolicySources();
   }
   ngOnDestroy(): void { }
 
@@ -328,9 +334,50 @@ export class PolicyProductComponent {
   }
   onBranchSelected(selectedValue: any) {
     this.selectedBranchCode = selectedValue.id;
-    log.debug("Branch Code:",this.selectedBranchCode)
+    log.debug("Branch Code:", this.selectedBranchCode)
     this.selectedBranchDescription = selectedValue.name;
-    log.debug("Branch Description:",this.selectedBranchDescription)
+    log.debug("Branch Description:", this.selectedBranchDescription)
+
+  }
+ 
+  loadPolicySources() {
+    this.quotationService
+      .getAllQuotationSources()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.sourceList = data;
+            this.sourceDetail = data.content;
+            console.log(this.sourceDetail, "Source list")
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onSourceSelected(event: any) {
+    this.selectedSourceCode = event.target.value;
+    console.log("Selected Source Code:", this.selectedSourceCode);
+    this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
+    console.log("Selected Source :", this.selectedSource);
+   
 
   }
 }

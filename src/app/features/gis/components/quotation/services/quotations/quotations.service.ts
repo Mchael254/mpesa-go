@@ -9,9 +9,10 @@ import { environment } from '../../../../../../../environments/environment';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { riskClauses } from '../../../setups/data/gisDTO';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
+
 @Injectable({
   providedIn: 'root'
 })
