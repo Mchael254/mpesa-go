@@ -28,16 +28,26 @@
     </div>
 
     <ng-container *ngIf="criterion.filter">
-      <span class="text-secondary filter-option" style="font-size: 0.8em">
+      <span class="text-secondary filter-option mt-2" style="font-size: 0.8em">
         <i class="pi pi-sort-amount-down"></i>
         {{ criterion.filter }}
+        <i 
+          class="pi pi-times text-danger" 
+          style="font-size: 0.8rem; cursor: pointer; padding-left: 1rem;"
+          (click)="removeFilter(criterion)"
+        ></i>
       </span>  <br>
     </ng-container>
 
     <ng-container *ngIf="criterion.sort">
-      <span class="text-secondary filter-option" style="font-size: 0.8em">
+      <span class="text-secondary filter-option" style="font-size: 0.8em;">
         <i class="pi pi-sort-amount-down"></i>
         {{ criterion.sort }}
+        <i 
+          class="pi pi-times text-danger" 
+          style="font-size: 0.8rem; cursor: pointer; padding-left: 1rem;"
+          (click)="removeSorting()"
+        ></i>
       </span>
     </ng-container>
   </div>
@@ -57,7 +67,9 @@
             </p>
           </div>
           <div class="col-sm-3 col-3 text-end">
-            <button #closebutton  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <span #closebutton data-bs-dismiss="modal" aria-label="Close">
+              <i class="pi pi-times text-danger"></i>
+            </span>
           </div>
 
           <div class="col-sm-9 offset-sm-0 col-8 offset-1">

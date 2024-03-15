@@ -48,7 +48,7 @@ export class CreateReportComponent implements OnInit {
   public filteredDimensions = [];
   public isCriteriaButtonActive: boolean = true;
   reportName: string = '';
-  reportNameRec: string = '';
+  reportNameRec: string = 'Report Name';
   metrics: any = {}; 
   filteredMetrics: any = [];
   filters: any = [];
@@ -91,7 +91,7 @@ export class CreateReportComponent implements OnInit {
       this.sort = reportParams.sort;
       this.reportNameRec = reportParams.reportNameRec;
     } else if (this.reportId) {
-      this.getReport(this.reportId)
+      // this.getReport(this.reportId)
     }
     this.getSubjectAreas();
     this.createSearchForm();
@@ -115,22 +115,22 @@ export class CreateReportComponent implements OnInit {
    * @param id of type number
    * @return void
    */
-  getReport(id: number): void {
-    this.reportServiceV2.getReportById(id)
-      .pipe(take(1))
-      .subscribe({
-        next: (res) => {
-          this.selectedReport = res;
-          this.measures = JSON.parse(res.measures);
-          this.dimensions = JSON.parse(res.dimensions);
-          this.filters = JSON.parse(res.filter);
-          this.criteria = [...this.measures, ...this.dimensions];
-          this.reportNameRec = res.name;
-          log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
-        },
-        error: (e) => { log.info(`error >>>`, e)}
-      })
-  }
+  // getReport(id: number): void {
+  //   this.reportServiceV2.getReportById(id)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: (res) => {
+  //         this.selectedReport = res;
+  //         this.measures = JSON.parse(res.measures);
+  //         this.dimensions = JSON.parse(res.dimensions);
+  //         this.filters = JSON.parse(res.filter);
+  //         this.criteria = [...this.measures, ...this.dimensions];
+  //         this.reportNameRec = res.name;
+  //         log.info(`report >>> `, res, this.measures, this.dimensions, this.filters);
+  //       },
+  //       error: (e) => { log.info(`error >>>`, e)}
+  //     })
+  // }
 
   /**
    * The function `getCategoriesBySubjectAreaId` retrieves categories based on a subject area ID and updates the selected
@@ -215,17 +215,24 @@ export class CreateReportComponent implements OnInit {
       queryName: query.name
     }
 
+    // console.log(`category<metrics> ==> `, category);
+    // console.log(`subCategory ==> `, subCategory);
+    // console.log(`query ==> `, query);
+    // console.log(`queryObject ==> `, this.queryObject);
+
     const criterion = `${this.queryObject.transaction}.${this.queryObject.query}`;
     const checkCriterion = this.checkIfCriterionExists(criterion, this.measures, this.dimensions);
     if (checkCriterion) {
-      const detail = `${this.queryObject.query} already selected.`;
-      this.globalMessagingService.displayErrorMessage('error',detail);
+      const detail = `${this.queryObject.queryName} already selected.`;
+      this.globalMessagingService.displayErrorMessage('error', detail);
       return;
     }
 
     this.criteria.push(this.queryObject);
     this.splitDimensionsAndMeasures(this.queryObject);
     this.shouldShowContinueButton = true;
+    // console.log(`criteria ==> `, this.criteria);
+    // console.log(`===============================`)
   }
 
   /**
@@ -311,12 +318,19 @@ export class CreateReportComponent implements OnInit {
   // }
 
   viewPreview(): void {
-    const reportNameRec = this.reportName === '' ? this.selectedReport?.name : ''
+    // const reportNameRec = this.reportName === '' ? this.selectedReport?.name : '';
+    
+    let filters = [];
+    if (this.filters.length > 0) {
+      this.filters.forEach(filter => filters.push(filter.filter));
+    } else {
+      filters = JSON.parse(this.selectedReport?.filter)
+    }
 
     const reportParams = {
       criteria: this.criteria,
       reportNameRec: this.reportNameRec,
-      filters: this.filters || this.selectedReport.filter,
+      filters,
       sort: this.sort || this.selectedReport.sort,
       dashboardId: this.selectedReport?.dashboardId,
       folder: this.selectedReport?.folder,
@@ -324,28 +338,28 @@ export class CreateReportComponent implements OnInit {
       createdBy: this.selectedReport?.createdBy,
     }
     this.sessionStorageService.setItem(`reportParams`, reportParams);
-    log.info(`report params >>>`, reportParams)
+    log.info(`report params >>>`, reportParams);
 
     const measures = this.criteria.filter(measure => measure.category === 'metrics');
     const dimensions = this.criteria.filter(measure => measure.category !== 'metrics');
 
-    let charts = [{
-      backgroundColor: "",
-      borderColor: "",
-      chartReportId: 0,
-      colorScheme: 0,
-      evenColor: "",
-      evenOddAppliesTo: "",
-      //id: 0, // 16685487
-      length: 0,
-      name: "",
-      oddColor: "",
-      order: 0,
-      type: 'table',
-      width: 0
-    }]
+    // let charts = [{
+    //   backgroundColor: "",
+    //   borderColor: "",
+    //   chartReportId: 0,
+    //   colorScheme: 0,
+    //   evenColor: "",
+    //   evenOddAppliesTo: "",
+    //   //id: 0, // 16685487
+    //   length: 0,
+    //   name: "",
+    //   oddColor: "",
+    //   order: 0,
+    //   type: 'table',
+    //   width: 0
+    // }]
 
-    const filter = this.filters.length > 0 ? JSON.stringify(this.filters) : '';
+    const filter = filters.length > 0 ? JSON.stringify(filters) : '';
 
     const report: ReportV2 = {
       charts: [],
@@ -375,11 +389,11 @@ export class CreateReportComponent implements OnInit {
 
 
   createReport(report: ReportV2): void {
+    log.info(`created report >>> `, report);
     this.reportServiceV2.createReport(report)
       .pipe(take(1))
       .subscribe({
         next: (res) => {
-          // this.globalMessagingService.displaySuccessMessage('success', 'Report successfully saved')
           this.reportId = res.id;
           this.router.navigate([`/home/reportsv2/preview/${this.reportId}`],
             { queryParams: { isEditing: false }});
@@ -397,13 +411,19 @@ export class CreateReportComponent implements OnInit {
    * @return void
    */
   updateFilter(filter): void {
+    log.info(`filter to save ==> `, filter);
     this.criteria.forEach((criterion) => {
-      if (criterion == filter.queryObject) {
+      console.log(`criterion ==> `, criterion, criterion.query == filter.queryObject.query)
+      if (criterion.query == filter.queryObject.query && filter.filter !== null) {
         criterion.filter = filter.queryObject.filter
         this.filters.push(filter)
+        console.log(`pushing filter to this.filters ==> `, this.filters)
+      } else if (criterion.query == filter.queryObject.query && filter.filter === null) {
+        this.filters = this.filters.filter(item => item.queryObject.queryName === filter.queryObject.queryName ? null : item);
+        delete criterion.filter
       }
     });
-    log.info(`filter >>> `, filter, this.filters);
+    log.info(`filter >>> `, this.filters);
     // this.loadChart();
   }
 
@@ -414,12 +434,14 @@ export class CreateReportComponent implements OnInit {
    */
   updateSort(sort): void {
     this.criteria.forEach((criterion) => {
-      if (criterion == sort.queryObject) {
+      if (criterion == sort.queryObject && sort.queryObject.sort !== null) {
         criterion.sort = sort.queryObject.sort
         this.sort.push(sort.sortValue)
+      } else {
+        this.sort = [];
       }
     });
-    log.info(`sort >>> `, sort)
+    log.info(`sort >>> `, sort);
     // this.loadChart();
   }
 

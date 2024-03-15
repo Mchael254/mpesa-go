@@ -65,9 +65,11 @@ export class CriteriaComponent implements OnInit{
    * @param criterion of type Criteria
    */
   selectCriteria(criterion: Criteria) {
+    log.info(`selected criterion ==> `, criterion);
     this.conditions = [];
     this.selectedCriterion = criterion;
     this.conditions = criterion.category === 'metrics' ? this.metricConditions : this.dimensionConditions;
+    // log.info(`conditions ==> `, this.conditions);
 
     if (criterion.category === 'metrics') {
       this.conditions = this.metricConditions;
@@ -79,6 +81,7 @@ export class CriteriaComponent implements OnInit{
       this.conditions = this.dateConditions;
       this.conditionsType = 'date';
     }
+    // log.info(`conditions 2 ==> `, this.conditions);
 
     this.filterForm.patchValue({
       operator: this.conditions[0].value,
@@ -118,6 +121,16 @@ export class CriteriaComponent implements OnInit{
     this.closebutton.nativeElement.click();
   }
 
+
+  /**
+   * 1. Removes filter from the selected criteria
+   * 2. Emits the selected criteria to remove filter from
+   */
+  removeFilter(criterion) {
+    const reportOptions = { filter: null, queryObject: criterion };
+    this.filter.emit(reportOptions);
+  }
+
   /**
    * 1. creates a sort object within an array from selected criterion & selected sort type
    * 2. Emits the sort value and selected criterion to parent component for further manipulation
@@ -132,6 +145,21 @@ export class CriteriaComponent implements OnInit{
     this.selectedCriterion.sort = `Sort order: ${sort}`;
     const sortOptions = {
       sortValue,
+      queryObject: this.selectedCriterion
+    };
+    log.info(`sortValue | selectedCriterion | sortOptions ==> `, sortValue, this.selectedCriterion, sortOptions)
+    this.sort.emit(sortOptions);
+  }
+
+  /**
+   * 1. Removes sorting from the selected criterion
+   * 2. Emits the sort value and selected criterion to parent component for further manipulation
+   * @return void 
+   */
+  removeSorting(): void {
+    this.selectedCriterion.sort = null;
+    const sortOptions = {
+      sortValue: null,
       queryObject: this.selectedCriterion
     };
     this.sort.emit(sortOptions);

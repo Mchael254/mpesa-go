@@ -16,8 +16,13 @@
           <h6 class="text-black">
             {{ 'report.report_name' | translate }}<span class="text-danger">*</span>
           </h6>
-          <input type="text" class="form-control form-control" placeholder="Pilot report"
-                 [(ngModel)]="reportName" (input)="onReportNameChange($event)" style="padding: 8px">
+          <input 
+            type="text" 
+            class="form-control form-control" 
+            placeholder="Pilot report"
+            (input)="onReportNameChange($event)" 
+            style="padding: 8px"
+          >
           <h6 class="text-black mt-3">
             {{ 'report.subject_area' | translate }}<span class="text-danger">*</span>
           </h6>
@@ -153,8 +158,7 @@
             <input
               type="text"
               class="text-center bg-transparent btn-full-width"
-              placeholder="Pilot report"
-              [(ngModel)]="reportNameRec"
+              [attr.placeholder]="reportNameRec"
               disabled
             >
           </div>
