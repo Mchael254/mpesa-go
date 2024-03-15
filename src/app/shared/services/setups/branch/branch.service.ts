@@ -4,9 +4,9 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { OrganizationBranchDto } from '../../../data/common/organization-branch-dto';
 import { environment } from '../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from '../../session-storage/session-storage.service';
+import { SESSION_KEY } from '../../../../features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
 
 /**
  * This service is used to manage branches

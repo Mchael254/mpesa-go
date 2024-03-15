@@ -25,6 +25,7 @@ import { MissingTranslationHandler } from '@ngx-translate/core';
 import { TranslateFakeLoader } from '@ngx-translate/core'
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 
 export class mockClientService {
   getClients = jest.fn().mockReturnValue(of());
@@ -38,12 +39,13 @@ export class mockProductService {
 export class MockBrowserStorage {
 
 }
-const mockTranslateService = {
-  use: jest.fn(),
-  get: jest.fn()
-};
+
 export class mockBranchService {
   getAllBranches = jest.fn().mockReturnValue(of());
+}
+export class mockQuotationService {
+  getAllQuotationSources = jest.fn().mockReturnValue(of());
+ 
 }
 
 const mockClientData = {
@@ -249,6 +251,7 @@ describe('PolicyProductComponent', () => {
   let globalMessagingService: GlobalMessagingService;
   let translateService:TranslateService;
   let branchService: BranchService;
+  let quotationService: QuotationsService;
 
 
 
@@ -265,6 +268,7 @@ describe('PolicyProductComponent', () => {
         { provide: BrowserStorage, useClass: MockBrowserStorage },
         { provide: TranslateService, useClass: TranslateService }, 
         { provide: BranchService, useClass: mockBranchService },
+        { provide: QuotationsService, useClass: mockQuotationService },
 
         { provide: APP_BASE_HREF, useValue: '/' },
         GlobalMessagingService, MessageService,
@@ -286,6 +290,8 @@ describe('PolicyProductComponent', () => {
     productService = TestBed.inject(ProductsService);
     translateService= TestBed.inject(TranslateService);
     branchService = TestBed.inject(BranchService);
+    quotationService = TestBed.inject(QuotationsService);
+
     component.policyProductForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
 
@@ -441,9 +447,7 @@ describe('PolicyProductComponent', () => {
         expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
       }
     });
-  });
-  
-  
+  }); 
   it('should update selectedBranchCode and selectedBranchDescription correctly', () => {
     const selectedValue = { id: 123, name: 'Branch Name' };
     
@@ -452,5 +456,50 @@ describe('PolicyProductComponent', () => {
     expect(component.selectedBranchCode).toEqual(selectedValue.id);
     expect(component.selectedBranchDescription).toEqual(selectedValue.name);
     // Add more expectations as needed
+  });
+  it('should load policy sources and update sourceList and sourceDetail on successful response', () => {
+    const mockSourceData = { content: [{ id: 1, name: 'Source 1' }, { id: 2, name: 'Source 2' }] };
+    const mockResponse = of(mockSourceData);
+    
+    // Spy on displayErrorMessage method
+    const displayErrorMessageSpy = jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+  
+    jest.spyOn(quotationService, 'getAllQuotationSources').mockReturnValue(mockResponse);
+  
+    component.loadPolicySources();
+  
+    expect(quotationService.getAllQuotationSources).toHaveBeenCalled();
+    
+    // Subscribe to the observable to trigger the next callback
+    mockResponse.subscribe({
+      next: () => {
+        // Expectations to cover the lines within the next callback
+        expect(component.sourceList).toEqual(mockSourceData.content);
+        expect(component.sourceDetail).toEqual(mockSourceData.content);
+        
+        // Additional expectations to ensure proper behavior
+        expect(displayErrorMessageSpy).not.toHaveBeenCalled(); // Ensure displayErrorMessage is not called
+      }
+    });
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(quotationService, 'getAllQuotationSources').mockReturnValue(mockResponse);
+
+    component.loadPolicySources();
+
+    expect(quotationService.getAllQuotationSources).toHaveBeenCalled();
+    
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
   });
 });

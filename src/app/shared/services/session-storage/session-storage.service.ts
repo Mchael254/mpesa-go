@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EncryptionService } from '../encryption/encryption.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 /**
  * This service is used to store data in the session storage

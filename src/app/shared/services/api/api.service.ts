@@ -5,8 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 import { AppConfigService } from '../../../core/config/app-config-service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../features/lms/util/string_manipulation';
+import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 
 @Injectable({
