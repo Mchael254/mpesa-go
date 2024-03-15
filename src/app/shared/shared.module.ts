@@ -88,7 +88,7 @@ import { Angular4PaystackModule } from 'angular4-paystack';
 
 import { ReusableInputComponent } from './components/reusable-input/reusable-input.component';
 import { DiseasePipe } from '../features/lms/pipe/disease/disease.pipe';
-import { TenantIdInterceptor } from './services/http/tenant-id.interceptor';
+// import { TenantIdInterceptor } from './services/http/tenant-id.interceptor';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
 import { QuotationLandingScreenComponent } from './components/quotation-landing-screen/quotation-landing-screen.component';
 import { TabViewModule } from 'primeng/tabview';
@@ -124,11 +124,11 @@ const SERVICES = [
     useClass: Error401Interceptor,
     multi: true,
   },
-  {
-    provide: HTTP_INTERCEPTORS,
-    useClass: TenantIdInterceptor,
-    multi: true,
-  },
+  // {
+  //   provide: HTTP_INTERCEPTORS,
+  //   useClass: TenantIdInterceptor,
+  //   multi: true,
+  // },
   // provide logger
   { provide: BrowserStorage, useClass: LocalBrowserStorageService },
   AuthService,

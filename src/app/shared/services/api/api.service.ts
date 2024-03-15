@@ -5,6 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 import { AppConfigService } from '../../../core/config/app-config-service';
 import { SessionStorageService } from '../session-storage/session-storage.service';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 
 @Injectable({
@@ -23,7 +25,7 @@ export class ApiService {
     let headers = new HttpHeaders()
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json')
-    .set('X-TenantId', environment.TENANT_ID)
+    .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
     .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '');
 
     // // For General File Downloads (e.g., PDF, Images)
@@ -102,8 +104,8 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;
     const headers = new HttpHeaders()
-      .set('X-TenantId', environment.TENANT_ID)
-      .set('Accept', 'text/csv')
+    .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
+    .set('Accept', 'text/csv')
       .set("Content-Type", "text/csv")
     // const options = { headers, params };
     // this.http.get('http://localhost:8080/downloadCsv', { responseType: 'blob' }).subscribe(csvData => {
@@ -153,7 +155,7 @@ export class ApiService {
 
     const headers = new HttpHeaders()
       .set('Accept', 'application/json')
-      .set('X-TenantId', environment.TENANT_ID);
+      .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)));
 
     return this.http.post<T>(url, data, { headers });
   }

@@ -4,6 +4,9 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs/internal/Observable";
 import {environment} from "../../../../../environments/environment";
 import {ClaimsPaymentModesDto, PaymentModesDto} from "../../../data/common/payment-modes-dto";
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +14,13 @@ import {ClaimsPaymentModesDto, PaymentModesDto} from "../../../data/common/payme
 export class PaymentModesService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
 
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
 
   getPaymentModes(): Observable<PaymentModesDto[]> {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams().set('organizationId', 2);
 
@@ -66,7 +69,7 @@ export class PaymentModesService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams().set('organizationId', 2);
 

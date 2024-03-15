@@ -17,6 +17,9 @@ import {
 import { Observable } from 'rxjs/internal/Observable';
 import { Logger } from '../../logger/logger.service';
 import { environment } from '../../../../../environments/environment';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../session-storage/session-storage.service';
 
 const log = new Logger('CountryService');
 
@@ -33,10 +36,10 @@ export class CountryService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     }),
   };
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
 
   /**
    * Fetch all countries
@@ -47,7 +50,7 @@ export class CountryService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`, {
       headers: headers,

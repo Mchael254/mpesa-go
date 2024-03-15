@@ -6,6 +6,9 @@ import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
 import { PremiumComputationRequest, quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +31,8 @@ export class QuotationsService {
 
   constructor(
     private http: HttpClient,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    private session_storage: SessionStorageService
   ) { }
 
  // Error handling
@@ -139,7 +143,7 @@ export class QuotationsService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
     return this.http.get(`/${this.computationBaseUrl}/api/v1/utils/payload`,{

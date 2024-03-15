@@ -11,6 +11,9 @@ import {
   CurrencyDenominationDTO,
   CurrencyRateDTO,
 } from '../../../../shared/data/common/currency-dto';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../session-storage/session-storage.service';
 
 const log = new Logger('CurrencyService');
 
@@ -23,7 +26,7 @@ const log = new Logger('CurrencyService');
 export class CurrencyService {
   baseUrl = this.appConfig.config.contextPath.setup_services;
 
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
 
   /**
    * Get all currencies
@@ -31,7 +34,7 @@ export class CurrencyService {
    */
   getAllCurrencies() {
     const headers = new HttpHeaders({
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     return this.http
       .get<any>(`/${this.baseUrl}/setups/currencies`, { headers })
