@@ -40,6 +40,7 @@ export class CreateDashboardComponent implements OnInit {
   selectedChartReport: any = [];
 
   public dashboards: ListDashboardsDTO[] = [];
+  public filteredDashboards: ListDashboardsDTO[] = []
   public selectedDashboard: CreateUpdateDashboardDTO;
   selectedItem:any = null;
   public dashboardReport: DashboardReports;
@@ -304,6 +305,7 @@ export class CreateDashboardComponent implements OnInit {
       .subscribe({
         next: async (res) => {
           this.dashboards = res;
+          this.filteredDashboards = res;
           log.info(`dashboards >>>`, this.dashboards);
           for (const dashboard of res) {
 
@@ -313,12 +315,7 @@ export class CreateDashboardComponent implements OnInit {
                 const dimensions = JSON.parse(report?.dimensions);
                 const filters = JSON.parse(report?.filter);
                 log.info(`chart to use >>>`, res[1]?.reports[0]?.charts[0]?.type);
-    
-                /*log.info(`measures >>>`, measures);
-                log.info(`dimensions >>>`, dimensions);
-                log.info(`filters >>>`, filters);
-                log.info('---------------')*/
-    
+
                 // this.getReportFromCubeJS(measures, dimensions, filters);
                 const chartData = await this.getReportFromCubeJS(measures, dimensions, filters);
                 dashboard.chartData = chartData;
@@ -495,5 +492,13 @@ export class CreateDashboardComponent implements OnInit {
           }, 3000);
         })
     }
+  }
+
+
+  filterDashboards(event) {
+    const filterValue = event.target.value;
+    this.filteredDashboards = this.dashboards.filter(
+      dashboard => (dashboard.name).toLowerCase().includes(filterValue.toLowerCase())
+    );
   }
 }
