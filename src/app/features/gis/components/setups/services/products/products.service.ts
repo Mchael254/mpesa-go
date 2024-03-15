@@ -4,9 +4,9 @@ import { throwError, Observable, retry, catchError, forkJoin, map } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Products, Product_group, SubclassesDTO } from '../../data/gisDTO';
 import { environment } from '../../../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
 
 
 @Injectable({
