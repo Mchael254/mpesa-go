@@ -113,11 +113,11 @@ export class ClientService {
         params:params
       });
   }
-  getClientType(organizationId: number): Observable<any[]> {
+  getClientType(organizationId): Observable<any[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      // 'X-TenantId': environment.TENANT_ID
+      'X-TenantId': environment.TENANT_ID
     });
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`);
