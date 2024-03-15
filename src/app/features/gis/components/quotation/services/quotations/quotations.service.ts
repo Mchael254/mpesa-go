@@ -9,6 +9,9 @@ import { environment } from '../../../../../../../environments/environment';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { Pagination } from '../../../../../../shared/data/common/pagination';
 import { riskClauses } from '../../../setups/data/gisDTO';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 @Injectable({
   providedIn: 'root'
 })
@@ -23,7 +26,7 @@ export class QuotationsService {
    * @param {AppConfigService} appConfig - Service for retrieving application configuration.
    * @param {HttpClient} http - HTTP client for making requests.
    */
-  constructor(private appConfig: AppConfigService, private http: HttpClient) { }
+  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) { }
    /**
    * Base URL for quotation services obtained from application configuration.
    * @type {string}
@@ -40,7 +43,7 @@ export class QuotationsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
     })
   }
@@ -164,7 +167,7 @@ errorHandl(error: HttpErrorResponse) {
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-TenantId': environment.TENANT_ID,
+        'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
       });
       return this.http.get<introducersDTO>(`/${this.baseUrl}/setups/api/v1/introducers`, {headers:headers}); 
   }
@@ -240,7 +243,7 @@ errorHandl(error: HttpErrorResponse) {
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID,
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   });
   const params = new HttpParams()
     .set('page', `${page}`)
@@ -262,7 +265,7 @@ quotationUtils(transactionCode){
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID,
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   });
 
   return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
@@ -294,7 +297,7 @@ assignProductLimits(productCode){
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID,
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   });
 
 
@@ -310,7 +313,7 @@ documentTypes(accountType){
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID,
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   });
 
   return this.http.get(`/${this.crmUrl}/setups/required-documents`,{
@@ -352,7 +355,7 @@ addProductClause(clauseCode,productCode,quotationCode){
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'X-TenantId': environment.TENANT_ID,
+    'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   });
 
   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-product-clause/post-product-clauses?clauseCode=${clauseCode}&productCode=${productCode}&quotationCode=${quotationCode}`,{

@@ -4,6 +4,9 @@ import { throwError, Observable, retry, catchError, forkJoin, map } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Products, Product_group, SubclassesDTO } from '../../data/gisDTO';
 import { environment } from '../../../../../../../environments/environment';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 
 @Injectable({
@@ -16,13 +19,14 @@ export class ProductsService {
   setupsbaseurl = "setups/api/v1"
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    private session_storage: SessionStorageService
   ) { }
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
     
     })
@@ -56,7 +60,7 @@ export class ProductsService {
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
 
     
     })
