@@ -27,10 +27,10 @@ export function loadConfig(
   return () => config.loadConfigurations(configLoader);
 }
 
-const cubejsOptions = {
-  token: '',
-  options: { apiUrl : 'https://ekwe.turnkeyafrica.com/cubejs-api/v1' }
-}
+// const cubejsOptions = {
+//   token: '',
+//   options: { apiUrl : 'https://ekwe.turnkeyafrica.com/cubejs-api/v1' }
+// }
 
 @NgModule({
   declarations: [
