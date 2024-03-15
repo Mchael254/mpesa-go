@@ -15,6 +15,16 @@ import { AppConfigService } from '../../../../../../core/config/app-config-servi
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Products } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
+// import { TranslateService } from '@ngx-translate/core/dist/lib/translate.service';
+import { DEFAULT_LANGUAGE, TranslateService,TranslateModule, USE_DEFAULT_LANG, USE_EXTEND, USE_STORE } from '@ngx-translate/core';
+import { TranslateStore } from '@ngx-translate/core';
+import { TranslateLoader } from '@ngx-translate/core';
+import { TranslateCompiler } from '@ngx-translate/core';
+import { TranslateParser } from '@ngx-translate/core';
+import { MissingTranslationHandler } from '@ngx-translate/core';
+import { TranslateFakeLoader } from '@ngx-translate/core'
+import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 
 export class mockClientService {
   getClients = jest.fn().mockReturnValue(of());
@@ -28,6 +38,14 @@ export class mockProductService {
 export class MockBrowserStorage {
 
 }
+const mockTranslateService = {
+  use: jest.fn(),
+  get: jest.fn()
+};
+export class mockBranchService {
+  getAllBranches = jest.fn().mockReturnValue(of());
+}
+
 const mockClientData = {
   content: [{
     branchCode: 1,
@@ -181,6 +199,46 @@ const mockProducts: Products[] = [
     organizationCode: 999,
   },
 ];
+const mockBranchList: OrganizationBranchDto[] = [
+  {
+    account: '123456',
+    contact: 'John Doe',
+    country: 1,
+    emailAddress: 'john.doe@example.com',
+    emailSource: 'internal',
+    fax: '987654',
+    id: 1,
+    logo: 'path/to/logo.png',
+    manager: 2,
+    name: 'Branch 1',
+    organizationId: 3,
+    physicalAddress: '123 Main St',
+    postAddress: 'PO Box 456',
+    postalCode: '789012',
+    region: {
+      agentSeqNo: '001',
+      branchMgrSeqNo: '002',
+      clientSequence: 1,
+      code: 1,
+      computeOverOwnBusiness: 'yes',
+      dateFrom: '2022-01-01',
+      dateTo: '2022-12-31',
+      managerAllowed: 'yes',
+      name: 'Region 1',
+      organization: 'Org 1',
+      overrideCommissionEarned: 'no',
+      policySeqNo: 123,
+      postingLevel: 'high',
+      preContractAgentSeqNo: 456,
+      shortDescription: 'Region 1 Short',
+    },
+    shortDescription: 'Branch 1 Short',
+    sms_source: 'external',
+    state: 2,
+    telephoneNumber: '555-1234',
+    town: 3,
+  },
+];
 
 
 describe('PolicyProductComponent', () => {
@@ -189,23 +247,35 @@ describe('PolicyProductComponent', () => {
   let clientService: ClientService;
   let productService: ProductsService;
   let globalMessagingService: GlobalMessagingService;
+  let translateService:TranslateService;
+  let branchService: BranchService;
 
 
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [PolicyProductComponent],
-      imports: [HttpClientTestingModule, SharedModule, FormsModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, SharedModule, FormsModule, RouterTestingModule,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader } // Use TranslateFakeLoader
+      })],
       providers:[
-        { provide: clientService, useClass: mockClientService },
-        { provide: productService, useClass: mockProductService },
+        { provide: ClientService, useClass: mockClientService }, 
+        { provide: ProductsService, useClass: mockProductService }, 
         { provide: BrowserStorage, useClass: MockBrowserStorage },
+        { provide: TranslateService, useClass: TranslateService }, 
+        { provide: BranchService, useClass: mockBranchService },
+
         { provide: APP_BASE_HREF, useValue: '/' },
         GlobalMessagingService, MessageService,
         FormBuilder,
-        { provide: AppConfigService, useValue: { config: { contextPath: { gis_services: 'gis/setups/api/v1' } } } }
-
+        { provide: AppConfigService, useValue: { config: { contextPath: { gis_services: 'gis/setups/api/v1' } } } },
+        { provide: USE_DEFAULT_LANG, useValue: true },
+        { provide: USE_STORE, useValue: true },
+        { provide: USE_EXTEND, useValue: true },
+        { provide: DEFAULT_LANGUAGE, useValue: true }
       ]
+      
     })
     .compileComponents();
 
@@ -214,6 +284,8 @@ describe('PolicyProductComponent', () => {
     globalMessagingService = TestBed.inject(GlobalMessagingService);
     clientService = TestBed.inject(ClientService);
     productService = TestBed.inject(ProductsService);
+    translateService= TestBed.inject(TranslateService);
+    branchService = TestBed.inject(BranchService);
     component.policyProductForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
 
@@ -311,7 +383,74 @@ describe('PolicyProductComponent', () => {
    
     expect(mockCloseButton.nativeElement.click).toHaveBeenCalled();
   });
+  it('should update showIntermediaryFields and showFacultativeFields based on value', () => {
+    component.onPolicyInterfaceTypeChange('N');
+    expect(component.showIntermediaryFields).toBe(true);
+    expect(component.showFacultativeFields).toBe(false);
 
+    component.onPolicyInterfaceTypeChange('F');
+    expect(component.showIntermediaryFields).toBe(false);
+    expect(component.showFacultativeFields).toBe(true);
+  });
+  it('should reset form controls when showIntermediaryFields is false', () => {
+    component.showIntermediaryFields = false;
+    component.onPolicyInterfaceTypeChange('N');
+    expect(component.policyProductForm.get('agent_code').value).toBeNull();
+    // Add expectations for other form controls here
+  });
+  it('should reset form controls when showFacultativeFields is false', () => {
+    component.showFacultativeFields = false;
+    component.onPolicyInterfaceTypeChange('F');
+    expect(component.policyProductForm.get('agent_code').value).toBeNull();
+    // Add expectations for other form controls here
+  });
+  it('should fetch branches and update branchList and userBranchName on successful response', () => {
+    const mockUserBranchId = 1;
+    const mockResponse = of(mockBranchList);
+    jest.spyOn(branchService, 'getAllBranches').mockReturnValue(mockResponse as any);
+
+    component.userBranchId = mockUserBranchId;
+    component.fetchBranches();
+
+    expect(branchService.getAllBranches).toHaveBeenCalledWith(undefined, undefined);
+    expect(component.branchList).toEqual(mockBranchList);
+    expect(component.userBranchName).toEqual('Branch 1');
+    // Add more expectations as needed
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    
+    // Spy on displayErrorMessage method
+    const displayErrorMessageSpy = jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+  
+    jest.spyOn(branchService, 'getAllBranches').mockReturnValue(mockResponse);
+  
+    component.fetchBranches();
+  
+    expect(branchService.getAllBranches).toHaveBeenCalledWith(undefined, undefined);
+    
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        
+        // Additional expectations to ensure proper error handling
+        expect(displayErrorMessageSpy).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
   
   
+  it('should update selectedBranchCode and selectedBranchDescription correctly', () => {
+    const selectedValue = { id: 123, name: 'Branch Name' };
+    
+    component.onBranchSelected(selectedValue);
+
+    expect(component.selectedBranchCode).toEqual(selectedValue.id);
+    expect(component.selectedBranchDescription).toEqual(selectedValue.name);
+    // Add more expectations as needed
+  });
 });
