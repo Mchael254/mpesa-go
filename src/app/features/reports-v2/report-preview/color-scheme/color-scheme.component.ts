@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import {Logger} from "../../../../shared/services";
 import { ColorScheme } from 'src/app/shared/data/reports/color-scheme';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -16,6 +16,7 @@ const log = new Logger(`ColorSchemeComponent`);
 export class ColorSchemeComponent implements OnInit {
 
   @Output() selectedColorScheme: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild('closeButton') closeButton;
 
   public colourSchemes: ColorScheme[] = [
     {
@@ -129,6 +130,7 @@ export class ColorSchemeComponent implements OnInit {
         // log.info(`color scheme created `, colorScheme);
         this.globalMessagingService.displaySuccessMessage('success', 'Color Scheme successfully created');
         this.fetchAllColorSchemes();
+        this.closeButton.nativeElement.click();
       },
       error: (err) => {
         this.globalMessagingService.displayErrorMessage('error', err.message);

@@ -57,40 +57,46 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">      
-        
-        <div class="mb-3">
-          <label for="colorName" class="form-label">
-            {{ 'report.enter_color_scheme_name' | translate }}
-          </label>
-          <input 
-            type="text" class="form-control" 
-            id="colorName" 
-            aria-describedby="colorNameHelp"
-            (keyup)="defineColorSchemeName($event)"
-            >
+        <div class="row">
+          <div class="col-11">
+            <div class="mb-3">
+              <label for="colorName" class="form-label">
+                {{ 'report.enter_color_scheme_name' | translate }}
+              </label>
+              <input 
+                type="text" class="form-control" 
+                id="colorName" 
+                aria-describedby="colorNameHelp"
+                (keyup)="defineColorSchemeName($event)"
+                >
+            </div>
+            <form [formGroup]="colorSchemeForm" class="mt-5">
+              <p>
+                {{ 'report.pick_square' | translate }}
+              </p>
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <span *ngFor="let field of fields" style="float: left; margin-right: 5px;">
+                    <p-colorPicker [formControlName]="field" format="hex"></p-colorPicker>
+                  </span>
+                  <span style="float: left; padding: 5px">
+                    <i id="addColorBox" (click)="addColorBox()" class="pi pi-plus"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="offset-md-8 col-md-4 mt-4 text-end">
+                  <button id="saveColorScheme" (click)="saveColorScheme()" type="button" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-1">
+            <span #closeButton class="me-4" data-bs-dismiss="modal" aria-label="Close">
+              <i class="pi pi-times text-danger"></i>
+            </span>
+          </div>
         </div>
-
-        <form [formGroup]="colorSchemeForm" class="mt-5">
-          <p>
-            {{ 'report.pick_square' | translate }}
-          </p>
-          <div class="row">
-            <div class="col-md-12 text-center">
-              <span *ngFor="let field of fields" style="float: left; margin-right: 5px;">
-                <p-colorPicker [formControlName]="field" format="hex"></p-colorPicker>
-              </span>
-              <span style="float: left; padding: 5px">
-                <i id="addColorBox" (click)="addColorBox()" class="pi pi-plus"></i>
-              </span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="offset-md-8 col-md-4 mt-4 text-end">
-              <button id="saveColorScheme" (click)="saveColorScheme()" type="button" class="btn btn-primary">Save</button>
-            </div>
-          </div>
-        </form>
-
       </div>
     </div>
   </div>

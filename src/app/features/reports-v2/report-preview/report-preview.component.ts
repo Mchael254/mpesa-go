@@ -246,7 +246,7 @@ export class ReportPreviewComponent implements OnInit{
    * @param reportParamFilters
    */
   populateSelectedFilters(reportFilters) {
-    // log.info(`report filters >>>`, JSON.parse(reportFilters));
+    log.info(`report filters >>>`, JSON.parse(reportFilters));
     if (!this.isEmpty(reportFilters)) {
       this.filters = JSON.parse(reportFilters);
     } else {
@@ -496,7 +496,6 @@ export class ReportPreviewComponent implements OnInit{
     log.info(`query for cube >>> `, query);
 
     this.cubejsApi.load(query).then(resultSet => {
-      // this.chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
       log.info(`resultSet >>>`, resultSet);
       const chartLabels = resultSet.chartPivot().map((c) => c.xValues[0]);
       const reportLabels = resultSet.chartPivot().map((c) => c.xValues);
