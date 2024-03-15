@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EncryptionService } from '../encryption/encryption.service';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 
 /**
  * This service is used to store data in the session storage
@@ -103,7 +104,9 @@ export class SessionStorageService {
    * Clear the session storage
    */
   clear_store(): void {
+    let tenant = this.get(SESSION_KEY.API_TENANT_ID);
     sessionStorage.setItem('store_', JSON.stringify(''))
+    this.set(SESSION_KEY.API_TENANT_ID,tenant);
   }
 
 

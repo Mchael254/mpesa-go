@@ -7,6 +7,9 @@ import {AccountTypeDTO, AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../dat
 import {IdentityModeDTO} from "../../data/entityDto";
 import {environment} from "../../../../../environments/environment";
 import {UtilService} from "../../../../shared/services";
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +19,8 @@ export class IntermediaryService {
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService,
-    private utilService: UtilService
+    private utilService: UtilService,
+    private session_storage: SessionStorageService
   ) { }
 
   getAgents(
@@ -29,7 +33,7 @@ export class IntermediaryService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
     const params = new HttpParams()
       .set('page', `${page}`)
@@ -49,7 +53,7 @@ export class IntermediaryService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
     return this.http.get<AgentDTO>(`/${baseUrl}/agents/${id}`,{
@@ -67,7 +71,7 @@ export class IntermediaryService {
     const header = new HttpHeaders({
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'X-TenantId': environment.TENANT_ID,
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
     const params = new HttpParams()

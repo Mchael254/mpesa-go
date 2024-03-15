@@ -27,8 +27,6 @@ export const environment = {
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
 
   ]),
-  TENANT_ID: API_TENANT_ID.TQV6,
-
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],
   // PAYSTACK_SECRET_KEY: process.env['PAYSTACK_SECRET_KEY']
 
