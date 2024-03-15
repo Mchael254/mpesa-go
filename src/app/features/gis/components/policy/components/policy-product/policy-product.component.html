@@ -63,11 +63,11 @@
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.branch' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="source">
-                                <option value=""></option>
-
-                            </select>
+                            <p-dropdown formControlName="branch_code" [options]="branchList"
+                            optionLabel="name" (onChange)="onBranchSelected($event.value)" 
+                            [placeholder]="userBranchName" 
+                            [filterBy]="'description'"  
+                            [filter]="true" [ngModel]="userBranchName"></p-dropdown>
                         </div>
                     </div>
                     <!-- Additional fields for Intermediary Business -->

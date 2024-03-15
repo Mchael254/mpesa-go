@@ -7,6 +7,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { Products } from '../../../setups/data/gisDTO';
+import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -38,6 +41,14 @@ export class PolicyProductComponent {
   showIntermediaryFields: boolean = false;
   showFacultativeFields: boolean = false;
 
+  branchList: OrganizationBranchDto[];
+  user: any;
+  userDetails: any
+  userBranchId: any;
+  userBranchName: any;
+  selectedBranchCode: any;
+  selectedBranchDescription: any;
+
 
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
@@ -48,6 +59,9 @@ export class PolicyProductComponent {
     public fb: FormBuilder,
     private clientService: ClientService,
     public productService: ProductsService,
+    public branchService: BranchService,
+    public authService: AuthService,
+
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
 
@@ -58,7 +72,9 @@ export class PolicyProductComponent {
     this.loadAllClients();
     this.createPolicyProductForm();
     this.loadAllproducts();
-
+    // this.fetchBranches();
+    this.getuser();
+    //  this.defaultBranchCode = 'DEFAULT_BRANCH_CODE';
   }
   ngOnDestroy(): void { }
 
@@ -119,6 +135,8 @@ export class PolicyProductComponent {
             log.debug("CLIENT DATA:", this.clientData)
 
           } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
             this.globalMessagingService.displayErrorMessage(
               'Error',
               'Something went wrong. Please try Again'
@@ -182,7 +200,6 @@ export class PolicyProductComponent {
   loadAllproducts() {
     const productDescription = [];
     const modifiedArray = [];
-
     this.productService
       .getAllProducts()
       .pipe(untilDestroyed(this))
@@ -264,5 +281,56 @@ export class PolicyProductComponent {
       this.policyProductForm.get('is_admin_fee_allowed').reset(false);
       // ... reset other fields for facultative business
     }
+  }
+  getuser() {
+    this.user = this.authService.getCurrentUserName()
+    this.userDetails = this.authService.getCurrentUser();
+    log.info('Login UserDetails', this.userDetails);
+    this.userBranchId = this.userDetails?.branchId;
+    log.debug("Branch Id", this.userBranchId);
+    this.fetchBranches();
+
+  }
+  fetchBranches(organizationId?: number, regionId?: number) {
+    this.branchService
+      .getAllBranches(organizationId, regionId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.branchList = data;
+            log.info('Fetched Branches', this.branchList);
+            const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
+            log.debug("branch", branch);
+            this.userBranchName = branch[0].name;
+            log.debug("branch name", this.userBranchName);
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onBranchSelected(selectedValue: any) {
+    this.selectedBranchCode = selectedValue.id;
+    log.debug("Branch Code:",this.selectedBranchCode)
+    this.selectedBranchDescription = selectedValue.name;
+    log.debug("Branch Description:",this.selectedBranchDescription)
+
   }
 }

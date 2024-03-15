@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+// import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
+
 import { Router } from '@angular/router';
 
 @Component({
