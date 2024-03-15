@@ -112,7 +112,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.fetchUserTenants(authenticationData, (tenants) => {
       log.info(`user tenants >>>`, tenants);
       this.tenants = tenants;
-      if (tenants.length <= 1) this.authAttempt();
+      if (tenants.length <= 1) {
+        this.tenant_id = tenants[0].name;
+        this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
+        this.authAttempt();
+      }
 
       this.isLoading = false;
     });
