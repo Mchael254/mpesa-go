@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
@@ -52,6 +52,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   showTownSpinner: boolean;
   quotationCode: number;
   steps = stepData;
+  clientCode: number;
 
 
   constructor (
@@ -66,7 +67,8 @@ export class QuickComponent implements OnInit, OnDestroy {
     private currencyService: CurrencyService,
     private session_storage: SessionStorageService,
     private spinner_Service: NgxSpinnerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private activatedRoute: ActivatedRoute
     ) {
       this.maxDate = new Date();
     }
@@ -86,6 +88,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.searchAgent();
     this.getBranch();
     this.retrievQuoteDets();
+    this.getParams();
   }
 
   ngOnDestroy(): void {
@@ -95,7 +98,7 @@ export class QuickComponent implements OnInit, OnDestroy {
   quickQuoteForm() {
     this.quickForm = this.fb.group({
       communicationType: [""],
-      clients: ["", [Validators.required] ],
+      // clients: ["", [Validators.required] ],
       branch: [""],
       products: ["", [Validators.required] ],
       durationType: ["", [Validators.required] ],
@@ -115,6 +118,13 @@ export class QuickComponent implements OnInit, OnDestroy {
   shareSummaryForm = this.fb.group({
     communicationType: ['', Validators.required],
   });
+
+  getParams() {
+  this.activatedRoute.queryParams.subscribe((queryParams) => {
+    this.clientCode = queryParams['clientCode'];
+    console.log("clientCodeFromClientCreation", this.clientCode)
+  });
+}
   
 
   capitalizeFirstLetterOfEachWord(str) {
@@ -264,9 +274,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       const apiRequest = {
         effective_date: formatDate(formData.effectiveDate, 'yyyy-MM-dd', 'en-US'),
         product_code: formData.products.value,
-        client_code: formData.clients.value,
-        // client_code: 232120913975,
-        // proposer_code: 20231411811,
+        client_code: this.clientCode,
         facultative_type: formData.facultativeType.name,
         cover_type_dependant: formData.quotationCovers.name,
         calculation_type: formData.quotationCalcType,
