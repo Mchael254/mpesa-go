@@ -26,6 +26,9 @@ import { TranslateFakeLoader } from '@ngx-translate/core'
 import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
+import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+
 
 export class mockClientService {
   getClients = jest.fn().mockReturnValue(of());
@@ -45,6 +48,9 @@ export class mockBranchService {
 }
 export class mockQuotationService {
   getAllQuotationSources = jest.fn().mockReturnValue(of());
+ 
+}export class mockInterMediaryService {
+  getAgents = jest.fn().mockReturnValue(of());
  
 }
 
@@ -241,6 +247,8 @@ const mockBranchList: OrganizationBranchDto[] = [
     town: 3,
   },
 ];
+const mockSourceData = { content: [{ id: 1, name: 'Source 1' }, { id: 2, name: 'Source 2' }] };
+
 
 
 describe('PolicyProductComponent', () => {
@@ -249,9 +257,10 @@ describe('PolicyProductComponent', () => {
   let clientService: ClientService;
   let productService: ProductsService;
   let globalMessagingService: GlobalMessagingService;
-  let translateService:TranslateService;
   let branchService: BranchService;
   let quotationService: QuotationsService;
+  let intermediaryService: IntermediaryService;
+
 
 
 
@@ -266,9 +275,9 @@ describe('PolicyProductComponent', () => {
         { provide: ClientService, useClass: mockClientService }, 
         { provide: ProductsService, useClass: mockProductService }, 
         { provide: BrowserStorage, useClass: MockBrowserStorage },
-        { provide: TranslateService, useClass: TranslateService }, 
         { provide: BranchService, useClass: mockBranchService },
         { provide: QuotationsService, useClass: mockQuotationService },
+        { provide: IntermediaryService, useClass: mockInterMediaryService },
 
         { provide: APP_BASE_HREF, useValue: '/' },
         GlobalMessagingService, MessageService,
@@ -288,9 +297,9 @@ describe('PolicyProductComponent', () => {
     globalMessagingService = TestBed.inject(GlobalMessagingService);
     clientService = TestBed.inject(ClientService);
     productService = TestBed.inject(ProductsService);
-    translateService= TestBed.inject(TranslateService);
     branchService = TestBed.inject(BranchService);
     quotationService = TestBed.inject(QuotationsService);
+    intermediaryService = TestBed.inject(IntermediaryService);
 
     component.policyProductForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
@@ -458,7 +467,6 @@ describe('PolicyProductComponent', () => {
     // Add more expectations as needed
   });
   it('should load policy sources and update sourceList and sourceDetail on successful response', () => {
-    const mockSourceData = { content: [{ id: 1, name: 'Source 1' }, { id: 2, name: 'Source 2' }] };
     const mockResponse = of(mockSourceData);
     
     // Spy on displayErrorMessage method
@@ -501,5 +509,45 @@ describe('PolicyProductComponent', () => {
         expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
       }
     });
+  });
+  it('should retrieve marketers correctly', () => {
+    const mockAgentData: { content: AgentDTO[] } = {
+      content: [
+        { accountTypeId: 10, /* other properties of AgentDto */ },
+        { accountTypeId: 20, /* other properties of AgentDto */ },
+        // Add more test data as needed
+      ]
+    };
+
+    jest.spyOn(intermediaryService, 'getAgents').mockReturnValue(of(mockAgentData)as any);
+
+    component.getMarketers(0, 10); // Assuming pageIndex and pageSize values
+
+    expect(component.agentList).toEqual(mockAgentData.content);
+    expect(component.marketerList).toEqual(mockAgentData.content.filter(agent => agent.accountTypeId == 10));
+  });
+  // it('should handle error properly', () => {
+  //   const errorMessage = 'Some error message';
+  //   jest.spyOn(intermediaryService, 'getAgents').mockReturnValue(throwError(errorMessage));
+
+  //   jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+  //   jest.spyOn(console, 'log'); // Spy on console.log
+
+  //   component.getMarketers(0, 10);
+  //   // expect(intermediaryService.getAgents).toHaveBeenCalled();
+  //   expect(intermediaryService.getAgents).toHaveBeenCalledWith(0, 10, 'createdDate', 'desc');
+
+  //   expect(component.errorOccurred).toBe(true);
+  //   expect(component.errorMessage).toBe('Something went wrong. Please try Again');
+  //   expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+  //   expect(console.log).toHaveBeenCalledWith('error >>>', errorMessage);
+  // });
+
+  it('should update selectedMarkterIdcorrectly', () => {
+    const selectedValue = { id: 123, name: 'Marketer Name' };
+    
+    component.onMarketerSelected(selectedValue);
+
+    expect(component.selectedMarketerCode).toEqual(selectedValue.id);
   });
 });

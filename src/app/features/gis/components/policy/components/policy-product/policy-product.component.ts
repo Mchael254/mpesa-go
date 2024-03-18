@@ -11,6 +11,9 @@ import { OrganizationBranchDto } from '../../../../../../shared/data/common/orga
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
 import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
+import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
+import { Observable } from 'rxjs';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -55,6 +58,10 @@ export class PolicyProductComponent {
   selectedSourceCode: any;
   selectedSource: any;
 
+  agentList:AgentDTO[];
+  marketerList:any;
+  selectedMarketerCode
+
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('clientModal') clientModal: any;
@@ -67,6 +74,8 @@ export class PolicyProductComponent {
     public branchService: BranchService,
     public authService: AuthService,
     public quotationService: QuotationsService,
+    private intermediaryService: IntermediaryService,
+
 
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
@@ -81,6 +90,7 @@ export class PolicyProductComponent {
     // this.fetchBranches();
     this.getuser();
     this.loadPolicySources();
+    this.getMarketers(0,1000,"createdDate");
   }
   ngOnDestroy(): void { }
 
@@ -378,6 +388,46 @@ export class PolicyProductComponent {
     this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
     console.log("Selected Source :", this.selectedSource);
    
+  }
+  getMarketers(pageIndex: number,
+    pageSize: number,
+    sortField: any = 'createdDate',
+    sortOrder: string = 'desc') {
+    this.intermediaryService
+      .getAgents(pageIndex, pageSize, sortField, sortOrder)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
+          if (data) {
+            this.agentList = data.content;
+            console.log( "Agent list",this.agentList)
+            this.marketerList= this.agentList.filter(agent => agent.accountTypeId == 10)
+            console.log( "Marketer list",this.marketerList)
+
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onMarketerSelected(selectedValue: any) {
+    this.selectedMarketerCode = selectedValue.id;
+    console.log("Selected Marketer Code:", this.selectedMarketerCode);
   }
 }

@@ -32,10 +32,15 @@ export class ClientService {
       order: string = 'desc'
     ): Observable<Pagination<ClientDTO>> {
 
+      // const headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      //   'Accept': 'application/json',
+      // })
       const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      })
+        'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+      });
       const params = new HttpParams()
         .set('page', `${page}`)
         .set('size', `${size}`)
