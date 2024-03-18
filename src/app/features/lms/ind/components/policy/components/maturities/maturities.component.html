@@ -3,7 +3,7 @@
   <div class="spinner" style="position: relative">
     <ngx-spinner [name]="'maturities'" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
   
-    <ng-container>
+    <ng-container *ngIf="quotationListInd?.rows.length>0">
       <p-table
         #dt1
         [lazy]="true"
@@ -55,6 +55,11 @@
         </ng-template>
       </p-table>
     </ng-container>
+
+    <div *ngIf="quotationListInd?.rows.length === 0" class="d-flex justify-content-center text-danger fw-bold">
+      No maturity(ies) record available!
+
+    </div>
   </div>
 
 </div>

@@ -43,7 +43,15 @@
           </div>
 
           <ng-container>
-            <div class="table-responsive">
+            <div class="table-responsive" style="position: relative">
+              <ngx-spinner
+                name="ben_view"
+                type="ball-clip-rotate-multiple"
+                [fullScreen]="false"
+                color="#00529B"
+                size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"
+              ></ngx-spinner>
               <table class="table table-bordered">
                 <thead>
                   <tr style="font-weight: 300; font-size: 12px">
@@ -117,7 +125,7 @@
                         >
                           <div>
                             {{
-                              row["type"] === "B" ? "Beneficairy" : "Trustee"
+                              row["type"] === "B" ? "Beneficiary" : "Trustee"
                             }}
                           </div>
                           <div>
@@ -188,7 +196,16 @@
           </div>
 
           <ng-container>
-            <div class="table-responsive">
+            <div class="table-responsive" style="position: relative">
+              <ngx-spinner
+                name="deps_view"
+                type="ball-clip-rotate-multiple"
+                [fullScreen]="false"
+                color="#00529B"
+                size="medium"
+                bdColor="rgba(255, 255, 255, 0.966)"
+              ></ngx-spinner>
+
               <table class="table table-bordered">
                 <thead>
                   <tr style="font-weight: 300; font-size: 12px">
@@ -196,7 +213,7 @@
                     <th>Other Name</th>
                     <th>Gender</th>
                     <th>Date Of Birth (Age)</th>
-                    <th>Adopted</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -223,11 +240,11 @@
                           aria-expanded="false"
                         >
                           <div>
-                            {{
+                            <!-- {{
                               row?.is_adopted
                                 ? "ADOPTED"
                                 : ("NOT ADOPTED" | titlecase)
-                            }}
+                            }} -->
                           </div>
                           <div>
                             <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -275,7 +292,7 @@
         class="btn btn-sm text-primary fw-medium fs-6"
         style="padding: 0.6em; text-decoration: underline"
         type="button"
-        (click)="nextPage()"
+        (click)="prevPage()"
       >
         Back
       </button>
@@ -288,9 +305,12 @@
         class="btn btn-sm"
         (click)="nextPage()"
         [ngClass]="
-          beneficiaryList.length === 0 && total < 100
-            ? 'btn-primary'
-            : 'btn-danger'
+        beneficiaryList.length>0
+        &&
+        total === 100
+        ? 'btn-primary'
+        : 'btn-danger'
+
         "
       >
         Proceed
@@ -504,6 +524,7 @@
                     <label class="required">Date of Birth</label>
                     <div>
                       <p-calendar
+                      [maxDate]="minDate" [defaultDate]="minDate"
                         ngDefaultControl
                         formControlName="date_of_birth"
                         dateFormat="dd/mm/yy"
@@ -716,7 +737,7 @@
                   </div>
                 </div> -->
 
-                <div class="col-md-6 col-sm-12 fadeIn">
+                <!-- <div class="col-md-6 col-sm-12 fadeIn">
                   <div class="w-75">
                     <label class="required">Is Adopted</label>
                     <div></div>
@@ -741,7 +762,7 @@
                       <span class="form-check-label" for="female">No</span>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </ng-container>
 
 

@@ -44,7 +44,7 @@ export class MedicalsService {
 
   downloadMedicalTestFile(rpt_code: number){
     let payload = {
-      "rpt_code": 329560,
+      "rpt_code": rpt_code,
       "system": "ORD",
       "report_format": "PDF",
       "encode_format": "RAW",

@@ -69,6 +69,7 @@
                           <div></div>
                           <div>
                             <div
+                            *ngIf="!editFirstForm"
                               (click)="addEmptyPolicyList(policyListOne)"
                               class="b-r d-flex justify-content-center align-content-center"
                             >
@@ -101,7 +102,7 @@
                                 >
                                   <tr
                                     [formGroup]="insuranceHistoryFormOne"
-                                    *ngIf="row['isEdit'] === true"
+                                    *ngIf="row?.isEdit === true"
                                   >
                                     <td>
                                       <input

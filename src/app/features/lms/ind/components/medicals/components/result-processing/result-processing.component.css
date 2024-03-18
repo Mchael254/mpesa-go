@@ -1,0 +1,23 @@
+.medical {
+    font-weight: 400;
+  }
+  
+  .medical:hover {
+    font-weight: 600;
+  }
+  
+  .medical-preview{
+    color:black;
+  }
+  .medical-preview:hover {
+    font-weight: 600;
+    color:gray
+  }
+  
+  pdf-viewer {
+    height: 100vh;
+  }
+  
+  :host ::ng-deep .ng2-pdf-viewer-container {
+    overflow-x: hidden !important;
+  }

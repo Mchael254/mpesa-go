@@ -3,6 +3,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { Utils } from 'src/app/features/lms/util/util';
 import { TableDetail } from 'src/app/shared/data/table-detail';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 
@@ -32,17 +33,19 @@ export class ReceiptsComponent implements OnInit{
     showSorting: false,
     paginator: false,
   };
+  util: Utils;
 
   constructor(private policy_service: PoliciesService, private spinner_service: NgxSpinnerService, private session_storage_service: SessionStorageService){}  
   ngOnInit(): void {
+    this.util = new Utils(this.session_storage_service);
     this.listPolicyReceipts();
   }
 
   public listPolicyReceipts(){
-    let pol_code = StringManipulation.returnNullIfEmpty(this.session_storage_service.getItem(SESSION_KEY.POL_CODE));
-    pol_code = pol_code===null ? 0 : pol_code;    
+       
     this.spinner_service.show()
-    this.policy_service.listPolicyReceipts().subscribe((data: any) =>{
+
+    this.policy_service.listPolicyReceipts(this.util.getPolCode()).subscribe((data: any) =>{
       this.quotationListInd['rows'] = data
       this.spinner_service.hide()
     }, err =>{

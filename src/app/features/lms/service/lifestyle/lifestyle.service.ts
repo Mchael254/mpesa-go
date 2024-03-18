@@ -10,7 +10,7 @@ export class LifestyleService {
 
   constructor(private api:ApiService) {}
 
-  getClientLifeStyleById(code: number){
+  getClientLifeStyleById(code: number){    
     return this.api.GET(`${this.LIFESTYLE_BASE_URL}?clientCode=${code}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
   }
 

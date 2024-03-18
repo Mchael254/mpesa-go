@@ -13,6 +13,7 @@ import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { finalize } from 'rxjs/operators';
 import { Utils } from 'src/app/features/lms/util/util';
 import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
+import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
 
 
 @Component({
@@ -25,6 +26,8 @@ export class BeneficiariesDependentsComponent implements OnInit{
   editEntity: boolean;
   beneficiaryForm: FormGroup;
   dependentForm: FormGroup;
+  minDate = DataManipulation.getMinDate();
+
 
   breadCrumbItems: BreadCrumbItem[] = [
     { label: 'Home', url: '/home/dashboard' },
@@ -194,34 +197,28 @@ export class BeneficiariesDependentsComponent implements OnInit{
   }
   saveDependent() {
     this.spinner_service.show('beneficiaries_view');
-
     this.spinner_service.show('dependent_modal_screen');
     let dep = { ...this.dependentForm.value };
     dep['dty_code']=1001;
-    console.log(dep);
+    this.editDepEntity = true;
     
-
     return this.party_service.saveDependent(dep)
         .pipe(
           finalize(() => {
-            // this.isBeneficiaryLoading = false;
             this.spinner_service.hide('dependent_modal_screen');
           })
         ).subscribe(
           (data) => {
+            this.editDepEntity = false;
             this.getDependentListByQuotationCode();
             this.closeCategoryDetstModal('categoryDetsModalTwo');
             this.dependentForm.reset();
             this.spinner_service.hide('dependent_modal_screen');
-            // this.isBeneficiaryLoading = false;
-            this.toast.success(
-              'Dependent Details Added Successfully',
-              'Dependent'
-            );
+            this.toast.success('Dependent Details Added Successfully', 'Dependent'.toUpperCase() );
           },
           (err) => {
+            this.editDepEntity = false;
             this.spinner_service.hide('dependent_modal_screen');
-
             this.toast.danger(err?.error?.errors[0], 'SAVE DEPENDENT ');
           }
         );
@@ -230,25 +227,52 @@ export class BeneficiariesDependentsComponent implements OnInit{
 
   deleteBeneficiary(i: number) {
     this.editEntity = true;
+    this.spinner_service.hide('ben_view')
+
     let beneficiary: {} = this.beneficiaryList.filter((data, x) => x === i)[0];
     this.party_service
       .deleteBeneficiary(beneficiary['code'])
       .subscribe((data) => {
         this.beneficiaryList = this.deleteEntity(this.beneficiaryList, i);
         this.editEntity = false;
+        this.toast.success('Delete data successfully', 'DELETE BENEFICIARY');
+        this.spinner_service.hide('ben_view')
+
+      }, 
+      err=>{
+        this.editEntity = false;
+        this.toast.danger('Fail to Delete data successfully', 'DELETE BENEFICIARY');
+        this.spinner_service.hide('ben_view')
+
+
       });
   }
+
   deleteDependent(i: number) {
     this.editDepEntity = true;
-    let dep: {} = this.dependentList.filter((data, x) => x === i)[0];
+    let dep: any = this.dependentList.filter((data, x) => x === i)[0];
+    
+    if(dep?.id_no){
+      this.toast.danger('Cannot delete self dependent', 'Dependent'.toUpperCase());
+      return;
+    }
+    this.spinner_service.show('deps_view');
     this.party_service
       .deleteDependent(dep['code'])
       .subscribe((data) => {
-        this.beneficiaryList = this.deleteEntity(this.dependentList, i);
+        this.dependentList = this.deleteEntity(this.dependentList, i);
         this.editDepEntity = false;
+        this.toast.success('Delete data successfully', 'DELETE DEPENDENT');
+        this.spinner_service.hide('deps_view')
+
+
       },
       err=>{
         this.editDepEntity = false;
+        this.toast.danger('Fail to Delete data successfully', 'DELETE DEPENDENT');
+        this.spinner_service.hide('deps_view')
+
+
       });
   }
   editBeneficiary(i: number) {
@@ -355,19 +379,23 @@ export class BeneficiariesDependentsComponent implements OnInit{
   }
 
   getDependentListByQuotationCode() {
-    this.editEntity = true;
-    let proposal_code = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.QUOTE_DETAILS)
-    );
+    // this.spinner_service.show('deps_view');
+    this.editDepEntity = true;
     this.party_service
       .getListOfDependentByQuotationCode(
         this.getQuoteCode(),
         this.util.getProposalCode()
       )
-      .pipe(finalize(() => (this.editEntity = false)))
+      .pipe(finalize(() => (this.editDepEntity = false)))
       .subscribe((data: any) => {
-        // console.log(data)
         this.dependentList = data;
+        this.toast.success('Fetch dependent(s) data successfully', 'Dependents'.toUpperCase());
+        // this.spinner_service.hide('deps_view');
+
+      },
+      err=>{
+        this.toast.danger('Fail to fetch dependent(s) data successfully', 'Dependents'.toUpperCase());
+        // this.spinner_service.hide('deps_view');
       });
   }
 
@@ -384,6 +412,11 @@ export class BeneficiariesDependentsComponent implements OnInit{
       .pipe(finalize(() => (this.editEntity = false)))
       .subscribe((data) => {
         this.beneficiaryList = data;
+        this.toast.success('Fetch beneficiary(ies) data successfully', 'Beneficiaries'.toUpperCase());
+      },
+      err => {
+        this.toast.danger('Fail to fetch beneficiary(ies) data successfully', 'Beneficiaries'.toUpperCase());
+
       });
   }
   
@@ -418,6 +451,9 @@ export class BeneficiariesDependentsComponent implements OnInit{
       return;
     }
     this.router.navigate(['/home/lms/ind/quotation/insurance-history'])
+  }
+  prevPage(){
+    this.router.navigate(['/home/lms/ind/quotation/documents-upload'])
   }
 
   get total(){

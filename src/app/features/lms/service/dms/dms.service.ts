@@ -21,7 +21,11 @@ export class DmsService {
   }
 
   downloadFileById(url: string) {
-    return this.http.get(url).pipe(map((data) => of(this.downloadFile(data['byteData'], `${data['docName']}`))))
+    console.log(url);
+    
+    return this.api.GET(url.replace('https://mutual-uat.turnkeyafrica.com/alfrescoServices/', ''), API_CONFIG.DMS_SERVICE).pipe(map((data) => of(this.downloadFile(data['byteData'], `${data['docName']}`))))
+
+    // return this.http.get(url).pipe(map((data) => of(this.downloadFile(data['byteData'], `${data['docName']}`))))
   }
 
   deleteDocumentById(code: string){

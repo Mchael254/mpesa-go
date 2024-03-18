@@ -29,6 +29,7 @@ import {
   map,
   of,
   switchMap,
+  tap,
 } from 'rxjs';
 import { BranchService } from '../../../../../../../shared/services/setups/branch/branch.service';
 import { OrganizationBranchDto } from '../../../../../../../shared/data/common/organization-branch-dto';
@@ -130,7 +131,8 @@ export class PersonalDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.formValidation();
+    let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
+   
 
     this.clientForm = this.getClientDetailsForm();
     this.clientSearch = this.fb.group({
@@ -141,15 +143,31 @@ export class PersonalDetailsComponent implements OnInit {
     this.getCountryList();
     this.getBranchList();
     this.getBankList();
-    let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
-    if(quote&&quote['client_code']){
-      this.getClientById(quote['client_code']);
-    }
+    
 
     this.util = new Utils(this.session_storage);
 
 
     this.fetchOccupations(2)
+
+    this.formValidation()
+    .pipe(concatMap((data) => {
+      return this.getClientById(quote?.client_code)
+    }))
+    .subscribe(data =>{      
+      this.patchClientDetailsToForm(data)
+      this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
+      this.spinner_Service.hide('client_details_view');
+
+    },
+    err => {
+      console.log(err);
+      this.toast.danger('Unable to Fetch Client Details', 'CLIENT DETAILS');
+      this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
+      this.spinner_Service.hide('client_details_view');
+
+      
+    })
   }
 
 
@@ -168,14 +186,12 @@ export class PersonalDetailsComponent implements OnInit {
   }
 
   formValidation() {
-
-    this.form_service
+    return this.form_service
       .getBySystemAndModuleAndScreeName(
         'LMS_INDIVIDUAL',
         'QUOTATION',
         'CLIENT_DETAILS'
-      )
-      .subscribe((data) => {
+      ).pipe(tap((data : any) => {        
         this.validationData = data['data'].map((val: any) => {
           let temp = {};
           temp['name'] = val?.form_name;
@@ -184,7 +200,8 @@ export class PersonalDetailsComponent implements OnInit {
           return temp;
         });
         this.clientForm = this.getClientDetailsForm();
-      });
+        // return data
+      }))
   }
 
   isTelQuoteOrWebQuote(){
@@ -341,7 +358,7 @@ export class PersonalDetailsComponent implements OnInit {
   //     const dob = new Date(dateOfBirth);
   //     return today.getFullYear() - dob.getFullYear();
   //   }
-  getClientDetailsForm(pattern: any = ''): FormGroup<any> {
+  getClientDetailsForm(pattern: any = ''): FormGroup<any> {    
     return this.fb.group({
       id: [],
       modeOfIdentity: this.getControlConfig('MODE_OF_IDENTITY'),
@@ -418,7 +435,10 @@ export class PersonalDetailsComponent implements OnInit {
     });
   }
   private patchClientDetailsToForm(data){
+    console.log(data);
+    
     this.clientForm.patchValue(data);
+    this.clientForm.get('id').patchValue(data?.id);
       this.clientForm.get('dateOfBirth').patchValue(new Date(data['dateOfBirth']));
       this.clientForm.get('modeOfIdentityNumber').patchValue(data['idNumber']);
       this.clientForm.get('countryId').patchValue(data['country']);
@@ -447,23 +467,10 @@ export class PersonalDetailsComponent implements OnInit {
     ];
   }
   getClientById(code: any){
-    this.spinner_Service.show('client_details_view');
-    this.crm_client_service.getClientById(code).subscribe(data =>{
-      this.patchClientDetailsToForm(data)
-      
-
-      this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
-      this.spinner_Service.hide('client_details_view');
-
-    },
-    err => {
-      console.log(err);
-      // this.toast.danger('Unable to Fetch Client Details', 'CLIENT DETAILS');
-      this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
-      this.spinner_Service.hide('client_details_view');
-
-      
-    })
+    if(code){
+      this.spinner_Service.show('client_details_view');
+      return this.crm_client_service.getClientById(code)
+    }
   }
   getClientList() {
     this.crm_client_service.getClients().subscribe((data) => {
@@ -725,7 +732,7 @@ export class PersonalDetailsComponent implements OnInit {
       dateOfBirth: clientForm.get('dateOfBirth').value,
       effectiveDateFrom: clientForm.get('paymentDetails').get('effective_from_date').value,
       effectiveDateTo: clientForm.get('paymentDetails').get('effective_to_date').value,
-      category: clientForm.get('category').value,
+      category: "I",
       status: clientForm.get('status').value,
       branchId: StringManipulation.returnNullIfEmpty(clientForm.get('contactDetails').get('branchId').value),
       countryId: StringManipulation.returnNullIfEmpty(clientForm.get('countryId').value),

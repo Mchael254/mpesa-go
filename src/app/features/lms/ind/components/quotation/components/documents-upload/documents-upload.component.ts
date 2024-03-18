@@ -178,9 +178,10 @@ export class DocumentsUploadComponent implements OnInit {
       return this.dms_service.getClientDocumentById(client_info['client_code']);
   }
   downloadBase64File(url: string) {
+    let url_ = url.replace('https://mutual-uat.turnkeyafrica.com/alfrescoServices/', '')
     this.spinner_service.show('download_view');
     this.dms_service
-      .downloadFileById(url)
+      .downloadFileById(url_)
       .pipe(
         finalize(() => {
           this.spinner_service.hide('download_view');

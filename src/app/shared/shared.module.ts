@@ -98,6 +98,8 @@ import { SortPipe } from './pipes/sort/sort.pipe';
 import { FileUploadModule } from 'primeng/fileupload';
 import { PolicyModule } from '../features/lms/grp/components/policy/policy.module';
 import { NationalityPipe } from '../features/lms/pipe/nationality/nationality.pipe';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 
 
 
@@ -225,6 +227,7 @@ const SERVICES = [
         TabViewModule,
         FileUploadModule,
         PolicyModule,
+        PdfViewerModule
     ],
     exports: [
         ErrorComponent,
@@ -269,7 +272,8 @@ const SERVICES = [
         TabViewModule,
         PolicyLandingScreenComponent,
         ProposalLandingScreenComponent,
-        FileUploadModule
+        FileUploadModule,
+        PdfViewerModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
