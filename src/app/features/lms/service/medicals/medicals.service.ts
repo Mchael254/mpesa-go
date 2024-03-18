@@ -22,13 +22,9 @@ export class MedicalsService {
     return this.api.GET<any>(`${this.MEDICALS_BASE_URL}/clients-medicals?pol_code=${pol_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
-
-
   deleteClientMedicalTest(cml_code=2024462214){
     return this.api.DELETE<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests/${cml_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
-
-
 
   saveClientMedicalTest(test:{}){
     return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/client-medical-tests`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
@@ -64,5 +60,12 @@ export class MedicalsService {
       ]
   }
     return this.api.POSTBYTE(null, payload, API_CONFIG.REPORT_SERVICE_BASE_URL);
+  }
+
+  getUnderwritingDecisons(pol_code=2024462214){
+    return this.api.GET<any>(`${this.MEDICALS_BASE_URL}/underwriting-decisions?pol_code=${pol_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+  saveClientMedicalDecison(test:{}){
+    return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/policy-underwriting-decisions`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 }

@@ -24,7 +24,7 @@ export const environment = {
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
-    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
+    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices']
 
 

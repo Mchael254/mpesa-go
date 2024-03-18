@@ -26,8 +26,8 @@ export const environment = {
 
 
     [API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL, '/crm/accounts'],
-    [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
-    // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
+    // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
+    [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
     [API_CONFIG.NOTIFICATION_BASE_URL, 'http://10.176.18.211:1025/notification/api'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
@@ -35,7 +35,7 @@ export const environment = {
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
-    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
+    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices']
 
   ]),
