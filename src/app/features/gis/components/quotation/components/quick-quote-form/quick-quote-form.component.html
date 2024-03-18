@@ -8,18 +8,19 @@
             <div class="card-body">
                 <div class="d-inline me-4">
                     <input class="form-check-input me-2 mt-2" (click)="toggleNewClient()" type="radio"
-                        name="flexRadioDefault" id="flexRadioDefault2">
+                        name="flexRadioDefault" id="flexRadioDefault2" [checked]="isNewClient">
                     <label class="form-check-label mb-4 mt-2" for="flexRadioDefault2">
                         New Client
                     </label>
                 </div>
                 <div class="d-inline ms-4">
                     <input class="form-check-input me-2 ms-4 mt-2" (click)="toggleButton()" type="radio"
-                        name="flexRadioDefault" id="flexRadioDefault1">
+                        name="flexRadioDefault" id="flexRadioDefault1" [checked]="!isNewClient">
                     <label class="form-check-label mb-4 mt-2" for="flexRadioDefault1">
                         Existing Client
                     </label>
                 </div>
+                
 
 
 
@@ -54,10 +55,10 @@
                         <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" [(ngModel)]="clientPhone">      -->
                         <div class="input-group">
                             <select id="zipDropdown">
-                                <option *ngFor="let mobile of filteredCountry" [value]="mobile.code" readonly>{{
-                                    mobile.mobilePrefix }}</option>
+                                <option *ngFor="let country of countryList" [value]="country.id" readonly>{{
+                                    country.zipCodeString }}</option>
                             </select>
-                            <input type="number" id="zip-quote-input" class="form-control form-control-sm mb-1"
+                            <input type="tel" id="zip-quote-input" class="form-control form-control-sm mb-1"
                                 [(ngModel)]="clientPhone">
                         </div>
 
@@ -117,7 +118,7 @@
 
                             <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
                                 formControlName="branchCode">
-                                <option *ngFor="let branch of branchList" [value]="branch.id">{{branch.name}}</option>
+                                <option *ngFor="let branch of branchList" [value]="branch.id">{{branch.name   | sentenceCase}}</option>
                                 <option></option>
                             </select>
 
@@ -209,10 +210,10 @@
                             <input class="form-control form-control-sm mb-1 ms-n4" id="quote-input"
                                 formControlName="currencyCode" [value]="selectedCurrency | sentenceCase" readonly>
                             <!-- Display error message under the field -->
-                            <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
+                            <!-- <div *ngIf="personalDetailsForm.get('currencyCode').hasError('required') && personalDetailsForm.get('currencyCode').touched"
                                 class="form-text text-danger">
                                 Currency is required.
-                            </div>
+                            </div> -->
                         </div>
 
                     </div>
