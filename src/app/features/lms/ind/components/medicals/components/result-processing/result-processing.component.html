@@ -168,13 +168,37 @@
       <div>
         <div class="d-flex justify-content-start pt-3 fs-6">Documents</div>
         <div class="row px-4 pt-2">
-          <div class="col-lg-7 col-md-6 col-sm-12 w-50">
+          <div class="col-lg-4 col-md-6 col-sm-12" style="position: relative">
+            <ngx-spinner
+              [name]="'test_report_view'"
+              type="ball-clip-rotate-multiple"
+              [fullScreen]="false"
+              color="#00529B"
+              size="medium"
+              bdColor="rgba(255, 255, 255, 0.966)"
+            ></ngx-spinner>
             <div class="row py-2" *ngFor="let item of getListOfMedicalDocuments()">
-
-              <span class="col-lg-6 col-md-12 col-sm-12 col-xs-12" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
-              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Share <i class="fa-solid fa-share-nodes"></i></span>
-              <span class="text-black col-lg-3 col-md-12 col-sm-12 fw-medium" style="cursor:pointer" >Preview <i class="fa-regular fa-eye"></i></span>
+              <span class=" col-lg-6 col-md-12 col-sm-12 col-xs-12 medical" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
+              <span class=" col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview" style="cursor:pointer" >Share <i class="fa-solid fa-share-nodes"></i></span>
+              <span class=" col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview" style="cursor:pointer"  (click)="downloadReport(item)" >Preview <i class="fa-regular fa-eye"></i></span>
             </div>
+          </div>
+
+          <div class="col-lg-8 col-md-6 col-sm-12"  *ngIf="filePath">
+            <div class="d-flex justify-content-center fw-bold py-2">
+              {{fileName | uppercase}}
+            </div>
+            <div style="border: #313179 1px solid;">
+              <pdf-viewer
+              [src]="filePath"
+              [render-text]="true"
+              [original-size]="true"
+              [fit-to-page]="true"
+              style="width: 100%; height: 500px"
+            ></pdf-viewer>
+
+            </div>
+           
           </div>
         </div>
       </div>

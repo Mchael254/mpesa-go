@@ -26,7 +26,7 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "*/lms": {
+  "/lms": {
     "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
@@ -81,6 +81,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-    }
+    },
+    "/alfrescoServices": {
+      "target": "https://mutual-uat.turnkeyafrica.com/",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+      }
 
 }

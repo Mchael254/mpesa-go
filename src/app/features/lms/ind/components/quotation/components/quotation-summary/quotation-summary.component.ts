@@ -3,7 +3,7 @@ import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { finalize, switchMap, timer } from 'rxjs';
+import { concatMap, finalize, switchMap, timer } from 'rxjs';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -103,10 +103,10 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
+    this.getClientById();
     this.getCoverType();
     this.getProductList();
     this.getLmsIndividualQuotationWebQuoteByCode();
-    this.getClientById();
     this.getBeneficiariesByQuotationCode();
     this.getRelationTypes();
     this.getDocumentsByClientId();
@@ -123,15 +123,8 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   getDocumentsByClientId() {
-    let client_code =
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage_service.get(SESSION_KEY.QUICK_QUOTE_DETAILS)
-      ) ||
-      StringManipulation.returnNullIfEmpty(
-        this.session_storage_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-      );
+    let client_code =this.util.getClientCode();
 
-    // this.session_storage_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)?.client_code;
     this.dms_service
       .getClientDocumentById(this.util.getClientCode())
       .subscribe((data) => {
@@ -193,13 +186,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
     this.client_service
       .getClientById(this.util.getClientCode())
       .pipe(
-        switchMap((data) => {
+        concatMap((data) => {
           this.client_details = data;
           return this.client_details;
         }),
-        switchMap((data: any) => {
+        concatMap((data: any) => {
           return this.country_service.getCountryById(data['country']).pipe(
-            switchMap((data_r: any) => {
+            concatMap((data_r: any) => {
               return data;
             })
           );
