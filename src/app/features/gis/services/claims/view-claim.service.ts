@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from '../../../../core/config/app-config-service'
+import {HttpParams} from "@angular/common/http";
 import { ClaimsDTO } from '../../data/claims-dto';
 import {API_CONFIG} from "../../../../../environments/api_service_config";
 import {ApiService} from "../../../../shared/services/api/api.service";
@@ -12,10 +11,7 @@ import {ApiService} from "../../../../shared/services/api/api.service";
 })
 export class ViewClaimService {
 
-  baseUrl = this.appConfig.config.contextPath.gis_services;
   constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
     private api:ApiService,
   ) { }
 
@@ -26,23 +22,24 @@ export class ViewClaimService {
     id: number
   ): Observable<Pagination<ClaimsDTO>> {
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
     const params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('dateFrom', `${dateFrom}`)
       .set('dateTo', `${dateTo}`);
 
-    return this.http.get<Pagination<ClaimsDTO>>(`/${this.baseUrl}/claims/api/v1/claims/client/` + id,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<Pagination<ClaimsDTO>>(`api/v2/claims/client/${id}?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 
   getClaimByClaimNo(claimNo: string): Observable<Pagination<ClaimsDTO>> {
     return this.api.GET<Pagination<ClaimsDTO>>(`api/v2/claims/view?claimNo=${claimNo}`, API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
+
+  getListOfExceptionsByClaimNo(claimNo: string, transactionNo: number, transactionType: string):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimNo', `${claimNo}`)
+      .set('transactionNo', `${transactionNo}`)
+      .set('transactionType', `${transactionType}`)
+    return this.api.GET<any>(`api/v1/claims/exceptions?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 }

@@ -227,16 +227,18 @@
       </div>
     </div>
     <p-table
-      #exceptionsTable
+      #claimsExceptionsTable
       [autoLayout]="true"
       [rowHover]="true"
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
-
+      [rows]="pageSize || 5"
+      [totalRecords]="claimExceptionData?.length"
+      [value]="claimExceptionData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
-
+      [(selection)]="selectedClaimException"
       selectionMode="single"
       dataKey="code"
       scrollHeight="400px"
@@ -267,32 +269,43 @@
           <td>
             <p-tableCheckbox [value]="exception"></p-tableCheckbox>
           </td>
-          <td>{{exception.code}}</td>
+          <td>{{exception.gis_exception_code}}</td>
           <td>
         <span *ngIf = "exception?.description" title="{{exception?.description}}">
           {{exception?.description?.substring(0,10)}}...
         </span>
           </td>
           <td>
-            <p-dropdown
+            <span title="{{exception?.underwriting_decision}}">
+            {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
+          </span>
 
-              optionLabel="remark"
-              id="id"
-              [filter]="true"
-              filterBy="remark"
-              [showClear]="true"
-              [style]="{ 'width': '130px', 'height': '40px' }"
-              placeholder="Select remark"
-              appendTo="body"
-            >
-            </p-dropdown>
+            <ng-container *ngIf="!exception.underwriting_decision">
+              <p-dropdown
+                [options]="completionRemarksData"
+                optionLabel="remark"
+                optionValue="remark"
+                id="code"
+                [filter]="true"
+                filterBy="remark"
+                [showClear]="true"
+                [style]="{ 'width': '130px', 'height': '40px' }"
+                placeholder="Select remark"
+                appendTo="body"
+                (onChange)="onDropdownChange($event, exception)"
+              >
+                <ng-template let-remark pTemplate="item">
+                  <div title="{{remark.remark}}">{{ remark.remark.length > 10 ? remark.remark.substring(0, 28) + '...' : remark.remark }}</div>
+                </ng-template>
+              </p-dropdown>
+            </ng-container>
           </td>
           <td>{{exception?.set_standard}}</td>
           <td>{{exception?.used_standard}}</td>
-          <td>{{exception?.is_authorized}}</td>
+          <td>{{exception?.authorised}}</td>
           <td>{{exception?.transactions_date}}</td>
-          <td>{{exception?.authorized_by}}</td>
-          <td>{{exception?.authorized_date}}</td>
+          <td>{{exception?.authorised_by}}</td>
+          <td>{{exception?.authorised_date}}</td>
           <td>{{exception?.exception_by}}</td>
         </tr>
       </ng-template>
