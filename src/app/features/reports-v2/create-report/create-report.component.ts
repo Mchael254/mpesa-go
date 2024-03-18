@@ -323,7 +323,7 @@ export class CreateReportComponent implements OnInit {
     let filters = [];
     if (this.filters.length > 0) {
       this.filters.forEach(filter => filters.push(filter.filter));
-    } else {
+    } else if(this.selectedReport?.filter) {
       filters = JSON.parse(this.selectedReport?.filter)
     }
 
@@ -374,17 +374,11 @@ export class CreateReportComponent implements OnInit {
       measures: JSON.stringify(measures),
       name: this.reportNameRec,
       order: 0,
-      width: 0
+      width: 0,
+      sort: JSON.stringify(this.sort)
     }
 
     this.createReport(report);
-
-    // if(isNaN(this.reportId)) {
-    //   this.router.navigate(['/home/reportsv2/preview']);
-    // } else {
-    //   this.router.navigate([`/home/reportsv2/preview/${this.reportId}`]);
-    // }
-    
   }
 
 
@@ -433,16 +427,20 @@ export class CreateReportComponent implements OnInit {
    * @return void
    */
   updateSort(sort): void {
-    this.criteria.forEach((criterion) => {
-      if (criterion == sort.queryObject && sort.queryObject.sort !== null) {
+    this.criteria.forEach((criterion, i) => {
+      if (criterion.query == sort?.queryObject?.query && sort.sortValue !== null) {
         criterion.sort = sort.queryObject.sort
-        this.sort.push(sort.sortValue)
-      } else {
-        this.sort = [];
+        this.sort.push(JSON.stringify(sort.sortValue))
+      } else if (criterion.query === sort?.queryObject?.query && sort.sortValue === null) {
+        this.sort = this.sort.filter(item => {
+          const sortItem = JSON.parse(item);
+          // console.log(sortItem, `${sort.queryObject.transaction}.${this.queryObject.query}`);
+          return sortItem[0] !== `${this.queryObject.transaction}.${this.queryObject.query}` ? item : null
+        });
+        delete criterion.sort
       }
     });
-    log.info(`sort >>> `, sort);
-    // this.loadChart();
+    log.info(`sort >>> `, this.sort);
   }
 
   /**

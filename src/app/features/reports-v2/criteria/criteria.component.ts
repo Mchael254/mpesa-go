@@ -147,7 +147,7 @@ export class CriteriaComponent implements OnInit{
       sortValue,
       queryObject: this.selectedCriterion
     };
-    log.info(`sortValue | selectedCriterion | sortOptions ==> `, sortValue, this.selectedCriterion, sortOptions)
+    // log.info(`sortValue | selectedCriterion | sortOptions ==> `, sortValue, this.selectedCriterion, sortOptions)
     this.sort.emit(sortOptions);
   }
 
@@ -156,11 +156,12 @@ export class CriteriaComponent implements OnInit{
    * 2. Emits the sort value and selected criterion to parent component for further manipulation
    * @return void 
    */
-  removeSorting(): void {
-    this.selectedCriterion.sort = null;
+  removeSorting(criterion): void {
+    // this.selectedCriterion.sort = null;
+    log.info(`critrion to remove sorting from ==> `, criterion);
     const sortOptions = {
       sortValue: null,
-      queryObject: this.selectedCriterion
+      queryObject: criterion
     };
     this.sort.emit(sortOptions);
   }
