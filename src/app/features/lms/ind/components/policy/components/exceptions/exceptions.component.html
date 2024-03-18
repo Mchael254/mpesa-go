@@ -72,8 +72,9 @@
           >
             <ng-container>
               <td>{{ rowIndex + 1 }}</td>
-              <td *ngFor="let col of columns">
-                {{ rowData[col.field].replaceAll("_", " ") | titlecase }}
+
+              <td *ngFor="let col of columns" style="width: 10%;">
+                {{ rowData[col.field]?.replaceAll("_", " ") | titlecase }}
               </td>
               <td>
                 <div

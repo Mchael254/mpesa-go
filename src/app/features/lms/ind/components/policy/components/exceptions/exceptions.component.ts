@@ -21,10 +21,13 @@ export class ExceptionsComponent implements OnInit {
 
   colsInd = [
     { field: 'name', header: 'Name' },
-    { field: 'description', header: 'Description' },
+    { field: 'description', header: 'Description' }, 
+    { field: 'value', header: 'Value' },
     { field: 'type', header: 'Type' },
     { field: 'captured_by', header: 'Captured By' },
     { field: 'authorized', header: 'Authorize' },
+    { field: 'authorized_by', header: 'Authorize By' },
+    
   ];
   webQuoteTotalLength = 0;
 

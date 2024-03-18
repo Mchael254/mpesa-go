@@ -35,6 +35,7 @@ export class ResultProcessingComponent implements OnInit {
   dynamicAccordionId: any;
   diseases: any[] = [];
   diseaseForms: FormGroup[] = [];
+  decisionsForm: FormGroup;
   // medicalResultForm : FormGroup;
   medicalReports:any[] = [];
   facilitatorList: any[] = [];
@@ -60,6 +61,10 @@ export class ResultProcessingComponent implements OnInit {
     this.medical_service.serviceProvider().subscribe(data =>{
       console.log(data);
       this.facilitatorList = data;
+      
+    });
+    this.medical_service.getUnderwritingDecisons(this.util.getPolCode()).subscribe(data =>{
+      console.log(data);
       
     })
     // this.medicalResultForm = this.fb.group({
@@ -200,8 +205,9 @@ export class ResultProcessingComponent implements OnInit {
 
   getClientMedicalTest() {
     this.spinner_service.show('medical_test_results_view');
+
     this.medical_service
-      .getListOfClientMedicalTests()
+      .getListOfClientMedicalTests(this.util.getPolCode())
       .subscribe((data: any[]) => {
         // console.log(data);
         

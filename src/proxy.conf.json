@@ -1,16 +1,16 @@
 {
   "/crm": {
-     "target": "http://10.176.18.211:1025/",
-     "secure": false,
-     "changeOrigin": true,
-     "logLevel": "debug"
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   },
 
   "/oauth": {
-     "target": "http://10.176.18.211:1025/",
-     "secure": false,
-     "changeOrigin": true,
-     "logLevel": "debug"
+    "target": "http://10.176.18.211:1025/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   },
 
   "/user": {
@@ -38,7 +38,7 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
- },
+  },
   "/turnquest": {
     "target": "http://10.176.18.211:1025/",
     "secure": false,
@@ -58,22 +58,16 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
- "/premium": {
-  "target": "http://10.176.18.211:1025/",
-  "secure": false,
-  "changeOrigin": true,
-  "logLevel": "debug"
-  },
-  "/reports": {
-    "target": "http://10.176.18.211:9991/",
+  "/premium": {
+    "target": "http://10.176.18.211:1025/",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
-    },
-    "/alfrescoServices": {
-      "target": "https://mutual-uat.turnkeyafrica.com/",
-      "secure": false,
-      "changeOrigin": true,
-      "logLevel": "debug"
-      }
+  },
+  "/alfrescoServices": {
+    "target": "https://mutual-uat.turnkeyafrica.com/",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
 }
