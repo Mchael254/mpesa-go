@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit, SimpleChanges} from '@angular/core';
 import { Logger } from '../../services/logger/logger.service';
 import { UtilService } from '../../services/util/util.service';
 // import {Logger, UtilService} from '../../shared.module';
@@ -31,7 +31,8 @@ export class DocViewerComponent implements OnInit {
   docPath: any;
   public contentType: 'document' | 'image' | 'video' = 'document';
 
-  constructor(private utilService: UtilService
+  constructor(private utilService: UtilService,
+              private cdr: ChangeDetectorRef
               ) {
   }
 
@@ -45,6 +46,7 @@ export class DocViewerComponent implements OnInit {
    * @param changes
    */
   ngOnChanges(changes: SimpleChanges){
+    this.cdr.detectChanges();
     this.contentType = this.utilService.checkIfImage(this.mimeType) ?
       'image' :
       'document';
