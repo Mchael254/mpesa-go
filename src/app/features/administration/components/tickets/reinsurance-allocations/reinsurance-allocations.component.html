@@ -33,11 +33,13 @@
             aria-label="search" aria-describedby="search"
           />
           <div class="form-check mt-2" *ngFor="let riskDetail of riskReinsuranceRiskDetailsData">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+
             <input class="form-check-input" type="checkbox" value="true" id="checkboxId"
             (click)="selectRiskDetails(riskDetail)" [checked]="riskDetail?.checked">
             <label class="form-label fw-bold text-dark" for="checkboxId">
               {{riskDetail?.propertyId}}
-            </label>
+            </label><br />
           </div>
         </form>
 

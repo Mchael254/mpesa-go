@@ -22,6 +22,7 @@ import { ReinsuranceAllocationsComponent } from './components/tickets/reinsuranc
 import { AuthorizationTabComponent } from './components/tickets/authorization-tab/authorization-tab.component';
 import { ClaimDetailsComponent } from './components/tickets/ticket-details/claim-details/claim-details.component';
 import { RevisionDetailsComponent } from './components/tickets/ticket-details/claim-details/revision-details/revision-details.component';
+import { AuthorizePolicyModalComponent } from './components/tickets/authorize-policy-modal/authorize-policy-modal.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { RevisionDetailsComponent } from './components/tickets/ticket-details/cl
     ReinsuranceAllocationsComponent,
     AuthorizationTabComponent,
     ClaimDetailsComponent,
-    RevisionDetailsComponent
+    RevisionDetailsComponent,
+    AuthorizePolicyModalComponent
   ],
   imports: [
     CommonModule,

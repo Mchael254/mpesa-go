@@ -20,6 +20,8 @@ import {LazyLoadEvent} from "primeng/api";
 import {TableLazyLoadEvent} from "primeng/table";
 import {TableDetail} from "../../../../../shared/data/table-detail";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
+import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize-policy-modal.component";
+import {PolicyDetailsDTO} from "../../../data/policy-details-dto";
 
 const log = new Logger('ViewTicketsComponent');
 @Component({
@@ -68,6 +70,7 @@ export class ViewTicketsComponent implements OnInit {
   activityName: string;
   totalTickets: number;
   filterPayload: any[]= [];
+  policyDetails: PolicyDetailsDTO;
 
   globalFilterFields = [
     'createdOn',
@@ -85,6 +88,8 @@ export class ViewTicketsComponent implements OnInit {
   });
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private filterKey: string = '';
+  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+
   constructor(
     private authService: AuthService,
     private ticketsService: TicketsService,
@@ -837,6 +842,43 @@ export class ViewTicketsComponent implements OnInit {
       return this.ticketsService.searchTickets(pageNo, pageSize, payload)
     }
   }
+
+  async authorizePolicy() {
+    const selectedTickets = this.selectedSpringTickets;
+
+    if (selectedTickets.length === 0) {
+      this.globalMessagingService.displayInfoMessage('Info', 'Please select at least one ticket to authorize');
+      return;
+    }
+
+    const policyCode = selectedTickets[0]?.ticket?.policyCode;
+
+    if (!policyCode) {
+      this.globalMessagingService.displayInfoMessage('Info', 'Policy code is missing');
+      return;
+    }
+
+    try {
+
+      this.ticketsService.getPolicyDetails(policyCode)
+        .subscribe(
+          policyDetails => {
+            this.policyDetails = policyDetails?.content[0];
+            log.info('Policy details:', this.policyDetails);
+            this.cdr.detectChanges();
+            this.authorizePolicyComponent.openDebtOwnerModal();
+          },
+          error => {
+            log.error('Error fetching policy details:', error);
+            this.globalMessagingService.displayErrorMessage('Error', 'Failed to fetch policy details');
+          }
+        );
+    } catch (error) {
+      log.error('Error:', error);
+      this.globalMessagingService.displayErrorMessage('Error', 'An error occurred');
+    }
+  }
+
 }
 
 enum filterSortEnums {
