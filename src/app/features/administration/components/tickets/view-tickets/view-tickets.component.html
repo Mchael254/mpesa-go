@@ -40,7 +40,8 @@
 
 <div  class="d-flex my-4 mx-4">
   <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>
-  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task">Reassign</button>
+  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task" style="margin-right: 1rem;">Reassign</button>
+  <button class="btn btn-success" (click)="authorizePolicy()">Authorize Policy</button>
 </div>
 
 <div class="d-flex my-4 mx-4">
@@ -401,5 +402,8 @@
   (reassignedTickets)="reassignSubmitted($event)">
 </app-reassign-ticket-modal>
 
+<app-authorize-policy-modal
+  [policyDetails]="policyDetails">
+</app-authorize-policy-modal>
 <div class="mobile-bottom"></div>
 

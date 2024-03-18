@@ -26,6 +26,8 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
 
   tableDetails: TableDetail;
   tableClaimantDocs: TableDetail;
+  tableClientDocs: TableDetail;
+  tableServiceProviderDocs: TableDetail;
 
   viewDocs: DmsDocument[] = [];
 
@@ -40,6 +42,20 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   ];
 
   colsClaimantDocs = [
+    { field: 'actualName', header: 'Doc Name' },
+    { field: 'dateCreated', header: 'Date Created' },
+    { field: 'modifiedBy', header: 'Modified by' },
+    { field: 'version', header: 'Version' },
+  ];
+
+  colsClientDocs = [
+    { field: 'actualName', header: 'Doc Name' },
+    { field: 'dateCreated', header: 'Date Created' },
+    { field: 'modifiedBy', header: 'Modified by' },
+    { field: 'version', header: 'Version' },
+  ];
+
+  colsServiceProviderDocs = [
     { field: 'actualName', header: 'Doc Name' },
     { field: 'dateCreated', header: 'Date Created' },
     { field: 'modifiedBy', header: 'Modified by' },
@@ -74,6 +90,22 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       showCustomModalOnView: true,
       noDataFoundMessage: 'No Documents Found'
     }
+    this.tableClientDocs = {
+      paginator: false, showFilter: false, showSorting: false,
+      cols: this.colsClientDocs,
+      rows: this.viewDocs,
+      isLazyLoaded: false,
+      showCustomModalOnView: true,
+      noDataFoundMessage: 'No Client Documents Found'
+    }
+    this.tableServiceProviderDocs = {
+      paginator: false, showFilter: false, showSorting: false,
+      cols: this.colsServiceProviderDocs,
+      rows: this.viewDocs,
+      isLazyLoaded: false,
+      showCustomModalOnView: true,
+      noDataFoundMessage: 'No Service Provider Documents Found'
+    }
     this.fetchDocuments();
   }
 
@@ -85,6 +117,8 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     switch (ticketModule) {
       case  allTicketModules.claims:
         this.fetchClaimDocuments(this.currentTicket?.ticket?.claimNo);
+        this.fetchClaimantDocuments(this.currentTicket?.ticket?.claimNo); ///should add service provider code
+        this.fetchServiceProvDocuments(this.currentTicket?.ticket?.claimNo); ///should add service provider code
         break;
       case allTicketModules.quotation:
         this.fetchQuotationDocuments(this.currentTicket?.ticket?.quotationNo);
@@ -93,6 +127,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
         this.fetchPolicyDocuments(this.currentTicket?.ticket?.policyNo);
         break;
     }
+    this.fetchClientDocuments(this.currentTicket?.ticket?.clientCode.toString());
   }
 
   /**
@@ -104,7 +139,6 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     if(!quoteCode){
       this.viewDocs = [];
       this.tableDetails.rows = this.viewDocs;
-      this.tableClaimantDocs.rows = this.viewDocs;
       return;
     }
 
@@ -117,7 +151,6 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       {
         this.viewDocs = docs;
         this.tableDetails.rows = this.viewDocs;
-        this.tableClaimantDocs.rows = this.viewDocs;
       }
       );
   }
@@ -140,7 +173,6 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       {
         this.viewDocs = policyDocs;
         this.tableDetails.rows = this.viewDocs;
-        this.tableClaimantDocs.rows = this.viewDocs;
       });
   }
 
@@ -153,7 +185,6 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     if(!claimNo){
       this.viewDocs = [];
       this.tableDetails.rows = this.viewDocs;
-      this.tableClaimantDocs.rows = this.viewDocs;
       return;
     }
     //
@@ -162,9 +193,56 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       .subscribe( claimDocuments => {
         this.viewDocs = claimDocuments;
         this.tableDetails.rows = this.viewDocs;
-        this.tableClaimantDocs.rows = this.viewDocs;
       }
     );
+  }
+
+  private fetchClientDocuments(clientCode: string) {
+    if(!clientCode){
+      this.viewDocs = [];
+      this.tableClientDocs.rows = this.viewDocs;
+      return;
+    }
+    //
+    this.dmsService.fetchDocumentsByClientCode(clientCode)
+      .pipe(untilDestroyed(this))
+      .subscribe( clientDocuments => {
+          this.viewDocs = clientDocuments;
+          this.tableClientDocs.rows = this.viewDocs;
+        }
+      );
+  }
+
+  private fetchClaimantDocuments(claimantNo: string) {
+    if(!claimantNo){
+      this.viewDocs = [];
+      this.tableClaimantDocs.rows = this.viewDocs;
+      return;
+    }
+    //
+    this.dmsService.fetchDocumentsByClaimantNo(claimantNo)
+      .pipe(untilDestroyed(this))
+      .subscribe( clientDocuments => {
+          this.viewDocs = clientDocuments;
+          this.tableClaimantDocs.rows = this.viewDocs;
+        }
+      );
+  }
+
+  private fetchServiceProvDocuments(spCode: string) {
+    if(!spCode){
+      this.viewDocs = [];
+      this.tableServiceProviderDocs.rows = this.viewDocs;
+      return;
+    }
+    //
+    this.dmsService.fetchDocumentsByServiceProviderCode(spCode)
+      .pipe(untilDestroyed(this))
+      .subscribe( clientDocuments => {
+          this.viewDocs = clientDocuments;
+          this.tableServiceProviderDocs.rows = this.viewDocs;
+        }
+      );
   }
 
   /**

@@ -15,7 +15,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {ReinsuranceAllocationsComponent} from "../reinsurance-allocations/reinsurance-allocations.component";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
-import {AuthorizationTabComponent} from "../authorization-tab/authorization-tab.component";
+import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize-policy-modal.component";
 
 @Component({
   selector: 'app-ticket-details',
@@ -44,9 +44,9 @@ export class TicketDetailsComponent implements OnInit {
   globalFilterFields = [''];
 
   activeIndex: number = 0;
-
+  showReassignTicketsModal: boolean;
   @ViewChild(ReinsuranceAllocationsComponent) reinsuranceAllocationsComp: ReinsuranceAllocationsComponent;
-  @ViewChild(AuthorizationTabComponent) authorizationTabComponent: AuthorizationTabComponent;
+  @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
 
   /*breadCrumbItems: BreadCrumbItem[] = [
     {
@@ -299,6 +299,25 @@ export class TicketDetailsComponent implements OnInit {
   }
 
   onClickAuthorize() {
-    this.authorizationTabComponent.openDebtOwnerModal();
+    this.authorizePolicyComponent.openDebtOwnerModal();
+  }
+
+  toggleReassignModal(visible: boolean) {
+    this.showReassignTicketsModal = visible;
+  }
+
+  openReassignModal() {
+    this.toggleReassignModal(true);
+  }
+
+  handleAction(event: void) {
+    this.toggleReassignModal(false); // Close the modal after performing the action
+  }
+
+  reassignSubmitted(event) {
+    if(event){
+      this.toggleReassignModal(false);
+      log.info('Reassign dto received: ', event);
+    }
   }
 }

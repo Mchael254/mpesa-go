@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Logger} from "../logger/logger.service";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {DmsDocument, SingleDmsDocument} from "../../data/common/dmsDocument";
 import {ParameterService} from "../system-parameters/parameter.service";
 import {environment} from "../../../../environments/environment";
-import {AppConfigService} from "../../../core/config/app-config-service";
+import {ApiService} from "../api/api.service";
+import {API_CONFIG} from "../../../../environments/api_service_config";
 
 const log = new Logger('DmsService');
 
@@ -14,6 +15,9 @@ const dmsEndpoints = {
   getDocsByQuotationNo: 'getQuotationDocsByQuoteNo',
   getDocsByPolicyNo: 'getNBDocByPolicyNo',
   getDocsByClaimNo: 'getClaimsDocsByClaimNo',
+  getDocsByClaimantNo: 'getClaimantDocsByClaimantNo',
+  getDocsByServiceProvCode: 'getSPDocsByAgentCode',
+  getDocsByClientCode: 'getClientDocsByClientCode'
 }
 
 /**
@@ -36,8 +40,7 @@ export class DmsService{
 
   constructor(
     private parameterService: ParameterService,
-    private appConfig: AppConfigService,
-    private http: HttpClient) {
+    private api:ApiService,) {
     this.dmsUrlParameter$.subscribe( dmsUrl =>  this.dmsApiUrl = dmsUrl);
   }
 
@@ -57,10 +60,10 @@ export class DmsService{
     const params = new HttpParams()
       .set('docId', `${docId}`);
 
-    url = this.getDmsUrl(urlEndpoint);
+    // url = this.getDmsUrl(urlEndpoint);
 
     log.info('Fetching documents for document: ', `${docId}`);
-    return this.http.get<SingleDmsDocument>(url, {headers:header, params:params})
+    return this.api.GET<SingleDmsDocument>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE)
   }
 
   /**
@@ -71,15 +74,12 @@ export class DmsService{
   fetchDocumentsByQuotationNo(quotationNo: string): Observable<DmsDocument[]>{
     let url: string, urlEndpoint = dmsEndpoints.getDocsByQuotationNo;
 
-    const header = new HttpHeaders({
-      "Accept": "application/json"
-    });
     const params = new HttpParams()
       .set('qouteCode', `${quotationNo}`);
-    url = this.getDmsUrl(urlEndpoint);
+    // url = this.getDmsUrl(urlEndpoint);
 
     log.info('Fetching documents for quotation no: ', `${quotationNo}`);
-    return this.http.get<DmsDocument[]>(url, {headers:header, params:params});
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
   }
 
   /**
@@ -89,16 +89,14 @@ export class DmsService{
    */
   fetchDocumentsByPolicyNo(policyNo: string): Observable<DmsDocument[]>{
     let url: string, urlEndpoint = dmsEndpoints.getDocsByPolicyNo;
-    const header = new HttpHeaders({
-      "Accept": "application/json"
-    });
+
     const params = new HttpParams()
       .set('policyNo', `${policyNo}`);
     log.info('Fetching documents for policy: ', `${policyNo}`);
 
-    url = this.getDmsUrl(urlEndpoint);
+    // url = this.getDmsUrl(urlEndpoint);
 
-    return this.http.get<DmsDocument[]>(url, {headers:header, params:params});
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
   }
 
   /**
@@ -108,16 +106,44 @@ export class DmsService{
    */
   fetchDocumentsByClaimNo(claimNo: string): Observable<DmsDocument[]>{
     let url: string, urlEndpoint = dmsEndpoints.getDocsByClaimNo;
-    const header = new HttpHeaders({
-      "Accept": "application/json"
-    });
+
     const params = new HttpParams()
       .set('claimNo', `${claimNo}`);
     log.info('Fetching documents for claim no: ', `${claimNo}`);
 
-    url = this.getDmsUrl(urlEndpoint);
+    // url = this.getDmsUrl(urlEndpoint);
 
-    return this.http.get<DmsDocument[]>(url, {headers:header, params:params});
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+  }
+
+  fetchDocumentsByClaimantNo(claimantNo: string): Observable<DmsDocument[]>{
+    let urlEndpoint = dmsEndpoints.getDocsByClaimantNo;
+
+    const params = new HttpParams()
+      .set('claimantNo', `${claimantNo}`);
+    log.info('Fetching documents for claim no: ', `${claimantNo}`);
+
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+  }
+
+  fetchDocumentsByServiceProviderCode(spCode: string): Observable<DmsDocument[]>{
+    let urlEndpoint = dmsEndpoints.getDocsByServiceProvCode;
+
+    const params = new HttpParams()
+      .set('spCode', `${spCode}`);
+    log.info('Fetching documents for service provider no: ', `${spCode}`);
+
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
+  }
+
+  fetchDocumentsByClientCode(clientCode: string): Observable<DmsDocument[]>{
+    let urlEndpoint = dmsEndpoints.getDocsByClientCode;
+
+    const params = new HttpParams()
+      .set('clientCode', `${clientCode}`);
+    log.info('Fetching documents for client no: ', `${clientCode}`);
+
+    return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
   }
 
   /**
@@ -126,7 +152,7 @@ export class DmsService{
    * @param urlEndpoint Specific endpoint
    * @return string Return full string url of endpoint
    */
-  private getDmsUrl(urlEndpoint: string): string {
+  /*private getDmsUrl(urlEndpoint: string): string {
     let url: string;
 
     // if dmsUrl has been set from the backend , otherwise select the one set on environment (either dev/prod)
@@ -134,6 +160,6 @@ export class DmsService{
 
     log.info('Dms Url Selected is: ', url, 'Endpoint is: ', urlEndpoint);
     return url.endsWith('/') ? url + urlEndpoint :  url + '/' + urlEndpoint;
-  }
+  }*/
 
 }

@@ -138,7 +138,7 @@
         <label class="text-primary mb-2">Reports</label>
         <app-ticket-reports></app-ticket-reports>
 
-        <label class="text-primary mb-2">Documents</label>
+
         <app-ticket-documents [currentTicket]="currentTicket">
         </app-ticket-documents>
       </p-tabPanel>
@@ -155,17 +155,9 @@
         <label class="text-primary mb-2">Reports</label>
         <app-ticket-reports></app-ticket-reports>
 
-        <label class="text-primary mb-2 mt-2">Claimant Documents</label>
         <app-ticket-documents [currentTicket]="currentTicket">
         </app-ticket-documents>
 
-        <label class="text-primary mb-2 mt-2">Service Providers</label>
-        <app-ticket-documents [currentTicket]="currentTicket">
-        </app-ticket-documents>
-
-        <label class="text-primary mb-2 mt-2">Claim Documents</label>
-        <app-ticket-documents [currentTicket]="currentTicket">
-        </app-ticket-documents>
       </p-tabPanel>
     </ng-container>
 
@@ -177,8 +169,7 @@
     <div class="col-sm-7">
       <button
         class="btn btn-outline-primary reassign-btn"
-        data-toggle="modal"
-        data-target="#reassignModal"
+        (click)="openReassignModal()"
       >
         Reassign
       </button>
@@ -209,3 +200,13 @@
   </div>
 </div>
 
+<app-authorize-policy-modal
+  [policyDetails]="policyDetails">
+</app-authorize-policy-modal>
+
+<app-reassign-ticket-modal
+  [selectedTickets]="[selectedSpringTickets]"
+  [reassignModalVisible]="showReassignTicketsModal"
+  (actionReassignEmitter)="handleAction($event)"
+  (reassignedTickets)="reassignSubmitted($event)">
+</app-reassign-ticket-modal>
