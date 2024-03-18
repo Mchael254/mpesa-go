@@ -7,7 +7,6 @@ import { CountryService } from 'src/app/shared/services/setups/country/country.s
 import { CountryDto } from 'src/app/shared/data/common/countryDto';
 import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Router } from '@angular/router';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import {NgxSpinnerService} from "ngx-spinner";
@@ -124,7 +123,7 @@ export class LifestyleDetailsComponent implements OnInit, OnDestroy {
   getClientLifeStyleById() {
     this.spinner_service.show("lifestyle_screen");
     this.isLoading = true;
-    let client_code = this.session_service.get(SESSION_KEY.CLIENT_CODE);
+    let client_code = this.util.getClientCode();
     this.lifestyle_service.getClientLifeStyleById(client_code).pipe(finalize(() => {
       this.spinner_service.hide("lifestyle_screen");
       this.isLoading = false;

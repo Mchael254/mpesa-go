@@ -18,6 +18,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
 
 
   @Input() payment_details: any = {};
+  @Input() client: any = {};
 
   isMpesaSelected: boolean;
   isCardSelected: boolean;
@@ -27,11 +28,12 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   title: string;
   // paymentInstance: PaymentInstance;
   token :string
+  client_record: any;
 
   paystack_details: {key?: string, email?:string, amount?: string, reference?: string} = {};
   options: any =  {
     amount: this.payment_details?.premium * 100,
-    email: 'user@mail.com',
+    email: 'user@gmail.com',
     ref: `ref-${Math.ceil(Math.random() * 10e13)}`
   } 
   quote: any;
@@ -42,10 +44,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.quote = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS))
     this.quote['proposal_no'] = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS))?.proposal_no
-    // this.getBankList();
-    console.log(this.payment_details);
-    
-    
+    this.options['email'] = new String(this.client?.emailAddress).toLowerCase();
     this.paystack_details['key'] = 'sk_test_9f5e8c96f1af351cb674ed100e20a28c56cffd17';
     this.options['amount'] = Math.ceil(this.payment_details['premium'])*100;
     this.options = {...this.options }

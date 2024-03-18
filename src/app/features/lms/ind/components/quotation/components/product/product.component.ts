@@ -7,7 +7,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { finalize, first, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { concatMap, finalize, first, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { PayFrequencyService } from 'src/app/features/lms/grp/components/quotation/service/pay-frequency/pay-frequency.service';
 import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
@@ -64,11 +64,14 @@ export class ProductComponent implements OnInit {
     let quote = StringManipulation.returnNullIfEmpty(
       this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
     );
-    if (!quote) {
+    this.productForm = this.getproductForm();
+    this.getPayFrequencies();
+    this.getAgentList();
+    console.log(quote);
+    
+    if (!quote) {      
       this.getQuotationSubscribe = this.getProduct().pipe(
-        switchMap((products) => {
-          console.log(products);
-
+        concatMap((products) => {
           this.productList = [...products];
           return this.getTelQuote();
         }),
@@ -76,33 +79,48 @@ export class ProductComponent implements OnInit {
       );
     } else {
       this.getQuotationSubscribe = this.getProduct().pipe(
-        switchMap((products) => {
-          // console.log(products);
-
+        concatMap((products) => {
+        
           this.productList = [...products];
           return this.getWebQuote();
         }),
         finalize(() => this.spinner.hide('product_view'))
       );
     }
-    this.getQuotationSubscribe.subscribe((final_quote) => {
-      console.log(final_quote);
+    this.getQuotationSubscribe
+    .pipe(concatMap((data: any)=>{
+      if(data?.agent_code){
+        return this.getAgentByCode(data?.agent_code).pipe(concatMap(agent_details =>{
+          this.productForm.get('agent').patchValue(agent_details);
+          
+          return of(data); 
+        }))
+
+      }
+      this.toast.info('Agent is not defined', 'Product Selection'.toUpperCase())
+      return of(data);
+
+    }))
+    .subscribe((final_quote) => {
       this.productForm
         .get('freq_payment')
         .patchValue(final_quote['payment_frequency']);
       this.productForm.get('term').patchValue(final_quote['policy_term']);
       this.productForm.get('agent').patchValue(final_quote['agent_code']);
 
-      if (quote['sum_insured']) {
+      if (quote?.sum_insured && quote?.sum_insured>0) {
+        this.productForm.get('sa_prem_select').patchValue('SA');
+        this.productForm.get('sa_prem_amount').patchValue(final_quote['sum_insured']);
+      }else{
         this.productForm.get('sa_prem_select').patchValue('P');
-        this.productForm
-          .get('sa_prem_amount')
-          .patchValue(final_quote['sum_insured']);
       }
+      this.toast.success('Fetch data successfully', 'Product Selection'.toUpperCase())
+    },
+    err =>{
+      this.toast.danger('Fail to fetch data successfully, try again!', 'Product Selection'.toUpperCase())
+
     });
-    this.productForm = this.getproductForm();
-    this.getPayFrequencies();
-    this.getAgentList();
+    
   }
 
   getWebQuote() {
@@ -113,9 +131,7 @@ export class ProductComponent implements OnInit {
       return this.quotation_service
         .getLmsIndividualQuotationWebQuoteByCode(quote['code'])
         .pipe(
-          switchMap((web_quote: any) => {
-            console.log(web_quote);
-
+          concatMap((web_quote: any) => {
             this.web_quote = web_quote;
             let product = web_quote['product_code'];
             this.productForm.patchValue(web_quote);
@@ -123,22 +139,23 @@ export class ProductComponent implements OnInit {
             this.selectProduct({ target: { value: product } });
             return of(web_quote);
           }),
-          switchMap((web_quote) => {
-            this.product_service
+          concatMap((web_quote) => {
+            return this.product_service
               .getProductOptionByCode(web_quote['pop_code'])
               .pipe(
-                switchMap((product_option) => {
+                concatMap((product_option) => {
                   let option = product_option['code'];
                   this.productForm.get('option').patchValue(option);
                   this.selectProductOption({
                     target: { value: product_option['code'] },
                   });
 
-                  return of(product_option);
+                  // return of(product_option);
+                  return of(web_quote);
+
                 })
               );
 
-            return of(web_quote);
           })
         );
     } else {
@@ -155,7 +172,7 @@ export class ProductComponent implements OnInit {
         .getLmsIndividualQuotationTelQuoteByCode(quote['tel_quote_code'])
         .pipe(
           switchMap((tel_quote: any) => {
-            console.log(tel_quote);
+            // console.log(tel_quote);
 
             this.web_quote = tel_quote;
             let product = tel_quote['product_code'];
@@ -191,6 +208,10 @@ export class ProductComponent implements OnInit {
         return d;
       });
     });
+  }
+
+  getAgentByCode(code: any) {
+    return this.crm_client_service.getAgentById(code);
   }
 
   coverTypeState(cover: any) {
@@ -341,7 +362,7 @@ export class ProductComponent implements OnInit {
   }
   selectClient(event: any) {
     // console.log('select client');
-    console.log(event?.value);
+    // console.log(event?.value);
     // let val = this.clientForm.get('client');
     // this.productForm.patchValue(event?.value);
   }
@@ -352,13 +373,14 @@ export class ProductComponent implements OnInit {
     }
     this.spinner.show('product_view');
     let quote = {};
-    let quote_details = StringManipulation.returnNullIfEmpty(
-      this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
-    );
-    let formValue = this.productForm.value;
-    // if(formValue['sa_prem_select']===null){
-    //   this.toast.danger('select either PREMIUM or SUM ASSURED', 'PRODUCT DETAILS')
-    // }
+    // let quote_details = StringManipulation.returnNullIfEmpty(
+    //   this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
+    // );
+    let formValue = this.productForm.value;    
+
+    if(formValue['sa_prem_select']===null){
+      this.toast.danger('select either PREMIUM or SUM ASSURED', 'PRODUCT DETAILS')
+    }
     let cover_list = this.coverTypeList()
       .filter((data) => data?.selected === true)
       .map((data) => data?.id);
@@ -399,11 +421,9 @@ export class ProductComponent implements OnInit {
           'QUOTATION CREATION/UPDATE'
         );
         this.route.navigate(['/home/lms/ind/quotation/beneficiaries-dependents'])
-        console.log(data);
         this.spinner.hide('product_view');
       },
       (err) => {
-        console.log(err);
         this.spinner.hide('product_view');
         this.toast.danger(err?.error?.errors[0], 'QUOTATION CREATION/UPDATE');
       }

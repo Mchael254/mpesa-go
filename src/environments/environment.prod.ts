@@ -25,6 +25,8 @@ export const environment = {
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     // [API_CONFIG.REPORT_SERVICE_BASE_URL, 'http://10.176.18.211:9991'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
+    [API_CONFIG.DMS_SERVICE, '/alfrescoServices']
+
 
   ]),
   // PAYSTACK_BASE_URL: process.env['PAYSTACK_BASE_URL'],

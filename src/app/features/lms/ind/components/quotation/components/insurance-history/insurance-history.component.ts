@@ -48,6 +48,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   coverStatusTypeListTwo: any[] = [];
 
   util: Utils;
+  editFirstForm: boolean;
   // insuranceHistoryForm: FormGroup;
 
   constructor(
@@ -87,12 +88,26 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     return this.insuranceHistoryForm.get('responseOne') as FormArray;
   }
 
-  addResponseOne(x) {
+  addResponseOne(x: any) {
     this.spinner_service.show('ins_view');
-
     let pol_data = this.policyListOne.filter((data, i) => {
       return i === x;
     })[0];
+    let data  = this.insuranceHistoryFormOne.value;
+    console.log(data);
+    
+    if(!data?.cover_status || data['cover_status']===''){
+      this.toast.danger('Select cover status', 'Insurance history'.toUpperCase());
+      this.spinner_service.hide('ins_view');
+      return;
+    }
+
+    if(data['premium'] > data['sum_assured']){
+      this.toast.danger('The Premium amount exceeds the sum assured', 'Insurance history'.toUpperCase())
+      this.spinner_service.hide('ins_view');
+      return;  
+    }
+    
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormOne.value,
@@ -100,9 +115,11 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
     .subscribe((pol_sub_data) => {
+      this.editFirstForm = false;      
       this.policyListOne = this.policyListOne.map((data, i) => {
         if (i === x) {
-          let temp = this.insuranceHistoryFormOne.value;
+          // let temp = this.insuranceHistoryFormOne.value;
+          let temp = pol_sub_data['data'];
           temp['isEdit'] = false;
           return temp;
         }
@@ -111,13 +128,35 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       this.spinner_service.hide('ins_view');
 
       this.insuranceHistoryFormOne.reset();
+      this.toast.success('Save Data Successfully', 'Insurance history'.toUpperCase());
+
+    },
+    err =>{
+      this.toast.danger('Failed to save Data Successfully', 'Insurance history'.toUpperCase());
+
     });
   }
-  addResponseTwo(x) {
+  addResponseTwo(x: any) {
     this.spinner_service.show('ins_view');
     let pol_data = this.policyListTwo.filter((data, i) => {
       return i === x;
     })[0];
+    let data = {...this.insuranceHistoryFormTwo.value};
+    console.log(data);
+
+    if(!data?.cover_status || data['cover_status']===''){
+      this.toast.danger('Select cover status', 'Insurance history'.toUpperCase());
+      this.spinner_service.hide('ins_view');
+      return;
+    }
+    
+
+    if(data['premium'] > data['sum_assured']){
+      this.toast.danger('The Premium amount exceeds the sum assured', 'Insurance history'.toUpperCase())
+      this.spinner_service.hide('ins_view');
+      return;  
+    }
+    
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormTwo.value,
@@ -125,21 +164,29 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
     .subscribe((pol_sub_data) => {
+      this.editFirstForm = false;
       this.policyListTwo = this.policyListTwo.map((data, i) => {
+        console.log(pol_sub_data);
+        
         if (i === x) {
-          let temp = this.insuranceHistoryFormTwo.value;
+          let temp = pol_sub_data['data'];
           temp['isEdit'] = false;
           return temp;
         }
         return data;
       });
       this.spinner_service.hide('ins_view');
-
-
       this.insuranceHistoryFormTwo.reset();
+      this.toast.success('Save Data Successfully', 'Insurance history'.toUpperCase());
+
+    },
+    err =>{
+      this.toast.danger('Failed to save Data Successfully', 'Insurance history'.toUpperCase());
+
     });
   }
   editPolicyOne(x) {
+    this.editFirstForm = true;
     let pol = this.policyListOne
       .filter((data, i) => {
         return i === x;
@@ -165,6 +212,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   addEmptyPolicyList(policyListOne: any[]) {
+    this.editFirstForm = true;
     policyListOne.push({ isEdit: true });
   }
 
@@ -173,10 +221,8 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   }
 
   deletePolicyListOne(i: number) {
-    this.spinner_service.show('ins_view')
-    let deleted_pol = this.policyListOne.find((data, x) => {
-      return i === x;
-    });
+    this.spinner_service.show('ins_view');
+    let deleted_pol = this.policyListOne.find((data, x) => {return i === x});    
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
@@ -184,7 +230,12 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       this.policyListOne = this.policyListOne.filter((data, x) => {
         return i !== x;
       });
+      this.toast.success('Delete Data Successfully', 'Insurance history'.toUpperCase())
       this.spinner_service.hide('ins_view')
+
+    },
+    err=>{
+      this.toast.danger('Failed to Delete Data', 'Insurance history'.toUpperCase())
 
     })
   }
@@ -192,17 +243,17 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   cancelPolicyListOne(i: number) {
     this.policyListOne = this.policyListOne.map((data, x) => {
       data['isEdit'] = false
-
       return data;
-    }).filter((data, x) => x!==i);
+    }).filter(data => { return data?.code});
+    this.editFirstForm = true;
+
+    
   }
 
 
   deletepolicyListTwo(i: number) {
     this.spinner_service.show('ins_view');
-    let deleted_pol = this.policyListTwo.find((data, x) => {
-      return i === x;
-    });
+    let deleted_pol = this.policyListTwo.find((data, x) => {return i === x});    
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
@@ -210,16 +261,23 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       this.policyListTwo = this.policyListTwo.filter((data, x) => {
         return i !== x;
       });
-      this.spinner_service.hide('ins_view');
+      this.toast.success('Delete Data Successfully', 'Insurance history'.toUpperCase())
+      this.spinner_service.hide('ins_view')
+
+    },
+    err=>{
+      this.toast.danger('Failed to Delete Data', 'Insurance history'.toUpperCase())
+
     })
   }
 
   cancelPolicyListTwo(i: number) {
     this.policyListTwo = this.policyListTwo.map((data, x) => {
-      data['isEdit'] = false
-
+      data['isEdit'] = false;
       return data;
-    }).filter((data, x) => x!==i);
+    }).filter(data => { return data?.code});
+    this.editFirstForm = true;
+
   }
   editPolicyTwo(x) {
     let pol = this.policyListTwo
@@ -301,7 +359,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
   saveInsuranceHistory(data: any) {
     let ins = { ...data };
     ins['clnt_code'] = this.util.getClientCode();
-    ins['prp_code'] = this.util.getClientCode();
+    // ins['prp_code'] = this.util.getClientCode();
     ins['prp_code'] = null;
     console.log(ins);
     return this.client_history_service.saveInsuranceHistory(ins);

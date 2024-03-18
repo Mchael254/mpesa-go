@@ -321,11 +321,13 @@
             <div class="collapse mt-4" id="contactDetails">
               <div class="row mb-4">
                 <div
+                
                   class="col-md-4"
                   *ngIf="getFormData('CONTACT_DETAILS_BRANCH_ID')"
                 >
                   <label
                     class="quote-label"
+                    [class.required]="getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['required']"
                     [for]="
                       getFormData('CONTACT_DETAILS_BRANCH_ID')['data']['label']
                     "
@@ -356,6 +358,7 @@
 
                 <div class="col-md-4">
                   <label for="titleShortDescription" class="quote-label"
+
                     >Title</label
                   >
                   <input
@@ -371,6 +374,9 @@
                 >
                   <label
                     class="quote-label"
+                    [class.required]="
+                    getFormData('CONTACT_DETAILS_SMS_NO')['data']['required']
+                  "
                     [for]="
                       getFormData('CONTACT_DETAILS_SMS_NO')['data']['label']
                     "
