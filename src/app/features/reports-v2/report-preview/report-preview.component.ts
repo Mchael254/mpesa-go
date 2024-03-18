@@ -490,7 +490,7 @@ export class ReportPreviewComponent implements OnInit{
       measures: this.measures,
       dimensions: this.dimensions,
       filters,
-      order: [],
+      order: this.sort,
       limit: 20
     }
     log.info(`query for cube >>> `, query);
