@@ -189,6 +189,8 @@
               >
                 Product details
               </div>
+
+              <!-- {{policyUnderwritingSummary | json}} -->
               <div class="row pt-2">
                 <div class="col-lg-4 col-md-12  text-black-50">Proposal No. :</div>
                 <div class="col-lg-8 col-md-12  text-black fw-medium"> {{ policyUnderwritingSummary['proposal_no']}}</div>
@@ -209,10 +211,10 @@
                 <div class="col-lg-4 col-md-12 text-black-50">Product:</div>
                 <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['product_description']| titlecase}}</div>
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Currency: </div>
                 <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['sum_assured'] | number}}</div>
-              </div>
+              </div> -->
               <div class="row">
                 <div class="col-lg-4 col-md-12 text-black-50">Premium: </div>
                 <div class="col-lg-8 col-md-12 text-black fw-medium"> {{ policyUnderwritingSummary['endr_tot_premium'] | number}}</div>
@@ -271,22 +273,23 @@
               </div>
               <div class="row">
                 <div *ngFor="let item of policyBeneficiaries" class="row col-6">
-                  <!-- {{item | json}} -->
                   <div class="row pt-2">
                     <div class="col-6 text-black-50">Name:</div>
-                    <div class="col-6 text-black fw-medium"> {{item?.beneficiary_info['first_name'] +' '+ item?.beneficiary_info['other_name'] | titlecase }} </div>
+                    <div class="col-6 text-black fw-medium"> {{item?.beneficiary_info['surname'] +' '+ item?.beneficiary_info['other_names'] | titlecase }} </div>
                   </div>
                   <div class="row">
                     <div class="col-6 text-black-50">Benefit proportion:</div>
-                    <div class="col-6 text-black fw-medium">{{item['percentage_benefit'] || 0 | number}}% </div>
+                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['percentage_benefit'] || 0 | number}}% </div>
                   </div>
                   <div class="row">
                     <div class="col-6 text-black-50">Date of birth:</div>
-                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['date_of_birth'] | date: 'dd/mm/YYYY'}}</div>
+                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['date_of_birth'] | date: 'short'}}</div>
                   </div>
                   <div class="row">
                     <div class="col-6 text-black-50">Relation:</div>
-                    <div class="col-6 text-black fw-medium">{{item?.beneficiary_info['relation_code'] }}</div>
+                    <div class="col-6 text-black fw-medium">{{
+                      relationTypeList
+                            | relationType : item?.beneficiary_info['relation_code']  | titlecase }}</div>
                   </div>
                   <!-- <div class="row">
                     <div class="col-6 text-black-50">Gender:</div>
@@ -294,7 +297,7 @@
                   </div> -->
                   <div class="row">
                     <div class="col-6 text-black-50">Type:</div>
-                    <div class="col-6 text-black fw-medium"> {{item['type']==='B'? 'Beneficiary':'Trustee' | titlecase}}</div>
+                    <div class="col-6 text-black fw-medium"> {{'Beneficiary' | titlecase}}</div>
                   </div>
                 </div>
 

@@ -7,6 +7,7 @@ import { EndorsementService } from 'src/app/features/lms/service/endorsement/end
 import { PartyService } from 'src/app/features/lms/service/party/party.service';
 import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
 import { ProductService } from 'src/app/features/lms/service/product/product.service';
+import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Utils } from 'src/app/features/lms/util/util';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -33,6 +34,7 @@ export class UnderwritingComponent implements OnInit {
   policyBeneficiaries: any[];
 
   util: Utils;
+  relationTypeList: any[];
 
   constructor(private policies_service: PoliciesService, 
     private spinner_service: NgxSpinnerService, 
@@ -42,6 +44,7 @@ export class UnderwritingComponent implements OnInit {
     private dms_service: DmsService,
     private party_service: PartyService,
     private toast_service: ToastService,
+    private relation_type_service: RelationTypesService,
     private session_storage_service: SessionStorageService) {
       this.util = new Utils(this.session_storage_service);
     }
@@ -66,6 +69,9 @@ export class UnderwritingComponent implements OnInit {
     ];
     this.rejectForm = this.fb.group({
       cancellation_source: ['', Validators.required]
+    })
+    this.relation_type_service.getRelationTypes().subscribe((data: any[]) =>{
+      this.relationTypeList = data;
     })
 
     this.activeItem = this.items[0];
@@ -129,7 +135,7 @@ export class UnderwritingComponent implements OnInit {
     })
   }
   getListPolicyBeneficiaries(){
-    this.party_service.getListOfDependentByQuotationCode(this.util.getPolCode(), this.util.getEndrCode()).subscribe((data: any[]) =>{
+    this.party_service.getListOfBeneficariesByProposalCode(this.util.getPolCode()).subscribe((data: any[]) =>{
       this.policyBeneficiaries = data;
       console.log(data);
       
