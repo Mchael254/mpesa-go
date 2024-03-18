@@ -3,6 +3,7 @@
   currentTicket?.ticket?.sysModule === 'P' ||
   currentTicket?.ticket?.sysModule === 'RT' ||
   currentTicket?.ticket?.sysModule === 'Q'">
+  <label class="text-primary mb-2">Documents</label>
   <app-dynamic-table
     [tableDetails]="tableDetails"
     (showCustomModalEmitter)="showModal($event)">
@@ -10,12 +11,24 @@
 </ng-container>
 
 <ng-container *ngIf="currentTicket?.ticket?.sysModule === 'C'">
+  <label class="text-primary mb-2">Claimant Documents</label>
   <app-dynamic-table
     [tableDetails]="tableClaimantDocs"
     (showCustomModalEmitter)="showModal($event)">
   </app-dynamic-table>
+
+  <label class="text-primary mt-2 mb-2">Service Provider Documents</label>
+  <app-dynamic-table
+    [tableDetails]="tableServiceProviderDocs"
+    (showCustomModalEmitter)="showModal($event)">
+  </app-dynamic-table>
 </ng-container>
 
+<label class="text-primary mt-2 mb-2">Client Documents</label>
+<app-dynamic-table
+  [tableDetails]="tableClientDocs"
+  (showCustomModalEmitter)="showModal($event)">
+</app-dynamic-table>
 
 <app-dynamic-simple-modal
   [modalVisible]="documentModalVisible"
