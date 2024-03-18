@@ -1,0 +1,146 @@
+<div class="modal fade" id="debtOwnerToggle" aria-hidden="true" aria-labelledby="debtOwnerToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="debtOwnerToggleLabel">Debt owner and promise date</h1>
+        <button type="button" class="btn-close" (click)="closeDebtOwnerModal()"></button>
+      </div>
+      <form [formGroup]="debtOwnerForm" class="clearfix">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <label for="modalUserAssignTo" class="text-dark">Debt owner</label>
+            </div>
+            <div class="col-9">
+              <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
+            </div>
+            <div class="col-2">
+              <button class="btn btn-outline-primary" (click)="openAllUsersModal()">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <div *ngIf="showDefaultUser" class="row mt-2">
+            <div class="col-3">
+              <label for="modalDefaultGroupUser">Default User</label>
+            </div>
+            <div class="col-7">
+              <input type="text" name="modalDefaultGroupUser" formControlName="modalDefaultGroupUser" id="modalDefaultGroupUser" class="form-control w-100 h-39 border border-secondary">
+            </div>
+            <div class="col-2">
+              <button type="submit" class="dropdownBtn">
+                <i class="fa fa-angle-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-12">
+              <label class="text-dark">Promise date</label>
+            </div>
+            <div class="col-12">
+              <input type="date" name="" class="form-control" formControlName="promiseDate">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer d-block float-end" style="border-top:0">
+          <button class="btn btn-primary cancelBtn" id="cancelDebtOwnerBtn"
+                  #cancelDebtOwner (click)="closeDebtOwnerModal()">Cancel</button>
+          <button class="btn btn-outline-primary float-right" id="scheduleBtn"
+                  (click)="saveDebitOwnerAndPromiseDate()">Next</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="scheduleModalToggle" aria-hidden="true" aria-labelledby="scheduleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="width: 350px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="scheduleModalToggleLabel">Schedule check</h1>
+        <button type="button" class="btn-close" (click)="closeScheduleModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 mb-3">
+          <label for="scheduleReadyAuth" class="form-label w-100">Is this the schedule ready for authorization?</label>
+          <form [formGroup]="scheduleCheckForm">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="Y">
+              <label class="form-label" for="scheduleReadyAuth">Yes</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="N">
+              <label class="form-label" for="scheduleReadyAuth">No</label>
+            </div>
+
+            <div *ngIf="scheduleCheckForm.get('scheduleReadyAuth').value === 'Y'">
+              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
+                <label class="form-label" for="dispatchDocuments">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
+                <label class="form-label" for="dispatchDocuments">No</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="onAuthorize()" [disabled]="isLoading">
+          <span *ngIf="!isLoading; else loading">Authorize</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--Modal for Listing all users !-->
+<app-dynamic-simple-modal
+  [modalVisible]="allUsersModalVisible"
+  [modalButtonLabel]="'Save debt owner'"
+  [modalTitle]="'Select debt owner'"
+  [useDynamicContent]="true"
+  [zIndex]="firstModalZIndex"
+  (actionEmitter)="processSelectedUser($event)"
+>
+  <!---Use content projection !-->
+  <div modal-body-content>
+    <app-staff-modal (userSelected)="getSelectedUser($event)">
+    </app-staff-modal>
+  </div>
+  <!---Use content projection !-->
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the allUsersModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="allUsersModalVisible"
+     [style.z-index]="firstModalZIndex"></div>
+
+
+<!-- Modal for Viewing Group Members if User from above list was of group Type (type = G) !-->
+<app-dynamic-simple-modal
+  [modalVisible]="groupUserModalVisible"
+  [modalButtonLabel]="'Save default debt owner'"
+  [zIndex]="secondModalZIndex"
+  [title]="'Select default debt owner'"
+  [useDynamicContent]="true"
+  (actionEmitter)="processDefaultUser($event)"
+>
+  <div modal-body-content>
+    <app-staff-modal
+      [isLazyLoaded]="false"
+      [staffList]="groupStaffMembers"
+      (userSelected)="getSelectedDefaultUser($event)">
+    </app-staff-modal>
+  </div>
+</app-dynamic-simple-modal>
+<!-- add backdrop element that is shown when the groupUserModalVisible is true and has a lower z-index value -->
+<div class="modal-backdrop fade" *ngIf="groupUserModalVisible"
+     [style.z-index]="zIndex"></div>
