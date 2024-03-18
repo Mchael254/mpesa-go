@@ -262,12 +262,19 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     })[0];
     
     let record  = {...pol_data, ...this.medicalHistoryTableOne.value};    
-    
     let medical_record = {...record, meh_code: {...this.medicalHistoryTableOne.value}['code']};
-    this.saveMedicalHistoryDependant(medical_record).subscribe((pol_sub_data) => {
+    medical_record['code'] = this.util.getClientCode();
+    medical_record['meh_code'] = this.util.getClientCode();
+    medical_record['client_code'] = this.util.getClientCode();
+    console.log(medical_record);
+    
+
+    this.saveMedicalHistoryDependant(medical_record)
+    .subscribe((pol_sub_data) => {
       console.log(pol_sub_data);
       
       this.medicalListOne = this.medicalListOne.map((data, i) => {
+
         if (i === x) {
           let temp = this.medicalHistoryTableOne.value;
           temp['isEdit'] = false;

@@ -13,13 +13,23 @@ export class PartyService {
   constructor(private api:ApiService) {}
 
   getListOfBeneficariesByQuotationCode(quote_code:number, proposal_code:number){
-    return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    return this.api.GET(`parties/beneficiaries?quote_code=${quote_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
     // return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}&proposal_code=${proposal_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
     .pipe(
       map((data: any) => {
         return data['content'];
     }),
     );
+  }
+
+  getListOfBeneficariesByProposalCode(pol_code:number){
+    return this.api.GET(`individual/parties/beneficiaries?pol_code=${pol_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
+    // return this.api.GET(`parties/beneficiaries?page=0&size=5&quote_code=${quote_code}&proposal_code=${proposal_code}`, API_CONFIG.IND_MARKETING_SERVICE_BASE_URL)
+    // .pipe(
+    //   map((data: any) => {
+    //     return data['content'];
+    // }),
+    // );
   }
 
   getListOfDependentByQuotationCode(pol_code:number, endr_code:number){

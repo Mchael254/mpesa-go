@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { of, switchMap } from 'rxjs';
+import { concatMap, of, switchMap } from 'rxjs';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { CoverTypeService } from 'src/app/features/lms/service/cover-type/cover-type.service';
 import { PartyService } from 'src/app/features/lms/service/party/party.service';
@@ -72,7 +72,7 @@ export class SummaryComponent implements OnInit {
     this.quotation_service
     .getLmsIndividualQuotationWebQuoteByCode(this.session_service.get(SESSION_KEY.WEB_QUOTE_DETAILS)['code'])
     .pipe(
-      switchMap((web_quote_res: any) =>{ 
+      concatMap((web_quote_res: any) =>{ 
         console.log(web_quote_res);
         let quote  = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.QUOTE_DETAILS));
         quote['endr_code']= web_quote_res['proposal_details']['endr_code'];
@@ -81,11 +81,11 @@ export class SummaryComponent implements OnInit {
         this.proposalSummaryData = web_quote_res;
         return this.product_service.getProductByCode(web_quote_res?.product_code)
       }),
-      switchMap((product_res : any) =>{        
+      concatMap((product_res : any) =>{        
         this.proposalSummaryData['product'] = product_res
         return this.product_option_service.getProductOptionByCode(this.proposalSummaryData?.pop_code)
       }),
-      switchMap((prod_option_res : any) =>{ 
+      concatMap((prod_option_res : any) =>{ 
         this.proposalSummaryData['product_option'] = prod_option_res
         // return this.cover_type_service.getCoverTypeByCode(this.proposalSummaryData?.pop_code)
         return of(prod_option_res)
