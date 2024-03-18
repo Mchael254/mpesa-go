@@ -137,14 +137,16 @@ export class UnderwritingComponent implements OnInit {
   }
 
   authorizePolicy(){
+    this.spinner_service.show('underwriting');
     this.endorsement_service.authorizePolicy(this.util.getEndrCode())
     .subscribe(data =>{
       console.log(data);
+      this.spinner_service.hide('underwriting');
       
     }, 
     err => {
       console.log(err['error']['errors'][0]);
-      
+      this.spinner_service.hide('underwriting');      
       this.toast_service.danger(err['error']['errors'][0], 'POLICY UNDERWRITING AUTORIZATION')
     })
   }

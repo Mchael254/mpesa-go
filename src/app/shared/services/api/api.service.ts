@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+
 import { Observable } from 'rxjs/internal/Observable';
 import { environment } from '../../../../environments/environment';
 import { API_CONFIG } from '../../../../environments/api_service_config';
@@ -53,13 +54,20 @@ export class ApiService {
 
   GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
-    const url = `${this.baseURL}/${endpoint}`;
+    const url = `${this.baseURL}/${endpoint}`;    
     let headers: HttpHeaders = this.getHeaders();
     // if(params!==null){
     //    return this.http.get<T>(url, { headers, params });
     // }
+    let config = {}
+    if(params===null){
+      config = {headers}
+    }else{
+      config ={headers, params}
+    }
 
-    return this.http.get<T>(url, {headers, params:params});
+
+    return this.http.get<T>(url, config);
   }
 
   POST<T>(endpoint: string, data: any, BASE_SERVICE: API_CONFIG =API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null ): Observable<T> {

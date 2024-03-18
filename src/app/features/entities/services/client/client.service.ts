@@ -41,7 +41,7 @@ export class ClientService {
         .set('size', `${size}`)
         .set('organizationId', 2)
         .set('sortListFields', `${sortField}`)
-        .set('order', `${order}`);
+        .set('order', `${order}`);        
 
       return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`,
         {
@@ -75,6 +75,21 @@ export class ClientService {
           params: params,
         });
   }
+
+  getAgentById(agent_code: any
+  ): Observable<Pagination<any>> {
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });    
+
+    return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/agents/${agent_code}`,
+
+      {
+        headers: headers,
+      });
+}
   searchClients(
       page: number,
       size: number = 5,

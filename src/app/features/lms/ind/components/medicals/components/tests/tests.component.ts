@@ -50,6 +50,8 @@ export class TestsComponent  implements OnInit{
   policySummaryDetails: any = {};
   medicalReports: any[]  = [];
   testForm: FormGroup;
+  filePath: any;
+  fileName: any;
 
   constructor(private router:Router,  
     private session_service: SessionStorageService, 
@@ -108,34 +110,34 @@ export class TestsComponent  implements OnInit{
   }
 
   downloadReport(item: any){
+    this.spinner_service.show('test_report_view');
     console.log(item);
     this.medical_service.downloadMedicalTestFile(item.rpt_code)
     .subscribe(
       (response: Blob) => {
-        // Create a blob from the response data
         const blob = new Blob([response], { type: 'application/pdf' });
+        this.filePath  = window.URL.createObjectURL(blob);
+        this.fileName = item.document;
+        this.spinner_service.hide('test_report_view');
+        this.toast_service.success('Successfully Preview Medical Report', 'Medical Report'.toUpperCase())
 
-        // Create a URL for the blob
-        const url = window.URL.createObjectURL(blob);
-
-        // Create a link element and set its href to the URL of the blob
-        const link = document.createElement('a');
-        link.href = url;
-
-        // Set the filename for the downloaded file
-        link.download = `${item.document}.pdf`;
-
-        // Append the link to the document body and click it to trigger the download
-        document.body.appendChild(link);
-        link.click();
+        // const link = document.createElement('a');
+        // link.href = this.filePath;
+        // link.download = `${item.document}.pdf`;
+        // document.body.appendChild(link);
+        // link.click();
 
         // Clean up by revoking the URL
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-    // .subscribe(data =>{
-    //   // this.dmsService.downloadFile(data, item.document);
+        // window.URL.revokeObjectURL(this.filePath);
+        // document.body.removeChild(link);
+
     },
     err=>{
+      this.filePath= null;
+      this.spinner_service.hide('test_report_view');
+      console.log(err);
+      
+      this.toast_service.danger('Fail to Preview Medical Report', 'Preview Medical Report'.toUpperCase())
       console.log(err);
       
     })
@@ -146,7 +148,6 @@ export class TestsComponent  implements OnInit{
 
   medicalSummaryResults(){
     this.spinner_service.show('medical_view');
-    
     this.product_service
     .getProductByCode(this.quotation_details['product_code'])
     .pipe(switchMap((product_res:any)=>{
@@ -164,10 +165,13 @@ export class TestsComponent  implements OnInit{
     .subscribe((policy_summary:any) => {
       // this.quotation_details = web_quote_res
       this.policySummaryDetails = policy_summary
-      console.log(policy_summary);
       this.spinner_service.hide('medical_view');
+      this.toast_service.success('Fetch record successfully', 'MEDICAL SUMMARY');      
+
     }, (err: any) =>{
       this.spinner_service.hide('medical_view');
+      this.toast_service.success('Fail fetch record successfully', 'MEDICAL SUMMARY');      
+
 
     })
   }
@@ -177,21 +181,25 @@ export class TestsComponent  implements OnInit{
     this.medical_service.getListOfClientMedicalTests().subscribe((data:any[]) =>{
       this.clientMedicalTestList = data[0];
       this.spinner_service.hide('test_view');
-      this.toast_service.success('Fetch Record Successfully', 'MEDICAL TESTS');
+      this.toast_service.success('Fetch record successfully', 'MEDICAL TESTS');      
+    },
+    err =>{
+      this.spinner_service.hide('test_view');
+      this.toast_service.danger('Fail to fetch record successfully', 'MEDICAL TESTS');
 
-
-      // console.log(data);
-      
     })
   }
 
   getPolMedicalTest(){
+    this.spinner_service.show('test_view');
     this.medical_service.getListOfTests(1).subscribe((data:any[]) =>{
       this.medicalTestList = data;
       this.toast_service.success('Fetch Record Successfully', 'MEDICAL TESTS');
-
-      console.log(data);
-      
+      console.log(data); 
+    },
+    err =>{
+      this.spinner_service.hide('test_view');
+      this.toast_service.danger('Fail to fetch record successfully', 'MEDICAL TESTS');
     })
   }
 

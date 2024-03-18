@@ -39,6 +39,8 @@ export class ResultProcessingComponent implements OnInit {
   medicalReports:any[] = [];
   facilitatorList: any[] = [];
   util: Utils;
+  filePath: any;
+  fileName: any;
 
   constructor(
     private router: Router,
@@ -118,35 +120,60 @@ export class ResultProcessingComponent implements OnInit {
 
   }
 
+  // downloadReport(item: any){
+  //   console.log(item);
+  //   this.medical_service.downloadMedicalTestFile(item.rpt_code)
+  //   .subscribe(
+  //     (response: Blob) => {
+  //       // Create a blob from the response data
+  //       const blob = new Blob([response], { type: 'application/pdf' });
+
+  //       // Create a URL for the blob
+  //       const url = window.URL.createObjectURL(blob);
+
+  //       // Create a link element and set its href to the URL of the blob
+  //       const link = document.createElement('a');
+  //       link.href = url;
+
+  //       // Set the filename for the downloaded file
+  //       link.download = `${item.document}.pdf`;
+
+  //       // Append the link to the document body and click it to trigger the download
+  //       document.body.appendChild(link);
+  //       link.click();
+
+  //       // Clean up by revoking the URL
+  //       window.URL.revokeObjectURL(url);
+  //       document.body.removeChild(link);
+  //   // .subscribe(data =>{
+  //   //   // this.dmsService.downloadFile(data, item.document);
+  //   },
+  //   err=>{
+  //     console.log(err);
+      
+  //   })
+
+  // }
+
   downloadReport(item: any){
+    this.spinner_service.show('test_report_view');
     console.log(item);
     this.medical_service.downloadMedicalTestFile(item.rpt_code)
     .subscribe(
       (response: Blob) => {
-        // Create a blob from the response data
         const blob = new Blob([response], { type: 'application/pdf' });
+        this.filePath  = window.URL.createObjectURL(blob);
+        this.fileName = item.document;
+        this.spinner_service.hide('test_report_view');
+        this.toast_service.success('Successfully Preview Medical Report', 'Medical Report'.toUpperCase())
 
-        // Create a URL for the blob
-        const url = window.URL.createObjectURL(blob);
-
-        // Create a link element and set its href to the URL of the blob
-        const link = document.createElement('a');
-        link.href = url;
-
-        // Set the filename for the downloaded file
-        link.download = `${item.document}.pdf`;
-
-        // Append the link to the document body and click it to trigger the download
-        document.body.appendChild(link);
-        link.click();
-
-        // Clean up by revoking the URL
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-    // .subscribe(data =>{
-    //   // this.dmsService.downloadFile(data, item.document);
     },
     err=>{
+      this.filePath= null;
+      this.spinner_service.hide('test_report_view');
+      console.log(err);
+      
+      this.toast_service.danger('Fail to Preview Medical Report', 'Preview Medical Report'.toUpperCase())
       console.log(err);
       
     })

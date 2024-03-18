@@ -1,34 +1,61 @@
 table {
-    border-collapse: collapse;
-    width: 100%;
-  }
+  border-collapse: collapse;
+  width: 100%;
+}
 
-  th, td {
-    padding: 10px;
-    text-align: left;
-  }
+th,
+td {
+  padding: 10px;
+  text-align: left;
+}
 
-  th {
-    background-color: #55555580;
-    color: #fff;
-  }
-  thead > tr >th {
-    color: black;
-    font-weight: 500;
-  }
+th {
+  background-color: #55555580;
+  color: #fff;
+}
 
-  thead>tr {
-    border: #55555500 0 solid;
-  }
+thead>tr>th {
+  color: black;
+  font-weight: 500;
+}
 
-  tbody>tr {
-    border: #fff 0 solid;
-  }
+thead>tr {
+  border: #55555500 0 solid;
+}
 
-  tbody>tr:nth-child(odd) {
-    background-color: #b81d1d;
-  }
-  
-  tbody > tr:nth-child(even) {
-    background-color: #fff; /* Background color for even rows */
-  }
+tbody>tr {
+  border: #fff 0 solid;
+}
+
+tbody>tr:nth-child(odd) {
+  background-color: #b81d1d;
+}
+
+tbody>tr:nth-child(even) {
+  background-color: #fff;
+  /* Background color for even rows */
+}
+
+.medical {
+  font-weight: 400;
+}
+
+.medical:hover {
+  font-weight: 600;
+}
+
+.medical-preview{
+  color:black;
+}
+.medical-preview:hover {
+  font-weight: 600;
+  color:gray
+}
+
+pdf-viewer {
+  height: 100vh;
+}
+
+:host ::ng-deep .ng2-pdf-viewer-container {
+  overflow-x: hidden !important;
+}
