@@ -272,6 +272,11 @@ export class PersonalDetailsComponent implements OnInit {
     );
   }
 
+  resetForm(){
+    this.clientForm.reset();
+    this.clientForm.patchValue({ "id": null, "modeOfIdentity": null, "modeOfIdentityId": null, "countryId": null, "firstName": null, "lastName": null, "gender": null, "dateOfBirth": null, "modeOfIdentityNumber": null, "pinNumber": null, "branchId": null, "contactDetails": { "id": null, "emailAddress": null, "phoneNumber": null, "preferredChannel": null, "smsNumber": null, "titleShortDescription": null, "branchId": null }, "address": { "id": null, "box_number": null, "country_id": null, "state_id": null, "town_id": null, "physical_address": null, "is_utility_address": "N" }, "paymentDetails": { "id": null, "account_number": null, "bank_branch_id": null, "currency_id": null, "effective_from_date": null, "effective_to_date": null, "iban": null, "mpayno": null, "preferedChannel": null }, "wealthDetails": { "id": null, "citizenship_country_id": null, "marital_status": null, "funds_source": null, "occupation_id": null, "employed": null, "is_employed": "N", "is_self_employed": "N", "sector_id": null, "insurancePurpose": null, "premiumFrequency": null, "distributeChannel": null }, "occupationId": null, "organizationId": null, "partyId": null, "passportNumber": null, "proposerCode": null, "shortDescription": null, "stateId": null, "townId": null, "client": null, "status": "A", "system": "LMS", "category": "I", "clientTypeId": "NEW_CLIENT", "dateCreated": null, "effectiveDateFrom": null, "effectiveDateTo": null })
+  }
+
   checkError(formName = 'modeOfIdentityNumber', errorName = 'incorrectFormat') {
     return (
       this.clientForm.get(formName).errors?.[errorName]

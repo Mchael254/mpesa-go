@@ -175,7 +175,7 @@
             </div>
           </div>
 
-          <div class="row col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12 px-4">
+          <div class="row col-xl-5 col-lg-6 col-md-6 col-sm-12 col-xs-12 px-4">
             <div class="d-flex justify-content-start pt-2">Medical Tests</div>
 
             <div class="container mt-4" style="position: relative">
@@ -311,8 +311,14 @@
             </div>
           </div>
           <div class="col-lg-8 col-md-8 col-sm-12"  *ngIf="filePath">
-            <div class="d-flex justify-content-center fw-bold py-2">
-              {{fileName | uppercase}}
+            <div class="d-flex justify-content-between fw-bold py-2">
+              <div></div>
+              <div>{{fileName | uppercase}}</div>
+              <div>
+                <span class="download_icon" *ngIf="filePath" (click)="downloadFile()"><i class="fa-solid fa-download text-black fs-4 px-2"></i></span>
+                
+                <span class="download_icon" (click)="clearFile()"><i class="fa-solid fa-xmark text-danger fs-4 px-2"></i></span>
+              </div>
             </div>
             <div style="border: #313179 1px solid;">
               <pdf-viewer

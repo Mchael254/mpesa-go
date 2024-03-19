@@ -21,13 +21,12 @@ export class ExceptionsComponent implements OnInit {
 
   colsInd = [
     { field: 'name', header: 'Name' },
-    { field: 'description', header: 'Description' }, 
+    { field: 'description', header: 'Description' },
     { field: 'value', header: 'Value' },
     { field: 'type', header: 'Type' },
     { field: 'captured_by', header: 'Captured By' },
     { field: 'authorized', header: 'Authorize' },
     { field: 'authorized_by', header: 'Authorize By' },
-    
   ];
   webQuoteTotalLength = 0;
 
@@ -139,6 +138,7 @@ export class ExceptionsComponent implements OnInit {
       modal.classList.remove('show');
       modal.style.display = 'none';
     }
+    this.exceptionFormModal.reset();
   }
 
   saveException() {
@@ -184,6 +184,7 @@ export class ExceptionsComponent implements OnInit {
             'Exception Details'.toUpperCase()
           );
           this.spinner_service.hide('exceptions');
+          
         }
       );
   }
@@ -194,6 +195,47 @@ export class ExceptionsComponent implements OnInit {
     if (rows.length > 0) {
       let data = rows[index];
       this.exceptionFormModal.patchValue(data);
+    }
+  }
+
+  approveException(index: any) {
+    let rows = [...this.exceptionList.rows];
+    if (rows.length > 0) {
+      let data = rows[index];
+      // this.exceptionFormModal.patchValue(data);
+
+      console.log(data);
+
+      let req ={
+        "exception_process": "A",
+        "le_code": data['le_code'],
+        "code": data['code'],
+        "value": data['value']
+      }
+      
+
+      this.spinner_service.show('exceptions');
+      this.endorsement_service
+        .approveEndorsementException(req, this.util.getEndrCode())
+        .subscribe(
+          (data) => {
+            this.closeModal();
+            this.getListOfExceptionsByPolCode();
+            this.spinner_service.hide('exceptions');
+            this.toast_service.success(
+              'Authorized exception successfully',
+              'Exception Details'.toUpperCase()
+            );
+            this.exceptionFormModal.reset();
+          },
+          (err) => {
+            this.toast_service.danger(
+              err.error.errors[2],
+              'Exception Details'.toUpperCase()
+            );
+            this.spinner_service.hide('exceptions');
+          }
+        );
     }
   }
 

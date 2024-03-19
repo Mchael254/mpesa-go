@@ -38,4 +38,8 @@ export class EndorsementService {
   createEndorsementException(exception:any, endr_code: number){
     return this.api.POST(`${this.IND_ENDORSEMENT_BASE_URL}/${endr_code}/exceptions`, exception, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
   }
+
+  approveEndorsementException(exception:any, id: number){
+    return this.api.POST(`${this.IND_ENDORSEMENT_BASE_URL}/${id}/exceptions`, exception, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL)
+  }
 }
