@@ -34,7 +34,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   documentModalVisible: boolean = false;
 
   cols = [
-    { field: 'actualName', header: 'Doc Format' },
+    { field: 'format', header: 'Doc Format' },
     { field: 'docType', header: 'Doc Type' },
     { field: 'actualName', header: 'Doc Name' },
     { field: 'dateCreated', header: 'Date Created' },
@@ -45,21 +45,21 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     { field: 'actualName', header: 'Doc Name' },
     { field: 'dateCreated', header: 'Date Created' },
     { field: 'modifiedBy', header: 'Modified by' },
-    { field: 'version', header: 'Version' },
+    { field: 'versionLabel', header: 'Version' },
   ];
 
   colsClientDocs = [
     { field: 'actualName', header: 'Doc Name' },
     { field: 'dateCreated', header: 'Date Created' },
     { field: 'modifiedBy', header: 'Modified by' },
-    { field: 'version', header: 'Version' },
+    { field: 'versionLabel', header: 'Version' },
   ];
 
   colsServiceProviderDocs = [
     { field: 'actualName', header: 'Doc Name' },
     { field: 'dateCreated', header: 'Date Created' },
     { field: 'modifiedBy', header: 'Modified by' },
-    { field: 'version', header: 'Version' },
+    { field: 'versionLabel', header: 'Version' },
   ];
 
   constructor(private dmsService: DmsService,
@@ -149,6 +149,10 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       )
       .subscribe( docs =>
       {
+        docs.forEach( doc => {
+          const splitName = doc['actualName'].split('.');
+          doc.format = splitName[1]?.toUpperCase();
+        });
         this.viewDocs = docs;
         this.tableDetails.rows = this.viewDocs;
       }
@@ -171,6 +175,10 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       .pipe(untilDestroyed(this))
       .subscribe( policyDocs =>
       {
+        policyDocs.forEach( doc => {
+          const splitName = doc['actualName'].split('.');
+          doc.format = splitName[1]?.toUpperCase();
+        });
         this.viewDocs = policyDocs;
         this.tableDetails.rows = this.viewDocs;
       });
@@ -191,6 +199,10 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     this.dmsService.fetchDocumentsByClaimNo(claimNo)
       .pipe(untilDestroyed(this))
       .subscribe( claimDocuments => {
+        claimDocuments.forEach( doc => {
+          const splitName = doc['actualName'].split('.');
+          doc.format = splitName[1]?.toUpperCase();
+        });
         this.viewDocs = claimDocuments;
         this.tableDetails.rows = this.viewDocs;
       }

@@ -70,4 +70,20 @@ export class DocViewerComponent implements OnInit {
     }
   }
 
+  downloadImage() {
+
+    const blobUrl = this.utilService.generateURLFromBase64String(this.mimeType, this.base64String);
+    const splitMime = this.mimeType.split('/')[1];
+
+    const anchor = document.createElement('a');
+    anchor.style.display = 'none';
+    anchor.href = blobUrl;
+    anchor.download = 'downloaded-file' +'.'+ splitMime ;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    window.URL.revokeObjectURL(blobUrl);
+  }
 }
