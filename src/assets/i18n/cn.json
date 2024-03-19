@@ -596,7 +596,12 @@
       "select_client": "选择客户",
       "id_no": "身份证号",
       "name": "姓名",
-      "email": "邮箱"
+      "email": "邮箱",
+      "select_an_introducer": "选择介绍人",
+      "staff_no": "员工编号",
+      "surname": "姓",
+      "other_names": "其他名字",
+      "company": "公司"
     }
   },
   "lms": {

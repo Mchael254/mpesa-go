@@ -13,7 +13,7 @@ import { GlobalMessagingService } from '../../../../../../shared/services/messag
 import { MessageService } from 'primeng/api';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { Products } from '../../../setups/data/gisDTO';
+import { Products, introducers } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 // import { TranslateService } from '@ngx-translate/core/dist/lib/translate.service';
 import { DEFAULT_LANGUAGE, TranslateService,TranslateModule, USE_DEFAULT_LANG, USE_EXTEND, USE_STORE } from '@ngx-translate/core';
@@ -28,6 +28,7 @@ import { BranchService } from '../../../../../../shared/services/setups/branch/b
 import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
 import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
 
 
 export class mockClientService {
@@ -49,10 +50,16 @@ export class mockBranchService {
 export class mockQuotationService {
   getAllQuotationSources = jest.fn().mockReturnValue(of());
  
-}export class mockInterMediaryService {
+}
+export class mockInterMediaryService {
   getAgents = jest.fn().mockReturnValue(of());
  
 }
+export class mockIntroducerService {
+  getAllIntroducers = jest.fn().mockReturnValue(of());
+ 
+}
+
 
 const mockClientData = {
   content: [{
@@ -248,7 +255,33 @@ const mockBranchList: OrganizationBranchDto[] = [
   },
 ];
 const mockSourceData = { content: [{ id: 1, name: 'Source 1' }, { id: 2, name: 'Source 2' }] };
-
+const mockIntroducersData: introducers []= [
+  {
+  agentCode: 2345,
+  bruCode: 3452,
+  code: 101,
+  dateOfBirth: "2000-02-03",
+  email: "ABC@gmail.com",
+  feeAllowed: "N",
+  groupCompany: "Geminia",
+  idRegistration: "XCLK",
+  introducerTown: "Nairobi",
+  introducerZip: "XCLP",
+  introducerZipName: "Mark",
+  mobileNumber: 8906,
+  otherNames: "AD",
+  pin: "ADLA",
+  postalAddress: 124,
+  remarks: "XCLK",
+  staffNo: 896,
+  surName: "AD",
+  telephoneNumber: 8906,
+  type: "S",
+  userId: 3452,
+  wef: "2000-02-03",
+  wet: "2001-02-03"
+  },
+];
 
 
 describe('PolicyProductComponent', () => {
@@ -260,7 +293,7 @@ describe('PolicyProductComponent', () => {
   let branchService: BranchService;
   let quotationService: QuotationsService;
   let intermediaryService: IntermediaryService;
-
+  let introducerService:IntroducersService;
 
 
 
@@ -278,6 +311,7 @@ describe('PolicyProductComponent', () => {
         { provide: BranchService, useClass: mockBranchService },
         { provide: QuotationsService, useClass: mockQuotationService },
         { provide: IntermediaryService, useClass: mockInterMediaryService },
+        { provide: IntroducersService, useClass: mockIntroducerService },
 
         { provide: APP_BASE_HREF, useValue: '/' },
         GlobalMessagingService, MessageService,
@@ -300,6 +334,7 @@ describe('PolicyProductComponent', () => {
     branchService = TestBed.inject(BranchService);
     quotationService = TestBed.inject(QuotationsService);
     intermediaryService = TestBed.inject(IntermediaryService);
+    introducerService = TestBed.inject(IntroducersService);
 
     component.policyProductForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
@@ -526,6 +561,46 @@ describe('PolicyProductComponent', () => {
     expect(component.agentList).toEqual(mockAgentData.content);
     expect(component.marketerList).toEqual(mockAgentData.content.filter(agent => agent.accountTypeId == 10));
   });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(intermediaryService, 'getAgents').mockReturnValue(mockResponse);
+
+    component.getMarketers(0,10);
+
+    expect(intermediaryService.getAgents).toHaveBeenCalled();
+    
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should select source correctly', () => {
+    // Arrange
+    const event = { target: { value: '123' } };
+    const mockSourceDetail = [
+        { code: '123', name: 'Source 1' },
+        { code: '456', name: 'Source 2' },
+        { code: '789', name: 'Source 3' }
+    ];
+    component.sourceDetail = mockSourceDetail;
+
+    // Act
+    component.onSourceSelected(event);
+
+    // Assert
+    expect(component.selectedSourceCode).toEqual('123');
+    expect(component.selectedSource.length).toEqual(1);
+    expect(component.selectedSource[0]).toEqual(mockSourceDetail[0]);
+    // Add more assertions if needed
+});
+
   // it('should handle error properly', () => {
   //   const errorMessage = 'Some error message';
   //   jest.spyOn(intermediaryService, 'getAgents').mockReturnValue(throwError(errorMessage));
@@ -550,4 +625,113 @@ describe('PolicyProductComponent', () => {
 
     expect(component.selectedMarketerCode).toEqual(selectedValue.id);
   });
+  
+  it('should retrieve Introducers correctly', () => {
+   
+    jest.spyOn(introducerService, 'getAllIntroducers').mockReturnValue(of(mockIntroducersData)as any);
+
+    component.getIntroducers(); 
+
+    expect(component.introducersList).toEqual(mockIntroducersData as any);
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(introducerService, 'getAllIntroducers').mockReturnValue(mockResponse);
+
+    component.getIntroducers();
+
+    expect(introducerService.getAllIntroducers).toHaveBeenCalled();
+    
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should call filterGlobal with correct parameters', () => {
+    // Arrange
+    const eventMock = {
+      target: {
+        value: 'test value'
+      }
+    } as any; // Mocking the $event object
+    const stringVal = 'someStringVal';
+    const filterGlobalSpy = jest.spyOn(component.dt2, 'filterGlobal');
+
+    // Act
+    component.applyIntroducersFilterGlobal(eventMock, stringVal);
+
+    // Assert
+    expect(filterGlobalSpy).toHaveBeenCalledWith('test value', 'someStringVal');
+  });
+  it('should load introducer details correctly', () => {
+    // Arrange
+    const code = 101;
+    const logSpy = jest.spyOn(console, 'info');
+    const filterSpy = jest.spyOn(Array.prototype, 'filter');
+   
+
+    // Mock data
+    const mockIntroducer = mockIntroducersData.find(introducer => introducer.code === code);
+    component.introducersList = mockIntroducersData;
+
+    // Mock the closebutton element
+    component.closebuttonIntroducers = { nativeElement: { click: jest.fn() } } as any;
+
+    // Mock the saveIntroducer method
+    jest.spyOn(component, 'saveIntroducer').mockImplementation(() => { });
+
+    // Act
+    component.loadIntroducerDetails(code);
+
+    // Assert
+    expect(filterSpy).toHaveBeenCalled();
+    expect(component.selectedIntroducer).toEqual([mockIntroducer]); 
+    expect(component.saveIntroducer).toHaveBeenCalled();
+    expect(component.closebuttonIntroducers.nativeElement.click).toHaveBeenCalled();
+    
+});
+it('should log an error when no introducer is found', () => {
+  // Arrange
+  const code = 999; // Assuming this code does not exist in the mock data
+  const errorSpy = jest.spyOn(console, 'error');
+  const filterSpy = jest.spyOn(Array.prototype, 'filter');
+
+  // Mock data
+  component.introducersList = mockIntroducersData;
+
+  // Act
+  component.loadIntroducerDetails(code);
+
+  // Assert
+  expect(filterSpy).toHaveBeenCalled();
+  expect(component.selectedIntroducer).toEqual([]); // Ensure selected introducer is an empty array
+  expect(errorSpy).toHaveBeenCalledWith("No introducer found with code:", code); // Ensure console.error is called with the correct message
+});
+it('should save introducer correctly', () => {
+  // Arrange
+  const mockSelectedIntroducer = mockIntroducersData[0]; // Assuming mockIntroducersData is an array of introducer objects
+
+  // Mock selected introducer
+  component.selectedIntroducer = [mockSelectedIntroducer];
+
+  // Act
+  component.saveIntroducer();
+
+  // Assert
+  expect(component.introducerCode).toEqual(mockSelectedIntroducer.code);
+  expect(component.introducerName).toEqual(mockSelectedIntroducer.surName);
+  // Add more assertions if needed
+});
+
+
+
+  
+  
 });

@@ -596,7 +596,12 @@
       "select_client":"Select Client",
       "id_no":"Id no",
       "name":"Name",
-      "email":"Email"
+      "email":"Email",
+      "select_an_introducer":"Select An Introducer",
+      "staff_no":"Staff No",
+      "surname":"Surname",
+      "other_names":"Other Names",
+      "company":"Company"
 
     }
   },
