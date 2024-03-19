@@ -6,7 +6,7 @@ import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { Products } from '../../../setups/data/gisDTO';
+import { Products, introducers } from '../../../setups/data/gisDTO';
 import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
@@ -14,6 +14,7 @@ import { QuotationsService } from '../../../quotation/services/quotations/quotat
 import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
 import { Observable } from 'rxjs';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
 
 const log = new Logger("QuickQuoteFormComponent");
 
@@ -58,14 +59,23 @@ export class PolicyProductComponent {
   selectedSourceCode: any;
   selectedSource: any;
 
-  agentList:AgentDTO[];
-  marketerList:any;
-  selectedMarketerCode
+  agentList: AgentDTO[];
+  marketerList: any;
+  selectedMarketerCode: any;
+
+  introducersList: introducers[];
+  selectedIntroducer: any;
+  introducerCode:any;
+  introducerName:any;
 
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
+  @ViewChild('dt2') dt2: Table | undefined;
+
   @ViewChild('clientModal') clientModal: any;
+  @ViewChild('introducersModal') introducersModal: any;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('closebuttonIntroducers') closebuttonIntroducers;
 
   constructor(
     public fb: FormBuilder,
@@ -75,7 +85,7 @@ export class PolicyProductComponent {
     public authService: AuthService,
     public quotationService: QuotationsService,
     private intermediaryService: IntermediaryService,
-
+    private introducerService: IntroducersService,
 
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
@@ -90,7 +100,8 @@ export class PolicyProductComponent {
     // this.fetchBranches();
     this.getuser();
     this.loadPolicySources();
-    this.getMarketers(0,1000,"createdDate");
+    this.getMarketers(0, 1000, "createdDate");
+    this.getIntroducers();
   }
   ngOnDestroy(): void { }
 
@@ -349,7 +360,7 @@ export class PolicyProductComponent {
     log.debug("Branch Description:", this.selectedBranchDescription)
 
   }
- 
+
   loadPolicySources() {
     this.quotationService
       .getAllQuotationSources()
@@ -387,7 +398,7 @@ export class PolicyProductComponent {
     console.log("Selected Source Code:", this.selectedSourceCode);
     this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
     console.log("Selected Source :", this.selectedSource);
-   
+
   }
   getMarketers(pageIndex: number,
     pageSize: number,
@@ -401,9 +412,9 @@ export class PolicyProductComponent {
 
           if (data) {
             this.agentList = data.content;
-            console.log( "Agent list",this.agentList)
-            this.marketerList= this.agentList.filter(agent => agent.accountTypeId == 10)
-            console.log( "Marketer list",this.marketerList)
+            console.log("Agent list", this.agentList)
+            this.marketerList = this.agentList.filter(agent => agent.accountTypeId == 10)
+            console.log("Marketer list", this.marketerList)
 
             this.cdr.detectChanges();
 
@@ -429,5 +440,60 @@ export class PolicyProductComponent {
   onMarketerSelected(selectedValue: any) {
     this.selectedMarketerCode = selectedValue.id;
     console.log("Selected Marketer Code:", this.selectedMarketerCode);
+  }
+  getIntroducers() {
+    this.introducerService
+      .getAllIntroducers()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.introducersList = data;
+            console.log("Introducers  list", this.introducersList)
+
+
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  applyIntroducersFilterGlobal($event, stringVal) {
+    this.dt2.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  loadIntroducerDetails(code) {
+    log.info("Introducer Code:", code);
+    this.selectedIntroducer = this.introducersList.filter(introducer => introducer.code == code);
+    if (this.selectedIntroducer.length > 0) {
+      this.saveIntroducer();
+      this.closebuttonIntroducers.nativeElement.click();
+    } else {
+      console.error("No introducer found with code:", code);
+    }
+    
+
+  }
+  saveIntroducer() {
+    this.introducerCode = this.selectedIntroducer[0].code;
+    log.debug("Introducer Code:",this.introducerCode);
+
+    this.introducerName = this.selectedIntroducer[0].surName;
+    log.debug("Introducer Name:",this.introducerName);
   }
 }

@@ -1047,3 +1047,28 @@ export interface riskClauses{
     sub_class_description: string,
     wording: string
 }
+export interface introducers {
+    agentCode: number;
+    bruCode: number;
+    code: number;
+    dateOfBirth: string;
+    email: string;
+    feeAllowed: string;
+    groupCompany: string;
+    idRegistration: string;
+    introducerTown: string;
+    introducerZip: string;
+    introducerZipName: string;
+    mobileNumber: number;
+    otherNames: string;
+    pin: string;
+    postalAddress: number;
+    remarks: string;
+    staffNo: number;
+    surName: string;
+    telephoneNumber: number;
+    type: string;
+    userId: number;
+    wef: string;
+    wet: string;
+}

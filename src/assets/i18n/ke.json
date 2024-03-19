@@ -596,7 +596,12 @@
       "select_client": "Chagua Mteja",
       "id_no": "Nambari ya Kitambulisho",
       "name": "Jina",
-      "email": "Barua pepe"
+      "email": "Barua pepe",
+      "select_an_introducer": "Chagua Mwanzishaji",
+      "staff_no": "Nambari ya Mfanyakazi",
+      "surname": "Jina la Ukoo",
+      "other_names": "Majina Mengine",
+      "company": "Kampuni"
     }
   },
   "lms": {
