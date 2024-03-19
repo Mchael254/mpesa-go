@@ -4,6 +4,8 @@ import {allTicketModules} from "../../../../data/ticketModule";
 import {ActivatedRoute} from "@angular/router";
 import {ReportsService} from "../../../../../../shared/services/reports/reports.service";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
+import {NotificationService} from "../../../../../lms/service/notification/notification.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 
 const log = new Logger('TicketReportsComponent');
@@ -15,17 +17,20 @@ const log = new Logger('TicketReportsComponent');
 })
 export class TicketReportsComponent implements OnInit {
 
-  selectedFormat: string = 'HTML';
+  selectedFormat: string = 'PDF';
   reportsWithLinks: any[] = [];
   module: string;
 
   filePath: any;
   fileName: any;
+  selectedReportName: string;
+  isLoadingReport: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private reportService: ReportsService,
-    private messageService: GlobalMessagingService) {
+    private messageService: GlobalMessagingService,
+    private notificationService: NotificationService) {
 
   }
 
@@ -155,11 +160,11 @@ export class TicketReportsComponent implements OnInit {
     return [
       {
         name: 'Quotation Report',
-        rpt_code: 0
+        rpt_code: 4
       },
       {
         name: 'Quotation Premium Report',
-        rpt_code: 0
+        rpt_code: 3
       }
     ];
   }
@@ -173,13 +178,15 @@ export class TicketReportsComponent implements OnInit {
   private fetchClaimReports(): any[] {
     return [{
       name: 'Claim Voucher Report',
-      rpt_code: 0
+      rpt_code: 294
     }];
   }
 
   fetchReport(report:any) {
+    this.isLoadingReport = true;
     const format = this.selectedFormat === 'PDF' ? 'PDF' : 'HTML';
     const selectedRptCode = report?.name?.rpt_code;
+    this.selectedReportName = report?.name?.name;
     console.log('rpt>', selectedRptCode);
     this.reportService.fetchReport(selectedRptCode)
       .subscribe(
@@ -189,10 +196,12 @@ export class TicketReportsComponent implements OnInit {
           this.filePath  = window.URL.createObjectURL(blob);
 
           this.openReportsModal();
+          this.isLoadingReport = false;
         },
         err=>{
           this.filePath= null;
-          this.messageService.displayErrorMessage('Error', err.statusText)
+          this.messageService.displayErrorMessage('Error', err.statusText);
+          this.isLoadingReport = false;
         })
   }
 
@@ -218,5 +227,47 @@ export class TicketReportsComponent implements OnInit {
         modalBackdrop.classList.remove('show');
       }
     }
+  }
+
+  sendNotification() {
+
+    const payload = {
+      address: ['john.gachoki@turnkeyafrica.com', 'example2@gmail.com'].filter(email => email), // Filter out any empty values
+      agentCode: 0,
+      attachments: [
+        {
+          content: 'string',
+          contentId: 'string',
+          disposition: 'string',
+          name: 'string',
+          type: 'string',
+        },
+      ],
+      clientCode: 0,
+      code: '524L',
+      emailAggregator: 'N',
+      from: 'string',
+      fromName: 'string',
+      message: 'Happy Birthday',
+      response: '524L',
+      sendOn: '2024-02-08T11:32:40.261Z',
+      status: 'D',
+      subject: 'Birthday Wishes',
+      systemCode: '0 for CRM, 1 for FMS',
+      systemModule: 'NB for New Business',
+
+    };
+    this.notificationService.sendEmail(payload).subscribe(
+      {
+        next:(res)=>{
+          const response = res
+          this.messageService.displaySuccessMessage('Success', 'Email sent successfully' );
+          console.log(res)
+        },
+        error : (error: HttpErrorResponse) => {
+          log.info(error);
+          this.messageService.displayErrorMessage('Error', 'Error, try again later' );
+        }
+      });
   }
 }

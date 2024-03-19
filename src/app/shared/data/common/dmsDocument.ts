@@ -45,6 +45,7 @@ export interface DmsDocument{
   shareholderName?: string;
   shareholderNo?: string;
   versionLabel?: string;
+  format?: string;
 }
 
 /**

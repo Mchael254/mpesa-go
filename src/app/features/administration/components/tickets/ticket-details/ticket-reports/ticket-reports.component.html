@@ -4,19 +4,28 @@
     <option value="HTML">HTML</option>
     <option value="PDF">PDF</option>
   </select>
-  <button class="btn btn-primary ms-4" style="font-size: 13px;">Dispatch documents</button>
+  <button class="btn btn-primary ms-4" style="font-size: 13px;" (click)="sendNotification()">Dispatch documents</button>
 </div>
 <ul class="list-group list-group-horizontal mb-3">
   <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
-    <a target="_blank" class="report-link" (click)="fetchReport(report)">{{ report.name.name }}</a>
+    <a target="_blank" class="report-link" (click)="fetchReport(report)">{{ report?.name?.name }}</a>
   </li>
+  <div>
+    <span *ngIf="!isLoadingReport; else loadingReport"></span>
+    <ng-template #loadingReport>
+      <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+    </ng-template>
+  </div>
+
+
 </ul>
 
 <!-- Modal -->
 <div class="modal fade" id="reportsModalToggle" tabindex="-1" aria-labelledby="reportsModalLabel" aria-hidden="true">
-  <div class="modal-dialog" style="height: 300px !important;">
+  <div class="modal-dialog modal-lg" style="height: 300px !important;">
     <div class="modal-content">
       <div class="modal-header">
+        <h1 class="modal-title fs-6" id="exampleModalLabel">{{ selectedReportName }}</h1>
         <button type="button" class="btn-close" (click)="closeReportsModal()"></button>
       </div>
       <div class="modal-body">
