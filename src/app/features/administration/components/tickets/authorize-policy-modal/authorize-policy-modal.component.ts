@@ -4,6 +4,8 @@ import {StaffDto} from "../../../../entities/data/StaffDto";
 import {Logger} from "../../../../../shared/services";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
+import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
+import {AuthService} from "../../../../../shared/services/auth.service";
 
 const log = new Logger('AuthorizePolicyModalComponent');
 @Component({
@@ -31,6 +33,8 @@ export class AuthorizePolicyModalComponent implements OnInit {
 
   debitOwnerPromiseDateData: any;
   scheduleData: any;
+  dispatchReasonsData: any[];
+  saveDocumentRejectionData: any;
 
   isLoading: boolean = false;
   isLoadingAuthExc: boolean = false;
@@ -45,13 +49,15 @@ export class AuthorizePolicyModalComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private policiesService: PoliciesService,
               private globalMessagingService: GlobalMessagingService,
-              private cdr: ChangeDetectorRef,) {
+              private cdr: ChangeDetectorRef,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
     this.showDefaultUser = false;
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
+    this.getDispatchReasons();
   }
 
   /**
@@ -77,7 +83,8 @@ export class AuthorizePolicyModalComponent implements OnInit {
   createScheduleCheckForm() {
     this.scheduleCheckForm = this.fb.group({
       scheduleReadyAuth: [''],
-      dispatchDocuments: ['']
+      dispatchDocuments: [''],
+      rejectionDescription: ['']
     })
   }
 
@@ -86,7 +93,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * on the type.
    */
   openDebtOwnerModal() {
-    if (this.policyDetails?.product?.interfaceType === 'ACCRUAL') {
+    if (this.policyDetails?.product?.interfaceType === 'CASH') {
       const modal = document.getElementById('debtOwnerToggle');
       if (modal) {
         modal.classList.add('show');
@@ -258,6 +265,13 @@ export class AuthorizePolicyModalComponent implements OnInit {
 
     log.info('schedule>>', scheduleFormValues);
 
+    //this will be removed when we get dispatch endpoint
+    if (scheduleFormValues.scheduleReadyAuth === 'Y') {
+      this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
+    }
+    this.saveDispatchRejection();
+    setTimeout(() => {
+
     this.policiesService.authorisePolicy(this.policyDetails?.batch_no, scheduleFormValues.scheduleReadyAuth, this.dateToday)
       .subscribe({
         next: (data) => {
@@ -274,6 +288,56 @@ export class AuthorizePolicyModalComponent implements OnInit {
           this.isLoading = false;
         }
       })
+    },1500);
+  }
+
+  getDispatchReasons() {
+    // this.spinner.show();
+    this.policiesService.getDispatchRejectionReasons('EDD')
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.dispatchReasonsData = data.embedded[0];
+          // this.spinner.hide();
+          log.info('dispatch reasons>>', this.dispatchReasonsData);
+        }
+      )
+  }
+
+  saveDispatchRejection() {
+    // log.info('>>>>', event.value)
+    const scheduleFormValues = this.scheduleCheckForm.getRawValue();
+    const assignee = this.authService.getCurrentUserName();
+    if (scheduleFormValues) {
+      const payload: any = {
+        code: 0,
+        dispatchApply: "N",
+        exemptReason: scheduleFormValues.rejectionDescription,
+        policyBatchNo: this.policyDetails?.batch_no,
+        preparedBy: assignee,
+        preparedDate: this.dateToday
+
+      }
+      this.policiesService.saveDispatchRejectReason(payload)
+        .subscribe({
+          next: (data) => {
+            this.saveDocumentRejectionData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully saved reason for dispatch rejection');
+            // this.getAuthorizationExceptionDetails();
+            this.cdr.detectChanges();
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Rejection reason not saved.'
+      );
+    }
   }
 
   ngOnDestroy(): void {

@@ -104,4 +104,21 @@ export class PoliciesService {
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
+
+  getDispatchRejectionReasons(
+    reasonsTypeShortDescription: string
+  ): Observable<any> {
+
+    const params = new HttpParams()
+      .set('reasonsTypeShortDescription', `${reasonsTypeShortDescription}`);
+
+    return this.api.GET<any>(`api/v1/policies/exempt-document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
+
+  saveDispatchRejectReason(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `api/v2/electronic-document-status`, JSON.stringify(data),
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
 }

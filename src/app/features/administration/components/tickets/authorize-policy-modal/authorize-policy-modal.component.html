@@ -87,6 +87,27 @@
                 <label class="form-label" for="dispatchDocuments">No</label>
               </div>
             </div>
+            <div *ngIf="scheduleCheckForm.get('dispatchDocuments').value === 'N'">
+              <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
+
+              <p-dropdown
+                [options]="dispatchReasonsData"
+                optionLabel="description"
+                optionValue="description"
+                [filter]="true"
+                filterBy="description"
+                [showClear]="true"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select reason"
+                formControlName="rejectionDescription"
+              >
+                <ng-template let-shortDescription pTemplate="item">
+                  <div title="{{shortDescription.description}}">
+                    {{ shortDescription.description.length > 10 ? shortDescription.description.substring(0, 28) + '...' : shortDescription.description }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
           </form>
         </div>
       </div>
