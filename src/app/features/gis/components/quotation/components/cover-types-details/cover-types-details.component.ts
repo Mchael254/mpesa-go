@@ -121,6 +121,7 @@ export class CoverTypesDetailsComponent {
   passedQuotationDetails:any;
   emailForm: FormGroup;
   smsForm: FormGroup;
+  currentExpandedIndex: number = -1;
 
 
   constructor(
@@ -213,9 +214,23 @@ export class CoverTypesDetailsComponent {
 
   }
 
-  toggleCollapsible() {
-    this.isCollapsibleOpen = !this.isCollapsibleOpen;
-  }
+  toggleCollapsible(index: number) {
+    if (this.currentExpandedIndex === index) {
+        // If the clicked card is already expanded, collapse it
+        this.currentExpandedIndex = -1;
+        this.isCollapsibleOpen = false; // Close the collapsible section
+    } else {
+        // Expand the clicked card and collapse any other expanded card
+        this.currentExpandedIndex = index;
+        this.isCollapsibleOpen = true; // Open the collapsible section
+    }
+}
+
+
+// Function to check if a card is expanded
+isCardExpanded(index: number): boolean {
+    return this.currentExpandedIndex === index;
+}
   openModal() {
     this.isModalOpen = true;
   }

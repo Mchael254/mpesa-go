@@ -181,11 +181,14 @@
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
                                 <label for="marketer" class=" product-label" id="marketer">{{'gis.policy.marketer' | translate}}</label>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="source">
                                     <option value=""></option>
 
-                                </select>
+                                </select> -->
+                                <p-dropdown  [options]="marketerList"
+                                optionLabel="name" (onChange)="onMarketerSelected($event.value)" placeholder=" "
+                                [filterBy]="'name'" [filter]="true"></p-dropdown>
                             </div>
                             <div class=" mb-1 col-sm-4 col-12 ">
                                 <label for="introducer" class=" product-label" id="introducer">{{'gis.policy.introducer' | translate}}</label>
