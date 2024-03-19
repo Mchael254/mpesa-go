@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Logger} from "../../../../../../shared/services";
 import {allTicketModules} from "../../../../data/ticketModule";
 import {ActivatedRoute} from "@angular/router";
+import {ReportsService} from "../../../../../../shared/services/reports/reports.service";
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 
 
 const log = new Logger('TicketReportsComponent');
@@ -17,8 +19,13 @@ export class TicketReportsComponent implements OnInit {
   reportsWithLinks: any[] = [];
   module: string;
 
+  filePath: any;
+  fileName: any;
+
   constructor(
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private reportService: ReportsService,
+    private messageService: GlobalMessagingService) {
 
   }
 
@@ -41,13 +48,13 @@ export class TicketReportsComponent implements OnInit {
 
     switch (module) {
       case allTicketModules.claims:
-        viewReports = this.fetchClaimReports(name);
+        viewReports = this.fetchClaimReports();
         break;
       case allTicketModules.quotation:
-        viewReports = this.fetchQuotationReports(name);
+        viewReports = this.fetchQuotationReports();
         break;
       default:
-        viewReports = this.fetchPolicyReports(name);
+        viewReports = this.fetchPolicyReports();
         break;
     }
 
@@ -125,8 +132,17 @@ export class TicketReportsComponent implements OnInit {
    * fetch the policy reports.
    * @returns An array of strings containing the names of policy reports.
    */
-  private fetchPolicyReports(name: string): string[] {
-    return ["Premium Working Report", "Debit/Credit Note", "Endorsement Report"];
+  private fetchPolicyReports(): any[] {
+    return [{
+      name: 'Premium Working Report',
+      rpt_code: 22
+    }, {
+      name: 'Debit/Credit Note',
+      rpt_code: 12
+    }, {
+      name: 'Endorsement Report',
+      rpt_code: 18
+    }]
   }
 
   /**
@@ -135,8 +151,17 @@ export class TicketReportsComponent implements OnInit {
    * reports are being fetched.
    * @returns An array of strings containing the names of the quotation reports.
    */
-  private fetchQuotationReports(name: string): string[] {
-    return ["Quotation Report", "Quotation Premium Report"];
+  private fetchQuotationReports(): any[] {
+    return [
+      {
+        name: 'Quotation Report',
+        rpt_code: 0
+      },
+      {
+        name: 'Quotation Premium Report',
+        rpt_code: 0
+      }
+    ];
   }
 
   /**
@@ -145,7 +170,53 @@ export class TicketReportsComponent implements OnInit {
    * fetch the claim reports.
    * @returns An array of strings containing the claim voucher report.
    */
-  private fetchClaimReports(name: string): string[] {
-    return ["Claim Voucher Report"];
+  private fetchClaimReports(): any[] {
+    return [{
+      name: 'Claim Voucher Report',
+      rpt_code: 0
+    }];
+  }
+
+  fetchReport(report:any) {
+    const format = this.selectedFormat === 'PDF' ? 'PDF' : 'HTML';
+    const selectedRptCode = report?.name?.rpt_code;
+    console.log('rpt>', selectedRptCode);
+    this.reportService.fetchReport(selectedRptCode)
+      .subscribe(
+        (response) => {
+          // this.apiService.DOWNLOADFROMBYTES(response, 'fname.pdf', 'application/pdf')
+          const blob = new Blob([response], { type: 'application/pdf' });
+          this.filePath  = window.URL.createObjectURL(blob);
+
+          this.openReportsModal();
+        },
+        err=>{
+          this.filePath= null;
+          this.messageService.displayErrorMessage('Error', err.statusText)
+        })
+  }
+
+  openReportsModal() {
+    const modal = document.getElementById('reportsModalToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
+  }
+
+  closeReportsModal() {
+    const modal = document.getElementById('reportsModalToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
   }
 }
