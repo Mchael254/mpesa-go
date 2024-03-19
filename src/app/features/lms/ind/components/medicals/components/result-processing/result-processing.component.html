@@ -15,16 +15,23 @@
     </div>
     <div>
       <div style="position: relative">
-        <ngx-spinner [name]="'medical_test_results_view'" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium"
-          bdColor="rgba(255, 255, 255, 0.966)"></ngx-spinner>
+        <ngx-spinner
+          [name]="'medical_test_results_view'"
+          type="ball-clip-rotate-multiple"
+          [fullScreen]="false"
+          color="#00529B"
+          size="medium"
+          bdColor="rgba(255, 255, 255, 0.966)"
+        ></ngx-spinner>
         <div class="d-flex justify-content-start pt-3 fs-6">
           Capture Medical Test Results
         </div>
-        <div class="row pt-0" *ngIf="diseases?.length > 0" >
-
-
+        <div class="row pt-0" *ngIf="diseases?.length > 0">
           <div class="accordion accordion-flush" [id]="dynamicAccordionId">
-            <div class="accordion-item" *ngFor="let form of diseaseForms; let i = index">
+            <div
+              class="accordion-item"
+              *ngFor="let form of diseaseForms; let i = index"
+            >
               <h2 class="accordion-header" [id]="'flush-heading' + i">
                 <button
                   class="accordion-button collapsed fs-7 fw-medium text-black"
@@ -62,7 +69,9 @@
                                 formControlName="checked"
                                 value="Y"
                               />
-                              <label class="form-check-label text-black" for="yes"
+                              <label
+                                class="form-check-label text-black"
+                                for="yes"
                                 >Yes</label
                               >
                             </span>
@@ -74,7 +83,9 @@
                                 formControlName="checked"
                                 value="N"
                               />
-                              <label class="form-check-label text-black" for="no"
+                              <label
+                                class="form-check-label text-black"
+                                for="no"
                                 >No</label
                               >
                             </span>
@@ -95,72 +106,134 @@
                           </div>
                         </div>
                       </div>
-                        
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="checkedDate">Checked Date</label>
                         <!-- <input type="text" class="form-control" formControlName="cheque_date" /> -->
-                        <p-calendar ngDefaultControl formControlName="cheque_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
+                        <p-calendar
+                          ngDefaultControl
+                          formControlName="cheque_date"
+                          dateFormat="dd/mm/yy"
+                          [showIcon]="true"
+                          [showButtonBar]="true"
+                        >
                         </p-calendar>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
-                        <label for="facilitator">Facilitator</label>                
-                  <select
-                    id="facilitator"
-                    class="form-select form-select mb-1"
-                    id="quote-input"
-                    placement="right"
-                    formControlName="facilitator"
-                  >
-                    <option selected="true" disabled="disabled"></option>
-                    <ng-container *ngFor="let item of facilitatorList">
-                      <option [value]="item?.code">{{item?.name | titlecase}}</option>
-
-
-                    </ng-container>
-                    
-                  </select>
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
+                        <label for="facilitator">Facilitator</label>
+                        <select
+                          id="facilitator"
+                          class="form-select form-select mb-1"
+                          id="quote-input"
+                          placement="right"
+                          formControlName="facilitator"
+                        >
+                          <option selected="true" disabled="disabled"></option>
+                          <ng-container *ngFor="let item of facilitatorList">
+                            <option [value]="item?.code">
+                              {{ item?.name | titlecase }}
+                            </option>
+                          </ng-container>
+                        </select>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="limitAmount">Limit Amount</label>
-                        <input type="text" class="form-control" formControlName="limit" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="limit"
+                        />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="invoiceAmount">Invoice Amount</label>
-                        <input type="text" class="form-control" formControlName="claim_amt" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="claim_amt"
+                        />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="payableAmount">Payable Amount</label>
-                        <input type="text" class="form-control" formControlName="payable_amt" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="payable_amt"
+                        />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="invoiceNo">Invoice No.</label>
-                        <input type="text" class="form-control" formControlName="invoice_no" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="invoice_no"
+                        />
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="invoiceDate">Invoice Date</label>
                         <!-- <input type="text" class="form-control" formControlName="invoice_date" /> -->
-                        <p-calendar ngDefaultControl formControlName="invoice_date" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true">
-                          </p-calendar>
-
+                        <p-calendar
+                          ngDefaultControl
+                          formControlName="invoice_date"
+                          dateFormat="dd/mm/yy"
+                          [showIcon]="true"
+                          [showButtonBar]="true"
+                        >
+                        </p-calendar>
                       </div>
-                      <div class="col-lg-4 col-md-6 col-sm-12" *ngIf="form.get('checked').value==='Y'">
+                      <div
+                        class="col-lg-4 col-md-6 col-sm-12"
+                        *ngIf="form.get('checked').value === 'Y'"
+                      >
                         <label for="remarks">Remarks</label>
-                        <input type="text" class="form-control" formControlName="remarks" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          formControlName="remarks"
+                        />
                       </div>
                     </div>
-                      <!-- Add more input fields for other form controls -->
-                    <div class="d-flex justify-content-end" *ngIf="form.get('checked').value==='Y'">
-                      <button type="submit" class="btn btn-primary" (click)="saveMedicalResult(i)">Save</button>
+                    <!-- Add more input fields for other form controls -->
+                    <div
+                      class="d-flex justify-content-end"
+                      *ngIf="form.get('checked').value === 'Y'"
+                    >
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        (click)="saveMedicalResult(i)"
+                      >
+                        Save
+                      </button>
                     </div>
-                      
                   </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="row pt-2 px-3 text-danger" *ngIf="diseases?.length===0">
+
+        <div class="row pt-2 px-3 text-danger" *ngIf="diseases?.length === 0">
           No Medical Test Results Available
         </div>
       </div>
@@ -177,81 +250,350 @@
               size="medium"
               bdColor="rgba(255, 255, 255, 0.966)"
             ></ngx-spinner>
-            <div class="row py-2" *ngFor="let item of getListOfMedicalDocuments()">
-              <span class=" col-lg-6 col-md-12 col-sm-12 col-xs-12 medical" style="cursor:pointer" (click)="downloadReport(item)">{{item.document | titlecase}}</span>
-              <span class=" col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview" style="cursor:pointer" >Share <i class="fa-solid fa-share-nodes"></i></span>
-              <span class=" col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview" style="cursor:pointer"  (click)="downloadReport(item)" >Preview <i class="fa-regular fa-eye"></i></span>
+            <div
+              class="row py-2"
+              *ngFor="let item of getListOfMedicalDocuments()"
+            >
+              <span
+                class="col-lg-6 col-md-12 col-sm-12 col-xs-12 medical"
+                style="cursor: pointer"
+                (click)="downloadReport(item)"
+                >{{ item.document | titlecase }}</span
+              >
+              <span
+                class="col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview"
+                style="cursor: pointer"
+                >Share <i class="fa-solid fa-share-nodes"></i
+              ></span>
+              <span
+                class="col-lg-3 col-md-12 col-sm-12 fw-medium medical-preview"
+                style="cursor: pointer"
+                (click)="downloadReport(item)"
+                >Preview <i class="fa-regular fa-eye"></i
+              ></span>
             </div>
           </div>
 
-          <div class="col-lg-8 col-md-6 col-sm-12"  *ngIf="filePath">
-            <div class="d-flex justify-content-center fw-bold py-2">
-              {{fileName | uppercase}}
+          <div class="col-lg-8 col-md-6 col-sm-12" *ngIf="filePath">
+            <div class="d-flex justify-content-between fw-bold py-2">
+              <div></div>
+              <div>{{fileName | uppercase}}</div>
+              <div>
+                <span class="download_icon" *ngIf="filePath" (click)="downloadFile()"><i class="fa-solid fa-download text-black fs-4 px-2"></i></span>
+                <span class="download_icon" (click)="clearFile()"><i class="fa-solid fa-xmark text-danger fs-4 px-2 "></i></span>
+              </div>
             </div>
-            <div style="border: #313179 1px solid;">
+            <div style="border: #313179 1px solid">
               <pdf-viewer
-              [src]="filePath"
-              [render-text]="true"
-              [original-size]="true"
-              [fit-to-page]="true"
-              style="width: 100%; height: 500px"
-            ></pdf-viewer>
-
+                [src]="filePath"
+                [render-text]="true"
+                [original-size]="true"
+                [fit-to-page]="true"
+                style="width: 100%; height: 500px"
+              ></pdf-viewer>
             </div>
-           
           </div>
         </div>
       </div>
 
-      <div>
-        <div class="d-flex justify-content-start pt-3 fs-6">Decisions</div>
+      <div class="pt-3">
+        <div class="d-flex justify-content-start pb-2 fs-6">Decisions</div>
 
-        <div class="row px-4" decisionsForm>
-          <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
-            <div class="row p-0">
-              <div>
-                <div class="text-black"><label for="yes">Checked?</label></div>
-                <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="yes"
-                    value="Y"
-                  />
-                  <label class="form-check-label text-black" for="yes"
-                    >Accept</label
-                  >
-                </span>
-                <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="no"
-                    value="N"
-                  />
-                  <label class="form-check-label text-black" for="no"
-                    >Reject</label
-                  >
-                </span>
-                <span class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="exempted"
-                    value="E"
-                  />
-                  <label class="form-check-label text-black" for="exempted"
-                    >Load Premium</label
-                  >
-                </span>
+        <div class="px-4" [formGroup]="decisionsFormOne">
+          <div style="position: relative">
+            <ngx-spinner
+              name="decisionsFormOne"
+              type="ball-clip-rotate-multiple"
+              [fullScreen]="false"
+              color="#00529B"
+              size="medium"
+              bdColor="rgba(255, 255, 255, 0.966)"
+            ></ngx-spinner>
+            <div class="row">
+              <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                <div class="text-black fw-medium">Internal</div>
+                <div class="p-0">
+                  <div *ngIf="possibleDecisionList?.length > 0">
+                    <div class="text-black">
+                      <label for="yes">Decision</label>
+                    </div>
+                    <ng-container *ngFor="let item of possibleDecisionList">
+                      <span class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          id="yes"
+                          [value]="item['ud_code']"
+                          formControlName="ud_code"
+                        />
+                        <label class="form-check-label text-black" for="yes">{{
+                          item["desc"]
+                        }}</label>
+                      </span>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <label for="email" class="required text-black">Comments</label>
+                <input type="text" class="form-control" [id]="'email'"  formControlName="notes"/>
               </div>
             </div>
-          </div>
-          <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
-            <label for="email" class="required text-black">Comments</label>
-            <input type="text" class="form-control" [id]="'email'" />
+
+            <div>
+              <div
+                class="row"
+                *ngIf="decisionsFormOne.get('ud_code').value === 202134"
+              >
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                  <label for="loadType" class="text-black">Load Type</label>
+                  <select
+                    id="loadType"
+                    class="form-select form-select mb-1"
+                    id="quote-input"
+                    placement="right"
+                    formControlName="load_type"
+                  >
+                    <option selected="true" disabled="disabled"></option>
+                    <ng-container *ngFor="let item of loadTypeList">
+                      <option [value]="item?.value">
+                        {{ item?.name | titlecase }}
+                      </option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_rate" class="required text-black"
+                    >Load rate</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_rate'" formControlName="load_rate" />
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_div_factor" class="required text-black"
+                    >Load rate division</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_div_factor'" formControlName="load_div_factor"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                (click)="saveMedicalDecisionOne()"
+              >
+                save
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-danger"
+                
+              >
+                clear
+              </button>
+            </div>
           </div>
         </div>
+
+        <div class="px-4" [formGroup]="decisionsFormTwo">
+          <div style="position: relative">
+            <ngx-spinner
+              name="decisionsFormTwo"
+              type="ball-clip-rotate-multiple"
+              [fullScreen]="false"
+              color="#00529B"
+              size="medium"
+              bdColor="rgba(255, 255, 255, 0.966)"
+            ></ngx-spinner>
+            <div class="row">
+              <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                <div class="text-black fw-medium">Reinsurance</div>
+                <div class="p-0">
+                  <div *ngIf="possibleDecisionList?.length > 0">
+                    <div class="text-black">
+                      <label for="yes">Decision</label>
+                    </div>
+                    <ng-container *ngFor="let item of possibleDecisionList">
+                      <span class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          id="yes"
+                          [value]="item['ud_code']"
+                          formControlName="ud_code"
+                        />
+                        <label class="form-check-label text-black" for="yes">{{
+                          item["desc"]
+                        }}</label>
+                      </span>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <label for="email" class="required text-black">Comments</label>
+                <input type="text" class="form-control" [id]="'email'"  formControlName="notes"/>
+              </div>
+            </div>
+
+            <div>
+              <div
+                class="row"
+                *ngIf="decisionsFormOne.get('ud_code').value === 202134"
+              >
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                  <label for="loadType" class="text-black">Load Type</label>
+                  <select
+                    id="loadType"
+                    class="form-select form-select mb-1"
+                    id="quote-input"
+                    placement="right"
+                    formControlName="load_type"
+                  >
+                    <option selected="true" disabled="disabled"></option>
+                    <ng-container *ngFor="let item of loadTypeList">
+                      <option [value]="item?.value">
+                        {{ item?.name | titlecase }}
+                      </option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_rate" class="required text-black"
+                    >Load rate</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_rate'" formControlName="load_rate" />
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_div_factor" class="required text-black"
+                    >Load rate division</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_div_factor'" formControlName="load_div_factor"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                (click)="saveMedicalDecisionTwo()"
+              >
+                save
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-danger"
+                
+              >
+                clear
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-4" [formGroup]="decisionsFormThree">
+          <div style="position: relative">
+            <ngx-spinner
+              name="decisionsFormThree"
+              type="ball-clip-rotate-multiple"
+              [fullScreen]="false"
+              color="#00529B"
+              size="medium"
+              bdColor="rgba(255, 255, 255, 0.966)"
+            ></ngx-spinner>
+            <div class="row">
+              <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12">
+                <div class="text-black fw-medium">Final</div>
+                <div class="p-0">
+                  <div *ngIf="possibleDecisionList?.length > 0">
+                    <div class="text-black">
+                      <label for="yes">Decision</label>
+                    </div>
+                    <ng-container *ngFor="let item of possibleDecisionList">
+                      <span class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          id="yes"
+                          [value]="item['ud_code']"
+                          formControlName="ud_code"
+                        />
+                        <label class="form-check-label text-black" for="yes">{{
+                          item["desc"]
+                        }}</label>
+                      </span>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <label for="email" class="required text-black">Comments</label>
+                <input type="text" class="form-control" [id]="'email'"  formControlName="notes"/>
+              </div>
+            </div>
+
+            <div>
+              <div
+                class="row"
+                *ngIf="decisionsFormOne.get('ud_code').value === 202134"
+              >
+                <div class="col-lg-4 col-md-6 col-sm-12">
+                  <label for="loadType" class="text-black">Load Type</label>
+                  <select
+                    id="loadType"
+                    class="form-select form-select mb-1"
+                    id="quote-input"
+                    placement="right"
+                    formControlName="load_type"
+                  >
+                    <option selected="true" disabled="disabled"></option>
+                    <ng-container *ngFor="let item of loadTypeList">
+                      <option [value]="item?.value">
+                        {{ item?.name | titlecase }}
+                      </option>
+                    </ng-container>
+                  </select>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_rate" class="required text-black"
+                    >Load rate</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_rate'" formControlName="load_rate" />
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                  <label for="load_div_factor" class="required text-black"
+                    >Load rate division</label
+                  >
+                  <input type="number" class="form-control" [id]="'load_div_factor'" formControlName="load_div_factor"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                (click)="saveMedicalDecisionThree()"
+              >
+                save
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-danger"
+                
+              >
+                clear
+              </button>
+            </div>
+          </div>
+        </div>
+
+
         <div class="pb-4"></div>
       </div>
     </div>

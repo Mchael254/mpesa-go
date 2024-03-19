@@ -21,3 +21,8 @@
   :host ::ng-deep .ng2-pdf-viewer-container {
     overflow-x: hidden !important;
   }
+
+  .download_icon:hover{
+    color: var(--primary-color);
+    cursor: pointer;
+  }

@@ -65,7 +65,11 @@ export class MedicalsService {
   getUnderwritingDecisons(pol_code=2024462214){
     return this.api.GET<any>(`${this.MEDICALS_BASE_URL}/underwriting-decisions?pol_code=${pol_code}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
-  saveClientMedicalDecison(test:{}){
-    return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/policy-underwriting-decisions`, test, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+
+  getLoadType(){
+    return this.api.GET<any>(`${this.MEDICALS_BASE_URL}/enums/underwriting-decisions/load-type`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+  saveRIMedicalDecison(decison:any){
+    return this.api.POST<any>(`${this.MEDICALS_BASE_URL}/policy-ri-medical-decisions`, decison, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 }
