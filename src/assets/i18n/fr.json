@@ -596,7 +596,12 @@
       "select_client": "Sélectionner un client",
       "id_no": "Numéro d'identification",
       "name": "Nom",
-      "email": "E-mail"
+      "email": "E-mail",
+      "select_an_introducer": "Sélectionner un Intervenant",
+      "staff_no": "Numéro du Personnel",
+      "surname": "Nom de Famille",
+      "other_names": "Autres Prénoms",
+      "company": "Entreprise"
     }
   },
   "lms": {
