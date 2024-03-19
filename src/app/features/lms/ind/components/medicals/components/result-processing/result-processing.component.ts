@@ -35,13 +35,17 @@ export class ResultProcessingComponent implements OnInit {
   dynamicAccordionId: any;
   diseases: any[] = [];
   diseaseForms: FormGroup[] = [];
-  decisionsForm: FormGroup;
+  decisionsFormOne: FormGroup;
+  decisionsFormTwo: FormGroup;
+  decisionsFormThree: FormGroup;
   // medicalResultForm : FormGroup;
   medicalReports:any[] = [];
   facilitatorList: any[] = [];
   util: Utils;
   filePath: any;
   fileName: any;
+  possibleDecisionList: any[];
+  loadTypeList: any[];
 
   constructor(
     private router: Router,
@@ -57,27 +61,40 @@ export class ResultProcessingComponent implements OnInit {
   }
 
   ngOnInit(): void { 
+    this.decisionsFormOne = this.fb.group({
+      ud_code : [],
+      load_type: [],
+      load_div_factor: [],
+      load_rate: [],
+      notes: []
+    })
+    this.decisionsFormTwo = this.fb.group({
+      ud_code : [],
+      load_type: [],
+      load_div_factor: [],
+      load_rate: [],
+      notes: []
+    })
+    this.decisionsFormThree = this.fb.group({
+      ud_code : [],
+      load_type: [],
+      load_div_factor: [],
+      load_rate: [],
+      notes: []
+    })
     this.getClientMedicalTest();
     this.medical_service.serviceProvider().subscribe(data =>{
-      console.log(data);
       this.facilitatorList = data;
       
     });
-    this.medical_service.getUnderwritingDecisons(this.util.getPolCode()).subscribe(data =>{
-      console.log(data);
+    this.medical_service.getUnderwritingDecisons(this.util.getPolCode()).subscribe((data: any[]) =>{
+      this.possibleDecisionList = data;
+      
+    });
+    this.medical_service.getLoadType().subscribe((data: any[]) =>{
+      this.loadTypeList = data;
       
     })
-    // this.medicalResultForm = this.fb.group({
-    //   checked: [],
-    //   cheque_date: [],
-    //   facilitator: [],
-    //   limit: [],
-    //   claim_amt: [], //invoiceAmount
-    //   payable_amt: [],
-    //   invoice_no: [],
-    //   invoice_date: [],
-    //   remarks: [],
-    // });
   };
 
   private initForms(): void {
@@ -94,6 +111,101 @@ export class ResultProcessingComponent implements OnInit {
         return this.createForm(disease);}
     );
 
+  }
+
+  saveMedicalDecisionOne(){
+    this.spinner_service.show('decisionsFormOne');
+
+    let val = {
+      "pol_code": this.util.getPolCode(),
+      "type": "R",
+      "decision": "A",
+      "load_type": "N",
+      "load_rate": 0,
+      "load_div_factor": 0,
+      "notes": "",
+      ...this.decisionsFormOne.value
+    }
+
+    console.log(val);
+
+    this.medical_service.saveRIMedicalDecison(val).subscribe(data =>{
+      console.log(data);
+      this.spinner_service.hide('decisionsFormOne');
+      this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
+
+
+      
+    },
+    err =>{
+      this.spinner_service.hide('decisionsFormOne');
+      this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
+
+    })
+    
+  }
+
+  saveMedicalDecisionTwo(){
+    this.spinner_service.show('decisionsFormTwo');
+
+    let val = {
+      "pol_code": this.util.getPolCode(),
+      "type": "R",
+      "decision": "A",
+      "load_type": "N",
+      "load_rate": 0,
+      "load_div_factor": 0,
+      "notes": "",
+      ...this.decisionsFormTwo.value
+    }
+
+    console.log(val);
+
+    this.medical_service.saveRIMedicalDecison(val).subscribe(data =>{
+      console.log(data);
+      this.spinner_service.hide('decisionsFormTwo');
+      this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
+
+
+      
+    },
+    err =>{
+      this.spinner_service.hide('decisionsFormTwo');
+      this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
+
+    })
+    
+  }
+
+  saveMedicalDecisionThree(){
+    this.spinner_service.show('decisionsFormThree');
+
+    let val = {
+      "pol_code": this.util.getPolCode(),
+      "type": "R",
+      "decision": "A",
+      "load_type": "N",
+      "load_rate": 0,
+      "load_div_factor": 0,
+      "notes": "",
+      ...this.decisionsFormThree.value
+    }
+
+    console.log(val);
+
+    this.medical_service.saveRIMedicalDecison(val).subscribe(data =>{
+      console.log(data);
+      this.spinner_service.hide('decisionsFormThree');
+      this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
+
+      
+    },
+    err =>{
+      this.spinner_service.hide('decisionsFormThree');
+      this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
+
+    })
+    
   }
 
   getListOfMedicalDocuments() : any[]{
@@ -186,9 +298,7 @@ export class ResultProcessingComponent implements OnInit {
   }
 
 
-  private createForm(disease: any): FormGroup {
-    console.log(disease);
-    
+  private createForm(disease: any): FormGroup {   
     return this.fb.group({
       checked: [disease.checked],
       cheque_date: [disease.cheque_date],
@@ -295,6 +405,27 @@ export class ResultProcessingComponent implements OnInit {
       this.spinner_service.hide('medical_test_results_view');
 
     }
+  }
+
+  downloadFile() {
+    if (!(this.filePath === null || this.filePath === '')) {
+      const link = document.createElement('a');
+      link.href = this.filePath;
+      link.download = `${this.fileName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up by revoking the URL
+      window.URL.revokeObjectURL(this.filePath);
+      document.body.removeChild(link);
+      this.toast_service.info('downloaded', 'Medical Reports'.toUpperCase())
+    }
+  }
+
+  clearFile() {
+    this.filePath = null;
+    this.toast_service.success('remove preview file successfully', 'Medical Reports'.toUpperCase())
+
   }
 
   nextPage() {
