@@ -158,6 +158,8 @@ export class QuickQuoteFormComponent {
 
 
   passedSections: any[] = [];
+  isNewClient: boolean = true; 
+
 
   constructor(
     public fb: FormBuilder,
@@ -188,6 +190,8 @@ export class QuickQuoteFormComponent {
   ngOnInit(): void {
     this.loadAllproducts();
     this.loadAllClients();
+    this.getCountries();
+
     this.loadAllQoutationSources();
     this.LoadAllFormFields(this.selectedProductCode);
     this.dynamicForm = this.fb.group({});
