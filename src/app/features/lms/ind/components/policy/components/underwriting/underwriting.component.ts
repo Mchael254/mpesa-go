@@ -153,7 +153,7 @@ export class UnderwritingComponent implements OnInit {
     err => {
       console.log(err['error']['errors'][0]);
       this.spinner_service.hide('underwriting');      
-      this.toast_service.danger(err['error']['errors'][0], 'POLICY UNDERWRITING AUTORIZATION')
+      this.toast_service.info(err['error']['errors'][0]===''?err['error']['errors'][1]:err['error']['errors'][0], 'POLICY UNDERWRITING AUTORIZATION')
     })
   }
   rejectQuote(){
