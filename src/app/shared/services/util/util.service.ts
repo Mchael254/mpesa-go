@@ -578,17 +578,14 @@ export class UtilService {
 
     // Decode the base64 string into a binary buffer.
     const binaryData = atob(base64FileData); // 'atob' is a built-in function to decode base64 strings
-    // Create a new array buffer to hold the binary data.
-    const arrayBuffer = new ArrayBuffer(binaryData.length);
-    // Create a view over the array buffer as a byte array.
-    const byteArray = new Uint8Array(arrayBuffer);
-    // Fill the byte array with the decoded binary data.
-    for (let i = 0; i < binaryData.length; i++) {
-      byteArray[i] = binaryData.charCodeAt(i);
-    }
+    const byteArray = Uint8Array.from(
+      atob(base64String)
+        .split('')
+        .map((char) => char.charCodeAt(0)),
+    );
 
    // Create a Blob object from the array buffer.
-   const blob = new Blob([arrayBuffer], { type: mimeType });
+   const blob = new Blob([byteArray], { type: mimeType });
 
    // Create a temporary URL for the Blob object using the URL.createObjectURL() method.
     return URL.createObjectURL(blob);
