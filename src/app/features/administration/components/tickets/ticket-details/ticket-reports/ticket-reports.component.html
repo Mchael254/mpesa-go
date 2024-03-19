@@ -8,6 +8,24 @@
 </div>
 <ul class="list-group list-group-horizontal mb-3">
   <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
-    <a [href]="getReportLink(report)" target="_blank" class="report-link">{{ report.name }}</a>
+    <a target="_blank" class="report-link" (click)="fetchReport(report)">{{ report.name.name }}</a>
   </li>
 </ul>
+
+<!-- Modal -->
+<div class="modal fade" id="reportsModalToggle" tabindex="-1" aria-labelledby="reportsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="height: 300px !important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" (click)="closeReportsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <ngx-doc-viewer
+          [fileName]="fileName ?? ''"
+          [srcUrl]="filePath ?? ''"
+          class="doc-viewer"
+        ></ngx-doc-viewer>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 .report-link {
   margin: 2rem 0; font-size: 0.8em;
+  cursor: pointer;
 }
 
 .report-link:hover {
