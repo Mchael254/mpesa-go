@@ -6,6 +6,8 @@ import { introducers } from '../../data/gisDTO';
 import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
 import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
+import { ApiService } from '../../../../../../shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +19,9 @@ export class IntroducersService {
   setupsbaseurl = "setups/api/v1"
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService,
-    private session_storage: SessionStorageService
-
+    private appConfig : AppConfigService,
+    private session_storage: SessionStorageService,
+    private api:ApiService
   ) { }
   httpOptions = {
     headers: new HttpHeaders({
@@ -44,19 +46,15 @@ errorHandl(error: HttpErrorResponse) {
   getAllIntroducers(): Observable<introducers[]>{
     let page = 0;
     let size = 100
-   const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-
-    })
+   
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<introducers[]>(`/${this.baseurl}/${this.setupsbaseurl}/introducers`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<introducers[]>(
+      `introducers`,
+     API_CONFIG.GIS_SETUPS_BASE_URL,
+     params
+    ).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 

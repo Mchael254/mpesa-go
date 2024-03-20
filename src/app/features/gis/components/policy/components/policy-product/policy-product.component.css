@@ -96,3 +96,22 @@
       font-weight: 400;
       line-height: normal;
     }
+    .search-input {
+        padding-bottom: 6px;
+        padding-left: 30px; 
+        border: 1px solid #ccc;
+        background: rgba(245, 246, 248, 1);
+        border-radius: 5px;
+        height: 40px;
+        width: 465px; 
+        font-size: 13px;
+      }
+      ::ng-deep .p-datatable .p-datatable-header{
+        background: transparent;
+      }
+      ::ng-deep .p-datatable.p-datatable-sm .p-datatable-header {
+        border-top: none;
+        padding:0;
+        padding-bottom:16px;
+      }
+      
