@@ -33,7 +33,7 @@
                     </div>
                     <div class=" col-sm-4 col-6" *ngIf="new">
                         <label for="Client" class="required quote-label" id="Client">Client</label>
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                        <input type="text" id="quote-input" class="form-select form-control form-control-sm mb-1"
                             data-bs-toggle="modal" data-bs-target="#clientModal" [(ngModel)]="clientName"
                             autocomplete="off" [attr.disabled]="clientName ? true : null">
 
@@ -58,7 +58,7 @@
                                 <option *ngFor="let country of countryList" [value]="country.id" readonly>{{
                                     country.zipCodeString }}</option>
                             </select>
-                            <input type="tel" id="zip-quote-input" class="form-control form-control-sm mb-1"
+                            <input type="text"  id="zipDropdown" class="form-control form-control-sm mb-1"
                                 [(ngModel)]="clientPhone">
                         </div>
 
@@ -116,11 +116,14 @@
                             <label for="Branch" class="quote-label" id="Branch">Branch</label>
                             <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="branchCode"  [(ngModel)]="userBranchId"  >      -->
 
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                            <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
                                 formControlName="branchCode">
                                 <option *ngFor="let branch of branchList" [value]="branch.id">{{branch.name   | sentenceCase}}</option>
                                 <option></option>
-                            </select>
+                            </select> -->
+                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray" optionLabel="description"
+                            (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
+                            [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('branchCode').hasError('required') && personalDetailsForm.get('branchCode').touched"
@@ -131,9 +134,13 @@
                         <div class="col-sm-4 col-6" *ngIf="new">
                             <label for="Branch" class="quote-label" id="Branch">Branch</label>
                             <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"  formControlName="branchCode"[(ngModel)]="userBranchId "  >      -->
-                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                                 formControlName="branchCode" [value]="userBranchId " [(ngModel)]="userBranchName"
-                                readonly>
+                                readonly> -->
+                                <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray" optionLabel="description"
+                            (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
+                            [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+
 
                         </div>
                         <div class="col-sm-4 col-6">
