@@ -47,8 +47,18 @@
                                     {{ getFolderCategoryName(report.folder) }}
                                 </a>
                                 <ul class="dropdown-menu">
-                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">{{ 'report.my_reports' | translate }}</li>
-                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">{{ 'report.shared_reports' | translate }}</li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('M', report)">
+                                    {{ 'report.my_reports' | translate }} 
+                                    <span *ngIf="report.folder==='M'" class="float-end">
+                                        <i class="pi pi-check"></i>
+                                    </span>
+                                </li>
+                                  <li class="reAssignReport" (click)="reAssignReportFolder('S', report)">
+                                    {{ 'report.shared_reports' | translate }}
+                                    <span *ngIf="report.folder==='S'" class="float-end">
+                                        <i class="pi pi-check"></i>
+                                    </span>
+                                </li>
                                 </ul>
                             </div>
                         </td>
@@ -65,6 +75,9 @@
                                     (click)="reAssignReportDashboard(dashboad.id, report)"
                                   >
                                     {{ dashboad?.name }}
+                                    <span *ngIf="getDashboardName(report.dashboardId) === dashboad.name" class="float-end">
+                                        <i class="pi pi-check"></i> 
+                                    </span>
                                 </li>
                                 </ul>
                             </div>
