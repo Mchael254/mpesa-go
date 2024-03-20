@@ -133,7 +133,9 @@ font-size: 14px;
   }
   #shareQuoteLabel{
     font-size: 14px;
-
+  }
+  #totalPayablePremium{
+    margin-left:-15px;
   }
 
   

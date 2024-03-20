@@ -47,6 +47,8 @@ export class CoverTypesDetailsComponent {
   sections: any[] = [];
   filteredSection: any;
   passedSections: any[] = [];
+  passedMandatorySections: any[] = [];
+
   sectionDetailsForm: FormGroup;
   checkedSectionCode: any;
   checkedSectionDesc: any;
@@ -116,6 +118,8 @@ export class CoverTypesDetailsComponent {
   covertypeSpecificSection: any;
   sectionCodesArray: number[] = [];
   premiumList: Premiums[] = [];
+  temporaryPremiumList: Premiums[] = [];
+
   passedNumber: string;
   passedQuotationCode: string;
   passedQuotationDetails:any;
@@ -306,7 +310,46 @@ isCardExpanded(index: number): boolean {
       sumInsuredRate: ['']
     });
   }
+ loadSubclassSectionCovertype() {
+    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
+      this.subclassSectionCoverList = data;
+      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+      this.covertypeSectionList = this.subclassSectionCoverList.filter(section =>
+        section.subClassCode == this.selectedSubclassCode &&
+        section.isMandatory == null
+      );
+      log.debug("NOT MANDATORY", this.covertypeSectionList)
+      this.covertypeSpecificSection = this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
+      log.debug("COVER SPECIFIC SECTIONS", this.covertypeSpecificSection)
+      // Add all elements found in covertypeSpecificSections to passedSections
+      this.passedMandatorySections = this.covertypeSpecificSection;
 
+
+    console.log('Selected Sections loadSubclass Section:', this.passedMandatorySections);
+    sessionStorage.setItem("Added Benefit", JSON.stringify(this.passedSections));
+
+    this.findTemporaryPremium();
+    })
+    
+  }
+  findTemporaryPremium(){
+    const selectedBinder = this.premiumPayload?.risks[0].binderDto.code;
+    const selectedSubclassCode = this.premiumPayload?.risks[0].subclassSection.code;
+    const sections = this.passedMandatorySections;
+
+    // Create an array to store observables returned by each service call
+    const observables = sections?.map(section => {
+      return this.premiumRateService.getAllPremiums(section.sectionCode, selectedBinder, selectedSubclassCode);
+    });
+
+    // Use forkJoin to wait for all observables to complete
+    forkJoin(observables).subscribe(data => {
+      // data is an array containing the results of each service call
+      this.temporaryPremiumList = data.flat(); // Flatten the array if needed
+      this.cdr.detectChanges();
+      log.debug("Premium List", this.temporaryPremiumList)
+    });
+  }
 
   onKeyUp(event: KeyboardEvent, section: any): void {
     const inputElement = event.target as HTMLInputElement;
@@ -428,19 +471,7 @@ isCardExpanded(index: number): boolean {
 
   /******************NEW PREMIUM COMPUTATION ENGINE **************/
 
-  loadSubclassSectionCovertype() {
-    this.subclassSectionCovertypeService.getSubclassCovertypeSections().subscribe(data => {
-      this.subclassSectionCoverList = data;
-      log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
-      this.covertypeSectionList = this.subclassSectionCoverList.filter(section =>
-        section.subClassCode == this.selectedSubclassCode &&
-        section.isMandatory == null
-      );
-      log.debug("NOT MANDATORY", this.covertypeSectionList)
-      this.covertypeSpecificSection = this.covertypeSectionList.filter(sec => sec.coverTypeCode == this.passedCovertypeCode)
-      log.debug("COVER SPECIFIC SECTIONS", this.covertypeSpecificSection)
-    })
-  }
+ 
 
   createQuotationForm() {
     this.quotationForm = this.fb.group({

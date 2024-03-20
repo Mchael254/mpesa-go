@@ -92,7 +92,7 @@ export class QuickQuoteFormComponent {
   clientName: any;
   clientEmail: any;
   clientPhone: any;
-
+  clientZipCode:any
 
 
   countryList: CountryDto[];
@@ -126,6 +126,10 @@ export class QuickQuoteFormComponent {
   userBranchId: any;
   userBranchName:any;
   branchList: OrganizationBranchDto[];
+  selectedBranchCode: any;
+  selectedBranchDescription: any;
+  branchDescriptionArray: any = [];
+
   coverFromDate: string;
   coverToDate: string;
   passedCoverToDate: any;
@@ -229,6 +233,11 @@ export class QuickQuoteFormComponent {
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
       this.isAddRisk = JSON.parse(passedIsAddRiskString);
       console.log("isAddRiskk Details:", this.isAddRisk);
+      this.isNewClient=false;
+      this.toggleButton();
+      this.selectedCountry = this.PassedClientDetails.country;
+      log.info("Paased selected country:",this.selectedCountry)
+      this.getCountries()
     }
 
 
@@ -346,6 +355,8 @@ export class QuickQuoteFormComponent {
   //   })
   // }
   fetchBranches(organizationId?: number, regionId?: number) {
+    const branchDescription = [];
+
     this.branchService
       .getAllBranches(organizationId, regionId)
       .pipe(untilDestroyed(this))
@@ -354,9 +365,33 @@ export class QuickQuoteFormComponent {
         log.info('Fetched Branches', this.branchList);
         const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
         log.debug("branch", branch);
-        this.userBranchName= branch[0].name;
+        this.userBranchName= branch[0]?.name;
+        this.branchList.forEach(branch => {
+          // Access each product inside the callback function
+          let capitalizedDescription = branch.name.charAt(0).toUpperCase() + branch.name.slice(1).toLowerCase();
+          branchDescription.push({
+            code: branch.id,
+            description: capitalizedDescription
+          });
+        });
+  
+        // Combine the characters back into words
+        const combinedWords = branchDescription.join(',');
+        this.branchDescriptionArray.push(...branchDescription)
+  
+        // Now 'combinedWords' contains the result with words instead of individual characters
+        log.info("modified Branch description", this.branchDescriptionArray);
+  
       });
   }
+  onBranchSelected(selectedValue: any) {
+    this.selectedBranchCode = selectedValue.code;
+    log.debug("Branch Code:", this.selectedBranchCode)
+    this.selectedBranchDescription = selectedValue.description;
+    log.debug("Branch Description:", this.selectedBranchDescription)
+
+  }
+
   /**
    * Fetches client data via HTTP GET from ClientService.
    * - Populates 'clientList' and extracts data from 'content'.
