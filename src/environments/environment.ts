@@ -33,7 +33,7 @@ export const environment = {
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
-    [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
+    [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups/api/v1'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices']

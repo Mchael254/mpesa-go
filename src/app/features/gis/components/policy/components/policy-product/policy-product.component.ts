@@ -65,9 +65,11 @@ export class PolicyProductComponent {
 
   introducersList: introducers[];
   selectedIntroducer: any;
-  introducerCode:any;
-  introducerName:any;
+  introducerCode: any;
+  introducerName: any;
 
+
+  enableSelect: boolean = false;
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
@@ -486,14 +488,19 @@ export class PolicyProductComponent {
     } else {
       console.error("No introducer found with code:", code);
     }
-    
+
 
   }
   saveIntroducer() {
     this.introducerCode = this.selectedIntroducer[0].code;
-    log.debug("Introducer Code:",this.introducerCode);
+    log.debug("Introducer Code:", this.introducerCode);
 
     this.introducerName = this.selectedIntroducer[0].surName;
-    log.debug("Introducer Name:",this.introducerName);
+    log.debug("Introducer Name:", this.introducerName);
+  }
+ 
+  toggleSelect(checked: boolean) {
+    const selectElement = document.getElementById('contractNameInput') as HTMLSelectElement;
+    selectElement.disabled = !checked;
   }
 }
