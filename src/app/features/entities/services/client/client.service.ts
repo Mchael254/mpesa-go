@@ -156,6 +156,7 @@ export class ClientService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
     });
 
     return this.http.post<ClientDTO[]>(`/${this.baseUrl}/accounts`, JSON.stringify(clientData), {headers:headers})
