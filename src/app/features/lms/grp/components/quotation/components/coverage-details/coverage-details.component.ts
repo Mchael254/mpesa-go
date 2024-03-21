@@ -938,12 +938,12 @@ handleFileChange(event) {
           "loading_discount": "N",
           "total_member_earnings": total_member_earnings,
           "product_code": this.productCode,
-          "multiple_earnings_period": 4,
+          "multiple_earnings_period": cover.multiplesOfEarnings,
           "dependant_type_code": 1000,
-          "dty_description": "DEFAULT",
+          "dty_description": cover.category,
           "apply_commission_expense_loading": "N",
           "sum_assured_limit": 0,
-          "staff_description": "DEFAULT",
+          "staff_description": cover.category,
     };
     console.log("coverToPostArrayForEditedCover", coverToPost)
     const coverToPostArray = [coverToPost];
