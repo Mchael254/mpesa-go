@@ -280,5 +280,9 @@ onMemberTableRowClick(membersDetails, index: number) {
     this.router.navigate(['/home/lms/grp/quotation/coverage']);
   }
 
+  downloadReports() {
+
+  }
+
 
 }
