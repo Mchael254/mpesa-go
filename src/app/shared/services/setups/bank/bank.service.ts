@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../../core/config/app-config-service';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
+
 import {
-  BankBranchDTO, BankChargeDTO,
+  BankBranchDTO,
+  BankChargeDTO,
   BankDTO,
   BankRegionDTO,
   CurrencyDTO,
-  FundSourceDTO, POSTBankBranchDTO,
+  FundSourceDTO,
+  POSTBankBranchDTO,
 } from '../../../data/common/bank-dto';
 import { Logger } from '../../logger/logger.service';
-import {environment} from "../../../../../environments/environment";
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from '../../session-storage/session-storage.service';
-// import { environment } from 'src/environments/environment';
+import { ApiService } from '../../api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 const log = new Logger('BankService');
 
@@ -25,9 +24,7 @@ const log = new Logger('BankService');
   providedIn: 'root',
 })
 export class BankService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private appConfig: AppConfigService, private http: HttpClient, private session_storage: SessionStorageService) {}
+  constructor(private api: ApiService) {}
 
   /**
    * Get all banks
@@ -36,17 +33,13 @@ export class BankService {
    */
   getBanks(countryId: number): Observable<BankDTO[]> {
     log.info('Fetching Banks');
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
     const params = new HttpParams().set('countryId', `${countryId}`);
 
-    return this.http.get<BankDTO[]>(`/${this.baseUrl}/setups/banks`, {
-      headers: header,
-      params: params,
-    });
+    return this.api.GET<BankDTO[]>(
+      `banks`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   /**
@@ -55,28 +48,21 @@ export class BankService {
    */
   getBankBranch(): Observable<BankBranchDTO[]> {
     log.info('Fetching Bank Branches');
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
 
-    return this.http.get<BankBranchDTO[]>(
-      `/${this.baseUrl}/setups/bank-branches`,
-      { headers: header }
+    return this.api.GET<BankBranchDTO[]>(
+      `bank-branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getBankBranchById(id: any): Observable<BankBranchDTO[]> {
     log.info('Fetching Bank Branches');
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams().set('bankId', `${id}`);
 
-    return this.http.get<BankBranchDTO[]>(
-      `/${this.baseUrl}/setups/bank-branches`,
-      { headers: header, params: params }
+    return this.api.GET<BankBranchDTO[]>(
+      `bank-branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
@@ -86,14 +72,9 @@ export class BankService {
    * @returns {Observable<BankBranchDTO[]>} all bank branches for a given bank id
    */
   getBankBranchesByBankId(bankId: number): Observable<BankBranchDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
-
-    return this.http.get<BankBranchDTO[]>(
-      `/${this.baseUrl}/setups/banks/${bankId}/branches`,
-      { headers: header }
+    return this.api.GET<BankBranchDTO[]>(
+      `banks/${bankId}/branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -103,29 +84,20 @@ export class BankService {
    * @returns {Observable<BankBranchDTO[]>} all bank branches for a given bank id
    */
   getBankBranchListByBankId(bankId: number): Observable<BankBranchDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams().set('bankId', `${bankId}`);
 
-    return this.http.get<BankBranchDTO[]>(
-      `/${this.baseUrl}/setups/bank-branches`,
-      { headers: header, params: params }
+    return this.api.GET<BankBranchDTO[]>(
+      `bank-branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   getCurrencies(): Observable<CurrencyDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-
-    });
-
-    return this.http.get<CurrencyDTO[]>(`/${this.baseUrl}/setups/currencies`, {
-      headers: header,
-    });
+    return this.api.GET<CurrencyDTO[]>(
+      `currencies`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -134,64 +106,42 @@ export class BankService {
    */
   getFundSource(): Observable<FundSourceDTO[]> {
     log.info('Fetching Source of Funds');
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
 
-    return this.http.get<FundSourceDTO[]>(
-      `/${this.baseUrl}/setups/source-of-funds`,
-      { headers: header }
+    return this.api.GET<FundSourceDTO[]>(
+      `source-of-funds`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getBankRegion(regionCode: number): Observable<BankRegionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('regionCode', `${regionCode}`);
-    return this.http.get<BankRegionDTO[]>(
-      `/${this.baseUrl}/setups/bank-regions`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<BankRegionDTO[]>(
+      `bank-regions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createBankRegion(data: BankRegionDTO): Observable<BankRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BankRegionDTO>(
-      `/${this.baseUrl}/setups/bank-regions`,
+    return this.api.POST<BankRegionDTO>(
+      `bank-regions`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   updateBankRegion(id: number, data: BankRegionDTO): Observable<BankRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<BankRegionDTO>(
-      `/${this.baseUrl}/setups/bank-regions/${id}`,
+    return this.api.PUT<BankRegionDTO>(
+      `bank-regions/${id}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteBankRegion(id: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BankRegionDTO>(
-      `/${this.baseUrl}/setups/bank-regions/${id}`,
-      { headers: headers }
+    return this.api.DELETE<BankRegionDTO>(
+      `bank-regions/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -201,17 +151,11 @@ export class BankService {
    * needed to create a bank.
    * @returns an Observable of type BankDTO.
    */
-  createBank(
-    data: BankDTO
-  ): Observable<BankDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BankDTO>(
-      `/${this.baseUrl}/setups/banks`,
+  createBank(data: BankDTO): Observable<BankDTO> {
+    return this.api.POST<BankDTO>(
+      `banks`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -224,14 +168,10 @@ export class BankService {
    * @returns an Observable of type BankDTO.
    */
   updateBank(id: number, data: BankDTO): Observable<BankDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<BankDTO>(
-      `/${this.baseUrl}/setups/banks/${id}`,
+    return this.api.PUT<BankDTO>(
+      `banks/${id}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -243,13 +183,9 @@ export class BankService {
    * `BankDTO`.
    */
   deleteBank(id: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BankDTO>(
-      `/${this.baseUrl}/setups/banks/${id}`,
-      { headers: headers }
+    return this.api.DELETE<BankDTO>(
+      `banks/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -259,17 +195,11 @@ export class BankService {
    * the information needed to create a bank branch.
    * @returns an Observable of type POSTBankBranchDTO.
    */
-  createBankBranch(
-    data: POSTBankBranchDTO
-  ): Observable<POSTBankBranchDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<POSTBankBranchDTO>(
-      `/${this.baseUrl}/setups/bank-branches`,
+  createBankBranch(data: POSTBankBranchDTO): Observable<POSTBankBranchDTO> {
+    return this.api.POST<POSTBankBranchDTO>(
+      `bank-branches`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -282,15 +212,14 @@ export class BankService {
    * the data to be updated for a bank branch.
    * @returns an Observable of type POSTBankBranchDTO.
    */
-  updateBankBranch(id: number, data: POSTBankBranchDTO): Observable<POSTBankBranchDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<POSTBankBranchDTO>(
-      `/${this.baseUrl}/setups/bank-branches/${id}`,
+  updateBankBranch(
+    id: number,
+    data: POSTBankBranchDTO
+  ): Observable<POSTBankBranchDTO> {
+    return this.api.PUT<POSTBankBranchDTO>(
+      `bank-branches/${id}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -302,13 +231,9 @@ export class BankService {
    * `POSTBankBranchDTO`.
    */
   deleteBankBranch(id: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<POSTBankBranchDTO>(
-      `/${this.baseUrl}/setups/bank-branches/${id}`,
-      { headers: headers }
+    return this.api.DELETE<POSTBankBranchDTO>(
+      `bank-branches/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -319,17 +244,11 @@ export class BankService {
    * @returns an Observable of type BankChargeDTO[].
    */
   getBankChargesByBankId(bankId: number): Observable<BankChargeDTO[]> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams().set('bankId', `${bankId}`);
-    return this.http.get<BankChargeDTO[]>(
-      `/${this.baseUrl}/setups/bank-charges`,
-      {
-        headers: header,
-        params: params
-      }
+    return this.api.GET<BankChargeDTO[]>(
+      `bank-charges`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
@@ -340,17 +259,11 @@ export class BankService {
    * necessary information to create a bank charge.
    * @returns an Observable of type BankChargeDTO.
    */
-  createBankCharge(
-    data: BankChargeDTO
-  ): Observable<BankChargeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BankChargeDTO>(
-      `/${this.baseUrl}/setups/bank-charges`,
+  createBankCharge(data: BankChargeDTO): Observable<BankChargeDTO> {
+    return this.api.POST<BankChargeDTO>(
+      `bank-charges`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -364,14 +277,10 @@ export class BankService {
    * @returns an Observable of type BankChargeDTO.
    */
   updateBankCharge(id: number, data: BankChargeDTO): Observable<BankChargeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<BankChargeDTO>(
-      `/${this.baseUrl}/setups/bank-charges/${id}`,
+    return this.api.PUT<BankChargeDTO>(
+      `bank-charges/${id}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -383,13 +292,9 @@ export class BankService {
    * `BankChargeDTO`.
    */
   deleteBankCharge(id: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BankChargeDTO>(
-      `/${this.baseUrl}/setups/bank-charges/${id}`,
-      { headers: headers }
+    return this.api.DELETE<BankChargeDTO>(
+      `bank-charges/${id}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }

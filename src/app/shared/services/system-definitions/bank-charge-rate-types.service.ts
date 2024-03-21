@@ -1,27 +1,20 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {AppConfigService} from "../../../core/config/app-config-service";
-import {Observable} from "rxjs";
-import {BankChargeRateTypesDto} from "../../data/common/bank-charge-rate-types-dto";
+import { Observable } from 'rxjs';
+
+import { BankChargeRateTypesDto } from '../../data/common/bank-charge-rate-types-dto';
+import { ApiService } from '../api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BankChargeRateTypesService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService) { }
+  constructor(private api: ApiService) {}
 
   getBankChargeRateTypes(): Observable<BankChargeRateTypesDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<BankChargeRateTypesDto[]>(
-      `/${this.baseUrl}/setups/system-definitions/bank-charge-rate-types`,
-      {
-        headers: headers,
-      }
+    return this.api.GET<BankChargeRateTypesDto[]>(
+      `system-definitions/bank-charge-rate-types`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }
