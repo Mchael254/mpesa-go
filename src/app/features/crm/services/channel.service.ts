@@ -1,59 +1,43 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../core/config/app-config-service';
 import { Observable } from 'rxjs';
+
 import { ChannelsDTO } from '../data/channels';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChannelService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService) {}
+  constructor(private api: ApiService) {}
 
   getChannels(): Observable<ChannelsDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<ChannelsDTO[]>(`/${this.baseUrl}/setups/channels`, {
-      headers: headers,
-    });
+    return this.api.GET<ChannelsDTO[]>(
+      `channels`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   createChannel(data: ChannelsDTO): Observable<ChannelsDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<ChannelsDTO>(
-      `/${this.baseUrl}/setups/channels`,
+    return this.api.POST<ChannelsDTO>(
+      `channels`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   updateChannel(channelId: number, data: ChannelsDTO): Observable<ChannelsDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<ChannelsDTO>(
-      `/${this.baseUrl}/setups/channels/${channelId}`,
+    return this.api.PUT<ChannelsDTO>(
+      `channels/${channelId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteChannel(channelId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<ChannelsDTO>(
-      `/${this.baseUrl}/setups/channels/${channelId}`,
-      { headers: headers }
+    return this.api.DELETE<ChannelsDTO>(
+      `channels/${channelId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }

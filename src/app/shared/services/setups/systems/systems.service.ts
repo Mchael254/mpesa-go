@@ -1,33 +1,24 @@
 import { Injectable } from '@angular/core';
-import {Observable} from "rxjs/internal/Observable";
-import {SystemsDto} from "../../../data/common/systemsDto";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from "../../../../core/config/app-config-service";
+import { Observable } from 'rxjs/internal/Observable';
+import { HttpParams } from '@angular/common/http';
+
+import { SystemsDto } from '../../../data/common/systemsDto';
+import { ApiService } from '../../api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SystemsService {
-
-  baseUrlSetup = this.appConfig.config.contextPath.setup_services;
-
-  constructor(
-    private appConfig: AppConfigService,
-    private http: HttpClient,
-  ) { }
+  constructor(private api: ApiService) {}
 
   getSystems(): Observable<SystemsDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
+    const params = new HttpParams().set('organizationId', 2);
 
-    return this.http.get<SystemsDto[]>(`/${this.baseUrlSetup}/setups/systems`,
-      {
-        headers:headers,
-        params: params
-      });
+    return this.api.GET<SystemsDto[]>(
+      `systems`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
   }
 }

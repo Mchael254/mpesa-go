@@ -1,74 +1,76 @@
-import {Injectable, signal} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from "../../../../core/config/app-config-service";
-import {ClientTitleDTO} from "../../../../shared/data/common/client-title-dto";
+import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 
 import { Pagination } from '../../../../shared/data/common/pagination';
-import { AccountReqPartyId, EntityDto, EntityResDTO, IdentityModeDTO, PoliciesDTO, ReqPartyById } from '../../data/entityDto';
+import {
+  AccountReqPartyId,
+  EntityDto,
+  EntityResDTO,
+  IdentityModeDTO,
+  PoliciesDTO,
+  ReqPartyById,
+} from '../../data/entityDto';
 import { PartyTypeDto } from '../../data/partyTypeDto';
 import { PartyAccountsDetails } from '../../data/accountDTO';
-import {UtilService} from "../../../../shared/services/util/util.service";
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ClaimsDTO } from 'src/app/features/gis/data/claims-dto';
+import { UtilService } from '../../../../shared/services/util/util.service';
+import { ApiService } from '../.../../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
+import { ClaimsDTO } from '../../../../features/gis/data/claims-dto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EntityService {
-
-  baseUrl = this.appConfig.config.contextPath.setup_services;
   private entity$ = new BehaviorSubject<EntityDto>({
     partyTypeId: 0,
-    profilePicture: "",
-    categoryName: "",
-    modeOfIdentityName: "",
+    profilePicture: '',
+    categoryName: '',
+    modeOfIdentityName: '',
     countryId: 0,
-    dateOfBirth: "",
-    effectiveDateFrom: "",
-    effectiveDateTo: "",
+    dateOfBirth: '',
+    effectiveDateFrom: '',
+    effectiveDateTo: '',
     id: 0,
     modeOfIdentity: undefined,
     identityNumber: 0,
-    name: "",
+    name: '',
     organizationId: 0,
-    pinNumber: "",
-    profileImage: ""
+    pinNumber: '',
+    profileImage: '',
   });
   currentEntity$ = this.entity$.asObservable();
 
   private accountDetails$ = new BehaviorSubject<AccountReqPartyId>({
     accountCode: 0,
     accountTypeId: 0,
-    category: "",
-    effectiveDateFrom: "",
-    effectiveDateTo: "",
+    category: '',
+    effectiveDateFrom: '',
+    effectiveDateTo: '',
     id: 0,
     partyId: 0,
     partyType: {
       id: 0,
       organizationId: 0,
       partyTypeLevel: 0,
-      partyTypeName: "",
-      partyTypeShtDesc: "",
-      partyTypeVisible: ""
+      partyTypeName: '',
+      partyTypeShtDesc: '',
+      partyTypeVisible: '',
     },
     kycInfo: {
       id: 0,
-      name: "",
-      shortDesc: "",
-      emailAddress: "",
-      phoneNumber: "",
+      name: '',
+      shortDesc: '',
+      emailAddress: '',
+      phoneNumber: '',
     },
     organizationId: 0,
-    organizationGroupId: 0
-
-  })
+    organizationGroupId: 0,
+  });
   currentAccount$ = this.accountDetails$.asObservable();
 
   private entityAccounts$ = new BehaviorSubject<AccountReqPartyId[]>([]);
-  private partyAccounts$ = new BehaviorSubject<PartyAccountsDetails[]>([])
+  private partyAccounts$ = new BehaviorSubject<PartyAccountsDetails[]>([]);
   currentEntityAccount$ = this.entityAccounts$.asObservable();
   currentPartyAccounts$ = this.partyAccounts$.asObservable();
 
@@ -80,12 +82,7 @@ export class EntityService {
 
   public searchTermObject = signal({});
 
-  constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
-    private utilService: UtilService,
-    private api: ApiService
-  ) { }
+  constructor(private utilService: UtilService, private api: ApiService) {}
 
   setSearchTerm(searchTerm: string) {
     this.searchTermSource.next(searchTerm);
@@ -95,19 +92,19 @@ export class EntityService {
     this.entitiesSource.next(entities);
   }
 
-  setCurrentEntity(entity: EntityDto){
+  setCurrentEntity(entity: EntityDto) {
     this.entity$.next(entity);
   }
 
-  setCurrentAccount(accountDetails: AccountReqPartyId){
+  setCurrentAccount(accountDetails: AccountReqPartyId) {
     this.accountDetails$.next(accountDetails);
   }
 
-  setCurrentEntityAccounts(entityAccountsDetails: AccountReqPartyId[]){
+  setCurrentEntityAccounts(entityAccountsDetails: AccountReqPartyId[]) {
     this.entityAccounts$.next(entityAccountsDetails);
   }
 
-  setCurrentPartyAcounts(partyAccountsDetails: PartyAccountsDetails[]){
+  setCurrentPartyAcounts(partyAccountsDetails: PartyAccountsDetails[]) {
     this.partyAccounts$.next(partyAccountsDetails);
   }
 
@@ -117,27 +114,26 @@ export class EntityService {
     sortList: string,
     order: string = 'desc'
   ): Observable<Pagination<EntityDto>> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
     let params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`)
-      .set('organizationId', 2) /*TODO: Find proper way to fetch organizationId*/
+      .set(
+        'organizationId',
+        2
+      ); /*TODO: Find proper way to fetch organizationId*/
 
-      // Call the removeNullValuesFromQueryParams method from the UtilsService
-    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
+    // Call the removeNullValuesFromQueryParams method from the UtilsService
+    params = new HttpParams({
+      fromObject: this.utilService.removeNullValuesFromQueryParams(params),
+    });
 
-    return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/parties/all-parties`,
-      {
-        headers:headers,
-        params: params
-      });
-
+    return this.api.GET<Pagination<EntityDto>>(
+      `parties/all-parties`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   searchEntities(
@@ -146,130 +142,108 @@ export class EntityService {
     columnName: string,
     columnValue: string
   ): Observable<Pagination<EntityDto>> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
     let params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('columnName', `${columnName}`)
-      .set('columnValue', `${columnValue}`)
+      .set('columnValue', `${columnValue}`);
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
-    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
-
-    return this.http.get<Pagination<EntityDto>>(`/${baseUrl}/parties/all-parties`,
-      {
-        headers:headers,
-        params: params
-      });
-
-  }
-   getEntityById(partyId: number): Observable<EntityDto>{
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
+    params = new HttpParams({
+      fromObject: this.utilService.removeNullValuesFromQueryParams(params),
     });
 
-    return this.http.get<EntityDto>(`/${baseUrl}/parties/${partyId}`,{headers:headers});
-  }
-  getEntityByPartyId(id: number): Observable<ReqPartyById > {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<ReqPartyById >(`/${baseUrl}/parties/` + id, {headers:headers});
+    return this.api.GET<Pagination<EntityDto>>(
+      `parties/all-parties`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
-  getIdentityType(): Observable<IdentityModeDTO []> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
+  getEntityById(partyId: number): Observable<EntityDto> {
+    return this.api.GET<EntityDto>(
+      `parties/${partyId}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
 
-    return this.http.get<IdentityModeDTO []>(`/${baseUrl}/identity-modes`,
-      {
-        headers:headers,
-        params:params,
-      })
+  getEntityByPartyId(id: number): Observable<ReqPartyById> {
+    return this.api.GET<ReqPartyById>(
+      `parties/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
 
+  getIdentityType(): Observable<IdentityModeDTO[]> {
+    const params = new HttpParams().set('organizationId', 2);
+
+    return this.api.GET<IdentityModeDTO[]>(
+      `identity-modes`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   getPartiesType(organizationId: number = 2): Observable<PartyTypeDto[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    const params = new HttpParams()
-    .set('organizationId', `${organizationId}`);
+    const params = new HttpParams().set('organizationId', `${organizationId}`);
 
-    return this.http.get<PartyTypeDto[]>(`/${baseUrl}/party-types`, {headers:headers,params:params});
+    return this.api.GET<PartyTypeDto[]>(
+      `party-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   saveEntityDetails(data: EntityResDTO): Observable<EntityDto> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<EntityDto>(`/${baseUrl}/parties`, JSON.stringify(data), {headers:headers})
+    return this.api.POST<EntityDto>(
+      `parties`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
   uploadProfileImage(partyId: number, file: File) {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    let form = new FormData;
+    let form = new FormData();
     form.append('file', file, file.name);
-    return this.http.post<any>(`/${baseUrl}/parties/${partyId}/upload-profile-image`, form );
+    return this.api.POST<any>(
+      `parties/${partyId}/upload-profile-image`,
+      form,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
   getAccountById(id: number): Observable<AccountReqPartyId[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<AccountReqPartyId[]>(`/${baseUrl}/parties/`+ id +`/accounts`, {headers:headers});
+    return this.api.GET<AccountReqPartyId[]>(
+      `parties/${id}/accounts`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
-  fetchGisQuotationsByClientId(id: number):Observable<any[]> {
-    const baseUrl = this.appConfig.config.contextPath.gis_quotation_service;
-    console.log(`gis base url >>>`, baseUrl);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<any[]>(`/${baseUrl}/view/clientCode?clientId=${id}`, { headers });
+  fetchGisQuotationsByClientId(id: number): Observable<any[]> {
+    return this.api.GET<any[]>(
+      `api/v2/view/clientCode?clientId=${id}`,
+      API_CONFIG.GIS_QUOTATIONS_BASE_URL
+    );
   }
 
   // fetchGisQuotationsByClientId_test(id: number) {
   //   return this.api.GET<any>(
-  //     `api/v2/view/clientCode?clientId=${id}`, 
+  //     `api/v2/view/clientCode?clientId=${id}`,
   //     API_CONFIG.GIS_QUOTATIONS_BASE_URL
   //   )
   // }
 
   fetchGisPoliciesByClientId(id: number) {
     return this.api.GET<Pagination<PoliciesDTO>>(
-      `api/v2/policies/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`, 
+      `api/v2/policies/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
 
   fetchGisClaimsByClientId(id: number): Observable<Pagination<ClaimsDTO>> {
     return this.api.GET<Pagination<ClaimsDTO>>(
-      `api/v2/claims/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`, 
+      `api/v2/claims/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`,
       API_CONFIG.GIS_CLAIMS_BASE_URL
     );
   }
-
-
 }

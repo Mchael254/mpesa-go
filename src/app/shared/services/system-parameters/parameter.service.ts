@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from "../../../core/config/app-config-service";
-import {ParameterDto} from "../../data/common/parameter-dto";
-import {UtilService} from "../util/util.service";
-import {Logger} from "../logger/logger.service";
-import {Observable} from "rxjs/internal/Observable";
-import {map} from "rxjs/operators";
+import { HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs/internal/Observable';
+import { map } from 'rxjs/operators';
+
+import { ParameterDto } from '../../data/common/parameter-dto';
+import { UtilService } from '../util/util.service';
+import { Logger } from '../logger/logger.service';
+import { ApiService } from '../api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 const log = new Logger('ParameterService');
 
@@ -13,13 +15,10 @@ const log = new Logger('ParameterService');
  * Service class to manage system parameters related operations
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ParameterService {
-
-  private baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private appConfig: AppConfigService, private http: HttpClient, private utilService:UtilService) { }
+  constructor(private utilService: UtilService, private api: ApiService) {}
 
   /**
    * Fetches all parameters for a given organization
@@ -28,20 +27,23 @@ export class ParameterService {
    * @returns {Observable<ParameterDto[]>} list of parameters
    * @private
    */
-  private getParameters(parameterName: string , organizationId: number): Observable<ParameterDto[]>{
+  private getParameters(
+    parameterName: string,
+    organizationId: number
+  ): Observable<ParameterDto[]> {
     log.info('Fetching all parameters for organization: ', organizationId);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
     const params = new HttpParams()
       .set('name', `${parameterName}`)
       .set('organizationId', `${organizationId}`);
 
-    let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
+    let queryparamObject =
+      this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.http.get<ParameterDto[]>(`/${this.baseUrl}/setups/parameters`, {headers:headers, params:queryparamObject});
+    return this.api.GET<ParameterDto[]>(
+      `parameters`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      queryparamObject
+    );
   }
 
   /**
@@ -50,7 +52,10 @@ export class ParameterService {
    * @param organization - organization ID
    * @returns {Observable<ParameterDto[]>} list of parameters
    */
-  getAllParameters(parameterName: string, organization: number): Observable<ParameterDto[]>{
+  getAllParameters(
+    parameterName: string,
+    organization: number
+  ): Observable<ParameterDto[]> {
     return this.getParameters(parameterName, organization);
   }
 
@@ -60,9 +65,14 @@ export class ParameterService {
    * @param organizationId - organization ID
    * @returns {Observable<ParameterDto>}
    */
-  getParameterByName(parameterName: string, organizationId: number): Observable<ParameterDto>{
+  getParameterByName(
+    parameterName: string,
+    organizationId: number
+  ): Observable<ParameterDto> {
     log.info('Fetching parameter: ', parameterName);
-    return this.getParameters(parameterName, organizationId).pipe(map(parameters => parameters[0]));
+    return this.getParameters(parameterName, organizationId).pipe(
+      map((parameters) => parameters[0])
+    );
   }
 
   /**
@@ -71,9 +81,14 @@ export class ParameterService {
    * @param organizationId - Organization ID
    * @returns {Observable<string>} - parameter value
    */
-  getParameterValue(parameterName: string, organizationId: number): Observable<string> {
+  getParameterValue(
+    parameterName: string,
+    organizationId: number
+  ): Observable<string> {
     log.info('Fetching parameter value for : ', parameterName);
-    return this.getParameters(parameterName, organizationId).pipe(map(parameters => parameters[0]?.value));
+    return this.getParameters(parameterName, organizationId).pipe(
+      map((parameters) => parameters[0]?.value)
+    );
   }
 
   /**
@@ -83,12 +98,10 @@ export class ParameterService {
    */
   getParameterById(parameterId: number): Observable<ParameterDto> {
     log.info('Fetching parameters for ID: ', parameterId);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
-    return this.http.get<ParameterDto>(`/${this.baseUrl}/setups/parameters/${parameterId}`);
+    return this.api.GET<ParameterDto>(
+      `parameters/${parameterId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -96,13 +109,13 @@ export class ParameterService {
    * @param parameter {ParameterDto} - parameter to be created
    * @returns {Observable<ParameterDto>} - created parameter
    */
-  createParameter(parameter: ParameterDto): Observable<ParameterDto>{
+  createParameter(parameter: ParameterDto): Observable<ParameterDto> {
     log.info('Saving new parameter ', parameter.name);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.post<ParameterDto>(`/${this.baseUrl}/setups/parameters/`, JSON.stringify(parameter), {headers:headers});
+    return this.api.POST<ParameterDto>(
+      `parameters/`,
+      JSON.stringify(parameter),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -110,16 +123,15 @@ export class ParameterService {
    * @param updatedParameter {ParameterDto} - parameter to be updated
    * @returns {Observable<ParameterDto>} - updated parameter
    */
-  updateParameter(updatedParameter: ParameterDto): Observable<ParameterDto>{
+  updateParameter(updatedParameter: ParameterDto): Observable<ParameterDto> {
     log.info('Updating parameter ', updatedParameter.name);
 
     let parameterId = updatedParameter.id;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
-    return this.http.put<ParameterDto>(`/${this.baseUrl}/setups/parameters/${parameterId}`, JSON.stringify(updatedParameter), {headers:headers});
+    return this.api.PUT<ParameterDto>(
+      `parameters/${parameterId}`,
+      JSON.stringify(updatedParameter),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -129,11 +141,10 @@ export class ParameterService {
    */
   deleteParameter(parameterId: number): Observable<ParameterDto> {
     log.info('Deleting parameter ', parameterId);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
 
-    return this.http.delete<ParameterDto>(`/${this.baseUrl}/setups/parameters/${parameterId}`, {headers:headers});
+    return this.api.DELETE<ParameterDto>(
+      `parameters/${parameterId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 }

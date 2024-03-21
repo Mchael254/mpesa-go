@@ -10,7 +10,6 @@
 import { API_CONFIG } from './api_service_config';
 
 export const environment = {
-
   production: false,
   dmsDefaultUrl: 'http://10.176.18.101:9080/alfrescoServices',
   API_URLS: new Map<API_CONFIG, string>([
@@ -24,11 +23,14 @@ export const environment = {
     // [API_CONFIG.UNDERWRITING_SERVICE_BASE_URL, 'http://10.176.18.211:5003'],
     [API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL, '/crm/setups'],
 
-
     [API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL, '/crm/accounts'],
-    [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
-    // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
-    [API_CONFIG.NOTIFICATION_BASE_URL, 'http://10.176.18.211:1025/notification/api'],
+    [API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL, '/user/administration'],
+    // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
+    [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
+    [
+      API_CONFIG.NOTIFICATION_BASE_URL,
+      'http://10.176.18.211:1025/notification/api',
+    ],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
@@ -36,8 +38,9 @@ export const environment = {
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups/api/v1'],
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
-    [API_CONFIG.DMS_SERVICE, '/alfrescoServices']
-
+    [API_CONFIG.DMS_SERVICE, '/alfrescoServices'][
+      (API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation')
+    ],
+    [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
   ]),
-
 };
