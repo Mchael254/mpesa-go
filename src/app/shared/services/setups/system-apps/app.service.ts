@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+
+import { ApiService } from '../../api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 /**
  * Service class to get the list of apps/systems
@@ -11,7 +12,6 @@ import { AppConfigService } from 'src/app/core/config/app-config-service';
   providedIn: 'root',
 })
 export class AppService {
-
   apps = [
     {
       'card-body-class': 'appStore',
@@ -87,27 +87,25 @@ export class AppService {
     // },
   ];
 
-  constructor(
-    private appConfig: AppConfigService,
-    private http: HttpClient
-  ) { }
+  constructor(private api: ApiService) {}
 
   /**
    * Returns the list of apps/systems
    */
-  getApps(): Observable<App[]>{
-      // return this.apps;
-      const baseUrl =  this.appConfig.config.contextPath.setup_services;
-      return this.http.get<App[]>(`/${baseUrl}/setups/systems?organizationId=2`)
+  getApps(): Observable<App[]> {
+    // return this.apps;
+    return this.api.GET<App[]>(
+      `systems?organizationId=2`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
-
 }
 
 export interface App {
-  id: number,
-  shortDesc: string,
-  systemName: string,
-  desc?: string,
-  imageSrc?: string,
-  clicked?: boolean,
+  id: number;
+  shortDesc: string;
+  systemName: string;
+  desc?: string;
+  imageSrc?: string;
+  clicked?: boolean;
 }

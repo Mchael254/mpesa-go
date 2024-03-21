@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../../core/config/app-config-service';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
+
 import { Logger } from '../../logger/logger.service';
 import {
   OccupationDTO,
   OccupationSectorDTO,
 } from '../../../data/common/occupation-dto';
+import { ApiService } from '../../api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 const log = new Logger('OccupationService');
 
@@ -18,9 +20,7 @@ const log = new Logger('OccupationService');
   providedIn: 'root',
 })
 export class OccupationService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private appConfig: AppConfigService, private http: HttpClient) {}
+  constructor(private api: ApiService) {}
 
   /**
    * Get all occupations for a given organization.
@@ -29,63 +29,44 @@ export class OccupationService {
    */
   getOccupations(organizationId: number): Observable<OccupationDTO[]> {
     log.info('Fetching Occupations');
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams().set('organizationId', `${organizationId}`);
 
-    return this.http.get<OccupationDTO[]>(
-      `/${this.baseUrl}/setups/occupations`,
-      { headers: header, params: params }
+    return this.api.GET<OccupationDTO[]>(
+      `occupations`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   getOccupationById(occupationId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<OccupationDTO>(
-      `/${this.baseUrl}/setups/occupations/${occupationId}`,
-      { headers: headers }
+    return this.api.GET<OccupationDTO>(
+      `occupations/${occupationId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOccupationBySectorId(sectorId: number): Observable<OccupationDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<OccupationDTO[]>(
-      `/${this.baseUrl}/setups/occupations/${sectorId}/occupations`,
-      { headers: headers }
+    return this.api.GET<OccupationDTO[]>(
+      `occupations/${sectorId}/occupations`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   createOccupation(data: OccupationDTO): Observable<OccupationDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<OccupationDTO>(
-      `/${this.baseUrl}/setups/occupations`,
+    return this.api.POST<OccupationDTO>(
+      `occupations`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   createAssignOcuupation(
     data: OccupationSectorDTO
   ): Observable<OccupationSectorDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<OccupationSectorDTO>(
-      `/${this.baseUrl}/setups/occupations/assignOccupation`,
+    return this.api.POST<OccupationSectorDTO>(
+      `occupations/assignOccupation`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -93,36 +74,24 @@ export class OccupationService {
     occupationId: number,
     data: OccupationDTO
   ): Observable<OccupationDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<OccupationDTO>(
-      `/${this.baseUrl}/setups/occupations/${occupationId}`,
+    return this.api.PUT<OccupationDTO>(
+      `occupations/${occupationId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOccupation(occupationId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OccupationDTO>(
-      `/${this.baseUrl}/setups/occupations/${occupationId}`,
-      { headers: headers }
+    return this.api.DELETE<OccupationDTO>(
+      `occupations/${occupationId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deactivateAssignOccupation(occupationId: number, sectorId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OccupationDTO>(
-      `/${this.baseUrl}/setups/occupations/${sectorId}/${occupationId}`,
-      { headers: headers }
+    return this.api.DELETE<OccupationDTO>(
+      `occupations/${sectorId}/${occupationId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }

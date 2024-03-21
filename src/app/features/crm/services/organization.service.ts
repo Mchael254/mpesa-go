@@ -1,8 +1,7 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-import { AppConfigService } from '../../../core/config/app-config-service';
 import {
   BranchContactDTO,
   BranchDivisionDTO,
@@ -16,6 +15,8 @@ import {
   YesNoDTO,
 } from '../data/organization-dto';
 import { UtilService } from '../../../shared/services';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root',
@@ -30,14 +31,7 @@ export class OrganizationService {
   private selectedRegionSource = new BehaviorSubject<number | null>(null);
   selectedRegion$ = this.selectedRegionSource.asObservable();
 
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-  accountsBaseUrl = this.appConfig.config.contextPath.accounts_services;
-
-  constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
-    private utilService: UtilService
-  ) {}
+  constructor(private utilService: UtilService, private api: ApiService) {}
 
   setSelectedOrganizationId(organizationId: number) {
     this.selectedOrganizationIdSource.next(organizationId);
@@ -48,49 +42,36 @@ export class OrganizationService {
   }
 
   getOptionValues(): Observable<YesNoDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<YesNoDTO[]>(
-      `/${this.baseUrl}/setups/system-definitions/yes-no-options`,
-      {
-        headers: headers,
-      }
+    return this.api.GET<YesNoDTO[]>(
+      `system-definitions/yes-no-options`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganization(): Observable<OrganizationDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<OrganizationDTO[]>(
-      `/${this.baseUrl}/setups/organizations`,
-      { headers: headers }
+    return this.api.GET<OrganizationDTO[]>(
+      `organizations`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   createOrganization(
     data: PostOrganizationDTO
   ): Observable<PostOrganizationDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<PostOrganizationDTO>(
-      `/${this.baseUrl}/setups/organizations`,
-      JSON.stringify(data),
-      { headers: headers }
+    return this.api.POST<PostOrganizationDTO>(
+      `organizations`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   uploadLogo(organizationId: number, file: File) {
     let form = new FormData();
     form.append('file', file, file.name);
-    return this.http.post<any>(
-      `/${this.baseUrl}/setups/organizations/${organizationId}/update-logo`,
-      form
+    return this.api.POST<any>(
+      `organizations/${organizationId}/update-logo`,
+      form,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -98,56 +79,38 @@ export class OrganizationService {
     organizationId: number,
     data: PostOrganizationDTO
   ): Observable<PostOrganizationDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<PostOrganizationDTO>(
-      `/${this.baseUrl}/setups/organizations/${organizationId}`,
+    return this.api.PUT<PostOrganizationDTO>(
+      `organizations/${organizationId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganization(organizationId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OrganizationDTO>(
-      `/${this.baseUrl}/setups/organizations/${organizationId}`,
-      { headers: headers }
+    return this.api.DELETE<OrganizationDTO>(
+      `organizations/${organizationId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganizationDivision(
     organizationId: number
   ): Observable<OrganizationDivisionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('organizationId', `${organizationId}`);
-    return this.http.get<OrganizationDivisionDTO[]>(
-      `/${this.baseUrl}/setups/divisions`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<OrganizationDivisionDTO[]>(
+      `divisions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createOrganizationDivision(
     data: OrganizationDivisionDTO
   ): Observable<OrganizationDivisionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<OrganizationDivisionDTO>(
-      `/${this.baseUrl}/setups/divisions`,
-      JSON.stringify(data),
-      { headers: headers }
+    return this.api.POST<OrganizationDivisionDTO>(
+      `divisions`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -155,56 +118,38 @@ export class OrganizationService {
     divisionId: number,
     data: OrganizationDivisionDTO
   ): Observable<OrganizationDivisionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<OrganizationDivisionDTO>(
-      `/${this.baseUrl}/setups/divisions/${divisionId}`,
+    return this.api.PUT<OrganizationDivisionDTO>(
+      `divisions/${divisionId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganizationDivision(divisionId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OrganizationDivisionDTO>(
-      `/${this.baseUrl}/setups/divisions/${divisionId}`,
-      { headers: headers }
+    return this.api.DELETE<OrganizationDivisionDTO>(
+      `divisions/${divisionId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganizationRegion(
     organizationId: number
   ): Observable<OrganizationRegionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('organizationId', `${organizationId}`);
-    return this.http.get<OrganizationRegionDTO[]>(
-      `/${this.baseUrl}/setups/regions`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<OrganizationRegionDTO[]>(
+      `regions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createOrganizationRegion(
     data: PostOrganizationRegionDTO
   ): Observable<PostOrganizationRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<PostOrganizationRegionDTO>(
-      `/${this.baseUrl}/setups/regions`,
-      JSON.stringify(data),
-      { headers: headers }
+    return this.api.POST<PostOrganizationRegionDTO>(
+      `regions`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -212,57 +157,37 @@ export class OrganizationService {
     regionId: number,
     data: PostOrganizationRegionDTO
   ): Observable<PostOrganizationRegionDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<PostOrganizationRegionDTO>(
-      `/${this.baseUrl}/setups/regions/${regionId}`,
+    return this.api.PUT<PostOrganizationRegionDTO>(
+      `regions/${regionId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganizationRegion(regionId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OrganizationDivisionDTO>(
-      `/${this.baseUrl}/setups/regions/${regionId}`,
-      { headers: headers }
+    return this.api.DELETE<OrganizationDivisionDTO>(
+      `regions/${regionId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getRegionManagers(organizationId: number): Observable<ManagersDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('organizationId', `${organizationId}`);
 
-    return this.http.get<ManagersDTO[]>(
-      `/${this.accountsBaseUrl}/accounts/region-managers`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<ManagersDTO[]>(
+      `region-managers`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
     );
   }
 
   getBranchManagers(organizationId: number): Observable<ManagersDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('organizationId', `${organizationId}`);
 
-    return this.http.get<ManagersDTO[]>(
-      `/${this.accountsBaseUrl}/accounts/branch-managers`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<ManagersDTO[]>(
+      `branch-managers`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
     );
   }
 
@@ -270,34 +195,24 @@ export class OrganizationService {
     organizationId: number,
     regionId: number
   ): Observable<OrganizationBranchDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams()
       .set('organizationId', `${organizationId}`)
       .set('regionId', `${regionId}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    return this.http.get<OrganizationBranchDTO[]>(
-      `/${this.baseUrl}/setups/branches`,
-      {
-        headers: headers,
-        params: paramObject,
-      }
+    return this.api.GET<OrganizationBranchDTO[]>(
+      `branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      paramObject
     );
   }
 
   createOrganizationBranch(
     data: OrganizationBranchDTO
   ): Observable<OrganizationBranchDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<OrganizationBranchDTO>(
-      `/${this.baseUrl}/setups/branches`,
-      JSON.stringify(data),
-      { headers: headers }
+    return this.api.POST<OrganizationBranchDTO>(
+      `branches`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -305,51 +220,35 @@ export class OrganizationService {
     branchId: number,
     data: OrganizationBranchDTO
   ): Observable<OrganizationBranchDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<OrganizationBranchDTO>(
-      `/${this.baseUrl}/setups/branches/${branchId}`,
+    return this.api.PUT<OrganizationBranchDTO>(
+      `branches/${branchId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganizationBranch(branchId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<OrganizationBranchDTO>(
-      `/${this.baseUrl}/setups/branches/${branchId}`,
-      { headers: headers }
+    return this.api.DELETE<OrganizationBranchDTO>(
+      `branches/${branchId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganizationBranchDivision(
     branchId: number
   ): Observable<BranchDivisionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<BranchDivisionDTO[]>(
-      `/${this.baseUrl}/setups/branches/${branchId}/divisions`,
-      { headers: headers }
+    return this.api.GET<BranchDivisionDTO[]>(
+      `branches/${branchId}/divisions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganizationUnassignedBranchDivision(
     branchId: number
   ): Observable<OrganizationDivisionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<OrganizationDivisionDTO[]>(
-      `/${this.baseUrl}/setups/branches/${branchId}/unassigned-divisions`,
-      { headers: headers }
+    return this.api.GET<OrganizationDivisionDTO[]>(
+      `branches/${branchId}/unassigned-divisions`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -357,14 +256,10 @@ export class OrganizationService {
     branchId: number,
     data: BranchDivisionDTO
   ): Observable<BranchDivisionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BranchDivisionDTO[]>(
-      `/${this.baseUrl}/setups/branches/${branchId}/divisions`,
+    return this.api.POST<BranchDivisionDTO[]>(
+      `branches/${branchId}/divisions`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -373,56 +268,38 @@ export class OrganizationService {
     data: BranchDivisionDTO,
     branchId: number
   ): Observable<BranchDivisionDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BranchDivisionDTO[]>(
-      `/${this.baseUrl}/setups/branches/${branchDivisionId}/divisions/${branchId}`,
+    return this.api.PUT<BranchDivisionDTO[]>(
+      `/branches/${branchDivisionId}/divisions/${branchId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganizationBranchDivision(branchDivisionId: number, branchId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BranchContactDTO>(
-      `/${this.baseUrl}/setups/branches/${branchId}/divisions/${branchDivisionId}`,
-      { headers: headers }
+    return this.api.DELETE<BranchContactDTO>(
+      `branches/${branchId}/divisions/${branchDivisionId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getOrganizationBranchContact(
     branchId: number
   ): Observable<BranchContactDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const params = new HttpParams().set('branchId', `${branchId}`);
-    return this.http.get<BranchContactDTO[]>(
-      `/${this.baseUrl}/setups/branch-contacts`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<BranchContactDTO[]>(
+      `branch-contacts`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createOrganizationBranchContact(
     data: BranchContactDTO
   ): Observable<BranchContactDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<BranchContactDTO>(
-      `/${this.baseUrl}/setups/branch-contacts`,
+    return this.api.POST<BranchContactDTO>(
+      `branch-contacts`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -430,25 +307,17 @@ export class OrganizationService {
     branchId: number,
     data: BranchContactDTO
   ): Observable<BranchContactDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<BranchContactDTO>(
-      `/${this.baseUrl}/setups/branch-contacts/${branchId}`,
+    return this.api.PUT<BranchContactDTO>(
+      `branch-contacts/${branchId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteOrganizationBranchContact(branchId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<BranchContactDTO>(
-      `/${this.baseUrl}/setups/branch-contacts/${branchId}`,
-      { headers: headers }
+    return this.api.DELETE<BranchContactDTO>(
+      `branch-contacts/${branchId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Logger } from '../../logger/logger.service';
-import { isObservable, of } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { AppConfigService } from '../../../../core/config/app-config-service';
+import { HttpParams } from '@angular/common/http';
+
 import { ClientTypeDTO } from 'src/app/shared/data/common/client-type';
 import { ApiService } from '../../api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 const log = new Logger('ClientTypeService');
 
@@ -13,17 +13,10 @@ const log = new Logger('ClientTypeService');
   providedIn: 'root',
 })
 export class ClientTypeService {
-  baseUrl = this.appConfig.config.contextPath.accounts_services;
-
-  constructor(
-    private appConfig: AppConfigService,
-    private http: HttpClient,
-    private api: ApiService
-  ) {}
+  constructor(private api: ApiService) {}
 
   getClientypeList(): { id: number; description: string }[] {
     log.info('Fetching Client Type');
-    // return this.http.get<CountryDto[]>(`/${this.baseUrl}/setups/countries`);
     return [
       { id: 1, description: 'Corporate' },
       { id: 2, description: 'Individual' },
@@ -31,14 +24,16 @@ export class ClientTypeService {
   }
   getClientTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
-    return this.http.get<any[]>(
-      `/${this.baseUrl}/client-types?organizationId=2`
+    return this.api.GET<any[]>(
+      `client-types?organizationId=2`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
   getIdentifierTypes(): Observable<any[]> {
     log.info('Fetching Client Types');
-    return this.http.get<any[]>(
-      `/${this.baseUrl}/identity-modes?organizationId=2`
+    return this.api.GET<any[]>(
+      `identity-modes?organizationId=2`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 
@@ -52,11 +47,6 @@ export class ClientTypeService {
     organizationId?: number,
     type?: string
   ): Observable<ClientTypeDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     if (name) {
@@ -86,21 +76,18 @@ export class ClientTypeService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/client-types`, {
-      headers: headers,
-      params: params,
-    });
+    return this.api.GET<ClientTypeDTO[]>(
+      `client-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   createClientType(data: ClientTypeDTO): Observable<ClientTypeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<ClientTypeDTO>(
-      `/${this.baseUrl}/client-types`,
+    return this.api.POST<ClientTypeDTO>(
+      `client-types`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -108,25 +95,17 @@ export class ClientTypeService {
     clientTypeCode: number,
     data: ClientTypeDTO
   ): Observable<ClientTypeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<ClientTypeDTO>(
-      `/${this.baseUrl}/client-types/${clientTypeCode}`,
+    return this.api.PUT<ClientTypeDTO>(
+      `client-types/${clientTypeCode}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 
   deleteClientType(clientTypeCode: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<ClientTypeDTO>(
-      `/${this.baseUrl}/client-types/${clientTypeCode}`,
-      { headers: headers }
+    return this.api.DELETE<ClientTypeDTO>(
+      `client-types/${clientTypeCode}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 }

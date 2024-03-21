@@ -1,40 +1,27 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../core/config/app-config-service';
-import { StatusDTO } from '../../data/common/systemsDto';
 import { Observable } from 'rxjs';
+
+import { StatusDTO } from '../../data/common/systemsDto';
+import { ApiService } from '../api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StatusService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService) {}
+  constructor(private api: ApiService) {}
 
   getStatus(): Observable<StatusDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<StatusDTO[]>(
-      `/${this.baseUrl}/setups/system-definitions/active-inactive-status`,
-      {
-        headers: headers,
-      }
+    return this.api.GET<StatusDTO[]>(
+      `system-definitions/active-inactive-status`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getDivisionStatus(): Observable<StatusDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.get<StatusDTO[]>(
-      `/${this.baseUrl}/setups/division-statuses`,
-      {
-        headers: headers,
-      }
+    return this.api.GET<StatusDTO[]>(
+      `division-statuses`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }
