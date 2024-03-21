@@ -1,35 +1,50 @@
-import {Injectable, signal} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {UtilService} from "../../../../shared/services";
-import {BehaviorSubject, Observable} from "rxjs";
-import {Pagination} from "../../../../shared/data/common/pagination";
-import {AssignAppsDto, AssignAppsRequest, CreateStaffDto, StaffDto, StaffResDto} from "../../data/StaffDto";
-import {CreateAccountDTO, NewAccountCreatedResponse} from "../../data/accountDTO";
-import {AuthService} from "../../../../shared/services/auth.service";
-import {AppConfigService} from "../../../../core/config/app-config-service";
-import {AccountReqPartyId} from "../../data/entityDto";
+import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+import { UtilService } from '../../../../shared/services';
+import { Pagination } from '../../../../shared/data/common/pagination';
+import {
+  AssignAppsDto,
+  AssignAppsRequest,
+  CreateStaffDto,
+  StaffDto,
+  StaffResDto,
+} from '../../data/StaffDto';
+import {
+  CreateAccountDTO,
+  NewAccountCreatedResponse,
+} from '../../data/accountDTO';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StaffService {
-  baseStaffUrl = this.appConfig.config.contextPath.users_services;
-  baseAccountsUrl = this.appConfig.config.contextPath.accounts_services;
-
-  private newStaffAccount = new BehaviorSubject<CreateStaffDto>({granterUserId: 0, organizationGroupId: 0, otherPhone: 0, userType: "", username: ""});
+  private newStaffAccount = new BehaviorSubject<CreateStaffDto>({
+    granterUserId: 0,
+    organizationGroupId: 0,
+    otherPhone: 0,
+    userType: '',
+    username: '',
+  });
   newStaffObservable = this.newStaffAccount.asObservable();
 
-  constructor(private appConfig: AppConfigService, private http: HttpClient,
-              private utilService: UtilService,private authService: AuthService) { }
+  constructor(
+    private utilService: UtilService,
+    private authService: AuthService,
+    private api: ApiService
+  ) {}
 
   /**
    * Set new staff account observable
    * @param newStaffAccount
    */
-  setNewStaffAccount(newStaffAccount: CreateStaffDto){
+  setNewStaffAccount(newStaffAccount: CreateStaffDto) {
     this.newStaffAccount.next(newStaffAccount);
   }
-
 
   /**
    * Method to fetch staff data
@@ -49,10 +64,6 @@ export class StaffService {
     order: string = 'desc',
     supervisor: number
   ): Observable<Pagination<StaffDto>> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
@@ -64,10 +75,11 @@ export class StaffService {
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`, {
-      headers: header,
-      params: paramObject,
-    });
+    return this.api.GET<Pagination<StaffDto>>(
+      `users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+      paramObject
+    );
   }
 
   /**
@@ -76,7 +88,10 @@ export class StaffService {
    * @returns {Observable<StaffDto>}
    */
   getStaffById(id: number): Observable<StaffDto> {
-    return this.http.get<StaffDto>(`/${this.baseStaffUrl}/administration/users/` + id);
+    return this.api.GET<StaffDto>(
+      `administration/users/${id}`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -84,13 +99,15 @@ export class StaffService {
    * @param {CreateAccountDTO} staffAccount - staff account data
    * @returns {Observable<NewAccountCreatedResponse>} - newly created staff account data
    */
-  createUserAccount(staffAccount: CreateAccountDTO): Observable<NewAccountCreatedResponse> {
+  createUserAccount(
+    staffAccount: CreateAccountDTO
+  ): Observable<NewAccountCreatedResponse> {
     const userData = JSON.stringify(staffAccount);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<NewAccountCreatedResponse>(`/${this.baseAccountsUrl}/accounts`, userData, {headers});
+    return this.api.POST<NewAccountCreatedResponse>(
+      `accounts`,
+      userData,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -99,13 +116,15 @@ export class StaffService {
    * @param assignedSystems - assigned apps
    * @returns {Observable<AssignAppsDto[]>} - assigned apps
    */
-  assignUserSystemApps(userId: number, assignedSystems: AssignAppsRequest): Observable<AssignAppsDto[]>{
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    // let assignedSystems = JSON.stringify(assignedSystems);
-    return this.http.post<AssignAppsDto[]>(`/${this.baseStaffUrl}/administration/users/${userId}/systems`, JSON.stringify(assignedSystems), {headers});
+  assignUserSystemApps(
+    userId: number,
+    assignedSystems: AssignAppsRequest
+  ): Observable<AssignAppsDto[]> {
+    return this.api.POST<AssignAppsDto[]>(
+      `users/${userId}/systems`,
+      JSON.stringify(assignedSystems),
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
   }
 
   /**
@@ -124,13 +143,8 @@ export class StaffService {
     userType: string,
     name: string,
     groupId: number = 1,
-    username: string = null,
+    username: string = null
   ): Observable<Pagination<StaffDto>> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
-
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
@@ -141,10 +155,11 @@ export class StaffService {
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`, {
-      headers: header,
-      params: paramObject,
-    });
+    return this.api.GET<Pagination<StaffDto>>(
+      `users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+      paramObject
+    );
   }
 
   /**
@@ -161,17 +176,12 @@ export class StaffService {
     size: number | null = 5,
     userType: string,
     sortList: string = 'dateCreated',
-    order: string = 'desc',
+    order: string = 'desc'
   ): Observable<Pagination<StaffResDto>> {
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    });
     const loggedInUser = this.authService.getCurrentUser();
-    let id:number;
+    let id: number;
     if (this.utilService.isUserAdmin(loggedInUser)) {
       id = loggedInUser.id;
-
     }
     const supervisor = id;
     const params = new HttpParams()
@@ -184,13 +194,12 @@ export class StaffService {
       .set('supervisor', `${supervisor}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    // log.info('Page selected: ', page);
-    // log.info('Staff Params object', paramObject);
 
-    return this.http.get<Pagination<StaffDto>>(`/${this.baseStaffUrl}/administration/users`, {
-      headers: header,
-      params: paramObject,
-    });
+    return this.api.GET<Pagination<StaffDto>>(
+      `users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+      paramObject
+    );
   }
 
   /**
@@ -198,11 +207,10 @@ export class StaffService {
    * @param staffGroupId - staff group id
    * @returns {Observable<StaffDto[]>} - staff data
    */
-  getStaffByGroup(staffGroupId: number): Observable<StaffDto[]>{
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.get<StaffDto[]>(`/${this.baseStaffUrl}/administration/user-groups/${staffGroupId}/users`);
+  getStaffByGroup(staffGroupId: number): Observable<StaffDto[]> {
+    return this.api.GET<StaffDto[]>(
+      `user-groups/${staffGroupId}/users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
   }
 }

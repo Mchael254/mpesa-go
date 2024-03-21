@@ -1,75 +1,53 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../core/config/app-config-service';
 import { Observable } from 'rxjs';
 import { UserParameterDTO } from '../data/user-parameter-dto';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ParameterService {
+  constructor(private api: ApiService) {}
 
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-
-  constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
-  ) { }
-
-  // getParameter(name: string, organizationId: number): Observable<UserParameterDTO[]> {
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json'
-  //   });
-  //   const params = new HttpParams()
-  //     .set('name', `${name}`)
-  //     .set('organizationId', `${organizationId}`);
-  //   return this.http.get<UserParameterDTO[]>(`/${this.baseUrl}/setups/parameters`
-  //     , {
-  //       headers: headers,
-  //       params: params
-  //     });
-  // }
-
-  getParameter(name?: string, organizationId?: number): Observable<UserParameterDTO[]> {
-    const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    });
-
+  getParameter(
+    name?: string,
+    organizationId?: number
+  ): Observable<UserParameterDTO[]> {
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     if (name) {
-        paramsObj['name'] = name;
+      paramsObj['name'] = name;
     }
     if (organizationId !== undefined && organizationId !== null) {
-        paramsObj['organizationId'] = organizationId.toString();
+      paramsObj['organizationId'] = organizationId.toString();
     }
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.http.get<UserParameterDTO[]>(`/${this.baseUrl}/setups/parameters`, {
-        headers: headers,
-        params: params
-    }); 
+    return this.api.GET<UserParameterDTO[]>(
+      `parameters`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
   }
 
-   updateParameter(parameterId: number, data: UserParameterDTO): Observable<UserParameterDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<UserParameterDTO>(`/${this.baseUrl}/setups/parameters/${parameterId}`,
-      data, { headers: headers })
+  updateParameter(
+    parameterId: number,
+    data: UserParameterDTO
+  ): Observable<UserParameterDTO> {
+    return this.api.PUT<UserParameterDTO>(
+      `parameters/${parameterId}`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   deleteParameter(parameterId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<UserParameterDTO>(`/${this.baseUrl}/setups/parameters/${parameterId}`,
-      { headers: headers });
+    return this.api.DELETE<UserParameterDTO>(
+      `parameters/${parameterId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
-
 }

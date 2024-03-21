@@ -1,11 +1,13 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../core/config/app-config-service';
 import { Observable, combineLatest, map, of } from 'rxjs';
+
 import { AssignedToDTO, RequiredDocumentDTO } from '../data/required-document';
 import { AccountTypeDTO } from '../../entities/data/AgentDTO';
 import { ProviderTypeDto } from '../../entities/data/ServiceProviderDTO';
 import { ClientTypeDTO } from '../../entities/data/ClientDTO';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 interface DropdownItem {
   label: string;
@@ -16,19 +18,11 @@ interface DropdownItem {
   providedIn: 'root',
 })
 export class RequiredDocumentsService {
-  baseUrl = this.appConfig.config.contextPath.setup_services;
-  baseAccUrl = this.appConfig.config.contextPath.accounts_services;
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService) {}
+  constructor(private api: ApiService) {}
 
   getRequiredDocuments(
     organizationId?: number
   ): Observable<RequiredDocumentDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
     const paramsObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
       paramsObj['organizationId'] = organizationId.toString();
@@ -36,26 +30,20 @@ export class RequiredDocumentsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.http.get<RequiredDocumentDTO[]>(
-      `/${this.baseUrl}/setups/required-documents`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<RequiredDocumentDTO[]>(
+      `required-documents`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createRequiredDocument(
     data: RequiredDocumentDTO
   ): Observable<RequiredDocumentDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<RequiredDocumentDTO>(
-      `/${this.baseUrl}/setups/required-documents`,
+    return this.api.POST<RequiredDocumentDTO>(
+      `required-documents`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -63,41 +51,26 @@ export class RequiredDocumentsService {
     documentId: number,
     data: RequiredDocumentDTO
   ): Observable<RequiredDocumentDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<RequiredDocumentDTO>(
-      `/${this.baseUrl}/setups/required-documents/${documentId}`,
+    return this.api.PUT<RequiredDocumentDTO>(
+      `required-documents/${documentId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteRequiredDocument(documentId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<RequiredDocumentDTO>(
-      `/${this.baseUrl}/setups/required-documents/${documentId}`,
-      { headers: headers }
+    return this.api.DELETE<RequiredDocumentDTO>(
+      `required-documents/${documentId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getRequiredDocumentAssignments(
     requiredDocumentId: number
   ): Observable<AssignedToDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
-    return this.http.get<AssignedToDTO[]>(
-      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments`,
-      {
-        headers: headers,
-      }
+    return this.api.GET<AssignedToDTO[]>(
+      `required-documents/${requiredDocumentId}/assignments`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -105,14 +78,10 @@ export class RequiredDocumentsService {
     data: AssignedToDTO,
     requiredDocumentId: number
   ): Observable<AssignedToDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<AssignedToDTO>(
-      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments`,
+    return this.api.POST<AssignedToDTO>(
+      `required-documents/${requiredDocumentId}/assignments`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -121,14 +90,10 @@ export class RequiredDocumentsService {
     data: AssignedToDTO,
     requiredDocumentId: number
   ): Observable<AssignedToDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<AssignedToDTO>(
-      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
+    return this.api.PUT<AssignedToDTO>(
+      `required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -136,32 +101,25 @@ export class RequiredDocumentsService {
     requiredDocAssignmentId: number,
     requiredDocumentId: number
   ) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<AssignedToDTO>(
-      `/${this.baseUrl}/setups/required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
-      { headers: headers }
+    return this.api.DELETE<AssignedToDTO>(
+      `required-documents/${requiredDocumentId}/assignments/${requiredDocAssignmentId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   getAgentAccountType(organizationId?: number): Observable<DropdownItem[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
     const paramsObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
       paramsObj['organizationId'] = organizationId.toString();
     }
 
     const params = new HttpParams({ fromObject: paramsObj });
-    return this.http
-      .get<AccountTypeDTO[]>(`/${this.baseAccUrl}/account-types`, {
-        headers: headers,
-        params: params,
-      })
+    return this.api
+      .GET<AccountTypeDTO[]>(
+        `account-types`,
+        API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+        params
+      )
       .pipe(
         map((data) =>
           data.map((item) => ({
@@ -173,14 +131,11 @@ export class RequiredDocumentsService {
   }
 
   getServiceProviderType(): Observable<DropdownItem[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http
-      .get<ProviderTypeDto[]>(`/${this.baseAccUrl}/service-provider-types`, {
-        headers: headers,
-      })
+    return this.api
+      .GET<ProviderTypeDto[]>(
+        `service-provider-types`,
+        API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+      )
       .pipe(
         map((data) =>
           data.map((item) => ({
@@ -192,11 +147,6 @@ export class RequiredDocumentsService {
   }
 
   getClientsType(organizationId?: number): Observable<DropdownItem[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
     const paramsObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
       paramsObj['organizationId'] = organizationId.toString();
@@ -204,11 +154,12 @@ export class RequiredDocumentsService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.http
-      .get<ClientTypeDTO[]>(`/${this.baseAccUrl}/client-types`, {
-        headers: headers,
-        params: params,
-      })
+    return this.api
+      .GET<ClientTypeDTO[]>(
+        `client-types`,
+        API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+        params
+      )
       .pipe(
         map((data) =>
           data.map((item) => ({

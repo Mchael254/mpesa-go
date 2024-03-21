@@ -1,27 +1,21 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../core/config/app-config-service';
 import { Observable } from 'rxjs';
 import { ServiceProviderTypeDTO } from '../data/service-provider-type';
+import { ApiService } from '../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../environments/api_service_config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServiceProviderTypesService {
-  baseUrl = this.appConfig.config.contextPath.accounts_services;
-
-  constructor(private http: HttpClient, private appConfig: AppConfigService) {}
+  constructor(private api: ApiService) {}
 
   getServiceProviderTypes(
     name?: string,
     shortDescription?: string,
     status?: string
   ): Observable<ServiceProviderTypeDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
     // Create an object to hold parameters only if they are provided
     const paramsObj: { [param: string]: string } = {};
     if (name) {
@@ -36,26 +30,20 @@ export class ServiceProviderTypesService {
 
     const params = new HttpParams({ fromObject: paramsObj });
 
-    return this.http.get<ServiceProviderTypeDTO[]>(
-      `/${this.baseUrl}/service-provider-types`,
-      {
-        headers: headers,
-        params: params,
-      }
+    return this.api.GET<ServiceProviderTypeDTO[]>(
+      `service-provider-types`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 
   createServiceProviderType(
     data: ServiceProviderTypeDTO
   ): Observable<ServiceProviderTypeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<ServiceProviderTypeDTO>(
-      `/${this.baseUrl}/service-provider-types`,
+    return this.api.POST<ServiceProviderTypeDTO>(
+      `service-provider-types`,
       JSON.stringify(data),
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
@@ -63,25 +51,17 @@ export class ServiceProviderTypesService {
     serviceProviderTypeId: number,
     data: ServiceProviderTypeDTO
   ): Observable<ServiceProviderTypeDTO> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.put<ServiceProviderTypeDTO>(
-      `/${this.baseUrl}/service-provider-types/${serviceProviderTypeId}`,
+    return this.api.PUT<ServiceProviderTypeDTO>(
+      `service-provider-types/${serviceProviderTypeId}`,
       data,
-      { headers: headers }
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
   deleteServiceProviderType(serviceProviderTypeId: number) {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.delete<ServiceProviderTypeDTO>(
-      `/${this.baseUrl}/service-provider-types/${serviceProviderTypeId}`,
-      { headers: headers }
+    return this.api.DELETE<ServiceProviderTypeDTO>(
+      `service-provider-types/${serviceProviderTypeId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }

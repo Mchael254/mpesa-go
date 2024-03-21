@@ -1,31 +1,22 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../../../../core/config/app-config-service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ProviderTypeDto, ServiceProviderDTO, ServiceProviderRes} from '../../data/ServiceProviderDTO';
-import { BankBranchDTO, BankDTO, CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
-import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
-import { MandatoryFieldsDTO } from 'src/app/shared/data/common/mandatory-fields-dto';
-import { ClientTitlesDto } from '../../data/ClientDTO';
-import { OccupationDTO } from 'src/app/shared/data/common/occupation-dto';
-import { IdentityModeDTO } from '../../data/entityDto';
-import { SectorDTO } from 'src/app/shared/data/common/sector-dto';
-import {UtilService} from "../../../../shared/services";
+import { HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
+import { Pagination } from '../../../../shared/data/common/pagination';
+import {
+  ProviderTypeDto,
+  ServiceProviderDTO,
+} from '../../data/ServiceProviderDTO';
+import { ClientTitlesDto } from '../../data/ClientDTO';
+import { UtilService } from '../../../../shared/services';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ServiceProviderService {
-
-  baseUrl = this.appConfig.config.contextPath.accounts_services;
-
-  constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
-    private utilService: UtilService
-  ) { }
+  constructor(private utilService: UtilService, private api: ApiService) {}
 
   getServiceProviders(
     page: number | null = 0,
@@ -33,105 +24,71 @@ export class ServiceProviderService {
     sortFields: string = 'createdDate',
     sortOrder: string = 'desc'
   ): Observable<Pagination<ServiceProviderDTO>> {
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('organizationId', 2) //TODO:Find proper way to fetch organization Id
       .set('sortListFields', `${sortFields}`)
-      .set('order', `${sortOrder}`)
+      .set('order', `${sortOrder}`);
 
-    return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/service-providers`,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<Pagination<ServiceProviderDTO>>(
+      `service-providers`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   searchServiceProviders(
     page: number,
     size: number = 5,
     columnName: string,
-    columnValue: string,
+    columnValue: string
   ): Observable<Pagination<ServiceProviderDTO>> {
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
       .set('organizationId', 2)
       .set('columnName', `${columnName}`)
-      .set('columnValue', `${columnValue}`)
+      .set('columnValue', `${columnValue}`);
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    return this.http.get<Pagination<ServiceProviderDTO>>(`/${this.baseUrl}/service-providers`,
-      {
-        headers: headers,
-        params: paramObject,
-      });
+    return this.api.GET<Pagination<ServiceProviderDTO>>(
+      `service-providers`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
   }
 
-  saveServiceProvider(serviceProviderData: ServiceProviderDTO): Observable<ServiceProviderDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-
-    return this.http.post<ServiceProviderDTO[]>(`/${this.baseUrl}/accounts`, JSON.stringify(serviceProviderData), {headers:headers})
-
+  saveServiceProvider(
+    serviceProviderData: ServiceProviderDTO
+  ): Observable<ServiceProviderDTO[]> {
+    return this.api.POST<ServiceProviderDTO[]>(
+      `accounts`,
+      JSON.stringify(serviceProviderData),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
-
 
   getClientTitles(): Observable<ClientTitlesDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<ClientTitlesDto[]>(`/${this.baseUrl}/client-titles`,
-      {
-        headers:headers,
-        params:params,
-      });
+    const params = new HttpParams().set('organizationId', 2);
+    return this.api.GET<ClientTitlesDto[]>(
+      `client-titles`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
-  // getIdentityType(): Observable<IdentityModeDTO[]> {
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/json',
-  //     'Accept': 'application/json'
-  //   });
-  //   const params = new HttpParams()
-  //     .set('organizationId', 2);
-  //   return this.http.get<IdentityModeDTO[]>(`/${this.baseUrl}/identity-modes`,
-  //     {
-  //       headers:headers,
-  //       params:params,
-  //     });
-  // }
 
   getServiceProviderType(): Observable<ProviderTypeDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.get<ProviderTypeDto[]>(`/${this.baseUrl}/service-provider-types`,{headers:headers});
+    return this.api.GET<ProviderTypeDto[]>(
+      `service-provider-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
-    /*Get a Service Provider by Id*/
-  getServiceProviderById(id: number){
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    return this.http.get(`/${this.baseUrl}/service-providers/${id}`,
-      {
-        headers: headers,
-      });
+  /*Get a Service Provider by Id*/
+  getServiceProviderById(id: number) {
+    return this.api.GET(
+      `service-providers/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 }

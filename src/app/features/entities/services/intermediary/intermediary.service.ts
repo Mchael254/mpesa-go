@@ -1,27 +1,24 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from "../../../../core/config/app-config-service";
-import {Observable} from "rxjs";
-import {Pagination} from "../../../../shared/data/common/pagination";
-import {AccountTypeDTO, AgentDTO, AgentPostDTO, IntermediaryDTO} from "../../data/AgentDTO";
-import {IdentityModeDTO} from "../../data/entityDto";
-import {environment} from "../../../../../environments/environment";
-import {UtilService} from "../../../../shared/services";
-import { SESSION_KEY } from '../../../../features/lms/util/session_storage_enum';
-import { StringManipulation } from '../../../../features/lms/util/string_manipulation';
-import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { Pagination } from '../../../../shared/data/common/pagination';
+import {
+  AccountTypeDTO,
+  AgentDTO,
+  AgentPostDTO,
+  IntermediaryDTO,
+} from '../../data/AgentDTO';
+import { IdentityModeDTO } from '../../data/entityDto';
+import { UtilService } from '../../../../shared/services';
+import { ApiService } from '../../../../shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../environments/api_service_config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class IntermediaryService {
-
-  constructor(
-    private http: HttpClient,
-    private appConfig: AppConfigService,
-    private utilService: UtilService,
-    private session_storage: SessionStorageService
-  ) { }
+  constructor(private utilService: UtilService, private api: ApiService) {}
 
   getAgents(
     page: number | null = 0,
@@ -29,12 +26,6 @@ export class IntermediaryService {
     sortList: string = 'createdDate',
     order: string = 'desc'
   ): Observable<Pagination<AgentDTO>> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
@@ -42,38 +33,26 @@ export class IntermediaryService {
       .set('sortListFields', `${sortList}`)
       .set('order', `${order}`);
 
-    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`,{
-      headers:headers,
-      params: params,
-    })
+    return this.api.GET<Pagination<AgentDTO>>(
+      `agents`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   getAgentById(id: number): Observable<AgentDTO> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
-    return this.http.get<AgentDTO>(`/${baseUrl}/agents/${id}`,{
-      headers:headers,
-    })
+    return this.api.GET<AgentDTO>(
+      `agents/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
   searchAgent(
     page: number = 0,
     size: number = 5,
     columnName: string = null,
-    columnValue: string = null,
+    columnValue: string = null
   ): Observable<Pagination<AgentDTO>> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const header = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
@@ -82,49 +61,36 @@ export class IntermediaryService {
       .set('columnValue', `${columnValue}`);
 
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-    return this.http.get<Pagination<AgentDTO>>(`/${baseUrl}/agents`, {
-      headers: header,
-      params: paramObject,
-    });
+    return this.api.GET<Pagination<AgentDTO>>(
+      `agents`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
   }
 
   getIdentityType(): Observable<IdentityModeDTO[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<IdentityModeDTO[]>(`/${baseUrl}/identity-modes`,
-      {
-        headers:headers,
-        params:params
-      })
+    const params = new HttpParams().set('organizationId', 2);
+    return this.api.GET<IdentityModeDTO[]>(
+      `identity-modes`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   getAccountType(): Observable<AccountTypeDTO[]> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<AccountTypeDTO[]>(`/${baseUrl}/account-types`,
-      {
-        headers:headers,
-        params:params
-      })
+    const params = new HttpParams().set('organizationId', 2);
+    return this.api.GET<AccountTypeDTO[]>(
+      `account-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   saveAgentDetails(data: AgentPostDTO): Observable<IntermediaryDTO> {
-    const baseUrl = this.appConfig.config.contextPath.accounts_services;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    });
-    return this.http.post<IntermediaryDTO>(`/${baseUrl}/accounts`, JSON.stringify(data), {headers:headers})
-
+    return this.api.POST<IntermediaryDTO>(
+      `accounts`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 }

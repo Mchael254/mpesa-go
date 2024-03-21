@@ -1,186 +1,149 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ClientBranchesDto, ClientDTO, ClientTypeDTO } from '../../data/ClientDTO';
-import {Pagination} from '../../../../shared/data/common/pagination'
-import {AppConfigService} from "../../../../core/config/app-config-service";
-import { environment } from '../../../../../environments/environment';
+
+import {
+  ClientBranchesDto,
+  ClientDTO,
+  ClientTypeDTO,
+} from '../../data/ClientDTO';
+import { Pagination } from '../../../../shared/data/common/pagination';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
-import {UtilService} from "../../../../shared/services";
-// import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { SESSION_KEY } from '../../../../features/lms/util/session_storage_enum';
-import { StringManipulation } from '../../../../features/lms/util/string_manipulation';
-import { SessionStorageService } from '../../../../shared/services/session-storage/session-storage.service';
+import { UtilService } from '../../../../shared/services';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClientService {
+  constructor(private api: ApiService, private utilService: UtilService) {}
 
-  baseUrl = this.appConfig.config.contextPath.accounts_services;
-  baseUrlSetups= this.appConfig.config.contextPath.setup_services;
-  headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json','X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),});
-
-  constructor(private http: HttpClient,
-    private appConfig: AppConfigService, private api: ApiService, private utilService: UtilService, private session_storage: SessionStorageService) { }
-    
   getClients(
-      page: number | null = 0,
-      size: number | null = 5,
-      sortField: string = 'createdDate',
-      order: string = 'desc'
-    ): Observable<Pagination<ClientDTO>> {
+    page: number | null = 0,
+    size: number | null = 5,
+    sortField: string = 'createdDate',
+    order: string = 'desc'
+  ): Observable<Pagination<ClientDTO>> {
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('organizationId', 2)
+      .set('sortListFields', `${sortField}`)
+      .set('order', `${order}`);
 
-      // const headers = new HttpHeaders({
-      //   'Content-Type': 'application/json',
-      //   'Accept': 'application/json',
-      // })
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-      });
-      const params = new HttpParams()
-        .set('page', `${page}`)
-        .set('size', `${size}`)
-        .set('organizationId', 2)
-        .set('sortListFields', `${sortField}`)
-        .set('order', `${order}`);        
-
-      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`,
-        {
-          headers: headers,
-          params: params,
-        });
-    }
+    return this.api.GET<Pagination<ClientDTO>>(
+      `clients`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
+  }
 
   getAgents(
-      page: number | null = 0,
-      size: number | null = 10,
-      sortField: string = 'createdDate',
-      order: string = 'desc'
-    ): Observable<Pagination<any>> {
-
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      })
-      const params = new HttpParams()
-        .set('page', `${page}`)
-        .set('size', `${size}`)
-        .set('organizationId', 2)
-        .set('sortListFields', `${sortField}`)
-        .set('order', `${order}`);
-
-      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/agents`,
-
-        {
-          headers: headers,
-          params: params,
-        });
-  }
-
-  getAgentById(agent_code: any
+    page: number | null = 0,
+    size: number | null = 10,
+    sortField: string = 'createdDate',
+    order: string = 'desc'
   ): Observable<Pagination<any>> {
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('organizationId', 2)
+      .set('sortListFields', `${sortField}`)
+      .set('order', `${order}`);
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });    
+    return this.api.GET<Pagination<ClientDTO>>(
+      `agents`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
+  }
 
-    return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/agents/${agent_code}`,
+  getAgentById(agent_code: any): Observable<Pagination<any>> {
+    return this.api.GET<Pagination<ClientDTO>>(
+      `agents/${agent_code}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
 
-      {
-        headers: headers,
-      });
-}
   searchClients(
-      page: number,
-      size: number = 5,
-      name: string,
-      modeOfIdentity: string = null,
-      idNumber: string = null,
-      clientTypeName: string = null
-    ): Observable<Pagination<ClientDTO>> {
-      const header = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-      });
+    page: number,
+    size: number = 5,
+    name: string,
+    modeOfIdentity: string = null,
+    idNumber: string = null,
+    clientTypeName: string = null
+  ): Observable<Pagination<ClientDTO>> {
+    const params = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('name', `${name}`)
+      .set('organizationId', 2)
+      .set('modeOfIdentity', `${modeOfIdentity}`)
+      .set('idNumber', `${idNumber}`)
+      .set('clientTypeName', `${clientTypeName}`);
 
-      const params = new HttpParams()
-        .set('page', `${page}`)
-        .set('size', `${size}`)
-        .set('name', `${name}`)
-        .set('organizationId', 2)
-        .set('modeOfIdentity', `${modeOfIdentity}`)
-        .set('idNumber', `${idNumber}`)
-        .set('clientTypeName', `${clientTypeName}`);
-      let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
-      return this.http.get<Pagination<ClientDTO>>(`/${this.baseUrl}/clients`, {
-        headers: header,
-        params: paramObject,
-      });
+    let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
+
+    return this.api.GET<Pagination<ClientDTO>>(
+      `clients`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      paramObject
+    );
   }
+
   getIdentityType(): Observable<any[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<any[]>(`/${this.baseUrl}/identity-modes`,
-      {
-        headers:headers,
-        params:params
-      });
+    const params = new HttpParams().set('organizationId', 2);
+    return this.api.GET<any[]>(
+      `identity-modes`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
+
   getClientType(organizationId: number): Observable<any[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      // 'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-    const params = new HttpParams()
-      .set('organizationId', `${organizationId}`);
-    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/client-types`,
-      {
-        headers:headers,
-        params:params
-      });
+    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    return this.api.GET<ClientTypeDTO[]>(
+      `client-types`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   saveClientDetails(clientData: ClientDTO): Observable<ClientDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
-    });
-
-    return this.http.post<ClientDTO[]>(`/${this.baseUrl}/accounts`, JSON.stringify(clientData), {headers:headers})
-
+    return this.api.POST<ClientDTO[]>(
+      `accounts`,
+      JSON.stringify(clientData),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
-   createClient(client: {}): Observable<ClientDTO> {
-    console.log('CREATE CLIENT:'+client);
-    return ;
+  createClient(client: {}): Observable<ClientDTO> {
+    console.log('CREATE CLIENT:' + client);
+    return;
 
     // return this.http.post<ClientDTO>(`/${this.baseUrl}/clients`, JSON.stringify(client), {headers:this.headers});
   }
 
   updateClient(client_id: number, client: {}): Observable<ClientDTO> {
-    console.log('UPDATE CLIENT:'+client);
-    return this.http.put<ClientDTO>(`/${this.baseUrl}/clients/${client_id}`, JSON.stringify(client), {headers:this.headers});
+    return this.api.PUT<ClientDTO>(
+      `clients/${client_id}`,
+      JSON.stringify(client),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
   getClientById(id: number): Observable<ClientDTO> {
-    return this.http.get<ClientDTO>(`/${this.baseUrl}/clients/` + id, {headers:this.headers});
+    return this.api.GET<ClientDTO>(
+      `clients/${id}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
-  getclientRequiredDocuments(){
-    return this.api.GET('required-documents?accountType=C', API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL)
+  getclientRequiredDocuments() {
+    return this.api.GET(
+      'required-documents?accountType=C',
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
   }
 
   // getAccountByCode(code: number): Observable<ClientDTO> {
@@ -190,41 +153,35 @@ export class ClientService {
   // }
 
   getAccountByCode(code: number): Observable<ClientDTO> {
-    // return this.http.get<ClientDTO>(`http://10.176.18.211:1031/accounts/details?accountCode=178565`);
-    return this.api.GET<ClientDTO>(`details?accountCode=${code}`, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
+    return this.api.GET<ClientDTO>(
+      `details?accountCode=${code}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
 
-
-
   getCLientBranches(): Observable<ClientBranchesDto[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    const params = new HttpParams()
-      .set('organizationId', 2);
-    return this.http.get<ClientBranchesDto[]>(`/${this.baseUrlSetups}/setups/branches`,
-      {
-        headers:headers,
-        params:params
-      });
+    const params = new HttpParams().set('organizationId', 2);
+    return this.api.GET<ClientBranchesDto[]>(
+      `branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   getClientTitles(organizationId: number): Observable<any[]> {
-
-    const params = new HttpParams()
-      .set('organizationId', `${organizationId}`);
-    return this.http.get<ClientTypeDTO[]>(`/${this.baseUrl}/client-titles`,
-      {
-        headers:this.headers,
-        params:params
-      });
+    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    return this.api.GET<ClientTypeDTO[]>(
+      `client-titles`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+      params
+    );
   }
 
   save(clientData: any): Observable<any> {
-    return this.api.POST<any>(`clients`, clientData, API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL);
-
+    return this.api.POST<any>(
+      `clients`,
+      clientData,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
   }
-
-
 }
