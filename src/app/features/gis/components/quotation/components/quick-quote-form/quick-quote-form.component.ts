@@ -92,13 +92,18 @@ export class QuickQuoteFormComponent {
   clientName: any;
   clientEmail: any;
   clientPhone: any;
-  clientZipCode:any
-
-
+  clientZipCode:any;
+  newClientData = {
+    inputClientName: '',
+    inputClientZipCode:'',
+    inputClientPhone: '',
+    inputClientEmail: ''
+  };
   countryList: CountryDto[];
   selectedCountry: any;
   filteredCountry: any;
   mobilePrefix: any;
+  selectedZipCode:any;
 
 
   subclassCoverType: subclassCoverTypes[] = [];
@@ -144,6 +149,7 @@ export class QuickQuoteFormComponent {
   passedQuotationNo: any;
   passedQuotationCode: string
   PassedClientDetails: any;
+  passedNewClientDetails:any;
 
   // isAddRisk:boolean=false;
   isAddRisk: boolean;
@@ -210,9 +216,24 @@ export class QuickQuoteFormComponent {
     /** THIS LINES OF CODES BELOW IS USED WHEN ADDING ANOTHER RISK ****/
     const passedQuotationDetailsString = sessionStorage.getItem('passedQuotationDetails');
     this.passedQuotation = JSON.parse(passedQuotationDetailsString);
-
     const passedClientDetailsString = sessionStorage.getItem('passedClientDetails');
-    this.PassedClientDetails = JSON.parse(passedClientDetailsString);
+
+    if (passedClientDetailsString == undefined){
+      log.debug("New Client has been passed")
+
+      const passedNewClientDetailsString = sessionStorage.getItem('passedNewClientDetails');
+    this.passedNewClientDetails = JSON.parse(passedNewClientDetailsString);
+    console.log("Client Details:", this.passedNewClientDetails);
+
+    }else{
+      log.debug("Existing Client has been passed")
+      this.PassedClientDetails = JSON.parse(passedClientDetailsString);
+     
+
+    }
+
+    
+
     console.log("Quotation Details:", this.passedQuotation);
     this.passedQuotationNo = this.passedQuotation?.no ?? null;
     log.debug("passed QUOYTATION number",this.passedQuotationNo)
@@ -225,16 +246,25 @@ export class QuickQuoteFormComponent {
 
     console.log("Client Details:", this.PassedClientDetails);
     if (this.passedQuotation) {
-      this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
+      if(this.PassedClientDetails){
+        this.clientName = this.PassedClientDetails.firstName + ' ' + this.PassedClientDetails.lastName;
       this.clientEmail = this.PassedClientDetails.emailAddress;
       this.clientPhone = this.PassedClientDetails.phoneNumber;
       this.personalDetailsForm.patchValue(this.passedQuotation)
-
+      this.isNewClient=false;
+      this.toggleButton();
+      }else{
+        log.debug("NEW CLIENT ADD ANOTHER RISK")
+        this.newClientData.inputClientName = this.passedNewClientDetails?.inputClientName;
+        this.newClientData.inputClientEmail = this.passedNewClientDetails?.inputClientEmail;
+        this.newClientData.inputClientPhone = this.passedNewClientDetails?.inputClientPhone;
+        this.selectedZipCode= this.passedNewClientDetails?.inputClientZipCode;
+        this.isNewClient=true;
+      }
       const passedIsAddRiskString = sessionStorage.getItem('isAddRisk');
       this.isAddRisk = JSON.parse(passedIsAddRiskString);
       console.log("isAddRiskk Details:", this.isAddRisk);
-      this.isNewClient=false;
-      this.toggleButton();
+     
       this.selectedCountry = this.PassedClientDetails.country;
       log.info("Paased selected country:",this.selectedCountry)
       this.getCountries()
@@ -338,7 +368,17 @@ export class QuickQuoteFormComponent {
     this.fetchBranches();
 
   }
-
+  onZipCodeSelected(event: any){
+    this.selectedZipCode = event.target.value;
+    console.log("Selected Zip Code:", this.selectedZipCode);
+  }
+  onInputChange() {
+    console.log("Method called")
+    this.newClientData.inputClientZipCode=this.selectedZipCode;
+   log.debug("New User Data",this.newClientData); 
+   const newClientDetailsString = JSON.stringify(this.newClientData);
+   sessionStorage.setItem('newClientDetails', newClientDetailsString);
+  }
   /**
    * Retrieves branch information by making an HTTP GET request to the BranchService.
    * - Populates the 'branchList' property with the received data.

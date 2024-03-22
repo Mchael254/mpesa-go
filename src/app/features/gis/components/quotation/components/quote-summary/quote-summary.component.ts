@@ -46,6 +46,7 @@ export class QuoteSummaryComponent {
   clientDetails:ClientDTO;
   selectedClientName:any;
   clientcode:any;
+  passedNewClientDetails:any;
 
   productCode:any;
   quotationproduct:any;
@@ -88,7 +89,11 @@ export class QuoteSummaryComponent {
     log.debug("Selected Cover Quotation Number:",this.coverQuotationNo );
     log.debug("Passed Premium :",this.passedPremium );
 
-    this.loadClientQuotation()
+    this.loadClientQuotation();
+    const newClientDetailsString = sessionStorage.getItem('newClientDetails');
+    this.passedNewClientDetails = JSON.parse(newClientDetailsString);
+    log.debug("New Client Details", this.passedNewClientDetails);
+
   }
 
   loadClientQuotation(){
@@ -142,12 +147,32 @@ export class QuoteSummaryComponent {
     console.log('Delete item clicked', item);
   }
   getClient(){
+    if(this.passedNewClientDetails){
+      log.debug("new client")
+      this.selectedClientName=this.passedNewClientDetails?.inputClientName;
+      log.debug("Selected New Client Name",this.selectedClientName); 
+    }else{
+      log.debug("existing client")
+
+      this.clientService.getClientById(this.insuredCode).subscribe(data=>{
+        this.clientDetails = data;
+        log.debug("Selected Client Details",this.clientDetails);
+        this.selectedClientName=this.clientDetails.firstName + ' ' + this.clientDetails.lastName
+          log.debug("Selected Client Name",this.selectedClientName);  
+      })
+    }
     this.clientService.getClientById(this.insuredCode).subscribe(data=>{
       this.clientDetails = data;
       log.debug("Selected Client Details",this.clientDetails);
-      this.selectedClientName=this.clientDetails.firstName + ' ' + this.clientDetails.lastName
-      log.debug("Selected Client Name",this.selectedClientName);
+      if(this.passedNewClientDetails){
+        this.selectedClientName=this.passedNewClientDetails?.inputClientName;
+        log.debug("Selected New Client Name",this.selectedClientName);  
 
+      }else{
+        this.selectedClientName=this.clientDetails.firstName + ' ' + this.clientDetails.lastName
+        log.debug("Selected Client Name",this.selectedClientName);  
+      }
+     
     })
   }
   getQuotationProduct(){
@@ -166,6 +191,9 @@ export class QuoteSummaryComponent {
     const passedClientDetailsString = JSON.stringify(this.clientDetails);
     sessionStorage.setItem('passedClientDetails', passedClientDetailsString);
 
+    const passedNewClientDetailsString = JSON.stringify(this.passedNewClientDetails);
+    sessionStorage.setItem('passedNewClientDetails', passedNewClientDetailsString);
+
     const passedIsAddRiskString = JSON.stringify(this.isAddRisk);
     sessionStorage.setItem('isAddRisk', passedIsAddRiskString);
 
@@ -175,6 +203,7 @@ export class QuoteSummaryComponent {
     log.debug("quotation number:",this.quotationNo)
     log.debug("Quotation Details:",this.quotationDetails)
     log.debug("Selected Client Details",this.clientDetails);
+    log.debug("Selected New Client Details",this.passedNewClientDetails);
 
     // this.router.navigate(['/home/gis/quotation/quick-quote'])
      // Use NgZone.run to execute the navigation code inside the Angular zone
