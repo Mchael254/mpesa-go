@@ -39,7 +39,7 @@ export class PolicyProductComponent {
   selectedProductCode: any;
 
   policyProductForm: FormGroup;
-
+  policyForm:FormGroup;
   errorMessage: string;
   errorOccurred: boolean;
 
