@@ -24,6 +24,7 @@ export class PaymentModesComponent implements OnInit {
 
   createPaymentModeForm: FormGroup;
   createClaimsPaymentModeForm: FormGroup;
+  editMode: boolean = false;
 
   paymentModesBreadCrumbItems: BreadCrumbItem[] = [
     {
@@ -218,6 +219,7 @@ export class PaymentModesComponent implements OnInit {
    * The function opens a modal by adding a 'show' class and setting the display property to 'block'.
    */
   openPaymentModesModal() {
+    this.createPaymentModeForm.reset();
     const modal = document.getElementById('paymentModesModal');
     if (modal) {
       modal.classList.add('show');
@@ -230,6 +232,7 @@ export class PaymentModesComponent implements OnInit {
    * "paymentModesModal".
    */
   closePaymentModesModal() {
+    this.editMode = false;
     const modal = document.getElementById('paymentModesModal');
     if (modal) {
       modal.classList.remove('show');
@@ -242,6 +245,7 @@ export class PaymentModesComponent implements OnInit {
    * 'block'.
    */
   openClaimPaymentModesModal() {
+    this.createClaimsPaymentModeForm.reset();
     const modal = document.getElementById('claimsPaymentModesModal');
     if (modal) {
       modal.classList.add('show');
@@ -253,6 +257,7 @@ export class PaymentModesComponent implements OnInit {
    * The function "closeClaimPaymentModesModal" hides and removes the "claimsPaymentModesModal" element from the DOM.
    */
   closeClaimPaymentModesModal() {
+    this.editMode = false;
     const modal = document.getElementById('claimsPaymentModesModal');
     if (modal) {
       modal.classList.remove('show');
@@ -333,6 +338,7 @@ export class PaymentModesComponent implements OnInit {
    * it displays an error message.
    */
   editPaymentMode() {
+    this.editMode = !this.editMode;
     if (this.selectedPaymentMode) {
       this.openPaymentModesModal();
       this.createPaymentModeForm.patchValue({
@@ -410,7 +416,7 @@ export class PaymentModesComponent implements OnInit {
         minimumAmount: claimsPaymentModeFormValues.minAmount,
         organizationId: 2,
         remarks: null,
-        shortDescription: claimsPaymentModeFormValues.id.shortDescription
+        shortDescription: claimsPaymentModeFormValues.id
 
       }
       log.info('claims payment mode create', saveClaimsPaymentMode);
@@ -439,7 +445,7 @@ export class PaymentModesComponent implements OnInit {
         minimumAmount: claimsPaymentModeFormValues.minAmount,
         organizationId: 2,
         remarks: null,
-        shortDescription: claimsPaymentModeFormValues.id.shortDescription
+        shortDescription: claimsPaymentModeFormValues.id
       }
       log.info('claims payment mode update', saveClaimsPaymentMode);
       this.paymentModesService.updateClaimsPaymentMode(claimsPaymentModeId, saveClaimsPaymentMode)
@@ -461,6 +467,7 @@ export class PaymentModesComponent implements OnInit {
    * display an error message if no claims payment mode is selected.
    */
   editClaimPaymentMode() {
+    this.editMode = !this.editMode;
     if (this.selectedClaimsPaymentMode) {
       this.openClaimPaymentModesModal();
       this.createClaimsPaymentModeForm.patchValue({

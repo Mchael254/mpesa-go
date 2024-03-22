@@ -59,6 +59,7 @@ export class BankComponent implements OnInit{
   lmsProducts: any[] = [];
 
   bankChargeRateTypesData: BankChargeRateTypesDto[];
+  editMode: boolean = false;
   bankBreadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Administration',
@@ -507,6 +508,7 @@ export class BankComponent implements OnInit{
    * The function "openBankModal" opens a modal by adding the "show" class and setting the display property to "block".
    */
   openBankModal() {
+    this.createBankForm.reset();
     const modal = document.getElementById('bankModal');
     if (modal) {
       modal.classList.add('show');
@@ -518,6 +520,7 @@ export class BankComponent implements OnInit{
    * The function "closeBankModal" hides and removes the "bankModal" element from the DOM.
    */
   closeBankModal() {
+    this.editMode = false;
     const modal = document.getElementById('bankModal');
     if (modal) {
       modal.classList.remove('show');
@@ -529,6 +532,7 @@ export class BankComponent implements OnInit{
    * The function opens a modal for a bank branch.
    */
   openBankBranchModal() {
+    this.createBankBranchForm.reset();
     const modal = document.getElementById('bankBranchModal');
     if (modal && this.selectedBank) {
       modal.classList.add('show');
@@ -544,6 +548,7 @@ export class BankComponent implements OnInit{
    * The function "closeBankBranchModal" hides and removes the "bankBranchModal" element from the DOM.
    */
   closeBankBranchModal() {
+    this.editMode = false;
     const modal = document.getElementById('bankBranchModal');
     if (modal) {
       modal.classList.remove('show');
@@ -555,6 +560,7 @@ export class BankComponent implements OnInit{
    * The function opens a modal to display bank charges if a bank is selected, otherwise it displays an error message.
    */
   openBankChargeModal() {
+    this.createBankChargeForm.reset();
     const modal = document.getElementById('bankChargeModal');
     if (modal && this.selectedBank) {
       modal.classList.add('show');
@@ -571,6 +577,7 @@ export class BankComponent implements OnInit{
    * The function "closeBankChargeModal" hides and removes the "bankChargeModal" element from the DOM.
    */
   closeBankChargeModal() {
+    this.editMode = false;
     const modal = document.getElementById('bankChargeModal');
     if (modal) {
       modal.classList.remove('show');
@@ -683,7 +690,7 @@ export class BankComponent implements OnInit{
         administrativeCharge: bankFormValues.adminCharge,
         allowPesalink: bankFormValues.pesaLink,
         bankAccountNoCharacters: bankFormValues.accountNoCharacters,
-        bankLogo: this.url,
+        bankLogo: this.selectedBank.bankLogo ? this.selectedBank.bankLogo : this.url ,
         bankSortCode: null,
         bankType: bankFormValues.classify,
         countryId: bankFormValues.country,
@@ -733,6 +740,7 @@ export class BankComponent implements OnInit{
    * error message if no bank is selected.
    */
   editBank() {
+    this.editMode = !this.editMode;
     if (this.selectedBank) {
       this.openBankModal();
       this.createBankForm.patchValue({
@@ -886,6 +894,7 @@ export class BankComponent implements OnInit{
    * purposes.
    */
   editBankBranch() {
+    this.editMode = !this.editMode;
     if (this.selectedBankBranch) {
       this.openBankBranchModal();
       this.createBankBranchForm.patchValue({
@@ -1024,6 +1033,7 @@ export class BankComponent implements OnInit{
    * error message if no bank charge is selected.
    */
   editBankCharge() {
+    this.editMode = !this.editMode;
     if (this.selectedBankCharge) {
       this.openBankChargeModal();
       const selectedDateFrom = new Date(this.selectedBankCharge.dateFrom).toISOString().split('T')[0];
