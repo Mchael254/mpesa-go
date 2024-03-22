@@ -7,3 +7,24 @@
 ::ng-deep .p-dropdown .p-dropdown-filter {
   height: 30px;
 }
+.columnSelect-dialogue {
+  width: 186px;
+  height: 337px;
+  border: solid 1px #d9d9d9;
+  border-radius: 10px;
+  margin: 10px;
+  position: absolute;
+  right: 50px;
+  z-index: 1000;
+}
+/* responsiveness */
+@media (max-width: 576px) {
+  .columnSelect-dialogue {
+    width: 300px;
+    margin: auto;
+    top: 20px;
+  }
+}
+table th {
+  background: #f8f9fa;
+}

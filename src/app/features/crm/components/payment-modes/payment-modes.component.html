@@ -43,10 +43,10 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Short description</th>
-                  <th class="head">Description</th>
-                  <th class="head">Narration</th>
-                  <th class="head">Default mode?</th>
+                  <th class="head" pSortableColumn="shortDescription">Short description <p-sortIcon field="shortDescription"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="narration">Narration <p-sortIcon field="narration"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="isDefault">Default mode? <p-sortIcon field="isDefault"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-paymentmode>
@@ -110,12 +110,12 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Short description</th>
-                  <th class="head">Description</th>
-                  <th class="head">Max amount</th>
-                  <th class="head">Min amount</th>
-                  <th class="head">Default value</th>
-                  <th class="head">Remarks</th>
+                  <th class="head" pSortableColumn="shortDescription">Short description <p-sortIcon field="shortDescription"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="maximumAmount">Max amount <p-sortIcon field="maximumAmount"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="minimumAmount">Min amount <p-sortIcon field="minimumAmount"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="isDefault">Default value <p-sortIcon field="isDefault"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="remarks">Remarks <p-sortIcon field="remarks"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-claimPaymentmode>
@@ -156,7 +156,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel">Add a new payment mode</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Add' }} a {{ editMode ? 'payment mode' : 'new payment mode' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -256,7 +256,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel">Add a new claims payment mode</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Add' }} a {{ editMode ? 'claims payment mode' : 'new claims payment mode' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -269,10 +269,11 @@
           <div class="row">
             <ng-container *ngIf="visibleStatus.id === 'Y'">
               <div class="col-6 mb-3">
-                <label for="id" class="form-label">ID</label>
+                <label for="id" class="form-label">Short description</label>
                 <p-dropdown
                   [options]="paymentModesData"
                   optionLabel="shortDescription"
+                  optionValue="shortDescription"
                   formControlName="id"
                   id="id"
                   [filter]="true"
@@ -284,7 +285,7 @@
                 >
                 </p-dropdown>
                 <div *ngIf="f['id']?.invalid && (f['id']?.dirty || f['id']?.touched)" class="form-text text-danger">
-                  <div *ngIf="f['id']?.errors['required']">ID is required</div>
+                  <div *ngIf="f['id']?.errors['required']">Short description is required</div>
                 </div>
               </div>
             </ng-container>

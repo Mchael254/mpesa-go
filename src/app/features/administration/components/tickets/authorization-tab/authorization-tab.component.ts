@@ -46,6 +46,8 @@ export class AuthorizationTabComponent implements OnInit{
   isLoadingMakeUndo: boolean = false;
   isLoadingAuthExc: boolean = false;
 
+  showDropdownForException: any;
+
   constructor(private policiesService: PoliciesService,
               private globalMessagingService: GlobalMessagingService,
               private completionRemarksService: CompletionRemarksService,
@@ -275,6 +277,14 @@ export class AuthorizationTabComponent implements OnInit{
         'Error',
         'Exception remark not selected.'
       );
+    }
+  }
+
+  toggleDropdown(exception: any) {
+    if (this.showDropdownForException === exception) {
+      this.showDropdownForException = null; // Hide the dropdown if already shown
+    } else {
+      this.showDropdownForException = exception; // Show the dropdown for the clicked exception
     }
   }
 }

@@ -4,7 +4,7 @@
     <option value="HTML">HTML</option>
     <option value="PDF">PDF</option>
   </select>
-  <button class="btn btn-primary ms-4" style="font-size: 13px;" (click)="sendNotification()">Dispatch documents</button>
+  <button class="btn btn-primary ms-4" style="font-size: 13px;" (click)="openDocDispatchModal()">Dispatch documents</button>
 </div>
 <ul class="list-group list-group-horizontal mb-3">
   <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
@@ -34,6 +34,86 @@
           [srcUrl]="filePath ?? ''"
           class="doc-viewer"
         ></ngx-doc-viewer>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="docDispatchToggle" aria-hidden="true" aria-labelledby="docDispatchToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="width: 350px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="docDispatchToggleLabel">Dispatch Documents</h1>
+        <button type="button" class="btn-close" (click)="closeDocDispatchModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 mb-3">
+          <form [formGroup]="docDispatchForm">
+
+            <div>
+              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
+                <label class="form-label" for="dispatchDocuments">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
+                <label class="form-label" for="dispatchDocuments">No</label>
+              </div>
+            </div>
+            <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
+              <label class="form-label w-100">Documents to dispatch</label><br>
+
+              <p-dropdown
+                [options]="dispatchReasonsData"
+                optionLabel="description"
+                optionValue="description"
+                [filter]="true"
+                filterBy="description"
+                [showClear]="true"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select document"
+                formControlName="documentDispatched"
+              >
+                <ng-template let-shortDescription pTemplate="item">
+                  <div title="{{shortDescription.description}}">
+                    {{ shortDescription.description.length > 10 ? shortDescription.description.substring(0, 28) + '...' : shortDescription.description }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+            <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'N'">
+              <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
+
+              <p-dropdown
+                [options]="dispatchReasonsData"
+                optionLabel="description"
+                optionValue="description"
+                [filter]="true"
+                filterBy="description"
+                [showClear]="true"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select reason"
+                formControlName="rejectionDescription"
+              >
+                <ng-template let-shortDescription pTemplate="item">
+                  <div title="{{shortDescription.description}}">
+                    {{ shortDescription.description.length > 10 ? shortDescription.description.substring(0, 28) + '...' : shortDescription.description }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="onSave()" [disabled]="isLoading">
+          <span *ngIf="!isLoading; else loading">Save</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
+        <button class="btn btn-secondary" (click)="closeDocDispatchModal()">Close</button>
       </div>
     </div>
   </div>

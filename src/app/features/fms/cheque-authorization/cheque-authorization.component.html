@@ -54,16 +54,99 @@
             </div>
 
           </div>
-          <div class="col-sm-6 col-lg-4">
+          <div class="row col-sm-6 col-lg-4">
             <div class="float-lg-end">
               <input
                 type="text"
-                class="form-control"
+                class="form-control float-end w-75"
                 placeholder="Search"
                 aria-label="search"
                 aria-describedby="search"
 
               />
+              <!--<button class="btn btn-outline-primary ms-4" (click)="showColumnSelect()">
+                <i class="fa fa-angle-down"></i>
+              </button>-->
+            </div>
+          </div>
+
+          <div
+            class="columnSelect-dialogue float-end bg-white"
+            [ngStyle]="{'visibility': (shouldShowColumnSelect === true) ? 'visible' : 'hidden' }"
+          >
+            <div style="display: block; width: auto">
+              <form [formGroup]="columnsForm">
+
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="refNo" type="checkbox" [checked]="columns.refNo">
+                  <label class="form-check-label">
+                    Ref No
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="date" type="checkbox" [value]="columns.date">
+                  <label class="form-check-label">
+                    Date
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="requestDate" type="checkbox" [checked]="columns.requestDate">
+                  <label class="form-check-label">
+                    Request date
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="type" type="checkbox" [checked]="columns.type">
+                  <label class="form-check-label">
+                    Type
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="paymentMethod" type="checkbox" [checked]="columns.paymentMethod">
+                  <label class="form-check-label">
+                    Payment method
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="narrative" type="checkbox" [checked]="columns.narrative">
+                  <label class="form-check-label">
+                    Narrative
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="bankAccount" type="checkbox" [checked]="columns.bankAccount">
+                  <label class="form-check-label">
+                    Bank account
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="chequeNumber" type="checkbox" [checked]="columns.chequeNumber">
+                  <label class="form-check-label">
+                    Cheque number
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="amount" type="checkbox" [checked]="columns.amount">
+                  <label class="form-check-label">
+                    Amount
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="payee" type="checkbox" [checked]="columns.payee">
+                  <label class="form-check-label">
+                    Payee
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" formControlName="remarks" type="checkbox" [checked]="columns.remarks">
+                  <label class="form-check-label">
+                    Remarks
+                  </label>
+                </div>
+
+                <button class="btn btn-outline-primary" (click)="closeColumnSelect()">Cancel</button>
+                <button class="btn btn-primary ms-2" (click)="showSelectedColumns()">Done</button>
+              </form>
             </div>
           </div>
         </div>
@@ -94,16 +177,17 @@
                 <th style="width:0.5rem;">
                   <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
-                <th>Ref No</th>
-                <th>Date</th>
-                <th>Request date</th>
-                <th>Type</th>
-                <th>Payment method</th>
-                <th>Narrative</th>
-                <th>Bank account</th>
-                <th>Cheque number</th>
-                <th>Amount</th>
-                <th>Payee</th>
+                <th *ngIf="columns.refNo">Ref No</th>
+                <th *ngIf="columns.date">Date</th>
+                <th *ngIf="columns.requestDate">Request date</th>
+                <th *ngIf="columns.type">Type</th>
+                <th *ngIf="columns.paymentMethod">Payment method</th>
+                <th *ngIf="columns.narrative">Narrative</th>
+                <th *ngIf="columns.bankAccount">Bank account</th>
+                <th *ngIf="columns.chequeNumber">Cheque number</th>
+                <th *ngIf="columns.amount">Amount</th>
+                <th *ngIf="columns.payee">Payee</th>
+                <th *ngIf="columns.remarks">Remarks</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-chequeAuth>
@@ -111,20 +195,20 @@
                 <td>
                   <p-tableCheckbox [value]="chequeAuth"></p-tableCheckbox>
                 </td>
-                <td>{{chequeAuth.exceptions_remark_code}}</td>
-                <td>
+                <td *ngIf="columns.refNo">{{chequeAuth.exceptions_remark_code}}</td>
+                <td *ngIf="columns.date">
                   {{chequeAuth?.description?.substring(0,10) | titlecase }}
                 </td>
-                <td>
+                <td *ngIf="columns.requestDate">
                   {{chequeAuth?.underwriting_decision?.substring(0,20) | titlecase }}
                 </td>
-                <td>{{chequeAuth?.set_standard}}</td>
-                <td>{{chequeAuth?.used_standard}}</td>
-                <td>{{chequeAuth?.is_authorized}}</td>
-                <td>{{chequeAuth?.transactions_date}}</td>
-                <td>{{chequeAuth?.authorized_by}}</td>
-                <td>{{chequeAuth?.authorized_date}}</td>
-                <td>{{chequeAuth?.exception_by}}</td>
+                <td *ngIf="columns.type">{{chequeAuth?.set_standard}}</td>
+                <td *ngIf="columns.paymentMethod">{{chequeAuth?.used_standard}}</td>
+                <td *ngIf="columns.narrative">{{chequeAuth?.is_authorized}}</td>
+                <td *ngIf="columns.bankAccount">{{chequeAuth?.transactions_date}}</td>
+                <td *ngIf="columns.chequeNumber">{{chequeAuth?.authorized_by}}</td>
+                <td *ngIf="columns.amount">{{chequeAuth?.authorized_date}}</td>
+                <td *ngIf="columns.payee">{{chequeAuth?.exception_by}}</td>
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -134,6 +218,42 @@
             </ng-template>
           </p-table>
         </div>
+        <!--<div>
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Select</th>
+              <th *ngIf="columns.refNo">Ref No</th>
+              <th *ngIf="columns.date">Date</th>
+              <th *ngIf="columns.requestDate">Request date</th>
+              <th *ngIf="columns.type">Type</th>
+              <th *ngIf="columns.paymentMethod">Payment method</th>
+              <th *ngIf="columns.narrative">Narrative</th>
+              <th *ngIf="columns.bankAccount">Bank account</th>
+              <th *ngIf="columns.chequeNumber">Cheque number</th>
+              <th *ngIf="columns.amount">Amount</th>
+              <th *ngIf="columns.payee">Payee</th>
+              <th *ngIf="columns.remarks">Remarks</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td scope="row"><input type="checkbox" ></td>
+              <td *ngIf="columns.refNo">Mark</td>
+              <td *ngIf="columns.date">Otto</td>
+              <td *ngIf="columns.requestDate">@mdo</td>
+              <td *ngIf="columns.type">Type</td>
+              <td *ngIf="columns.paymentMethod">Payment method</td>
+              <td *ngIf="columns.narrative">Narrative</td>
+              <td *ngIf="columns.bankAccount">Bank account</td>
+              <td *ngIf="columns.chequeNumber">Cheque number</td>
+              <td *ngIf="columns.amount">Amount</td>
+              <td *ngIf="columns.payee">Payee</td>
+              <td *ngIf="columns.remarks">Remarks</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>-->
       </div>
     </div>
   </div>

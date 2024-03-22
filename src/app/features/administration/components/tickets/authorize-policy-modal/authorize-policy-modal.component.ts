@@ -93,7 +93,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * on the type.
    */
   openDebtOwnerModal() {
-    if (this.policyDetails?.product?.interfaceType === 'CASH') {
+    if (this.policyDetails?.product?.interfaceType === 'ACCRUAL') {
       const modal = document.getElementById('debtOwnerToggle');
       if (modal) {
         modal.classList.add('show');
