@@ -3,32 +3,98 @@
   currentTicket?.ticket?.sysModule === 'P' ||
   currentTicket?.ticket?.sysModule === 'RT' ||
   currentTicket?.ticket?.sysModule === 'Q'">
-  <label class="text-primary mb-2">Documents</label>
-  <app-dynamic-table
-    [tableDetails]="tableDetails"
-    (showCustomModalEmitter)="showModal($event)">
-  </app-dynamic-table>
+  <div class="row mt-3 mb-2 card">
+    <div class="col-12 mt-2 mb-2">
+      <label class="text-primary">Dispatched documents</label>
+
+      <span class="icon-circle float-end"
+            data-bs-toggle="collapse" href="#collapseDispatchDocs" role="button" aria-expanded="false" aria-controls="collapseDispatchDocs"
+      ><i class="pi pi-chevron-down"></i
+      ></span>
+    </div>
+
+    <div class="collapse" id="collapseDispatchDocs">
+      <app-dynamic-table
+        [tableDetails]="tableDispatchedDocs"
+        (showCustomModalEmitter)="showModal($event)">
+      </app-dynamic-table>
+    </div>
+  </div>
+
+  <div class="row mt-3 mb-2 card">
+    <div class="col-12 mt-2 mb-2">
+      <label class="text-primary">Documents</label>
+
+      <span class="icon-circle float-end"
+            data-bs-toggle="collapse" href="#collapseDocs" role="button" aria-expanded="false" aria-controls="collapseDocs"
+      ><i class="pi pi-chevron-down"></i
+      ></span>
+    </div>
+
+    <div class="collapse" id="collapseDocs">
+      <app-dynamic-table
+        [tableDetails]="tableDetails"
+        (showCustomModalEmitter)="showModal($event)">
+      </app-dynamic-table>
+    </div>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="currentTicket?.ticket?.sysModule === 'C'">
-  <label class="text-primary mb-2">Claimant Documents</label>
-  <app-dynamic-table
-    [tableDetails]="tableClaimantDocs"
-    (showCustomModalEmitter)="showModal($event)">
-  </app-dynamic-table>
+  <div class="row mt-3 mb-2 card">
+    <div class="col-12 mt-2 mb-2">
+      <label class="text-primary">Claimant Documents</label>
 
-  <label class="text-primary mt-2 mb-2">Service Provider Documents</label>
-  <app-dynamic-table
-    [tableDetails]="tableServiceProviderDocs"
-    (showCustomModalEmitter)="showModal($event)">
-  </app-dynamic-table>
+      <span class="icon-circle float-end"
+            data-bs-toggle="collapse" href="#collapseClaimant" role="button" aria-expanded="false" aria-controls="collapseClaimant"
+      ><i class="pi pi-chevron-down"></i
+      ></span>
+    </div>
+
+    <div class="collapse" id="collapseClaimant">
+      <app-dynamic-table
+        [tableDetails]="tableClaimantDocs"
+        (showCustomModalEmitter)="showModal($event)">
+      </app-dynamic-table>
+    </div>
+  </div>
+
+  <div class="row mt-3 mb-2 card">
+    <div class="col-12 mt-2 mb-2">
+      <label class="text-primary">Service Provider Documents</label>
+
+      <span class="icon-circle float-end"
+            data-bs-toggle="collapse" href="#collapseServProv" role="button" aria-expanded="false" aria-controls="collapseServProv"
+      ><i class="pi pi-chevron-down"></i
+      ></span>
+    </div>
+
+    <div class="collapse" id="collapseServProv">
+      <app-dynamic-table
+        [tableDetails]="tableServiceProviderDocs"
+        (showCustomModalEmitter)="showModal($event)">
+      </app-dynamic-table>
+    </div>
+  </div>
 </ng-container>
 
-<label class="text-primary mt-2 mb-2">Client Documents</label>
-<app-dynamic-table
-  [tableDetails]="tableClientDocs"
-  (showCustomModalEmitter)="showModal($event)">
-</app-dynamic-table>
+<div class="row mt-3 mb-2 card">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Client documents</label>
+
+    <span class="icon-circle float-end"
+          data-bs-toggle="collapse" href="#collapseClientDocs" role="button" aria-expanded="false" aria-controls="collapseClientDocs"
+    ><i class="pi pi-chevron-down"></i
+    ></span>
+  </div>
+
+  <div class="collapse" id="collapseClientDocs">
+    <app-dynamic-table
+      [tableDetails]="tableClientDocs"
+      (showCustomModalEmitter)="showModal($event)">
+    </app-dynamic-table>
+  </div>
+</div>
 
 <app-dynamic-simple-modal
   [modalVisible]="documentModalVisible"

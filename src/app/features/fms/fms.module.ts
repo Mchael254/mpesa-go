@@ -6,6 +6,7 @@ import { ChequeAuthorizationComponent } from './cheque-authorization/cheque-auth
 import {DropdownModule} from "primeng/dropdown";
 import {TableModule} from "primeng/table";
 import {NgxSpinnerModule} from "ngx-spinner";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -17,7 +18,9 @@ import {NgxSpinnerModule} from "ngx-spinner";
     FmsRoutingModule,
     DropdownModule,
     TableModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class FmsModule { }

@@ -28,6 +28,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   tableClaimantDocs: TableDetail;
   tableClientDocs: TableDetail;
   tableServiceProviderDocs: TableDetail;
+  tableDispatchedDocs: TableDetail;
 
   viewDocs: DmsDocument[] = [];
 
@@ -61,6 +62,15 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     { field: 'modifiedBy', header: 'Modified by' },
     { field: 'versionLabel', header: 'Version' },
   ];
+  colsDispatchedDocs = [
+    { field: 'actualName', header: 'Report Name' },
+    { field: 'dateCreated', header: 'E-doc client delivery status' },
+    { field: 'modifiedBy', header: 'E-doc agent delivery status' },
+    { field: 'versionLabel', header: 'Client email address' },
+    { field: 'dateCreated', header: 'Agent acc holder email' },
+    { field: 'modifiedBy', header: 'Interested party' },
+    { field: 'versionLabel', header: 'Interested party email' },
+  ];
 
   constructor(private dmsService: DmsService,
               private localStorageService: LocalStorageService,
@@ -75,7 +85,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.currentTicket = this.localStorageService.getItem('ticketDetails');
     this.tableDetails = {
-      paginator: false, showFilter: false, showSorting: false,
+      paginator: false, showFilter: false, showSorting: false, showSearch: true,
       cols: this.cols,
       rows: this.viewDocs,
       isLazyLoaded: false,
@@ -83,7 +93,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       noDataFoundMessage: 'No Documents Found'
     }
     this.tableClaimantDocs = {
-      paginator: false, showFilter: false, showSorting: false,
+      paginator: false, showFilter: false, showSorting: false, showSearch: true,
       cols: this.colsClaimantDocs,
       rows: this.viewDocs,
       isLazyLoaded: false,
@@ -91,7 +101,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       noDataFoundMessage: 'No Documents Found'
     }
     this.tableClientDocs = {
-      paginator: false, showFilter: false, showSorting: false,
+      paginator: false, showFilter: false, showSorting: false, showSearch: true,
       cols: this.colsClientDocs,
       rows: this.viewDocs,
       isLazyLoaded: false,
@@ -99,12 +109,21 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       noDataFoundMessage: 'No Client Documents Found'
     }
     this.tableServiceProviderDocs = {
-      paginator: false, showFilter: false, showSorting: false,
+      paginator: false, showFilter: false, showSorting: false, showSearch: true,
       cols: this.colsServiceProviderDocs,
       rows: this.viewDocs,
       isLazyLoaded: false,
       showCustomModalOnView: true,
       noDataFoundMessage: 'No Service Provider Documents Found'
+    }
+
+    this.tableDispatchedDocs = {
+      paginator: false, showFilter: false, showSorting: false, showSearch: true,
+      cols: this.colsDispatchedDocs,
+      rows: this.viewDocs,
+      isLazyLoaded: false,
+      showCustomModalOnView: true,
+      noDataFoundMessage: 'No Dispatch Documents Found'
     }
     this.fetchDocuments();
   }
