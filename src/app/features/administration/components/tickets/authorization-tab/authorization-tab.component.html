@@ -62,6 +62,7 @@
     scrollHeight="400px"
     currentPageReportTemplate="{first} - {last} of {totalRecords}"
     [globalFilterFields]="['description', 'code']"
+    [sortField]="'is_authorized'" [sortOrder]="1"
   >
 
     <ng-template pTemplate="header">
@@ -75,7 +76,7 @@
         <th>Remarks</th>
         <th>Set standard</th>
         <th>Used standard</th>
-        <th>Authorized</th>
+        <th pSortableColumn="is_authorized" style="width:20%">Authorized<p-sortIcon field="is_authorized"></p-sortIcon></th>
         <th>Submission date</th>
         <th>Authorized by</th>
         <th>Authorized date</th>
@@ -94,11 +95,11 @@
         </span>
         </td>
         <td>
-          <span title="{{exception?.underwriting_decision}}">
+          <span title="{{exception?.underwriting_decision}}" (click)="toggleDropdown(exception)">
             {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
           </span>
 
-          <ng-container *ngIf="!exception.underwriting_decision">
+          <ng-container *ngIf="!exception.underwriting_decision || showDropdownForException === exception">
             <p-dropdown
               [options]="completionRemarksData"
               optionLabel="remark"
