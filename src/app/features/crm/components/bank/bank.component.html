@@ -54,14 +54,14 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">ID</th>
-                  <th class="head">Name</th>
-                  <th class="head">Remarks</th>
-                  <th class="head">DD forwarding bank</th>
-                  <th class="head">EFT supported</th>
-                  <th class="head">Class type</th>
-                  <th class="head">A/C no. characters</th>
-                  <th class="head">Admin Charge</th>
+                  <th class="head" pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="remarks">Remarks <p-sortIcon field="remarks"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="forwardingBankName">DD forwarding bank <p-sortIcon field="forwardingBankName"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="isEftSupported">EFT supported <p-sortIcon field="isEftSupported"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="bankType">Class type <p-sortIcon field="bankType"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="bankAccountNoCharacters">A/C no. characters <p-sortIcon field="bankAccountNoCharacters"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="administrativeCharge">Admin Charge <p-sortIcon field="administrativeCharge"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-bank>
@@ -128,13 +128,13 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Name</th>
-                  <th class="head">Short desc</th>
-                  <th class="head">Ref code</th>
-                  <th class="head">EFT supported</th>
-                  <th class="head">DD supported</th>
-                  <th class="head">Date created</th>
-                  <th class="head">Created by</th>
+                  <th class="head" pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="short_description">Short desc <p-sortIcon field="short_description"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="referenceCode">Ref code <p-sortIcon field="referenceCode"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="eftSupported">EFT supported <p-sortIcon field="eftSupported"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="directDebitSupported">DD supported <p-sortIcon field="directDebitSupported"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="createdDate">Date created <p-sortIcon field="createdDate"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="createdBy">Created by <p-sortIcon field="createdBy"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-bankbranch>
@@ -202,12 +202,12 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Rate</th>
-                  <th class="head">Date from</th>
-                  <th class="head">Date to</th>
-                  <th class="head">Rate type</th>
-                  <th class="head">System</th>
-                  <th class="head">Product</th>
+                  <th class="head" pSortableColumn="rate">Rate <p-sortIcon field="rate"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="dateFrom">Date from <p-sortIcon field="dateFrom"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="dateTo">Date to <p-sortIcon field="dateTo"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="rateType">Rate type <p-sortIcon field="rateType"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="systemName">System <p-sortIcon field="systemName"></p-sortIcon></th>
+                  <th class="head" pSortableColumn="productName">Product <p-sortIcon field="productName"></p-sortIcon></th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-bankCharge>
@@ -249,7 +249,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel">Define a bank</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'bank' : 'new bank' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -492,7 +492,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel">Define a bank branch</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'bank branch' : 'new bank branch' }}</h5>
         <button
           type="button"
           class="btn-close"
@@ -759,7 +759,7 @@
   <div class="modal-dialog align-items-center">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title" id="exampleModalLabel">Define a bank charge</h5>
+        <h5 class="modal-title" id="exampleModalLabel">{{ editMode ? 'Edit' : 'Define' }} a {{ editMode ? 'bank charge' : 'new bank charge' }}</h5>
         <button
           type="button"
           class="btn-close"
