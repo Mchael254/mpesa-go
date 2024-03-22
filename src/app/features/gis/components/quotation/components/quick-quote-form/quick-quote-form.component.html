@@ -20,7 +20,7 @@
                         Existing Client
                     </label>
                 </div>
-                
+
 
 
 
@@ -28,8 +28,15 @@
                 <div class="row mb-4">
                     <div class="col-sm-4 col-6" *ngIf="!new">
                         <label for="name" class="required quote-label" id="name">Name</label>
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1 "
-                            [(ngModel)]="clientName">
+                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1 "
+                            [(ngModel)]="clientName"> -->
+                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="inputClientName" (blur)="onInputChange()"> -->
+                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                             [(ngModel)]="newClientData.inputClientName" 
+                            (blur)="onInputChange()">
+                            <!-- <input type="text" id="email-input" class="form-control form-control-sm mb-1" [(ngModel)]="inputClientName" (change)="onInputChange()"> -->
+
                     </div>
                     <div class=" col-sm-4 col-6" *ngIf="new">
                         <label for="Client" class="required quote-label" id="Client">Client</label>
@@ -40,8 +47,10 @@
                     </div>
                     <div class=" col-sm-4 col-6 " *ngIf="!new">
                         <label for="Email" class="quote-label" id="Email">Email Address</label>
-                        <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                            [(ngModel)]="clientEmail">
+                        <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="clientEmail"> -->
+                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="newClientData.inputClientEmail" (blur)="onInputChange()">
                     </div>
 
 
@@ -54,12 +63,14 @@
                         <label for="Phone" class="quote-label" id="Phone">Phone Number</label>
                         <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1" [(ngModel)]="clientPhone">      -->
                         <div class="input-group">
-                            <select id="zipDropdown">
-                                <option *ngFor="let country of countryList" [value]="country.id" readonly>{{
+                            <select id="zipDropdown" (change)="onZipCodeSelected($event)" [(ngModel)]="selectedZipCode">
+                                <option *ngFor="let country of countryList" [value]="country.zipCodeString"  >{{
                                     country.zipCodeString }}</option>
                             </select>
-                            <input type="text"  id="zipDropdown" class="form-control form-control-sm mb-1"
-                                [(ngModel)]="clientPhone">
+                            <!-- <input type="text" id="zipDropdown" class="form-control form-control-sm mb-1"
+                                [(ngModel)]="clientPhone"> -->
+                                <input type="tel" id="quote-input" class="form-control form-control-sm mb-1"
+                            [(ngModel)]="newClientData.inputClientPhone" (blur)="onInputChange()">
                         </div>
 
 
@@ -121,9 +132,10 @@
                                 <option *ngFor="let branch of branchList" [value]="branch.id">{{branch.name   | sentenceCase}}</option>
                                 <option></option>
                             </select> -->
-                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray" optionLabel="description"
-                            (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
-                            [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
+                                optionLabel="description" (onChange)="onBranchSelected($event.value)"
+                                [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
+                                [ngModel]="userBranchName"></p-dropdown>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="personalDetailsForm.get('branchCode').hasError('required') && personalDetailsForm.get('branchCode').touched"
@@ -137,16 +149,17 @@
                             <!-- <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
                                 formControlName="branchCode" [value]="userBranchId " [(ngModel)]="userBranchName"
                                 readonly> -->
-                                <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray" optionLabel="description"
-                            (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
-                            [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                            <p-dropdown formControlName="branchCode" [options]="branchDescriptionArray"
+                                optionLabel="description" (onChange)="onBranchSelected($event.value)"
+                                [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
+                                [ngModel]="userBranchName"></p-dropdown>
 
 
                         </div>
                         <div class="col-sm-4 col-6">
                             <label for="product" class="quote-label" id="product">Product</label><br>
                             <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray"
-                                optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" " 
+                                optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->

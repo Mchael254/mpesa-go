@@ -107,6 +107,8 @@ export class CoverTypesDetailsComponent {
   selectedCurrencyCode: any;
 
   passedClientDetails: any;
+  passedNewClientDetails: any;
+
   passedClientCode: any;
   computationDetails: any;
 
@@ -193,12 +195,33 @@ export class CoverTypesDetailsComponent {
     this.clientcode = this.passedClientCode;
     log.debug("Client code", this.passedClientCode);
 
-    this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
     log.debug("Selected Client Name", this.selectedClientName);
     this.passedQuotationSource = sessionStorage.getItem('quotationSource');
     log.debug("Source details", this.passedQuotationSource);
-    this.selectedEmail = this.passedClientDetails?.emailAddress;
-    this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
+    // this.selectedEmail = this.passedClientDetails?.emailAddress;
+    // this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
+
+    const newClientDetailsString = sessionStorage.getItem('newClientDetails');
+    this.passedNewClientDetails = JSON.parse(newClientDetailsString);
+    log.debug("New Client Details", this.passedNewClientDetails);
+
+    if(this.passedClientDetails){
+      log.info("EXISTING CLIENT")
+      this.selectedClientName = this.passedClientDetails?.firstName + ' ' + this.passedClientDetails?.lastName
+      this.selectedEmail = this.passedClientDetails?.emailAddress;
+      this.selectedPhoneNo = this.passedClientDetails?.phoneNumber;
+    }else{
+      log.info("NEW CLIENT")
+      this.selectedClientName= this.passedNewClientDetails?.inputClientName;
+      log.info("Selected Name:",this.selectedClientName)
+
+      this.selectedEmail = this.passedNewClientDetails?.inputClientEmail;
+      log.info("Selected Email:",this.selectedEmail)
+
+      this.selectedPhoneNo = this.passedNewClientDetails?.inputClientPhone;
+      log.info("Selected Phone:",this.selectedPhoneNo)
+
+    }
 
 
     this.createQuotationForm();
