@@ -153,7 +153,7 @@
       </p-tabPanel>
       <p-tabPanel header="Documents and reports">
         <label class="text-primary mb-2">Reports</label>
-        <app-ticket-reports></app-ticket-reports>
+        <app-ticket-reports [policyDetails]="policyDetails"></app-ticket-reports>
 
         <app-ticket-documents [currentTicket]="currentTicket">
         </app-ticket-documents>

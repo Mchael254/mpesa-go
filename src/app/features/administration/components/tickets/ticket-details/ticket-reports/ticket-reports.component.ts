@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Logger} from "../../../../../../shared/services";
 import {allTicketModules} from "../../../../data/ticketModule";
 import {ActivatedRoute} from "@angular/router";
@@ -6,6 +6,10 @@ import {ReportsService} from "../../../../../../shared/services/reports/reports.
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {NotificationService} from "../../../../../lms/service/notification/notification.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {untilDestroyed} from "../../../../../../shared/services/until-destroyed";
+import {PoliciesService} from "../../../../../gis/services/policies/policies.service";
+import {AuthService} from "../../../../../../shared/services/auth.service";
 
 
 const log = new Logger('TicketReportsComponent');
@@ -16,7 +20,7 @@ const log = new Logger('TicketReportsComponent');
   styleUrls: ['./ticket-reports.component.css']
 })
 export class TicketReportsComponent implements OnInit {
-
+  @Input() policyDetails:any;
   selectedFormat: string = 'PDF';
   reportsWithLinks: any[] = [];
   module: string;
@@ -26,11 +30,27 @@ export class TicketReportsComponent implements OnInit {
   selectedReportName: string;
   isLoadingReport: boolean = false;
 
+  docDispatchForm: FormGroup;
+  dispatchReasonsData: any[];
+  saveDocumentRejectionData: any;
+  isLoading: boolean = false;
+
+  today = new Date();
+  year = this.today.getFullYear(); // Get the current year
+  month = (this.today.getMonth() + 1).toString().padStart(2, '0'); // Get the current month and pad with leading zero if necessary
+  day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
+
+  dateToday = `${this.year}-${this.month}-${this.day}`;
+
   constructor(
     private route: ActivatedRoute,
     private reportService: ReportsService,
     private messageService: GlobalMessagingService,
-    private notificationService: NotificationService) {
+    private notificationService: NotificationService,
+    private fb: FormBuilder,
+    private policiesService: PoliciesService,
+    private authService: AuthService,
+    private globalMessagingService: GlobalMessagingService,) {
 
   }
 
@@ -39,6 +59,16 @@ export class TicketReportsComponent implements OnInit {
       log.info(`query Params >>>`, params);
       this.module = params['module'];
       this.fetchReports(params['module'], '');
+    })
+    this.createDocDispatchForm();
+    this.getDispatchReasons();
+  }
+
+  createDocDispatchForm() {
+    this.docDispatchForm = this.fb.group({
+      dispatchDocuments: [''],
+      rejectionDescription: [''],
+      documentDispatched: ['']
     })
   }
 
@@ -229,45 +259,80 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
-  sendNotification() {
+  openDocDispatchModal() {
+    const modal = document.getElementById('docDispatchToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
+  }
+  closeDocDispatchModal() {
+    const modal = document.getElementById('docDispatchToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
+  }
 
-    const payload = {
-      address: ['john.gachoki@turnkeyafrica.com', 'example2@gmail.com'].filter(email => email), // Filter out any empty values
-      agentCode: 0,
-      attachments: [
-        {
-          content: 'string',
-          contentId: 'string',
-          disposition: 'string',
-          name: 'string',
-          type: 'string',
-        },
-      ],
-      clientCode: 0,
-      code: '524L',
-      emailAggregator: 'N',
-      from: 'string',
-      fromName: 'string',
-      message: 'Happy Birthday',
-      response: '524L',
-      sendOn: '2024-02-08T11:32:40.261Z',
-      status: 'D',
-      subject: 'Birthday Wishes',
-      systemCode: '0 for CRM, 1 for FMS',
-      systemModule: 'NB for New Business',
-
-    };
-    this.notificationService.sendEmail(payload).subscribe(
-      {
-        next:(res)=>{
-          const response = res
-          this.messageService.displaySuccessMessage('Success', 'Email sent successfully' );
-          console.log(res)
-        },
-        error : (error: HttpErrorResponse) => {
-          log.info(error);
-          this.messageService.displayErrorMessage('Error', 'Error, try again later' );
+  getDispatchReasons() {
+    // this.spinner.show();
+    this.policiesService.getDispatchRejectionReasons('EDD')
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.dispatchReasonsData = data.embedded[0];
+          // this.spinner.hide();
+          log.info('dispatch reasons>>', this.dispatchReasonsData);
         }
-      });
+      )
+  }
+
+  saveDispatchRejection() {
+    // log.info('>>>>', event.value)
+    const scheduleFormValues = this.docDispatchForm.getRawValue();
+    const assignee = this.authService.getCurrentUserName();
+    if (scheduleFormValues) {
+      const payload: any = {
+        code: 0,
+        dispatchApply: "N",
+        exemptReason: scheduleFormValues.rejectionDescription,
+        policyBatchNo: this.policyDetails?.batch_no,
+        preparedBy: assignee,
+        preparedDate: this.dateToday
+
+      }
+      this.policiesService.saveDispatchRejectReason(payload)
+        .subscribe({
+          next: (data) => {
+            this.saveDocumentRejectionData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully saved reason for dispatch rejection');
+            // this.cdr.detectChanges();
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Rejection reason not saved.'
+      );
+    }
+  }
+  onSave() {
+    this.globalMessagingService.displaySuccessMessage('Success', 'Saved');
+  }
+
+  ngOnDestroy(): void {
   }
 }
