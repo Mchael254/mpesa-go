@@ -7,7 +7,8 @@ import { environment } from '../../../../../../../environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,8 @@ export class SubclassesService {
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
-    private session_storage: SessionStorageService
+    private session_storage: SessionStorageService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -59,24 +61,21 @@ const headers = new HttpHeaders({
   const params = new HttpParams()
   .set('page', `${page}`)
   .set('pageSize', `${size}`)
-  return this.http.get<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`,{
-    params:params,
-    headers:headers
-  }).pipe(
+  return this.api.GET<Subclasses[]>(`sub-classes`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   )
 }
 
 getSubclasses(code: any): Observable<Subclasses>{
-  return this.http.get<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${code}`).pipe(
+  return this.api.GET<Subclasses>(`sub-classes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   )
 }
 createSubClass(data:Subclasses[]) {
   console.log(JSON.stringify(data))
-  return this.http.post<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`, JSON.stringify(data),this.httpOptions)
+  return this.api.POST<Subclasses[]>(`sub-classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -84,21 +83,21 @@ createSubClass(data:Subclasses[]) {
   } 
   updateSubClass(data:Subclasses,id:any){
     console.log(JSON.stringify(data))
-    return this.http.put<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<Subclasses>(`sub-classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   deleteSubClass(id:any){
-    return this.http.delete<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, this.httpOptions)
+    return this.api.DELETE<Subclasses>(`sub-classes/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getSubclassSectionBySCode(code: any): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${code}`).pipe(
+    return this.api.GET<any>(`subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -114,10 +113,7 @@ createSubClass(data:Subclasses[]) {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<subclassClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-clauses?subclassCode=${code}`, {
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<subclassClauses[]>(`subclass-clauses?subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )  }
@@ -134,10 +130,7 @@ createSubClass(data:Subclasses[]) {
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.http.get<Clauses>(`/${this.baseurl}/${this.setupsbaseurl}/clauses`, {
-        headers:headers,
-        params:params
-      }).pipe(
+      return this.api.GET<Clauses>(`clauses`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )  }

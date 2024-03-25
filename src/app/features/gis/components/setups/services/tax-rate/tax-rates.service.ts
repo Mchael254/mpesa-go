@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, retry, catchError, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { TaxRates } from '../../data/gisDTO';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +14,8 @@ export class TaxRatesService {
   setupsbaseurl = "setups/api/v1"
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
   ) { }
   httpOptions = {
     headers: new HttpHeaders({
@@ -49,24 +51,21 @@ export class TaxRatesService {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/tax-rates`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<any>(`tax-rates?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 
   }
   getTaxRates(code: any): Observable<TaxRates[]>{
 
-    return this.http.get<TaxRates[]>(`/${this.baseurl}/${this.setupsbaseurl}/tax-rates/${code}`).pipe(
+    return this.api.GET<TaxRates[]>(`tax-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createTaxRate(data:TaxRates[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<TaxRates[]>(`/${this.baseurl}/${this.setupsbaseurl}/tax-rates`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<TaxRates[]>(`tax-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -74,14 +73,14 @@ export class TaxRatesService {
     } 
     updateTaxRate(data:TaxRates,id:any): Observable<TaxRates> {
       console.log(JSON.stringify(data))
-      return this.http.put<TaxRates>(`/${this.baseurl}/${this.setupsbaseurl}/tax-rates/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<TaxRates>(`tax-rates/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deleteTaxRate(id:any){
-      return this.http.delete<TaxRates>(`/${this.baseurl}/${this.setupsbaseurl}/tax-rates/${id}`)
+      return this.api.DELETE<TaxRates>(`tax-rates/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

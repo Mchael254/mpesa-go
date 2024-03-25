@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { riskClauses } from '../../data/gisDTO';
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +14,8 @@ export class RiskClausesService {
   setupsbaseurl = "setups/api/v1"
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
   ) { }
   httpOptions = {
     headers: new HttpHeaders({
@@ -46,10 +48,7 @@ errorHandl(error: HttpErrorResponse) {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<riskClauses[]>(`/${this.baseurl}/${this.setupsbaseurl}/excesses/?riskCode=${code}`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<riskClauses[]>(`excesses/?riskCode=${code}&page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 

@@ -6,6 +6,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -15,8 +17,8 @@ export class ClassesSubclassesService {
 
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
-
+    public appConfig : AppConfigService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -30,17 +32,8 @@ export class ClassesSubclassesService {
   getAllSubclasses(): Observable<Subclasses[]>{
     let page = 0;
     let size = 100;
-  const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-    const params = new HttpParams()
-    .set('page', `${page}`)
-    .set('pageSize', `${size}`)
-    return this.http.get<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`,{
-      params:params,
-      headers:headers
-    }).pipe(
+
+    return this.api.GET<Subclasses[]>(`sub-classes?page=${page}&pageSize=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -48,21 +41,21 @@ export class ClassesSubclassesService {
 
   //TODO: Decide on which of the two methods below or above to use
   getSubclasses1(page: number = 0, pageSize: number = 10): Observable<SubclassesDTO[]> {
-    return this.http.get<SubclassesDTO[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes?pageNo=${page}&pageSize=${pageSize}`).pipe(
+    return this.api.GET<SubclassesDTO[]>(`sub-classes?pageNo=${page}&pageSize=${pageSize}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
 
   getSubclass(code: any): Observable<Subclasses>{
-    return this.http.get<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${code}`).pipe(
+    return this.api.GET<Subclasses>(`sub-classes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createSubClass(data:Subclasses[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<Subclasses[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<Subclasses[]>(`sub-classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -70,14 +63,14 @@ export class ClassesSubclassesService {
     }
     updateSubClass(data:Subclasses,id:any){
       console.log(JSON.stringify(data))
-      return this.http.put<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<Subclasses>(`sub-classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deleteSubClass(id:any){
-      return this.http.delete<Subclasses>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes/${id}`, this.httpOptions)
+      return this.api.DELETE<Subclasses>(`sub-classes/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -86,21 +79,21 @@ export class ClassesSubclassesService {
 
     /* CLASSES SETUPS */
     getAllClasses(): Observable<Classes[]>{
-      return this.http.get<Classes[]>(`/${this.baseurl}/${this.setupsbaseurl}/classes`,this.httpOptions).pipe(
+      return this.api.GET<Classes[]>(`classes`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
 
     getClasses(code: number): Observable<Classes>{
-      return this.http.get<Classes>(`/${this.baseurl}/${this.setupsbaseurl}/classes/${code}`).pipe(
+      return this.api.GET<Classes>(`classes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     createClass(data:Classes[]) {
       console.log(JSON.stringify(data))
-      return this.http.post<Classes[]>(`/${this.baseurl}/${this.setupsbaseurl}/classes`, JSON.stringify(data),this.httpOptions)
+      return this.api.POST<Classes[]>(`classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
@@ -108,14 +101,14 @@ export class ClassesSubclassesService {
       }
       updateClass(data:Classes,id:any){
         console.log(JSON.stringify(data))
-        return this.http.put<Classes>(`/${this.baseurl}/${this.setupsbaseurl}/classes/${id}`, JSON.stringify(data), this.httpOptions)
+        return this.api.PUT<Classes>(`classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
         )
       }
       deleteClass(id:any){
-        return this.http.delete<Classes>(`/${this.baseurl}/${this.setupsbaseurl}/classes/${id}`, this.httpOptions)
+        return this.api.DELETE<Classes>(`classes/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
@@ -139,13 +132,13 @@ errorHandl(error: HttpErrorResponse) {
 
 
   getAllClassPerils(): Observable<classPeril[]>{
-    return this.http.get<classPeril[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils`).pipe(
+    return this.api.GET<classPeril[]>(`subclass-section-perils`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getClassPeril(code: any): Observable<classPeril[]>{
-    return this.http.get<classPeril[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils/${code}`).pipe(
+    return this.api.GET<classPeril[]>(`subclass-section-perils/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -158,17 +151,14 @@ errorHandl(error: HttpErrorResponse) {
       'Accept': 'application/json',
 
     })
-    return this.http.get<classPeril[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils`,{
-      params:params,
-      headers:headers
-    }).pipe(
+    return this.api.GET<classPeril[]>(`subclass-section-perils`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createClassPeril(data:classPeril[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<classPeril[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<classPeril[]>(`subclass-section-perils`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -176,14 +166,14 @@ errorHandl(error: HttpErrorResponse) {
     }
     updateClassPeril(data:classPeril,id:any){
       console.log(JSON.stringify(data))
-      return this.http.put<classPeril>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<classPeril>(`subclass-section-perils/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deleteClassPeril(id:any){
-      return this.http.delete<classPeril>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-section-perils/${id}`, this.httpOptions)
+      return this.api.DELETE<classPeril>(`subclass-section-perils/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -192,20 +182,20 @@ errorHandl(error: HttpErrorResponse) {
 
 
     getAllPerils(): Observable<Peril[]>{
-      return this.http.get<Peril[]>(`/${this.baseurl}/${this.setupsbaseurl}/perils?pageNo=0&pageSize=100`).pipe(
+      return this.api.GET<Peril[]>(`perils?pageNo=0&pageSize=100`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     getPeril(code: any): Observable<Peril>{
-      return this.http.get<Peril>(`/${this.baseurl}/${this.setupsbaseurl}/perils/${code}`).pipe(
+      return this.api.GET<Peril>(`perils/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     createPeril(data:Peril[]) {
       console.log(JSON.stringify(data))
-      return this.http.post<Peril[]>(`/${this.baseurl}/${this.setupsbaseurl}/perils`, JSON.stringify(data),this.httpOptions)
+      return this.api.POST<Peril[]>(`perils`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
@@ -213,14 +203,14 @@ errorHandl(error: HttpErrorResponse) {
       }
       updatePeril(data:Peril,id:any){
         console.log(JSON.stringify(data))
-        return this.http.put<Peril>(`/${this.baseurl}/${this.setupsbaseurl}/perils/${id}`, JSON.stringify(data), this.httpOptions)
+        return this.api.PUT<Peril>(`perils/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
         )
       }
       deletePeril(id:any){
-        return this.http.delete<Peril>(`/${this.baseurl}/${this.setupsbaseurl}/perils/${id}`, this.httpOptions)
+        return this.api.DELETE<Peril>(`perils/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
           retry(1),
           catchError(this.errorHandl)
@@ -230,19 +220,19 @@ errorHandl(error: HttpErrorResponse) {
 
 
       getFields(){
-        return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/forms`).pipe(
+        return this.api.GET(`forms`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )
       }
       getField(code:number):Observable<fields[]>{
-        return this.http.get<fields[]>(`/${this.baseurl}/${this.setupsbaseurl}/forms/${code}`).pipe(
+        return this.api.GET<fields[]>(`forms/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )
       }
       updateFields(fields:fields[]){
-        return this.http.put<fields>(`/${this.baseurl}/${this.setupsbaseurl}/fields`, [fields],this.httpOptions)
+        return this.api.PUT<fields>(`fields`, [fields],API_CONFIG.GIS_SETUPS_BASE_URL)
   }
   /*SUBPERILS*/
 
@@ -254,10 +244,7 @@ errorHandl(error: HttpErrorResponse) {
           'Accept': 'application/json',
 
         })
-        return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/subperils`,{
-        params:params,
-        headers:headers
-      }).pipe(
+        return this.api.GET(`subperils`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )
@@ -265,7 +252,7 @@ errorHandl(error: HttpErrorResponse) {
 
    /* CLASS EXCESSES */
         getAllExcesses(): Observable<Excesses[]>{
-          return this.http.get<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`,this.httpOptions).pipe(
+          return this.api.GET<Excesses[]>(`class-excess`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
             retry(1),
             catchError(this.errorHandl)
           )
@@ -279,17 +266,14 @@ errorHandl(error: HttpErrorResponse) {
             'Accept': 'application/json',
 
           })
-          return this.http.get<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`,{
-            params:params,
-            headers:headers
-          }).pipe(
+          return this.api.GET<Excesses[]>(`class-excess`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
             retry(1),
             catchError(this.errorHandl)
           )
         }
 
         getExcessesDetails(code: number): Observable<Excesses>{
-          return this.http.get<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${code}`).pipe(
+          return this.api.GET<Excesses>(`class-excess/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
             retry(1),
             catchError(this.errorHandl)
           )
@@ -297,7 +281,7 @@ errorHandl(error: HttpErrorResponse) {
 
         createExcesses(data:Excesses[]) {
           console.log(JSON.stringify(data))
-          return this.http.post<Excesses[]>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess`, JSON.stringify(data),this.httpOptions)
+          return this.api.POST<Excesses[]>(`class-excess`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
             .pipe(
               retry(1),
               catchError(this.errorHandl)
@@ -305,14 +289,14 @@ errorHandl(error: HttpErrorResponse) {
           }
           updateExcesses(data:Excesses,id:any){
             console.log(JSON.stringify(data))
-            return this.http.put<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${id}`, JSON.stringify(data), this.httpOptions)
+            return this.api.PUT<Excesses>(`class-excess/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
             .pipe(
               retry(1),
               catchError(this.errorHandl)
             )
           }
           deleteExcesses(id:any){
-            return this.http.delete<Excesses>(`/${this.baseurl}/${this.setupsbaseurl}/class-excess/${id}`, this.httpOptions)
+            return this.api.DELETE<Excesses>(`class-excess/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
             .pipe(
               retry(1),
               catchError(this.errorHandl)
@@ -321,7 +305,7 @@ errorHandl(error: HttpErrorResponse) {
         /* LOVs */
 
       getConditions():Observable<Conditions>{
-        return this.http.get<Conditions>(`/${this.baseurl}/${this.setupsbaseurl}/excess-conditions`).pipe(
+        return this.api.GET<Conditions>(`excess-conditions`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )
@@ -335,10 +319,7 @@ errorHandl(error: HttpErrorResponse) {
           'Accept': 'application/json',
 
         })
-        return this.http.get<UWScreens>(`/${this.baseurl}/${this.setupsbaseurl}/screens`,{
-          params:params,
-          headers:headers
-        }).pipe(
+        return this.api.GET<UWScreens>(`screens`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )

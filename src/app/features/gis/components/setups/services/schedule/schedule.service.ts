@@ -3,6 +3,8 @@ import {Observable, retry} from "rxjs";
 import {ScreenCode, ScreenCodes} from "../../data/gisDTO";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -16,23 +18,24 @@ export class ScheduleService {
 
   constructor(
     private http: HttpClient,
-    private appConfig: AppConfigService
+    private appConfig: AppConfigService,
+    public api:ApiService
   ) { }
 
   getAllScreenCodes(): Observable<ScreenCodes> {
-    return this.http.get<ScreenCodes>(`/${this.baseUrl}/setups/api/v1/screens?pageNo=0&pageSize=1000`)
+    return this.api.GET<ScreenCodes>(`screens?pageNo=0&pageSize=1000`,API_CONFIG.GIS_SETUPS_BASE_URL)
   }
 
   updateScreenCode(screenCode: ScreenCode): Observable<ScreenCode>{
-    return this.http.put<ScreenCode>(
-      `/${this.baseUrl}/setups/api/v1/screens/${screenCode.code}`, JSON.stringify(screenCode),
-      {headers: this.headers}
+    return this.api.PUT<ScreenCode>(
+      `screens/${screenCode.code}`, JSON.stringify(screenCode),
+      API_CONFIG.GIS_SETUPS_BASE_URL
     )
   }
   createScreenCode(screenCode: ScreenCode) : Observable<ScreenCode> {
-    return this.http.post<ScreenCode>(
-      `/${this.baseUrl}/setups/api/v1/screens`,
-      JSON.stringify(screenCode), {headers: this.headers}
+    return this.api.POST<ScreenCode>(
+      `screens`,
+      JSON.stringify(screenCode), API_CONFIG.GIS_SETUPS_BASE_URL
     )
   }
 }
