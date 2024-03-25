@@ -4,6 +4,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +15,8 @@ export class ShortPeriodService {
 
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
   ) { }
 
 
@@ -42,20 +45,20 @@ errorHandl(error: HttpErrorResponse) {
   
 
   getAllSPRates():Observable<any>{
-    return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates`).pipe(
+    return this.api.GET(`short-period-rates`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getSPRates(code:number):Observable<shortPeriod>{
-    return this.http.get<shortPeriod>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates/${code}`).pipe(
+    return this.api.GET<shortPeriod>(`short-period-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createSPRates(data:shortPeriod[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<shortPeriod[]>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<shortPeriod[]>(`short-period-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -63,14 +66,14 @@ errorHandl(error: HttpErrorResponse) {
     } 
     updateSPRates(data:shortPeriod,id:any){
       console.log(JSON.stringify(data))
-      return this.http.put<shortPeriod>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<shortPeriod>(`short-period-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deleteSPRates(id:number){
-      return this.http.delete<shortPeriod>(`/${this.baseurl}/${this.setupsbaseurl}/short-period-rates/${id}`, this.httpOptions)
+      return this.api.DELETE<shortPeriod>(`short-period-rates/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

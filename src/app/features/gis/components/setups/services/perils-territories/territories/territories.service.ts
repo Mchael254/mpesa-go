@@ -4,6 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 import { territories } from '../../../data/gisDTO';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +16,8 @@ export class TerritoriesService {
 
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
     
     ) { }
 
@@ -42,20 +45,20 @@ errorHandl(error: HttpErrorResponse) {
    /*TERRITORIES*/
 
    getAllTerritories():Observable<any>{
-    return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/territories`).pipe(
+    return this.api.GET(`territories`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getTerritory(code:number):Observable<territories>{
-    return this.http.get<territories>(`/${this.baseurl}/${this.setupsbaseurl}/territories/${code}`).pipe(
+    return this.api.GET<territories>(`territories/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createTerritory(data:territories[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<territories[]>(`/${this.baseurl}/${this.setupsbaseurl}/territories`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<territories[]>(`territories`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -63,7 +66,7 @@ errorHandl(error: HttpErrorResponse) {
     } 
     updateTerritory(data:territories,id:any){
       console.log(JSON.stringify(data))
-      return this.http.put<territories>(`/${this.baseurl}/${this.setupsbaseurl}/territories/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<territories>(`territories/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

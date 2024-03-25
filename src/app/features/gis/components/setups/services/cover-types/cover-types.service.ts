@@ -4,7 +4,8 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {CoverTypes} from "../../data/gisDTO";
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,9 @@ export class CoverTypesService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public appConfig : AppConfigService) { }
+              public appConfig : AppConfigService,
+              public api:ApiService
+              ) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -41,7 +44,7 @@ export class CoverTypesService {
    * Get all cover types
    */
   getAllCovertypes1(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types?pageNo=0&pageSize=10`).pipe(
+    return this.api.GET<any>(`cover-types?pageNo=0&pageSize=10`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -53,7 +56,7 @@ export class CoverTypesService {
    */
   getCoverType(code: any): Observable<CoverTypes>{
 
-    return this.http.get<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${code}`).pipe(
+    return this.api.GET<CoverTypes>(`cover-types/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -65,7 +68,7 @@ export class CoverTypesService {
    */
   createCover(data:CoverTypes) {
     console.log(JSON.stringify(data))
-    return this.http.post<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<CoverTypes>(`cover-types`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -79,7 +82,7 @@ export class CoverTypesService {
    */
   updateCover(data:CoverTypes,id:any): Observable<CoverTypes> {
     console.log(JSON.stringify(data))
-    return this.http.put<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${id}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<CoverTypes>(`cover-types/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -91,7 +94,7 @@ export class CoverTypesService {
    * @param id of the cover type
    */
   deleteCover(id:any){
-    return this.http.delete<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${id}`)
+    return this.api.DELETE<CoverTypes>(`cover-types/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

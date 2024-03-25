@@ -4,6 +4,8 @@ import {catchError, retry} from "rxjs/operators";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {subSections} from "../../data/gisDTO";
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,9 @@ export class SubClassSectionsService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public appConfig : AppConfigService) { }
+              public appConfig : AppConfigService,
+              public api:ApiService
+              ) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -46,7 +50,7 @@ export class SubClassSectionsService {
    * @param subClassCode Subclass code
    */
   getSubclassSectionBySCode(subClassCode: any): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${subClassCode}`).pipe(
+    return this.api.GET<any>(`subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -57,7 +61,7 @@ export class SubClassSectionsService {
    * @param subClassSectionCode of type number
    */
   getSingleSubSection(subClassSectionCode: number): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections/${subClassSectionCode}`).pipe(
+    return this.api.GET<any>(`subclass-sections/${subClassSectionCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -69,7 +73,7 @@ export class SubClassSectionsService {
    * @returns Observable of type subSections
    */
   createSubSections(data: subSections): Observable<subSections>{
-    return this.http.post<subSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<subSections>(`subclass-sections`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -84,7 +88,7 @@ export class SubClassSectionsService {
    */
   updatesubSection(data: subSections, subClassSectionCode:number): Observable<subSections> {
     console.log(JSON.stringify(data))
-    return this.http.put<subSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections/${subClassSectionCode}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<subSections>(`subclass-sections/${subClassSectionCode}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -97,7 +101,7 @@ export class SubClassSectionsService {
    * @param subClassSectionCode of type number
    */
   deleteSubclassSection(subClassSectionCode: any): Observable<subSections>{
-    return this.http.delete<subSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections/${subClassSectionCode}`).pipe(
+    return this.api.DELETE<subSections>(`subclass-sections/${subClassSectionCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
