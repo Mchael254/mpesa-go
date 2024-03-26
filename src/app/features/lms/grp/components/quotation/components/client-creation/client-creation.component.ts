@@ -33,7 +33,8 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   clientId: number;
   OrganizationClientType: ClientTypeDTO[];
   clientCode: number;
-  patchedClientId: number
+  patchedClientId: number;
+  organizationId: number;
 
   @ViewChild('clientDropdown') clientDropdown: Dropdown;
 
@@ -371,7 +372,7 @@ selectState(_event: any) {
 }
 
 getClntTypes() {
-  this.client_service.getClientType(2).subscribe((clntType: ClientTypeDTO[]) => {
+  this.client_service.getClientType(this.organizationId).subscribe((clntType: ClientTypeDTO[]) => {
 console.log("clntType", clntType)
 this.OrganizationClientType = clntType;
   })
