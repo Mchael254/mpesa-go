@@ -96,6 +96,6 @@ export class EntityBasicInfoComponent {
       error: (err) => {}
     })
   }
-  
+
 
 }

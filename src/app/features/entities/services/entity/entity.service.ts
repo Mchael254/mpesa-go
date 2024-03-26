@@ -1,27 +1,31 @@
-import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
+import {Injectable, signal} from '@angular/core';
+import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {AppConfigService} from "../../../../core/config/app-config-service";
 
-import { Pagination } from '../../../../shared/data/common/pagination';
+import {Pagination} from '../../../../shared/data/common/pagination';
 import {
   AccountReqPartyId,
   EntityDto,
   EntityResDTO,
   IdentityModeDTO,
   PoliciesDTO,
-  ReqPartyById,
+  ReqPartyById
 } from '../../data/entityDto';
-import { PartyTypeDto } from '../../data/partyTypeDto';
-import { PartyAccountsDetails } from '../../data/accountDTO';
-import { UtilService } from '../../../../shared/services/util/util.service';
-import { ApiService } from '../.../../../../../shared/services/api/api.service';
-import { API_CONFIG } from '../../../../../environments/api_service_config';
-import { ClaimsDTO } from '../../../../features/gis/data/claims-dto';
+import {PartyTypeDto} from '../../data/partyTypeDto';
+import {PartyAccountsDetails} from '../../data/accountDTO';
+import {UtilService} from "../../../../shared/services/util/util.service";
+import {ApiService} from 'src/app/shared/services/api/api.service';
+import {API_CONFIG} from 'src/environments/api_service_config';
+import {ClaimsDTO} from 'src/app/features/gis/data/claims-dto';
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class EntityService {
+
+  baseUrl = this.appConfig.config.contextPath.setup_services;
   private entity$ = new BehaviorSubject<EntityDto>({
     partyTypeId: 0,
     profilePicture: '',
@@ -82,7 +86,13 @@ export class EntityService {
 
   public searchTermObject = signal({});
 
-  constructor(private utilService: UtilService, private api: ApiService) {}
+  constructor(
+    private http: HttpClient,
+    private appConfig: AppConfigService,
+    private utilService: UtilService,
+    private api: ApiService,
+    private session_storage: SessionStorageService,
+  ) { }
 
   setSearchTerm(searchTerm: string) {
     this.searchTermSource.next(searchTerm);
@@ -114,6 +124,11 @@ export class EntityService {
     sortList: string,
     order: string = 'desc'
   ): Observable<Pagination<EntityDto>> {
+    const baseUrl = this.appConfig.config.contextPath.accounts_services;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    });
     let params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
@@ -225,13 +240,6 @@ export class EntityService {
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
-
-  // fetchGisQuotationsByClientId_test(id: number) {
-  //   return this.api.GET<any>(
-  //     `api/v2/view/clientCode?clientId=${id}`,
-  //     API_CONFIG.GIS_QUOTATIONS_BASE_URL
-  //   )
-  // }
 
   fetchGisPoliciesByClientId(id: number) {
     return this.api.GET<Pagination<PoliciesDTO>>(

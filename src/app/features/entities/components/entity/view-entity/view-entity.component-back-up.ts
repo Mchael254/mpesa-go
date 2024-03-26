@@ -5,7 +5,7 @@ import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, tap, Observable, combineLatestWith, merge, forkJoin, of} from 'rxjs';
+import { ReplaySubject, finalize, takeUntil, tap } from 'rxjs';
 import { ChartOptions, ChartType } from 'chart.js';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,13 +27,13 @@ import { ClaimsDTO } from '../../../../gis/data/claims-dto';
 import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {CountryDto} from "../../../../../shared/data/common/countryDto";
-import {combineLatest, take} from "rxjs/operators";
+import {take} from "rxjs/operators";
 
 const log = new Logger("ViewEntityComponent")
 
 @Component({
   selector: 'app-view-entity',
-  templateUrl: './view-entity2.component.html',
+  templateUrl: './view-entity.component.html',
   styleUrls: ['./view-entity.component.css'],
 })
 export class ViewEntityComponent implements OnInit {
@@ -44,8 +44,6 @@ export class ViewEntityComponent implements OnInit {
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
   unAssignedPartyTypes: PartyTypeDto[] = [];
-  unAssignedPartyTypes$: Observable<PartyTypeDto[]>;
-
   selectedRole: PartyTypeDto;
   accounts: Roles[]=[];
   policies: Pagination<PoliciesDTO> = <Pagination<PoliciesDTO>>{};
@@ -64,11 +62,7 @@ export class ViewEntityComponent implements OnInit {
   entityId: number;
   accountCode: number;
   entityPartyIdDetails: ReqPartyById;
-  entityPartyIdDetails$: Observable<ReqPartyById>;
-
   entityAccountIdDetails: AccountReqPartyId[];
-  entityAccountIdDetails$: Observable<AccountReqPartyId[]>;
-
   selectedAccount: AccountReqPartyId;
   selectedFile: File;
 
@@ -81,21 +75,16 @@ export class ViewEntityComponent implements OnInit {
   dateFrom = `${this.year-4}-${this.month}-${this.day}`;
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  // public pieChartOptions: ChartOptions =  {
-  //   responsive: true,
-  // };
-  // public pieChartLabels: any[] = ['Motor', 'PA', 'Domestic'];
-  // public pieChartData: any = [ {data: [23, 25, 30]}];
-  // public pieChartType: ChartType = "doughnut";
-  // public  pieChartLegend = true;
-  // public pieChartPlugins = [];
+  public pieChartOptions: ChartOptions =  {
+    responsive: true,
+  };
+  public pieChartLabels: any[] = ['Motor', 'PA', 'Domestic'];
+  public pieChartData: any = [ {data: [23, 25, 30]}];
+  public pieChartType: ChartType = "doughnut";
+  public  pieChartLegend = true;
+  public pieChartPlugins = [];
 
   partyAccountDetails: PartyAccountsDetails;
-  partyAccountDetails$: Observable<PartyAccountsDetails>;
-
-  allEntityDetails$: any;
-  allEntityDetails: any;
-
   accountId: number;
 
   countries: CountryDto[] = []
@@ -106,6 +95,12 @@ export class ViewEntityComponent implements OnInit {
     private router: Router,
     private entityService: EntityService,
     private accountService: AccountService,
+    private staffService: StaffService,
+    private clientService: ClientService,
+    private serviceProviderService: ServiceProviderService,
+    private intermediaryService: IntermediaryService,
+    // private datePipe: DatePipe,
+    // private messageService: MessageService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private countryService: CountryService
@@ -118,15 +113,11 @@ export class ViewEntityComponent implements OnInit {
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
-
+    log.info(`Entity id is ${this.entityId}`);
     this.getEntityByPartyId();
-
     this.getEntityAccountById();
-
-
     this.getCountries();
   }
-
 
   getCountries() {
     this.countryService.getCountries()
