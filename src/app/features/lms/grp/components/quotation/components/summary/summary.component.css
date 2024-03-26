@@ -183,6 +183,20 @@
     cursor: pointer;
   }
 
+  .report-button {
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: transparent;
+    color: #00529B;
+    margin-top: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 0 auto; /* Center horizontally */
+}
+
   #tdStyle {
     padding-left: 0.55rem;
   }
