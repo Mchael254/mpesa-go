@@ -6,7 +6,7 @@
           <div class="col-sm-4">
             <div class="mb-3">
               <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search by client's name or quotation no.">
-            </div>            
+            </div>
           </div>
           <div class="col-sm-2">
             <select class="form-select" aria-label="Default select example">
@@ -14,7 +14,7 @@
               <option value="1">One</option>
               <option value="2">Two</option>
               <option value="3">Three</option>
-            </select>            
+            </select>
           </div>
           <div class="offset-2 col-sm-4 text-end">
             <button type="button" class="btn btn-primary btn-sm">Create quick quote</button>
@@ -52,7 +52,7 @@
                   <td>xxx</td>
                   <td>{{ quot?.premium | currency : ' ' }}</td>
                   <td>{{ quot?.agentCode }}</td>
-                  <td>xxx</td>
+                  <td>{{ quot?.dateCreated }}</td>
                   <td>{{ quot?.coverFrom }}</td>
                   <td>{{ quot?.coverTo }}</td>
                   <td>{{ quot?.status }}</td>
@@ -95,7 +95,7 @@
           <div class="col-sm-4">
             <div class="mb-3">
               <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search for policy">
-            </div>            
+            </div>
           </div>
           <div class="offset-2 col-sm-6 text-end">
             <button type="button" class="btn btn-primary btn-sm">Create new policy</button>
@@ -132,11 +132,11 @@
             <ng-template pTemplate="body" let-policy>
                 <tr>
                   <td>{{ policy?.policy_no }}</td>
+                  <td>xxx</td>
                   <td>{{ policy?.total_sum_insured | currency: ' ' }}</td>
                   <td>{{ policy?.premium | currency: ' ' }}</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
+                  <td>{{ policy?.agency }}</td>
+                  <td>{{ policy?.preparedDate }}</td>
                   <td>{{ policy?.wef_dt }}</td>
                   <td>{{ policy?.wet_dt }}</td>
                   <td>{{ policy?.authorizedStatus }}</td>
@@ -180,7 +180,7 @@
           <div class="col-sm-4">
             <div class="mb-3">
               <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search for claim">
-            </div>            
+            </div>
           </div>
           <div class="offset-2 col-sm-6 text-end">
             <button type="button" class="btn btn-primary btn-sm">Report a claim</button>

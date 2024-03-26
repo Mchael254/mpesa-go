@@ -1,0 +1,39 @@
+<div class="entity-container">
+<!--    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
+    <div class="p-2">
+        <p-tabView>
+            <p-tabPanel header="Overview">
+              <!--<ng-container *ngIf="entityPartyIdDetails$ | async as entityPartyIdDetails">
+                <ng-container *ngIf="entityAccountIdDetails$ | async as entityAccountIdDetails">
+                  <ng-container *ngIf="partyAccountDetails$ | async as partyAccountDetails">
+
+                  </ng-container>
+                </ng-container>
+              </ng-container>-->
+
+              <ng-container *ngIf="entityPartyIdDetails && entityAccountIdDetails && partyAccountDetails">
+                <app-entity-basic-info
+                  *ngIf="unAssignedPartyTypes"
+                  [unAssignedPartyTypes]="unAssignedPartyTypes"
+                  [partyAccountDetails]="partyAccountDetails"
+                  [entityAccountIdDetails]="entityAccountIdDetails"
+                  [entityPartyIdDetails]="entityPartyIdDetails"
+                  (fetchTransactions)="fetchTransactions($event)"
+                ></app-entity-basic-info>
+              </ng-container>
+
+                <ng-container *ngIf="partyAccountDetails">
+                  <app-entity-other-details
+                    [countries]="countries"
+                    [partyAccountDetails]="partyAccountDetails"
+                  ></app-entity-other-details>
+                </ng-container>
+
+            </p-tabPanel>
+            <p-tabPanel header="Transactions">
+                <app-entity-transactions
+                 ></app-entity-transactions>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>

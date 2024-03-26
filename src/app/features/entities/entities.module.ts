@@ -53,7 +53,7 @@ import { EntityTransactionsComponent } from './components/entity/view-entity/ent
         StaffModalComponent,
         EntityBasicInfoComponent,
         EntityOtherDetailsComponent,
-        EntityTransactionsComponent
+        EntityTransactionsComponent,
     ],
     imports: [
         CommonModule,
