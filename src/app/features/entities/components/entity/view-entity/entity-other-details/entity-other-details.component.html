@@ -1,3 +1,16 @@
+<div class="row">
+  <div class="col-sm-12">
+    <h5 class=" mt-5">
+        Additional Information
+        <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%;">
+            <i
+                class="fa fa-pencil"
+                style="color:#00529B; font-size: 0.8em;"
+            ></i>
+        </button>
+    </h5>
+</div>
+</div>
 <p-tabView>
   <p-tabPanel header="Contact Details">
       <div class="row">
@@ -6,11 +19,11 @@
                   <tbody>
                     <tr>
                       <td>Mobile number</td>
-                      <th>xxx</th>
+                      <th>{{ partyAccountDetails?.contactDetails?.smsNumber }}</th>
                     </tr>
                     <tr>
-                      <td>Country</td>
-                      <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                      <td>County</td>
+                      <th>{{ partyAccountDetails?.address?.state_id }}</th>
                     </tr>
                   </tbody>
               </table>
@@ -24,20 +37,25 @@
                     </tr>
                     <tr>
                       <td>Physical address</td>
-                      <th>xxx</th>
+                      <th>
+                        {{ partyAccountDetails?.address?.house_number }}
+                        {{ partyAccountDetails?.address?.physical_address }}
+                      </th>
                     </tr>
                   </tbody>
-              </table> 
+              </table>
           </div>
           <div class="col-sm-3 offset-1">
               <table class="table table-borderless">
                   <tbody>
                     <tr>
                       <td>Country</td>
-                      <th>xxx</th>
+                      <th>
+                        {{ getCountryName(partyAccountDetails?.address?.country_id) }}
+                      </th>
                     </tr>
                   </tbody>
-              </table> 
+              </table>
           </div>
       </div>
   </p-tabPanel>
@@ -70,7 +88,7 @@
                         <th>xxx</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
             <div class="col-sm-3 offset-1">
                 <table class="table table-borderless">
@@ -80,7 +98,7 @@
                         <th>xxx</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
         </div>
     </p-tabPanel>
@@ -92,11 +110,11 @@
                     <tbody>
                       <tr>
                         <td>Nationality</td>
-                        <th>xxx</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.citizenship_country_id }}</th>
                       </tr>
                       <tr>
                         <td>Citizenship</td>
-                        <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.citizenship_country_id }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -106,24 +124,24 @@
                     <tbody>
                       <tr>
                         <td>Source of funds</td>
-                        <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
                       </tr>
                       <tr>
-                        <td>Sectory</td>
-                        <th>xxx</th>
+                        <td>Sector</td>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.sector_id }}</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
             <div class="col-sm-3 offset-1">
                 <table class="table table-borderless">
                     <tbody>
                       <tr>
                         <td>Type of employment</td>
-                        <th>xxx</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.occupation_id }}</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
         </div>
     </p-tabPanel>
@@ -135,15 +153,15 @@
                     <tbody>
                       <tr>
                         <td>Trading names</td>
-                        <th>xxx</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.tradingName }}</th>
                       </tr>
                       <tr>
                         <td>Operation country</td>
-                        <th>xxx</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.operating_country_id }}</th>
                       </tr>
                       <tr>
                         <td>Parent country</td>
-                        <th>xxx</th>
+                        <th>{{ partyAccountDetails?.wealthAmlDetails?.parent_country_id }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -160,7 +178,7 @@
                         <th>xxx</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
             <div class="col-sm-3 offset-1">
                 <table class="table table-borderless">
@@ -174,7 +192,7 @@
                         <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
                       </tr>
                     </tbody>
-                </table> 
+                </table>
             </div>
         </div>
     </p-tabPanel>

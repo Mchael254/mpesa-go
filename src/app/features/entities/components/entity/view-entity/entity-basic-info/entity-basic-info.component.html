@@ -2,16 +2,16 @@
     <div class="col-sm-4">
         <div class="row profile">
             <div class="col-sm-3">
-                <img 
-                  class="profile-image" 
-                  src="{{entityPartyIdDetails?.profileImage || '../../../../../../../assets/images/headshot.png'}}" 
-                  alt="{{entityPartyIdDetails?.name | titlecase}}"
+                <img
+                  class="profile-image"
+                  src="{{ entityPartyIdDetails?.profileImage || '../../../../../../../assets/images/headshot.png'}}"
+                  alt="{{ entityPartyIdDetails?.name | titlecase}}"
                 >
             </div>
             <div class="col-sm-9">
                 <h5>{{ entityPartyIdDetails?.name | titlecase }}</h5>
                 <ng-container *ngFor="let role of entityAccountIdDetails">
-                  <button 
+                  <button
                     class="btn btn-sm"
                     [ngClass]="{
                       'btn-primary': partyAccountDetails?.partyType?.id === role?.partyType?.id,
@@ -31,14 +31,14 @@
         </button>
     </div>
     <div class="col-sm-2 mt-4">
-        <p>WEF 
+        <p>WEF
           <span class="ms-4 fw-bold">
           {{ entityPartyIdDetails?.effectiveDateFrom | date }}
         </span>
         </p>
     </div>
     <div class="col-sm-2 mt-4">
-        <p>WET 
+        <p>WET
           <span class="ms-4 fw-bold">
             {{ entityPartyIdDetails?.effectiveDateTo | date }}
           </span>
@@ -59,8 +59,8 @@
         <h5 class=" mt-5">
             Basic Information
             <button class="btn btn-light btn-sm ms-4" style="border-radius: 100%;">
-                <i 
-                    class="fa fa-pencil" 
+                <i
+                    class="fa fa-pencil"
                     style="color:#00529B; font-size: 0.8em;"
                 ></i>
             </button>
@@ -146,7 +146,7 @@
         </ng-container>
       </div>
       <!-- <div class="modal-footer">
-        <button type="button" 
+        <button type="button"
         class="btn btn-secondary" data-bs-dismiss="modal"
         (click)="getUnAssignedRoles()"
         >Close</button>
