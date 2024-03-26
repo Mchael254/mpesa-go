@@ -4,7 +4,8 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {Subclass, SubclassesDTO} from "../../data/gisDTO";
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,9 @@ export class ProductSubclassService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public appConfig : AppConfigService) { }
+              public appConfig : AppConfigService,
+              public api:ApiService
+              ) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -45,7 +48,7 @@ export class ProductSubclassService {
    */
   updateSubclass(data:any,code:number): Observable<SubclassesDTO> {
     console.log(JSON.stringify(data))
-    return this.http.put<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<SubclassesDTO>(`product-subclasses/${code}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -57,7 +60,7 @@ export class ProductSubclassService {
    * @param code of type number which is the product subclass code
    */
   deleteSubclass(code: any): Observable<SubclassesDTO>{
-    return this.http.delete<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`).pipe(
+    return this.api.DELETE<SubclassesDTO>(`product-subclasses/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -70,7 +73,7 @@ export class ProductSubclassService {
    */
   createSubclasses(data: Subclass): Observable<Subclass> {
     console.log(JSON.stringify(data))
-    return this.http.post<Subclass>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses`, JSON.stringify(data), this.httpOptions)
+    return this.api.POST<Subclass>(`product-subclasses`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
       )
   }

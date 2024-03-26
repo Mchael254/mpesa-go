@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
-import {AppConfigService} from '../../../../core/config/app-config-service'
+import {APP_CONFIG, AppConfigService} from '../../../../core/config/app-config-service'
 import {Observable, catchError, retry, throwError} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
@@ -9,7 +9,8 @@ import { environment } from '../../../../../environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -32,7 +33,8 @@ export class QuotationsService {
   constructor(
     private http: HttpClient,
     private appConfig: AppConfigService,
-    private session_storage: SessionStorageService
+    private session_storage: SessionStorageService,
+    private api:ApiService
   ) { }
 
  // Error handling
@@ -64,11 +66,7 @@ export class QuotationsService {
       .set('dateFrom', `${dateFrom}`)
       .set('dateTo', `${dateTo}`);
 
-    return this.http.get<Pagination<QuotationsDTO>>(`/${this.baseUrl}/quotation/api/v1/quotations/client/` + id,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<Pagination<QuotationsDTO>>(`v1/quotations/client/` + id, API_CONFIG.GIS_QUOTATION_BASE_URL );
   }
   getAllQuotationSources(): Observable<any>{
     let page = 0;
@@ -78,62 +76,48 @@ export class QuotationsService {
       'Accept': 'application/json',
     
     })
-    const params = new HttpParams()
-    .set('pageNo', `${page}`)
-      .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseUrl}/quotation/api/v2/quotation-sources`,{
-      headers:headers,
-      params:params
-    }).pipe(
+   
+    return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 
   }
   getFormFields(shortDescription:any): Observable<any>{
-   
-   const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    
-    })
-    const params = new HttpParams()
-    return this.http.get<any>(`/${this.baseUrl}/${this.setupsbaseurl}/forms/${shortDescription}`,{
-      headers:headers,
-      params:params
-    }).pipe(
+  
+    return this.api.GET<any>(`/forms/${shortDescription}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 
   }
    createQuotation(data:quotationDTO,user){
-    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation?user=${user}`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
       
   }
   createQuotationRisk(quotationCode ,data:quotationRisk[]){
     // console.log(JSON.stringify(data),"Data from the service")
-    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST(`v1/quotation-risks?quotationCode=${quotationCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   getRiskSection(quotationRiskCode):Observable<riskSection[]>{
-    return this.http.get<riskSection[]>(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`)
+    return this.api.GET<riskSection[]>(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
   createRiskSection(quotationRiskCode ,data:riskSection[]){
-    return this.http.post(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
   updateRiskSection(quotationRiskCode ,data:riskSection[]){
-    return this.http.put(`/${this.baseUrl}/quotation/api/v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),this.httpOptions)
+    return this.api.PUT(`v1/risk-sections?quotationRiskCode=${quotationRiskCode}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
 
   }
   getClientQuotations(quotationNo){
-    return this.http.get(`/${this.baseUrl}/quotation/api/v2/quotation/view?quotationNo=${quotationNo}`)
+    return this.api.GET(`v2/quotation/view?quotationNo=${quotationNo}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
   }
   // computePremium(quotationCode) {
   //   return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium?quotationCode=${quotationCode}`, {});
   // }
   computePremium(quotationCode) {
     const params = new HttpParams().set('quotationCode', quotationCode);
-    return this.http.post(`/${this.baseUrl}/quotation/api/v1/quotation/compute-premium/${quotationCode}`, null);
+    return this.api.POST(`v1/quotation/compute-premium/${quotationCode}`, null,API_CONFIG.GIS_QUOTATION_BASE_URL);
   }
   quotationUtils(transactionCode){
     const params = new HttpParams()

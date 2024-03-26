@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { ClientRemarks, Clients, Agents } from '../../data/gisDTO';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,8 @@ export class ClientRemarksService {
 
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -50,9 +53,7 @@ return throwError(errorMessage);
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks`,{
-      headers:headers
-    }).pipe(
+    return this.api.GET<any>(`client-remarks`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -60,7 +61,7 @@ return throwError(errorMessage);
 
   getClientRemarks(code: any): Observable<ClientRemarks[]>{
 
-    return this.http.get<ClientRemarks[]>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks/${code}`).pipe(
+    return this.api.GET<ClientRemarks[]>(`client-remarks/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -79,10 +80,7 @@ return throwError(errorMessage);
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/clients`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<any>(`clients`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -90,7 +88,7 @@ return throwError(errorMessage);
 
   getClient(code: any): Observable<Clients[]>{
 
-    return this.http.get<Clients[]>(`/${this.crmurl}/clients/${code}`).pipe(
+    return this.api.GET<Clients[]>(`clients/${code}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -110,17 +108,14 @@ return throwError(errorMessage);
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
       .set('organizationId',`${org}`)
-    return this.http.get<any>(`/${this.crmurl}/agents`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<any>(`agents`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getAgent(code: any): Observable<Agents[]>{
 
-    return this.http.get<Agents[]>(`/${this.crmurl}/clients/${code}`).pipe(
+    return this.api.GET<Agents[]>(`clients/${code}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -128,7 +123,7 @@ return throwError(errorMessage);
 
   createRemark(data:ClientRemarks[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<ClientRemarks[]>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<ClientRemarks[]>(`/client-remarks`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -137,7 +132,7 @@ return throwError(errorMessage);
 
     updateRemark(data:ClientRemarks,id:any): Observable<ClientRemarks> {
       console.log(JSON.stringify(data))
-      return this.http.put<ClientRemarks>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<ClientRemarks>(`client-remarks/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -145,7 +140,7 @@ return throwError(errorMessage);
     }
 
     deleteRemark(id:any){
-      return this.http.delete<ClientRemarks>(`/${this.baseurl}/${this.setupsbaseurl}/client-remarks/${id}`)
+      return this.api.DELETE<ClientRemarks>(`client-remarks/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -163,10 +158,7 @@ return throwError(errorMessage);
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.http.get<any>(`/${this.crmurl}/agents`,{
-        headers:headers,
-        params:params
-      }).pipe(
+      return this.api.GET<any>(`agents?page=${page}&pageSize=${size}`,API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )

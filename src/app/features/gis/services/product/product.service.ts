@@ -1,13 +1,14 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
-import { AppConfigService } from '../../../../core/config/app-config-service';
+import { APP_CONFIG, AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
 import { environment } from '../../../../../environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,8 @@ export class ProductService {
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
-    private session_storage: SessionStorageService
+    private session_storage: SessionStorageService,
+    private api:ApiService
     ) { }
 
     httpOptions = {
@@ -34,8 +36,8 @@ export class ProductService {
 
   getGroupedData(): Observable<any[]> {
     return forkJoin([
-      this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/products?pageNo=0&pageSize=100000`),
-      this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/product-groups?pageNo=0&pageSize=100000`),
+      this.api.GET(`products?pageNo=0&pageSize=100000`,API_CONFIG.GIS_SETUPS_BASE_URL),
+      this.api.GET(`product-groups?pageNo=0&pageSize=100000`,API_CONFIG.GIS_SETUPS_BASE_URL),
     ]).pipe(
       map(([products, productGroups]) => {
         return Object.values(products).map(product => {
@@ -47,7 +49,7 @@ export class ProductService {
   }
   getProductGroupByCode(code: number): Observable<Product_group[]>{
 
-    return this.http.get<Product_group[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups/${code}`).pipe(
+    return this.api.GET<Product_group[]>(`product-groups/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -55,38 +57,38 @@ export class ProductService {
   }
   createProductgroup(data: any): Observable<Product_group> {
     console.log(JSON.stringify(data))
-    return this.http.post<Product_group>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups`, JSON.stringify(data), this.httpOptions)
+    return this.api.POST<Product_group>(`product-groups`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
     )
   }
   getAllProducts(): Observable<Products[]> {
-    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products`, this.httpOptions).pipe(
+    return this.api.GET<Products[]>(`products`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getSubclasses1(): Observable<SubclassesDTO[]> {
-    return this.http.get<SubclassesDTO[]>(`/${this.baseurl}/${this.setupsbaseurl}/sub-classes?pageNo=0&pageSize=10`).pipe(
+    return this.api.GET<SubclassesDTO[]>(`sub-classes?pageNo=0&pageSize=10`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   updateProductGroupbyCode(data:any,code:any): Observable<Product_group>{
-    return this.http.put<Product_group>(`/${this.baseurl}/${this.setupsbaseurl}/product-groups/${code}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<Product_group>(`product-groups/${code}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getAllScheduleReports(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe();
+    return this.api.GET<any>(`report-groups`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe();
   }
   getAllScreens(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/screens`).pipe();
+    return this.api.GET<any>(`screens`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe();
   }
   getProductByCode(code: number): Observable<Products[]>{
 
-    return this.http.get<Products[]>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`, this.httpOptions).pipe(
+    return this.api.GET<Products[]>(`products/${code}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -94,7 +96,7 @@ export class ProductService {
   }
   getProductDetailsByCode(code: number): Observable<Products>{
 
-    return this.http.get<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`,this.httpOptions).pipe(
+    return this.api.GET<Products>(`products/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -102,7 +104,7 @@ export class ProductService {
   }
   getProductDocument(code: number): Observable<any>{
 
-    return this.http.get<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents?productCode=${code}`).pipe(
+    return this.api.GET<productDocument[]>(`product-documents?productCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -110,7 +112,7 @@ export class ProductService {
   }
   getFormScreen(code: number): Observable<FormScreen>{
 
-    return this.http.get<FormScreen>(`/${this.baseurl}/${this.setupsbaseurl}/forms/${code}`).pipe(
+    return this.api.GET<FormScreen>(`forms/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -118,12 +120,12 @@ export class ProductService {
   }
   createProducts(data: any): Observable<Products> {
     console.log(JSON.stringify(data))
-    return this.http.post<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products`, JSON.stringify(data), this.httpOptions)
+    return this.api.POST<Products>(`products`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
     )
   }
   editProducts (data:any,code:any): Observable<Products> {
-    return this.http.put<Products>(`/${this.baseurl}/${this.setupsbaseurl}/products/${code}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<Products>(`products/${code}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -131,39 +133,39 @@ export class ProductService {
   }
   createProductSubclasses(data: any): Observable<any> {
     // console.log(JSON.stringify(data))
-    return this.http.post<any>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses`, JSON.stringify(data), this.httpOptions)
+    return this.api.POST<any>(`product-subclasses`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
     )
   }
   getASubclasses (): Observable<SubclassesDTO>{
 
-    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?pageNo=0&pageSize=90`).pipe(
+    return this.api.GET<SubclassesDTO>(`product-subclasses?pageNo=0&pageSize=90`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
   }
   getProductSubclasses (productCode): Observable<SubclassesDTO>{
 
-    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses?productCode=${productCode}`, this.httpOptions).pipe(
+    return this.api.GET<SubclassesDTO>(`product-subclasses?productCode=${productCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );
   }
   getsubclassByCode(code: any): Observable<SubclassesDTO>{
-    return this.http.get<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`).pipe(
+    return this.api.GET<SubclassesDTO>(`product-subclasses/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
 
     )
   }
   updateSubclass(data:any,code:any): Observable<SubclassesDTO> {
     console.log(JSON.stringify(data))
-    return this.http.put<SubclassesDTO>(`/${this.baseurl}/${this.setupsbaseurl}/product-subclasses/${code}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<SubclassesDTO>(`product-subclasses/${code}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   saveProductDocument(data:productDocument[]) {
-    return this.http.post<productDocument[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-documents`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<productDocument[]>(`product-documents`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -172,13 +174,13 @@ export class ProductService {
      /* REPORT GROUP */
 
      getReportGroup(){
-      return this.http.get(`/${this.baseurl}/${this.setupsbaseurl}/report-groups`).pipe(
+      return this.api.GET(`report-groups`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     getReportGroupDetails(code:any):Observable<report[]>{
-      return this.http.get<report[]>(`/${this.baseurl}/${this.setupsbaseurl}/report-groups/${code}`).pipe(
+      return this.api.GET<report[]>(`report-groups/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )

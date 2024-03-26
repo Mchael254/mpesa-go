@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { ProductsExcludedTaxes } from '../../data/gisDTO';
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,8 @@ export class ProductsExcludedService {
   setupsbaseurl = "setups/api/v1"
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
   ) { }
   httpOptions = {
     headers: new HttpHeaders({
@@ -50,23 +52,21 @@ export class ProductsExcludedService {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/product-excluded-taxes?transactionTypeCode=${transactionTypeCode}`,{
-      headers:headers
-    }).pipe(
+    return this.api.GET<any>(`product-excluded-taxes?transactionTypeCode=${transactionTypeCode}&page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     ) 
   }
   getProductsExcluded(code: any): Observable<ProductsExcludedTaxes[]>{
       
-    return this.http.get<ProductsExcludedTaxes[]>(`/${this.baseurl}/${this.setupsbaseurl}/product-excluded-taxes/${code}`).pipe(
+    return this.api.GET<ProductsExcludedTaxes[]>(`product-excluded-taxes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createProductsExcluded(data:ProductsExcludedTaxes) {
     console.log(JSON.stringify(data))
-    return this.http.post<ProductsExcludedTaxes>(`/${this.baseurl}/${this.setupsbaseurl}/product-excluded-taxes`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<ProductsExcludedTaxes>(`product-excluded-taxes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -74,14 +74,14 @@ export class ProductsExcludedService {
     } 
     updateProductExcluded(data:ProductsExcludedTaxes,id:any): Observable<ProductsExcludedTaxes> {
       console.log(JSON.stringify(data))
-      return this.http.put<ProductsExcludedTaxes>(`/${this.baseurl}/${this.setupsbaseurl}/product-excluded-taxes/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<ProductsExcludedTaxes>(`product-excluded-taxes/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deleteProductExcluded(transactionTypeCode:any,productCode:any){
-      return this.http.delete<ProductsExcludedTaxes>(`/${this.baseurl}/${this.setupsbaseurl}/product-excluded-taxes/${transactionTypeCode}/${productCode}`)
+      return this.api.DELETE<ProductsExcludedTaxes>(`product-excluded-taxes/${transactionTypeCode}/${productCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

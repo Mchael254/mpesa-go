@@ -8,7 +8,8 @@ import { environment } from '../../../../../../../environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +19,10 @@ export class SectionsService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public appConfig : AppConfigService, private session_storage: SessionStorageService) { }
+              public appConfig : AppConfigService,
+              private session_storage: SessionStorageService,
+              private api:ApiService
+              ) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -56,10 +60,7 @@ export class SectionsService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<any>(`sections`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -74,10 +75,7 @@ export class SectionsService {
     })
     const params = new HttpParams()
      
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<any>(`sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -93,10 +91,7 @@ export class SectionsService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.http.get<subclassSection[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-sections?subClassCode=${subClassCode}`,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET<subclassSection[]>(`subclass-sections?subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
