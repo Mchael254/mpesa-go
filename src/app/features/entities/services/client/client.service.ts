@@ -100,8 +100,21 @@ export class ClientService {
     );
   }
 
-  getClientType(organizationId: number): Observable<any[]> {
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+  // getClientType(organizationId: number): Observable<any[]> {
+  //   const params = new HttpParams().set('organizationId', `${organizationId}`);
+  //   return this.api.GET<ClientTypeDTO[]>(
+  //     `client-types`,
+  //     API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
+  //     params
+  //   );
+  // }
+
+  getClientType(organizationId: number | null = null): Observable<any[]> {
+    let params = new HttpParams();
+    console.log("OrgIdPassed", organizationId)
+    if (organizationId !== null) {
+      params = params.set('organizationId', organizationId.toString());
+    }
     return this.api.GET<ClientTypeDTO[]>(
       `client-types`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,

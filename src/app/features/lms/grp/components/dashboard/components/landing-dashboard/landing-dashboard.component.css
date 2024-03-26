@@ -1,4 +1,4 @@
-.main {
+/* .main {
     padding: 40px;
     height: 100%;
 }
@@ -113,5 +113,150 @@
     .main {
         padding: 10px;
         height: auto;
+    }
+} */
+
+.main {
+    padding: 20px;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 4px;
+    min-height: 120px;
+    margin-bottom: 30px;
+    padding-left: 50px;
+    
+}
+
+.container > div {
+    margin-right: 20px;
+}
+
+.info {
+    display: flex;
+    flex-grow: 1; /* Items in .info will distribute equally */
+}
+
+.info > div {
+    flex-grow: 1; /* Each item in .info will take equal space */
+    margin-right: 20px;
+}
+
+.label-name {
+    color: grey;
+    margin-right: 10px;
+}
+
+.label-desc {
+    color: black;
+}
+
+.profile {
+    padding-right: 30px;
+}
+
+.dashboard {
+    padding-bottom: 8px;
+    font-weight: 400;
+    font-size: 20px;
+}
+
+  .container2 {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: #FFF;
+    border-radius: 6px;
+}
+
+.box {
+    width: calc(33.33% - 60px);
+    min-height: 100px;
+    background-color: rgb(229, 240, 248);
+    border-radius: 5px 13px 5px 5px;
+    margin-right: 40px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+table {
+    width: 90%;
+    margin-top: 30px;
+    margin-left: 20px;
+    margin-bottom: 40px;
+}
+
+.td-data {
+    color: black;
+}
+
+td:first-child {
+    width: 50%;
+    font-weight: 500;
+}
+
+.active-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #00529B;
+    color: white;
+    padding: 1px 10px 1px 20px;
+    border-radius: 0 15px 0 20px;
+    width: 100px;
+}
+
+.title {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 1200px) {
+    .box {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        flex-wrap: wrap;
+    }
+
+    .container > div {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+        text-align: center;
+    }
+
+    .info > div {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .profile {
+        width: 100%;
+        text-align: center;
+        padding-left: 20px;
     }
 }
