@@ -18,8 +18,8 @@ export class LandingDashboardComponent implements OnInit {
     
   }
 
-  onViewPolicies() {
-    this.router.navigate(['/home/lms/grp/policy/policyListing'])
-  }
+  // onViewPolicies() {
+  //   this.router.navigate(['/home/lms/grp/policy/policyListing'])
+  // }
 
 }
