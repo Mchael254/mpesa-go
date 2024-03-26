@@ -87,7 +87,8 @@
         </div>
 
         <div class="summary-container col-12 mt-5" style="padding-right: 50px;">
-            <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
+            <!-- <div class="sub-summary col-md-4 col-sm-12 col-xs-12"> -->
+                <div class="sub-summary col-md-4 col-sm-12 col-xs-12" [ngClass]="{'col-md-4': quatationCalType === 'D', 'col-md-6': quatationCalType !== 'D'}">
                 <h5 class="summary-label">Cover summary</h5>
                 <div class="summary" style="width: 100%; min-height: 170px; position: relative;">
                     <div class="col-md-12 col-sm-12 col-xs-12" style="padding-left: 20px;">
@@ -133,7 +134,8 @@
                     </div>
                 </div>
             </div>
-            <div class="sub-summary col-md-4 col-sm-12 col-xs-12">
+            <!-- <div class="sub-summary col-md-4 col-sm-12 col-xs-12"> -->
+                <div class="sub-summary col-md-4 col-sm-12 col-xs-12" [ngClass]="{'col-md-4': quatationCalType === 'D', 'col-md-6': quatationCalType !== 'D'}">
                 <h5 class="summary-label">Category summary</h5>
                 <div class="summary" style="width: 100%; height: 100%; position: relative;">
                 <div class="col-md-12 col-xs-12" style="padding-left: 20px;">
@@ -547,15 +549,13 @@
 
     </div>
     <div>
-        <button
-        type="button"
-        class="btn btn-primary back-button"
-        (click)="onBack()"
-      >Back
-      </button>
+        <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
+        </button>
       <div class="button-container">
+        <button type="button" class="btn btn-primary report-button" (click)="downloadReports()">Reports
+        </button>
         <button type="button" class="btn btn-info buttonS" (click)="onProceed()">Share</button>
-        <button type="button" class="btn btn-primary buttonP" (click)="onProceed()">Proceed</button>
+        <button type="button" class="btn btn-primary buttonP" (click)="onProceed()">Finish</button>
     </div>
 </div>
 </div>

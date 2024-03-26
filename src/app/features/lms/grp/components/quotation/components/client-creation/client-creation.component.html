@@ -40,7 +40,9 @@
                                     class="form-control"
                                     id="clientName" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="clientName">
+                                    formControlName="clientName"
+                                    [ngClass]="{'is-invalid': highlightInvalid('clientName')}">
+                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">New client name is required</div>
                             </div>
                         </div>
                     </div>
@@ -56,8 +58,10 @@
                                 <div>
                                     <p-dropdown id='value' [options]='clientList' [optionLabel]="'label'" [dataKey]="'value'" [editable]="true"
                                                 [style]="{width: '100%', height: '37px', 'line-height': '10px' }" placeholder="Select or Type Client name"
-                                                formControlName='clientName' class="select" #clientDropdown [showClear]="true"  (onClear)="onDropdownClear()">
+                                                formControlName='clientName' class="select" #clientDropdown [showClear]="true"  (onClear)="onDropdownClear()"
+                                                [ngClass]="{'is-invalid': highlightInvalid('clientName')}">
                                     </p-dropdown>
+                                    <div *ngIf="highlightInvalid('clientName')" class="invalid-feedback">Name is required</div>
                                 </div>
                             </div>
                         </div> 
@@ -67,23 +71,23 @@
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="type" style="color: black;">Type<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'type'" formControlName="type">
-                            <option selected="true" disabled="disabled"></option>
-                            <option *ngFor="let clientType of OrganizationClientType" [value]="clientType.code">{{ clientType.category }}
-                            </option>
+                        <select class="form-select" [id]="'type'" formControlName="type" [ngClass]="{'is-invalid': highlightInvalid('type')}">
+                          <option selected="true" disabled="disabled"></option>
+                          <option *ngFor="let clientType of OrganizationClientType" [value]="clientType.code">{{ clientType.clientTypeName | titlecase }}</option>
                         </select>
-                    </div>
+                        <div *ngIf="highlightInvalid('type')" class="invalid-feedback">Type is required</div>
+                      </div>                      
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="status" style="color: black;">Status<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'status'" formControlName="status">
+                        <select class="form-select" [id]="'status'" formControlName="status" [ngClass]="{'is-invalid': highlightInvalid('status')}">
                             <option selected="true" disabled="disabled"></option>
                             <option value="A">Active</option>
                             <option value="I">Inactive</option>
-                            <option value="P">Prospect</option>
                         </select>
+                        <div *ngIf="highlightInvalid('status')" class="invalid-feedback">Status is required</div>
                     </div>
                 </div>
             </div>
@@ -101,8 +105,9 @@
                                             [showIcon]="true" 
                                             [showButtonBar]="true"
                                             placeholder="dd/mm/yy"
-                                            >
+                                            [ngClass]="{'is-invalid': highlightInvalid('incorporationDate')}">
                                 </p-calendar>
+                                <div *ngIf="highlightInvalid('incorporationDate')" class="invalid-feedback">Inc date is required</div>
                               </div>
                         </div>
                     </div>
@@ -121,7 +126,9 @@
                                     class="form-control"
                                     id="registrationNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="registrationNumber">
+                                    formControlName="registrationNumber"
+                                    [ngClass]="{'is-invalid': highlightInvalid('registrationNumber')}">
+                                    <div *ngIf="highlightInvalid('registrationNumber')" class="invalid-feedback">Reg no is required</div>
                             </div>
                         </div>
                     </div>
@@ -140,7 +147,9 @@
                                     class="form-control"
                                     id="occupation" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="occupation">
+                                    formControlName="occupation"
+                                    [ngClass]="{'is-invalid': highlightInvalid('occupation')}">
+                                    <div *ngIf="highlightInvalid('occupation')" class="invalid-feedback">Occupation is required</div>
                             </div>
                         </div>
                     </div>
@@ -161,7 +170,9 @@
                                     class="form-control"
                                     id="pinNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="pinNumber">
+                                    formControlName="pinNumber"
+                                    [ngClass]="{'is-invalid': highlightInvalid('pinNumber')}">
+                                    <div *ngIf="highlightInvalid('pinNumber')" class="invalid-feedback">PIN no is required</div>
                             </div>
                         </div>
                     </div>
@@ -183,7 +194,9 @@
                                     class="form-control"
                                     id="phoneNumber" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="phoneNumber">
+                                    formControlName="phoneNumber"
+                                    [ngClass]="{'is-invalid': highlightInvalid('phoneNumber')}">
+                                    <div *ngIf="highlightInvalid('phoneNumber')" class="invalid-feedback">Phone no is required</div>
                             </div>
                         </div>
                     </div>
@@ -202,7 +215,9 @@
                                     class="form-control"
                                     id="email" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="email">
+                                    formControlName="email"
+                                    [ngClass]="{'is-invalid': highlightInvalid('email')}">
+                                    <div *ngIf="highlightInvalid('email')" class="invalid-feedback">Email is required</div>
                             </div>
                         </div>
                     </div>
@@ -221,7 +236,9 @@
                                     class="form-control"
                                     id="address" 
                                     [style]="{ width: '100%' }"
-                                    formControlName="address">
+                                    formControlName="address"
+                                    [ngClass]="{'is-invalid': highlightInvalid('address')}">
+                                    <div *ngIf="highlightInvalid('address')" class="invalid-feedback">Address is required</div>
                             </div>
                         </div>
                     </div>
@@ -232,33 +249,38 @@
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="country" style="color: black;">Country<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'country'" formControlName="country" (change)="selectCountry($event)">
+                        <select class="form-select" [id]="'country'" formControlName="country" (change)="selectCountry($event)"
+                        [ngClass]="{'is-invalid': highlightInvalid('country')}">
                             <option *ngFor="let data of countryList | sort : 'asc' : 'name'" [value]="data?.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
+                        <div *ngIf="highlightInvalid('country')" class="invalid-feedback">Country is required</div>
                     </div>
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="county" style="color: black;">County/State<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'county'" formControlName="county" (change)="selectState($event)">
+                        <select class="form-select" [id]="'county'" formControlName="county" (change)="selectState($event)"
+                        [ngClass]="{'is-invalid': highlightInvalid('county')}">
                             <option *ngFor="let data of stateList | sort : 'asc' : 'name'" [value]="data?.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
+                        <div *ngIf="highlightInvalid('county')" class="invalid-feedback">County/State is required</div>
                     </div>
                 </div>
         
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="city" style="color: black;">City/Town<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'city'" formControlName="city">
+                        <select class="form-select" [id]="'city'" formControlName="city" [ngClass]="{'is-invalid': highlightInvalid('city')}">
                             <option *ngFor="let data of townList | sort : 'asc' : 'name'" [value]="data.id">
                                 {{ data?.name | titlecase }}
                             </option>
                         </select>
+                        <div *ngIf="highlightInvalid('city')" class="invalid-feedback">City is required</div>
                     </div>
                 </div>
             </div>
@@ -280,11 +302,13 @@
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="representation" style="color: black;">Representation<span style="color: red;">*</span></label>
-                        <select class="form-select" [id]="'representation'" formControlName="representation">
+                        <select class="form-select" [id]="'representation'" formControlName="representation"
+                        [ngClass]="{'is-invalid': highlightInvalid('representation')}">
                             <option selected="true" disabled="disabled"></option>
                             <option value="C">Direct</option>
                             <option value="I">Indirect</option>
                         </select>
+                        <div *ngIf="highlightInvalid('representation')" class="invalid-feedback">Representation is required</div>
                     </div>
                 </div>
             </div>
