@@ -434,6 +434,99 @@
             </div>
         </div>
 
+        <div class="card">
+            <div class="card-body">
+                <p class="subheading">{{'gis.policy.policy_details' | translate}}</p>
+                <form [formGroup]="policyProductForm">
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="coverFrom" class="required product-label" id="coverTo">{{'gis.policy.cover_from' |
+                                translate}}</label>
+                            <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                                formControlName="with_effective_from_date">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyProductForm.get('with_effective_from_date').hasError('required') && policyProductForm.get('with_effective_from_date').touched"
+                                class="form-text text-danger">
+                                {{'gis.policy.cover_from' | translate}} is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="coverTo" class="required product-label"
+                                id="coverTo">{{'gis.policy.cover_to' | translate}}</label>
+                                <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                                formControlName="with_effective_to_date">
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="coverDays" class="required product-label" id="product">{{'gis.policy.cover_days' |
+                                translate}}</label><br>
+                                
+                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1">
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="policy_interface" class=" product-label"
+                                id="policy_interface">{{'gis.policy.currency' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="transaction_type">
+                                <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
+                                <option value="CASH">{{'gis.policy.cash' | translate}}</option>
+
+                            </select>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="policy_type" class=" product-label"
+                                id="policy_type">{{'gis.policy.currency_rate' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="pro_interface_type" #policyTypeSelect
+                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
+                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
+                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
+                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
+                            </select>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="branch" class=" product-label" id="branch">{{'gis.policy.currency_fixed_rate' |
+                                translate}}</label>
+                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name"
+                                (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
+                                [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="policy_interface" class="required product-label"
+                                id="policy_interface">{{'gis.policy.policy_document' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="transaction_type">
+                                <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
+                                <option value="CASH">{{'gis.policy.cash' | translate}}</option>
+
+                            </select>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="policy_type" class="required product-label"
+                                id="policy_type">{{'gis.policy.payment_mode' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="pro_interface_type" #policyTypeSelect
+                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
+                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
+                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
+                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
+                            </select>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="branch" class="required product-label" id="branch">{{'gis.policy.payment_reference' |
+                                translate}}</label>
+                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name"
+                                (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
+                                [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 </div>

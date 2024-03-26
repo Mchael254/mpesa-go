@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { CoverType, CoverTypes, Sections } from '../../data/gisDTO';
-
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,8 @@ export class CoverTypeService {
 
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
   ) { }
 
   httpOptions = {
@@ -51,17 +53,14 @@ export class CoverTypeService {
       const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-      return this.http.get<CoverType>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types`,{
-        headers:headers,
-        params:params
-      }).pipe(
+      return this.api.GET<CoverType>(`cover-types`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )
   }
 
   getCoverType(code: any): Observable<CoverTypes[]>{
-    return this.http.get<CoverTypes[]>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${code}`).pipe(
+    return this.api.GET<CoverTypes[]>(`cover-types/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -69,7 +68,7 @@ export class CoverTypeService {
 
   createCover(data:CoverTypes[]) {
   console.log(JSON.stringify(data))
-  return this.http.post<CoverTypes[]>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types`, JSON.stringify(data),this.httpOptions)
+  return this.api.POST<CoverTypes[]>(`cover-types`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -77,14 +76,14 @@ export class CoverTypeService {
   }
   updateCover(data:CoverTypes,id:any): Observable<CoverTypes> {
     console.log(JSON.stringify(data))
-    return this.http.put<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${id}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<CoverTypes>(`cover-types/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   deleteCover(id:any){
-    return this.http.delete<CoverTypes>(`/${this.baseurl}/${this.setupsbaseurl}/cover-types/${id}`)
+    return this.api.DELETE<CoverTypes>(`cover-types/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -103,43 +102,40 @@ export class CoverTypeService {
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
 
-    return this.http.get<Sections[]>(`/${this.baseurl}/${this.setupsbaseurl}/sections`,{
-          headers:headers,
-          params:params
-        }).pipe(
+    return this.api.GET<Sections[]>(`sections`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
           retry(1),
           catchError(this.errorHandl)
         )
   }
 
   getSections(): Observable<Sections[]> {
-    return this.http.get<Sections[]>(`/${this.baseurl}/${this.setupsbaseurl}/sections1?pageNo=0&pageSize=10000`).pipe(
+    return this.api.GET<Sections[]>(`sections1?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getSectionId(code: any): Observable<Sections>{
-    return this.http.get<Sections>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`).pipe(
+    return this.api.GET<Sections>(`sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   saveSection(data: Sections, code:any): Observable<Sections> {
-    return this.http.put<Sections>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`, JSON.stringify(data), this.httpOptions)
+    return this.api.PUT<Sections>(`sections/${code}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
     )
   }
   createSection(data: Sections): Observable<Sections>{
-    return this.http.post<Sections>(`/${this.baseurl}/${this.setupsbaseurl}/sections`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<Sections>(`sections`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
     )
   }
   deleteSection(code: any): Observable<Sections>{
-    return this.http.delete<Sections>(`/${this.baseurl}/${this.setupsbaseurl}/sections/${code}`).pipe(
+    return this.api.DELETE<Sections>(`sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

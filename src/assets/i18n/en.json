@@ -551,6 +551,7 @@
       "accept_quote": "Accept quote"
     },
     "policy": {
+     
       "underwriting_new_transaction": "Underwriting: New transaction",
       "type_of_transaction": "Type of transaction",
       "new_business": "New business",
@@ -601,7 +602,19 @@
       "staff_no":"Staff No",
       "surname":"Surname",
       "other_names":"Other Names",
-      "company":"Company"
+      "company":"Company",
+
+      "underwriting":"Underwriting",
+      "policy_details":"Policy Details",
+      "cover_from":"Cover From",
+      "cover_to":"Cover To",
+      "cover_days":"Cover Days",
+      "currency":"Currency",
+      "currency_rate":"Currency Rate",
+      "currency_fixed_rate":"Currency Fixed Rate",
+      "policy_document":"Policy Document",
+      "payment_mode":"Payment Mode",
+      "payment_reference":"Payment Reference"
 
     }
   },

@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Premiums } from '../../data/gisDTO';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,7 +15,8 @@ export class PremiumRateService {
   
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -50,28 +52,25 @@ return throwError(errorMessage);
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-      var url = `/${this.baseurl}/${this.setupsbaseurl}/premium-rates`
+      var url = `premium-rates?page=${page}&pageSize=${size}`
       if ( sectionCode != undefined && binderCode !=undefined && subClassCode !=undefined) {
         url = url + "?sectionCode=" + sectionCode+"&binderCode="+binderCode+"&subClassCode="+subClassCode;
       }
-    return this.http.get(url,{
-      headers:headers,
-      params:params
-    }).pipe(
+    return this.api.GET(url,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   
   getPremiums(code:any):Observable<Premiums[]>{
-    return this.http.get<Premiums[]>(`/${this.baseurl}/${this.setupsbaseurl}/premium-rates/${code}`).pipe(
+    return this.api.GET<Premiums[]>(`premium-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createPremium(data:Premiums[]) {
     console.log(JSON.stringify(data))
-    return this.http.post<Premiums[]>(`/${this.baseurl}/${this.setupsbaseurl}/premium-rates`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<Premiums[]>(`premium-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -79,14 +78,14 @@ return throwError(errorMessage);
     } 
     updatePremium(data:Premiums,id:any): Observable<Premiums> {
       console.log(JSON.stringify(data))
-      return this.http.put<Premiums>(`/${this.baseurl}/${this.setupsbaseurl}/premium-rates/${id}`, JSON.stringify(data), this.httpOptions)
+      return this.api.PUT<Premiums>(`premium-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deletePremium(id:any){
-      return this.http.delete<Premiums>(`/${this.baseurl}/${this.setupsbaseurl}/premium-rates/${id}`)
+      return this.api.DELETE<Premiums>(`premium-rates/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

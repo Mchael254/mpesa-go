@@ -7,6 +7,8 @@ import { environment } from 'src/environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,8 @@ export class VehicleMakeService {
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
-    private session_storage: SessionStorageService
+    private session_storage: SessionStorageService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -54,10 +57,7 @@ getAllVehicleMake(): Observable<vehicleMake[]>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.http.get<vehicleMake[]>(`/${this.baseurl}/${this.setupsbaseurl}/vehicle-makes`,{
-    headers:headers,
-    params:params
-  }).pipe(
+  return this.api.GET<vehicleMake[]>(`vehicle-makes`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   ) 

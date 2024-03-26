@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
 import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { vehicleModel } from '../../data/gisDTO';
+import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,8 @@ export class VehicleModelService {
   
   constructor(
     private http: HttpClient,
-    public appConfig : AppConfigService
+    public appConfig : AppConfigService,
+    public api:ApiService
     ) { }
 
     httpOptions = {
@@ -50,10 +53,7 @@ getAllVehicleModel(): Observable<vehicleModel[]>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.http.get<vehicleModel[]>(`/${this.baseurl}/${this.setupsbaseurl}/vehicle-models`,{
-    headers:headers,
-    params:params
-  }).pipe(
+  return this.api.GET<vehicleModel[]>(`vehicle-models`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   ) 

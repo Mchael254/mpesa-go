@@ -8,7 +8,8 @@ import { environment } from '../../../../../../../environments/environment';
 import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { ApiService } from 'src/app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +19,10 @@ export class SubClassCoverTypesSectionsService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public appConfig : AppConfigService, private session_storage: SessionStorageService) { }
+              public  appConfig : AppConfigService, 
+              private session_storage: SessionStorageService,
+              private api:ApiService
+              ) { }
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -47,14 +51,14 @@ export class SubClassCoverTypesSectionsService {
    * Get all subclass cover types sections
    */
   getAllSubCovSection(): Observable<any>{
-    return this.http.get<any>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=1000000`).pipe(
+    return this.api.GET<any>(`subclass-covertype-to-sections?pageNo=0&pageSize=1000000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
 
   getSubclassCovertypeSections(): Observable<subclassCoverTypes[]>{
-    return this.http.get<subclassCoverTypes[]>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections?pageNo=0&pageSize=10000`,this.httpOptions).pipe(
+    return this.api.GET<subclassCoverTypes[]>(`subclass-covertype-to-sections?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -68,7 +72,7 @@ export class SubClassCoverTypesSectionsService {
    */
   createSubCoverTypeSection(data: subclassCoverSections): Observable<subclassCoverSections>{
 
-    return this.http.post<subclassCoverSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<subclassCoverSections>(`subclass-covertype-to-sections`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -81,7 +85,7 @@ export class SubClassCoverTypesSectionsService {
    * @returns Observable of type subclassCoverSections
    */
   deleteSubCovSec(subClassCoverTypeSetionCode: number): Observable<subclassCoverSections>{
-    return this.http.delete<subclassCoverSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections/${subClassCoverTypeSetionCode}`).pipe(
+    return this.api.DELETE<subclassCoverSections>(`subclass-covertype-to-sections/${subClassCoverTypeSetionCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -94,7 +98,7 @@ export class SubClassCoverTypesSectionsService {
    */
   createSub(data: subclassCoverSections): Observable<subclassCoverSections>{
 
-    return this.http.post<subclassCoverSections>(`/${this.baseurl}/${this.setupsbaseurl}/subclass-covertype-to-sections`, JSON.stringify(data),this.httpOptions)
+    return this.api.POST<subclassCoverSections>(`subclass-covertype-to-sections`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
