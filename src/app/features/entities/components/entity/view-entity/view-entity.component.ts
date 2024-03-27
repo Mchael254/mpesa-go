@@ -1,22 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { StaffDto } from '../../../data/StaffDto';
 import { AgentDTO } from '../../../data/AgentDTO';
 import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, tap, Observable, combineLatestWith, merge, forkJoin, of} from 'rxjs';
-import { ChartOptions, ChartType } from 'chart.js';
+import {ReplaySubject, finalize, takeUntil, Observable, take} from 'rxjs';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntityService } from '../../../services/entity/entity.service';
-import { StaffService } from '../../../services/staff/staff.service';
 import { AccountService } from '../../../services/account/account.service';
-import { ServiceProviderService } from '../../../services/service-provider/service-provider.service';
-import { IntermediaryService } from '../../../services/intermediary/intermediary.service';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
-import { ClientService } from '../../../services/client/client.service';
 import { Logger } from '../../../../../shared/services';
 import { ClientDTO } from '../../../data/ClientDTO';
 import { ServiceProviderRes } from '../../../data/ServiceProviderDTO';
@@ -27,7 +21,6 @@ import { ClaimsDTO } from '../../../../gis/data/claims-dto';
 import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {CountryDto} from "../../../../../shared/data/common/countryDto";
-import {combineLatest, take} from "rxjs/operators";
 
 const log = new Logger("ViewEntityComponent")
 
@@ -44,7 +37,6 @@ export class ViewEntityComponent implements OnInit {
   public entityDetails: StaffDto | ClientDTO | ServiceProviderRes | AgentDTO;
 
   unAssignedPartyTypes: PartyTypeDto[] = [];
-  unAssignedPartyTypes$: Observable<PartyTypeDto[]>;
 
   selectedRole: PartyTypeDto;
   accounts: Roles[]=[];
@@ -64,10 +56,8 @@ export class ViewEntityComponent implements OnInit {
   entityId: number;
   accountCode: number;
   entityPartyIdDetails: ReqPartyById;
-  entityPartyIdDetails$: Observable<ReqPartyById>;
 
   entityAccountIdDetails: AccountReqPartyId[];
-  entityAccountIdDetails$: Observable<AccountReqPartyId[]>;
 
   selectedAccount: AccountReqPartyId;
   selectedFile: File;
@@ -81,20 +71,7 @@ export class ViewEntityComponent implements OnInit {
   dateFrom = `${this.year-4}-${this.month}-${this.day}`;
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  // public pieChartOptions: ChartOptions =  {
-  //   responsive: true,
-  // };
-  // public pieChartLabels: any[] = ['Motor', 'PA', 'Domestic'];
-  // public pieChartData: any = [ {data: [23, 25, 30]}];
-  // public pieChartType: ChartType = "doughnut";
-  // public  pieChartLegend = true;
-  // public pieChartPlugins = [];
-
   partyAccountDetails: PartyAccountsDetails;
-  partyAccountDetails$: Observable<PartyAccountsDetails>;
-
-  allEntityDetails$: any;
-  allEntityDetails: any;
 
   accountId: number;
 
@@ -118,12 +95,8 @@ export class ViewEntityComponent implements OnInit {
     this.createEntitySummaryForm();
     this.createSelectRoleForm();
     this.entityId = this.activatedRoute.snapshot.params['id'];
-
     this.getEntityByPartyId();
-
     this.getEntityAccountById();
-
-
     this.getCountries();
   }
 
@@ -162,11 +135,7 @@ export class ViewEntityComponent implements OnInit {
         this.accountCode = this.selectedAccount?.accountCode;
       });
 
-    // this.getEntityAccountDetailsByAccountNo(this.accountCode);
     this.getPartyAccountDetailByAccountId(this.accountCode);
-    // this.getPoliciesByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
-    // this.getQuotationsByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
-    // this.getClaimsByClientId(this.page, this.dateFrom, this.dateToday,  this.accountCode);
   }
 
       /***
@@ -253,109 +222,6 @@ export class ViewEntityComponent implements OnInit {
 
   }
 
-  // /***
-  //  * Fetch Entity Accounts - Staff Account, Client Account, Service Provider Account, Intermediary Account
-  //  * @param id representing account code
-  //  */
-  // getEntityAccountDetailsByAccountNo(id: number) {
-  //     let accountType =  this.entityAccountIdDetails.find(account =>  account.id == id);
-  //     this.entityService.setCurrentAccount(accountType);
-  //     if(accountType){
-  //       switch (accountType?.partyType?.partyTypeName.toLowerCase()) {
-  //         case 'staff':
-  //           this.fetchStaffDetails(accountType?.accountCode);
-  //           break;
-  //         case 'client':
-  //           this.fetchClientDetails(accountType?.accountCode);
-  //           break;
-  //         case 'service provider':
-  //           this.fetchServiceProviderDetails(accountType?.accountCode);
-  //           break;
-  //         case 'agent':
-  //           this.fetchIntermediaryDetails(accountType?.accountCode);
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  //   }
-
-  // }
-
-  // /***
-  //  * Fetch Entity Accounts - Staff Account
-  //  * @param accountCode
-  //  */
-  // fetchStaffDetails(accountCode: number){
-  //   this.staffService.getStaffById(accountCode)
-  //     .pipe(
-  //       takeUntil(this.destroyed$),
-  //     )
-  //     .subscribe(
-  //       (data) => {
-  //         this.entityDetails = data;
-
-  //         console.log('>>>>>>>>>>> Fetching partyType staff details using accountCode', this.entityDetails)
-  //       }
-  //     );
-  // }
-
-  // /***
-  //  * Fetch Entity Accounts - Client Account
-  //  * @param accountCode
-  //  */
-  // fetchClientDetails(accountCode: number){
-  //   this.clientService.getClientById(accountCode)
-  //     .pipe(
-  //       takeUntil(this.destroyed$),
-  //     )
-  //     .subscribe(
-  //       (data) => {
-  //         this.entityDetails = data;
-
-  //         console.log('>>>>>>>>>>> Fetching partyType client details using accountCode', this.entityDetails)
-
-  //       }
-  //     )
-  // }
-
-
-  // /***
-  //  * Fetch Entity Accounts - Intermediary Account
-  //  * @param accountCode
-  //  */
-  // fetchIntermediaryDetails(accountCode: number){
-  //   this.intermediaryService.getAgentById(accountCode)
-  //     .pipe(
-  //       takeUntil(this.destroyed$),
-  //     )
-  //     .subscribe(
-  //       (data) => {
-  //         this.entityDetails = data;
-
-  //         console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
-  //       }
-  //     );
-  // }
-
-  // /***
-  //  * Fetch Entity Accounts - Service Provider Account
-  //  * @param accountCode
-  //  */
-  // fetchServiceProviderDetails(accountCode: number){
-  //   this.serviceProviderService.getServiceProviderById(accountCode)
-  //     .pipe(
-  //       takeUntil(this.destroyed$),
-  //     )
-  //     .subscribe(
-  //       (data) => {
-  //         this.entityDetails = data;
-
-  //         console.log('>>>>>>>>>>> Fetching partyType intermediary details using accountCode', this.entityDetails)
-
-  //       }
-  //     )
-  // }
-
   /*** Create Summary Form **/
   createEntitySummaryForm() {
     this.entitySummaryForm = this.fb.group({
@@ -435,15 +301,6 @@ export class ViewEntityComponent implements OnInit {
 
   goToViewPolicies(id:number) {
     this.router.navigate([`/home/gis/policy/list/${this.accountCode}`]);
-  }
-
-  goToViewQuotations(id:number) {
-    // this.router.navigate([`/home/gis/quotation/list/${this.accountCode}`]);
-    this.router.navigate([`/home/gis/quotation/list`]);
-  }
-
-  goToViewPayments() {
-    // this.router.navigate(['home/payments']);
   }
 
   goToEntityRoleDefinitions() {
@@ -534,89 +391,11 @@ export class ViewEntityComponent implements OnInit {
    */
   fetchTransactions(partyAccountDetails): void {
     log.info(`party account details from view entity >>> `, partyAccountDetails);
-    const id = partyAccountDetails?.accountCode
+    const id = partyAccountDetails?.accountCode;
+    this.partyAccountDetails = partyAccountDetails;
     this.entityTransactions.fetchGisQuotationsByClientId(id);
     this.entityTransactions.fetchGisClaimsByClientId(id);
     this.entityTransactions.fetchGisPoliciesByClientId(id);
   }
-
-  // getPoliciesByClientId(
-  //   pageIndex: number,
-  //   dateFrom: string,
-  //   dateTo: string,
-  //   id: number
-  // ) {
-  //     if (id === null || id === undefined) {
-  //       // Handle the case when id is not available
-  //       console.log('ID is not available');
-  //       return;
-  //     }
-
-
-  //     return this.policiesServices
-  //       .getPolicies(pageIndex, dateFrom, dateTo, id)
-  //       .pipe(
-  //         takeUntil(this.destroyed$),
-  //         tap((data) => log.info(`Fetching Policies>>>`, data))
-  //       )
-  //       .subscribe(
-  //         (data: Pagination<PoliciesDTO>) => {
-  //           this.policies = data;
-  //           this.cdr.detectChanges();
-  //         }
-  //       );
-  // }
-
-  // getQuotationsByClientId(
-  //   pageIndex: number,
-  //   dateFrom: string,
-  //   dateTo: string,
-  //   id: number
-  // ) {
-  //     if (id === null || id === undefined) {
-  //       // Handle the case when id is not available
-  //       console.log('ID is not available');
-  //       return;
-  //     }
-
-  //     return this.quotationsService
-  //       .getQuotations(pageIndex, dateFrom, dateTo, id)
-  //       .pipe(
-  //         takeUntil(this.destroyed$),
-  //         tap((data) => log.info(`Fetching Quotations>>>`, data))
-  //       )
-  //       .subscribe(
-  //         (data: Pagination<QuotationsDTO>) => {
-  //           this.quotations = data;
-  //           this.cdr.detectChanges();
-  //         }
-  //       );
-  // }
-
-  // getClaimsByClientId(
-  //   pageIndex: number,
-  //   dateFrom: string,
-  //   dateTo: string,
-  //   id: number
-  // ) {
-  //     if (id === null || id === undefined) {
-  //       // Handle the case when id is not available
-  //       console.log('ID is not available');
-  //       return;
-  //     }
-
-  //     return this.claimsService
-  //       .getClaims(pageIndex, dateFrom, dateTo, id)
-  //       .pipe(
-  //         takeUntil(this.destroyed$),
-  //         tap((data) => log.info(`Fetching Claims>>>`, data))
-  //       )
-  //       .subscribe(
-  //         (data: Pagination<ClaimsDTO>) => {
-  //           this.claims = data;
-  //           this.cdr.detectChanges();
-  //         }
-  //       );
-  // }
 
 }

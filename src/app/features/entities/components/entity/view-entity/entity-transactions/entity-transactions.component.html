@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-sm-4">
             <div class="mb-3">
-              <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search by client's name or quotation no.">
+              <input type="email" class="form-control" placeholder="Search by client's name or quotation no.">
             </div>
           </div>
           <div class="col-sm-2">
@@ -35,8 +35,8 @@
                 <tr>
                   <th>Quotation no.</th>
                   <th>Client name</th>
-                  <th>Sum insured</th>
-                  <th>Premium</th>
+                  <th>Sum insured ({{ currency }})</th>
+                  <th>Premium ({{ currency }})</th>
                   <th>Intermediary</th>
                   <th>Dated created</th>
                   <th>Cover from</th>
@@ -48,8 +48,8 @@
             <ng-template pTemplate="body" let-quot>
                 <tr>
                   <td>{{ quot?.no }}</td>
-                  <td>{{ quot?.clientCode }}</td>
-                  <td>xxx</td>
+                  <td><!--{{ quot?.clientCode }}-->{{ clientName }}</td>
+                  <td>{{ quot?.sumInsured | currency: ' ' }}</td>
                   <td>{{ quot?.premium | currency : ' ' }}</td>
                   <td>{{ quot?.agentCode }}</td>
                   <td>{{ quot?.dateCreated }}</td>
@@ -94,7 +94,7 @@
         <div class="row">
           <div class="col-sm-4">
             <div class="mb-3">
-              <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Search for policy">
+              <input type="email" class="form-control" placeholder="Search for policy">
             </div>
           </div>
           <div class="offset-2 col-sm-6 text-end">
@@ -119,8 +119,8 @@
                 <tr>
                   <th>Policy no.</th>
                   <th>Client name</th>
-                  <th>Sum insured</th>
-                  <th>Premium</th>
+                  <th>Sum insured ({{ currency }})</th>
+                  <th>Premium ({{ currency }})</th>
                   <th>Intermediary</th>
                   <th>Dated created</th>
                   <th>Cover from</th>
@@ -132,7 +132,7 @@
             <ng-template pTemplate="body" let-policy>
                 <tr>
                   <td>{{ policy?.policy_no }}</td>
-                  <td>xxx</td>
+                  <td>{{ clientName }}</td>
                   <td>{{ policy?.total_sum_insured | currency: ' ' }}</td>
                   <td>{{ policy?.premium | currency: ' ' }}</td>
                   <td>{{ policy?.agency }}</td>
@@ -204,8 +204,8 @@
                 <tr>
                   <th>Claim no.</th>
                   <th>Client name</th>
-                  <th>Sum insured</th>
-                  <th>Premium</th>
+                  <th>Sum insured ({{ currency }})</th>
+                  <th>Premium ({{ currency }})</th>
                   <th>Intermediary</th>
                   <th>Dated created</th>
                   <th>Cover from</th>
@@ -217,9 +217,13 @@
             <ng-template pTemplate="body" let-claim>
                 <tr>
                   <td>{{ claim?.claim_no }}</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
-                  <td>xxx</td>
+                  <td>{{ clientName }}</td>
+                  <td>
+                    {{ getClaimsPremiumAndSumInsured(claim?.risk, 'value') | currency: ' ' }}
+                  </td>
+                  <td>
+                    {{ getClaimsPremiumAndSumInsured(claim?.risk, 'grossPremium') | currency: ' ' }}
+                  </td>
                   <td>xxx</td>
                   <td>{{ claim?.booked_date }}</td>
                   <td>{{ claim?.product.withEffectFrom }}</td>

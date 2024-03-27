@@ -1,5 +1,5 @@
 <div class="entity-container">
-<!--    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
     <div class="p-2">
         <p-tabView>
             <p-tabPanel header="Overview">
@@ -32,6 +32,7 @@
             </p-tabPanel>
             <p-tabPanel header="Transactions">
                 <app-entity-transactions
+                  [clientName]="entityPartyIdDetails?.name"
                  ></app-entity-transactions>
             </p-tabPanel>
         </p-tabView>
