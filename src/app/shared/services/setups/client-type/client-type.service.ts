@@ -87,7 +87,7 @@ export class ClientTypeService {
     return this.api.POST<ClientTypeDTO>(
       `client-types`,
       JSON.stringify(data),
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 

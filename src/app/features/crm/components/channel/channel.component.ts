@@ -106,6 +106,31 @@ export class ChannelComponent implements OnInit {
     return this.createChannelForm.controls;
   }
 
+  onSort(event: Event, dataArray: any[], sortKey: string): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+
+    switch (selectedValue) {
+      case 'asc':
+        this.sortArrayAsc(dataArray, sortKey);
+        break;
+      case 'desc':
+        this.sortArrayDesc(dataArray, sortKey);
+        break;
+      default:
+        // Handle default case or no sorting
+        break;
+    }
+  }
+
+  sortArrayAsc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  }
+
+  sortArrayDesc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
+  }
+
   /**
    * The `fetchChannels` function retrieves channel data from a service, assigns it to a variable, and
    * handles any errors that occur during the process.

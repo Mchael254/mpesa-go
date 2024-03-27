@@ -18,5 +18,10 @@
     "number": 4,
     "title": "Branch",
     "link": "/home/crm/branch"
+  },
+  {
+    "number": 5,
+    "title": "Agencies",
+    "link": "/home/crm/agency"
   }
 ]
