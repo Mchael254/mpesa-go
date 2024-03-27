@@ -19,6 +19,7 @@ import {ApiService} from 'src/app/shared/services/api/api.service';
 import {API_CONFIG} from 'src/environments/api_service_config';
 import {ClaimsDTO} from 'src/app/features/gis/data/claims-dto';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import {Bank} from "../../data/BankDto";
 
 @Injectable({
   providedIn: 'root',
@@ -236,22 +237,27 @@ export class EntityService {
 
   fetchGisQuotationsByClientId(id: number): Observable<any[]> {
     return this.api.GET<any[]>(
-      `api/v2/view/clientCode?clientId=${id}`,
+      `api/v2/quotation/view/clientCode?clientId=${id}`,
       API_CONFIG.GIS_QUOTATIONS_BASE_URL
     );
   }
 
   fetchGisPoliciesByClientId(id: number) {
     return this.api.GET<Pagination<PoliciesDTO>>(
-      `api/v2/policies/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`,
+      `api/v2/policies/client/${id}`,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
 
   fetchGisClaimsByClientId(id: number): Observable<Pagination<ClaimsDTO>> {
     return this.api.GET<Pagination<ClaimsDTO>>(
-      `api/v2/claims/client/${id}?dateFrom=2016-01-01&dateTo=2024-01-01`,
+      `api/v2/claims/client/${id}`,
       API_CONFIG.GIS_CLAIMS_BASE_URL
     );
   }
+
+  fetchBankDetailsByBranchId(id: number): Observable<Bank> {
+    return this.api.GET<Bank>(`bank-branches/${id}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
+  }
+
 }
