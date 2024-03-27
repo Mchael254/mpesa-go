@@ -32,6 +32,10 @@ export class PolicyProductComponent {
   clientName: any;
   clientCode: any;
 
+  jointAccountData: ClientDTO[] = [];
+  jointAccountCode:any;
+  jointAccountName:any;
+  jointAccountDetails:ClientDTO;
 
   productList: Products[];
   ProductDescriptionArray: any = [];
@@ -39,7 +43,7 @@ export class PolicyProductComponent {
   selectedProductCode: any;
 
   policyProductForm: FormGroup;
-  policyForm:FormGroup;
+  policyForm: FormGroup;
   errorMessage: string;
   errorOccurred: boolean;
 
@@ -73,11 +77,16 @@ export class PolicyProductComponent {
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
+  @ViewChild('dt3') dt3: Table | undefined;
+
 
   @ViewChild('clientModal') clientModal: any;
   @ViewChild('introducersModal') introducersModal: any;
+  @ViewChild('jointAccountModal') jointAccountModal: any;
   @ViewChild('closebutton') closebutton;
   @ViewChild('closebuttonIntroducers') closebuttonIntroducers;
+  @ViewChild('closebuttonJointAccount') closebuttonJointAccount;
+
 
   constructor(
     public fb: FormBuilder,
@@ -106,7 +115,11 @@ export class PolicyProductComponent {
     this.getIntroducers();
   }
   ngOnDestroy(): void { }
-
+  ngAfterViewInit(): void {
+    // Disable the select element after the view has been initialized
+    this.toggleSelect(false);
+    this.toggleJointAccountSelect(false);
+  }
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
       action_type: [''],
@@ -201,6 +214,7 @@ export class PolicyProductComponent {
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
+      this.updateJointAccountData();
     })
   }
   /**
@@ -332,7 +346,7 @@ export class PolicyProductComponent {
             log.info('Fetched Branches', this.branchList);
             const branch = this.branchList.filter(branch => branch.id == this.userBranchId)
             log.debug("branch", branch);
-            this.userBranchName = branch[0].name;
+            this.userBranchName = branch[0]?.name;
             log.debug("branch name", this.userBranchName);
             this.cdr.detectChanges();
 
@@ -498,9 +512,40 @@ export class PolicyProductComponent {
     this.introducerName = this.selectedIntroducer[0].surName;
     log.debug("Introducer Name:", this.introducerName);
   }
- 
+
   toggleSelect(checked: boolean) {
     const selectElement = document.getElementById('contractNameInput') as HTMLSelectElement;
     selectElement.disabled = !checked;
+  }
+  toggleJointAccountSelect(checked: boolean) {
+    const selectElement = document.getElementById('jointAccountInput') as HTMLSelectElement;
+    selectElement.disabled = !checked;
+  }
+  applyJointAccountFilterGlobal($event, stringVal) {
+    this.dt3.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  updateJointAccountData() {
+    if (this.clientCode !== null) {
+      this.jointAccountData = this.clientData.filter(client => client.id !== this.clientCode);
+      log.debug("Joint Account Client", this.jointAccountData)
+    } else {
+      this.jointAccountData = [];
+    }
+  }
+  loadJointAccountDetails(id) {
+    log.info("Joint Account Id:", id)
+    this.clientService.getClientById(id).subscribe(data => {
+      this.jointAccountDetails = data;
+      console.log("Selected Joint Account Details:", this.jointAccountDetails)
+      this.saveJointAccount()
+      this.closebuttonJointAccount.nativeElement.click();
+    })
+  }
+  saveJointAccount() {
+    this.jointAccountCode = this.jointAccountDetails.id;
+    log.debug("JOINT ACCOUNT NO:",this.jointAccountCode)
+    this.jointAccountName = this.jointAccountDetails.firstName + ' ' + this.jointAccountDetails.lastName;
+    log.debug("JOINT ACCOUNT NAME:",this.jointAccountName)
+
   }
 }

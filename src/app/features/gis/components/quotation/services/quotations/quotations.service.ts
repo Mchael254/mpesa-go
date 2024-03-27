@@ -12,8 +12,9 @@ import { riskClauses } from '../../../setups/data/gisDTO';
 import { SESSION_KEY } from '../../../../../../features/lms/util/session_storage_enum';
 import { StringManipulation } from '../../../../../../features/lms/util/string_manipulation';
 import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../shared/services/api/api.service';
+
 @Injectable({
   providedIn: 'root'
 })
