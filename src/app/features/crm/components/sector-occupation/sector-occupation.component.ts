@@ -153,6 +153,31 @@ export class SectorOccupationComponent implements OnInit {
     return this.createOccupationForm.controls;
   }
 
+  onSort(event: Event, dataArray: any[], sortKey: string): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+
+    switch (selectedValue) {
+      case 'asc':
+        this.sortArrayAsc(dataArray, sortKey);
+        break;
+      case 'desc':
+        this.sortArrayDesc(dataArray, sortKey);
+        break;
+      default:
+        // Handle default case or no sorting
+        break;
+    }
+  }
+
+  sortArrayAsc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  }
+
+  sortArrayDesc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
+  }
+
   /**
    * The `fetchSectors` function in TypeScript fetches sector data for a given organization ID and
    * handles success and error responses accordingly.

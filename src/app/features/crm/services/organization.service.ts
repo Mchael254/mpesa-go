@@ -171,8 +171,11 @@ export class OrganizationService {
     );
   }
 
-  getRegionManagers(organizationId: number): Observable<ManagersDTO[]> {
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+  getRegionManagers(organizationId?: number): Observable<ManagersDTO[]> {
+    let params = new HttpParams();
+    if (organizationId !== undefined) {
+      params = params.set('organizationId', `${organizationId}`);
+    }
 
     return this.api.GET<ManagersDTO[]>(
       `region-managers`,

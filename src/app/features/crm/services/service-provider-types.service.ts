@@ -32,7 +32,7 @@ export class ServiceProviderTypesService {
 
     return this.api.GET<ServiceProviderTypeDTO[]>(
       `service-provider-types`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL,
       params
     );
   }
@@ -43,7 +43,7 @@ export class ServiceProviderTypesService {
     return this.api.POST<ServiceProviderTypeDTO>(
       `service-provider-types`,
       JSON.stringify(data),
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 
@@ -54,14 +54,14 @@ export class ServiceProviderTypesService {
     return this.api.PUT<ServiceProviderTypeDTO>(
       `service-provider-types/${serviceProviderTypeId}`,
       data,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 
   deleteServiceProviderType(serviceProviderTypeId: number) {
     return this.api.DELETE<ServiceProviderTypeDTO>(
       `service-provider-types/${serviceProviderTypeId}`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }
 }

@@ -10,7 +10,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-4">
+          <div class="col-sm-3">
+            <select
+              class="form-select"
+              (change)="onSort($event, currenciesData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-3">
             <input
               type="text"
               class="form-control"
@@ -20,7 +30,7 @@
               (input)="filterCurrencies($event)"
             />
           </div>
-          <div class="col-8">
+          <div class="col-sm-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openCurrencyModal()"></i
@@ -90,13 +100,23 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-3">
+          <div class="col-sm-3">
+            <select
+              class="form-select"
+              (change)="onSort($event, currencyRatesData, 'targetCurrency')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <!-- <div class="form-group col-3">
             <select class="form-select" (change)="onFilterChange($event)">
               <option value="">Select Filter</option>
               <option value="wef">WEF Date</option>
               <option value="wet">WET Date</option>
             </select>
-          </div>
+          </div> -->
 
           <div class="form-group col-3">
             <input
@@ -194,7 +214,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-4">
+          <div class="col-sm-3">
+            <select
+              class="form-select"
+              (change)="onSort($event, currencyDenominationData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-3">
             <input
               type="text"
               class="form-control"
@@ -204,7 +234,7 @@
               (input)="filterCurrencyDenomination($event)"
             />
           </div>
-          <div class="col-8">
+          <div class="col-sm-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i

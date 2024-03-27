@@ -56,7 +56,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-4">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, branchesData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
             <input
               type="text"
               class="form-control"
@@ -66,7 +76,7 @@
               (input)="filterBranch($event)"
             />
           </div>
-          <div class="col-8">
+          <div class="col-sm-4">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -149,7 +159,27 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-12">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, branchDivisionData, 'divisionName')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name"
+              aria-label="search"
+              aria-describedby="search"
+              (input)="filterBranchDivision($event)"
+            />
+          </div>
+          <div class="col-sm-4">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -172,12 +202,14 @@
         <div class="row mb-5">
           <div class="col-12">
             <p-table
+              #branchDivisionTable
               [value]="branchDivisionData"
               styleClass="p-datatable-sm"
               responsiveLayout="scroll"
               [scrollable]="true"
               scrollHeight="400px"
               class="ui-datatable"
+              [globalFilterFields]="['divisionName', 'branchName']"
             >
               <ng-template pTemplate="header">
                 <tr>
@@ -215,7 +247,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-4">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, branchContacts, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
             <input
               type="text"
               class="form-control"
@@ -225,7 +267,7 @@
               (input)="filterBranchContact($event)"
             />
           </div>
-          <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+          <!-- <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
           <div class="form-group col-3">
             <input
               type="text"
@@ -235,7 +277,7 @@
               onfocus="(this.type='date')"
               onblur="(this.type='text')"
             />
-          </div>
+          </div> -->
           <div class="col-4">
             <div class="float-end">
               <span class="icon-circle"
@@ -304,7 +346,7 @@
         </div>
       </div>
     </div>
-    <!-- <div class="row mt-1">
+    <div class="row mt-1">
       <div class="col-12">
         <div class="float-end">
           <button
@@ -315,7 +357,7 @@
           </button>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </div>
 
