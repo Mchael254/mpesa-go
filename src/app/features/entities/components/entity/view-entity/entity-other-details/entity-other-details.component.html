@@ -67,11 +67,11 @@
                     <tbody>
                       <tr>
                         <td>Bank</td>
-                        <th>xxx</th>
+                        <th>{{ bankDetails?.bank }}</th>
                       </tr>
                       <tr>
                         <td>Branch</td>
-                        <th>{{ partyAccountDetails?.paymentDetails?.bank_branch_id }}</th>
+                        <th>{{ bankDetails?.branch }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -81,11 +81,11 @@
                     <tbody>
                       <tr>
                         <td>Account no.</td>
-                        <th>{{ partyAccountDetails?.paymentDetails?.account_number }}</th>
+                        <th>{{ bankDetails?.accountNo }}</th>
                       </tr>
                       <tr>
                         <td>Payment method</td>
-                        <th>xxx</th>
+                        <th>{{ bankDetails?.paymentMethod }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -95,7 +95,7 @@
                     <tbody>
                       <tr>
                         <td>Account type</td>
-                        <th>xxx</th>
+                        <th>{{ bankDetails?.accountType }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -103,18 +103,22 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="Wealth Details">
+    <p-tabPanel header="Wealth Details" *ngIf="wealthAmlDetails">
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
                     <tbody>
                       <tr>
                         <td>Nationality</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.citizenship_country_id }}</th>
+                        <th>
+                          {{ getCountryName(wealthAmlDetails?.nationality_country_id )}}
+                        </th>
                       </tr>
                       <tr>
                         <td>Citizenship</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.citizenship_country_id }}</th>
+                        <th>
+                          {{ getCountryName(wealthAmlDetails?.citizenship_country_id) }}
+                        </th>
                       </tr>
                     </tbody>
                 </table>
@@ -124,11 +128,11 @@
                     <tbody>
                       <tr>
                         <td>Source of funds</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.funds_source }}</th>
+                        <th>{{ wealthAmlDetails?.funds_source }}</th>
                       </tr>
                       <tr>
                         <td>Sector</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.sector_id }}</th>
+                        <th>{{ wealthAmlDetails?.sector_id }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -138,7 +142,7 @@
                     <tbody>
                       <tr>
                         <td>Type of employment</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.occupation_id }}</th>
+                        <th>{{ wealthAmlDetails?.employment_type }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -146,22 +150,22 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="AML Details">
+    <p-tabPanel header="AML Details" *ngIf="wealthAmlDetails">
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
                     <tbody>
                       <tr>
                         <td>Trading names</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.tradingName }}</th>
+                        <th>{{ wealthAmlDetails?.trading_name }}</th>
                       </tr>
                       <tr>
                         <td>Operation country</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.operating_country_id }}</th>
+                        <th>{{ wealthAmlDetails?.operating_country_id }}</th>
                       </tr>
                       <tr>
                         <td>Parent country</td>
-                        <th>{{ partyAccountDetails?.wealthAmlDetails?.parent_country_id }}</th>
+                        <th>{{ wealthAmlDetails?.parent_country_id }}</th>
                       </tr>
                     </tbody>
                 </table>
@@ -197,7 +201,7 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="Next of kin">
+    <p-tabPanel header="Next of kin" *ngIf="nokList.length > 0">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -211,14 +215,14 @@
                 </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr *ngFor="let nok of nokList">
+                <td>{{ nok?.modeOfIdentity?.name }}</td>
+                <td>{{ nok?.identityNumber }}</td>
+                <td>{{ nok?.fullName | titlecase }}</td>
+                <td>{{ nok?.relationship | titlecase }}</td>
                 <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
-                <td>xxx</td>
+                <td>{{ nok?.smsNumber }}</td>
+                <td>{{ nok?.emailAddress | lowercase }}</td>
               </tr>
             </tbody>
         </table>
