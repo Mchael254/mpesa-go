@@ -31,7 +31,7 @@ export interface IdentityModeDTO {
 
 export interface EntityResDTO {
   category: string;
-  countryId: number;
+  countryId?: number;
   dateOfBirth: string;
   effectiveDateFrom: string;
   effectiveDateTo: string;
