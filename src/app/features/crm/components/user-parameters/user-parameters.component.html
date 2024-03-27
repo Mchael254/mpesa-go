@@ -10,7 +10,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-4">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, userParametersData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
             <input
               type="text"
               class="form-control"
@@ -20,7 +30,7 @@
               (input)="filterParameters($event)"
             />
           </div>
-          <div class="col-8">
+          <div class="col-sm-4">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="pi pi-pencil" (click)="editParameter()"></i

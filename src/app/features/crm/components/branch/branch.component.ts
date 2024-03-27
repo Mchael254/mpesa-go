@@ -50,6 +50,7 @@ export class BranchComponent implements OnInit {
   @ViewChild('branchDivisionModal ') branchDivisionModal: ElementRef;
   @ViewChild('branchContactModal ') branchContactModal: ElementRef;
   @ViewChild('branchTable') branchTable: Table;
+  @ViewChild('branchDivisionTable') branchDivisionTable: Table;
   @ViewChild('branchContactTable') branchContactTable: Table;
   @ViewChild('branchConfirmationModal')
   branchConfirmationModal!: ReusableInputComponent;
@@ -281,6 +282,31 @@ export class BranchComponent implements OnInit {
     }
   }
 
+  onSort(event: Event, dataArray: any[], sortKey: string): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+
+    switch (selectedValue) {
+      case 'asc':
+        this.sortArrayAsc(dataArray, sortKey);
+        break;
+      case 'desc':
+        this.sortArrayDesc(dataArray, sortKey);
+        break;
+      default:
+        // Handle default case or no sorting
+        break;
+    }
+  }
+
+  sortArrayAsc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  }
+
+  sortArrayDesc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
+  }
+
   onBranchRowSelect(branch: OrganizationBranchDTO) {
     this.selectedBranch = branch;
     this.fetchOrganizationBranchDivision(this.selectedBranch.id);
@@ -416,6 +442,10 @@ export class BranchComponent implements OnInit {
   filterBranch(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.branchTable.filterGlobal(filterValue, 'contains');
+  }
+  filterBranchDivision(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.branchDivisionTable.filterGlobal(filterValue, 'contains');
   }
 
   filterBranchContact(event: Event) {

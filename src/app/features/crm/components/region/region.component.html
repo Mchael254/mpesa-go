@@ -39,7 +39,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-4">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, regionData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
             <input
               type="text"
               class="form-control"
@@ -49,7 +59,7 @@
               (input)="filterRegion($event)"
             />
           </div>
-          <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+          <!-- <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
           <div class="form-group col-3">
             <input
               type="text"
@@ -59,7 +69,7 @@
               onfocus="(this.type='date')"
               onblur="(this.type='text')"
             />
-          </div>
+          </div> -->
           <div class="col-4">
             <div class="float-end">
               <span class="icon-circle"
@@ -142,7 +152,17 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-4">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, bankRegionData, 'bankRegionName')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
             <input
               type="text"
               class="form-control"
@@ -152,7 +172,7 @@
               (input)="filterRegionBank($event)"
             />
           </div>
-          <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
+          <!-- <label for="filterBy" class="col-1 col-form-label">Filter by:</label>
           <div class="form-group col-3">
             <input
               type="text"
@@ -162,8 +182,8 @@
               onfocus="(this.type='date')"
               onblur="(this.type='text')"
             />
-          </div>
-          <div class="col-4">
+          </div> -->
+          <div class="col-sm-4">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openBankModal()"></i

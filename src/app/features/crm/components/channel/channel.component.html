@@ -11,7 +11,17 @@
         </div>
         <div class="card-body">
           <div class="row mb-3">
-            <div class="col-4">
+            <div class="col-sm-3 col-4">
+              <select
+                class="form-select"
+                (change)="onSort($event, channelsData, 'channelName')"
+              >
+                <option value="">Sorting Options</option>
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+            <div class="col-sm-3 col-4">
               <input
                 type="text"
                 class="form-control"
@@ -21,7 +31,7 @@
                 (input)="filterChannels($event)"
               />
             </div>
-            <div class="col-8">
+            <div class="col-sm-6 col-4">
               <div class="float-end">
                 <span class="icon-circle"
                   ><i class="fa-solid fa-plus" (click)="openChannelModal()"></i

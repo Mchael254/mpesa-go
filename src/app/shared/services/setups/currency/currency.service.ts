@@ -134,7 +134,7 @@ export class CurrencyService {
     data: CurrencyDenominationDTO
   ): Observable<CurrencyDenominationDTO> {
     return this.api.PUT<CurrencyDenominationDTO>(
-      `currency-rates/${currencyDenominationId}`,
+      `currency-denominations/${currencyDenominationId}`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
@@ -142,7 +142,7 @@ export class CurrencyService {
 
   deleteCurrencyDenomination(currencyDenominationId: number) {
     return this.api.DELETE<CurrencyDenominationDTO>(
-      `currency-rates/${currencyDenominationId}`,
+      `currency-denominations/${currencyDenominationId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
