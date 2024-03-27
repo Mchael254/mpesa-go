@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
 import { StatusService } from '../../../../shared/services/system-definitions/status.service';
 import { StatusDTO } from '../../../../shared/data/common/systemsDto';
 import { ReusableInputComponent } from '../../../../shared/components/reusable-input/reusable-input.component';
+import { Table } from 'primeng/table';
 
 const log = new Logger('DivisionComponent');
 
@@ -33,6 +34,7 @@ const log = new Logger('DivisionComponent');
 })
 export class DivisionComponent implements OnInit {
   @ViewChild('divisionModal') divisionModal: ElementRef;
+  @ViewChild('divisionTable') divisionTable: Table;
   @ViewChild('confirmationModal') confirmationModal: ElementRef;
   @ViewChild('divisionConfirmationModal')
   divisionConfirmationModal!: ReusableInputComponent;
@@ -117,6 +119,31 @@ export class DivisionComponent implements OnInit {
     return this.createDivisionForm.controls;
   }
 
+  onSort(event: Event, dataArray: any[], sortKey: string): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+
+    switch (selectedValue) {
+      case 'asc':
+        this.sortArrayAsc(dataArray, sortKey);
+        break;
+      case 'desc':
+        this.sortArrayDesc(dataArray, sortKey);
+        break;
+      default:
+        // Handle default case or no sorting
+        break;
+    }
+  }
+
+  sortArrayAsc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
+  }
+
+  sortArrayDesc(dataArray: any[], sortKey: string): void {
+    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
+  }
+
   fetchOrganization() {
     this.organizationService
       .getOrganization()
@@ -159,6 +186,11 @@ export class DivisionComponent implements OnInit {
         this.divisionData = data;
         log.info('Division Data', this.divisionData);
       });
+  }
+
+  filterDivision(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.divisionTable.filterGlobal(filterValue, 'contains');
   }
 
   openDivisionModal() {
