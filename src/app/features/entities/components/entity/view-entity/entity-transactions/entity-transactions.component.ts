@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EntityService } from 'src/app/features/entities/services/entity/entity.service';
 import { Logger } from 'src/app/shared/services';
+import {Pagination} from "../../../../../../shared/data/common/pagination";
+import {ClaimsDTO} from "../../../../../gis/data/claims-dto";
 
 const log = new Logger('EntityTransactionComponent')
 
@@ -11,17 +13,20 @@ const log = new Logger('EntityTransactionComponent')
 })
 export class EntityTransactionsComponent implements OnInit {
 
-  @Input() userId
+  @Input() clientName: string;
   gis_quotations: any;
   gis_claims: any;
   gis_policies: any;
+  currency: string;
 
   constructor(
     private entityService: EntityService
-  ) {}
-
+  ) {
+    log.info(`client name from transactions `, this.clientName);
+  }
 
   ngOnInit(): void {
+
   }
 
   fetchGisQuotationsByClientId(id: number): void {
@@ -30,6 +35,7 @@ export class EntityTransactionsComponent implements OnInit {
       next: (data) => {
         this.gis_quotations = data;
         log.info(`gis_quotations`, data);
+        this.currency = data[0]?.currency;
       },
       error: (err) => {}
     })
@@ -38,7 +44,7 @@ export class EntityTransactionsComponent implements OnInit {
   fetchGisClaimsByClientId(id: number): void {
     this.entityService.fetchGisClaimsByClientId(id)
     .subscribe({
-      next: (data) => {
+      next: (data: Pagination<ClaimsDTO>) => {
         this.gis_claims = data;
         log.info(`gis_claims`, data);
       },
@@ -55,6 +61,16 @@ export class EntityTransactionsComponent implements OnInit {
       },
       error: (err) => {}
     })
+  }
+
+  getClaimsPremiumAndSumInsured(risks: any[], fieldName: string): number {
+    let sumInsured: number = 0;
+    if (risks.length > 0) {
+      risks.forEach(risk => {
+        sumInsured += risk[fieldName];
+      });
+    }
+  return sumInsured;
   }
 
 }
