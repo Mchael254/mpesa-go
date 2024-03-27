@@ -173,11 +173,9 @@ export class ClientService {
   }
 
   getCLientBranches(): Observable<ClientBranchesDto[]> {
-    const params = new HttpParams().set('organizationId', 2);
     return this.api.GET<ClientBranchesDto[]>(
       `branches`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
-      params
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 

@@ -60,6 +60,9 @@ export class mockIntroducerService {
  
 }
 
+const mockLogger = {
+  debug: jest.fn()
+};
 
 const mockClientData = {
   content: [{
@@ -283,7 +286,6 @@ const mockIntroducersData: introducers []= [
   },
 ];
 
-
 describe('PolicyProductComponent', () => {
   let component: PolicyProductComponent;
   let fixture: ComponentFixture<PolicyProductComponent>;
@@ -341,7 +343,10 @@ describe('PolicyProductComponent', () => {
 
     fixture.detectChanges();
   });
-
+  afterEach(() => {
+    // Optionally clear mock function calls
+    jest.clearAllMocks();
+  });
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -729,9 +734,72 @@ it('should save introducer correctly', () => {
   expect(component.introducerName).toEqual(mockSelectedIntroducer.surName);
   // Add more assertions if needed
 });
+it('should call filterGlobal with correct parameters', () => {
+  // Arrange
+  const eventMock = {
+    target: {
+      value: 'test value'
+    }
+  } as any; 
+  const stringVal = 'someStringValue';
+  const filterGlobalSpy = jest.spyOn(component.dt3, 'filterGlobal');
 
+  // Act
+  component.applyJointAccountFilterGlobal(eventMock, stringVal);
 
+  // Assert
+  expect(filterGlobalSpy).toHaveBeenCalledWith('test value', 'someStringValue');
+});
+it('should load Joint Account details and update sessionStorage', () => {
+  const clientId = 123;
+ 
 
+  jest.spyOn(clientService, 'getClientById').mockReturnValue(of(mockClientDataID));
+
+  // Mock the closebutton native element
+  const mockCloseButton = { nativeElement: { click: jest.fn() } };
+  component.closebuttonJointAccount = mockCloseButton;
+
+  component.loadJointAccountDetails(clientId);
+
+  // Expectations for the successful case
+  expect(clientService.getClientById).toHaveBeenCalledWith(clientId);
+  expect(component.jointAccountDetails).toEqual(mockClientDataID);
+
+ 
+  expect(mockCloseButton.nativeElement.click).toHaveBeenCalled();
+});
+it('should update joint account data when client code is not null', () => {
+  // Set up test data
+  component.clientData = [mockClientDataID]; // Use the mockClientDataID
   
+  // Set clientCode to a value other than null
+  component.clientCode = mockClientDataID.id;
+
+  // Call the method to be tested
+  component.updateJointAccountData();
+
+  // Expectations
+  expect(component.jointAccountData).toEqual([]); // Since the filter condition won't match, it should result in an empty array
+  
+  // Expect that log.debug is called with the correct arguments
+  // expect(mockLogger.debug).toHaveBeenCalledWith("Joint Account Client", []);
+});
+it('should set joint account data to an empty array when client code is null', () => {
+  // Set up test data
+  component.clientData = [
+    mockClientDataID
+  ];
+  component.clientCode = null;
+
+  // Call the method to be tested
+  component.updateJointAccountData();
+
+  // Expectations
+  expect(component.jointAccountData).toEqual([]);
+  
+  // Expect that log.debug is called with the correct arguments
+  // expect(mockLogger.debug).toHaveBeenCalledWith("Joint Account Client", []);
+});
   
 });
