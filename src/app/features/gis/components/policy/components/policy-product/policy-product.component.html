@@ -21,13 +21,19 @@
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="joint_account" class=" product-label"
-                                id="joint_account">{{'gis.policy.joint_account' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                           
+                            <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault" #checkbox (change)="toggleJointAccountSelect(checkbox.checked)">
+
+                                <label class="product-label">{{'gis.policy.joint_account' | translate}}</label>
+                                <input type="text"id="jointAccountInput" class="form-control form-control-sm mb-1"
+                                formControlName="source" [value]="jointAccountCode " [(ngModel)]="jointAccountName"
+                                data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly>
+                                
+                                <!-- <select class="form-select form-control-sm mb-1 ms-n4 quote-input" id="jointAccountInput"
                                 formControlName="source">
                                 <option value=""></option>
-
-                            </select>
+                                <option ></option>
+                            </select> -->
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="product" class="required product-label" id="product">{{'gis.policy.product' |
@@ -219,7 +225,7 @@
                                 <label class="product-label">{{'gis.policy.contract_name' | translate}}</label>
                                
                                 </div>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="contractNameInput"
                                 formControlName="source">
                                 <option value=""></option>
                                 <option ></option>
@@ -335,6 +341,72 @@
                                                 </td>
                                                 <td>
                                                     {{clientData.emailAddress}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                        
+                                    </p-table>
+                                    <br>
+                                    <!-- <button class="btn btn-primary float-end" data-bs-dismiss="modal" (click)="saveclient()">Save Details</button> -->
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Joint Account Modal -->
+                    <div class="modal fade" id="jointAccountModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-body">
+                                    <button type="button" #closebuttonJointAccount class="float-end btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <p class="text-start" id="selectClient">{{'gis.policy.select_client' | translate}}
+                                    </p>
+
+                                    <p-table #dt3 [value]="jointAccountData" [tableStyle]="{'max-width': '465px'}"
+                                        selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
+                                        responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+                                        [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
+                                        [showCurrentPageReport]="true"
+                                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                                        [globalFilterFields]="['idNumber', 'emailAddress','lastName','emailAddress']">
+                                        <ng-template pTemplate="caption">
+                                            <div class="flex">
+                                                <span class="p-input-icon-left ml-auto">
+                                                    <i class="pi pi-search search-icon"></i>
+                                                </span>
+                                                <input class="search-input" pInputText type="text"
+                                                    (input)="applyFilterGlobal($event, 'contains')"
+                                                    placeholder="Search" />
+
+                                            </div>
+                                        </ng-template>
+                                        <ng-template pTemplate="header">
+
+                                            <tr id="product">
+                                                <th>{{'gis.policy.id_no' | translate}}</th>
+                                                <th>{{'gis.policy.name' | translate}}</th>
+                                                <th>{{'gis.policy.email' | translate}}</th>
+
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template let-jointAccountData pTemplate="body">
+                                            <tr id="productData" [pSelectableRow]=""
+                                                (click)="loadJointAccountDetails(jointAccountData.id);">
+
+                                                <td>
+                                                    {{jointAccountData.idNumber}}
+                                                </td>
+                                                <td>
+                                                    {{jointAccountData.firstName+" "+jointAccountData.lastName}}
+                                                </td>
+                                                <td>
+                                                    {{jointAccountData.emailAddress}}
                                                 </td>
                                             </tr>
                                         </ng-template>

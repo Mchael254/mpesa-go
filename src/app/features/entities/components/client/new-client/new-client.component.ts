@@ -673,7 +673,7 @@ export class NewClientComponent implements OnInit{
       wealthAmlDetails:wealth,
       countryId: clientFormValues.citizenship,
       dateCreated: null,
-      accountType: 21,
+      accountType: clientFormValues.clientTypeId,
       dateOfBirth: this.entityDetails?.dateOfBirth,
       organizationId: 2,
       modeOfIdentityid: this.entityDetails?.modeOfIdentity?.id,

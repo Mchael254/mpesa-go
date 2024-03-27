@@ -317,7 +317,6 @@ export class NewEntityComponent implements OnInit {
      const partyTypeId = this.selectedItem ? this.selectedItem.id : this.selectedRole.id;
      const saveEntity: EntityResDTO = {
        category: entityFormValues.category,
-       countryId: 1100,
        effectiveDateFrom: null,
        effectiveDateTo: null,
        modeOfIdentityId: entityFormValues.mode_of_identity,
