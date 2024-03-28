@@ -146,10 +146,15 @@
 
     <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'C'">
       <p-tabPanel header="Claim details">
-        <app-claim-details [selectedSpringTickets]="selectedSpringTickets"></app-claim-details>
+        <app-claim-details
+          [selectedSpringTickets]="selectedSpringTickets"
+          [claim]="claim"
+        ></app-claim-details>
       </p-tabPanel>
       <p-tabPanel header="Revision details">
-        <app-revision-details></app-revision-details>
+        <app-revision-details
+          [claim]="claim"
+        ></app-revision-details>
       </p-tabPanel>
       <p-tabPanel header="Documents and reports">
         <label class="text-primary mb-2">Reports</label>

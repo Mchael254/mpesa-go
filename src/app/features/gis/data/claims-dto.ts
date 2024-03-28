@@ -70,5 +70,25 @@ export interface ClaimsDTO {
     withEffectTo: string,
     years: number,
   }
+  risk: [
+    {
+      riskIpuCode: number,
+      propertyDescription: string,
+      policyBatchNo: number,
+      policyNumber: string,
+      propertyId: string,
+      subClassCode: number,
+      subClassDescription: string,
+      quantity: null,
+      value: number,
+      coverTypeCode: number,
+      coverTypeShortDescription: string,
+      reinsuranceEndorsementNumber: string,
+      basicPremium: number,
+      netPremium: number,
+      grossPremium: number
+    }
+  ]
+  risk_code: number,
   total_claim_amount: number
 }
