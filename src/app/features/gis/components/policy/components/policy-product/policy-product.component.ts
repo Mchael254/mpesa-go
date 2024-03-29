@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
 
-const log = new Logger("QuickQuoteFormComponent");
+const log = new Logger("PolicyProductComponent");
 
 @Component({
   selector: 'app-policy-product',
