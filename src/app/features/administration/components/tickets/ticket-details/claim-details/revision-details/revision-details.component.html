@@ -56,25 +56,24 @@
           <th>Underwriting rate</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-peril>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount | number}}</td>
-          <td>{{receipt.master_transaction_balance | number}}</td>
-          <td>{{receipt.master_transaction_settlement | number}}</td>
-          <td>{{receipt.master_transaction_dc}}</td>
-          <td>{{receipt.transmital_trans_auth_by}}</td>
-          <td>{{receipt.master_transaction_settlement | number}}</td>
-          <td>{{receipt.master_transaction_dc}}</td>
-          <td>{{receipt.transmital_trans_auth_by}}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>{{peril.claimant}}</td>
+          <td>{{peril.description}}</td>
+          <td>{{peril.peril_type}}</td>
+          <td>{{peril.claim_peril_claim_amount | number}}</td>
+          <td>{{peril.claim_peril_adjacent_amount | number}}</td>
+          <td>{{peril.peril_limit}}</td>
+          <td>{{peril.excess}}</td>
+          <td>{{peril.novice_excess_amount | number}}</td>
+          <td>{{peril.section_peril_depreciation_percentage}}</td>
+          <td>{{peril.claim_peril_origin_reserve_amount}}</td>
+          <td>{{peril.own_recoveries}}</td>
+          <td>{{peril.own_salvages}}</td>
+          <td>{{peril.own_payments}}</td>
+          <td>{{peril.own_net_paid}}</td>
+          <td>{{peril.claim_peril_remarks}}</td>
+          <td>{{peril.peril_rate}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -111,8 +110,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="treatyCedingData?.length"
+      [value]="treatyCedingData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -127,11 +126,11 @@
           <th>Treaty amount</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-treatyCeding>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount}}</td>
+          <td>{{treatyCeding.reinsurance_short_description}}</td>
+          <td>{{treatyCeding.rate}}</td>
+          <td>{{treatyCeding.treaty_amount_currency}}</td>
 
         </tr>
       </ng-template>
@@ -161,8 +160,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="facultativeCedingData?.length"
+      [value]="facultativeCedingData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -179,13 +178,13 @@
           <th>Submission status</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-facultativeCeding>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount}}</td>
-          <td>{{receipt.master_transaction_balance}}</td>
-          <td>{{receipt.master_transaction_settlement}}</td>
+          <td>{{facultativeCeding.agent_short_description}}</td>
+          <td>{{facultativeCeding.agency_name}}</td>
+          <td>{{facultativeCeding.rate}}</td>
+          <td>{{facultativeCeding.amount | number}}</td>
+          <td>{{facultativeCeding.master_transaction_settlement}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -214,8 +213,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="nonPropTreatyData?.length"
+      [value]="nonPropTreatyData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -232,13 +231,13 @@
           <th>Recovered</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-nonProp>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount}}</td>
-          <td>{{receipt.master_transaction_balance}}</td>
-          <td>{{receipt.master_transaction_settlement}}</td>
+          <td>{{nonProp.layer}}</td>
+          <td>{{nonProp.company_retention_amount}}</td>
+          <td>{{nonProp.amount_to_cede}}</td>
+          <td>{{nonProp.excess_amount}}</td>
+          <td>{{nonProp.master_transaction_settlement}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -279,8 +278,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="penaltiesData?.length"
+      [value]="penaltiesData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -299,15 +298,15 @@
           <th>Peril</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-penalties>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount}}</td>
-          <td>{{receipt.master_transaction_balance}}</td>
-          <td>{{receipt.master_transaction_settlement}}</td>
-          <td>{{receipt.master_transaction_dc}}</td>
-          <td>{{receipt.transmital_trans_auth_by}}</td>
+          <td>{{penalties.transmital_trans_receipt_no}}</td>
+          <td>{{penalties.transmital_trans_gen_date}}</td>
+          <td>{{penalties.transmital_trans_amount}}</td>
+          <td>{{penalties.master_transaction_balance}}</td>
+          <td>{{penalties.master_transaction_settlement}}</td>
+          <td>{{penalties.master_transaction_dc}}</td>
+          <td>{{penalties.transmital_trans_auth_by}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -336,8 +335,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="reinsurancePoolData?.length"
+      [value]="reinsurancePoolData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -351,10 +350,10 @@
           <th>Pool amt</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-reinsurancePool>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
+          <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+          <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">

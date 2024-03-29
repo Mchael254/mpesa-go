@@ -16,6 +16,9 @@ import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {ReinsuranceAllocationsComponent} from "../reinsurance-allocations/reinsurance-allocations.component";
 import {PoliciesService} from "../../../../gis/services/policies/policies.service";
 import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize-policy-modal.component";
+import {Pagination} from "../../../../../shared/data/common/pagination";
+import {ClaimsDTO} from "../../../../gis/data/claims-dto";
+import {ViewClaimService} from "../../../../gis/services/claims/view-claim.service";
 
 @Component({
   selector: 'app-ticket-details',
@@ -48,6 +51,9 @@ export class TicketDetailsComponent implements OnInit {
   @ViewChild(ReinsuranceAllocationsComponent) reinsuranceAllocationsComp: ReinsuranceAllocationsComponent;
   @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
 
+  claimsData: Pagination<ClaimsDTO> = <Pagination<ClaimsDTO>>{};
+  claim: ClaimsDTO;
+
   /*breadCrumbItems: BreadCrumbItem[] = [
     {
       label: 'Home',
@@ -76,6 +82,7 @@ export class TicketDetailsComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private policiesService: PoliciesService,
+    private claimsService: ViewClaimService,
   ) {
   }
 
@@ -88,6 +95,9 @@ export class TicketDetailsComponent implements OnInit {
     this.currentTicket = this.ticketService.currentTicketDetail();
 
     this.activeIndex = this.selectedSpringTickets?.ticket?.sysModule === 'P' ? 2 : 0;
+    if (this.selectedSpringTickets?.ticket?.sysModule === 'C') {
+      this.fetchClaimDetails(this.selectedSpringTickets?.ticket?.claimNo);
+    }
   }
 
   fetchPolicyDetails(batchNumber: number) {
@@ -100,6 +110,19 @@ export class TicketDetailsComponent implements OnInit {
       })
   }
 
+  fetchClaimDetails(code:any) {
+    this.claimsService.getClaimByClaimNo(code)
+      .pipe(take(1))
+      .subscribe(
+        (data: Pagination<ClaimsDTO>) => {
+          data.content.forEach( claim => {
+            this.claim = claim
+          });
+          this.claimsData = data;
+
+          log.info('claimsdata ticket>>', this.claimsData, this.claim)
+        })
+  }
 
   callGenerateAuthorizeOtp() {
     this.selectedTickets = [this.selectedTicket];
