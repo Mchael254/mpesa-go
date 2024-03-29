@@ -149,7 +149,7 @@ export class AuthorizationTabComponent implements OnInit{
         'Error',
         'No exception is selected.'
       );
-      this.isLoading = false;
+      this.isLoadingAuthExc = false;
     }
   }
 

@@ -7,7 +7,7 @@
     </p>
     <p>
       <label class="ticketLabel">Insured:</label>
-      <span class="ticketDesc">{{ selectedSpringTickets?.clientName}}</span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.clientName | titlecase}}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk WEF:</label>
@@ -19,14 +19,14 @@
     </p>
     <p>
       <label class="ticketLabel">Intermediary:</label>
-      <span class="ticketDesc">{{ selectedSpringTickets?.agentName}}</span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.agentName | titlecase}}</span>
     </p>
   </div>
 
   <div class="col-sm-4">
     <p >
       <label class="ticketLabel">Client name:</label>
-      <span class="ticketDesc">{{ selectedSpringTickets?.clientName}}</span>
+      <span class="ticketDesc">{{ selectedSpringTickets?.clientName | titlecase}}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk:</label>
@@ -52,7 +52,7 @@
     </p>
     <p>
       <label class="ticketLabel">Risk value:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.risk[0]?.value}}</span>
     </p>
     <p>
       <label class="ticketLabel">Claim loss date:</label>
@@ -64,7 +64,7 @@
     </p>
     <p>
       <label class="ticketLabel">Currency:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{claimPaymentTransaction?.currency_symbol}}</span>
     </p>
   </div>
 
@@ -85,7 +85,7 @@
       </p>
       <p>
         <label class="ticketLabel">Voucher no.:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimTransaction?.code}}</span>
       </p>
       <p>
         <label class="ticketLabel">Payment date:</label>
@@ -93,42 +93,42 @@
       </p>
       <p>
         <label class="ticketLabel">Authorised date:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
       </p>
       <p>
         <label class="ticketLabel">Invoice no.:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.invoice_no}}</span>
       </p>
       <p>
         <label class="ticketLabel">Payment type.:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.payment_type}}</span>
       </p>
       <p>
         <label class="ticketLabel">Bank account:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.bank_account}}</span>
       </p>
       <p>
         <label class="ticketLabel">Cheque no.:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimTransaction?.chequeNumber}}</span>
       </p>
       <p>
         <label class="ticketLabel">Excise duty:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.exercise_duty_amount | number}}</span>
       </p>
     </div>
 
     <div class="col-sm-4">
       <p >
         <label class="ticketLabel">Payee:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.payee | titlecase}}</span>
       </p>
       <p>
         <label class="ticketLabel">Payment mode:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.payment_mode}}</span>
       </p>
       <p>
         <label class="ticketLabel">Authorised:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
       </p>
       <p>
         <label class="ticketLabel">Own gross amount:</label>
@@ -136,49 +136,49 @@
       </p>
       <p>
         <label class="ticketLabel">Voucher currency:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.currency_description | titlecase}}</span>
       </p>
       <p>
         <label class="ticketLabel">WHTX amount:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.witholding_tax_amount | number}}</span>
       </p>
       <p>
         <label class="ticketLabel">Net paid:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.net_pay | number}}</span>
       </p>
       <p>
         <label class="ticketLabel">Retention:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.company_retention | number}}</span>
       </p>
     </div>
     <div class="col-sm-4">
       <p>
         <label class="ticketLabel">Correspondent:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.claimant_provider | titlecase}}</span>
       </p>
       <p>
         <label class="ticketLabel">Coin amount:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.coinsurance_total_amount | number}}</span>
       </p>
       <p>
         <label class="ticketLabel">Authorised by:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
       </p>
       <p>
         <label class="ticketLabel">Account type:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.account_type}}</span>
       </p>
       <p>
         <label class="ticketLabel">Base currency:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.amount_base_currency}}</span>
       </p>
       <p>
         <label class="ticketLabel">Invoice amount:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.invoice_amount | number}}</span>
       </p>
       <p>
         <label class="ticketLabel">Payment desc:</label>
-        <span class="ticketDesc"></span>
+        <span class="ticketDesc">{{claimPaymentTransaction?.payment_description | titlecase}}</span>
       </p>
       <p>
         <label class="ticketLabel">Reinstatement amt:</label>
@@ -222,7 +222,11 @@
         >Make ready
         </button>
         <button
-          class="btn btn-primary" style="font-size: 12px;" >Authorise exceptions
+          class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()" [disabled]="isLoadingAuthExc">
+          <span *ngIf="!isLoadingAuthExc; else loadingAuthExc">Authorise exceptions</span>
+          <ng-template #loadingAuthExc>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
         </button>
       </div>
     </div>
