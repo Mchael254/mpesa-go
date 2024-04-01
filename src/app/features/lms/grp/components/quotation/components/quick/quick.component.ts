@@ -88,7 +88,7 @@ export class QuickComponent implements OnInit, OnDestroy {
     this.searchAgent();
     this.getBranch();
     this.retrievQuoteDets();
-    this.getParams();
+    // this.getParams();
   }
 
   ngOnDestroy(): void {
@@ -119,12 +119,12 @@ export class QuickComponent implements OnInit, OnDestroy {
     communicationType: ['', Validators.required],
   });
 
-  getParams() {
-  this.activatedRoute.queryParams.subscribe((queryParams) => {
-    this.clientCode = queryParams['clientCode'];
-    console.log("clientCodeFromClientCreation", this.clientCode)
-  });
-}
+//   getParams() {
+//   this.activatedRoute.queryParams.subscribe((queryParams) => {
+//     this.clientCode = queryParams['clientCode'];
+//     console.log("clientCodeFromClientCreation", this.clientCode)
+//   });
+// }
   
 
   capitalizeFirstLetterOfEachWord(str) {
@@ -356,6 +356,9 @@ export class QuickComponent implements OnInit, OnDestroy {
 
   retrievQuoteDets() {
     const storedQuoteData = this.session_storage.get('quotation_code');
+    const newClientCodeString = this.session_storage.get('newClientCode');
+    const newClientCode = JSON.parse(newClientCodeString);
+    this.clientCode = newClientCode;
 
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
