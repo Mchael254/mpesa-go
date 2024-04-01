@@ -216,6 +216,7 @@ td:first-child {
 .title {
     width: 100%;
     margin-bottom: 10px;
+    color: #000;
 }
 
 @media (max-width: 1200px) {

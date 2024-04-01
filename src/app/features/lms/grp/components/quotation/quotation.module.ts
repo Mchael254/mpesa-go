@@ -17,6 +17,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ClientCreationComponent } from './components/client-creation/client-creation.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { ClientCreationComponent } from './components/client-creation/client-cre
     MultiSelectModule,
     ProgressBarModule,
     RadioButtonModule,
-    SharedModule
+    SharedModule,
+    OverlayPanelModule,
+    ConfirmDialogModule,
   ]
 })
 export class QuotationModule { }

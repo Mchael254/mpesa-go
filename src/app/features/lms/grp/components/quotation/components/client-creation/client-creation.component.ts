@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from 'src/app/shared/services/setups/country/country.service';
 import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
@@ -13,7 +13,12 @@ import { ClientDTO, ClientTypeDTO } from 'src/app/features/entities/data/ClientD
 import { Dropdown } from 'primeng/dropdown';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { AdministratorService } from '../../service/contact-person/administrator.service';
+import { ContactPersonDTO } from '../../models/contactPerson/administratoDto';
+import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
+@AutoUnsubscribe
 @Component({
   selector: 'app-client-creation',
   templateUrl: './client-creation.component.html',
@@ -35,6 +40,11 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   clientCode: number;
   patchedClientId: number;
   organizationId: number;
+  administratorDetails: ContactPersonDTO[];
+  isEditMode: boolean = false;
+  contactPersonCode: number;
+  storedClientCode: number;
+  createAdmin: boolean = false;
 
   @ViewChild('clientDropdown') clientDropdown: Dropdown;
 
@@ -45,6 +55,11 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     private router: Router,
     private spinner_Service: NgxSpinnerService,
     private messageService: MessageService,
+    private adminService: AdministratorService,
+    private session_storage: SessionStorageService,
+    private confirmationService: ConfirmationService,
+    
+    
   ) {}
 
   ngOnInit(): void {
@@ -55,103 +70,14 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     this.getClientList();
     this.clientTypeChanges();
     this.getClntTypes();
+    this.getAdministratorDetails();
+    this.adminDetsTableColumns();
+    this.retrievClientDets();
   }
 
   ngOnDestroy(): void {
     
   }
-
-  // dummy data for administrator details table
-  data = [
-    { 
-        name: 'John Doe',
-        dob: '1990-05-15',
-        idNumber: '123456789',
-        position: 'Manager',
-        address: '123 Main St, Cityville',
-        contact: '+1234567890',
-        email: 'john.doe@example.com',
-        fromDate: '2023-01-01',
-        toDate: '2023-12-31'
-    },
-    { 
-        name: 'Jane Smith',
-        dob: '1985-08-25',
-        idNumber: '987654321',
-        position: 'Developer',
-        address: '456 Elm St, Townsville',
-        contact: '+9876543210',
-        email: 'jane.smith@example.com',
-        fromDate: '2022-07-01',
-        toDate: '2023-06-30'
-    },
-    { 
-        name: 'Alice Johnson',
-        dob: '1978-03-10',
-        idNumber: '456123789',
-        position: 'Sales Representative',
-        address: '789 Oak St, Villageton',
-        contact: '+4561237890',
-        email: 'alice.johnson@example.com',
-        fromDate: '2022-09-15',
-        toDate: '2023-09-14'
-    },
-    { 
-        name: 'Bob Williams',
-        dob: '1995-11-30',
-        idNumber: '789456123',
-        position: 'Accountant',
-        address: '321 Pine St, Hamletville',
-        contact: '+7894561230',
-        email: 'bob.williams@example.com',
-        fromDate: '2023-03-01',
-        toDate: '2024-02-29'
-    },
-    { 
-        name: 'Emily Brown',
-        dob: '1980-02-20',
-        idNumber: '321654987',
-        position: 'HR Manager',
-        address: '654 Cedar St, Countryside',
-        contact: '+3216549870',
-        email: 'emily.brown@example.com',
-        fromDate: '2022-12-01',
-        toDate: '2023-11-30'
-    },
-    { 
-        name: 'Michael Davis',
-        dob: '1992-07-05',
-        idNumber: '987123654',
-        position: 'IT Specialist',
-        address: '987 Maple St, Riverside',
-        contact: '+9871236540',
-        email: 'michael.davis@example.com',
-        fromDate: '2023-02-15',
-        toDate: '2024-02-14'
-    },
-    { 
-        name: 'Sophia Wilson',
-        dob: '1987-09-18',
-        idNumber: '654789321',
-        position: 'Marketing Manager',
-        address: '147 Birch St, Lakeside',
-        contact: '+6547893210',
-        email: 'sophia.wilson@example.com',
-        fromDate: '2023-05-01',
-        toDate: '2024-04-30'
-    },
-    { 
-        name: 'David Martinez',
-        dob: '1975-01-08',
-        idNumber: '987321654',
-        position: 'CEO',
-        address: '369 Walnut St, Hillside',
-        contact: '+9873216540',
-        email: 'david.martinez@example.com',
-        fromDate: '2023-01-01',
-        toDate: '2024-12-31'
-    }
-]
 
 clientCreationForm() {
   this.clientDetailsForm = this.fb.group({
@@ -205,7 +131,26 @@ closeAdminDetailsModal() {
     modal.classList.remove('show')
     modal.style.display = 'none';
   }
+
+  this.isEditMode = false
+  this.adminDetailsForm.reset();
 }
+
+  adminDetsTableColumns() {
+    this.columnOptions = [
+      { label: 'Name', value: 'contact_person_name' },
+      { label: 'Date of birth', value: 'date_of_birth' },
+      { label: 'ID number', value: 'identification_number' },
+      { label: 'Position', value: 'position' },
+      { label: 'Physical address', value: 'contact_person_physical_address' },
+      { label: 'Contact', value: 'phone_number' },
+      { label: 'Email', value: 'contact_person_email' },
+      { label: 'With effect from', value: 'wef' },
+      { label: 'With effect to', value: 'wet' },
+    ];
+
+    this.selectedColumns = this.columnOptions.map(option => option.value);
+  }
 
 // Helps enable or disbale phone number and email fields based on client type chosen
 clientTypeChanges() {
@@ -215,7 +160,23 @@ clientTypeChanges() {
     if (value === 'existingClient') {
       emailControl.disable();
       phoneControl.disable();
+      this.getClientList();
     } else {
+
+      /*...Clears admin table when new client option is selected.
+      New client does not have administrators yet.
+      */
+      this.administratorDetails = [];
+
+
+      /*...Ensures clientType selected(Which is New Client) do not get cleared when
+      resetting the form, because they are part of the clientDetailsForm.
+      */
+      Object.keys(this.clientDetailsForm.controls).forEach(controlName => {
+        if (controlName !== 'clientType') {
+          this.clientDetailsForm.get(controlName).reset();
+        }
+      });
       emailControl.enable();
       phoneControl.enable();
     }
@@ -226,7 +187,8 @@ capitalizeFirstLetterOfEachWord(str) {
   return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
 }
 
-// Function to patch data into the clientDetailsForm
+/* Function to patch data into the clientDetailsForm 
+when existing client is selected.*/
 patchClientData(client: ClientDTO) {
   this.clientDetailsForm.patchValue({
     clientName: `${client.firstName} ${client.lastName}`,
@@ -246,6 +208,7 @@ patchClientData(client: ClientDTO) {
     representation: client.country,
   });
   this.patchedClientId = client.id
+  this.storedClientCode = this.patchedClientId;
   console.log("IdOfPAtched", this.patchedClientId)
 }
 
@@ -265,6 +228,7 @@ onDropdownClear() {
     if (controlName !== 'clientType') {
       this.clientDetailsForm.get(controlName).reset();
       this.getClientList();
+      this.administratorDetails = [];//removes admin details associated with cleared client.
     }
   });
 }
@@ -276,8 +240,19 @@ searchClient() {
     this.clientId = clientTyped.value;
     
     console.log("clientSelectedID", this.clientId)
+
+    /*...Help get selected client's details.
+    These detailes are what is patched to all other fields.
+      */
     if(this.clientId !== null || this.clientId !== undefined) {
       this.getClientById(this.clientId);
+    }
+
+      /*...Fetches admin details for every client 
+      whenever a client is selected.
+      */
+    if(this.storedClientCode !== null || this.storedClientCode !== undefined) {
+      this.getAdministratorDetails();
     }
 
     if(clientTyped.length > 0) {
@@ -297,6 +272,9 @@ searchClient() {
 }
 
 
+/**Gets a list of five clients that is displayed by default.
+ The rest are obtained by searching.
+*/
 getClientList() {
   this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
     console.log("clients", data)
@@ -307,6 +285,9 @@ getClientList() {
   });
 }
 
+/*...Gets Client details based on the Client_id provided
+The details are patched to the clientDetailsForm when client/searched_client is selected
+*/
 getClientById(clientId){
     this.client_service.getClientById(this.clientId).subscribe(data =>{
       console.log("searchedByClientId", data)
@@ -450,8 +431,11 @@ highlightInvalid(field: string): boolean {
       }
     };
 
+    this.session_storage.set('clientDetails', JSON.stringify(formValues));
+
     if (this.clientDetailsForm.get('clientType').value === null || this.clientDetailsForm.get('clientType').value === ''
         || this.clientDetailsForm.get('clientType').value === undefined) {
+          this.spinner_Service.hide('download_view');
           this.messageService.add({
             severity: 'info',
             summary: 'Information',
@@ -461,10 +445,12 @@ highlightInvalid(field: string): boolean {
         }
 
     if (this.clientDetailsForm.get('clientType').value === 'existingClient') {
-      console.log("updating Existing client")
+      this.spinner_Service.hide('download_view');
+      console.log("updating Existing client", formValues)
 
       if (this.clientDetailsForm.get('clientName').value === null || this.clientDetailsForm.get('clientName').value === ''
         || this.clientDetailsForm.get('clientName').value === undefined) {
+          this.spinner_Service.hide('download_view');
           this.messageService.add({
             severity: 'warn',
             summary: 'Warning',
@@ -473,35 +459,37 @@ highlightInvalid(field: string): boolean {
         return;
       } else {
         console.log("Client to updateID", this.patchedClientId)
-        this.client_service.updateClient(this.patchedClientId, payload).subscribe((updateClnt) => {
-          console.log("client successfully updated", updateClnt)
-          // move activated router below here once the PUT method works.
-        },
-          (error) => {
-            let errorMessage = 'Unknown error'; // Default message
-            if (error.error && error.error.errors && error.error.errors.length > 0) {
-              errorMessage = error.error.errors[0]; // Extract the first error message
-            } else if (error.error && typeof error.error === 'string') {
-              errorMessage = error.error; // If the error is a string, use it as the message
-            }
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorMessage
-            });
-          });
+        this.spinner_Service.show('download_view');
+        // this.client_service.updateClient(this.patchedClientId, payload).subscribe((updateClnt) => {
+        //   this.session_storage.set('newClientCode', JSON.stringify(this.patchedClientId));
+        //   console.log("client successfully updated", updateClnt)
+        //   // move activated router below here once the PUT method works.
+        // },
+        //   (error) => {
+        //     this.session_storage.set('newClientCode', JSON.stringify(this.patchedClientId));
+        //     let errorMessage = 'Unknown error'; // Default message
+        //     if (error.error && error.error.errors && error.error.errors.length > 0) {
+        //       errorMessage = error.error.errors[0]; // Extract the first error message
+        //     } else if (error.error && typeof error.error === 'string') {
+        //       errorMessage = error.error; // If the error is a string, use it as the message
+        //     }
+        //     this.messageService.add({
+        //       severity: 'error',
+        //       summary: 'Error',
+        //       detail: errorMessage
+        //     });
+        //   });
 
           // to be moved after update method above is fixed
-          this.router.navigate(['/home/lms/grp/quotation/quick'], {
-            queryParams: {
-              clientCode: this.patchedClientId,
-            },
-          });
+          this.session_storage.set('newClientCode', JSON.stringify(this.patchedClientId));
+          this.router.navigate(['/home/lms/grp/quotation/quick']);
+          this.spinner_Service.hide('download_view');
 
       }
     } else {
 
       if (this.clientDetailsForm.invalid) {
+        this.spinner_Service.hide('download_view');
 
         /*
         together with the method -highlightInvalid(field: string), it helps 
@@ -519,6 +507,7 @@ highlightInvalid(field: string): boolean {
         });
         return;
       } else if(emailValue && !emailPattern.test(emailValue)) {
+        this.spinner_Service.hide('download_view');
         emailControl.setErrors({ 'invalidEmail': true });
         this.messageService.add({
           severity: 'warn',
@@ -529,24 +518,47 @@ highlightInvalid(field: string): boolean {
       }
 
       else {
+        this.spinner_Service.show('download_view');
 
         this.client_service.save(payload).subscribe(
           (clientPayload) => {
             this.clientCode = clientPayload?.id;
+            this.session_storage.set('newClientCode', JSON.stringify(this.clientCode));
+            this.storedClientCode = this.clientCode;
+            this.spinner_Service.hide('download_view');
             console.log("clientProposerCode", this.clientCode);
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
               detail: 'New client successfully created'
             });
-        
-            this.router.navigate(['/home/lms/grp/quotation/quick'], {
-              queryParams: {
-                clientCode: this.clientCode,
+
+            //Choose whether to create administrator or not, for the created client
+            this.confirmationService.confirm({
+              target: event.target as EventTarget,
+              message: 'Do you wish to create administrator for this client?',
+              header: 'Confirmation',
+              icon: 'pi pi-exclamation-triangle',
+              acceptIcon: "none",
+              rejectIcon: "none",
+              rejectButtonStyleClass: "p-button-text",
+              accept: () => {
+                this.session_storage.set('newClientCode', JSON.stringify(this.clientCode));
+                this.createAdmin = true;
+                this.messageService.add({
+                  severity: 'info',
+                  summary: 'Information',
+                  detail: 'Navigate to administrator section and click on add(+) button'
+                });
               },
+              reject: () => {
+                this.session_storage.set('newClientCode', JSON.stringify(this.clientCode));
+                this.router.navigate(['/home/lms/grp/quotation/quick']);
+              }
             });
           },
           (error) => {
+            this.spinner_Service.hide('download_view');
             let errorMessage = 'Unknown error'; // Default message
             if (error.error && error.error.errors && error.error.errors.length > 0) {
               errorMessage = error.error.errors[0]; // Extract the first error message
@@ -566,11 +578,174 @@ highlightInvalid(field: string): boolean {
     }
   }
 
-onSaveAdminDets() {
-  const formValues = this.adminDetailsForm.value;
-    console.log('AdminFormValues', formValues);
+  /*Method to call on press of continue after 
+  selecting add administrator for created client*/
+  continueAfterAddingAdmin() {
+    this.router.navigate(['/home/lms/grp/quotation/quick']);
+    // this.createAdmin = false;
+  }
 
-}
+  /*...Retreives new client's details or existing client's
+  when navigating to this screen after proceeding to second/other screens.
+  Rereives from session storage.
+      */
+  retrievClientDets() {
+    const storedClientData = this.session_storage.get('clientDetails');
+    const newClientCodeString = this.session_storage.get('newClientCode');
+    const newClientCode = JSON.parse(newClientCodeString);
+    this.storedClientCode = newClientCode;
+
+    if (storedClientData) {
+      const clientData = JSON.parse(storedClientData);
+      this.clientDetailsForm.patchValue(clientData);
+      this.clientDetailsForm.patchValue({
+        clientName: {
+          label: clientData.clientName,
+          value: this.storedClientCode
+        },
+      })
+      console.log("clientDetailsFormData",this.clientDetailsForm, clientData, newClientCode);
+    }
+  }
+
+  onSaveAdminDets() {
+    this.spinner_Service.show('download_view');
+    const formValues = this.adminDetailsForm.value;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailControl = this.adminDetailsForm.get('email');
+    const emailValue = emailControl.value;
+    console.log('AdminFormValues', formValues);
+    const adminDetails = {
+      contact_person_name: formValues.name,
+      telephone_number: formValues.phoneNumber,
+      contact_person_email: formValues.email,
+      wef: formValues.wef,
+      wet: formValues.wet,
+      date_of_birth: formValues.dob,
+      phone_number: formValues.phoneNumber,
+      gender: formValues.gender,
+      client_code: this.storedClientCode,
+      // position: formValues.position
+      // idType: formValues.identificationType
+      //address: formValues.address
+    }
+
+    if(emailValue && !emailPattern.test(emailValue)) {
+      this.spinner_Service.hide('download_view');
+      emailControl.setErrors({ 'invalidEmail': true });
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Email is invalid'
+      });
+      return;
+    } else {
+    this.adminService.saveAdminDetails(adminDetails).subscribe((res) => {
+      this.closeAdminDetailsModal()
+      this.getAdministratorDetails();
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Administrator saved successfully'
+      });
+    },(error) => {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Error occured, check form details'
+      });
+    })
+  }
+  }
+
+  getAdministratorDetails() {
+    this.adminService.getAdministratorDetails(this.storedClientCode).subscribe((adminDets: ContactPersonDTO[]) => {
+      this.administratorDetails = adminDets;
+      console.log("Admin/ContactPerson", this.administratorDetails);
+    });
+  }
+
+
+  showEditAdminDetailsModal(administratorDetails) {
+    this.isEditMode = true;
+    this.contactPersonCode = administratorDetails.contact_person_code;
+    const modal = document.getElementById('adminDetailsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+
+    if (administratorDetails) {
+      this.adminDetailsForm.patchValue({
+        name: administratorDetails.contact_person_name,
+        phoneNumber: administratorDetails.phone_number,
+        email: administratorDetails.contact_person_email,
+        wef: administratorDetails.wef,
+        wet: administratorDetails.wet,
+        dob: administratorDetails.date_of_birth,
+        gender: administratorDetails.gender,
+        // position: formValues.position
+        // idType: formValues.identificationType
+        //address: formValues.address
+      });
+    }
+  }
+
+  editAdminDetails() {
+    this.spinner_Service.show('download_view');
+    const formValues = this.adminDetailsForm.value;
+    const adminDetails = {
+      contact_person_name: formValues.name,
+      telephone_number: formValues.phoneNumber,
+      contact_person_email: formValues.email,
+      wef: formValues.wef,
+      wet: formValues.wet,
+      date_of_birth: formValues.dob,
+      phone_number: formValues.phoneNumber,
+      gender: formValues.gender,
+      client_code: this.storedClientCode,
+    }
+
+    this.adminService.updateAdministratorDetails(this.contactPersonCode, adminDetails).subscribe((res) => {
+      this.getAdministratorDetails();
+      this.spinner_Service.hide('download_view');
+      this.closeAdminDetailsModal()
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Edit successful'
+      });
+    })
+  }
+
+  deleteAdminDetails(administratorDetails, event: Event) {
+    const contactPerson_code = administratorDetails.contact_person_code;
+
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure that you want to Delete this Administrator?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      accept: () => {
+        this.adminService.deleteAdministrator(contactPerson_code).subscribe((res) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Deleted'
+          });
+          this.getAdministratorDetails();
+        });
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Cancelled', life: 3000 });
+      }
+    });
+  }
 
 
 }
