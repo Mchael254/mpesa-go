@@ -6,6 +6,17 @@
       </div>
 
       <div id="container">
+        <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, used more than once -->
+        <!-- lodaing spinner, used more then once -->
+        <ngx-spinner
+      name="download_view"
+        type="ball-clip-rotate-multiple"
+
+        [fullScreen]="true"
+        color="#00529B"
+        size="medium"
+        bdColor="rgba(255, 255, 255, 0.9)"
+      ></ngx-spinner>
         <div>
         <h5>Client details</h5>
 
@@ -334,31 +345,55 @@
                     <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns">
                     </p-multiSelect>
                   </div>
-                <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="administratorDetails" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '30rem'}">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Name</th>
-                            <th>Date of birth</th>
-                            <th>ID number</th>
-                            <th>Position</th>
-                            <th>Physical address</th>
-                            <th>Contact</th>
-                            <th>Email</th>
-                            <th>With effect from</th>
-                            <th>With effect to</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_name')">Name</th>
+                            <th *ngIf="selectedColumns.includes('date_of_birth')">Date of birth</th>
+                            <th *ngIf="selectedColumns.includes('identification_number')">ID number</th>
+                            <th *ngIf="selectedColumns.includes('position')">Position</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_physical_address')">Physical address</th>
+                            <th *ngIf="selectedColumns.includes('phone_number')">Contact</th>
+                            <th *ngIf="selectedColumns.includes('contact_person_email')">Email</th>
+                            <th *ngIf="selectedColumns.includes('wef')">With effect from</th>
+                            <th *ngIf="selectedColumns.includes('wet')">With effect to</th>
+                            <th class="action-column"></th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                             <tr>
-                                <td id="table-align">{{ item.name }}</td>
-                                <td id="table-align">{{ item.dob }}</td>
-                                <td id="table-align">{{ item.idNumber }}</td>
-                                <td id="table-align">{{ item.position }}</td>
-                                <td id="table-align">{{ item.address }}</td>
-                                <td id="table-align">{{ item.contact }}</td>
-                                <td id="table-align">{{ item.email }}</td>
-                                <td id="table-align">{{ item.fromDate }}</td>
-                                <td id="table-align">{{ item.toDate }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('contact_person_name')">{{ item.contact_person_name }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('date_of_birth')">{{ item.date_of_birth }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('identification_number')">{{ item.identification_number }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('position')">{{ item.position }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('contact_person_physical_address')">{{ item.contact_person_physical_address }}
+                                </td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('phone_number')">{{ item.phone_number }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('contact_person_email')">{{ item.contact_person_email }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('wef')">{{ item.wef }}</td>
+                                <td id="table-align" *ngIf="selectedColumns.includes('wet')">{{ item.wet }}</td>
+                                <td class="action-column">
+                                    <div class="flex justify-content-center">
+                                        <p-overlayPanel #op>
+                                            <div class="action-buttons">
+                                                <!-- Edit button -->
+                                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditAdminDetailsModal(item)"
+                                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>&nbsp;
+                                                    <!-- Delete button -->
+                                                        <p-button
+                                                        label="Delete" icon="pi pi-trash" (click)="deleteAdminDetails(item, $event)"
+                                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                                                    
+                                            </div>
+                                        </p-overlayPanel>
+                                        <!-- Ellipsis container -->
+                                        <div class="button-container">
+                                            <button class="hover-button" (click)="op.toggle($event)">
+                                                <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                     </ng-template>
                 </p-table>
@@ -370,7 +405,7 @@
         
 </div>
 <div class="cont-button" style="display: flex; justify-content: end; padding-top: 12px;">
-    <button class="finish-button" (click)="onContinue()">
+    <button class="finish-button" (click)="createAdmin ? continueAfterAddingAdmin() : onContinue()">
         <span class="finish-text">
             Continue
         </span>
@@ -533,8 +568,7 @@
                     <div class="form-group">
                         <div>
                             <input 
-                                type="text"
-                                pInputText
+                                type="number"
                                 class="form-control"
                                 id="phoneNumber" 
                                 [style]="{ width: '100%' }"
@@ -610,7 +644,8 @@
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSaveAdminDets()">Save</button>
+        <button type="button" class="btn btn-primary"
+        (click)="isEditMode ? editAdminDetails() : onSaveAdminDets()">Save</button>
       </div>
     </div>
   </div>

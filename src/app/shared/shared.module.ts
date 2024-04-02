@@ -9,7 +9,7 @@ import {
   NgOptimizedImage,
   PlatformLocation,
 } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { CookieService } from 'ngx-cookie-service';
 import { BrowserStorage, LocalBrowserStorageService } from './services/storage';
 import { JwtService } from './services';
@@ -135,6 +135,7 @@ const SERVICES = [
   { provide: BrowserStorage, useClass: LocalBrowserStorageService },
   AuthService,
   MessageService,
+  ConfirmationService,
   CookieService,
   ApiErrorInterceptor,
   CacheInterceptor,
