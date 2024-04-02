@@ -140,6 +140,7 @@ export class NewClientComponent implements OnInit{
       url: '/home/entity/client/new'
     }
   ];
+  timeStamp:any;
   constructor(
     private clientService: ClientService,
     private globalMessagingService: GlobalMessagingService,
@@ -181,6 +182,10 @@ export class NewClientComponent implements OnInit{
     this.getOccupation(2);
     this.getClientType(2);
     this.getClientBranch();
+
+    const passedTimestampString = sessionStorage.getItem('Timestamp');
+    this.timeStamp = JSON.parse(passedTimestampString);
+    log.info("Passed Timestamp (CRM):",this.timeStamp)
   }
 
   /**
@@ -502,6 +507,7 @@ export class NewClientComponent implements OnInit{
  * and wealth details, by making an API call with the form values.
  */
   saveClientBasic() {
+   
     this.submitted = true;
     this.clientRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
@@ -688,10 +694,22 @@ export class NewClientComponent implements OnInit{
           this.globalMessagingService.clearMessages();
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully Created Client');
           // this.clients = clientData;
-          this.router.navigate(['home/entity/client/list']);
+          log.debug("Timestamp:",this.timeStamp)
+          if(this.timeStamp){
+            log.debug("BACK TO GIS:")
+
+            this.router.navigate(['/home/gis/policy/policy-product']);
+      
+          }else{
+            log.debug("BACK TO CRM:")
+
+            this.router.navigate(['home/entity/client/list']);
+
+          }
         });
 
     });
+    
   }
 
 /**
