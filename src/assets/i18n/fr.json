@@ -601,7 +601,27 @@
       "staff_no": "Numéro du Personnel",
       "surname": "Nom de Famille",
       "other_names": "Autres Prénoms",
-      "company": "Entreprise"
+      "company": "Entreprise",
+      "underwriting_risk_details": "Souscription : Détails du risque",
+      "risk_details": "Détails du risque",
+      "insured": "Assuré",
+      "risk_id": "ID du risque",
+      "risk_description": "Description du risque",
+      "subclass": "Sous-classe",
+      "binder": "Reliure",
+      "cover_type": "Type de couverture",
+      "risk_cover_days": "Jours de couverture du risque",
+      "underwriting": "Souscription",
+      "policy_details": "Détails de la police",
+      "cover_from": "Couvrir De",
+      "cover_to": "Couvrir À",
+      "cover_days": "Jours de couverture",
+      "currency": "Devise",
+      "currency_rate": "Taux de change",
+      "currency_fixed_rate": "Taux de change fixe",
+      "policy_document": "Document de police",
+      "payment_mode": "Mode de paiement",
+      "payment_reference": "Référence de paiement"
     }
   },
   "lms": {
