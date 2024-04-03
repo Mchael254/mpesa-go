@@ -1,5 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+  FormControl,
+} from '@angular/forms';
 
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
 import { OccupationDTO } from '../../../../shared/data/common/occupation-dto';
@@ -38,6 +44,8 @@ export class SectorOccupationComponent implements OnInit {
   public occupationsData: OccupationDTO[];
   public selectedSector: SectorDTO;
   public selectedOccupation: OccupationDTO;
+  public selectedOccupations: OccupationDTO[] = [];
+  public selectedSectors: SectorDTO[] = [];
 
   public groupId: string = 'sectorTab';
   public ogroupId: string = 'occupationTab';
@@ -89,6 +97,7 @@ export class SectorOccupationComponent implements OnInit {
     this.createSectorForm = this.fb.group({
       shortDescription: [''],
       name: [''],
+      occupation: [[]],
     });
     this.mandatoryFieldsService
       .getMandatoryFieldsByGroupId(this.groupId)
@@ -123,6 +132,7 @@ export class SectorOccupationComponent implements OnInit {
     this.createOccupationForm = this.fb.group({
       shortDescription: [''],
       name: [''],
+      sector: [[]],
     });
     this.mandatoryFieldsService
       .getMandatoryFieldsByGroupId(this.ogroupId)
@@ -151,6 +161,14 @@ export class SectorOccupationComponent implements OnInit {
 
   get g() {
     return this.createOccupationForm.controls;
+  }
+
+  updateSelectedOccupations(selectedOccupations: OccupationDTO[]) {
+    this.selectedOccupations = selectedOccupations;
+  }
+
+  updateSelectedSectors(selectedSectors: SectorDTO[]) {
+    this.selectedSectors = selectedSectors;
   }
 
   onSort(event: Event, dataArray: any[], sortKey: string): void {
@@ -254,6 +272,41 @@ export class SectorOccupationComponent implements OnInit {
       });
   }
 
+  fetchOccupationBySectorId(sectorId: number) {
+    this.occupationServive
+      .getOccupationBySectorId(sectorId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            // Append the fetched data to existing occupationsData array
+            // this.occupationsData.push(...data);
+            this.occupationsData = data;
+            log.info(
+              `Fetched Occuption Data By Sector ID`,
+              this.occupationsData
+            );
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.error?.errors[0];
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
   /**
    * The function `filterSectors` filters a table based on a user input value.
    * @param {Event} event - The `event` parameter in the `filterSectors` function is an Event object
@@ -286,7 +339,8 @@ export class SectorOccupationComponent implements OnInit {
    */
   onSectorsRowSelect(sector: SectorDTO) {
     this.selectedSector = sector;
-    // this.fetchOccupations(this.selectedSector.id);
+    this.occupationsData = [];
+    this.fetchOccupationBySectorId(this.selectedSector.id);
   }
 
   /**

@@ -15,6 +15,7 @@ import { ChannelComponent } from './components/channel/channel.component';
 import { ServiceProviderTypesComponent } from './components/service-provider-types/service-provider-types.component';
 import { SectorOccupationComponent } from './components/sector-occupation/sector-occupation.component';
 import { ClientTypeComponent } from './components/client-type/client-type.component';
+import { AgencyComponent } from './components/agency/agency.component';
 
 const routes: Routes = [
   {
@@ -76,6 +77,10 @@ const routes: Routes = [
   {
     path: 'client-type',
     component: ClientTypeComponent,
+  },
+  {
+    path: 'agencies',
+    component: AgencyComponent,
   },
 ];
 

@@ -853,18 +853,17 @@
                 >Transfer Region</label
               >
               <p-dropdown
-                [options]="stateData"
-                [(ngModel)]="selectedState"
-                (onChange)="onCityChange()"
+                [options]="regionData"
+                [(ngModel)]="selectedRegion"
                 optionLabel="name"
                 optionValue="id"
-                formControlName="transferRegion"
-                id="transferRegion"
+                formControlName="region"
+                id="region"
                 [filter]="true"
                 filterBy="name"
                 [showClear]="true"
                 [style]="{ width: '100%', height: '45%' }"
-                placeholder="Select Region"
+                placeholder="Select a Region"
               >
               </p-dropdown>
             </div>

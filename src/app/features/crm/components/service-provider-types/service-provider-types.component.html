@@ -482,6 +482,103 @@
   </div>
 </div>
 
+<div
+  class="modal fade"
+  id="serviceProviderTypeActivityModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Define a Service Provider Activity
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeServiceProviderTypeActivityModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createServiceProviderTypeActivityForm">
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <label for="activityId" class="form-label">Activity ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="activityId"
+                placeholder="Activity ID"
+                formControlName="activityId"
+                [ngClass]="{
+                  'is-invalid':
+                    f['activityId']?.invalid &&
+                    (f['activityId']?.dirty || f['activityId']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['activityId']?.invalid &&
+                  (f['activityId']?.dirty || f['activityId']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['activityId']?.errors
+                }"
+              >
+                <div *ngIf="f['activityId']?.errors['required']">
+                  Activity ID is required
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <label for="activity" class="form-label">Activity</label>
+              <input
+                type="text"
+                class="form-control"
+                id="activity"
+                placeholder="Activity"
+                formControlName="activity"
+                [ngClass]="{
+                  'is-invalid':
+                    f['activity']?.invalid &&
+                    (f['activity']?.dirty || f['activity']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['activity']?.invalid &&
+                  (f['activity']?.dirty || f['activity']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['activity']?.errors
+                }"
+              >
+                <div *ngIf="f['activity']?.errors['required']">
+                  Activity is required
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveServiceProviderTypeActivity()"
+        >
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <app-reusable-input
   [modalId]="'serviceProviderTypeConfirmationModal'"
   [title]="'Delete Confirmation'"
