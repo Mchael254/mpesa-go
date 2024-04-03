@@ -22,4 +22,8 @@ export class LandingDashboardComponent implements OnInit {
   //   this.router.navigate(['/home/lms/grp/policy/policyListing'])
   // }
 
+  navigateToPolDets() {
+    this.router.navigate(['/home/lms/grp/dashboard/policy-details']);
+  }
+
 }
