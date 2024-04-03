@@ -1,0 +1,94 @@
+.card-header {
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0em;
+  color: #000000;
+  border-bottom: none;
+}
+
+label {
+  font-weight: 500;
+}
+
+label,
+legend {
+  font-weight: 500;
+}
+
+fieldset legend {
+  font-size: 16px;
+}
+
+.form-group .form-select {
+  border-radius: 8px;
+}
+
+.form-group .form-control {
+  border-radius: 8px;
+}
+
+.icon-circle {
+  display: inline-block;
+  background-color: #e4e7eb;
+  color: #00529b;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.custom-table {
+  cursor: pointer;
+}
+
+.custom-table.selected {
+  background-color: #c8c7cc;
+}
+
+.img_upload {
+  display: inline-block;
+  font-family: "Roboto", serif;
+  text-align: center;
+  background-color: white;
+  color: var(--primary-color);
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  border: 1px solid var(--primary-color);
+  border-radius: 2px 1px 2px 2px;
+
+  .fa {
+    vertical-align: middle;
+  }
+}
+
+.img_edit {
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.img_edit:hover {
+  text-decoration: underline;
+}
+
+#profile-photo {
+  width: 50px;
+  height: 50px;
+  margin-right: 16px;
+  border-radius: 50%;
+}
+
+::ng-deep .p-dropdown .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+::ng-deep .p-dropdown .p-dropdown-filter {
+  height: 35px;
+}

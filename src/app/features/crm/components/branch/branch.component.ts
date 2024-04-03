@@ -36,6 +36,7 @@ import { ReusableInputComponent } from '../../../../shared/components/reusable-i
 import { ReplaySubject, combineLatest, filter, takeUntil } from 'rxjs';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
+import { Router } from '@angular/router';
 
 const log = new Logger('BranchComponent');
 
@@ -126,6 +127,7 @@ export class BranchComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private renderer: Renderer2,
+    private router: Router,
     private organizationService: OrganizationService,
     private countryService: CountryService,
     private staffService: StaffService,
@@ -1087,5 +1089,7 @@ export class BranchComponent implements OnInit {
     }
   }
 
-  onNext() {}
+  onNext() {
+    this.router.navigate(['/home/crm/agencies']);
+  }
 }

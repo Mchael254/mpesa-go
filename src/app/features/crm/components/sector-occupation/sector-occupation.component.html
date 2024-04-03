@@ -210,7 +210,7 @@
       <div class="modal-body">
         <form [formGroup]="createSectorForm">
           <div class="row">
-            <div class="col-6 mb-3">
+            <div class="col-sm-12 mb-3">
               <label for="shortDescription" class="form-label"
                 >Short Description</label
               >
@@ -243,7 +243,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-6 mb-3">
+            <div class="col-sm-12 mb-3">
               <label for="name" class="form-label">Name</label>
               <input
                 type="text"
@@ -270,6 +270,22 @@
                   Name is required
                 </div>
               </div>
+            </div>
+            <div class="col-sm-12 mb-3">
+              <label for="occupation" class="form-label"
+                >Select Occupations</label
+              >
+              <p-multiSelect
+                [options]="occupationsData"
+                [ngModel]="selectedOccupations"
+                (ngModelChange)="updateSelectedOccupations($event)"
+                [filter]="true"
+                optionLabel="name"
+                id="occupation"
+                formControlName="occupation"
+                [style]="{ width: '100%', height: '55%' }"
+                placeholder="Select Occupation"
+              ></p-multiSelect>
             </div>
           </div>
         </form>
@@ -304,7 +320,7 @@
       <div class="modal-body">
         <form [formGroup]="createOccupationForm">
           <div class="row">
-            <div class="col-6 mb-3">
+            <div class="col-sm-12 mb-3">
               <label for="shortDescription" class="form-label"
                 >Short Description</label
               >
@@ -337,7 +353,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-6 mb-3">
+            <div class="col-sm-12 mb-3">
               <label for="name" class="form-label">Name</label>
               <input
                 type="text"
@@ -364,6 +380,20 @@
                   Name is required
                 </div>
               </div>
+            </div>
+            <div class="col-sm-12 mb-3">
+              <label for="sector" class="form-label">Select Sectors</label>
+              <p-multiSelect
+                [options]="sectorsData"
+                [ngModel]="selectedSectors"
+                (ngModelChange)="updateSelectedSectors($event)"
+                [filter]="true"
+                optionLabel="name"
+                id="sector"
+                formControlName="sector"
+                [style]="{ width: '100%', height: '55%' }"
+                placeholder="Select Sector"
+              ></p-multiSelect>
             </div>
           </div>
         </form>
