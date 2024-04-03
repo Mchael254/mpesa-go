@@ -15,13 +15,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { TreeModule } from 'primeng/tree';
+import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 
 
 @NgModule({
   declarations: [
     ListPoliciesComponent,
     UnderwritingComponent,
-    PolicyProductComponent
+    PolicyProductComponent,
+    RiskDetailsComponent
   ],
   imports: [
     CommonModule,

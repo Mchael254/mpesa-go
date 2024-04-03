@@ -601,7 +601,27 @@
       "staff_no": "Número de Empleado",
       "surname": "Apellido",
       "other_names": "Otros Nombres",
-      "company": "Empresa"
+      "company": "Empresa",
+      "underwriting_risk_details": "Suscripción: Detalles del riesgo",
+      "risk_details": "Detalles del riesgo",
+      "insured": "Asegurado",
+      "risk_id": "ID del riesgo",
+      "risk_description": "Descripción del riesgo",
+      "subclass": "Subclase",
+      "binder": "Vinculante",
+      "cover_type": "Tipo de cobertura",
+      "risk_cover_days": "Días de cobertura del riesgo",
+      "underwriting": "Suscripción",
+      "policy_details": "Detalles de la póliza",
+      "cover_from": "Cobertura desde",
+      "cover_to": "Cobertura hasta",
+      "cover_days": "Días de cobertura",
+      "currency": "Moneda",
+      "currency_rate": "Tipo de cambio",
+      "currency_fixed_rate": "Tipo de cambio fijo",
+      "policy_document": "Documento de póliza",
+      "payment_mode": "Modo de pago",
+      "payment_reference": "Referencia de pago"
     }
   },
   "lms": {

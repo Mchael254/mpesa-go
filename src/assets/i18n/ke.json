@@ -601,7 +601,27 @@
       "staff_no": "Nambari ya Mfanyakazi",
       "surname": "Jina la Ukoo",
       "other_names": "Majina Mengine",
-      "company": "Kampuni"
+      "company": "Kampuni",
+      "underwriting_risk_details": "Uwekaji: Maelezo ya Hatari",
+      "risk_details": "Maelezo ya Hatari",
+      "insured": "Mwenye Bima",
+      "risk_id": "Kitambulisho cha Hatari",
+      "risk_description": "Maelezo ya Hatari",
+      "subclass": "Daraja la Chini",
+      "binder": "Kishikizio",
+      "cover_type": "Aina ya Bima",
+      "risk_cover_days": "Siku za Kufunika Hatari",
+      "underwriting": "Uhakiki",
+      "policy_details": "Maelezo ya Sera",
+      "cover_from": "Kufunika Kutoka",
+      "cover_to": "Kufunika Hadi",
+      "cover_days": "Siku za Kufunika",
+      "currency": "Sarafu",
+      "currency_rate": "Kiwango cha Kubadilisha Sarafu",
+      "currency_fixed_rate": "Kiwango cha Kubadilisha Sarafu Kifungwa",
+      "policy_document": "Hatikati ya Sera",
+      "payment_mode": "Njia ya Malipo",
+      "payment_reference": "Marejeo ya Malipo"
     }
   },
   "lms": {
