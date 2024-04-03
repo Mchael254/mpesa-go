@@ -88,8 +88,9 @@
     <div class="dashboard">Dashboard</div>
     <div class="container2">
         <div class="title"><span id="title">Policies</span></div>
-        <div class="box">
+        <div class="box" (click)="navigateToPolDets()">
             <label class="active-label">Active</label>
+            <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
@@ -108,11 +109,13 @@
                     <td class="td-data">976875</td>
                 </tr>
             </table>
+        </div>
         </div>
         
 
-        <div class="box">
+        <div class="box" (click)="navigateToPolDets()">
             <label class="active-label">Active</label>
+            <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
@@ -132,9 +135,11 @@
                 </tr>
             </table>
         </div>
+        </div>
         
-        <div class="box">
+        <div class="box" (click)="navigateToPolDets()">
             <label class="active-label">Active</label>
+            <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
@@ -153,6 +158,7 @@
                     <td class="td-data">976875</td>
                 </tr>
             </table>
+        </div>
         </div>
         
     </div>
