@@ -29,6 +29,10 @@
   background-color: #c8c7cc;
 }
 
+::ng-deep .p-multiSelect-fileter-container .p-multiSelect-filter {
+  height: 35px;
+}
+
 @media (max-width: 576px) {
   .card-body {
     padding: 10px;

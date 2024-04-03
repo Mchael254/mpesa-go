@@ -30,6 +30,8 @@ export class ServiceProviderTypesComponent implements OnInit {
   serviceProviderTypeConfirmationModal!: ReusableInputComponent;
 
   public createServiceProviderTypeForm: FormGroup;
+  public createServiceProviderTypeActivityForm: FormGroup;
+
   public serviceProviderTypesData: ServiceProviderTypeDTO[];
   public selectedServiceProviderType: ServiceProviderTypeDTO;
   public statusesData: StatusDTO[];
@@ -82,6 +84,7 @@ export class ServiceProviderTypesComponent implements OnInit {
    */
   ngOnInit(): void {
     this.ServiceProviderTypeForm();
+    this.ServiceProviderTypeActivityForm();
     this.fetchServiceProviderTypes();
     this.fetchStatuses();
   }
@@ -140,6 +143,13 @@ export class ServiceProviderTypesComponent implements OnInit {
 
   get f() {
     return this.createServiceProviderTypeForm.controls;
+  }
+
+  ServiceProviderTypeActivityForm() {
+    this.createServiceProviderTypeActivityForm = this.fb.group({
+      activityId: [''],
+      activity: [''],
+    });
   }
 
   onSort(event: Event, dataArray: any[], sortKey: string): void {
@@ -264,9 +274,21 @@ export class ServiceProviderTypesComponent implements OnInit {
     }
   }
 
-  openServiceProviderTypeActivityModal() {}
+  openServiceProviderTypeActivityModal() {
+    const modal = document.getElementById('serviceProviderTypeActivityModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
 
-  closeServiceProviderTypeActivityModal() {}
+  closeServiceProviderTypeActivityModal() {
+    const modal = document.getElementById('serviceProviderTypeActivityModal');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+    }
+  }
 
   /**
    * The `saveServiceProviderType` function handles the saving and updating of service provider types,
@@ -490,6 +512,52 @@ export class ServiceProviderTypesComponent implements OnInit {
         'No Service Provider Type is selected!.'
       );
     }
+  }
+
+  saveServiceProviderTypeActivity() {
+    this.submitted = true;
+    this.createServiceProviderTypeActivityForm.markAllAsTouched();
+
+    if (this.createServiceProviderTypeActivityForm.invalid) {
+      const invalidControls = Array.from(
+        document.querySelectorAll('.is-invalid')
+      ) as Array<HTMLInputElement | HTMLSelectElement>;
+
+      let firstInvalidUnfilledControl:
+        | HTMLInputElement
+        | HTMLSelectElement
+        | null = null;
+
+      for (const control of invalidControls) {
+        if (!control.value) {
+          firstInvalidUnfilledControl = control;
+          break;
+        }
+      }
+
+      if (firstInvalidUnfilledControl) {
+        firstInvalidUnfilledControl.focus();
+        const scrollContainer = this.utilService.findScrollContainer(
+          firstInvalidUnfilledControl
+        );
+        if (scrollContainer) {
+          scrollContainer.scrollTop = firstInvalidUnfilledControl.offsetTop;
+        }
+      } else {
+        const firstInvalidControl = invalidControls[0];
+        if (firstInvalidControl) {
+          firstInvalidControl.focus();
+          const scrollContainer =
+            this.utilService.findScrollContainer(firstInvalidControl);
+          if (scrollContainer) {
+            scrollContainer.scrollTop = firstInvalidControl.offsetTop;
+          }
+        }
+      }
+      return;
+    }
+
+    this.closeServiceProviderTypeActivityModal();
   }
 
   editServiceProviderTypeActivity() {}
