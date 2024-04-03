@@ -1,0 +1,454 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <app-stepper [currentStep]="5" [stepperData]="steps"></app-stepper>
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-header bg-transparent">
+        <span class="float-start mt-3">Organization Definition</span>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-4">
+            <label for="organization" class="form-label"
+              >Select an Organization</label
+            >
+            <p-dropdown
+              [options]="organizationsData"
+              [(ngModel)]="selectedOrganizationId"
+              (onChange)="onOrganizationChange()"
+              optionLabel="name"
+              optionValue="id"
+              id="organization"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              [style]="{ width: '100%', height: '45%' }"
+              placeholder="Select organization"
+            >
+            </p-dropdown>
+          </div>
+          <div class="col-sm-4">
+            <label for="branch" class="form-label">Select a Branch</label>
+            <p-dropdown
+              [options]="branchesData"
+              [(ngModel)]="selectedBranch"
+              (onChange)="onBranchChange()"
+              optionLabel="name"
+              optionValue="id"
+              id="branch"
+              [filter]="true"
+              filterBy="name"
+              [showClear]="true"
+              [style]="{ width: '100%', height: '45%' }"
+              placeholder="Select Branch"
+            >
+            </p-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header bg-transparent float-start">
+        <span class="float-start mt-3">Agencies Details</span>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-4">
+            <select
+              class="form-select"
+              (change)="onSort($event, agenciesData, 'name')"
+            >
+              <option value="">Sorting Options</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by name"
+              aria-label="search"
+              aria-describedby="search"
+              (input)="filterAgency($event)"
+            />
+          </div>
+          <div class="col-sm-4">
+            <div class="float-end">
+              <span class="icon-circle"
+                ><i
+                  class="pi pi-arrow-right-arrow-left"
+                  (click)="openAgencyTransferModal()"
+                ></i
+              ></span>
+              <span class="icon-circle"
+                ><i class="fa-solid fa-plus" (click)="openAgencyModal()"></i
+              ></span>
+              <span class="icon-circle"
+                ><i class="pi pi-pencil" (click)="editAgency()"></i
+              ></span>
+              <span class="icon-circle"
+                ><i class="fa-regular fa-trash-can" (click)="deleteAgency()"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-5">
+          <div class="col-12">
+            <p-table
+              #agencyTable
+              [value]="agenciesData"
+              [autoLayout]="true"
+              [rowHover]="true"
+              [resizableColumns]="true"
+              styleClass="p-datatable-sm"
+              responsiveLayout="scroll"
+              [scrollable]="true"
+              scrollHeight="400px"
+              class="ui-datatable"
+              [globalFilterFields]="['name']"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="head" pSortableColumn="code">
+                    Code <p-sortIcon field="code"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="id">
+                    ID <p-sortIcon field="id"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="name">
+                    Name <p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="status">
+                    Status <p-sortIcon field="status"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="manager">
+                    Manager
+                    <p-sortIcon field="manager"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="managerAllowed">
+                    Manager Allowed
+                    <p-sortIcon field="managerAllowed"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="commissionEarned">
+                    Overide Commission Earned
+                    <p-sortIcon field="commissionEarned"></p-sortIcon>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-agency>
+                <tr
+                  class="custom-table"
+                  (click)="onAgencyRowSelect(agency)"
+                  [class.selected]="selectedAgency === agency"
+                >
+                  <td class="body">{{ agency.id }}</td>
+                  <td class="body">{{ agency.name }}</td>
+                  <td class="body">{{ agency.status }}</td>
+                  <td class="body">{{ agency.manager }}</td>
+                  <td class="body">{{ agency.managerAllowed }}</td>
+                  <td class="body">{{ agency.commissionEarned }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9">No Agency detail found.</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div
+  class="modal fade"
+  #branchModal
+  id="agencyModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Define a Branch</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeAgencyModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createAgencyForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="code" class="form-label">Code</label>
+              <input
+                type="text"
+                class="form-control"
+                id="code"
+                placeholder="Code"
+                formControlName="code"
+                [ngClass]="{
+                  'is-invalid':
+                    f['code']?.invalid &&
+                    (f['code']?.dirty || f['code']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['code']?.invalid && (f['code']?.dirty || f['code']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['code']?.errors
+                }"
+              >
+                <div *ngIf="f['code']?.errors['required']">
+                  Code is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="id" class="form-label">ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="id"
+                placeholder="ID"
+                formControlName="id"
+                [ngClass]="{
+                  'is-invalid':
+                    f['id']?.invalid && (f['id']?.dirty || f['id']?.touched)
+                }"
+              />
+              <div
+                *ngIf="f['id']?.invalid && (f['id']?.dirty || f['id']?.touched)"
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['id']?.errors
+                }"
+              >
+                <div *ngIf="f['id']?.errors['required']">ID is required</div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="Name"
+                formControlName="name"
+                [ngClass]="{
+                  'is-invalid':
+                    f['name']?.invalid &&
+                    (f['name']?.dirty || f['name']?.touched)
+                }"
+              />
+              <div
+                *ngIf="
+                  f['name']?.invalid && (f['name']?.dirty || f['name']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && f['name']?.errors
+                }"
+              >
+                <div *ngIf="f['name']?.errors['required']">
+                  Name is required
+                </div>
+              </div>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option value="">Select Status</option>
+                <option
+                  *ngFor="let status of statusesData"
+                  [value]="status.value"
+                >
+                  {{ status.name | uppercase }}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 mb-3">
+              <label for="manager" class="form-label">Manager</label>
+              <p-dropdown
+                [options]="managersData"
+                [(ngModel)]="selectedManager"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="manager"
+                id="manager"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select a Manager"
+              >
+              </p-dropdown>
+            </div>
+            <div class="col-6 mb-3">
+              <fieldset>
+                <legend for="managerAllowed" class="form-label">
+                  Manager Allowed?
+                </legend>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio1"
+                    value="YES"
+                    formControlName="managerAllowed"
+                  />
+                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio2"
+                    value="NO"
+                    formControlName="managerAllowed"
+                  />
+                  <label class="form-check-label" for="inlineRadio2">No</label>
+                </div>
+              </fieldset>
+            </div>
+            <div class="col-6 mb-3">
+              <fieldset>
+                <legend for="commission" class="form-label">
+                  Override Commision Earned?
+                </legend>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio1"
+                    value="YES"
+                    formControlName="commission"
+                  />
+                  <label class="form-check-label" for="inlineRadio1">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="inlineRadio2"
+                    value="NO"
+                    formControlName="commission"
+                  />
+                  <label class="form-check-label" for="inlineRadio2">No</label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveAgency()">
+          Save Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Agency transfer modal -->
+<div
+  class="modal fade"
+  #agencyTransferModal
+  id="agencyTransferModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog align-items-center">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Transfer an Agency</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeAgencyTransferModal()"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="createAgencyTransferForm">
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label for="currentBranch" class="form-label"
+                >Current Branch</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="currentBranch"
+                placeholder="Current Branch"
+                formControlName="currentBranch"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label for="agencyName" class="form-label">Agency</label>
+              <input
+                type="text"
+                class="form-control"
+                id="agencyName"
+                placeholder="Agency Name"
+                formControlName="agencyName"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label for="transferDate" class="form-label">Transfer Date</label>
+              <input
+                type="text"
+                class="form-control"
+                id="transferDate"
+                placeholder="Transfer Date"
+                formControlName="transferDate"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label for="transferRegion" class="form-label"
+                >Transfer to Branch</label
+              >
+              <p-dropdown
+                [options]="branchesData"
+                [(ngModel)]="selectedBranch"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="transferBranch"
+                id="transferBranch"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Select a Branch"
+              >
+              </p-dropdown>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="transferAgency()"
+        >
+          Authorize Transfer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

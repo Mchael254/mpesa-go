@@ -5,6 +5,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -23,6 +24,7 @@ import { ChannelComponent } from './components/channel/channel.component';
 import { ServiceProviderTypesComponent } from './components/service-provider-types/service-provider-types.component';
 import { SectorOccupationComponent } from './components/sector-occupation/sector-occupation.component';
 import { ClientTypeComponent } from './components/client-type/client-type.component';
+import { AgencyComponent } from './components/agency/agency.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ import { ClientTypeComponent } from './components/client-type/client-type.compon
     ServiceProviderTypesComponent,
     SectorOccupationComponent,
     ClientTypeComponent,
+    AgencyComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +54,7 @@ import { ClientTypeComponent } from './components/client-type/client-type.compon
     DropdownModule,
     TooltipModule,
     DialogModule,
+    MultiSelectModule,
     SharedModule,
   ],
   providers: [DatePipe],

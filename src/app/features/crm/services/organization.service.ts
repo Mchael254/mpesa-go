@@ -195,12 +195,17 @@ export class OrganizationService {
   }
 
   getOrganizationBranch(
-    organizationId: number,
-    regionId: number
+    organizationId?: number,
+    regionId?: number
   ): Observable<OrganizationBranchDTO[]> {
-    const params = new HttpParams()
-      .set('organizationId', `${organizationId}`)
-      .set('regionId', `${regionId}`);
+    let params = new HttpParams();
+    if (organizationId !== undefined) {
+      params = params.set('organizationId', `${organizationId}`);
+    }
+    if (regionId !== undefined) {
+      params = params.set('regionId', `${regionId}`);
+    }
+
     let paramObject = this.utilService.removeNullValuesFromQueryParams(params);
     return this.api.GET<OrganizationBranchDTO[]>(
       `branches`,
