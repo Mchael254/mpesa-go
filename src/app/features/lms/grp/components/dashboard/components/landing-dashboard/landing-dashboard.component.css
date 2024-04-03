@@ -186,6 +186,11 @@
     justify-content: space-between;
 }
 
+.box:hover {
+    background-color: rgb(156, 208, 244);
+    cursor: pointer;
+}
+
 table {
     width: 90%;
     margin-top: 30px;
@@ -217,6 +222,11 @@ td:first-child {
     width: 100%;
     margin-bottom: 10px;
     color: #000;
+}
+
+.scroll-content {
+    overflow-x: auto;
+    flex-grow: 1;
 }
 
 @media (max-width: 1200px) {
