@@ -601,7 +601,27 @@
       "staff_no": "员工编号",
       "surname": "姓",
       "other_names": "其他名字",
-      "company": "公司"
+      "company": "公司",
+      "underwriting_risk_details": "承保：风险细节",
+      "risk_details": "风险细节",
+      "insured": "被保险人",
+      "risk_id": "风险ID",
+      "risk_description": "风险描述",
+      "subclass": "子类",
+      "binder": "保单",
+      "cover_type": "保险类型",
+      "risk_cover_days": "风险覆盖天数",
+      "underwriting": "承保",
+      "policy_details": "保单详情",
+      "cover_from": "保险起期",
+      "cover_to": "保险止期",
+      "cover_days": "保险天数",
+      "currency": "货币",
+      "currency_rate": "汇率",
+      "currency_fixed_rate": "固定汇率",
+      "policy_document": "保单文件",
+      "payment_mode": "支付方式",
+      "payment_reference": "支付参考"
     }
   },
   "lms": {

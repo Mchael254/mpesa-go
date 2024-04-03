@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ListPoliciesComponent } from './components/list-policies/list-policies.component';
 import { UnderwritingComponent } from './components/underwriting/underwriting.component';
 import { PolicyProductComponent } from './components/policy-product/policy-product.component';
+import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,9 @@ const routes: Routes = [
   },
   {
     path: 'policy-product', component:PolicyProductComponent
+  },
+  {
+    path: 'risk-details', component:RiskDetailsComponent
   },
 ];
 

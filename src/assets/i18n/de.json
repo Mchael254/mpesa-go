@@ -601,7 +601,27 @@
       "staff_no": "Mitarbeiternummer",
       "surname": "Nachname",
       "other_names": "Andere Namen",
-      "company": "Firma"
+      "company": "Firma",
+      "underwriting_risk_details": "Underwriting: Risikodetails",
+      "risk_details": "Risikodetails",
+      "insured": "Versicherte",
+      "risk_id": "Risiko-ID",
+      "risk_description": "Risikobeschreibung",
+      "subclass": "Unterklasse",
+      "binder": "Binder",
+      "cover_type": "Deckungstyp",
+      "risk_cover_days": "Risikoabdeckungstage",
+      "underwriting": "Zeichnung",
+      "policy_details": "Versicherungsdetails",
+      "cover_from": "Deckung von",
+      "cover_to": "Deckung bis",
+      "cover_days": "Deckungstage",
+      "currency": "Währung",
+      "currency_rate": "Wechselkurs",
+      "currency_fixed_rate": "Fester Wechselkurs",
+      "policy_document": "Versicherungsdokument",
+      "payment_mode": "Zahlungsart",
+      "payment_reference": "Zahlungsreferenz"
     }
   },
   "lms": {

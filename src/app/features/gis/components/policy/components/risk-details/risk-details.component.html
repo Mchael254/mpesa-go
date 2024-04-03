@@ -1,0 +1,119 @@
+<div class="container ">
+    <p class="titleMain mt-3">{{'gis.policy.underwriting_risk_details' | translate}}</p>
+    <div class="container mx-2 mt-n1">
+        <div class="card mb-3 px-2" style=" position: relative;">
+            <div class="card-body">
+                <p class="subheading">{{'gis.policy.risk_details' | translate}}</p>
+                <form [formGroup]="policyRiskForm">
+                    <!-- ROW 1 -->
+                    <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="insured" class="required risk-label" id="client">{{'gis.policy.insured' | translate}}</label>
+                            <div formGroupName="insureds">
+                                <div formGroupName="client">
+                                    <input type="text" id="insured" class="form-control form-control-sm mb-1 riskInput"
+                                        formControlName="id" readonly>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class="required risk-label">{{'gis.policy.risk_id' | translate}}</label>
+                            <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="property_id">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk ID is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="riskDescription" class="required risk-label" id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
+                            <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="property_description">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Description is required.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ROW 2 -->
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.subclass' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
+                                formControlName="sub_class_code">
+                                <option></option>
+
+                            </select>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('sub_class_code').hasError('required') && policyRiskForm.get('sub_class_code').touched"
+                                class="form-text text-danger">
+                                Subclass is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="binder" class="required risk-label" id="binder">{{'gis.policy.binder' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="binder"
+                                formControlName="binder_code">
+                                <option></option>
+
+                            </select>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('binder_code').hasError('required') && policyRiskForm.get('binder_code').touched"
+                                class="form-text text-danger">
+                                Binder is required.
+                            </div>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type' | translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="coverType"
+                                formControlName="cover_type_code">
+                                <option></option>
+
+                            </select>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('cover_type_code').hasError('required') && policyRiskForm.get('cover_type_code').touched"
+                                class="form-text text-danger">
+                                Cover Type is required.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ROW 3 -->
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.cover_from' | translate}}</label>
+                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="date_cover_from">
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' | translate}}</label>
+                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="date_cover_to">
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="riskCoverDays" class=" risk-label" id="riskCoverDays">{{'gis.policy.risk_cover_days' | translate}}</label>
+                            <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput"
+                                readonly>
+
+
+                            <!-- Display error message under the field -->
+                            <!-- <div *ngIf="policyProductForm.get('product_code').hasError('required') && policyProductForm.get('product_code').touched"
+                                class="form-text text-danger">
+                                Product is required.
+                            </div> -->
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
