@@ -897,12 +897,12 @@
             </ng-container>
             <ng-container *ngIf="visibleStatus?.distributeChannel === 'Y'">
               <div class="form-group col-md-4">
-                <label for="distributeChannel">{{ 'entities.distributed_channel' | translate }}</label>
+                <label for="distributeChannel">{{ 'entities.distribute_channel' | translate }}</label>
                 <input type="text" class="form-control" id="distributeChannel" placeholder="" formControlName="distributeChannel"
                        [ngClass]="{ 'is-invalid': f['wealthDetails']['controls']['distributeChannel']?.invalid && (f['wealthDetails']['controls']['distributeChannel']?.dirty || f['wealthDetails']['controls']['distributeChannel']?.touched) }">
                 <div *ngIf="f['wealthDetails']['controls']['distributeChannel']?.invalid && (f['wealthDetails']['controls']['distributeChannel']?.dirty || f['wealthDetails']['controls']['distributeChannel']?.touched)" class="form-text text-danger">
                   <div *ngIf="f['wealthDetails']['controls']['distributeChannel']?.errors.required">
-                    {{ 'entities.distrubed_channel_required' | translate }}
+                    {{ 'entities.distribute_channel_required' | translate }}
                   </div>
                 </div>
               </div>

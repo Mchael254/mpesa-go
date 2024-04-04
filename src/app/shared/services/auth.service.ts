@@ -270,6 +270,8 @@ export class AuthService implements OnDestroy {
         detail: errMsg,
       };
 
+      this.globalMessagingService.displayErrorMessage('User Authentication Failed', errMsg);
+
       if (errorCallback) {
         errorCallback(_msg);
       }
