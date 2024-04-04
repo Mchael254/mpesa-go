@@ -190,7 +190,7 @@ export class NewClientComponent implements OnInit{
 
   /**
    * This method gets party from DB  to auto-populate Primary Identity
-   * @param id 
+   * @param id
    * @returns void
    */
   getPartyDetails(id: number): void {
@@ -352,7 +352,7 @@ export class NewClientComponent implements OnInit{
       identity_type: this.entityDetails?.modeOfIdentity?.name,
     });
   }
-  
+
 
 /**
  * After the view has been initialized, this method retrieves mandatory field data
@@ -507,7 +507,7 @@ export class NewClientComponent implements OnInit{
  * and wealth details, by making an API call with the form values.
  */
   saveClientBasic() {
-   
+
     this.submitted = true;
     this.clientRegistrationForm.markAllAsTouched(); // Mark all form controls as touched to show validation errors
 
@@ -699,7 +699,7 @@ export class NewClientComponent implements OnInit{
             log.debug("BACK TO GIS:")
 
             this.router.navigate(['/home/gis/policy/policy-product']);
-      
+
           }else{
             log.debug("BACK TO CRM:")
 
@@ -709,7 +709,7 @@ export class NewClientComponent implements OnInit{
         });
 
     });
-    
+
   }
 
 /**
@@ -962,6 +962,7 @@ export class NewClientComponent implements OnInit{
   onBankSelection() {
    /* const bankId = event.target.value; // Get the selected bank ID from the event
     this.getBankBranches(bankId);*/
+    log.info(`selected bank ==> `, this.selectedBank);
     this.clientRegistrationForm.patchValue({
       branch: null
     });
