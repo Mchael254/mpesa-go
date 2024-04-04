@@ -3,29 +3,29 @@
     <div class="p-2">
         <p-tabView>
             <p-tabPanel header="Overview">
-              <!--<ng-container *ngIf="entityPartyIdDetails$ | async as entityPartyIdDetails">
-                <ng-container *ngIf="entityAccountIdDetails$ | async as entityAccountIdDetails">
-                  <ng-container *ngIf="partyAccountDetails$ | async as partyAccountDetails">
-
-                  </ng-container>
-                </ng-container>
-              </ng-container>-->
-
-              <ng-container *ngIf="entityPartyIdDetails && entityAccountIdDetails && partyAccountDetails">
+              <ng-container
+                *ngIf="entityPartyIdDetails && entityAccountIdDetails
+                && partyAccountDetails && unAssignedPartyTypes"
+              >
                 <app-entity-basic-info
-                  *ngIf="unAssignedPartyTypes"
                   [unAssignedPartyTypes]="unAssignedPartyTypes"
                   [partyAccountDetails]="partyAccountDetails"
                   [entityAccountIdDetails]="entityAccountIdDetails"
                   [entityPartyIdDetails]="entityPartyIdDetails"
                   (fetchTransactions)="fetchTransactions($event)"
+                  (assignRole)="onAssignRole($event)"
+                  (partyTypeRole)="selectPartyTypeRole($event)"
                 ></app-entity-basic-info>
               </ng-container>
 
-                <ng-container *ngIf="partyAccountDetails">
+                <ng-container *ngIf="partyAccountDetails && bankDetails">
                   <app-entity-other-details
                     [countries]="countries"
                     [partyAccountDetails]="partyAccountDetails"
+                    [bankDetails]="bankDetails"
+                    [wealthAmlDetails]="wealthAmlDetails"
+                    (fetchWealthAmlDetails)="getWealthAmlDetails()"
+                    (fetchPaymentDetails)="getPaymentDetails()"
                   ></app-entity-other-details>
                 </ng-container>
 
