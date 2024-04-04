@@ -60,7 +60,7 @@
       </div>
   </p-tabPanel>
 
-    <p-tabPanel header="Bank Details">
+    <p-tabPanel header="Bank Details" (click)="getPaymentDetails()">
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">
@@ -103,7 +103,7 @@
         </div>
     </p-tabPanel>
 
-    <p-tabPanel header="Wealth Details" *ngIf="wealthAmlDetails">
+    <p-tabPanel header="Wealth Details" *ngIf="wealthAmlDetails" (click)="getWealthAmlDetails()" >
         <div class="row">
             <div class="col-sm-3">
                 <table class="table table-borderless">

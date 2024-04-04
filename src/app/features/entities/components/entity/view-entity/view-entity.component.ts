@@ -5,7 +5,7 @@ import { PartyTypeDto } from '../../../data/partyTypeDto';
 import { AccountReqPartyId, EntityDto, PoliciesDTO, ReqPartyById, Roles } from '../../../data/entityDto';
 import { Pagination } from '../../../../../shared/data/common/pagination';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ReplaySubject, finalize, takeUntil, Observable, take} from 'rxjs';
+import {ReplaySubject, finalize, takeUntil, take} from 'rxjs';
 import { PartyAccountsDetails } from '../../../data/accountDTO';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntityService } from '../../../services/entity/entity.service';
@@ -21,6 +21,7 @@ import { ClaimsDTO } from '../../../../gis/data/claims-dto';
 import { EntityTransactionsComponent } from './entity-transactions/entity-transactions.component';
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {CountryDto} from "../../../../../shared/data/common/countryDto";
+import {Bank} from "../../../data/BankDto";
 
 const log = new Logger("ViewEntityComponent")
 
@@ -76,6 +77,9 @@ export class ViewEntityComponent implements OnInit {
   accountId: number;
 
   countries: CountryDto[] = []
+
+  wealthAmlDetails: any;
+  bankDetails: any;
 
   constructor(
     private fb: FormBuilder,
@@ -151,9 +155,10 @@ export class ViewEntityComponent implements OnInit {
         )
         .subscribe((data: PartyAccountsDetails) => {
           this.partyAccountDetails = data
-          console.log('This is the selected account data >>>>>', this.partyAccountDetails);
+          log.info('This is the selected account data >>>>>', this.partyAccountDetails);
           // this.accountService.setCurrentAccounts(accountType);
           this.accountService.setCurrentAccounts(this.partyAccountDetails);
+          this.getPaymentDetails();
           this.cdr.detectChanges();
         })
 
@@ -172,7 +177,7 @@ export class ViewEntityComponent implements OnInit {
         this.entityPartyIdDetails = data;
         const datePipe = new DatePipe('en-GB'); // TODO: Proper way to fetch locales via constructor injection token
 
-        console.log('This is the Entity Details By PartyId', this.entityPartyIdDetails)
+        log.info('This is the Entity Details By PartyId', this.entityPartyIdDetails)
 
         this.entitySummaryForm.patchValue({
           contact: null,
@@ -270,13 +275,12 @@ export class ViewEntityComponent implements OnInit {
       });
   }
 
-  onAssignRole(role) {
+  onAssignRole(role: AccountReqPartyId) {
     this.selectedRole = role;
-    this.closebutton.nativeElement.click();
     this.goToEntityRoleDefinitions();
   }
 
-  getUnAssignedRoles() {
+  getUnAssignedRoles(): void {
     let allPartyTypes: PartyTypeDto[] = [];
     let assignedPartyTypes: PartyTypeDto[] = this.entityAccountIdDetails.map(o => o.partyType);
     this.entityService.getPartiesType() // TODO: Find a better way to store/persist party Types in local storage or use services
@@ -324,23 +328,25 @@ export class ViewEntityComponent implements OnInit {
     this.entityService.setCurrentEntity(currentEntity);
 
     let entityRoleName = this.selectedRole?.partyTypeName;
+    let url = '';
 
     switch (entityRoleName?.toLocaleLowerCase()) {
       case 'staff':
-        this.router.navigate(['/home/entity/staff/new']);
+        url = '/home/entity/staff/new';
         break;
       case 'client':
-        this.router.navigate(['/home/entity/client/new']);
+        url = '/home/entity/client/new';
         break;
       case 'agent':
-        this.router.navigate(['/home/entity/intermediary/new']);
+        url = '/home/entity/intermediary/new';
         break;
       case 'service provider':
-        this.router.navigate(['home/entity/service-provider/new']);
+        url = 'home/entity/service-provider/new'
         break;
       default:
         break;
     }
+    this.router.navigate([url], { queryParams: {id: this.entityPartyIdDetails?.id }});
   }
 
   selectAccount(event: any) {
@@ -389,13 +395,67 @@ export class ViewEntityComponent implements OnInit {
    * @param partyAccountDetails required to get account id
    * @returns void
    */
-  fetchTransactions(partyAccountDetails): void {
+  fetchTransactions(partyAccountDetails: PartyAccountsDetails): void {
     log.info(`party account details from view entity >>> `, partyAccountDetails);
     const id = partyAccountDetails?.accountCode;
     this.partyAccountDetails = partyAccountDetails;
     this.entityTransactions.fetchGisQuotationsByClientId(id);
     this.entityTransactions.fetchGisClaimsByClientId(id);
     this.entityTransactions.fetchGisPoliciesByClientId(id);
+  }
+
+  selectPartyTypeRole(role: AccountReqPartyId): void {
+    const accountId: number = role?.id;
+    const  accountType: AccountReqPartyId =
+      this.entityAccountIdDetails.find((account: AccountReqPartyId): boolean =>  account.id == accountId);
+
+    this.selectedAccount = accountType;
+    this.accountService.getAccountDetailsByAccountCode(accountType?.accountCode)
+      .subscribe({
+        next: (data: PartyAccountsDetails): void => {
+          this.partyAccountDetails = data;
+          this.accountService.setCurrentAccounts(this.partyAccountDetails);
+          this.fetchTransactions(this.partyAccountDetails);
+        },
+        error: (err) => {}
+      })
+  }
+
+  getWealthAmlDetails(): void {
+    if (this.partyAccountDetails.wealthAmlDetails) {
+      this.wealthAmlDetails = {
+        citizenship_country_id:  this.partyAccountDetails?.wealthAmlDetails?.citizenship_country_id,
+        funds_source: this.partyAccountDetails?.wealthAmlDetails?.funds_source,
+        sector_id: this.partyAccountDetails?.wealthAmlDetails?.sector_id,
+        employment_type: this.partyAccountDetails?.wealthAmlDetails?.occupation_id,
+        nationality_country_id: this.partyAccountDetails?.wealthAmlDetails?.nationality_country_id,
+        distribute_channel: this.partyAccountDetails?.wealthAmlDetails?.distributeChannel,
+        insurance_purpose: this.partyAccountDetails?.wealthAmlDetails?.insurancePurpose,
+        premium_frequency: this.partyAccountDetails?.wealthAmlDetails?.premiumFrequency,
+      };
+      log.info(`wealth AML Details ==> `, this.wealthAmlDetails);
+    }
+  }
+
+  getPaymentDetails(): void {
+    if (this.partyAccountDetails?.paymentDetails) {
+      const id: number  = this.partyAccountDetails?.paymentDetails?.bank_branch_id;
+      this.entityService.fetchBankDetailsByBranchId(id)
+        .subscribe({
+          next: (bank: Bank) => {
+            this.bankDetails = {
+              bankId: bank.bankId,
+              bank: bank.bankName,
+              branch: bank.name,
+              accountNo: this.partyAccountDetails?.paymentDetails?.account_number,
+              paymentMethod: 'xxx',
+              accountType: 'xxx'
+            }
+            log.info(`Bank details ==> `, this.bankDetails);
+          },
+          error: (err) => {}
+        });
+    }
   }
 
 }
