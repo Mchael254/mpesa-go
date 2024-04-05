@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {CountryService} from "../../../../../shared/services/setups/country/country.service";
 import {IntermediaryService} from "../../../services/intermediary/intermediary.service";
 import {MandatoryFieldsService} from "../../../../../shared/services/mandatory-fields/mandatory-fields.service";
@@ -62,6 +62,7 @@ export class NewIntermediaryComponent implements OnInit{
   submitted = false;
   response: any;
   utilityBill: string = 'N';
+  partyId: number;
 
   agentType: string = 'I';
   isCreditAllowed = [
@@ -155,7 +156,8 @@ export class NewIntermediaryComponent implements OnInit{
     private cdr: ChangeDetectorRef,
     private utilService: UtilService,
     private accountService: AccountService,
-    private setupsParameterService: SetupsParametersService
+    private setupsParameterService: SetupsParametersService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   /**
@@ -182,6 +184,39 @@ export class NewIntermediaryComponent implements OnInit{
           this.occupationData = occupation;
           this.agentsTitlesData = agent;
         });
+  }
+
+  /**
+   * This method fetches the entity details using the party/entity id
+   * @returns void
+   */
+  getEntityDetails() : void {
+    this.partyId = +(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    this.entityService.getEntityById(this.partyId)
+      .pipe()
+      .subscribe({
+        next: (entityDetails: EntityDto) => {
+          log.info(`fetched intermediary details`, entityDetails);
+          this.patchIntermediaryFormValues(entityDetails);
+        },
+        error: (err) => {}
+      });
+  }
+
+  /**
+   * This method patches the intermediary form with entity values
+   * @param entityDetails<EntityDto>
+   * @returns void
+   */
+  patchIntermediaryFormValues(entityDetails: EntityDto): void {
+    this.createIntermediaryForm.patchValue({
+      identityType: entityDetails?.modeOfIdentity?.id,
+      otherName: entityDetails?.name.substring(0, entityDetails.name.indexOf(' ')),
+      surname: entityDetails?.name.substring(entityDetails.name.indexOf(' ') + 1),
+      dateOfBirth: this.datePipe.transform(entityDetails?.dateOfBirth, 'dd-MM-yyy'),
+      idNumber: entityDetails?.identityNumber,
+      pinNumber: entityDetails?.pinNumber,
+    });
   }
 
   /**
@@ -290,15 +325,15 @@ export class NewIntermediaryComponent implements OnInit{
         }
       )
     });
-    this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
-    this.entityService
-      .currentEntity$
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        currentEntity => this.entityDetails = currentEntity
-      );
+    // this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
+    // this.entityService
+    //   .currentEntity$
+    //   .pipe(
+    //     takeUntil(this.destroyed$),
+    //   )
+    //   .subscribe(
+    //     currentEntity => this.entityDetails = currentEntity
+    //   );
     let name = 'SMS_NO_FORMAT';
     this.setupsParameterService.getParameters(name)
       .subscribe((data) => {
@@ -448,14 +483,9 @@ export class NewIntermediaryComponent implements OnInit{
         })
         this.cdr.detectChanges();
       });
-    this.createIntermediaryForm.patchValue({
-      identityType: this.entityDetails?.modeOfIdentity?.id,
-      otherName: this.entityDetails?.name.substring(0, this.entityDetails.name.indexOf(' ')),
-      surname: this.entityDetails?.name.substring(this.entityDetails.name.indexOf(' ') + 1),
-      dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
-      idNumber: this.entityDetails?.identityNumber,
-      pinNumber: this.entityDetails?.pinNumber,
-    });
+
+    this.getEntityDetails();
+
   }
 
   /**
@@ -710,7 +740,7 @@ export class NewIntermediaryComponent implements OnInit{
         address: addressDetails,
         agentRequestDto: agentDetails,
         contactDetails: contactsDetails,
-        partyId: this.entityDetails.id,
+        partyId: this.partyId,
         partyTypeShortDesc: 'AGENT',
         createdBy: null,
         effectiveDateFrom: null,
