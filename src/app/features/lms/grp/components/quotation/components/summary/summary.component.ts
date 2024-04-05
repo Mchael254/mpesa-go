@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
@@ -164,6 +164,56 @@ export class SummaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  //Enables modal to close on press of esc key on keyboard
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    this.closeCategorySummary();
+    this.closeCoverSummary();
+    this.closeMembersSummary();
+  }
+
+  //Enables modal to close on click of anywhere outside the modal
+  onBackdropClick(event: MouseEvent) {
+    // Check if the clicked element is the backdrop of the modal
+    const target = event.target as HTMLElement;
+    if (target.classList.contains('modal')) {
+      this.closeCoverSummary();
+      this.closeCategorySummary();
+      this.closeMembersSummary();
+    }
+  }
+
+  getPayFrequencyDescription(payFrequency: string): string {
+    // Mapping of pay frequencies to their descriptions
+    const payFrequencyDescriptions = {
+        "T": "TRIANNUALLY",
+        "M": "MONTHLY",
+        "Q": "QUARTERLY",
+        "S": "SEMI-ANNUALLY",
+        "A": "ANNUALLY",
+        "F": "SINGLE PREMIUM",
+    };
+    
+    // Return the description based on the provided payFrequency value
+    return payFrequencyDescriptions[payFrequency] || "Unknown";
+}
+
+getDurationTypeDescription(durationType: string): string {
+  // Mapping of duration types to their descriptions
+  const durationTypeDescriptions = {
+      "A": "ANNUAL",
+      "C": "Other",
+      "M": "Monthly",
+      "O": "Open",
+      "Q": "Quarterly",
+      "S": "Semi-Annual",
+      "T": "Termly",
+  };
+  
+  // Return the description based on the provided durationType value OR unknown if not among the above
+  return durationTypeDescriptions[durationType] || "Unknown";
+}
+
   searchFormMemberDets = this.fb.group({
     filterby: [""],
     greaterOrEqual: [""],
@@ -274,6 +324,8 @@ onMemberTableRowClick(membersDetails, index: number) {
 }
 
   onProceed () {
+    this.router.navigate(['home/lms/quotation/list'], 
+    { queryParams: { tab: 'group-life' } });
   }
 
   onBack() {

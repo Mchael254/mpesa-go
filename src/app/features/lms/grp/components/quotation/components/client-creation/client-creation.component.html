@@ -116,12 +116,24 @@
                                             [showIcon]="true" 
                                             [showButtonBar]="true"
                                             placeholder="dd/mm/yy"
+                                            [maxDate]="maxDate"
                                             [ngClass]="{'is-invalid': highlightInvalid('incorporationDate')}">
                                 </p-calendar>
                                 <div *ngIf="highlightInvalid('incorporationDate')" class="invalid-feedback">Inc date is required</div>
                               </div>
                         </div>
                     </div>
+                </div>
+                  <div class="col-md-4">
+                      <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="modeOfIdentity" style="color: black;">Mode of Identity<span style="color: red;">*</span></label>
+                        <select class="form-select" [id]="'modeOfIdentity'" formControlName="modeOfIdentity" [ngClass]="{'is-invalid': highlightInvalid('modeOfIdentity')}" (change)="onModeOfIdentitySelected($event)">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let modeOfIdentity of identityType" [value]="modeOfIdentity.id">{{ modeOfIdentity.name | titlecase }}</option>
+                        </select>
+                        <div *ngIf="highlightInvalid('modeOfIdentity')" class="invalid-feedback">Identity mode is required</div>
+                    </div>
+                    
                 </div>
         
                 <div class="col-md-4">
@@ -138,29 +150,11 @@
                                     id="registrationNumber" 
                                     [style]="{ width: '100%' }"
                                     formControlName="registrationNumber"
-                                    [ngClass]="{'is-invalid': highlightInvalid('registrationNumber')}">
-                                    <div *ngIf="highlightInvalid('registrationNumber')" class="invalid-feedback">Reg no is required</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        
-                <div class="col-md-4">
-                    <div>
-                        <div>
-                            <label for="occupation" style="color: black;">Occupation<span style="color: red;">*</span></label>
-                        </div>
-                        <div class="form-group">
-                            <div>
-                                <input 
-                                    type="text"
-                                    pInputText
-                                    class="form-control"
-                                    id="occupation" 
-                                    [style]="{ width: '100%' }"
-                                    formControlName="occupation"
-                                    [ngClass]="{'is-invalid': highlightInvalid('occupation')}">
-                                    <div *ngIf="highlightInvalid('occupation')" class="invalid-feedback">Occupation is required</div>
+                                    [ngClass]="{'is-invalid': highlightInvalid('registrationNumber')}"
+                                    (input)="validateRegistrationNumber()"
+                                    (blur)="validateRegistrationNumber()"
+                                    (keydown)="onRegistrationNumberKeydown($event)">
+                                    <div *ngIf="highlightInvalid('registrationNumber')" class="invalid-feedback">{{ validateRegistrationNumber() }}</div>
                             </div>
                         </div>
                     </div>
@@ -171,7 +165,25 @@
                 <div class="col-md-4">
                     <div>
                         <div>
-                            <label for="pinNumber" style="color: black;">Pin number</label>
+                            <label for="occupation" style="color: black;">Occupation<span style="color: red;">*</span></label>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <select class="form-select" [id]="'occupation'" formControlName="occupation" [ngClass]="{'is-invalid': highlightInvalid('occupation')}">
+                                    <ng-container *ngFor="let occupation of occupation">
+                                        <option [value]="occupation['occupation_code']">{{ occupation['occupation_desc'] | titlecase }}
+                                        </option>
+                                    </ng-container>
+                                </select>
+                                <div *ngIf="highlightInvalid('occupation')" class="invalid-feedback">Occupation is required</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="pinNumber" style="color: black;">Pin number<span style="color: red;">*</span></label>
                         </div>
                         <div class="form-group">
                             <div>
@@ -200,7 +212,7 @@
                         <div class="form-group">
                             <div>
                                 <input 
-                                    type="text"
+                                    type="number"
                                     pInputText
                                     class="form-control"
                                     id="phoneNumber" 
@@ -485,13 +497,9 @@
                     </div>
                     <div class="form-group">
                         <div>
-                            <input 
-                                type="date"
-                                pInputText
-                                class="form-control"
-                                id="dob" 
-                                [style]="{ width: '100%' }"
-                                formControlName="dob">
+                            <p-calendar formControlName="dob" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+                                placeholder="dd/mm/yy" [maxDate]="over18Date" [defaultDate]="over18Date">
+                            </p-calendar>
                         </div>
                     </div>
                 </div>
@@ -501,22 +509,13 @@
 
         <div class="row">
             <div class="col-md-6">
-                <div>
-                    <div>
-                        <label for="identificationType" style="color: black;">Identification type<span style="color: red;">*</span></label>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <input 
-                                type="text"
-                                pInputText
-                                class="form-control"
-                                id="identificationType" 
-                                [style]="{ width: '100%' }"
-                                formControlName="identificationType">
-                        </div>
-                    </div>
-                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="identificationType" style="color: black;">Identification type<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'identificationType'" formControlName="identificationType">
+                      <option selected="true" disabled="disabled"></option>
+                      <option *ngFor="let modeOfIdentity of identityType" [value]="modeOfIdentity.id">{{ modeOfIdentity.name | titlecase }}</option>
+                    </select>
+                  </div>                      
             </div>
     
             <div class="col-md-6">
@@ -607,13 +606,9 @@
                     </div>
                     <div class="form-group">
                         <div>
-                            <input 
-                                type="date"
-                                pInputText
-                                class="form-control"
-                                id="wef" 
-                                [style]="{ width: '100%' }"
-                                formControlName="wef">
+                            <p-calendar formControlName="wef" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+                                placeholder="dd/mm/yy">
+                            </p-calendar>
                         </div>
                     </div>
                 </div>
@@ -629,13 +624,9 @@
                     </div>
                     <div class="form-group">
                         <div>
-                            <input 
-                                type="date"
-                                pInputText
-                                class="form-control"
-                                id="wet" 
-                                [style]="{ width: '100%' }"
-                                formControlName="wet">
+                            <p-calendar formControlName="wet" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+                                placeholder="dd/mm/yy">
+                            </p-calendar>
                         </div>
                     </div>
                 </div>
