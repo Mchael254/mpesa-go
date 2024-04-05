@@ -9,7 +9,8 @@
                     <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="insured" class="required risk-label" id="client">{{'gis.policy.insured' | translate}}</label>
+                            <label for="insured" class="required risk-label" id="client">{{'gis.policy.insured' |
+                                translate}}</label>
                             <div formGroupName="insureds">
                                 <div formGroupName="client">
                                     <input type="text" id="insured" class="form-control form-control-sm mb-1 riskInput"
@@ -30,7 +31,8 @@
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="riskDescription" class="required risk-label" id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
+                            <label for="riskDescription" class="required risk-label"
+                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="property_description">
 
@@ -44,7 +46,8 @@
                     <!-- ROW 2 -->
                     <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.subclass' | translate}}</label>
+                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.subclass' |
+                                translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
                                 formControlName="sub_class_code">
                                 <option></option>
@@ -57,7 +60,8 @@
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="binder" class="required risk-label" id="binder">{{'gis.policy.binder' | translate}}</label>
+                            <label for="binder" class="required risk-label" id="binder">{{'gis.policy.binder' |
+                                translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="binder"
                                 formControlName="binder_code">
                                 <option></option>
@@ -71,7 +75,8 @@
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type' | translate}}</label>
+                            <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type'
+                                | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="coverType"
                                 formControlName="cover_type_code">
                                 <option></option>
@@ -87,18 +92,21 @@
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.cover_from' | translate}}</label>
+                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.cover_from' |
+                                translate}}</label>
                             <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="date_cover_from">
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' | translate}}</label>
+                            <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' |
+                                translate}}</label>
                             <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="date_cover_to">
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="riskCoverDays" class=" risk-label" id="riskCoverDays">{{'gis.policy.risk_cover_days' | translate}}</label>
+                            <label for="riskCoverDays" class=" risk-label"
+                                id="riskCoverDays">{{'gis.policy.risk_cover_days' | translate}}</label>
                             <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput"
                                 readonly>
 
@@ -110,6 +118,126 @@
                             </div> -->
                         </div>
                     </div>
+                    <div class="collapse" id="collapseExample">
+                        <!-- ROW 4 -->
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+
+                                <label class=" risk-label">{{'gis.policy.override_but_charge' | translate}}</label>
+                                <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+
+
+                            <div class="mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+
+                                    <input class="form-check-input me-2" type="checkbox" id="flexCheckDefault" #checkbox
+                                        (change)="toggleNcdApplicableFields(checkbox.checked)">
+
+                                    <label class="risk-label form-check-label" for="flexCheckDefault">
+                                        {{'gis.policy.ncd_applicable' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+                                    <input class="form-check-input me-2" type="checkbox" id="flexCheckDefault"
+                                        #cashApplicableCheckbox
+                                        (change)="toggleCashApplicableField(cashApplicableCheckbox.checked)">
+
+                                    <!-- <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> -->
+                                    <label class="risk-label form-check-label" for="flexCheckDefault">
+                                        {{'gis.policy.cash_applicable' | translate}}
+                                    </label>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <!-- NCD APPLICABLE FIELDS -->
+                        <div class="row mb-4" *ngIf="isNcdApplicable">
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label class=" risk-label">  {{'gis.policy.ncd_level' | translate}}</label>
+                                <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label class=" risk-label">  {{'gis.policy.ncd_certificate_number' | translate}}</label>
+                                <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+                        </div>
+                         <!-- CASH APPLICABLE FIELDS -->
+                        <div class="row mb-4" *ngIf="isCashApplicable">
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label class=" risk-label">  {{'gis.policy.cash_level' | translate}}</label>
+                                <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+                            
+                        </div>
+                        <!-- ROW 5 -->
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+
+                                <label class=" risk-label">  {{'gis.policy.conveyance_type' | translate}}</label>
+                                <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
+                                    formControlName="sub_class_code">
+                                    <option value=""></option>
+                                    <option value="">  {{'gis.policy.by_sea' | translate}}</option>
+                                    <option value="">  {{'gis.policy.by_air' | translate}}</option>
+                                    <option value="">  {{'gis.policy.by_road' | translate}}</option>
+                                    <option value="">  {{'gis.policy.by_sea_rail_road' | translate}}</option>
+                                    <option value="">  {{'gis.policy.by_sea_road' | translate}}</option>
+                                    <option value="">  {{'gis.policy.by_air_road' | translate}}</option>
+                                    <option value="">  {{'gis.policy.not_applicable' | translate}}</option>
+                                    <option value="">  {{'gis.policy.none' | translate}}</option>
+                                </select>
+                            </div>
+
+
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="risk-label form-check-label" for="flexCheckDefault">
+                                        {{'gis.policy.auto_generate_cert' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-1 col-sm-4 col-12">
+
+                                <label class=" risk-label">  {{'gis.policy.installment_payment_pct' | translate}}</label>
+                                <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+
+
+
+                        </div>
+                        <!-- </div> ROW 6 -->
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+
+                                <label class=" risk-label"> {{'gis.policy.installment_period' | translate}}</label>
+                                <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
+                                    formControlName="property_id">
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+                        aria-expanded="false" aria-controls="collapseExample"> {{'gis.policy.more_details' |
+                        translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapseExample"
+                            aria-expanded="false" aria-controls="collapseExample"> <i class="pi pi-angle-double-up"
+                                style="font-size:13px" *ngIf="!show" data-toggle="collapse"
+                                data-target="#collapseExample"></i><i class="pi pi-angle-double-down"
+                                style="font-size:13px" *ngIf="show" data-toggle="collapse"
+                                data-target="#collapseExample"></i></span> </p>
                 </form>
 
             </div>

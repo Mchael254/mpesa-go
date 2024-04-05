@@ -621,7 +621,24 @@
       "currency_fixed_rate": "Tipo de cambio fijo",
       "policy_document": "Documento de póliza",
       "payment_mode": "Modo de pago",
-      "payment_reference": "Referencia de pago"
+      "payment_reference": "Referencia de pago",
+      "override_but_charge": "Anular/Pero cobrar prima",
+      "ncd_applicable": "Aplicable de NCD",
+      "ncd_level": "Nivel de NCD",
+      "ncd_certificate_number": "Número de certificado de NCD",
+      "cashback_level": "Nivel de devolución de efectivo",
+      "conveyance_type": "Tipo de transporte",
+      "by_sea": "Por mar",
+      "by_air": "Por aire",
+      "by_road": "Por carretera",
+      "by_sea_rail_road": "Por mar-tren-carretera",
+      "by_sea_road": "Por mar-carretera",
+      "by_air_road": "Por aire-carretera",
+      "not_applicable": "No aplicable",
+      "none": "Ninguno",
+      "auto_generate_cert": "Generar certificado automáticamente",
+      "installment_payment_pct": "Porcentaje de pago a plazos",
+      "installment_period": "Período de pago a plazos"
     }
   },
   "lms": {

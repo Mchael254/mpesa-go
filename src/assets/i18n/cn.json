@@ -621,7 +621,24 @@
       "currency_fixed_rate": "固定汇率",
       "policy_document": "保单文件",
       "payment_mode": "支付方式",
-      "payment_reference": "支付参考"
+      "payment_reference": "支付参考",
+      "override_but_charge": "覆盖/但要收取额外费用",
+      "ncd_applicable": "适用无索赔折扣",
+      "ncd_level": "无索赔折扣等级",
+      "ncd_certificate_number": "无索赔折扣证书号码",
+      "cashback_level": "现金返还等级",
+      "conveyance_type": "运输方式",
+      "by_sea": "海运",
+      "by_air": "空运",
+      "by_road": "陆运",
+      "by_sea_rail_road": "海陆铁联运",
+      "by_sea_road": "海陆联运",
+      "by_air_road": "空陆联运",
+      "not_applicable": "不适用",
+      "none": "无",
+      "auto_generate_cert": "自动生成证书",
+      "installment_payment_pct": "分期付款百分比",
+      "installment_period": "分期付款期限"
     }
   },
   "lms": {
