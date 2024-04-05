@@ -98,6 +98,12 @@
     width: 505px;
 }
 
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .custom-red-button {
   color: transparent;
   background-color: transparent;
