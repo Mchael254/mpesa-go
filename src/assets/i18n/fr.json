@@ -621,7 +621,24 @@
       "currency_fixed_rate": "Taux de change fixe",
       "policy_document": "Document de police",
       "payment_mode": "Mode de paiement",
-      "payment_reference": "Référence de paiement"
+      "payment_reference": "Référence de paiement",
+      "override_but_charge": "Remplacement/Mais facturer une prime",
+      "ncd_applicable": "Applicable NCD",
+      "ncd_level": "Niveau de NCD",
+      "ncd_certificate_number": "Numéro de certificat NCD",
+      "cashback_level": "Niveau de remise en argent",
+      "conveyance_type": "Type de transport",
+      "by_sea": "Par mer",
+      "by_air": "Par avion",
+      "by_road": "Par route",
+      "by_sea_rail_road": "Par mer-train-route",
+      "by_sea_road": "Par mer-route",
+      "by_air_road": "Par avion-route",
+      "not_applicable": "Non applicable",
+      "none": "Aucun",
+      "auto_generate_cert": "Générer automatiquement un certificat",
+      "installment_payment_pct": "Pourcentage de paiement échelonné",
+      "installment_period": "Période d'échelonnement du paiement"
     }
   },
   "lms": {

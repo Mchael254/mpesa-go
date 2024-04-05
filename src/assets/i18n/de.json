@@ -621,7 +621,24 @@
       "currency_fixed_rate": "Fester Wechselkurs",
       "policy_document": "Versicherungsdokument",
       "payment_mode": "Zahlungsart",
-      "payment_reference": "Zahlungsreferenz"
+      "payment_reference": "Zahlungsreferenz",
+      "override_but_charge": "Überschreiben/Aber Gebühr erheben",
+      "ncd_applicable": "NCD anwendbar",
+      "ncd_level": "NCD-Stufe",
+      "ncd_certificate_number": "NCD-Zertifikatsnummer",
+      "cashback_level": "Cashback-Stufe",
+      "conveyance_type": "Transportart",
+      "by_sea": "Auf dem Meer",
+      "by_air": "Mit dem Flugzeug",
+      "by_road": "Auf der Straße",
+      "by_sea_rail_road": "Mit dem Schiff-Bahn-Straße",
+      "by_sea_road": "Mit dem Schiff-Straße",
+      "by_air_road": "Mit dem Flugzeug-Straße",
+      "not_applicable": "Nicht anwendbar",
+      "none": "Keiner",
+      "auto_generate_cert": "Zertifikat automatisch generieren",
+      "installment_payment_pct": "Ratenzahlungsprozentsatz",
+      "installment_period": "Ratenzahlungszeitraum"
     }
   },
   "lms": {
