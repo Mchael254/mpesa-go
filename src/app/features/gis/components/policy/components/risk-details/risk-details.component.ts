@@ -11,6 +11,11 @@ const log = new Logger("RiskDetailsComponent");
 })
 export class RiskDetailsComponent {
   policyRiskForm: FormGroup;
+  show: boolean = true;
+  isNcdApplicable: boolean = false;
+  isCashApplicable: boolean = false;
+
+
   constructor(
     public fb: FormBuilder,
 
@@ -86,5 +91,10 @@ export class RiskDetailsComponent {
       value: [''],
     });
   }
-
+  toggleNcdApplicableFields(checked: boolean) {
+    this.isNcdApplicable = checked;
+  }
+  toggleCashApplicableField(checked: boolean) {
+    this.isCashApplicable = checked;
+  }
 }
