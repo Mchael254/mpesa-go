@@ -621,7 +621,24 @@
       "currency_fixed_rate": "Kiwango cha Kubadilisha Sarafu Kifungwa",
       "policy_document": "Hatikati ya Sera",
       "payment_mode": "Njia ya Malipo",
-      "payment_reference": "Marejeo ya Malipo"
+      "payment_reference": "Marejeo ya Malipo",
+      "override_but_charge": "Zaidi/Lakini Malipo ya Ziada",
+      "ncd_applicable": "NCD Inayotumika",
+      "ncd_level": "Kiwanja cha NCD",
+      "ncd_certificate_number": "Nambari ya Cheti cha NCD",
+      "cashback_level": "Kiwanja cha Cashback",
+      "conveyance_type": "Aina ya Usafirishaji",
+      "by_sea": "Kwa Bahari",
+      "by_air": "Kwa Anga",
+      "by_road": "Kwa Barabara",
+      "by_sea_rail_road": "Kwa Bahari-rel- Barabara",
+      "by_sea_road": "Kwa Bahari-Barabara",
+      "by_air_road": "Kwa Anga-Barabara",
+      "not_applicable": "Haitumiki",
+      "none": "Hakuna",
+      "auto_generate_cert": "Kuzalisha Cheti Kiotomatiki",
+      "installment_payment_pct": "Asilimia ya Malipo ya Kisasa",
+      "installment_period": "Kipindi cha Malipo ya Kisasa"
     }
   },
   "lms": {
