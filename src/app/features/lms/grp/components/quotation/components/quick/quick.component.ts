@@ -110,7 +110,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       effectiveDate: ["", [Validators.required] ],
       quotationCalcType: ["", [Validators.required] ],
       intermediary: ["", [Validators.required] ],
-      commissionRate: ["", [Validators.required] ],
+      commissionRate: ["", [Validators.max(100)] ], //not required but if value above 100 is entered it sets form as has errors
 
     });
   }
@@ -118,6 +118,12 @@ export class QuickComponent implements OnInit, OnDestroy {
   shareSummaryForm = this.fb.group({
     communicationType: ['', Validators.required],
   });
+
+  // highlights a touched/clicked/dirtified field that is not filled or option not selected
+highlightInvalid(field: string): boolean {
+  const control = this.quickForm.get(field);
+  return control.invalid && (control.dirty || control.touched);
+}
 
 //   getParams() {
 //   this.activatedRoute.queryParams.subscribe((queryParams) => {
@@ -291,11 +297,13 @@ export class QuickComponent implements OnInit, OnDestroy {
       };
       console.log("apiRequest", apiRequest)
 
-        if (!commissionRatePattern.test(commissionRateValue || (commissionRateValue === '' || null))) {
-          console.log("Enter a valid commission rate value!")
+      if (commissionRateValue !== null && commissionRateValue !== undefined) {
+        if (!commissionRatePattern.test(commissionRateValue) || commissionRateValue > 100) {
+          console.log("Enter a valid commission rate value!");
           this.messageService.add({severity: 'error', summary: 'summary', detail: 'Enter a valid commission rate value!'});
           return;
         }
+      }
 
         const quoteData = {
           formData
@@ -349,8 +357,15 @@ export class QuickComponent implements OnInit, OnDestroy {
           }
           );
         }
-      } else {
-        this.messageService.add({severity: 'warning', summary: 'summary', detail: 'Fill all the fields!'});
+      } else {/*
+      together with the method -highlightInvalid(field: string), it helps 
+       highlight all invalid form fields on click of Continue button 
+       */
+      Object.keys(this.quickForm.controls).forEach(field => {
+        const control = this.quickForm.get(field);
+        control.markAsTouched({ onlySelf: true });
+      });
+        this.messageService.add({severity: 'warn', summary: 'summary', detail: 'Fill all the fields correctly!'});
       }
   }
 

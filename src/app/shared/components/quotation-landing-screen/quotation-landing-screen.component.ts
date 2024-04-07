@@ -3,7 +3,7 @@ import { SessionStorageService } from '../../services/session-storage/session-st
 // import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-quotation-landing-screen',
@@ -16,10 +16,13 @@ export class QuotationLandingScreenComponent implements OnInit {
   @Input() LMS_GRP: any[];
   @Input() GIS: any[];
   @Input() PEN: any[];
-  constructor(private session_service: SessionStorageService, private router: Router){}
+  activeIndex: number = 0;
+  constructor(private session_service: SessionStorageService, private router: Router,
+    private route: ActivatedRoute){}
   
   ngOnInit(): void {
     this.session_service.clear_store();
+    this.getParams();
   }
   
 
@@ -43,6 +46,15 @@ export class QuotationLandingScreenComponent implements OnInit {
     this.session_service.set(SESSION_KEY.QUOTE_DETAILS, quote);
     this.router.navigate(['/home/lms/ind/quotation/client-details']);
 
+  }
+
+  //gets params to automatically open Group-life tab when navigating from quote summary
+  getParams() {
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] === 'group-life') {
+        this.activeIndex = 1; // Set the active index to the desired tab index (1-based)
+      }
+    });
   }
 
   

@@ -48,7 +48,13 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Commission amount: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.commission_amount | number }}</td>
+                        <td style="width: 50%; align-items: right;">
+                            <ng-container *ngIf="quoteSummary?.[0]?.commission_amount !== null; else notSpecified">
+                              {{ quoteSummary?.[0]?.commission_amount | number }}
+                            </ng-container>
+                            <ng-template #notSpecified>Not specified</ng-template>
+                          </td>
+                          
                     </tr>
                 </table>
             </div>
@@ -60,11 +66,15 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Frequency of Payment: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.frequency_of_payment }}</td>
+                        <td style="width: 50%; align-items: right;">{{ getPayFrequencyDescription(quoteSummary?.[0]?.frequency_of_payment) | titlecase }}</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Duration type: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.duration_type }}</td>
+                        <td style="width: 50%; align-items: right;">{{ getDurationTypeDescription(quoteSummary?.[0]?.duration_type) | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; align-items: left; color: grey;">Agent: </td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.agent | titlecase }}</td>
                     </tr>
                 </table>
             </div>
@@ -80,7 +90,8 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Client Name: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name | titlecase }}</td>
+                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '' | titlecase }}
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -217,7 +228,7 @@
         <!-- beginning of modals for group quote summary -->
         <!-- modal for members summary -->
         <div class="modal fade" tabindex="-1" #memberSummaryModal id="memberSummaryModal"
-            aria-labelledby="memberSummaryModal" aria-hidden="true">
+            aria-labelledby="memberSummaryModal" aria-hidden="true" (click)="onBackdropClick($event)">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -398,13 +409,13 @@
 
         <!-- modal for category summary -->
         <div class="modal fade" tabindex="-1" #memberSummaryModal id="categorySummaryModal"
-            aria-labelledby="categorySummaryModal" aria-hidden="true">
+            aria-labelledby="categorySummaryModal" aria-hidden="true" (click)="onBackdropClick($event)">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
                         <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
-                            (click)="closeCategorySummary()"></button>
+                            (click)="closeCategorySummary()" (blur)="closeCategorySummary()"></button>
                     </div>
                     <div class="modal-body">
                         <div class="card">
@@ -486,7 +497,7 @@
 
         <!-- modal for cover summary -->
         <div class="modal fade" tabindex="-1" #memberSummaryModal id="coverSummaryModal"
-            aria-labelledby="coverSummaryModal" aria-hidden="true">
+            aria-labelledby="coverSummaryModal" aria-hidden="true" (click)="onBackdropClick($event)">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">

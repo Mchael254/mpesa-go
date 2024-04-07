@@ -81,7 +81,7 @@
     <div class="product-details">Product details</div>
     <div class="row col-12" > 
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Product</label></div>
+            <div class="label"><label>Product<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='products'
                             [options]='productList'
@@ -91,12 +91,14 @@
                             [virtualScroll]="true" 
                             [virtualScrollItemSize]="40"
                             placeholder="Select a Product"
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('products')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('products')" class="invalid-feedback">Product is required</div>
             </div>
         </div>
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Duration Type</label></div>
+            <div class="label"><label>Duration Type<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='durationType'
                             [options]='durationType'
@@ -104,12 +106,14 @@
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             formControlName='durationType'
                             placeholder="Select Duration type" 
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('durationType')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('durationType')" class="invalid-feedback">Duration type required</div>
             </div>
         </div>
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Facultative Type</label></div>
+            <div class="label"><label>Facultative Type<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='facultativeType'
                             [options]='facultativeType'
@@ -117,14 +121,16 @@
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             formControlName='facultativeType'
                             placeholder="Select Facultative Type"
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('facultativeType')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('facultativeType')" class="invalid-feedback">Facultative type required</div>
             </div>
         </div>
     </div>
     <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Quotation Covers</label></div>
+            <div class="label"><label>Quotation Covers<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='quotationCovers'
                             [options]='quotationCovers'
@@ -132,12 +138,14 @@
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             formControlName='quotationCovers'
                             placeholder="Select Quotation Cover" 
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('quotationCovers')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('quotationCovers')" class="invalid-feedback">Quote cover required</div>
             </div>
         </div>
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
-            <div class="label"><label>Frequency of Payment</label></div>
+            <div class="label"><label>Frequency of Payment<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='frequencyOfPayment'
                             [options]='frequencyOfPayment'
@@ -145,12 +153,14 @@
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             formControlName='frequencyOfPayment'
                             placeholder="Select Freq. of Payment"
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('frequencyOfPayment')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('frequencyOfPayment')" class="invalid-feedback">Freq of payment required</div>
             </div>
         </div>
         <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
-            <div class="label"><label>Unit Rate Option</label></div>
+            <div class="label"><label>Unit Rate Option<span style="color: red;">*</span></label></div>
             <div>
                 <p-dropdown id='unitRateOption'
                             [options]='unitRateOption'
@@ -158,14 +168,16 @@
                             [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                             formControlName='unitRateOption'
                             placeholder="Select Unit rate"
-                            class="select">
+                            class="select"
+                            [ngClass]="{'is-invalid': highlightInvalid('unitRateOption')}">
                 </p-dropdown>
+                <div *ngIf="highlightInvalid('unitRateOption')" class="invalid-feedback">Unit rate is required</div>
             </div>
         </div>
     </div>
         <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
             <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-                <div class="label"><label>Currency</label></div>
+                <div class="label"><label>Currency<span style="color: red;">*</span></label></div>
                 <div>
                     <p-dropdown id='currency'
                                 [options]='currencyList'
@@ -175,13 +187,15 @@
                                 [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
                                 formControlName='currency' 
                                 placeholder="Select Currency"
-                                class="select">
+                                class="select"
+                                [ngClass]="{'is-invalid': highlightInvalid('currency')}">
                     </p-dropdown>
+                    <div *ngIf="highlightInvalid('currency')" class="invalid-feedback">Currency is required</div>
                 </div>
             </div>
             <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" 
             style="padding-left: 20px;">
-              <label class="label">Effective Date</label>
+              <label class="label">Effective Date<span style="color: red;">*</span></label>
               <div class="mx-1">
                 <p-calendar formControlName="effectiveDate" 
                             dateFormat="dd/mm/yy" 
@@ -190,12 +204,14 @@
                             [style]="{ 'width': '83%' }"
                             placeholder="dd/mm/yy"
                             [maxDate]="maxDate"
+                            [ngClass]="{'is-invalid': highlightInvalid('effectiveDate')}"
                             >
                 </p-calendar>
+                <div *ngIf="highlightInvalid('effectiveDate')" class="invalid-feedback">Date is required</div>
               </div>
             </div>
             <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-              <div class="label"><label>Quotation Calculation Type</label></div>
+              <div class="label"><label>Quotation Calculation Type<span style="color: red;">*</span></label></div>
               <div class="form-check radio-group" id="inline">
                   <input
                     class="form-check-input box"
@@ -204,6 +220,7 @@
                     id="quotationCalcType"
                     name="quotationCalcType"
                     formControlName="quotationCalcType"
+                    [ngClass]="{'is-invalid': highlightInvalid('quotationCalcType')}"
                   >
                   <label class="form-check-label pl-2" for="detailed">
                       Detailed
@@ -217,6 +234,7 @@
                     id="quotationCalcType"
                     name="quotationCalcType"
                     formControlName="quotationCalcType"
+                    [ngClass]="{'is-invalid': highlightInvalid('quotationCalcType')}"
                   >
                   <label class="form-check-label pl-2" for="aggregate">
                       Aggregate
@@ -224,7 +242,7 @@
                 </div>
             </div>
       </div>
-      <div class="product-details" style="padding-top: 50px;">Intermediary details</div>
+      <div class="product-details" style="padding-top: 50px;">Intermediary details<span style="color: red;">*</span></div>
   <div class="row col-12" > 
       <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
           <div class="label"><label>Intermediary</label></div>
@@ -237,8 +255,10 @@
                           formControlName='intermediary' 
                           placeholder="Select/Type an Intermediary name"
                           class="select"
+                          [ngClass]="{'is-invalid': highlightInvalid('intermediary')}"
                           >
               </p-dropdown>
+              <div *ngIf="highlightInvalid('intermediary')" class="invalid-feedback">Intermediary is required</div>
           </div>
       </div>
       <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
@@ -256,16 +276,12 @@
         </div>
     </div>
       <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-          <div class="label"><label>Commission Rate</label></div>
-          <div class="form-group mx-2">
-              <input type="number"
-                         pInputText
-                         class="form-control"
-                          id='commissionRate'
-                          [style]="{ width: '85%', height: '38px' }"
-                          formControlName='commissionRate'
-                         >
-          </div>
+        <div class="label"><label>Commission Rate</label></div>
+        <div class="form-group mx-2">
+          <input type="number" pInputText class="form-control" id='commissionRate' [style]="{ width: '85%', height: '38px' }"
+            formControlName='commissionRate' [ngClass]="{'is-invalid': highlightInvalid('commissionRate')}">
+          <div *ngIf="highlightInvalid('commissionRate')" class="invalid-feedback">Commission cannot be greater than 100%</div>
+        </div>
       </div>
   </div>
     </form>
