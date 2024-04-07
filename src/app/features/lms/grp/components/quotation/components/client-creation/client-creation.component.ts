@@ -17,6 +17,10 @@ import { AdministratorService } from '../../service/contact-person/administrator
 import { ContactPersonDTO } from '../../models/contactPerson/administratoDto';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { ClientTypeService } from 'src/app/shared/services/setups/client-type/client-type.service';
+import { IdentityTypeDTO } from '../../models/IdentityTypes/IdentityTypeDTO';
+import { OccupationDTO } from '../../models/coverTypes/coverTypesDto';
+import { CoverageService } from '../../service/coverage/coverage.service';
 
 @AutoUnsubscribe
 @Component({
@@ -45,6 +49,14 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   contactPersonCode: number;
   storedClientCode: number;
   createAdmin: boolean = false;
+  identityType: IdentityTypeDTO[];
+  modeOfIdentityId: number;
+  modeOfIdentityName: string;
+  modeOfIdentityFormat: string;
+  modeOfIdentityErrorMessage: string;
+  occupation: OccupationDTO[];
+  maxDate: Date;
+  over18Date: Date;
 
   @ViewChild('clientDropdown') clientDropdown: Dropdown;
 
@@ -58,9 +70,15 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     private adminService: AdministratorService,
     private session_storage: SessionStorageService,
     private confirmationService: ConfirmationService,
+    private clientType_service: ClientTypeService,
+    private coverageService: CoverageService,
     
     
-  ) {}
+  ) {
+    this.maxDate = new Date();
+    const currentDate: Date = new Date();
+    this.over18Date = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+  }
 
   ngOnInit(): void {
     this.clientCreationForm();
@@ -72,6 +90,8 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     this.getClntTypes();
     this.getAdministratorDetails();
     this.adminDetsTableColumns();
+    this.getIdentifierTypeList();
+    this.getOccupations();
     this.retrievClientDets();
   }
 
@@ -84,8 +104,9 @@ clientCreationForm() {
     clientType: [""],
     clientName: ["", Validators.required],
     status: ["", Validators.required],
-    type: ["", Validators.required],
+    type: [27, Validators.required],
     incorporationDate: ["", Validators.required],
+    modeOfIdentity: ["", Validators.required],
     registrationNumber: ["", Validators.required],
     occupation: ["", Validators.required],
     pinNumber: ["", Validators.required],
@@ -160,6 +181,11 @@ clientTypeChanges() {
     if (value === 'existingClient') {
       emailControl.disable();
       phoneControl.disable();
+      Object.keys(this.clientDetailsForm.controls).forEach(controlName => {
+        if (controlName !== 'clientType' && controlName !== 'type') {
+          this.clientDetailsForm.get(controlName).reset();
+        }
+      });
       this.getClientList();
     } else {
 
@@ -173,7 +199,7 @@ clientTypeChanges() {
       resetting the form, because they are part of the clientDetailsForm.
       */
       Object.keys(this.clientDetailsForm.controls).forEach(controlName => {
-        if (controlName !== 'clientType') {
+        if (controlName !== 'clientType' && controlName !== 'type') {
           this.clientDetailsForm.get(controlName).reset();
         }
       });
@@ -206,6 +232,7 @@ patchClientData(client: ClientDTO) {
     city: client.country,
     affiliatedToInsurer: client.country,
     representation: client.country,
+    modeOfIdentity: client.modeOfIdentity,
   });
   this.patchedClientId = client.id
   this.storedClientCode = this.patchedClientId;
@@ -255,16 +282,32 @@ searchClient() {
       this.getAdministratorDetails();
     }
 
-    if(clientTyped.length > 0) {
+    // if(clientTyped.length > 0) {
+    //   this.client_service.searchClients(0, 10, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
+    //     this.clientList = data.content.map(client =>({
+    //       label: this.capitalizeFirstLetterOfEachWord(
+    //         `${client.firstName} ${client.lastName ? client.lastName : ''}  - ${client.emailAddress}`),
+    //       value: client.id
+    //     }));
+    //     this.openDropdown();
+    //   })
+    // }
+    if (clientTyped.length > 0) {
       this.client_service.searchClients(0, 10, clientTyped).subscribe((data: Pagination<ClientDTO>) => {
-        this.clientList = data.content.map(client =>({
-          label: this.capitalizeFirstLetterOfEachWord(
-            `${client.firstName} ${client.lastName ? client.lastName : ''}  - ${client.emailAddress}`),
-          value: client.id
-        }));
+        this.clientList = data.content.map(client => {
+          let fullName = client.firstName ? client.firstName.trim() : '';
+          if (fullName.toLowerCase().includes('null')) {
+            fullName = fullName.replace(/null/gi, '').trim();
+          }
+          const lastName = client.lastName ? client.lastName.trim() : '';
+          return {
+            label: this.capitalizeFirstLetterOfEachWord(`${fullName} ${lastName ? lastName : ''}  - ${client.emailAddress}`),
+            value: client.id
+          };
+        });
         this.openDropdown();
-      })
-    }
+      });
+    }    
     else {
       this.getClientList();
     }
@@ -275,13 +318,30 @@ searchClient() {
 /**Gets a list of five clients that is displayed by default.
  The rest are obtained by searching.
 */
+// getClientList() {
+//   this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
+//     console.log("clients", data)
+//     this.clientList = data.content.map(client => ({
+//       label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
+//       value: client.id
+//     }));
+//   });
+// }
 getClientList() {
   this.client_service.getClients().subscribe((data: Pagination<ClientDTO>) => {
-    console.log("clients", data)
-    this.clientList = data.content.map(client => ({
-      label: this.capitalizeFirstLetterOfEachWord(`${client.firstName} ${client.lastName}`),
-      value: client.id
-    }));
+    console.log("clients", data);
+    this.clientList = data.content.map(client => {
+      let fullName = client.firstName ? client.firstName.trim() : '';
+      if (fullName.toLowerCase().includes('null')) {
+        fullName = fullName.replace(/null/gi, '').trim();
+      }
+      const lastName = client.lastName ? client.lastName.trim() : '';
+      const trimmedFullName = fullName + (fullName && lastName ? ' ' : '') + lastName;
+      return {
+        label: this.capitalizeFirstLetterOfEachWord(trimmedFullName),
+        value: client.id
+      };
+    });
   });
 }
 
@@ -307,6 +367,103 @@ private returnLowerCase(data: any) {
   return mapData;
 }
 
+getOccupations() {
+  this.coverageService.getOccupation().subscribe((occupation: OccupationDTO[]) => {
+    this.occupation = occupation;
+  })
+}
+
+  getIdentifierTypeList() {
+    this.clientType_service.getIdentifierTypes().subscribe((data: IdentityTypeDTO[]) => {
+      this.identityType = data;
+      console.log("getIdentifierTypeList", this.identityType)
+    });
+  }
+
+  //Get regex and error message for mode of Identity chosen.
+  onModeOfIdentitySelected(event: any) {
+    this.clientDetailsForm.get('registrationNumber').reset();
+    const selectedModeId = parseInt(event.target.value); // Convert value to number
+
+    // Find the selected mode based on its ID
+    const selectedMode = this.identityType.find(mode => mode.id === selectedModeId);
+
+    // Check if the selected mode exists and then access its properties
+    if (selectedMode) {
+      this.modeOfIdentityId = selectedMode.id;
+      this.modeOfIdentityFormat = selectedMode.identityFormat;
+      this.modeOfIdentityErrorMessage = selectedMode.identityFormatError;
+      this.modeOfIdentityName = selectedMode.name;
+    }
+  }
+
+  /* Prevents typing to registration NO when mode of 
+    identity is not selected */
+  onRegistrationNumberKeydown(event: KeyboardEvent) {
+    if (!this.modeOfIdentityId) {
+        event.preventDefault();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Information',
+          detail: 'Please select a mode of identity first'
+        });
+    }
+}
+
+  /* Gets format of the typed registration number and compare with format
+  of selected mode of Identity then display error message. */
+  validateRegistrationNumber() {
+    const registrationNumber = this.clientDetailsForm.get('registrationNumber').value;
+  
+    if (registrationNumber === null || registrationNumber === undefined) {
+      this.modeOfIdentityErrorMessage = 'Registration number is required';
+      return this.modeOfIdentityErrorMessage;
+    }
+  
+    if (this.modeOfIdentityFormat && registrationNumber) {
+      const regex = new RegExp(this.modeOfIdentityFormat);
+      if (!regex.test(registrationNumber)) {
+        // Display error message with format example
+        let errorMessage = 'Incorrect format. Expected format example: ';
+        switch (this.modeOfIdentityFormat) {
+          case '^[0-9]{3}\/[0-9]{5}$':
+            errorMessage += '123/45678';
+            break;
+          case '^[0-9]{8}$':
+            errorMessage += '12345678';
+            break;
+          case '^[A-Z]{1,2}[0-9]{6,8}[A-Z]{0,1}$':
+            errorMessage += 'AB123456DE';
+            break;
+          case '^A[0-9]{8}$':
+            errorMessage += 'A12345678';
+            break;
+          case '^[0-9]{5}-[0-9]{5}-[0-9]{4}$':
+            errorMessage += '12345-67890-1234';
+            break;
+          case '^[0-9]{5}\\/[0-9]{5}$':
+            errorMessage += '12345/67890';
+            break;
+          case '^[a-zA-Z0-9_]{3}\\/[a-zA-Z0-9_]{3}\\/[0-9]{6}$':
+            errorMessage += 'ABC/DEF/123456';
+            break;
+          case '^[0-9]{3}\\/[0-9]{5}$':
+            errorMessage += '123/45678';
+            break;
+          default:
+            errorMessage += 'Please enter the correct format.';
+        }
+        
+        // Set form control errors and return error message
+        this.clientDetailsForm.get('registrationNumber').setErrors({ 'incorrectFormat': true });
+        this.modeOfIdentityErrorMessage = errorMessage;
+        return this.modeOfIdentityErrorMessage;
+      }
+    }
+    
+    return null;
+  }
+  
 
 getCountryList() {
   this.country_service
@@ -374,10 +531,10 @@ highlightInvalid(field: string): boolean {
     const payload = {
       "id": null,
       "system": "LMS",
-      "firstName": null,
+      // "firstName": null,
       "lastName": formValues.clientName,
-      "modeOfIdentityId": 1,
-      "modeOfIdentity": "NATIONAL_ID",
+      "modeOfIdentityId": formValues.modeOfIdentity,
+      "modeOfIdentity": this.modeOfIdentityName,
       "modeOfIdentityNumber": formValues.registrationNumber,
       "gender": formValues.gender,
       "pinNumber": formValues.pinNumber,
