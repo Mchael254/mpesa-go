@@ -385,6 +385,7 @@
     "pin_number": "PIN Number",
     "pin_number_required": "PIN Number is required",
     "po_box": "P.O. Box",
+    "po_box_number": "P.O. Box Number",
     "po_box_required": "P.O. Box is required",
     "policies": "Policies",
     "policies_in_force": "Policies in Force",

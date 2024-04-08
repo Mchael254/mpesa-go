@@ -299,7 +299,7 @@
                               {{ '+' + (value?.zipCode) }}
                             </option>
                           </select>
-                          <input type="tel" class="form-control" id="phone_number" 
+                          <input type="tel" class="form-control" id="phone_number"
                                  formControlName="phone_number"
                                  [ngClass]="{ 'is-invalid': f['contact_details']['controls']['phone_number']['invalid'] &&
                            (f['contact_details']['controls']['phone_number']['dirty'] ||
@@ -375,7 +375,7 @@
               <div class="form-group row">
                 <ng-container *ngIf="visibleStatus?.['txtProviderPostalAddress'] === 'Y'">
                   <div class="col-sm-4">
-                    <label for="txtProviderPostalAddress" class="label col-form-label">{{ 'entities.po_box_number' | translate }}r</label>
+                    <label for="txtProviderPostalAddress" class="label col-form-label">{{ 'entities.po_box_number' | translate }}</label>
                     <input type="text" id="txtProviderPostalAddress" name="postal" class="form-control" formControlName="txtProviderPostalAddress"
                            [ngClass]="{ 'is-invalid': f['address']?.['txtProviderPostalAddress']?.invalid && (f['address']?.['txtProviderPostalAddress']?.dirty || f['address']?.['txtProviderPostalAddress']?.touched) }">
 
