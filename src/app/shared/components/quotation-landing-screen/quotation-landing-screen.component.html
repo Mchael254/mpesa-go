@@ -110,7 +110,55 @@
     </div>
   </p-tabPanel>
   <p-tabPanel header="General">
-    <p>General</p>
+    <div class="row">
+      <div class="col-7">
+        <div>
+          <div class="row">
+            <div class="col-8">
+              <div class="input-group mb-3" style="font-size: 15px">
+                <span class="input-group-text" id="basic-addon1">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input
+                  style="font-size: 12px !important"
+                  type="text"
+                  class="form-control"
+                  placeholder="Search"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                />
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="input-group mb-3">
+                <label
+                  class="input-group-text"
+                  for="inputGroupSelect01"
+                  style="font-size: 11px !important"
+                  >Sort by:</label
+                >
+                <select style="font-size: 11px;" class="form-select" id="inputGroupSelect01">
+                  <option selected>
+                    Status
+                  </option>
+                  <option></option>
+                  
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-5">
+        <div class="d-flex justify-content-end">
+          <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/gis/quotation/quick-quote'">Quick Quotation</button>
+          <button style="padding: 0.5em; font-size: 12px !important" type="button" class="btn btn-sm btn-primary" [routerLink]="'/home/gis/quotation/quotations-client-details'"> Normal Quotation </button>
+        
+
+        </div>
+      </div>
+    </div>
   </p-tabPanel>
   <p-tabPanel header="Pension">
     <p>Pension</p>
