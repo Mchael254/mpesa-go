@@ -11,11 +11,11 @@
     </p>
     <p>
       <label class="ticketLabel">Risk WEF:</label>
-      <span class="ticketDesc">{{ claim?.product?.withEffectFrom}}</span>
+      <span class="ticketDesc">{{ claim?.risk_wef }}</span>
     </p>
     <p>
       <label class="ticketLabel">Next review date:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.next_review_date }}</span>
     </p>
     <p>
       <label class="ticketLabel">Intermediary:</label>
@@ -30,15 +30,15 @@
     </p>
     <p>
       <label class="ticketLabel">Risk:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.risk_property_id }}</span>
     </p>
     <p>
       <label class="ticketLabel">Risk WET:</label>
-      <span class="ticketDesc">{{ claim?.product?.withEffectTo}}</span>
+      <span class="ticketDesc">{{ claim?.risk_wet }}</span>
     </p>
     <p>
       <label class="ticketLabel">Loss description:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.loss_description }}</span>
     </p>
     <p>
       <label class="ticketLabel">Claim remarks:</label>
@@ -56,7 +56,7 @@
     </p>
     <p>
       <label class="ticketLabel">Claim loss date:</label>
-      <span class="ticketDesc"></span>
+      <span class="ticketDesc">{{ claim?.loss_date }}</span>
     </p>
     <p>
       <label class="ticketLabel">Claim notification date:</label>
@@ -74,117 +74,172 @@
   <label class="text-primary mb-3">Claim transaction details</label>
   <button
     class="btn btn-primary float-end"
+    *ngIf ="claimPaymentTransaction?.transaction_type === 'CFO' || claimPaymentTransaction?.transaction_type === 'CFI' ||
+      claimPaymentTransaction?.transaction_type === 'CPI' || claimPaymentTransaction?.transaction_type === 'CPO'"
   >
     Contra
   </button>
   <div class="row">
-    <div class="col-sm-4">
-      <p>
-        <label class="ticketLabel">Transaction type:</label>
-        <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimTransactionType }}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Voucher no.:</label>
-        <span class="ticketDesc">{{claimTransaction?.code}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Payment date:</label>
-        <span class="ticketDesc"></span>
-      </p>
-      <p>
-        <label class="ticketLabel">Authorised date:</label>
-        <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Invoice no.:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.invoice_no}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Payment type.:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.payment_type}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Bank account:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.bank_account}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Cheque no.:</label>
-        <span class="ticketDesc">{{claimTransaction?.chequeNumber}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Excise duty:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.exercise_duty_amount | number}}</span>
-      </p>
+    <div>
+      <span *ngIf="!isLoadingTransactionData; else loadingTransactionData"></span>
+      <ng-template #loadingTransactionData>
+        <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+      </ng-template>
     </div>
 
-    <div class="col-sm-4">
-      <p >
-        <label class="ticketLabel">Payee:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.payee | titlecase}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Payment mode:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.payment_mode}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Authorised:</label>
-        <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Own gross amount:</label>
-        <span class="ticketDesc"></span>
-      </p>
-      <p>
-        <label class="ticketLabel">Voucher currency:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.currency_description | titlecase}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">WHTX amount:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.witholding_tax_amount | number}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Net paid:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.net_pay | number}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Retention:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.company_retention | number}}</span>
-      </p>
-    </div>
-    <div class="col-sm-4">
-      <p>
-        <label class="ticketLabel">Correspondent:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.claimant_provider | titlecase}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Coin amount:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.coinsurance_total_amount | number}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Authorised by:</label>
-        <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Account type:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.account_type}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Base currency:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.amount_base_currency}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Invoice amount:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.invoice_amount | number}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Payment desc:</label>
-        <span class="ticketDesc">{{claimPaymentTransaction?.payment_description | titlecase}}</span>
-      </p>
-      <p>
-        <label class="ticketLabel">Reinstatement amt:</label>
-        <span class="ticketDesc"></span>
-      </p>
-    </div>
+    <ng-container *ngIf ="claimPaymentTransaction?.transaction_type === 'LOP' || claimPaymentTransaction?.transaction_type === 'LRV'">
+      <div class="col-sm-4">
+        <p>
+          <label class="ticketLabel">Transaction type:</label>
+          <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimTransactionType }}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Revision own:</label>
+          <span class="ticketDesc"></span>
+        </p>
+        <p>
+          <label class="ticketLabel">Authorised date:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p>
+          <label class="ticketLabel">Authorised by:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Revision authorised:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Own share:</label>
+          <span class="ticketDesc"></span>
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p>
+          <label class="ticketLabel">Revision date:</label>
+          <span class="ticketDesc"></span>
+        </p>
+        <p>
+          <label class="ticketLabel">Own gross amount:</label>
+          <span class="ticketDesc"></span>
+        </p>
+        <p>
+          <label class="ticketLabel">Revision remarks:</label>
+          <span class="ticketDesc"></span>
+        </p>
+      </div>
+    </ng-container>
+    <ng-container *ngIf ="claimPaymentTransaction?.transaction_type === 'CFO' || claimPaymentTransaction?.transaction_type === 'CFI' ||
+      claimPaymentTransaction?.transaction_type === 'CPI' || claimPaymentTransaction?.transaction_type === 'CPO'">
+      <div class="col-sm-4">
+        <p>
+          <label class="ticketLabel">Transaction type:</label>
+          <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.claimTransactionType }}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Voucher no.:</label>
+          <span class="ticketDesc">{{claimTransaction?.code}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Payment date:</label>
+          <span class="ticketDesc"></span>
+        </p>
+        <p>
+          <label class="ticketLabel">Authorised date:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Invoice no.:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.invoice_no}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Payment type.:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.payment_type}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Bank account:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.bank_account}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Cheque no.:</label>
+          <span class="ticketDesc">{{claimTransaction?.chequeNumber}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Excise duty:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.exercise_duty_amount | number}}</span>
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p >
+          <label class="ticketLabel">Payee:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.payee | titlecase}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Payment mode:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.payment_mode}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Authorised:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Own gross amount:</label>
+          <span class="ticketDesc"></span>
+        </p>
+        <p>
+          <label class="ticketLabel">Voucher currency:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.currency_description | titlecase}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">WHTX amount:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.witholding_tax_amount | number}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Net paid:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.net_pay | number}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Retention:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.company_retention | number}}</span>
+        </p>
+      </div>
+      <div class="col-sm-4">
+        <p>
+          <label class="ticketLabel">Correspondent:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.claimant_provider | titlecase}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Coin amount:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.coinsurance_total_amount | number}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Authorised by:</label>
+          <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Account type:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.account_type}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Base currency:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.amount_base_currency}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Invoice amount:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.invoice_amount | number}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Payment desc:</label>
+          <span class="ticketDesc">{{claimPaymentTransaction?.payment_description | titlecase}}</span>
+        </p>
+        <p>
+          <label class="ticketLabel">Reinstatement amt:</label>
+          <span class="ticketDesc"></span>
+        </p>
+      </div>
+    </ng-container>
 
   </div>
 </div>
