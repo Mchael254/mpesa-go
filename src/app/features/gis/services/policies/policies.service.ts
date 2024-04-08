@@ -121,4 +121,46 @@ export class PoliciesService {
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
+
+  //fetches the list of reports to be dispatched
+  fetchDispatchReports(batchNo: number, documentType: string): Observable<any> {
+    const params = new HttpParams()
+      .set('batchNo', `${batchNo}`)
+      .set('documentType', `${documentType}`)
+    return this.api.GET<any>(`api/v2/document-dispatch/dispatch-reports?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
+
+  //fetches a list of documents that have been dispatched
+  fetchDocumentsDispatched(batchNo: number): Observable<any> {
+    return this.api.GET<any>(`api/v2/document-dispatch?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
+
+  //dispatches documents
+  dispatchDocuments(batchNo: any): Observable<any> {
+    return this.api.POST<any>(
+      `api/v2/document-dispatch/dispatch?batchNo=${batchNo}`, null,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  //prepares reports that were selected for dispatch
+  prepareDocuments(batchNo: any): Observable<any> {
+    return this.api.POST<any>(
+      `api/v2/electronic-document-status/prepared-documents?batchNo=${batchNo}`, null,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  //add or removes reports to be dispatched
+  //The report status should be "A" when adding a document and R when removing the document
+  addRemoveReportsToPrepare(data: any): Observable<any> {
+    return this.api.POST<any>(
+      `api/v2/electronic-document-status/add-reports`, JSON.stringify(data),
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
+
+  fetchReportsDispatched(batchNo: number): Observable<any> {
+    return this.api.GET<any>(`api/v2/document-dispatch/dispatch-documents-mapping?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
 }

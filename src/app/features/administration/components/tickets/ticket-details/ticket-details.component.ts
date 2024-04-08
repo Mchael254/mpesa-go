@@ -105,6 +105,7 @@ export class TicketDetailsComponent implements OnInit {
       .pipe(take(1))
       .subscribe((policyDetails) => {
         this.policyDetails = policyDetails?.content[0];
+        this.localStorageService.setItem('policyDetails', this.policyDetails);
 
         log.info('policy details>>', this.policyDetails);
       })
@@ -116,7 +117,8 @@ export class TicketDetailsComponent implements OnInit {
       .subscribe(
         (data: Pagination<ClaimsDTO>) => {
           data.content.forEach( claim => {
-            this.claim = claim
+            this.claim = claim;
+            this.localStorageService.setItem('claimDetails', this.claim);
           });
           this.claimsData = data;
 

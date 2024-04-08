@@ -146,6 +146,14 @@ export class DmsService{
     return this.api.GET<DmsDocument[]>(`${urlEndpoint}?${params}`, API_CONFIG.DMS_SERVICE);
   }
 
+  fetchDispatchedDocumentsByBatchNo(batchNo: number): Observable<any>{
+    const params = new HttpParams()
+      .set('batchNo', `${batchNo}`);
+    log.info('Fetching dispatched documents for batch no: ', `${batchNo}`);
+
+    return this.api.GET<any>(`api/v2/document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+  }
+
   /**
    * Get DMS Full Url
    * This method concatenates the dms service api with urlEndpoint

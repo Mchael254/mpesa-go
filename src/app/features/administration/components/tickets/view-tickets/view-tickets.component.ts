@@ -879,6 +879,15 @@ export class ViewTicketsComponent implements OnInit {
     }
   }
 
+  goToDispatch() {
+    const selectedTickets = this.selectedSpringTickets;
+
+    if (selectedTickets.length === 0) {
+      this.globalMessagingService.displayInfoMessage('Info', 'Please select at least one ticket to dispatch');
+      return;
+    }
+    this.router.navigate([`home/administration/document-dispatch`]);
+  }
 }
 
 enum filterSortEnums {
