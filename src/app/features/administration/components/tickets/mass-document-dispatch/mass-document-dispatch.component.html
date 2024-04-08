@@ -1,0 +1,193 @@
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Home',
+        url: '/home/dashboard'
+      },
+      {
+        label: 'Tickets',
+        url: '/home/administration/tickets',
+      },
+      {
+        label: 'Documents dispatch',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row mt-3 mb-2 p-2">
+      <div class="col-12">
+        <label class="text-primary">Documents Dispatch</label>
+      </div>
+      <div class="row col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by policy no"
+            aria-label="search"
+            aria-describedby="search"
+            (input)="filterDocs($event)"
+          />
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="date"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 d-flex justify-content-end">
+        <button
+          class="btn btn-primary" style="font-size: 12px;" (click)="openDocDispatchModal()">Dispatch documents
+
+        </button>
+
+      </div>
+    </div>
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      #dispatchDocsTable
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="dispatchedDocs?.length"
+      [value]="dispatchedDocs"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      [(selection)]="selectedDoc"
+      selectionMode="single"
+      dataKey="code"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      [globalFilterFields]="['pol_policy_no']"
+      [sortField]="'is_authorized'" [sortOrder]="1"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th>Client name</th>
+          <th>Policy no.</th>
+          <th>Date created</th>
+          <th>Transaction type</th>
+          <th>Endorsement number</th>
+          <th>Documents</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-doc>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="doc"></p-tableCheckbox>
+          </td>
+          <td></td>
+          <td>{{doc.pol_policy_no}}</td>
+          <td>{{doc.geds_prepared_date}}</td>
+          <td>{{doc?.etr_trans_type}}</td>
+          <td></td>
+          <td>{{doc?.is_authorized}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">No Documents Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!--DOC Dispatch modal-->
+<div class="modal fade" id="docDispatchToggle" aria-hidden="true" aria-labelledby="docDispatchToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="width: 350px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="docDispatchToggleLabel">Dispatch Documents</h1>
+        <button type="button" class="btn-close" (click)="closeDocDispatchModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 mb-3">
+          <form [formGroup]="docDispatchForm">
+
+            <div>
+              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
+                <label class="form-label" for="dispatchDocuments">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
+                <label class="form-label" for="dispatchDocuments">No</label>
+              </div>
+            </div>
+            <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
+              <label class="form-label w-100">Documents to dispatch</label><br>
+
+              <p-multiSelect
+                [options]="documentsToDispatchData"
+                formControlName="documentDispatched"
+                optionLabel="rpt_name"
+                optionValue="dd_code"
+                [filter]="true"
+                filterBy="rpt_name"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select report"
+                [(ngModel)]="selectedOptions">
+                <ng-template let-report pTemplate="item">
+                  <div title="{{report.rpt_name}}">
+                    {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </div>
+            <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'N'">
+              <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
+
+              <p-dropdown
+                [options]="dispatchReasonsData"
+                optionLabel="description"
+                optionValue="description"
+                [filter]="true"
+                filterBy="description"
+                [showClear]="true"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select reason"
+                formControlName="rejectionDescription"
+              >
+                <ng-template let-shortDescription pTemplate="item">
+                  <div title="{{shortDescription.description}}">
+                    {{ shortDescription.description.length > 10 ? shortDescription.description.substring(0, 28) + '...' : shortDescription.description }}
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-primary" (click)="saveDispatchRejection()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'N'">
+          <span *ngIf="!isLoading; else loading">Save</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
+        <button class="btn btn-primary" (click)="prepareDocuments()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
+          <span *ngIf="!isLoading; else loading">Dispatch</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
