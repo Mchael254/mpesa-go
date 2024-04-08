@@ -9,6 +9,9 @@
       [showCurrentPageReport]="true"
       [resizableColumns]="true"
       [globalFilterFields]="tableDetails?.globalFilterFields"
+      [scrollable]="true"
+      scrollHeight="400px"
+      responsiveLayout="scroll"
     >
       <ng-template pTemplate="caption" *ngIf="tableDetails.showSearch">
         <div class="row">
@@ -89,6 +92,9 @@
       [resizableColumns]="true"
       [totalRecords]="tableDetails?.totalElements"
       [globalFilterFields]="tableDetails?.globalFilterFields"
+      [scrollable]="true"
+      scrollHeight="400px"
+      responsiveLayout="scroll"
     >
       <ng-template pTemplate="caption" >
         <div class="row">
