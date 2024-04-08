@@ -37,7 +37,7 @@ export const environment = {
     [API_CONFIG.GIS_CLAIMS_BASE_URL, '/gis/claims'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
-    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation'],
+    [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/reports'],
   ]),
 };
