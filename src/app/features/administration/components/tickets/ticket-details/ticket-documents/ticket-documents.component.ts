@@ -63,13 +63,20 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     { field: 'versionLabel', header: 'Version' },
   ];
   colsDispatchedDocs = [
-    { field: 'actualName', header: 'Report Name' },
-    { field: 'dateCreated', header: 'E-doc client delivery status' },
-    { field: 'modifiedBy', header: 'E-doc agent delivery status' },
-    { field: 'versionLabel', header: 'Client email address' },
-    { field: 'dateCreated', header: 'Agent acc holder email' },
-    { field: 'modifiedBy', header: 'Interested party' },
-    { field: 'versionLabel', header: 'Interested party email' },
+    { field: 'dd_report_name', header: 'Report Name' },
+    { field: 'ged_dms_posted_status', header: 'E-doc client delivery status' },
+    { field: 'ged_dms_posted_status', header: 'E-doc agent delivery status' },
+    { field: 'geds_clnt_email_addrs', header: 'Client email address' },
+    { field: 'geds_agn_accholder', header: 'Agent acc holder email' },
+    { field: 'agn_name', header: 'Interested party' },
+    { field: 'geds_pip_email_address', header: 'Interested party email' },
+    { field: 'ged_pip_sent_status', header: 'Interested Party Delivery Status' },
+    { field: 'ged_dms_posted_status', header: 'DMS Delivery Status' },
+    { field: 'geds_pip_email_address2', header: '2nd Interested Party' },
+    { field: 'geds_pip_email_address3', header: '3rd Interested Party' },
+    { field: 'ged_pip_email_address4', header: '4th Interested Party' },
+    { field: 'ged_approved_by', header: 'Dispatched By' },
+    { field: 'ged_approved_date', header: 'Dispatched Date' },
   ];
 
   constructor(private dmsService: DmsService,
@@ -122,7 +129,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       cols: this.colsDispatchedDocs,
       rows: this.viewDocs,
       isLazyLoaded: false,
-      showCustomModalOnView: true,
+      showCustomModalOnView: false,
       noDataFoundMessage: 'No Dispatch Documents Found'
     }
     this.fetchDocuments();
@@ -144,6 +151,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
         break;
       default:
         this.fetchPolicyDocuments(this.currentTicket?.ticket?.policyNo);
+        this.fetchDispatchedDocuments(this.currentTicket?.ticket?.policyCode)
         break;
     }
     this.fetchClientDocuments(this.currentTicket?.ticket?.clientCode.toString());
@@ -274,6 +282,21 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
           this.tableServiceProviderDocs.rows = this.viewDocs;
         }
       );
+  }
+
+  private fetchDispatchedDocuments(batchNo: number) {
+    if(!batchNo){
+      this.viewDocs = [];
+      this.tableDetails.rows = this.viewDocs;
+      return;
+    }
+    this.dmsService.fetchDispatchedDocumentsByBatchNo(batchNo)
+      .pipe(untilDestroyed(this))
+      .subscribe( policyDocs =>
+      {
+        this.viewDocs = policyDocs;
+        this.tableDispatchedDocs.rows = this.viewDocs;
+      });
   }
 
   /**

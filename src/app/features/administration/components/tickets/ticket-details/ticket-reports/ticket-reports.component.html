@@ -64,23 +64,22 @@
             <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
               <label class="form-label w-100">Documents to dispatch</label><br>
 
-              <p-dropdown
-                [options]="dispatchReasonsData"
-                optionLabel="description"
-                optionValue="description"
-                [filter]="true"
-                filterBy="description"
-                [showClear]="true"
-                [style]="{ 'width': '100%', 'height': '40px' }"
-                placeholder="Select document"
+              <p-multiSelect
+                [options]="documentsToDispatchData"
                 formControlName="documentDispatched"
-              >
-                <ng-template let-shortDescription pTemplate="item">
-                  <div title="{{shortDescription.description}}">
-                    {{ shortDescription.description.length > 10 ? shortDescription.description.substring(0, 28) + '...' : shortDescription.description }}
+                optionLabel="rpt_name"
+                optionValue="dd_code"
+                [filter]="true"
+                filterBy="rpt_name"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select report"
+                [(ngModel)]="selectedOptions">
+                <ng-template let-report pTemplate="item">
+                  <div title="{{report.rpt_name}}">
+                    {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
                   </div>
                 </ng-template>
-              </p-dropdown>
+              </p-multiSelect>
             </div>
             <div *ngIf="docDispatchForm.get('dispatchDocuments').value === 'N'">
               <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
@@ -107,13 +106,18 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" (click)="onSave()" [disabled]="isLoading">
+        <button class="btn btn-outline-primary" (click)="saveDispatchRejection()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'N'">
           <span *ngIf="!isLoading; else loading">Save</span>
           <ng-template #loading>
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
           </ng-template>
         </button>
-        <button class="btn btn-secondary" (click)="closeDocDispatchModal()">Close</button>
+        <button class="btn btn-primary" (click)="prepareDocuments()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
+          <span *ngIf="!isLoading; else loading">Dispatch</span>
+          <ng-template #loading>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
+        </button>
       </div>
     </div>
   </div>
