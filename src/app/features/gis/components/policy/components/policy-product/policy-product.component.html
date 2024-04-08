@@ -506,7 +506,7 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-body">
                 <p class="subheading">{{'gis.policy.policy_details' | translate}}</p>
                 <form [formGroup]="policyProductForm">
@@ -515,7 +515,7 @@
                             <label for="coverFrom" class="required product-label" id="coverTo">{{'gis.policy.cover_from' |
                                 translate}}</label>
                             <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="with_effective_from_date">
+                                formControlName="with_effective_from_date"  (change)="updateCoverTo()">
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('with_effective_from_date').hasError('required') && policyProductForm.get('with_effective_from_date').touched"
@@ -526,44 +526,37 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="coverTo" class="required product-label"
                                 id="coverTo">{{'gis.policy.cover_to' | translate}}</label>
-                                <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
+                                <input type="date" id="quote-input" (change)="updateCoverDays()" class="form-control form-control-sm mb-1" 
                                 formControlName="with_effective_to_date">
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="coverDays" class="required product-label" id="product">{{'gis.policy.cover_days' |
                                 translate}}</label><br>
                                 
-                            <input type="text" id="quote-input" class="form-control form-control-sm mb-1">
+                            <input type="text" id="quote-input" formControlName="cover_days" class="form-control form-control-sm mb-1">
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_interface" class=" product-label"
                                 id="policy_interface">{{'gis.policy.currency' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="transaction_type">
-                                <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
-                                <option value="CASH">{{'gis.policy.cash' | translate}}</option>
-
-                            </select>
+                                <p-dropdown formControlName="currency_code" [options]="currency" optionLabel="name" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class=" product-label"
                                 id="policy_type">{{'gis.policy.currency_rate' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="pro_interface_type" #policyTypeSelect
-                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
-                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
-                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
-                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
-                            </select>
+                            <input type="text" id="quote-input" formControlName="currency_rate" class="form-control form-control-sm mb-1">
+
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class=" product-label" id="branch">{{'gis.policy.currency_fixed_rate' |
                                 translate}}</label>
-                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name"
-                                (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
-                                [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                formControlName="is_exchange_rate_fixed">
+                                <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                                <option value="N">{{'gis.policy.no' | translate}}</option>
+
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -572,8 +565,7 @@
                                 id="policy_interface">{{'gis.policy.policy_document' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                 formControlName="transaction_type">
-                                <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
-                                <option value="CASH">{{'gis.policy.cash' | translate}}</option>
+                                
 
                             </select>
                         </div>
@@ -596,9 +588,145 @@
                                 [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
                         </div>
                     </div>
+                    <div class="collapse" id="collapsePolicy">
+                        <!-- ROW 3 -->
+                        <div class="row mb-4">
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label for="payment_date" class=" product-label" id="payment_date">{{'gis.policy.payment_date' |
+                                    translate}}</label>
+                                    <input type="date" id="quote-input" class="form-control form-control-sm mb-1">
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label for="payment_frequency" class=" product-label" id="payment_frequency">{{'gis.policy.payment_frequency' |
+                                    translate}}</label>
+                               
+                                <p-dropdown [options]="marketerList" optionLabel="name" id="product-input"
+                                    (onChange)="onMarketerSelected($event.value)" placeholder=" " [filterBy]="'name'"
+                                    [filter]="true"></p-dropdown>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12 ">
+                                <label for="holding_company" class=" product-label" id="holding_company">{{'gis.policy.holding_company'
+                                    | translate}}</label>
+                                <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
+                                    formControlName="agent_code" [value]="introducerCode " [(ngModel)]="introducerName"
+                                    data-bs-toggle="modal" data-bs-target="#introducersModal" readonly>
+
+                             
+                            </div>
+                        </div>
+                        <!-- ROW 4 -->
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label for="payment_frequency" class="product-label" id="payment_frequency">{{'gis.policy.other_insterested_parties' |
+                                    translate}}</label>
+                                
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                                formControlName="source">
+                                <option value=""></option>
+                                <option ></option>
+                            </select>
+                            </div>
+                            
+                            
+                            <div class=" mb-1 col-sm-4 col-12">
+                                    <label class="product-label" for="installment_date">
+                                        {{'gis.policy.installment_date' | translate}}
+                                    </label>
+                                    <input class="form-control form-control-sm mb-1" type="date" value="" id="installment_date">
+
+
+                                
+                            </div>
+                            <div class="  mb-1 col-sm-4 col-12">
+                                    <label class="product-label" for="premium_financier">
+                                        {{'gis.policy.premium_financier' | translate}}
+                                    </label>
+                                    <input class="form-control form-control-sm mb-1" type="text" value="" id="premium_financier">
+                                   
+                            </div>
+
+                        </div>
+                        <!-- ROW 5 -->
+                        <div class="row mb-4">
+                            <div class=" mb-1 col-sm-4 col-12">
+                                    <label class="form-check-label" class="product-label" for="payment_plan">
+                                        {{'gis.policy.payment_plan' | translate}}
+                                    </label>
+                                    <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" value="" id="policy_generated">
+                                    <label class="form-check-label"  for="policy_generated">
+                                        {{'gis.policy.policy_generated' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                    <label class="form-check-label" class="product-label" for="old_policy_no">
+                                        {{'gis.policy.old_policy_no' | translate}}
+                                    </label>
+                                    <input class="form-control form-control-sm mb-1" type="text" value="" id="old_policy_no">
+                            </div>
+
+                        </div>
+                        <!-- ROW 6 -->
+                        <div class="row mb-4">
+                            <div class=" mb-1 col-sm-4 col-12">
+                                    <label class="form-check-label" class="product-label" for="old_agent_no">
+                                        {{'gis.policy.old_agent_no' | translate}}
+                                    </label>
+                                    <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label class="form-check-label" class="product-label" for="reference_no">
+                                    {{'gis.policy.reference_no' | translate}}
+                                </label>
+                                <input class="form-control form-control-sm mb-1" type="text" value="" id="reference_no">
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                    <label class="form-check-label" class="product-label" for="import_risks">
+                                        {{'gis.policy.import_risks' | translate}}
+                                    </label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="another_policy">
+                                            <label class="form-check-label"  for="another_policy">
+                                                {{'gis.policy.another_policy' | translate}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="from_csv">
+                                            <label class="form-check-label"  for="from_csv">
+                                                {{'gis.policy.from_csv' | translate}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                  
+
+                             </div>
+
+                        </div>
+                    </div>
+                    <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapsePolicy"
+                    aria-expanded="false" aria-controls="collapsePolicy"> {{'gis.policy.more_details' |
+                    translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapsePolicy"
+                        aria-expanded="false" aria-controls="collapsePolicy"> <i class="pi pi-angle-double-up"
+                            style="font-size:13px" *ngIf="!show" data-toggle="collapse"
+                            data-target="#collapsePolicy"></i><i class="pi pi-angle-double-down"
+                            style="font-size:13px" *ngIf="show" data-toggle="collapse"
+                            data-target="#collapsePolicy"></i></span> </p>
                 </form>
             </div>
         </div>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-primary" (click)="createPolicy()">{{'gis.policy.next' | translate}}</button>
+        </div>
+      
     </div>
 
 </div>

@@ -15,6 +15,7 @@ import { IntermediaryService } from '../.../../../../../../entities/services/int
 import { Observable } from 'rxjs';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
+import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
 
 const log = new Logger("PolicyProductComponent");
 
@@ -71,7 +72,7 @@ export class PolicyProductComponent {
   selectedIntroducer: any;
   introducerCode: any;
   introducerName: any;
-
+  currency:any;
 
   enableSelect: boolean = false;
   show: boolean = true;
@@ -97,7 +98,7 @@ export class PolicyProductComponent {
     public quotationService: QuotationsService,
     private intermediaryService: IntermediaryService,
     private introducerService: IntroducersService,
-
+    private currencyService:CurrencyService,
     public globalMessagingService: GlobalMessagingService,
     public cdr: ChangeDetectorRef,
 
@@ -109,6 +110,7 @@ export class PolicyProductComponent {
     this.createPolicyProductForm();
     this.loadAllproducts();
     // this.fetchBranches();
+    this.getCurrencies()
     this.getuser();
     this.loadPolicySources();
     this.getMarketers(0, 1000, "createdDate");
@@ -155,7 +157,11 @@ export class PolicyProductComponent {
       source: [''],
       transaction_type: ['', Validators.required],
       with_effective_from_date: [''],
-      with_effective_to_date: ['']
+      with_effective_to_date: [''],
+      
+      cover_days:[''],
+      currency_rate:[''],
+
     });
 
   }
@@ -546,6 +552,38 @@ export class PolicyProductComponent {
     log.debug("JOINT ACCOUNT NO:",this.jointAccountCode)
     this.jointAccountName = this.jointAccountDetails.firstName + ' ' + this.jointAccountDetails.lastName;
     log.debug("JOINT ACCOUNT NAME:",this.jointAccountName)
+  }
+  getCurrencies(){
+    this.currencyService.getAllCurrencies().subscribe({
+      next:(res=>{
+        this.currency = res 
+        console.log("Currency",res)
+      })
+    })
+  }
+  updateCoverTo(): void {
+    
+    const fromDate = new Date(this.policyProductForm.get('with_effective_from_date').value);
+    const toDate = new Date(fromDate);
+    toDate.setDate(fromDate.getDate() + 365);
+    this.policyProductForm.controls['with_effective_to_date'].setValue(this.formatDate(toDate));
+    this.updateCoverDays();
+  }
 
+  updateCoverDays(): void {
+    const fromDate = new Date(this.policyProductForm.get('with_effective_from_date').value);
+    const toDate = new Date(this.policyProductForm.get('with_effective_to_date').value);
+    const differenceInTime = toDate.getTime() - fromDate.getTime();
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+    this.policyProductForm.controls['cover_days'].setValue(differenceInDays);
+  }
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+  createPolicy(){
+    console.log(JSON.stringify(this.policyProductForm.value))
   }
 }
