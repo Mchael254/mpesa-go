@@ -5,6 +5,7 @@ import {ViewClaimService} from "../../../../../gis/services/claims/view-claim.se
 import {ClaimsDTO} from "../../../../../gis/data/claims-dto";
 import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 import {AuthService} from "../../../../../../shared/services/auth.service";
+import {LocalStorageService} from "../../../../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('ClaimDetailsComponent');
 @Component({
@@ -30,10 +31,12 @@ export class ClaimDetailsComponent implements OnInit {
   claimPaymentTransaction: any;
 
   isLoadingAuthExc: boolean = false;
+  isLoadingTransactionData: boolean = false;
 
   constructor(private claimsService: ViewClaimService,
               private globalMessagingService: GlobalMessagingService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private localStorageService: LocalStorageService) {
   }
   ngOnInit(): void {
     log.info('claim>>', this.selectedSpringTickets);
@@ -122,7 +125,7 @@ export class ClaimDetailsComponent implements OnInit {
           if (this.claimTransaction) {
             this.fetchClaimPaymentsTransactionDetails();
             this.fetchClaimExceptions();
-            this.claimsService.claimTransactionObject.set({...this.claimTransaction, fromClaimTransaction: true});
+            this.localStorageService.setItem('claimTransactionDetails', this.claimTransaction);
           }
           log.info('claim transaction data>>', this.claimTransactionData, this.claimTransaction);
           // transactionNo
@@ -134,17 +137,20 @@ export class ClaimDetailsComponent implements OnInit {
   }
 
   fetchClaimPaymentsTransactionDetails() {
-    this.claimsService.getClaimsPaymentTransactionsDetails(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.code)
+    this.isLoadingTransactionData = true;
+    this.claimsService.getClaimsPaymentTransactionsDetails(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.claimVoucherCode)
       .subscribe({
         next: (data) => {
           data.embedded[0].forEach( transaction => {
-            this.claimPaymentTransaction = transaction
+            this.claimPaymentTransaction = transaction;
           });
+          this.isLoadingTransactionData = false;
           this.claimPaymentTransactionData = data.embedded[0];
           log.info('claim payment transaction data>>', this.claimPaymentTransactionData, this.claimPaymentTransaction);
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);
+          this.isLoadingTransactionData = false;
         }
       })
   }

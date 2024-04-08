@@ -1,4 +1,5 @@
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Perils</label>
 
@@ -59,7 +60,7 @@
       <ng-template pTemplate="body" let-peril>
         <tr>
           <td>{{peril.claimant}}</td>
-          <td>{{peril.description}}</td>
+          <td>{{peril.description | titlecase}}</td>
           <td>{{peril.peril_type}}</td>
           <td>{{peril.claim_peril_claim_amount | number}}</td>
           <td>{{peril.claim_peril_adjacent_amount | number}}</td>
@@ -72,7 +73,7 @@
           <td>{{peril.own_salvages}}</td>
           <td>{{peril.own_payments}}</td>
           <td>{{peril.own_net_paid}}</td>
-          <td>{{peril.claim_peril_remarks}}</td>
+          <td>{{peril.claim_peril_remarks | titlecase}}</td>
           <td>{{peril.peril_rate}}</td>
         </tr>
       </ng-template>
@@ -83,16 +84,85 @@
       </ng-template>
     </p-table>
 
-    <span class="icon-circle mt-3 mb-2 float-start" data-bs-toggle="collapse" href="#collapsePerils" role="button"
+    <!--<span class="icon-circle mt-3 mb-2 float-start" data-bs-toggle="collapse" href="#collapsePerils" role="button"
           aria-expanded="false" aria-controls="collapsePerils">
       <i class="pi pi-chevron-up"></i>
-    </span>
+    </span>-->
   </div>
-
-
 </div>
 
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Perils</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseClaimPaymentPerils" role="button"
+          aria-expanded="false" aria-controls="collapseClaimPaymentPerils">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+    <div class="float-end">
+      <span class="icon-circle">
+        <i class="fa-solid fa-plus" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="pi pi-pencil" ></i>
+      </span>
+      <span class="icon-circle">
+        <i class="fa-regular fa-trash-can"></i>
+      </span>
+    </div>
+  </div>
+
+  <div class="collapse" id="collapseClaimPaymentPerils">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="perilsPaymentData?.length"
+      [value]="perilsPaymentData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Peril id</th>
+          <th>Peril</th>
+          <th>Voucher amount type</th>
+          <th>Excess allowed</th>
+          <th>Excess amount</th>
+          <th>Novice excess amt</th>
+          <th>Reinstatement amount</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-perilPayment>
+        <tr>
+          <td>{{perilPayment.peril_short_description}}</td>
+          <td>{{perilPayment.peril_description | titlecase}}</td>
+          <td>{{perilPayment.type}}</td>
+          <td>{{perilPayment.excess_allowed}}</td>
+          <td>{{perilPayment.excess_amount | number}}</td>
+          <td>{{perilPayment.novice_excess_amount | number}}</td>
+          <td>{{perilPayment.reinsurance_amount}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="17">No Peril Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Treaty ceding</label>
 
@@ -128,10 +198,9 @@
       </ng-template>
       <ng-template pTemplate="body" let-treatyCeding>
         <tr>
-          <td>{{treatyCeding.reinsurance_short_description}}</td>
+          <td>{{treatyCeding.reinsurance_short_description | titlecase}}</td>
           <td>{{treatyCeding.rate}}</td>
           <td>{{treatyCeding.treaty_amount_currency}}</td>
-
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -142,7 +211,67 @@
     </p-table>
   </div>
 </div>
-<div class="row mt-5 mb-2 card">
+
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Treaty cession</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseTreatyCession" role="button"
+          aria-expanded="false" aria-controls="collapseTreatyCession">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseTreatyCession">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="treatyCessionData?.length"
+      [value]="treatyCessionData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Code</th>
+          <th>Transaction no.</th>
+          <th>Rei code</th>
+          <th>Description</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-treatyCession>
+        <tr>
+          <td>{{treatyCession.code}}</td>
+          <td>{{treatyCession.transactionNo}}</td>
+          <td>{{treatyCession.reinsuranceCode}}</td>
+          <td>{{treatyCession.reinsuranceTreatyShortDescription}}</td>
+          <td>{{treatyCession.rate | number}}</td>
+          <td>{{treatyCession.treatyAmountCurrency}}</td>
+          <td></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">No Treaty Cession Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Facultative ceding</label>
 
@@ -195,7 +324,67 @@
     </p-table>
   </div>
 </div>
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Facultative cession</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseFacultativeCession" role="button"
+          aria-expanded="false" aria-controls="collapseFacultativeCession">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseFacultativeCession">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="facultativeCessionData?.length"
+      [value]="facultativeCessionData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Transaction no.</th>
+          <th>FC code</th>
+          <th>Description</th>
+          <th>Facultative account</th>
+          <th>Rate</th>
+          <th>Amount</th>
+          <th>Amount covered</th>
+          <th>Balance</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-facultativeCession>
+        <tr>
+          <td>{{facultativeCession.transactionNo}}</td>
+          <td>{{facultativeCession.facultativeCode}}</td>
+          <td>{{facultativeCession.agencyName | titlecase}}</td>
+          <td>{{facultativeCession.shortDescription}}</td>
+          <td>{{facultativeCession.rate}}</td>
+          <td>{{facultativeCession.amount | number}}</td>
+          <td>{{facultativeCession.paid}}</td>
+          <td>{{facultativeCession.balance}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Facultative Cession Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card" *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Non-proportional treaties</label>
 
@@ -234,9 +423,9 @@
       <ng-template pTemplate="body" let-nonProp>
         <tr>
           <td>{{nonProp.layer}}</td>
-          <td>{{nonProp.company_retention_amount}}</td>
-          <td>{{nonProp.amount_to_cede}}</td>
-          <td>{{nonProp.excess_amount}}</td>
+          <td>{{nonProp.company_retention_amount | number}}</td>
+          <td>{{nonProp.amount_to_cede | number}}</td>
+          <td>{{nonProp.excess_amount | number}}</td>
           <td>{{nonProp.master_transaction_settlement}}</td>
         </tr>
       </ng-template>
@@ -248,7 +437,128 @@
     </p-table>
   </div>
 </div>
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Non-proportional reinsurers</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapsePropReinsurers" role="button"
+          aria-expanded="false" aria-controls="collapsePropReinsurers">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapsePropReinsurers">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="nonPropReinsurerData?.length"
+      [value]="nonPropReinsurerData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Layer</th>
+          <th>Ret amount</th>
+          <th>Excess</th>
+          <th>Amount to recover</th>
+          <th>Amount recovered</th>
+          <th>Balance</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-nonPropReinsurer>
+        <tr>
+          <td>{{nonPropReinsurer.layer}}</td>
+          <td>{{nonPropReinsurer.companyRetentionAmount | number}}</td>
+          <td>{{nonPropReinsurer.excessAmount | number}}</td>
+          <td>{{nonPropReinsurer.amountToCede}}</td>
+          <td>{{nonPropReinsurer.amount}}</td>
+          <td>{{nonPropReinsurer.balance}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Non-proportional Reinsurers Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Payment items</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapsePaymentItems" role="button"
+          aria-expanded="false" aria-controls="collapsePaymentItems">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapsePaymentItems">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="nonPropTreatyData?.length"
+      [value]="nonPropTreatyData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Desc</th>
+          <th>Amount</th>
+          <th>Withhold VAT</th>
+          <th>VAT rate</th>
+          <th>VAT amount</th>
+          <th>Whtx</th>
+          <th>Whtx rate</th>
+          <th>Whtx amount</th>
+          <th>Excise duty</th>
+          <th>Excise duty rate</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-nonProp>
+        <tr>
+          <td>{{nonProp.layer}}</td>
+          <td>{{nonProp.company_retention_amount}}</td>
+          <td>{{nonProp.amount_to_cede}}</td>
+          <td>{{nonProp.excess_amount}}</td>
+          <td>{{nonProp.master_transaction_settlement}}</td>
+          <td>{{nonProp.layer}}</td>
+          <td>{{nonProp.company_retention_amount}}</td>
+          <td>{{nonProp.amount_to_cede}}</td>
+          <td>{{nonProp.excess_amount}}</td>
+          <td>{{nonProp.master_transaction_settlement}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10">No Payment Item Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Penalties</label>
 
@@ -317,7 +627,8 @@
     </p-table>
   </div>
 </div>
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'LO' || claimTransaction?.transactionCode === 'LR'">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Reinsurance pool</label>
 
@@ -359,6 +670,106 @@
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="2">No Reinsurance Pool Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Reinsurance pool rates</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseReinsurancePoolRate" role="button"
+          aria-expanded="false" aria-controls="collapseReinsurancePoolRate">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseReinsurancePoolRate">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="reinsurancePoolData?.length"
+      [value]="reinsurancePoolData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>UWYR</th>
+          <th>Pool rate</th>
+          <th>Pool amt</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-reinsurancePool>
+        <tr>
+          <td></td>
+          <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+          <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="2">No Reinsurance Pool Rate Detail(s) Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+<div class="row mt-5 mb-2 card"
+     *ngIf ="claimTransaction?.transactionCode === 'CF' || claimTransaction?.transactionCode === 'CP'">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary">Bank details</label>
+
+    <span class="icon-circle float-end" data-bs-toggle="collapse" href="#collapseBankDetail" role="button"
+          aria-expanded="false" aria-controls="collapseBankDetail">
+      <i class="pi pi-chevron-down"></i>
+    </span>
+  </div>
+
+  <div class="collapse" id="collapseBankDetail">
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="claimBankData?.length"
+      [value]="claimBankData"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Account no.</th>
+          <th>Bank</th>
+          <th>Bank branch</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-claimBank>
+        <tr>
+          <td>{{claimBank?.account_no}}</td>
+          <td>{{claimBank?.bank_name | titlecase}}</td>
+          <td>{{claimBank?.branch_name | titlecase}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3">No Bank Detail(s) Found.</td>
         </tr>
       </ng-template>
     </p-table>

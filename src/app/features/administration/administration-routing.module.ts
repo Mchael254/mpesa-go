@@ -7,6 +7,9 @@ import {
 } from "./components/staff-performance/view-employee-transactions/view-employee-transactions.component";
 import {ViewTicketsComponent} from "./components/tickets/view-tickets/view-tickets.component";
 import { TicketDetailsComponent } from './components/tickets/ticket-details/ticket-details.component';
+import {
+  MassDocumentDispatchComponent
+} from "./components/tickets/mass-document-dispatch/mass-document-dispatch.component";
 
 const routes: Routes = [
     {
@@ -37,6 +40,10 @@ const routes: Routes = [
       path: 'ticket/details',
       component: TicketDetailsComponent
     },
+  {
+    path: 'document-dispatch',
+    component: MassDocumentDispatchComponent
+  },
 ];
 
 @NgModule({

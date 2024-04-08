@@ -52,6 +52,7 @@
     "team": "Team",
     "tickets": "Tickets",
     "view_all": "VIEW ALL",
+    "dispatch": "DISPATCH",
     "more": "more",
     "DAY": "day",
     "WEEK": "week",
@@ -552,6 +553,7 @@
       "accept_quote": "Accept quote"
     },
     "policy": {
+
       "underwriting_new_transaction": "Underwriting: New transaction",
       "type_of_transaction": "Type of transaction",
       "new_business": "New business",

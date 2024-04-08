@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
 import {Pagination} from "../../../../shared/data/common/pagination";
 import {HttpParams} from "@angular/common/http";
@@ -10,7 +10,7 @@ import {ApiService} from "../../../../shared/services/api/api.service";
   providedIn: 'root'
 })
 export class ViewClaimService {
-  public claimTransactionObject = signal({});
+
   constructor(
     private api:ApiService,
   ) { }
@@ -95,5 +95,43 @@ export class ViewClaimService {
       .set('claimVoucherNo', `${claimVoucherNo}`)
     // claimVoucherNo=2022204967
     return this.api.GET<any>(`api/v1/claims/payments?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getTreatyCessions(claimNo: string, transactionNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimNo', `${claimNo}`)
+      .set('transactionNo', `${transactionNo}`)
+    return this.api.GET<any>(`api/v1/claims/treaty-cession?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getFacultativeCessions(claimNo: string, transactionNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimNo', `${claimNo}`)
+      .set('transactionNo', `${transactionNo}`)
+    return this.api.GET<any>(`api/v1/claims/facultative-cession?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getNonPropReinsurers(claimNo: string, transactionNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimNo', `${claimNo}`)
+      .set('transactionNo', `${transactionNo}`)
+    return this.api.GET<any>(`api/v1/claims/treaty-reinsurers?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getClaimsBankDetails(claimVoucherNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('cpvCode', `${claimVoucherNo}`)
+    return this.api.GET<any>(`api/v1/claims/bank-details?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getListOfPerilsPayment(claimVoucherNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimVoucherNo', `${claimVoucherNo}`)
+    return this.api.GET<any>(`api/v1/claims/peril-details-payment?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 }

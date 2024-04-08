@@ -23,6 +23,8 @@ import { AuthorizationTabComponent } from './components/tickets/authorization-ta
 import { ClaimDetailsComponent } from './components/tickets/ticket-details/claim-details/claim-details.component';
 import { RevisionDetailsComponent } from './components/tickets/ticket-details/claim-details/revision-details/revision-details.component';
 import { AuthorizePolicyModalComponent } from './components/tickets/authorize-policy-modal/authorize-policy-modal.component';
+import { MassDocumentDispatchComponent } from './components/tickets/mass-document-dispatch/mass-document-dispatch.component';
+import {MultiSelectModule} from "primeng/multiselect";
 
 
 @NgModule({
@@ -41,20 +43,22 @@ import { AuthorizePolicyModalComponent } from './components/tickets/authorize-po
     AuthorizationTabComponent,
     ClaimDetailsComponent,
     RevisionDetailsComponent,
-    AuthorizePolicyModalComponent
+    AuthorizePolicyModalComponent,
+    MassDocumentDispatchComponent
   ],
-  imports: [
-    CommonModule,
-    AdministrationRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TableModule,
-    SharedModule,
-    TableModule,
-    EntitiesModule,
-    TabViewModule,
-    DialogModule
-  ],
+    imports: [
+        CommonModule,
+        AdministrationRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TableModule,
+        SharedModule,
+        TableModule,
+        EntitiesModule,
+        TabViewModule,
+        DialogModule,
+        MultiSelectModule
+    ],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ]
