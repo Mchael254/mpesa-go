@@ -3,18 +3,26 @@
         <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
         </app-dynamic-breadcrumb>
       </div>
-    <div class="container">
+    <div *ngIf="!gla" class="container">
         <div>
-            <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
-                Pension account summary</div>
+            <!-- <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
+                Pension account summary</div> -->
+                <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
+                    {{ investment || investmentWithRider ? 'Investment summary' : 'Pension account summary' }}
+                </div>                
+                <div *ngIf="pensionWithLifeRider || investmentWithRider" class="nav-link" (click)="showContent('cover_types')"
+                [class.active]="selectedContent === 'cover_types'">Cover types</div>
             <div class="nav-link" (click)="showContent('transactions')"
                 [class.active]="selectedContent === 'transactions'">Transactions</div>
         </div>
     </div>
 
     <div class="container2">
+        <ng-container *ngIf="!gla">
         <div *ngIf="selectedContent === 'summary'">
-            <div class="title-desc">Pension account summary</div>
+            <div class="title-desc" *ngIf="!investment && !investmentWithRider">Pension account summary</div>
+            <div class="title-desc" *ngIf="investment || investmentWithRider">Investment summary</div>
+
 
             <div class="pension-table-container col-12">
 
@@ -36,8 +44,12 @@
                             <td class="table-label">Years to retirement:</td>
                             <td class="table-label-desc">40</td>
                         </tr>
-                        <tr>
+                        <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Employee contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr *ngIf="investment || investmentWithRider">
+                            <td class="table-label">Interest:</td>
                             <td class="table-label-desc">Ksh. 20,000</td>
                         </tr>
                         <tr>
@@ -61,13 +73,21 @@
                             <td class="table-label">Group:</td>
                             <td class="table-label-desc">Nairobi sacco</td>
                         </tr>
-                        <tr>
+                        <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Employer contribution:</td>
                             <td class="table-label-desc">Ksh. 20,000</td>
                         </tr>
-                        <tr>
+                        <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Annual salary:</td>
                             <td class="table-label-desc">Ksh. 10,300,000</td>
+                        </tr>
+                        <tr *ngIf="investment || investmentWithRider">
+                            <td class="table-label">Contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr *ngIf="investment || investmentWithRider">
+                            <td class="table-label">Total fund value:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
                         </tr>
                         <tr>
                             <td class="table-label">Status:</td>
@@ -77,6 +97,7 @@
                 </div>
             </div>
 
+            <ng-container *ngIf="!investment && !investmentWithRider">
             <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div>
             <div class="pension-table-container col-12">
                 <div class="col-6">
@@ -135,12 +156,22 @@
             </div>
 
             <div class="statement-desc" style="color: black;">Pension account totals <b>Ksh. 20,000,000</b></div>
-            <div class="download-link mt-2">
+        </ng-container>
+            <!-- <div class="download-link mt-2">
                 <a href="#">
                     <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
                     <span class="download-link">Pension account summary report</span>
                 </a>
+            </div> -->
+            <div class="download-link mt-2">
+                <a href="#">
+                    <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                    <span class="download-link">
+                        {{ investment || investmentWithRider ? 'Investment summary report' : 'Pension account summary report' }}
+                    </span>
+                </a>
             </div>
+            
 
             <div class="title-desc mt-3">Valuations</div>
             <div class="filter-options">
@@ -180,9 +211,21 @@
                         <td id="table-align">{{ item.interest }}</td>
                         <td id="table-align">{{ item.balanceCF }}</td>
                         <td class="action-column">
-                            <i class="fas fa-ellipsis-v"></i>
+                            <div class="flex justify-content-center">
+                                <p-overlayPanel #op>
+                                    <div>
+                                        <!-- Download button -->
+                                        <p-button label="Download" icon="pi pi-download" styleClass="p-button-rounded p-button-text"
+                                            severity="primary"></p-button>
+                                    </div>
+                                </p-overlayPanel>
+                                <!-- Ellipsis container -->
+                                <div (click)="op.toggle($event)">
+                                    <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
+                                </div>
+                            </div>
                         </td>
-                    </tr>
+                        </tr>
                 </ng-template>
             </p-table>
 
@@ -195,6 +238,31 @@
 
 
         </div>
+        </ng-container>
+
+        <ng-container *ngIf="!gla">
+        <div *ngIf="selectedContent === 'cover_types'">
+                <div class="info">
+                    <div>
+                        <label class="label-name" for="name">Cover:</label>
+                        <span class="label-desc" id="name">Critical illness</span>
+                    </div>
+            
+                    <div>
+                        <label class="label-name" for="national-id">Coverage period:</label>
+                        <span class="label-desc" id="national-id">01/01/2023-31/12/2024</span>
+                    </div>
+        
+                    <div>
+                        <label class="label-name" for="phone">Sum assured:</label>
+                        <span class="label-desc" id="phone">30%</span>
+                    </div>
+            
+                </div>
+        </div>
+    </ng-container>
+
+        <ng-container *ngIf="!gla">
         <div *ngIf="selectedContent === 'transactions'">
             <div class="title-desc">Receipts</div>
             <div>
@@ -227,8 +295,8 @@
                             <th style="width: calc(100% / 8);">Total pension account</th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-item>
-                        <tr>
+                    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+                        <tr (click)="onReceiptsTableRowClick(item, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
                             <td id="table-align">{{ item.year }}</td>
                             <td id="table-align">{{ item.period }}</td>
                             <td id="table-align">{{ item.balanceBF }}</td>
@@ -286,7 +354,231 @@
                     </ng-template>
                 </p-table>
             </div>
+
+            <div style="margin-top: 40px;" *ngIf="investment || investmentWithRider">
+                <div class="title-desc">Loans</div>
+                <div class="filter-options">
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Year</option>
+                        <ng-container *ngFor="let year of years">
+                            <option [value]="year">{{ year }}</option>
+                        </ng-container>
+                    </select>
+
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Month</option>
+                        <ng-container *ngFor="let month of months">
+                            <option [value]="month">{{ month }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+
+                <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: calc(100% / 7);">Issue date</th>
+                            <th style="width: calc(100% / 7);">1st repayment date</th>
+                            <th style="width: calc(100% / 7);">Loan duration</th>
+                            <th style="width: calc(100% / 7);">Principal amount</th>
+                            <th style="width: calc(100% / 7);">Rates</th>
+                            <th style="width: calc(100% / 7);">Interest</th>
+                            <th style="width: calc(100% / 7);">Total payment</th>
+                            <th class="action-column" style="width: 10px;"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td id="table-align">{{ item.year }}</td>
+                            <td id="table-align">{{ item.period }}</td>
+                            <td id="table-align">{{ item.balanceBF }}</td>
+                            <td id="table-align">{{ item.contribution }}</td>
+                            <td id="table-align">{{ item.rate }}%</td>
+                            <td id="table-align">{{ item.interest }}</td>
+                            <td id="table-align">{{ item.interest }}</td>
+                            <td class="action-column">
+                                <div class="flex justify-content-center">
+                                    <p-overlayPanel #op>
+                                        <div>
+                                            <!-- Download button -->
+                                            <p-button label="Download repayment schedule" icon="pi pi-download" styleClass="p-button-rounded p-button-text"
+                                                severity="primary"></p-button>
+                                        </div>
+                                    </p-overlayPanel>
+                                    <!-- Ellipsis container -->
+                                    <div (click)="op.toggle($event)">
+                                        <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
         </div>
+    </ng-container>
+
+        <ng-container *ngIf="gla">
+            <div class="title-desc" style="font-size: 20px;">Cover types</div>
+            <div class="box-container">
+                <div class="box">
+                    <label class="active-label">Active</label>
+                    <div class="scroll-content">
+                    <table>
+                        <tr>
+                            <td>Cover:</td>
+                            <td class="td-data">Death benefit</td>
+                        </tr>
+                        <tr>
+                            <td>Coverage period:</td>
+                            <td class="td-data">10/10/2010-10/10/2030</td>
+                        </tr>
+                        <tr>
+                            <td>Sum assured:</td>
+                            <td class="td-data">Ksh. 97,865</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+
+                <div class="box">
+                    <label class="active-label">Active</label>
+                    <div class="scroll-content">
+                    <table>
+                        <tr>
+                            <td>Cover:</td>
+                            <td class="td-data">Death benefit</td>
+                        </tr>
+                        <tr>
+                            <td>Coverage period:</td>
+                            <td class="td-data">10/10/2010-10/10/2030</td>
+                        </tr>
+                        <tr>
+                            <td>Sum assured:</td>
+                            <td class="td-data">Ksh. 97,865</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+
+                <div class="box">
+                    <label class="active-label">Active</label>
+                    <div class="scroll-content">
+                    <table>
+                        <tr>
+                            <td>Cover:</td>
+                            <td class="td-data">Death benefit</td>
+                        </tr>
+                        <tr>
+                            <td>Coverage period:</td>
+                            <td class="td-data">10/10/2010-10/10/2030</td>
+                        </tr>
+                        <tr>
+                            <td>Sum assured:</td>
+                            <td class="td-data">Ksh. 97,865</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+
+                <div class="box">
+                    <label class="active-label">Active</label>
+                    <div class="scroll-content">
+                    <table>
+                        <tr>
+                            <td>Cover:</td>
+                            <td class="td-data">Death benefit</td>
+                        </tr>
+                        <tr>
+                            <td>Coverage period:</td>
+                            <td class="td-data">10/10/2010-10/10/2030</td>
+                        </tr>
+                        <tr>
+                            <td>Sum assured:</td>
+                            <td class="td-data">Ksh. 97,865</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+            </div>
+        </ng-container>
 
     </div>
 </div>
+
+<!-- modals begin -->
+<!-- modal to GET receipt breakdown -->
+<div class="modal fade" tabindex="-1" #adminDetailsModal id="receiptsModal" aria-labelledby="receiptsModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title float-left" id="receiptsModal">Receipts summary</h5>
+          <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeReceiptsModal()"></button>
+        </div>
+        <div class="modal-body">
+            <div class="pension-table-container col-12">
+                <div class="col-6">
+                    <div class="title-desc" style="color: black;">Employee contribution</div>
+
+                    <table class="receipt-table">
+                        <tr>
+                            <td class="table-label">Contribution:</td>
+                            <td class="table-label-desc">Ksh. 200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Trasfer amount:</td>
+                            <td class="table-label-desc">Ksh. 120,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Annual voluntary contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Cost of benefits:</td>
+                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Total contribution:</td>
+                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-6">
+                    <div class="title-desc col-6" style="color: black;">Employer contribution</div>
+
+                    <table class="receipt-table">
+                        <tr>
+                            <td class="table-label">Contribution:</td>
+                            <td class="table-label-desc">Ksh. 200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Trasfer amount:</td>
+                            <td class="table-label-desc">Ksh. 120,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Annual voluntary contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Cost of benefits:</td>
+                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Total contribution:</td>
+                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="statement-desc" style="color: black;">Total account contributions <b>Ksh. 20,000,000</b></div>
+            
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of modal to GET receipt breakdown -->
+  <!-- modals end -->
