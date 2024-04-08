@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceProviderService } from '../../../services/service-provider/service-provider.service';
 import {takeUntil} from "rxjs/operators";
 import { ReplaySubject } from 'rxjs';
-import { untilDestroyed,UtilService } from '../../../../../shared/shared.module';
+import {Logger, untilDestroyed, UtilService} from '../../../../../shared/shared.module';
 import { SectorDTO } from '../../../../../shared/data/common/sector-dto';
 import { ClientTitlesDto } from '../../../data/ClientDTO';
 import { EntityDto, IdentityModeDTO } from '../../../data/entityDto';
@@ -26,6 +26,9 @@ import { OccupationService } from '../../../../../shared/services/setups/occupat
 import {EntityService} from "../../../services/entity/entity.service";
 import {AccountService} from "../../../services/account/account.service";
 import {SetupsParametersService} from "../../../../../shared/services/setups-parameters.service";
+
+const log = new Logger('NewServiceProviderComponent');
+
 @Component({
   selector: 'app-new-service-provider',
   templateUrl: './new-service-provider.component.html',
@@ -132,6 +135,7 @@ export class NewServiceProviderComponent {
   };
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private partyId: number;
 
   constructor(
     private router: Router,
@@ -149,7 +153,8 @@ export class NewServiceProviderComponent {
     private occupationService:OccupationService,
     private entityService: EntityService,
     private accountService: AccountService,
-    private setupsParameterService: SetupsParametersService
+    private setupsParameterService: SetupsParametersService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -186,6 +191,38 @@ export class NewServiceProviderComponent {
     return this.newServiceProviderForm.controls;
   }
 
+  /**
+   * This method fetches the entity details using the party/entity id
+   * @returns void
+   */
+  getEntityDetails() : void {
+    this.partyId = +(this.activatedRoute.snapshot.queryParamMap.get('id'));
+    this.entityService.getEntityById(this.partyId)
+      .pipe()
+      .subscribe({
+        next: (entityDetails: EntityDto) => {
+          log.info(`fetched service provider details`, entityDetails);
+          this.patchServiceProviderFormValues(entityDetails);
+        },
+        error: (err) => {}
+      });
+  }
+
+  /**
+   * This method patches the service provider form with entity values
+   * @param entityDetails<EntityDto>
+   * @returns void
+   */
+  patchServiceProviderFormValues(entityDetails: EntityDto) {
+    this.newServiceProviderForm.patchValue({
+      firstName: entityDetails?.name.substring(0, entityDetails?.name.indexOf(' ')),
+      otherName: entityDetails?.name.substring(entityDetails?.name.indexOf(' ') + 1),
+      pinNumber: entityDetails?.pinNumber,
+      dateOfBirth: this.datePipe.transform(entityDetails?.dateOfBirth, 'dd-MM-yyy'),
+      txtIdNo: entityDetails?.identityNumber,
+      identityType: entityDetails?.modeOfIdentity?.name,
+    });
+  }
 
 /**
  * Initializes and configures the service provider registration form.
@@ -284,16 +321,9 @@ export class NewServiceProviderComponent {
       ),
 
     });
-    this.entityDetails = JSON.parse(sessionStorage.getItem('entityDetails'));
-    this.entityService
-      .currentEntity$
-      .pipe(
-        takeUntil(this.destroyed$),
-      )
-      .subscribe(
-        currentEntity => this.entityDetails = currentEntity
-      );
-    console.log('Entities data to service provider', this.entityDetails);
+
+  this.getEntityDetails();
+
   let name = 'SMS_NO_FORMAT';
   this.setupsParameterService.getParameters(name)
     .subscribe((data) => {
@@ -306,7 +336,7 @@ export class NewServiceProviderComponent {
           this.newServiceProviderForm.controls['contact_details'].get('phone_number')?.addValidators([Validators.pattern(this.phoneNumberRegex)]);
           this.newServiceProviderForm.controls['contact_details'].get('phone_number')?.updateValueAndValidity();
         }
-        console.log('parameters>>>', this.phoneNumberRegex)
+        log.info('parameters>>>', this.phoneNumberRegex)
       });
     });
     this.mandatoryService.getMandatoryFieldsByGroupId(this.groupId).pipe(
@@ -415,15 +445,6 @@ export class NewServiceProviderComponent {
         })
           this.cdr.detectChanges();
       });
-
-    this.newServiceProviderForm.patchValue({
-      firstName: this.entityDetails?.name.substring(0, this.entityDetails?.name.indexOf(' ')),
-      otherName: this.entityDetails?.name.substring(this.entityDetails?.name.indexOf(' ') + 1),
-      pinNumber: this.entityDetails?.pinNumber,
-      dateOfBirth: this.datePipe.transform(this.entityDetails?.dateOfBirth, 'dd-MM-yyy'),
-      txtIdNo: this.entityDetails?.identityNumber,
-      identityType: this.entityDetails?.modeOfIdentity?.name,
-    });
   }
 
   /**
@@ -720,7 +741,7 @@ export class NewServiceProviderComponent {
           lastName: serviceproviderFormValues.otherName,
           dateOfBirth: this.entityDetails?.dateOfBirth,
           name:null,
-          partyId: this.entityDetails.id,
+          partyId: this.partyId,
           partyTypeShortDesc: "SPR",
           modeOfIdentityid: this.entityDetails?.modeOfIdentity.id,
           paymentDetails: payment,
