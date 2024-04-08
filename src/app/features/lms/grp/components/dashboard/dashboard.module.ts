@@ -6,6 +6,8 @@ import { LandingScreenComponent } from './components/landing-screen/landing-scre
 import { SharedModule } from 'src/app/shared/shared.module';
 import { LandingDashboardComponent } from './components/landing-dashboard/landing-dashboard.component';
 import { PolicyDetailsComponent } from './components/policy-details/policy-details.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { PolicyDetailsComponent } from './components/policy-details/policy-detai
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    SharedModule
+    SharedModule,
+    OverlayPanelModule,
+    ConfirmDialogModule,
   ]
 })
 export class DashboardModule { }
