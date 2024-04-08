@@ -4,6 +4,8 @@ import {GlobalMessagingService} from "../../../../../../../shared/services/messa
 import {ViewClaimService} from "../../../../../../gis/services/claims/view-claim.service";
 import {ReinsuranceService} from "../../../../../../gis/reinsurance/reinsurance.service";
 import {ClaimsDTO} from "../../../../../../gis/data/claims-dto";
+import {TicketsDTO} from "../../../../../data/ticketsDTO";
+import {LocalStorageService} from "../../../../../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger('RevisionDetailsComponent');
 @Component({
@@ -12,7 +14,8 @@ const log = new Logger('RevisionDetailsComponent');
   styleUrls: ['./revision-details.component.css']
 })
 export class RevisionDetailsComponent implements OnInit {
-  @Input() claim: ClaimsDTO;
+  claim: ClaimsDTO;
+  @Input() selectedSpringTickets: TicketsDTO;
   claimTransaction: any;
   pageSize: 5;
   perilsData: any[];
@@ -21,19 +24,27 @@ export class RevisionDetailsComponent implements OnInit {
   nonPropTreatyData: any[];
   penaltiesData: any[];
   reinsurancePoolData: any[];
+  treatyCessionData: any[];
+  facultativeCessionData: any[];
+  nonPropReinsurerData: any[];
+  claimBankData: any[];
+  perilsPaymentData: any[];
 
   constructor(
     private globalMessagingService: GlobalMessagingService,
     private viewClaimService: ViewClaimService,
-    private reinsuranceService: ReinsuranceService,) {
+    private reinsuranceService: ReinsuranceService,
+    private localStorageService: LocalStorageService) {
   }
 
   ngOnInit(): void {
     setTimeout(() => {
-      log.info('claimsdata revision>>', this.claim)
+      log.info('claimsData ticket detail>>', this.selectedSpringTickets);
 
-      log.info("transaction obj",this.viewClaimService.claimTransactionObject());
-      this.claimTransaction = this.viewClaimService.claimTransactionObject();
+      this.claimTransaction = this.localStorageService.getItem('claimTransactionDetails');
+      this.claim = this.localStorageService.getItem('claimDetails');
+      log.info('claimTransaction session', this.claimTransaction)
+      log.info('claimsDetail session>>', this.claim);
 
       this.getPerils();
       this.getTreatyCeding();
@@ -41,12 +52,17 @@ export class RevisionDetailsComponent implements OnInit {
       this.getNonProportionalTreaty();
       this.getPenalties();
       this.getReinsurancePool();
+      this.getTreatyCession();
+      this.getFacultativeCession();
+      this.getNonPropReinsurers();
+      this.getClaimBankDetails();
+      this.getPerilsClaimPayment();
 
     },1500);
   }
 
   getPerils() {
-    this.viewClaimService.getListOfPerilsLRV(this.claim?.claim_no)
+    this.viewClaimService.getListOfPerilsLRV(this.selectedSpringTickets?.ticket?.claimNo)
       .subscribe({
         next: (data) => {
           this.perilsData = data.embedded[0];
@@ -59,7 +75,7 @@ export class RevisionDetailsComponent implements OnInit {
   }
 
   getTreatyCeding() {
-    this.viewClaimService.getTreatyCedingLRV(this.claim?.claim_no, this.claimTransaction?.transactionNo)
+    this.viewClaimService.getTreatyCedingLRV(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
       .subscribe({
         next: (data) => {
           this.treatyCedingData = data.embedded[0];
@@ -72,7 +88,7 @@ export class RevisionDetailsComponent implements OnInit {
   }
 
   getFacultativeCeding() {
-    this.viewClaimService.getFacultativeCedingLRV(this.claim?.claim_no, this.claimTransaction?.transactionNo)
+    this.viewClaimService.getFacultativeCedingLRV(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
       .subscribe({
         next: (data) => {
           this.facultativeCedingData = data.embedded[0];
@@ -85,7 +101,7 @@ export class RevisionDetailsComponent implements OnInit {
   }
 
   getNonProportionalTreaty() {
-    this.viewClaimService.getNonPropTreatyLRV(this.claim?.claim_no, this.claimTransaction?.transactionNo)
+    this.viewClaimService.getNonPropTreatyLRV(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
       .subscribe({
         next: (data) => {
           this.nonPropTreatyData = data.embedded[0];
@@ -98,7 +114,7 @@ export class RevisionDetailsComponent implements OnInit {
   }
 
   getPenalties() {
-    this.viewClaimService.getPenaltiesLRV(this.claim?.claim_no)
+    this.viewClaimService.getPenaltiesLRV(this.selectedSpringTickets?.ticket?.claimNo)
       .subscribe({
         next: (data) => {
           this.penaltiesData = data.embedded[0];
@@ -123,4 +139,68 @@ export class RevisionDetailsComponent implements OnInit {
       })
   }
 
+  getTreatyCession() {
+    this.viewClaimService.getTreatyCessions(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
+      .subscribe({
+        next: (data) => {
+          this.treatyCessionData = data.embedded[0];
+          log.info('treatyCession data>>', this.treatyCessionData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getFacultativeCession() {
+    this.viewClaimService.getFacultativeCessions(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
+      .subscribe({
+        next: (data) => {
+          this.facultativeCessionData = data.embedded[0];
+          log.info('facCession data>>', this.facultativeCessionData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getNonPropReinsurers() {
+    this.viewClaimService.getNonPropReinsurers(this.selectedSpringTickets?.ticket?.claimNo, this.claimTransaction?.transactionNo)
+      .subscribe({
+        next: (data) => {
+          this.nonPropReinsurerData = data.embedded[0];
+          log.info('facCession data>>', this.nonPropReinsurerData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getClaimBankDetails() {
+    this.viewClaimService.getClaimsBankDetails(this.claimTransaction?.claimVoucherCode)
+      .subscribe({
+        next: (data) => {
+          this.claimBankData = data.embedded[0];
+          log.info('claim bank data>>', this.claimBankData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getPerilsClaimPayment() {
+    this.viewClaimService.getListOfPerilsPayment(this.claimTransaction?.claimVoucherCode)
+      .subscribe({
+        next: (data) => {
+          this.perilsPaymentData = data.embedded[0];
+          log.info('perilsPayment>>', this.perilsPaymentData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
 }

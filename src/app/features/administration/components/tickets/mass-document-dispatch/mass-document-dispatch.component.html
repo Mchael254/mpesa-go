@@ -1,44 +1,113 @@
-<div *ngIf="module != 'C'">
-  <label for="format" style="font-weight: 700; font-size: 13px; padding: 0 0.5rem 1rem 0;">{{'Select format:'}}</label>
-  <select style="font-weight: 500; font-size: 13px; width: 90px;" id="format" [(ngModel)]="selectedFormat">
-    <option value="HTML">HTML</option>
-    <option value="PDF">PDF</option>
-  </select>
-  <button class="btn btn-primary ms-4" style="font-size: 13px;" (click)="openDocDispatchModal()">Dispatch documents</button>
-</div>
-<ul class="list-group list-group-horizontal mb-3">
-  <li class="list-group-item border-0 ps-0" *ngFor="let report of reportsWithLinks">
-    <a target="_blank" class="report-link" (click)="fetchReport(report)">{{ report?.name?.name }}</a>
-  </li>
-  <div>
-    <span *ngIf="!isLoadingReport; else loadingReport"></span>
-    <ng-template #loadingReport>
-      <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
-    </ng-template>
-  </div>
-
-
-</ul>
-
-<!-- Modal -->
-<div class="modal fade" id="reportsModalToggle" tabindex="-1" aria-labelledby="reportsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" style="height: 300px !important;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-6" id="exampleModalLabel">{{ selectedReportName }}</h1>
-        <button type="button" class="btn-close" (click)="closeReportsModal()"></button>
-      </div>
-      <div class="modal-body">
-        <ngx-doc-viewer
-          [fileName]="fileName ?? ''"
-          [srcUrl]="filePath ?? ''"
-          class="doc-viewer"
-        ></ngx-doc-viewer>
-      </div>
+<div class="base-content-section">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'Home',
+        url: '/home/dashboard'
+      },
+      {
+        label: 'Tickets',
+        url: '/home/administration/tickets',
+      },
+      {
+        label: 'Documents dispatch',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
     </div>
   </div>
+  <div class="card">
+    <div class="row mt-3 mb-2 p-2">
+      <div class="col-12">
+        <label class="text-primary">Documents Dispatch</label>
+      </div>
+      <div class="row col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by policy no"
+            aria-label="search"
+            aria-describedby="search"
+            (input)="filterDocs($event)"
+          />
+        </div>
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="date"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 d-flex justify-content-end">
+        <button
+          class="btn btn-primary" style="font-size: 12px;" (click)="openDocDispatchModal()">Dispatch documents
+
+        </button>
+
+      </div>
+    </div>
+    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+    <p-table
+      #dispatchDocsTable
+      [autoLayout]="true"
+      [rowHover]="true"
+      [resizableColumns]="true"
+      [showCurrentPageReport]="true"
+      [rows]="pageSize || 5"
+      [totalRecords]="dispatchedDocs?.length"
+      [value]="dispatchedDocs"
+      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+      responsiveLayout="stack"
+      [scrollable]="true"
+      [(selection)]="selectedDoc"
+      selectionMode="single"
+      dataKey="code"
+      scrollHeight="400px"
+      currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      [globalFilterFields]="['pol_policy_no']"
+      [sortField]="'is_authorized'" [sortOrder]="1"
+    >
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th>
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th>Client name</th>
+          <th>Policy no.</th>
+          <th>Date created</th>
+          <th>Transaction type</th>
+          <th>Endorsement number</th>
+          <th>Documents</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-doc>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="doc"></p-tableCheckbox>
+          </td>
+          <td></td>
+          <td>{{doc.pol_policy_no}}</td>
+          <td>{{doc.geds_prepared_date}}</td>
+          <td>{{doc?.etr_trans_type}}</td>
+          <td></td>
+          <td>{{doc?.is_authorized}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">No Documents Found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>
 
+<!--DOC Dispatch modal-->
 <div class="modal fade" id="docDispatchToggle" aria-hidden="true" aria-labelledby="docDispatchToggleLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered" style="width: 350px">
     <div class="modal-content">

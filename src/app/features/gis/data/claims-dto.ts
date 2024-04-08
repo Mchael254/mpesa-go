@@ -70,6 +70,14 @@ export interface ClaimsDTO {
     withEffectTo: string,
     years: number,
   }
+  loss_description: string,
+  loss_date: string,
+  risk_value: number,
+  risk_wef: string,
+  risk_wet: string,
+  risk_property_id: string,
+  remarks: string,
+  next_review_date: string,
   risk: [
     {
       riskIpuCode: number,

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {Logger} from "../../../../../../shared/services";
 import {allTicketModules} from "../../../../data/ticketModule";
 import {ActivatedRoute} from "@angular/router";
@@ -10,6 +10,8 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {untilDestroyed} from "../../../../../../shared/services/until-destroyed";
 import {PoliciesService} from "../../../../../gis/services/policies/policies.service";
 import {AuthService} from "../../../../../../shared/services/auth.service";
+import {LocalStorageService} from "../../../../../../shared/services/local-storage/local-storage.service";
+import {DmsService} from "../../../../../../shared/services/dms/dms.service";
 
 
 const log = new Logger('TicketReportsComponent');
@@ -20,7 +22,7 @@ const log = new Logger('TicketReportsComponent');
   styleUrls: ['./ticket-reports.component.css']
 })
 export class TicketReportsComponent implements OnInit {
-  @Input() policyDetails:any;
+  policyDetails:any;
   selectedFormat: string = 'PDF';
   reportsWithLinks: any[] = [];
   module: string;
@@ -33,7 +35,10 @@ export class TicketReportsComponent implements OnInit {
   docDispatchForm: FormGroup;
   dispatchReasonsData: any[];
   saveDocumentRejectionData: any;
+  documentsToDispatchData: any[];
   isLoading: boolean = false;
+  reportsDispatchedData: any[];
+  selectedOptions: any[];
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -50,7 +55,10 @@ export class TicketReportsComponent implements OnInit {
     private fb: FormBuilder,
     private policiesService: PoliciesService,
     private authService: AuthService,
-    private globalMessagingService: GlobalMessagingService,) {
+    private globalMessagingService: GlobalMessagingService,
+    private localStorageService: LocalStorageService,
+    private dmsService: DmsService,
+    private cdr: ChangeDetectorRef) {
 
   }
 
@@ -60,8 +68,22 @@ export class TicketReportsComponent implements OnInit {
       this.module = params['module'];
       this.fetchReports(params['module'], '');
     })
+    this.policyDetails = this.localStorageService.getItem('ticketDetails');
+    log.info('policy report sess', this.policyDetails);
     this.createDocDispatchForm();
     this.getDispatchReasons();
+    this.getDocumentsDispatched();
+    this.getReportsToPrepare();
+    this.getReportsDispatched();
+
+    /*this.documentsToDispatchData = [
+      { rpt_name: 'Premium Listing', dd_code: '1' },
+      { rpt_name: 'Debit/credit note', dd_code: '2' },
+      { rpt_name: 'Renewal notice', dd_code: '3' },
+      { rpt_name: 'Policy draft', dd_code: '4' },
+      { rpt_name: 'Policy document', dd_code: '5' },
+      { rpt_name: 'Premium calculation', dd_code: '6' }
+    ];*/
   }
 
   createDocDispatchForm() {
@@ -297,6 +319,19 @@ export class TicketReportsComponent implements OnInit {
       )
   }
 
+  getDocumentsDispatched() {
+    this.policiesService.fetchDocumentsDispatched(this.policyDetails?.ticket?.policyCode)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.documentsToDispatchData = data.embedded[0];
+          // this.spinner.hide();
+          log.info('docs to display>>', this.documentsToDispatchData);
+        })
+  }
+
   saveDispatchRejection() {
     // log.info('>>>>', event.value)
     const scheduleFormValues = this.docDispatchForm.getRawValue();
@@ -306,11 +341,12 @@ export class TicketReportsComponent implements OnInit {
         code: 0,
         dispatchApply: "N",
         exemptReason: scheduleFormValues.rejectionDescription,
-        policyBatchNo: this.policyDetails?.batch_no,
+        policyBatchNo: this.policyDetails?.ticket?.policyCode,
         preparedBy: assignee,
         preparedDate: this.dateToday
 
       }
+      log.info('save payload>>', payload)
       this.policiesService.saveDispatchRejectReason(payload)
         .subscribe({
           next: (data) => {
@@ -329,8 +365,99 @@ export class TicketReportsComponent implements OnInit {
       );
     }
   }
+
+  getReportsToPrepare() {
+    this.policiesService.fetchDispatchReports(this.policyDetails?.ticket?.policyCode, this.policyDetails?.ticket?.endorsment)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          this.documentsToDispatchData = data;
+          // this.spinner.hide();
+          log.info('reports>>', this.documentsToDispatchData);
+        }
+      )
+  }
+
+  getReportsDispatched() {
+    this.policiesService.fetchReportsDispatched(this.policyDetails?.ticket?.policyCode)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          const codes = data.embedded.map(transaction => transaction?.documentDispatchCode);
+          log.info('Codes:', codes);
+
+          // this.selectedOptions = codes;
+          this.reportsDispatchedData = data;
+
+          log.info('reports dispatched>>', this.reportsDispatchedData);
+        }
+      );
+  }
+
+  //add/remove report, also dispatch documents added
+  prepareDocuments() {
+    const scheduleFormValues = this.docDispatchForm.getRawValue();
+    if (scheduleFormValues.documentDispatched.length > 0) {
+      const payload: any = {
+        dispatchDocumentCode: scheduleFormValues.documentDispatched,
+        policyBatchNo: this.policyDetails?.ticket?.policyCode,
+        reportStatus: "A"
+      }
+
+      log.info('prepare report payload>>', payload, scheduleFormValues)
+      this.policiesService.addRemoveReportsToPrepare(payload)
+        .subscribe({
+          next: (data) => {
+            // this.saveAddReportData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully added report(s)');
+            setTimeout(() => {
+              this.savePreparedDocs();
+            },1500);
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Document(s) not prepared, ensure a report is selected.'
+      );
+    }
+  }
+
+  savePreparedDocs() {
+    this.policiesService.prepareDocuments(this.policyDetails?.ticket?.policyCode)
+      .subscribe({
+        next: (data) => {
+          // this.savePreparedDocumentData = data;
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully prepared documents');
+          this.onSave();
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      })
+  }
+
   onSave() {
-    this.globalMessagingService.displaySuccessMessage('Success', 'Saved');
+    this.policiesService.dispatchDocuments(this.policyDetails?.ticket?.policyCode)
+      .subscribe({
+        next: (data) => {
+          // this.saveDispatchedDocumentData = data;
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
+          this.dmsService.fetchDispatchedDocumentsByBatchNo(this.policyDetails?.ticket?.policyCode);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+        }
+      })
+    this.cdr.detectChanges();
+    // this.globalMessagingService.displaySuccessMessage('Success', 'Saved');
   }
 
   ngOnDestroy(): void {

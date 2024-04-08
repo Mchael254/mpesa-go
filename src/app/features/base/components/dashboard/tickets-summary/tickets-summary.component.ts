@@ -86,4 +86,8 @@ export class TicketsSummaryComponent implements OnInit {
       {queryParams: {activityName, totalTickets }}).then(r => {
     })
   }
+
+  goToDispatch() {
+    this.router.navigate([`home/administration/document-dispatch`]);
+  }
 }
