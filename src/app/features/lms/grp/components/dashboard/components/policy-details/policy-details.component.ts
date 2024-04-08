@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 
+const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
 @Component({
   selector: 'app-policy-details',
@@ -20,6 +22,11 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     { label: 'Dashboard', url: '/home/lms/grp/dashboard/dashboard-screen' },
     { label: this.policySelected, url: '/home/lms/grp/dashboard/policy-details' },
   ];
+  selectedRowIndex: number;
+  pensionWithLifeRider: boolean = false;
+  gla: boolean = false;
+  investment: boolean = false;
+  investmentWithRider: boolean = false;
 
   constructor() { }
 
@@ -37,6 +44,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       this.selectedContent = 'summary';
     } else if (content === 'transactions') {
       this.selectedContent = 'transactions';
+    }
+    else if (content === 'cover_types') {
+      this.selectedContent = 'cover_types';
     }
   }
 
@@ -93,5 +103,28 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     }
   ];
 
+  showReceiptsModal() {
+    const modal = document.getElementById('receiptsModal');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+    }
+  }
+
+  closeReceiptsModal() {
+    const modal = document.getElementById('receiptsModal');
+    if (modal) {
+      modal.classList.remove('show')
+      modal.style.display = 'none';
+    }
+  }
+
+  onReceiptsTableRowClick(dummyData, index: number) {
+    this.selectedRowIndex = index;
+    if(dummyData){
+      log.info("dummydataPassed", dummyData);
+      this.showReceiptsModal();
+    }
+  }
 
 }
