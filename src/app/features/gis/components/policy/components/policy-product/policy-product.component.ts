@@ -16,6 +16,9 @@ import { Observable } from 'rxjs';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
 import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
+import { ContractNamesService } from '../../services/contract-names/contract-names.service';
+import { PolicyService } from '../../services/policy.service';
+import { Router } from '@angular/router';
 
 const log = new Logger("PolicyProductComponent");
 
@@ -34,9 +37,9 @@ export class PolicyProductComponent {
   clientCode: any;
 
   jointAccountData: ClientDTO[] = [];
-  jointAccountCode:any;
-  jointAccountName:any;
-  jointAccountDetails:ClientDTO;
+  jointAccountCode: any;
+  jointAccountName: any;
+  jointAccountDetails: ClientDTO;
 
   productList: Products[];
   ProductDescriptionArray: any = [];
@@ -65,6 +68,8 @@ export class PolicyProductComponent {
   selectedSource: any;
 
   agentList: AgentDTO[];
+  selectedAgentCode: any;
+  selectedAgentDesc: any;
   marketerList: any;
   selectedMarketerCode: any;
 
@@ -72,7 +77,16 @@ export class PolicyProductComponent {
   selectedIntroducer: any;
   introducerCode: any;
   introducerName: any;
-  currency:any;
+  currency: any;
+
+  contractNamesList: any;
+  contractDetails: any;
+  binderType: any;
+
+  policyDetails:any;
+  policyResponse:any;
+
+  selectedTransactionType:any;
 
   enableSelect: boolean = false;
   show: boolean = true;
@@ -98,14 +112,20 @@ export class PolicyProductComponent {
     public quotationService: QuotationsService,
     private intermediaryService: IntermediaryService,
     private introducerService: IntroducersService,
-    private currencyService:CurrencyService,
+    private currencyService: CurrencyService,
+    private contractNamesService: ContractNamesService,
+    private policyService:PolicyService,
     public globalMessagingService: GlobalMessagingService,
+    private router: Router,
     public cdr: ChangeDetectorRef,
 
 
   ) { }
 
   ngOnInit(): void {
+
+    this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
+    log.debug("Passed Transaction type:", this.selectedTransactionType);
     this.loadAllClients();
     this.createPolicyProductForm();
     this.loadAllproducts();
@@ -115,13 +135,16 @@ export class PolicyProductComponent {
     this.loadPolicySources();
     this.getMarketers(0, 1000, "createdDate");
     this.getIntroducers();
+
   }
   ngOnDestroy(): void { }
   ngAfterViewInit(): void {
     // Disable the select element after the view has been initialized
-    this.toggleSelect(false);
     this.toggleJointAccountSelect(false);
+    this.toggleContractSelect(false);
+
   }
+  
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
       action_type: [''],
@@ -158,9 +181,9 @@ export class PolicyProductComponent {
       transaction_type: ['', Validators.required],
       with_effective_from_date: [''],
       with_effective_to_date: [''],
-      
-      cover_days:[''],
-      currency_rate:[''],
+
+      cover_days: [''],
+      currency_rate: [''],
 
     });
 
@@ -216,7 +239,7 @@ export class PolicyProductComponent {
     log.info("Client Id:", id)
     this.clientService.getClientById(id).subscribe(data => {
       this.clientDetails = data;
-      console.log("Selected Client Details:", this.clientDetails)
+      log.debug("Selected Client Details:", this.clientDetails)
       // this.getCountries();
       this.saveclient()
       this.closebutton.nativeElement.click();
@@ -233,6 +256,7 @@ export class PolicyProductComponent {
     this.clientCode = this.clientDetails.id;
     this.clientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     sessionStorage.setItem('clientCode', this.clientCode);
+    log.debug("Client Code:", this.clientCode)
   }
   /**
    * Applies a global filter to a DataTable.
@@ -306,7 +330,7 @@ export class PolicyProductComponent {
   */
   onProductSelected(selectedValue: any) {
     this.selectedProductCode = selectedValue.code;
-    console.log("Selected Product Code:", this.selectedProductCode);
+    log.debug("Selected Product Code:", this.selectedProductCode);
   }
   onPolicyInterfaceTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
@@ -318,16 +342,16 @@ export class PolicyProductComponent {
     if (!this.showIntermediaryFields) {
       this.policyProductForm.get('agent_code').reset();
       // this.policyProductForm.get('underwritersOnly').reset(false);
-      this.policyProductForm.get('is_commission_allowed').reset(false);
-      this.policyProductForm.get('is_admin_fee_allowed').reset(false);
+      this.policyProductForm.get('is_commission_allowed').reset();
+      this.policyProductForm.get('is_admin_fee_allowed').reset();
     }
 
     if (!this.showFacultativeFields) {
       this.policyProductForm.get('agent_code').reset();
       // this.policyProductForm.get('selectRiAgent').reset();
       // this.policyProductForm.get('underwritersOnlyFacultative').reset(false);
-      this.policyProductForm.get('is_commission_allowed').reset(false);
-      this.policyProductForm.get('is_admin_fee_allowed').reset(false);
+      this.policyProductForm.get('is_commission_allowed').reset();
+      this.policyProductForm.get('is_admin_fee_allowed').reset();
       // ... reset other fields for facultative business
     }
   }
@@ -376,10 +400,23 @@ export class PolicyProductComponent {
       });
   }
   onBranchSelected(selectedValue: any) {
-    this.selectedBranchCode = selectedValue.id;
-    log.debug("Branch Code:", this.selectedBranchCode)
-    this.selectedBranchDescription = selectedValue.name;
-    log.debug("Branch Description:", this.selectedBranchDescription)
+    this.selectedBranchCode = selectedValue;
+    const selectedBranch = this.branchList.find(branch => branch.id === selectedValue);
+    if (selectedBranch) {
+      console.log("Selected Branch Data:", selectedBranch);
+
+      const selectedBranchCode = selectedBranch.id;
+      const selectedBranchName = selectedBranch.name;
+
+      console.log("Selected Agent Code:", selectedBranchCode);
+      console.log("Selected Agent Name:", selectedBranchName);
+      this.selectedBranchCode = selectedBranchCode;
+      this.selectedBranchDescription = selectedBranchCode;
+
+    } else {
+      console.log("Branch not found in agentList");
+    }
+
 
   }
 
@@ -393,7 +430,7 @@ export class PolicyProductComponent {
           if (data) {
             this.sourceList = data;
             this.sourceDetail = data.content;
-            console.log(this.sourceDetail, "Source list")
+            log.debug(this.sourceDetail, "Source list")
             this.cdr.detectChanges();
 
           } else {
@@ -417,9 +454,9 @@ export class PolicyProductComponent {
   }
   onSourceSelected(event: any) {
     this.selectedSourceCode = event.target.value;
-    console.log("Selected Source Code:", this.selectedSourceCode);
+    log.debug("Selected Source Code:", this.selectedSourceCode);
     this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
-    console.log("Selected Source :", this.selectedSource);
+    log.debug("Selected Source :", this.selectedSource);
 
   }
   getMarketers(pageIndex: number,
@@ -434,9 +471,9 @@ export class PolicyProductComponent {
 
           if (data) {
             this.agentList = data.content;
-            console.log("Agent list", this.agentList)
+            log.debug("Agent list", this.agentList)
             this.marketerList = this.agentList.filter(agent => agent.accountTypeId == 10)
-            console.log("Marketer list", this.marketerList)
+            log.debug("Marketer list", this.marketerList)
 
             this.cdr.detectChanges();
 
@@ -461,7 +498,28 @@ export class PolicyProductComponent {
   }
   onMarketerSelected(selectedValue: any) {
     this.selectedMarketerCode = selectedValue.id;
-    console.log("Selected Marketer Code:", this.selectedMarketerCode);
+    log.debug("Selected Marketer Code:", this.selectedMarketerCode);
+  }
+  onAgentSelected(selectedValue: any) {
+    log.debug("Selected Agent Code:", selectedValue);
+
+    const selectedAgent = this.agentList.find(agent => agent.id === selectedValue);
+
+    if (selectedAgent) {
+      console.log("Selected Agent Data:", selectedAgent);
+
+      const selectedAgentCode = selectedAgent.id;
+      const selectedAgentName = selectedAgent.name;
+
+      console.log("Selected Agent Code:", selectedAgentCode);
+      console.log("Selected Agent Name:", selectedAgentName);
+      this.selectedAgentCode = selectedAgentCode;
+      this.selectedAgentDesc = selectedAgentName;
+
+      this.getContractNames();
+    } else {
+      console.log("Agent not found in agentList");
+    }
   }
   getIntroducers() {
     this.introducerService
@@ -472,7 +530,7 @@ export class PolicyProductComponent {
 
           if (data) {
             this.introducersList = data;
-            console.log("Introducers  list", this.introducersList)
+            log.debug("Introducers  list", this.introducersList)
 
 
             this.cdr.detectChanges();
@@ -506,7 +564,7 @@ export class PolicyProductComponent {
       this.saveIntroducer();
       this.closebuttonIntroducers.nativeElement.click();
     } else {
-      console.error("No introducer found with code:", code);
+      log.error("No introducer found with code:", code);
     }
 
 
@@ -519,11 +577,14 @@ export class PolicyProductComponent {
     log.debug("Introducer Name:", this.introducerName);
   }
 
-  toggleSelect(checked: boolean) {
-    const selectElement = document.getElementById('contractNameInput') as HTMLSelectElement;
-    selectElement.disabled = !checked;
+  toggleContractSelect(contractChecked: boolean) {
+    log.info("I HAVE BEEN CALLED")
+    const selectContractElement = document.getElementById('contractNameInput') as HTMLSelectElement;
+    selectContractElement.disabled = !contractChecked;
   }
   toggleJointAccountSelect(checked: boolean) {
+    log.info("JOINT ACCOUNT HAS BEEN CALLED")
+
     const selectElement = document.getElementById('jointAccountInput') as HTMLSelectElement;
     selectElement.disabled = !checked;
   }
@@ -542,27 +603,27 @@ export class PolicyProductComponent {
     log.info("Joint Account Id:", id)
     this.clientService.getClientById(id).subscribe(data => {
       this.jointAccountDetails = data;
-      console.log("Selected Joint Account Details:", this.jointAccountDetails)
+      log.debug("Selected Joint Account Details:", this.jointAccountDetails)
       this.saveJointAccount()
       this.closebuttonJointAccount.nativeElement.click();
     })
   }
   saveJointAccount() {
     this.jointAccountCode = this.jointAccountDetails.id;
-    log.debug("JOINT ACCOUNT NO:",this.jointAccountCode)
+    log.debug("JOINT ACCOUNT NO:", this.jointAccountCode)
     this.jointAccountName = this.jointAccountDetails.firstName + ' ' + this.jointAccountDetails.lastName;
-    log.debug("JOINT ACCOUNT NAME:",this.jointAccountName)
+    log.debug("JOINT ACCOUNT NAME:", this.jointAccountName)
   }
-  getCurrencies(){
+  getCurrencies() {
     this.currencyService.getAllCurrencies().subscribe({
-      next:(res=>{
-        this.currency = res 
-        console.log("Currency",res)
+      next: (res => {
+        this.currency = res
+        console.log("Currency", res)
       })
     })
   }
   updateCoverTo(): void {
-    
+
     const fromDate = new Date(this.policyProductForm.get('with_effective_from_date').value);
     const toDate = new Date(fromDate);
     toDate.setDate(fromDate.getDate() + 365);
@@ -583,7 +644,127 @@ export class PolicyProductComponent {
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   }
-  createPolicy(){
-    console.log(JSON.stringify(this.policyProductForm.value))
+
+
+  getContractNames() {
+    this.binderType = "M"
+    this.contractNamesService
+      .getContractNames(this.selectedAgentCode, this.binderType, this.selectedProductCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.contractNamesList = data;
+            log.debug("Contract Name  list", this.contractNamesList)
+            this.contractDetails = this.contractNamesList.embedded[0]
+            log.debug("Contract Name details", this.contractDetails)
+
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onContractSelected(event: any) {
+    //   this.selectedSourceCode = event.target.value;
+    //  log.debug("Selected Binder Code:", this.selectedSourceCode);
+    //   this.selectedSource = this.sourceDetail.filter(source => source.code == this.selectedSourceCode);
+    //   log.debug("Selected Source :", this.selectedSource);
+
+  }
+  createPolicy() {
+    this.policyProductForm.get('action_type').setValue("A");
+    this.policyProductForm.get('add_edit').setValue("A");
+    this.policyProductForm.get('client_code').setValue(this.clientCode);
+    this.policyProductForm.get('agent_short_description').setValue(this.selectedAgentDesc);
+    this.policyProductForm.get('branch_code').setValue(this.selectedBranchCode);
+    this.policyProductForm.get('branch_short_description').setValue(this.selectedBranchDescription);
+
+    // Transform the checkbox value to 'Y' or 'N' based on whether it's checked
+    const isCoinsuranceChecked = this.policyProductForm.get('is_coinsurance').value ? 'Y' : 'N';
+    this.policyProductForm.get('is_coinsurance').setValue(isCoinsuranceChecked);
+
+    const isAdminFeeAllowedChecked = this.policyProductForm.get('is_admin_fee_allowed').value ? 'Y' : 'N';
+    this.policyProductForm.get('is_admin_fee_allowed').setValue(isAdminFeeAllowedChecked);
+    const isCashApplicableChecked = this.policyProductForm.get('is_cashback_applicable').value ? 'Y' : 'N';
+    this.policyProductForm.get('is_cashback_applicable').setValue(isCashApplicableChecked);
+    log.debug("Is coinsuaranace Checked:", isCoinsuranceChecked)
+    log.debug("IsAdmin Fee Checked:", isAdminFeeAllowedChecked)
+    log.debug("Is Cash Applicable Checked:", isCashApplicableChecked)
+       // Transform the transaction type based on the selected value
+   let transactionTypeValue = '';
+   switch (this.selectedTransactionType) {
+       case 'new-business':
+           transactionTypeValue = 'NB';
+           break;
+       case 'endorsement':
+           transactionTypeValue = 'ED';
+           break;
+           case 'contra-transaction':
+           transactionTypeValue = 'CT';
+           break;
+       // Add more cases for other transaction types as needed
+       default:
+           // Handle any other case or set a default value if necessary
+           break;
+   }
+   this.policyProductForm.get('transaction_type').setValue(transactionTypeValue);
+
+
+    log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
+    const policyForm = this.policyProductForm.value;
+    this.policyService
+    .createPolicy(policyForm,this.user)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+
+        if (data) {
+          this.policyResponse = data;
+          log.debug("Create Policy Endpoint Response", this.policyResponse)
+          this.policyDetails = this.policyResponse.embedded[0]
+          log.debug("Policy Details", this.policyDetails)
+          this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created' );
+
+          const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
+          sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+          this.router.navigate(['/home/gis/policy/risk-details']);
+
+          this.cdr.detectChanges();
+        
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
   }
 }

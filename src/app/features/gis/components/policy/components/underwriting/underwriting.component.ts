@@ -53,7 +53,8 @@ export class UnderwritingComponent {
           const timestampString = JSON.stringify(timestamp);
           sessionStorage.setItem('Timestamp', timestampString);
           console.log("Passed Time Stamp(GIS)", timestampString);
-    
+          sessionStorage.setItem('selectedTransactionType', this.selectedOption);
+
           this.router.navigate(['/home/entity/new'], { queryParams: queryParams }).then(r => {
             // Check for errors during navigation
             if (!r) {
@@ -63,6 +64,8 @@ export class UnderwritingComponent {
         } else {
           console.log("Navigating to products page");
           this.router.navigate(['/home/gis/policy/policy-product']);
+          sessionStorage.setItem('selectedTransactionType', this.selectedOption);
+
         }
       } else {
         // Handle other transaction types

@@ -48,11 +48,17 @@
                         <div class="mb-1 col-sm-4 col-12">
                             <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.subclass' |
                                 translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
-                                formControlName="sub_class_code">
+                            <!-- <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
+                                formControlName="sub_class_code" (change)="onSubclassSelected($event)">
                                 <option></option>
 
-                            </select>
+                            </select> -->
+                            <select class="form-select form-control-sm selectInput" id="subclass"
+                            formControlName="sub_class_code"  (change)="onSubclassSelected($event)">
+                            <option value=""></option>
+                            <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
+                                {{subclass.description | sentenceCase}}</option>
+                        </select>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('sub_class_code').hasError('required') && policyRiskForm.get('sub_class_code').touched"
                                 class="form-text text-danger">
@@ -62,10 +68,16 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="binder" class="required risk-label" id="binder">{{'gis.policy.binder' |
                                 translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="binder"
-                                formControlName="binder_code">
+                            <!-- <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="binder"
+                                formControlName="binder_code" (change)="onSelectBinder($event)">
                                 <option></option>
 
+                            </select> -->
+                            <select class="form-select form-control-sm mb-1 ms-n4selectInput" id="binder"
+                                formControlName="binder_code" >
+                                <option></option>
+                                <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
+                                    binder.binder_short_description | sentenceCase }}</option>
                             </select>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('binder_code').hasError('required') && policyRiskForm.get('binder_code').touched"
@@ -77,11 +89,17 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="coverType" class="required risk-label" id="coverType">{{'gis.policy.cover_type'
                                 | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="coverType"
+                            <!-- <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="coverType"
                                 formControlName="cover_type_code">
                                 <option></option>
 
-                            </select>
+                            </select> -->
+                            <select class="form-select form-control-sm selectInput" id="coverType"
+                            formControlName="cover_type_code"  (change)="onCoverTypeSelected($event)">
+                            <option value=""></option>
+                            <option *ngFor="let coverType of subclassCoverType" [value]="coverType.code">
+                                {{coverType.description | sentenceCase}}</option>
+                        </select>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('cover_type_code').hasError('required') && policyRiskForm.get('cover_type_code').touched"
                                 class="form-text text-danger">

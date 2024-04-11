@@ -27,12 +27,12 @@
 
 }
 .riskInput {
-    height: 33px;
+    height: 39px;
 }
-.selectInput {
+/* .selectInput {
     height: 30px;
     border-radius: 4px;
-}
+} */
 .more {
     color: #00529B;
     font-family: Roboto;
