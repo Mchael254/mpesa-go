@@ -11,7 +11,7 @@
                             <label for="client" class="required product-label" id="client">{{'gis.policy.client' |
                                 translate}}</label>
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="client_code" [value]="clientCode " [(ngModel)]="clientName"
+                                formControlName="client_code"  [(ngModel)]="clientName"
                                 data-bs-toggle="modal" data-bs-target="#clientModal" readonly>
 
                             <!-- Display error message under the field -->
@@ -25,8 +25,8 @@
                             <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault" #checkbox (change)="toggleJointAccountSelect(checkbox.checked)">
 
                                 <label class="product-label">{{'gis.policy.joint_account' | translate}}</label>
-                                <input type="text"id="jointAccountInput" class="form-control form-control-sm mb-1"
-                                formControlName="source" [value]="jointAccountCode " [(ngModel)]="jointAccountName"
+                                <input type="text"id="jointAccountInput" class="form-control form-control-sm mb-1" formControlName="source"
+                                 [value]="jointAccountCode " [(ngModel)]="jointAccountName"
                                 data-bs-toggle="modal" data-bs-target="#jointAccountModal" readonly>
                                 
                                 <!-- <select class="form-select form-control-sm mb-1 ms-n4 quote-input" id="jointAccountInput"
@@ -38,7 +38,7 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="product" class="required product-label" id="product">{{'gis.policy.product' |
                                 translate}}</label><br>
-                            <p-dropdown formControlName="product_code" [options]="ProductDescriptionArray"
+                            <p-dropdown formControlName="product_code" [options]="ProductDescriptionArray" optionValue="code"
                                 optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
 
@@ -55,7 +55,7 @@
                             <label for="policy_interface" class="required product-label"
                                 id="policy_interface">{{'gis.policy.policy_interface_type' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="transaction_type">
+                                formControlName="pro_interface_type">
                                 <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
                                 <option value="CASH">{{'gis.policy.cash' | translate}}</option>
 
@@ -65,8 +65,9 @@
                             <label for="policy_type" class="required product-label"
                                 id="policy_type">{{'gis.policy.policy_type' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="pro_interface_type" #policyTypeSelect
+                                 #policyTypeSelect
                                 (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
+                                <option value=""></option>
                                 <option value="D">{{'gis.policy.direct_business' | translate}}</option>
                                 <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
                                 <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
@@ -75,7 +76,7 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.branch' |
                                 translate}}</label>
-                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name"
+                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name" optionValue="id"
                                 (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
                                 [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
                         </div>
@@ -86,11 +87,13 @@
                             <div class="mb-1 col-sm-4 col-12">
                                 <label for="select_agent" class="product-label" id="select_agent">
                                     {{'gis.policy.agent' | translate}}</label>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="agent_code">
                                     <option value=""></option>
-
-                                </select>
+                                </select> -->
+                                <p-dropdown formControlName="agent_code" [options]="agentList" optionValue="id"
+                                optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
+                                [filterBy]="'name'" [filter]="true"></p-dropdown>
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
                                 <div class="form-check pt-4">
@@ -198,7 +201,7 @@
                                 <label for="marketer" class=" product-label" id="marketer">{{'gis.policy.marketer' |
                                     translate}}</label>
                                
-                                <p-dropdown [options]="marketerList" optionLabel="name" id="product-input"
+                                <p-dropdown [options]="marketerList" optionLabel="name" id="product-input" optionValue="id"
                                     (onChange)="onMarketerSelected($event.value)" placeholder=" " [filterBy]="'name'"
                                     [filter]="true"></p-dropdown>
                             </div>
@@ -220,22 +223,30 @@
                         <div class="row mb-4">
                             <div class="mb-1 col-sm-4 col-12">
                                 <div class="form-check pt-4">
-                                <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault" #checkbox (change)="toggleSelect(checkbox.checked)">
+                                <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefaultContract" #Contractcheckbox (change)="toggleContractSelect(Contractcheckbox.checked)">
 
                                 <label class="product-label">{{'gis.policy.contract_name' | translate}}</label>
                                
                                 </div>
-                                <select class="form-select form-control-sm mb-1 ms-n4" id="contractNameInput"
+                                <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="contractNameInput"
                                 formControlName="source">
                                 <option value=""></option>
                                 <option ></option>
-                            </select>
+                            </select> -->
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="contractNameInput"
+                            (change)="onContractSelected($event)">
+                            <option value=""></option>
+                            <option *ngFor="let contract of contractDetails" [value]="contract.binder_code">{{
+                                contract.binder_name
+                                | sentenceCase}}</option>
+                        </select>
                             </div>
                             
                             
                             <div class=" mb-1 col-sm-4 col-12">
                                 <div class="form-check pt-4">
-                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="is_cashback_applicable"
+                                    >
                                     <label class="form-check-label" for="flexCheckDefault">
                                         {{'gis.policy.cash_applicable' | translate}}
                                     </label>
@@ -271,7 +282,7 @@
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="coinsuarnce_policy">
+                                    <input class="form-check-input" type="checkbox" value="" id="coinsuarnce_policy" formControlName="is_coinsurance">
                                     <label class="form-check-label" for="coinsuarnce_policy">
                                         {{'gis.policy.coinsuarance_policy' | translate}}
                                     </label>
@@ -540,7 +551,7 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_interface" class=" product-label"
                                 id="policy_interface">{{'gis.policy.currency' | translate}}</label>
-                                <p-dropdown formControlName="currency_code" [options]="currency" optionLabel="name" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
+                                <p-dropdown formControlName="currency_code" [options]="currency" optionLabel="name" optionValue="id" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class=" product-label"
@@ -573,19 +584,23 @@
                             <label for="policy_type" class="required product-label"
                                 id="policy_type">{{'gis.policy.payment_mode' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="pro_interface_type" #policyTypeSelect
-                                (change)="onPolicyInterfaceTypeChange(policyTypeSelect.value)">
-                                <option value="D">{{'gis.policy.direct_business' | translate}}</option>
-                                <option value="N">{{'gis.policy.intermediary_business' | translate}} </option>
-                                <option value="F">{{'gis.policy.facultative_inward' | translate}}</option>
+                                formControlName="payment_mode" >
+                                <option value=""></option>
+                                <option value="">Electronic</option>
+                                <option value="">Cheque </option>
+                                <option value="">Cash</option>
+                                <option value="">IPF</option>
+                                <option value="">RTGS</option>
+                                <option value="">EFT</option>
+                                <option value="">Credit note</option>
+                                <option value="">Debit note</option>
                             </select>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.payment_reference' |
                                 translate}}</label>
-                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name"
-                                (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
-                                [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
+                                <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
+
                         </div>
                     </div>
                     <div class="collapse" id="collapsePolicy">
@@ -600,9 +615,17 @@
                                 <label for="payment_frequency" class=" product-label" id="payment_frequency">{{'gis.policy.payment_frequency' |
                                     translate}}</label>
                                
-                                <p-dropdown [options]="marketerList" optionLabel="name" id="product-input"
-                                    (onChange)="onMarketerSelected($event.value)" placeholder=" " [filterBy]="'name'"
-                                    [filter]="true"></p-dropdown>
+                                    <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                                    formControlName="fequency_of_payment" >
+                                    <option value=""></option>
+                                    <option value="">Annually</option>
+                                    <option value="">Semi-annually </option>
+                                    <option value="">Quaterly</option>
+                                    <option value="">Monthly</option>
+                                    <option value="">One off</option>
+                                    <option value="">Others</option>
+                                    
+                                </select>
                             </div>
                             <div class=" mb-1 col-sm-4 col-12 ">
                                 <label for="holding_company" class=" product-label" id="holding_company">{{'gis.policy.holding_company'
@@ -621,7 +644,7 @@
                                     translate}}</label>
                                 
                                 <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
-                                formControlName="source">
+                                >
                                 <option value=""></option>
                                 <option ></option>
                             </select>
