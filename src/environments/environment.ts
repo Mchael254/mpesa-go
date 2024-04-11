@@ -30,7 +30,7 @@ export const environment = {
     [API_CONFIG.NOTIFICATION_BASE_URL, 'http://10.176.18.211:1025/notification/api'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
-    [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting'],
+    [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting/api'],
     [API_CONFIG.GIS_QUOTATION_BASE_URL, '/gis/quotation/api'],
     [API_CONFIG.MNGT_WORKFLOW_BASE_URL, '/turnquest/workflow'],
     [API_CONFIG.GIS_SETUPS_BASE_URL, '/gis/setups'],
