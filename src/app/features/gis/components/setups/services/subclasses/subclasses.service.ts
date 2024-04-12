@@ -58,24 +58,24 @@ const headers = new HttpHeaders({
     'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
   
   })
-  const params = new HttpParams()
-  .set('page', `${page}`)
-  .set('pageSize', `${size}`)
-  return this.api.GET<Subclasses[]>(`sub-classes`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  // const params = new HttpParams()
+  // .set('page', `${page}`)
+  // .set('pageSize', `${size}`)
+  return this.api.GET<Subclasses[]>(`api/v1/sub-classes?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   )
 }
 
 getSubclasses(code: any): Observable<Subclasses>{
-  return this.api.GET<Subclasses>(`sub-classes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  return this.api.GET<Subclasses>(`api/v1/sub-classes/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   )
 }
 createSubClass(data:Subclasses[]) {
   console.log(JSON.stringify(data))
-  return this.api.POST<Subclasses[]>(`sub-classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
+  return this.api.POST<Subclasses[]>(`api/v1/sub-classes`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -83,21 +83,21 @@ createSubClass(data:Subclasses[]) {
   } 
   updateSubClass(data:Subclasses,id:any){
     console.log(JSON.stringify(data))
-    return this.api.PUT<Subclasses>(`sub-classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
+    return this.api.PUT<Subclasses>(`api/v1/sub-classes/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   deleteSubClass(id:any){
-    return this.api.DELETE<Subclasses>(`sub-classes/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
+    return this.api.DELETE<Subclasses>(`api/v1/sub-classes/${id}`, API_CONFIG.GIS_SETUPS_BASE_URL)
     .pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   getSubclassSectionBySCode(code: any): Observable<any>{
-    return this.api.GET<any>(`subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/subclass-sections?pageNo=0&pageSize=1000000&subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -113,7 +113,7 @@ createSubClass(data:Subclasses[]) {
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.api.GET<subclassClauses[]>(`subclass-clauses?subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<subclassClauses[]>(`api/v1/subclass-clauses?subclassCode=${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )  }
@@ -130,7 +130,7 @@ createSubClass(data:Subclasses[]) {
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.api.GET<Clauses>(`clauses`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      return this.api.GET<Clauses>(`api/v1/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )  }

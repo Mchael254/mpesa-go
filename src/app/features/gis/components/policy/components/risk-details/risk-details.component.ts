@@ -5,10 +5,12 @@ import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Subclass, Subclasses, subclassCoverTypes } from '../../../setups/data/gisDTO';
+import { Subclass, Subclasses, subclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
+import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
+import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -23,10 +25,10 @@ export class RiskDetailsComponent {
   isNcdApplicable: boolean = false;
   isCashApplicable: boolean = false;
 
-  passedPolicyDetails:any;
-  batchNo:any;
-  policyResponse:any;
-  policyDetails:any;
+  passedPolicyDetails: any;
+  batchNo: any;
+  policyResponse: any;
+  policyDetails: any;
 
   errorMessage: string;
   errorOccurred: boolean;
@@ -34,8 +36,8 @@ export class RiskDetailsComponent {
   subClassList: Subclass[];
   allSubclassList: Subclasses[]
   allMatchingSubclasses = [];
-  selectedSubclassCode:any;
-  productCode:any;
+  selectedSubclassCode: any;
+  productCode: any;
 
   binderList: any;
   binderListDetails: any;
@@ -44,13 +46,33 @@ export class RiskDetailsComponent {
   coverTypeCode: any;
   coverTypeDesc: any;
 
+  passedCoverFrom: any;
+  passedCoverTo: any;
+  passedCoverDays: any;
+
+  showMotorSubclassFields: boolean = false;
+  motorClassAllowed: any;
+
+  vehicleMakeList: vehicleMake[];
+  vehicleModelList: any;
+  vehicleModelDetails: vehicleModel[];
+  filteredVehicleModel: any;
+  selectedVehicleMakeCode: any;
+  vehiclemakeModel: any;
+  selectedVehicleMakeName: any;
+  selectedVehicleModelName: any;
+
+  motorProduct: boolean;
+
   constructor(
     public fb: FormBuilder,
-    private policyService:PolicyService,
+    private policyService: PolicyService,
     public subclassService: SubclassesService,
     public productService: ProductsService,
     public binderService: BinderService,
     private subclassCoverTypesService: SubClassCoverTypesService,
+    public vehicleMakeService: VehicleMakeService,
+    public vehicleModelService: VehicleModelService,
 
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
@@ -61,12 +83,13 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
+    this.loadAllSubclass();
+    this.getVehicleMake();
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
     console.log("Passed Policy Details:", this.passedPolicyDetails);
     this.createPolicyRiskForm();
     this.getPolicy();
-    this.loadAllSubclass();
   }
   ngOnDestroy(): void { }
 
@@ -74,7 +97,7 @@ export class RiskDetailsComponent {
     this.policyRiskForm = this.fb.group({
 
       allowed_commission_rate: [''],
-      basic_premium:[''],
+      basic_premium: [''],
       binder_code: [''],
       commission_amount: [''],
       commission_rate: [''],
@@ -91,7 +114,7 @@ export class RiskDetailsComponent {
           id: [''],
           last_name: ['']
         }),
-        prp_code:[''],
+        prp_code: [''],
       }),
       ipu_ncd_cert_no: [''],
       loaded: [''],
@@ -107,7 +130,7 @@ export class RiskDetailsComponent {
       quantity: [''],
       reinsurance_endorsement_number: [''],
       renewal_area: [''],
-      risk_fp_override:[''],
+      risk_fp_override: [''],
       risk_ipu_code: [''],
       sections: this.fb.array([
         this.fb.group({
@@ -126,11 +149,14 @@ export class RiskDetailsComponent {
         })
       ]),
       stamp_duty: [''],
-      sub_class_code:[''],
+      sub_class_code: [''],
       sub_class_description: [''],
       transaction_type: [''],
       underwriting_year: [''],
       value: [''],
+
+      cover_days: [''],
+
     });
   }
   toggleNcdApplicableFields(checked: boolean) {
@@ -139,73 +165,142 @@ export class RiskDetailsComponent {
   toggleCashApplicableField(checked: boolean) {
     this.isCashApplicable = checked;
   }
-  getPolicy(){
-    this.batchNo= this.passedPolicyDetails.batchNumber;
-    log.debug("Batch No:",this.batchNo)
+  getPolicy() {
+    this.batchNo = this.passedPolicyDetails.batchNumber;
+    log.debug("Batch No:", this.batchNo)
     this.policyService
-    .getPolicy(this.batchNo)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data) => {
+      .getPolicy(this.batchNo)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-        if (data) {
-          this.policyResponse = data;
-          log.debug("Get Policy Endpoint Response", this.policyResponse)
-          this.policyDetails = this.policyResponse.content[0]
-          log.debug("Policy Details", this.policyDetails)
-         this.productCode=this.policyDetails.product.code;
-         log.debug("Product Code", this.productCode)
-          this.getProductSubclass();
-          this.cdr.detectChanges();
-        
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
+          if (data) {
+            this.policyResponse = data;
+            log.debug("Get Policy Endpoint Response", this.policyResponse)
+            this.policyDetails = this.policyResponse.content[0]
+            log.debug("Policy Details", this.policyDetails)
+            this.productCode = this.policyDetails.product.code;
+            log.debug("Product Code", this.productCode)
+            this.passedCoverFrom = this.policyDetails.wef_dt;
+            log.debug("COVER FROM", this.passedCoverFrom);
+            this.passedCoverTo = this.policyDetails.wet_dt;
+            log.debug("COVER TO", this.passedCoverTo);
+
+
+            // Calculate cover days
+            const coverFromDate = new Date(this.passedCoverFrom).getTime(); // Convert to milliseconds
+            const coverToDate = new Date(this.passedCoverTo).getTime(); // Convert to milliseconds
+            const coverDays = Math.ceil((coverToDate - coverFromDate) / (1000 * 60 * 60 * 24));
+            this.passedCoverDays = coverDays;
+            this.policyRiskForm.controls['cover_days'].setValue(this.passedCoverDays);
+
+            log.debug("Cover Days", this.passedCoverDays);
+
+            this.onProductSelected();
+            this.getProductSubclass();
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Something went wrong. Please try Again'
+            this.errorMessage
           );
-        }
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
+          log.info(`error >>>`, err);
+        },
+      });
   }
   loadAllSubclass() {
-    return this.subclassService.getAllSubclasses().subscribe(data => {
-      this.allSubclassList = data;
-      log.debug(this.allSubclassList, "All Subclass List");
-      this.cdr.detectChanges();
+    this.subclassService
+      .getAllSubclasses()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-    })
-  }
-  getProductSubclass() {
-    this.productService.getProductSubclasses(this.productCode).subscribe(data => {
-      this.subClassList = data._embedded.product_subclass_dto_list;
-      log.debug(this.subClassList, 'Product Subclass List');
+          if (data) {
+            this.allSubclassList = data;
+            log.debug(this.allSubclassList, "All Subclass List");
+            this.cdr.detectChanges();
 
-      this.subClassList.forEach(element => {
-        const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
-        this.allMatchingSubclasses.push(...matchingSubclasses); 
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
       });
 
-      log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
+  }
+  getProductSubclass() {
+    this.productService
+      .getProductSubclasses(this.productCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.subClassList = data._embedded.product_subclass_dto_list;
+            log.debug(this.subClassList, 'Product Subclass List');
+            log.debug(this.allSubclassList, 'All Subclass List');
+            if (this.allSubclassList) {
+              this.subClassList.forEach(element => {
+                const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
+                this.allMatchingSubclasses.push(...matchingSubclasses);
+              });
+
+              log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
+            }
 
 
-      this.cdr.detectChanges();
-    });
+
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
   }
   onSubclassSelected(event: any) {
-    const selectedValue = event.target.value; 
+    const selectedValue = event.target.value;
     this.selectedSubclassCode = selectedValue;
     // Perform your action based on the selected value
-    log.debug(this.selectedSubclassCode, 'Sekected Subclass Code')
+    log.debug(this.selectedSubclassCode, 'Selected Subclass Code')
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders();
@@ -213,24 +308,203 @@ export class RiskDetailsComponent {
 
   }
   loadAllBinders() {
-    this.binderService.getAllBindersQuick(this.selectedSubclassCode).subscribe(data => {
-      this.binderList = data;
-      this.binderListDetails = this.binderList._embedded.binder_dto_list;
-      console.log("All Binders Details:", this.binderListDetails);
-    });
+    this.binderService
+      .getAllBindersQuick(this.selectedSubclassCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.binderList = data;
+            this.binderListDetails = this.binderList._embedded.binder_dto_list;
+            console.log("All Binders Details:", this.binderListDetails);
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
   }
   loadCovertypeBySubclassCode(code: number) {
-    this.subclassCoverTypesService.getSubclassCovertypeBySCode(code).subscribe(data => {
-      this.subclassCoverType = data;
-      log.debug('Subclass Covertype', this.subclassCoverType);
+    this.subclassCoverTypesService
+      .getSubclassCovertypeBySCode(code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-      this.cdr.detectChanges();
-    })
+          if (data) {
+            this.subclassCoverType = data;
+            log.debug('Subclass Covertype', this.subclassCoverType);
+
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
   }
-  onCoverTypeSelected(event:any){
-    const selectedValue = event.target.value; 
-    this.coverTypeCode= selectedValue;
-    log.debug("Cover Type Code:",this.coverTypeCode)
+  onCoverTypeSelected(event: any) {
+    const selectedValue = event.target.value;
+    this.coverTypeCode = selectedValue;
+    log.debug("Cover Type Code:", this.coverTypeCode)
   }
+  onProductSelected() {
+    this.motorClassAllowed = this.policyDetails.product.allowMotorClass;
+    log.debug("Motor Class Allowed Value", this.motorClassAllowed);
+    if (this.motorClassAllowed === 'Y') {
+      this.showMotorSubclassFields = true;
+      this.motorProduct = true;
+    }
+  }
+  getVehicleMake() {
+    this.vehicleMakeService
+      .getAllVehicleMake()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.vehicleMakeList = data;
+            log.debug("VehicleMake", this.vehicleMakeList)
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onVehicleMakeSelected(selectedValue: any) {
+    this.selectedVehicleMakeCode = selectedValue;
+
+    log.debug("SELECTED vehicle CODE:", this.selectedVehicleMakeCode)
+
+
+
+    // Convert selectedValue to the appropriate type (e.g., number)
+    // const typedSelectedValue = this.convertToCorrectType(selectedValue);
+    // log.debug("SELECTED vehicle CODE type changed:", typedSelectedValue)
+
+    const selectedObject = this.vehicleMakeList.find(vehicleMake => vehicleMake.code === this.selectedVehicleMakeCode);
+
+    // Check if the object is found
+    if (selectedObject) {
+      console.log('Selected Vehicle Object:', selectedObject);
+    } else {
+      console.error('Selected Vehicle Object not found');
+    }
+    this.getVehicleModel();
+    this.selectedVehicleMakeName = selectedObject.name
+  }
+
+  // convertToCorrectType(value: any): any {
+  //   // Implement the conversion logic based on the actual type of your identifier
+  //   // For example, if your identifier is a number, you can use parseInt or parseFloat
+  //   // If it's another type, implement the conversion accordingly
+  //   return parseInt(value, 10); // Adjust based on your actual data type
+  // }
+  getVehicleModel() {
+
+    this.vehicleModelService
+      .getAllVehicleModel()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.vehicleModelList = data;
+            log.debug("VehicleModel", this.vehicleModelList);
+            this.vehicleModelDetails = this.vehicleModelList._embedded.vehicle_model_dto_list;
+            log.debug("Vehicle Model Details", this.vehicleModelDetails);
+            this.filteredVehicleModel = this.vehicleModelDetails.filter(model => model.vehicle_make_code == this.selectedVehicleMakeCode);
+            log.debug("Filtered Vehicle Model Details", this.filteredVehicleModel);
+
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onVehicleModelSelected(selectedVehivleModel:any) {
+    const selectedValue = selectedVehivleModel
+    log.debug("SELECTED vehicle make CODE:", selectedValue)
+
+    // Find the selected object using the converted value
+    const selectedObject = this.filteredVehicleModel.find(vehicleModel => vehicleModel.code === selectedValue);
+
+    // Check if the object is found
+    if (selectedObject) {
+      console.log('Selected Vehicle Model:', selectedObject);
+      // Perform further actions with the selected object as needed
+    } else {
+      console.error('Selected Vehicle Model not found');
+    }
+    this.selectedVehicleModelName = selectedObject.name;
+    this.vehiclemakeModel = this.selectedVehicleMakeName + ' ' + this.selectedVehicleModelName;
+    console.log('Selected Vehicle make model combined ', this.vehiclemakeModel);
+
+  }
+
+ 
 }
 

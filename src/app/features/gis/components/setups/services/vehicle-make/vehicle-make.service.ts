@@ -57,7 +57,7 @@ getAllVehicleMake(): Observable<vehicleMake[]>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.api.GET<vehicleMake[]>(`vehicle-makes`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  return this.api.GET<vehicleMake[]>(`api/v1/vehicle-makes?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   ) 
