@@ -51,7 +51,7 @@ errorHandl(error: HttpErrorResponse) {
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
     return this.api.GET<introducers[]>(
-      `introducers`,
+      `api/v1/introducers`,
      API_CONFIG.GIS_SETUPS_BASE_URL,
      params
     ).pipe(

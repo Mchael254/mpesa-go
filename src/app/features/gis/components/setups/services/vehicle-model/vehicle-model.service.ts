@@ -53,7 +53,7 @@ getAllVehicleModel(): Observable<vehicleModel[]>{
   const params = new HttpParams()
   .set('page', `${page}`)
     .set('pageSize', `${size}`)
-  return this.api.GET<vehicleModel[]>(`vehicle-models`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+  return this.api.GET<vehicleModel[]>(`api/v1/vehicle-models?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
     retry(1),
     catchError(this.errorHandl)
   ) 
