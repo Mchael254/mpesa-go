@@ -30,11 +30,23 @@
                                 Risk ID is required.
                             </div>
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12 ">
+                        <div class=" mb-1 col-sm-4 col-12" *ngIf="!motorProduct">
                             <label for="riskDescription" class="required risk-label"
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="property_description">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Description is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" *ngIf="motorProduct">
+                            <label for="riskDescription" class="required risk-label"
+                                id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
+                            <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="property_description" [(ngModel)]="vehiclemakeModel">
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
@@ -107,26 +119,102 @@
                             </div>
                         </div>
                     </div>
+                    <!-- MOTOR SUBCLASS FIELDS -->
+                    <div *ngIf="showMotorSubclassFields">
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="vehiclemake" class="required risk-label" id="vehiclemake">Vehicle Make</label><br>
+                            <p-dropdown  [options]="vehicleMakeList" optionValue="code"
+                            optionLabel="name" (onChange)="onVehicleMakeSelected($event.value)" placeholder=" "
+                            [filterBy]="'name'" [filter]="true"></p-dropdown>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="vehicleModel" class="required risk-label" id="vehicleModel">Vehicle model</label><br>
+                            <p-dropdown  [options]="filteredVehicleModel" optionValue="code"
+                            optionLabel="name" (onChange)="onVehicleModelSelected($event.value)" placeholder=" "
+                            [filterBy]="'name'" [filter]="true"></p-dropdown>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <label for="riskCoverDays" class=" risk-label required"
+                                id="modelYear">Model year</label>
+                                <select class="form-select form-control-sm selectInput" id="modelYear"
+                                formControlName="sub_class_code"  >
+                                <option value=""></option>
+                                <option value=""></option>
+                            </select>
+
+
+                            <!-- Display error message under the field -->
+                            <!-- <div *ngIf="policyProductForm.get('product_code').hasError('required') && policyProductForm.get('product_code').touched"
+                                class="form-text text-danger">
+                                Product is required.
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                         
+                        <div class="form-check pt-4">
+
+                            <input class="form-check-input me-2" type="checkbox" id="insuredDriver">
+
+                            <label class="risk-label form-check-label" for="insuredDriver">
+                                Insured as regular driver
+                            </label>
+                        </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <div class="form-check pt-4">
+
+                                <input class="form-check-input me-2" type="checkbox" id="logBookAvailable">
+
+                                <label class="risk-label form-check-label" for="logBookAvailable">
+                                    Log book available
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12 ">
+                            <div class="form-check pt-4">
+
+                                <input class="form-check-input me-2" type="checkbox" id="logBookUnderInsured">
+
+                                <label class="risk-label form-check-label" for="logBookUnderInsured">
+                                    Log book under insured name
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="logbook" class="required risk-label"
+                            id="logbook">Logbook</label><br>
+                        <input type="text" id="logbook" class="form-control form-control-sm mb-1 riskInput"
+                            formControlName="property_description">
+                        </div>
+                    </div>
+                    </div>
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
                             <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.cover_from' |
                                 translate}}</label>
-                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverFrom"
                                 formControlName="date_cover_from">
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' |
                                 translate}}</label>
-                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverTo"
                                 formControlName="date_cover_to">
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="riskCoverDays" class=" risk-label"
                                 id="riskCoverDays">{{'gis.policy.risk_cover_days' | translate}}</label>
-                            <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput"
-                                readonly>
+                            <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput" 
+                            formControlName="cover_days" readonly>
 
 
                             <!-- Display error message under the field -->
