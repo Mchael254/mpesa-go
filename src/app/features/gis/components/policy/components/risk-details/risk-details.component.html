@@ -348,6 +348,252 @@
 
             </div>
         </div>
+        <div class="card mb-3 px-2" style=" position: relative;">
+            <div class="card-body">
+                <form [formGroup]="policyRiskForm">
+                     <!-- ROW 1 -->
+                     <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="riskLocation" class="required risk-label" id="riskLocation">Risk location</label>
+                            <p-dropdown  [options]="" optionValue="code"
+                                optionLabel="description"  placeholder=" "
+                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class="required risk-label">Risk town</label>
+                            <p-dropdown  [options]="" optionValue="code"
+                                optionLabel="description"  placeholder=" "
+                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk Town is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" >
+                            <label for="riskAddress" class="required risk-label"
+                                id="riskAddress">Risk address</label><br>
+                            <input type="text" id="riskAddress" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="property_description">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Address is required.
+                            </div>
+                        </div>
+                       
+                    </div>
+                     <!-- ROW 2 -->
+                     <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="riskDetails" class="required risk-label" id="riskLocation">Risk details</label>
+                            <input type="text" id="riskDetails" class="form-control form-control-sm mb-1 riskInput"
+                            formControlName="property_description">
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class="required risk-label">Survey risk</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                            <option value="N">{{'gis.policy.no' | translate}}</option>
+
+                        </select>
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk Town is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" >
+                            <label for="surveyDate" class="required risk-label"
+                                id="surveyDate">Survey date</label><br>
+                                <input type="date" id="surveyDate" class="form-control form-control-sm mb-1 riskInput" 
+                                formControlName="date_cover_to">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Address is required.
+                            </div>
+                        </div>
+                       
+                    </div>
+                       <!-- ROW 3 -->
+                       <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="computeMaxExposure" class="required risk-label" id="riskLocation">Compute max exposure</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                            <option value="N">{{'gis.policy.no' | translate}}</option>
+
+                        </select>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class=" risk-label">Max exposure amount</label>
+                            <input type="number" id="maxExposureAmount" class="form-control form-control-sm mb-1 riskInput"
+                            formControlName="property_id">
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk Town is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" >
+                            <label for="surveyDate" class="required risk-label"
+                                id="surveyDate">Territory</label><br>
+                                <p-dropdown  [options]="" optionValue="code"
+                                optionLabel="description"  placeholder=" "
+                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Address is required.
+                            </div>
+                        </div>
+                       
+                    </div>
+                     <!-- ROW 4 -->
+                     <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="newRisk" class="required risk-label" id="riskLocation">New risk?</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                            <option value="N">{{'gis.policy.no' | translate}}</option>
+
+                        </select>
+
+                        </div>
+                        
+                       
+                    </div>
+                    <div class="collapse" id="collapseRiskOtherDetails">
+                         <!-- ROW 5 -->
+                       <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="emlLocation" class="required risk-label" id="emlLocation">EML/top location level</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value="">RSK</option>
+                            <option value="">SEC</option>
+
+                        </select>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label class=" risk-label">Period rates</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value="">ProRata</option>
+                            <option value="">Short Period Rates</option>
+                            <option value="">Full</option>
+
+                        </select>
+
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk Town is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" >
+                            <div class="form-check pt-4">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="risk-label form-check-label" for="flexCheckDefault">
+                                    Retroactive cover
+                                </label>
+                            </div>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Address is required.
+                            </div>
+                        </div>
+                       
+                    </div>
+                       <!-- ROW 6 -->
+                       <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <div class="form-check pt-4">
+                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                <label class="risk-label form-check-label" for="flexCheckDefault">
+                                    Maintenance cover
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12">
+                            <label for="surveyDate" class="required risk-label"
+                                id="surveyDate">Quake/flood zone</label><br>
+                                <p-dropdown  [options]="" optionValue="code"
+                                optionLabel="description"  placeholder=" "
+                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+
+
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                class="form-text text-danger">
+                                Risk Town is required.
+                            </div>
+                        </div>
+                        <div class=" mb-1 col-sm-4 col-12" >
+                            <label for="surveyDate" class="required risk-label"
+                                id="surveyDate">Relation group</label><br>
+                                <p-dropdown  [options]="" optionValue="code"
+                                optionLabel="description"  placeholder=" "
+                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+                            <!-- Display error message under the field -->
+                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                class="form-text text-danger">
+                                Risk Address is required.
+                            </div>
+                        </div>
+                       
+                    </div>
+                     <!-- ROW 7 -->
+                     <div class="row mb-4">
+
+                        <div class="mb-1 col-sm-4 col-12">
+                            <label for="newRisk" class="required risk-label" id="riskLocation">Risk Class:</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
+                            formControlName="is_exchange_rate_fixed">
+                            <option value=""></option>
+                            <option value=""></option>
+                        </select>
+
+                        </div>
+                        
+                       
+                    </div>
+                    </div>
+                    <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseRiskOtherDetails"
+                        aria-expanded="false" aria-controls="collapseExample"> {{'gis.policy.more_details' |
+                        translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapseRiskOtherDetails"
+                            aria-expanded="false" aria-controls="collapseExample"> <i class="pi pi-angle-double-up"
+                                style="font-size:13px" *ngIf="!show" data-toggle="collapse"
+                                data-target="#collapseRiskOtherDetails"></i><i class="pi pi-angle-double-down"
+                                style="font-size:13px" *ngIf="show" data-toggle="collapse"
+                                data-target="#collapseRiskOtherDetails"></i></span> </p>
+                </form>
+            </div>
+        </div>
 
     </div>
 </div>
