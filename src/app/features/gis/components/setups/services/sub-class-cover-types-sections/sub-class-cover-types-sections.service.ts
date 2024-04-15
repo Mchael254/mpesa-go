@@ -58,7 +58,7 @@ export class SubClassCoverTypesSectionsService {
   }
 
   getSubclassCovertypeSections(): Observable<subclassCoverTypes[]>{
-    return this.api.GET<subclassCoverTypes[]>(`subclass-covertype-to-sections?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<subclassCoverTypes[]>(`api/v1/subclass-covertype-to-sections?pageNo=0&pageSize=10000`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

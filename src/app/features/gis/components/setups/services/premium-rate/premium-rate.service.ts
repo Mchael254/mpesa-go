@@ -52,7 +52,7 @@ return throwError(errorMessage);
     const params = new HttpParams()
     .set('page', `${page}`)
       .set('pageSize', `${size}`)
-      var url = `premium-rates?page=${page}&pageSize=${size}`
+      var url = `api/v1/premium-rates?`
       if ( sectionCode != undefined && binderCode !=undefined && subClassCode !=undefined) {
         url = url + "?sectionCode=" + sectionCode+"&binderCode="+binderCode+"&subClassCode="+subClassCode;
       }
@@ -63,14 +63,14 @@ return throwError(errorMessage);
   }
   
   getPremiums(code:any):Observable<Premiums[]>{
-    return this.api.GET<Premiums[]>(`premium-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<Premiums[]>(`api/v1/premium-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
   }
   createPremium(data:Premiums[]) {
     console.log(JSON.stringify(data))
-    return this.api.POST<Premiums[]>(`premium-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
+    return this.api.POST<Premiums[]>(`api/v1/premium-rates`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -78,14 +78,14 @@ return throwError(errorMessage);
     } 
     updatePremium(data:Premiums,id:any): Observable<Premiums> {
       console.log(JSON.stringify(data))
-      return this.api.PUT<Premiums>(`premium-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
+      return this.api.PUT<Premiums>(`api/v1/premium-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)
       )
     }
     deletePremium(id:any){
-      return this.api.DELETE<Premiums>(`premium-rates/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
+      return this.api.DELETE<Premiums>(`api/v1/premium-rates/${id}`,API_CONFIG.GIS_SETUPS_BASE_URL)
       .pipe(
         retry(1),
         catchError(this.errorHandl)

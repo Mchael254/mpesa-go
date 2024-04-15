@@ -88,7 +88,7 @@ export class ProductService {
   }
   getProductByCode(code: number): Observable<Products[]>{
 
-    return this.api.GET<Products[]>(`products/${code}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<Products[]>(`api/v1/products/${code}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -96,7 +96,7 @@ export class ProductService {
   }
   getProductDetailsByCode(code: number): Observable<Products>{
 
-    return this.api.GET<Products>(`products/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<Products>(`api/v1/products/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -146,7 +146,7 @@ export class ProductService {
   }
   getProductSubclasses (productCode): Observable<SubclassesDTO>{
 
-    return this.api.GET<SubclassesDTO>(`product-subclasses?productCode=${productCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<SubclassesDTO>(`api/v1/product-subclasses?productCode=${productCode}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     );

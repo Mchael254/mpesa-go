@@ -355,14 +355,14 @@
                      <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="riskLocation" class="required risk-label" id="riskLocation">Risk location</label>
+                            <label for="riskLocation" class="required risk-label" id="riskLocation">{{'gis.policy.risk_location'|translate}}</label>
                             <p-dropdown  [options]="" optionValue="code"
                                 optionLabel="description"  placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class="required risk-label">Risk town</label>
+                            <label class="required risk-label">{{'gis.policy.risk_town'|translate}}</label>
                             <p-dropdown  [options]="" optionValue="code"
                                 optionLabel="description"  placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
@@ -374,8 +374,8 @@
                             </div>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12" >
-                            <label for="riskAddress" class="required risk-label"
-                                id="riskAddress">Risk address</label><br>
+                            <label for="riskAddress" class=" risk-label"
+                                id="riskAddress">{{'gis.policy.risk_address'|translate}}</label><br>
                             <input type="text" id="riskAddress" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="property_description">
 
@@ -391,13 +391,13 @@
                      <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="riskDetails" class="required risk-label" id="riskLocation">Risk details</label>
+                            <label for="riskDetails" class=" risk-label" id="riskLocation">{{'gis.policy.risk_details'|translate}}</label>
                             <input type="text" id="riskDetails" class="form-control form-control-sm mb-1 riskInput"
                             formControlName="property_description">
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class="required risk-label">Survey risk</label>
+                            <label class="required risk-label">{{'gis.policy.survey_risk'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
                             <option value="Y">{{'gis.policy.yes' | translate}}</option>
@@ -413,7 +413,7 @@
                         </div>
                         <div class=" mb-1 col-sm-4 col-12" >
                             <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">Survey date</label><br>
+                                id="surveyDate">{{'gis.policy.Survey_date'|translate}}</label><br>
                                 <input type="date" id="surveyDate" class="form-control form-control-sm mb-1 riskInput" 
                                 formControlName="date_cover_to">
 
@@ -429,7 +429,7 @@
                        <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="computeMaxExposure" class="required risk-label" id="riskLocation">Compute max exposure</label>
+                            <label for="computeMaxExposure" class="required risk-label" id="riskLocation">{{'gis.policy.compute_maximum_exposure'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
                             <option value="Y">{{'gis.policy.yes' | translate}}</option>
@@ -439,7 +439,7 @@
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class=" risk-label">Max exposure amount</label>
+                            <label class=" risk-label">{{'gis.policy.max_exposure_amount'|translate}}</label>
                             <input type="number" id="maxExposureAmount" class="form-control form-control-sm mb-1 riskInput"
                             formControlName="property_id">
 
@@ -451,7 +451,7 @@
                         </div>
                         <div class=" mb-1 col-sm-4 col-12" >
                             <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">Territory</label><br>
+                                id="surveyDate">{{'gis.policy.territory'|translate}}</label><br>
                                 <p-dropdown  [options]="" optionValue="code"
                                 optionLabel="description"  placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
@@ -468,7 +468,7 @@
                      <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="newRisk" class="required risk-label" id="riskLocation">New risk?</label>
+                            <label for="newRisk" class="required risk-label" id="riskLocation">{{'gis.policy.new_risk'|translate}}?</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
                             <option value="Y">{{'gis.policy.yes' | translate}}</option>
@@ -485,7 +485,7 @@
                        <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="emlLocation" class="required risk-label" id="emlLocation">EML/top location level</label>
+                            <label for="emlLocation" class="required risk-label" id="emlLocation">{{'gis.policy.eml_top_location_level'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
                             <option value="">RSK</option>
@@ -495,12 +495,12 @@
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
-                            <label class=" risk-label">Period rates</label>
+                            <label class=" risk-label">{{'gis.policy.period_rates'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
-                            <option value="">ProRata</option>
-                            <option value="">Short Period Rates</option>
-                            <option value="">Full</option>
+                            <option value="">{{'gis.policy.prorata'|translate}}</option>
+                            <option value="">{{'gis.policy.short_period_rates'|translate}}</option>
+                            <option value="">{{'gis.policy.full'|translate}}</option>
 
                         </select>
 
@@ -515,7 +515,7 @@
                             <div class="form-check pt-4">
                                 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                                 <label class="risk-label form-check-label" for="flexCheckDefault">
-                                    Retroactive cover
+                                    {{'gis.policy.retroactive_cover'|translate}}
                                 </label>
                             </div>
                             <!-- Display error message under the field -->
@@ -533,14 +533,15 @@
                             <div class="form-check pt-4">
                                 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
                                 <label class="risk-label form-check-label" for="flexCheckDefault">
-                                    Maintenance cover
+                                    {{'gis.policy.maintenance_cover'|translate}}
                                 </label>
                             </div>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">Quake/flood zone</label><br>
+                                id="surveyDate">{{'gis.policy.quake_flood_zone'|translate}}</label><br>
+                               
                                 <p-dropdown  [options]="" optionValue="code"
                                 optionLabel="description"  placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
@@ -555,7 +556,7 @@
                         </div>
                         <div class=" mb-1 col-sm-4 col-12" >
                             <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">Relation group</label><br>
+                                id="surveyDate">{{'gis.policy.relational_group'|translate}}</label><br>
                                 <p-dropdown  [options]="" optionValue="code"
                                 optionLabel="description"  placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
@@ -571,7 +572,7 @@
                      <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="newRisk" class="required risk-label" id="riskLocation">Risk Class:</label>
+                            <label for="newRisk" class="required risk-label" id="riskLocation">{{'gis.policy.risk_class'|translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                             formControlName="is_exchange_rate_fixed">
                             <option value=""></option>
