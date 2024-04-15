@@ -583,18 +583,13 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class="required product-label"
                                 id="policy_type">{{'gis.policy.payment_mode' | translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="payment_mode" >
-                                <option value=""></option>
-                                <option value="">Electronic</option>
-                                <option value="">Cheque </option>
-                                <option value="">Cash</option>
-                                <option value="">IPF</option>
-                                <option value="">RTGS</option>
-                                <option value="">EFT</option>
-                                <option value="">Credit note</option>
-                                <option value="">Debit note</option>
-                            </select>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
+                                    formControlName="payment_mode" >
+                                    <option value=""></option>
+                                    <option *ngFor="let payment of paymentDetails" [value]="payment.code">{{
+                                        payment.description
+                                        | sentenceCase}}</option>
+                                </select>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.payment_reference' |
@@ -618,12 +613,12 @@
                                     <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                     formControlName="fequency_of_payment" >
                                     <option value=""></option>
-                                    <option value="">Annually</option>
-                                    <option value="">Semi-annually </option>
-                                    <option value="">Quaterly</option>
-                                    <option value="">Monthly</option>
-                                    <option value="">One off</option>
-                                    <option value="">Others</option>
+                                    <option value="">{{'gis.policy.annually' |translate}}</option>
+                                    <option value="">{{'gis.policy.semi_annually' |  translate}} </option>
+                                    <option value="">{{'gis.policy.quarterly' |translate}}</option>
+                                    <option value="">{{'gis.policy.monthly' |translate}}</option>
+                                    <option value="">{{'gis.policy.one_off' |translate}}</option>
+                                    <option value="">{{'gis.policy.others'|translate}}</option>
                                     
                                 </select>
                             </div>
