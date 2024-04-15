@@ -195,6 +195,41 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0; 
 }
 
+#moveToEnd {
+  float: right;
+  margin-right: 0;
+}
+
+.modal-header,
+ .modal-footer {
+     border: none;
+     /* Removes the border between header/footer and body of modal */
+ }
+
+ .modal-content {
+  padding: 0 40px;
+ }
+
+ .row {
+  padding-top: 40px;
+ }
+
+ table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 8px;
+  background-color: #BAD0E4;
+  white-space: nowrap;
+}
+
+td {
+  padding: 2px;
+}
+
 
 @media screen and (max-width: 768px) {
   .container {

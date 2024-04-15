@@ -786,6 +786,26 @@ highlightInvalid(field: string): boolean {
       // idType: formValues.identificationType
       //address: formValues.address
     }
+console.log("this.storedClientCode", this.storedClientCode)
+    if(this.storedClientCode === null || this.storedClientCode === undefined) {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Information',
+        detail: 'Create client or select existing client first!'
+      });
+      return;
+    }
+
+    if(this.adminDetailsForm.invalid) {
+      this.spinner_Service.hide('download_view');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Fill all Mandatory fields'
+      });
+      return;
+    }
 
     if(emailValue && !emailPattern.test(emailValue)) {
       this.spinner_Service.hide('download_view');
