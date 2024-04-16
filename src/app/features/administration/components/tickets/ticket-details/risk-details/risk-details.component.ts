@@ -13,7 +13,7 @@ export class RiskDetailsComponent {
   public shouldShowViewMoreDialog: boolean = false;
 
   showViewMoreDialog(risk:any) {
-    this.sectionDetails = risk?.sectionsDetails;
+    this.sectionDetails = risk?.sections;
     this.shouldShowViewMoreDialog = true;
   }
 }
