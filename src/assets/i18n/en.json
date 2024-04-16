@@ -633,7 +633,6 @@
       "installment_period": "Installment Period",
       "agent":"Agent",
       "company":"Company",
-
       "underwriting":"Underwriting",
       "policy_details":"Policy Details",
       "cover_from":"Cover From",
@@ -661,7 +660,37 @@
       "from_csv":"From a CSV file",
       "select_file":"Select a file to upload",
       "choose_fiel":"Choose File",
-      "policy_no":"Policy No."
+      "policy_no":"Policy No.",
+
+      "annually": "Annually",
+      "semi_annually":"Semi-annually",
+      "quaterly": "Quaterly",
+      "monthly" : "Monthly",
+      "one_off": "One off",
+      "others": "Others",
+      "risk_location": "Risk location",
+      "risk_town": "Risk town",
+      "risk_address":"Risk address",
+      "survey_risk": "Survey risk",
+      "Survey_date":"Survey date",
+      "compute_maximum_exposure": "Compute max exposure",
+      "max_exposure_amount": "Max exposure amount",
+      "territory":"Territory",
+      "new_risk": "New risk",
+      "eml_top_location_level": "EML/top location level",
+      "rsk": "RSK",
+      "sec": "SEC",
+      "period_rates": "Period rates",
+      "prorata": "ProRata",
+      "short_period_rates": "Short Period Rates",
+      "full":"Full",
+      "retroactive_cover": "Retroactive cover",
+      "maintenance_cover": "Maintenance cover",
+      "quake_flood_zone": "Quake/flood zone",
+      "relational_group":"Relation group",
+      "risk_class": "Risk Class"
+
+
 
 
     }

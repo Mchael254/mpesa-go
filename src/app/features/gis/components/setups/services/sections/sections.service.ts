@@ -60,7 +60,7 @@ export class SectionsService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.api.GET<any>(`sections`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/sections`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -75,7 +75,7 @@ export class SectionsService {
     })
     const params = new HttpParams()
      
-    return this.api.GET<any>(`sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
@@ -91,7 +91,7 @@ export class SectionsService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.api.GET<subclassSection[]>(`subclass-sections?subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<subclassSection[]>(`api/v1/subclass-sections?subClassCode=${subClassCode}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

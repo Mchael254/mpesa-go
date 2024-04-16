@@ -211,7 +211,7 @@ errorHandl(error: HttpErrorResponse) {
    * @return {Observable<any>} - An observable of the response containing product clauses.
    */
  getProductClauses(productCode){
-    return this.api.GET(`products/${productCode}/clauses`,API_CONFIG.GIS_SETUPS_BASE_URL)
+    return this.api.GET(`api/v1/products/${productCode}/clauses`,API_CONFIG.GIS_SETUPS_BASE_URL)
  }
  deleteSchedule(level:any,riskCode:any,code:any){
     return this.api.DELETE<scheduleDetails>(`v2/schedule-details/?level=${level}&riskCode=${riskCode}&scheduleCode=${code}`,API_CONFIG.GIS_QUOTATION_BASE_URL) 
@@ -226,10 +226,10 @@ errorHandl(error: HttpErrorResponse) {
     return this.api.POST(`v1/quotation/authorise/${quotationCode}?user=${user}`,API_CONFIG.GIS_QUOTATION_BASE_URL)
  }
  getExternalClaimsExperience(clientCode){
-  return this.api.GET(`external-claims-experiences?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
+  return this.api.GET(`api/v1/external-claims-experiences?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
  }
  getInternalClaimsExperience(clientCode){
-  return this.api.GET(`internal-claims-experience?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
+  return this.api.GET(`api/v1/internal-claims-experience?clientCode=${clientCode}`,API_CONFIG.GIS_SETUPS_BASE_URL)
  }
 
 
