@@ -72,7 +72,6 @@ export class TicketReportsComponent implements OnInit {
     log.info('policy report sess', this.policyDetails);
     this.createDocDispatchForm();
     this.getDispatchReasons();
-    this.getDocumentsDispatched();
     this.getReportsToPrepare();
     this.getReportsDispatched();
 
@@ -319,19 +318,6 @@ export class TicketReportsComponent implements OnInit {
       )
   }
 
-  getDocumentsDispatched() {
-    this.policiesService.fetchDocumentsDispatched(this.policyDetails?.ticket?.policyCode)
-      .pipe(
-        untilDestroyed(this),
-      )
-      .subscribe(
-        (data) => {
-          this.documentsToDispatchData = data.embedded[0];
-          // this.spinner.hide();
-          log.info('docs to display>>', this.documentsToDispatchData);
-        })
-  }
-
   saveDispatchRejection() {
     // log.info('>>>>', event.value)
     const scheduleFormValues = this.docDispatchForm.getRawValue();
@@ -445,18 +431,24 @@ export class TicketReportsComponent implements OnInit {
   }
 
   onSave() {
-    this.policiesService.dispatchDocuments(this.policyDetails?.ticket?.policyCode)
-      .subscribe({
-        next: (data) => {
-          // this.saveDispatchedDocumentData = data;
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
-          this.dmsService.fetchDispatchedDocumentsByBatchNo(this.policyDetails?.ticket?.policyCode);
-        },
-        error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-        }
-      })
-    this.cdr.detectChanges();
+    if (this.policyDetails?.ticket?.policyCode) {
+      const payload: any[] = [
+        this.policyDetails?.ticket?.policyCode
+      ]
+      this.policiesService.dispatchDocuments(payload)
+        .subscribe({
+          next: (data) => {
+            // this.saveDispatchedDocumentData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
+            this.dmsService.fetchDispatchedDocumentsByBatchNo(this.policyDetails?.ticket?.policyCode);
+            this.closeDocDispatchModal();
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+      this.cdr.detectChanges();
+    }
     // this.globalMessagingService.displaySuccessMessage('Success', 'Saved');
   }
 

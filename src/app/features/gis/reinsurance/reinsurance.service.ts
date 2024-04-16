@@ -131,7 +131,7 @@ export class ReinsuranceService {
       .set('policyBatchNo', `${policyBatchNo}`)
       .set('user', `${assignee}`);
 
-    return this.api.POST<any>(`api/v1/policy-Risks-Controller/reinsure`,
+    return this.api.POST<any>(`v1/policy-Risks-Controller/reinsure`,
       JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL, params);
   }
 }

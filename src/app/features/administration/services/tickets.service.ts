@@ -89,19 +89,13 @@ export class TicketsService {
   // }
 
   getTicketModules(): Observable<TicketModuleDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.get<TicketModuleDTO[]>(`/${this.baseUrl}/workflow/api/v1/ticket-modules`,{headers:headers});
+
+    return this.api.GET<TicketModuleDTO[]>(`api/v1/ticket-modules`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   getTicketTypes(): Observable<TicketTypesDTO[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return this.http.get<TicketTypesDTO[]>(`/${this.baseUrl}/workflow/api/v1/ticket-types`,{headers:headers});
+
+    return this.api.GET<TicketTypesDTO[]>(`api/v1/ticket-types`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   // get all tickets for the logged in user
@@ -208,19 +202,11 @@ export class TicketsService {
   // get ticket count per module for the logged in user
   getTicketCount(): Observable<TicketCountDTO[]> {
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
     const assignee = this.authService.getCurrentUserName();
     const params = new HttpParams()
       .set('assignee', `${assignee}`)
 
-    return this.http.get<TicketCountDTO[]>(`/${this.baseUrl}/workflow/api/v1/tickets/count-per-module`,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<TicketCountDTO[]>(`api/v1/tickets/count-per-module?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   // get all transactions for a supervisor
@@ -241,10 +227,7 @@ export class TicketsService {
 
     }
     const supervisor = id;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
+
     const params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
@@ -257,11 +240,7 @@ export class TicketsService {
 
     let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.http.get<TransactionsDTO[]>(`/${this.baseUrl}/workflow/api/v1/tickets/manager-report`,
-      {
-        headers: headers,
-        params: queryparamObject,
-      });
+    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${queryparamObject}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   // get all transactions aggregate per module
@@ -365,10 +344,7 @@ export class TicketsService {
 
     }
     const supervisor = id;
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
+
     const params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
@@ -383,11 +359,7 @@ export class TicketsService {
 
     let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
 
-    return this.http.get<TransactionsDTO[]>(`/${this.baseUrl}/workflow/api/v1/tickets/manager-report`,
-      {
-        headers: headers,
-        params: queryparamObject,
-      });
+    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${queryparamObject}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   sortTickets(
@@ -402,11 +374,6 @@ export class TicketsService {
 
     const assignee = this.authService.getCurrentUserName()
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    })
-
     let params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
@@ -419,11 +386,7 @@ export class TicketsService {
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.http.get<Pagination<TicketsDTO>>(`/${this.baseUrl}/workflow/api/v1/tickets`,
-      {
-        headers: headers,
-        params: params,
-      });
+    return this.api.GET<Pagination<TicketsDTO>>(`api/v1/tickets?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   getBusinessTransactions(): Observable<BusinessTransactionsDTO[]> {

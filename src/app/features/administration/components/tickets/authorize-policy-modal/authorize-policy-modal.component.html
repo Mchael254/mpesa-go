@@ -49,8 +49,13 @@
         <div class="modal-footer d-block float-end" style="border-top:0">
           <button class="btn btn-primary cancelBtn" id="cancelDebtOwnerBtn"
                   #cancelDebtOwner (click)="closeDebtOwnerModal()">Cancel</button>
-          <button class="btn btn-outline-primary float-right" id="scheduleBtn"
-                  (click)="saveDebitOwnerAndPromiseDate()">Next</button>
+          <button class="btn btn-outline-primary float-right"  id="scheduleBtn"
+                  (click)="saveDebitOwnerAndPromiseDate()" [disabled]="isLoadingNext">
+            <span *ngIf="!isLoadingNext; else loadingNext">Next</span>
+            <ng-template #loadingNext>
+              <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+            </ng-template>
+          </button>
         </div>
       </form>
     </div>
@@ -86,6 +91,26 @@
                 <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
                 <label class="form-label" for="dispatchDocuments">No</label>
               </div>
+            </div>
+            <div *ngIf="scheduleCheckForm.get('dispatchDocuments').value === 'Y'">
+              <label class="form-label w-100">Documents to dispatch</label><br>
+
+              <p-multiSelect
+                [options]="documentsToDispatchData"
+                formControlName="documentDispatched"
+                optionLabel="rpt_name"
+                optionValue="dd_code"
+                [filter]="true"
+                filterBy="rpt_name"
+                [style]="{ 'width': '100%', 'height': '40px' }"
+                placeholder="Select report"
+                [(ngModel)]="selectedOptions">
+                <ng-template let-report pTemplate="item">
+                  <div title="{{report.rpt_name}}">
+                    {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
+                  </div>
+                </ng-template>
+              </p-multiSelect>
             </div>
             <div *ngIf="scheduleCheckForm.get('dispatchDocuments').value === 'N'">
               <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
