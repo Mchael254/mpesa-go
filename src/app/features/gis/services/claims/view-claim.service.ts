@@ -134,4 +134,8 @@ export class ViewClaimService {
       .set('claimVoucherNo', `${claimVoucherNo}`)
     return this.api.GET<any>(`api/v1/claims/peril-details-payment?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
+
+  claimMakeReady(data: any): Observable<any> {
+    return this.api.POST<any>(`api/v1/claims/make-ready`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
 }

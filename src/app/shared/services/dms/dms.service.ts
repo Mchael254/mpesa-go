@@ -151,7 +151,7 @@ export class DmsService{
       .set('batchNo', `${batchNo}`);
     log.info('Fetching dispatched documents for batch no: ', `${batchNo}`);
 
-    return this.api.GET<any>(`api/v2/document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
+    return this.api.GET<any>(`v2/document-dispatch?${params}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
 
   /**
