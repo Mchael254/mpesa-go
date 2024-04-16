@@ -1,126 +1,53 @@
 <div class="container">  
   <div class="row">
     <div class="col-12" (click)="retrievQuoteDets()">
-      <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+      <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
     </div>
   </div>
   <div id="container">
       
     <!-- <div><span class="client-details">Client</span></div> -->
     <form class="form" [formGroup]="quickForm">
-      <!-- <div class="row">
-        <div class="col">
-          <div class="custom-radio-button-container">
-            <p-radioButton formControlName="communicationType" value="existing" inputId="email"
-              class="custom-radio-button"></p-radioButton>
-            <label for="existingClient" class="custom-label">Existing client</label>
-          </div>
-        </div>
-    
-        <div class="col">
-          <div class="">
-            <p-radioButton formControlName="communicationType" value="new"
-              inputId="sms"></p-radioButton>
-            <label for="newClient" class="custom-label">New client</label>
-          </div>
-        </div>
-      </div>
-    <div class="row col-12 col-xs-12 col-sm-12 col-md-12 col-lg-12" id="#">
-        <div *ngIf="quickForm.get('communicationType').value === 'existing'"
-         class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Client</label></div>
-            <div>
-                <p-dropdown id='value'
-                            [options]='clientList'
-                            [optionLabel]="'label'"
-                            [dataKey]="'value'"
-                            [editable]="true"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
-                            placeholder="Select or Type Client name"
-                            formControlName='clients' 
-                            class="select">
-                </p-dropdown>
-            </div>
-        </div>
-        <ng-container *ngIf="quickForm.get('communicationType').value === 'new'">
-          <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-            <div class="label"><label>Name</label></div>
-            <div class="form-group mx-2">
-                <input type="text"
-                           pInputText
-                           class="form-control"
-                            id='commissionRate'
-                            [style]="{ width: '85%', height: '38px' }"
-                            formControlName='commissionRate'
-                           >
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-12">
-          <div class="label"><label>Status</label></div>
-          <select class="form-select" [id]="'aggregateCoverType'" formControlName="aggregateCoverType"
-          [style]="{ width: '80%', height: '38px' }">
-              <ng-container *ngFor="let cover">
-                  <option [value]="cover['cvt_desc']">{{ cover['cvt_desc'] | titlecase }}</option>
-              </ng-container>
-          </select>
-      </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
-          <div class="label"><label>Email</label></div>
-          <div class="form-group mx-2">
-              <input type="text"
-                         pInputText
-                         class="form-control"
-                          id='commissionRate'
-                          [style]="{ width: '85%', height: '38px' }"
-                          formControlName='commissionRate'
-                         >
-          </div>
-      </div>
-        </ng-container>
-    </div> -->
     <div class="product-details">Product details</div>
-    <div class="row col-12" > 
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+    <div class="row"> 
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Product<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='products'
                             [options]='productList'
                             [optionLabel]="'label'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='products' 
                             [virtualScroll]="true" 
                             [virtualScrollItemSize]="40"
-                            placeholder="Select a Product"
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('products')}">
                 </p-dropdown>
                 <div *ngIf="highlightInvalid('products')" class="invalid-feedback">Product is required</div>
             </div>
         </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Duration Type<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='durationType'
                             [options]='durationType'
                             [optionLabel]="'value'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='durationType'
-                            placeholder="Select Duration type" 
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('durationType')}">
                 </p-dropdown>
                 <div *ngIf="highlightInvalid('durationType')" class="invalid-feedback">Duration type required</div>
             </div>
         </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Facultative Type<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='facultativeType'
                             [options]='facultativeType'
                             [optionLabel]="'value'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='facultativeType'
-                            placeholder="Select Facultative Type"
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('facultativeType')}">
                 </p-dropdown>
@@ -128,46 +55,43 @@
             </div>
         </div>
     </div>
-    <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+    <div class="row" style="padding-top: 30px;"> 
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
             <div class="label"><label>Quotation Covers<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='quotationCovers'
                             [options]='quotationCovers'
                             [optionLabel]="'value'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='quotationCovers'
-                            placeholder="Select Quotation Cover" 
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('quotationCovers')}">
                 </p-dropdown>
                 <div *ngIf="highlightInvalid('quotationCovers')" class="invalid-feedback">Quote cover required</div>
             </div>
         </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12" >
             <div class="label"><label>Frequency of Payment<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='frequencyOfPayment'
                             [options]='frequencyOfPayment'
                             [optionLabel]="'label'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='frequencyOfPayment'
-                            placeholder="Select Freq. of Payment"
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('frequencyOfPayment')}">
                 </p-dropdown>
                 <div *ngIf="highlightInvalid('frequencyOfPayment')" class="invalid-feedback">Freq of payment required</div>
             </div>
         </div>
-        <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" >
+        <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12" >
             <div class="label"><label>Unit Rate Option<span style="color: red;">*</span></label></div>
-            <div>
+            <div class="form-group">
                 <p-dropdown id='unitRateOption'
                             [options]='unitRateOption'
                             [optionLabel]="'name'"
-                            [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                            [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                             formControlName='unitRateOption'
-                            placeholder="Select Unit rate"
                             class="select"
                             [ngClass]="{'is-invalid': highlightInvalid('unitRateOption')}">
                 </p-dropdown>
@@ -175,16 +99,16 @@
             </div>
         </div>
     </div>
-        <div class="row col-12 col-xs-12 col-sm-12" style="padding-top: 30px;"> 
-            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+        <div class="row" style="padding-top: 30px;"> 
+            <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
                 <div class="label"><label>Currency<span style="color: red;">*</span></label></div>
-                <div>
+                <div class="form-group">
                     <p-dropdown id='currency'
                                 [options]='currencyList'
                                 [optionLabel]="'label'"
                                 [filter]="true"
                                 [filterBy]="'label'"
-                                [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                                [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                                 formControlName='currency' 
                                 placeholder="Select Currency"
                                 class="select"
@@ -193,15 +117,14 @@
                     <div *ngIf="highlightInvalid('currency')" class="invalid-feedback">Currency is required</div>
                 </div>
             </div>
-            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12" 
-            style="padding-left: 20px;">
-              <label class="label">Effective Date<span style="color: red;">*</span></label>
-              <div class="mx-1">
+            <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
+              <div class="label"><label>Effective Date<span style="color: red;">*</span></label></div>
+              <div class="form-group">
                 <p-calendar formControlName="effectiveDate" 
                             dateFormat="dd/mm/yy" 
                             [showIcon]="true" 
                             [showButtonBar]="true"
-                            [style]="{ 'width': '83%' }"
+                            [style]="{ 'width': '100%', height: '37px', 'line-height': '10px' }"
                             placeholder="dd/mm/yy"
                             [maxDate]="maxDate"
                             [ngClass]="{'is-invalid': highlightInvalid('effectiveDate')}"
@@ -210,7 +133,7 @@
                 <div *ngIf="highlightInvalid('effectiveDate')" class="invalid-feedback">Date is required</div>
               </div>
             </div>
-            <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+            <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
               <div class="label"><label>Quotation Calculation Type<span style="color: red;">*</span></label></div>
               <div class="form-check radio-group" id="inline">
                   <input
@@ -226,7 +149,7 @@
                       Detailed
                   </label>
                 </div>
-                <div class="form-check radio-group" id="inline">
+                <div class="form-check radio-group" id="inline" style="float: right;">
                   <input
                     class="form-check-input box"
                     type="radio"
@@ -243,17 +166,16 @@
             </div>
       </div>
       <div class="product-details" style="padding-top: 50px;">Intermediary details<span style="color: red;">*</span></div>
-  <div class="row col-12" > 
-      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+  <div class="row" > 
+      <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
           <div class="label"><label>Intermediary</label></div>
-          <div class="ui-fluid">
+          <div class="form-group">
               <p-dropdown id='intermediary'
                           [options]='intermediaries'
                           [optionLabel]="'name'"
                           [editable]="true"
-                          [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
+                          [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                           formControlName='intermediary' 
-                          placeholder="Select/Type an Intermediary name"
                           class="select"
                           [ngClass]="{'is-invalid': highlightInvalid('intermediary')}"
                           >
@@ -261,24 +183,23 @@
               <div *ngIf="highlightInvalid('intermediary')" class="invalid-feedback">Intermediary is required</div>
           </div>
       </div>
-      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+      <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
         <div class="label"><label>Branch</label></div>
-        <div>
+        <div class="form-group">
             <p-dropdown id='branch'
                         [options]='branch'
                         [optionLabel]="'name'"
                         [dataKey]="'id'"
-                        [style]="{ width: '80%', height: '40px', 'line-height': '10px' }"
-                        placeholder="Select a Branch"
+                        [style]="{ width: '100%', height: '37px', 'line-height': '10px' }"
                         formControlName='branch' 
                         class="select">
             </p-dropdown>
         </div>
     </div>
-      <div class="form-group col-md-4 col-lg-4 col-xs-12 col-sm-12">
+      <div class="col-md-4 col-lg-4 col-xs-12 col-sm-12">
         <div class="label"><label>Commission Rate</label></div>
-        <div class="form-group mx-2">
-          <input type="number" pInputText class="form-control" id='commissionRate' [style]="{ width: '85%', height: '38px' }"
+        <div class="form-group">
+          <input type="number" pInputText class="form-control" id='commissionRate' [style]="{ width: '100%', height: '38px' }"
             formControlName='commissionRate' [ngClass]="{'is-invalid': highlightInvalid('commissionRate')}">
           <div *ngIf="highlightInvalid('commissionRate')" class="invalid-feedback">Commission cannot be greater than 100%</div>
         </div>
