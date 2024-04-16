@@ -244,7 +244,7 @@ export class EntityService {
 
   fetchGisPoliciesByClientId(id: number) {
     return this.api.GET<Pagination<PoliciesDTO>>(
-      `api/v2/policies/client/${id}`,
+      `v2/policies/client/${id}`,
       API_CONFIG.GIS_UNDERWRITING_BASE_URL
     );
   }
