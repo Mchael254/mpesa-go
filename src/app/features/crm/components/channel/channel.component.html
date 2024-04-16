@@ -11,17 +11,7 @@
         </div>
         <div class="card-body">
           <div class="row mb-3">
-            <div class="col-sm-3 col-4">
-              <select
-                class="form-select"
-                (change)="onSort($event, channelsData, 'channelName')"
-              >
-                <option value="">Sorting Options</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-            <div class="col-sm-3 col-4">
+            <div class="col-sm-4 col-6">
               <input
                 type="text"
                 class="form-control"
@@ -31,7 +21,7 @@
                 (input)="filterChannels($event)"
               />
             </div>
-            <div class="col-sm-6 col-4">
+            <div class="col-sm-8 col-6">
               <div class="float-end">
                 <span class="icon-circle"
                   ><i class="fa-solid fa-plus" (click)="openChannelModal()"></i
@@ -62,9 +52,12 @@
               >
                 <ng-template pTemplate="header">
                   <tr>
-                    <!-- <th class="head">Code</th> -->
-                    <th class="head">Name</th>
-                    <th class="head">Description</th>
+                    <th class="head" pSortableColumn="channelName">
+                      Name<p-sortIcon field="channelName"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="channelDesc">
+                      Description<p-sortIcon field="channelDesc"></p-sortIcon>
+                    </th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-channel>
@@ -73,7 +66,6 @@
                     (click)="onChannelRowSelect(channel)"
                     [class.selected]="selectedChannel === channel"
                   >
-                    <!-- <td class="body">{{ channel.id }}</td> -->
                     <td class="body">{{ channel.channelName }}</td>
                     <td class="body">
                       {{ channel.channelDesc }}

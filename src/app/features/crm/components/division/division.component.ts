@@ -38,7 +38,6 @@ export class DivisionComponent implements OnInit {
   @ViewChild('confirmationModal') confirmationModal: ElementRef;
   @ViewChild('divisionConfirmationModal')
   divisionConfirmationModal!: ReusableInputComponent;
-  // @Input() selectOrganization: OrganizationDTO;
 
   public createDivisionForm: FormGroup;
   showModal = false;
@@ -77,7 +76,6 @@ export class DivisionComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private renderer: Renderer2,
     private organizationService: OrganizationService,
     private statusService: StatusService,
     private globalMessagingService: GlobalMessagingService,
@@ -86,20 +84,16 @@ export class DivisionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to the selectedOrganizationId$ observable
+    this.DivisionCreateForm();
+    this.fetchOrganization();
     this.organizationService.selectedOrganizationId$.subscribe(
       (selectedOrganizationId) => {
-        // Update the selected organization ID in your component
         this.selectedOrganizationId = selectedOrganizationId;
-        // Check if the selected organization ID is already set
         if (this.selectedOrganizationId !== null) {
-          // Call the fetchOrganizationDivision method
           this.fetchOrganizationDivision(this.selectedOrganizationId);
         }
       }
     );
-    this.DivisionCreateForm();
-    this.fetchOrganization();
     this.fetchStatuses();
   }
 
@@ -117,31 +111,6 @@ export class DivisionComponent implements OnInit {
 
   get f() {
     return this.createDivisionForm.controls;
-  }
-
-  onSort(event: Event, dataArray: any[], sortKey: string): void {
-    const target = event.target as HTMLSelectElement;
-    const selectedValue = target.value;
-
-    switch (selectedValue) {
-      case 'asc':
-        this.sortArrayAsc(dataArray, sortKey);
-        break;
-      case 'desc':
-        this.sortArrayDesc(dataArray, sortKey);
-        break;
-      default:
-        // Handle default case or no sorting
-        break;
-    }
-  }
-
-  sortArrayAsc(dataArray: any[], sortKey: string): void {
-    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
-  }
-
-  sortArrayDesc(dataArray: any[], sortKey: string): void {
-    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
   }
 
   fetchOrganization() {

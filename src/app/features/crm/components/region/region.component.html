@@ -39,17 +39,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, regionData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -70,7 +60,7 @@
               onblur="(this.type='text')"
             />
           </div> -->
-          <div class="col-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openRegionModal()"></i
@@ -98,12 +88,28 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Name</th>
-                  <th class="head">Override Eommission Earned</th>
-                  <th class="head">Manager</th>
-                  <th class="head">Manager Allowed</th>
-                  <th class="head">WEF</th>
-                  <th class="head">WET</th>
+                  <th class="head" pSortableColumn="name">
+                    Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="overrideCommissionEarned">
+                    Override Eommission Earned<p-sortIcon
+                      field="overrideCommissionEarned"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="manager">
+                    Manager<p-sortIcon field="manager"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="managerAllowed">
+                    Manager Allowed<p-sortIcon
+                      field="managerAllowed"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="dateFrom">
+                    WEF<p-sortIcon field="dateFrom"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="dateTo">
+                    WET<p-sortIcon field="dateTo"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-region>
@@ -152,17 +158,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, bankRegionData, 'bankRegionName')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -183,7 +179,7 @@
               onblur="(this.type='text')"
             />
           </div> -->
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openBankModal()"></i
@@ -214,10 +210,20 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Short Description</th>
-                  <th class="head">Name</th>
-                  <th class="head">WEF</th>
-                  <th class="head">WET</th>
+                  <th class="head" pSortableColumn="shortDescription">
+                    Short Description<p-sortIcon
+                      field="shortDescription"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="bankRegionName">
+                    Name<p-sortIcon field="bankRegionName"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="wef">
+                    WEF<p-sortIcon field="wef"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="wet">
+                    WET<p-sortIcon field="wet"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-bank>
