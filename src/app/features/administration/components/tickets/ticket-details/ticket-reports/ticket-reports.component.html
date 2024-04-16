@@ -112,7 +112,7 @@
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
           </ng-template>
         </button>
-        <button class="btn btn-primary" (click)="prepareDocuments()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
+        <button class="btn btn-primary" (click)="onSave()" [disabled]="isLoading" *ngIf="docDispatchForm.get('dispatchDocuments').value === 'Y'">
           <span *ngIf="!isLoading; else loading">Dispatch</span>
           <ng-template #loading>
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
