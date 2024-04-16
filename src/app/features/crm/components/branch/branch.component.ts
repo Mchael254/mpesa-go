@@ -126,7 +126,6 @@ export class BranchComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private renderer: Renderer2,
     private router: Router,
     private organizationService: OrganizationService,
     private countryService: CountryService,
@@ -158,9 +157,7 @@ export class BranchComponent implements OnInit {
       .subscribe(([organizationId, selectedRegion]) => {
         this.selectedOrganizationId = organizationId;
         this.selectedRegion = selectedRegion;
-        // call the fetchOrganizationRegion method
         this.fetchOrganizationRegion(this.selectedOrganizationId);
-        // call the fetchOrganizationBranch method
         this.fetchOrganizationBranch(
           this.selectedOrganizationId,
           this.selectedRegion
@@ -282,31 +279,6 @@ export class BranchComponent implements OnInit {
       // Handle the case where this.selectedOrg is null
       log.error('Selected Organization is null');
     }
-  }
-
-  onSort(event: Event, dataArray: any[], sortKey: string): void {
-    const target = event.target as HTMLSelectElement;
-    const selectedValue = target.value;
-
-    switch (selectedValue) {
-      case 'asc':
-        this.sortArrayAsc(dataArray, sortKey);
-        break;
-      case 'desc':
-        this.sortArrayDesc(dataArray, sortKey);
-        break;
-      default:
-        // Handle default case or no sorting
-        break;
-    }
-  }
-
-  sortArrayAsc(dataArray: any[], sortKey: string): void {
-    dataArray.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
-  }
-
-  sortArrayDesc(dataArray: any[], sortKey: string): void {
-    dataArray.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
   }
 
   onBranchRowSelect(branch: OrganizationBranchDTO) {

@@ -310,17 +310,7 @@
           </div>
           <div class="card-body">
             <div class="row mb-3">
-              <div class="form-group col-sm-4">
-                <select
-                  class="form-select"
-                  (change)="onSort($event, stateData, 'name')"
-                >
-                  <option value="">Sorting Options</option>
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </select>
-              </div>
-              <div class="form-group col-sm-4">
+              <div class="col-sm-5 col-6">
                 <input
                   type="text"
                   class="form-control"
@@ -330,7 +320,7 @@
                   (input)="filterState($event)"
                 />
               </div>
-              <div class="col-sm-4">
+              <div class="col-sm-7 col-6">
                 <div class="float-end">
                   <span class="icon-circle"
                     ><i class="fa-solid fa-plus" (click)="openCountyModal()"></i
@@ -348,7 +338,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-12">
+              <div class="col-sm-12 col-12">
                 <p-table
                   #stateTable
                   [value]="stateData"
@@ -364,8 +354,14 @@
                 >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="head">Short Description</th>
-                      <th class="head">Name</th>
+                      <th class="head" pSortableColumn="shortDescription">
+                        Short Description<p-sortIcon
+                          field="shortDescription"
+                        ></p-sortIcon>
+                      </th>
+                      <th class="head" pSortableColumn="name">
+                        Name<p-sortIcon field="name"></p-sortIcon>
+                      </th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-state>
@@ -400,17 +396,7 @@
           </div>
           <div class="card-body">
             <div class="row mb-3">
-              <div class="form-group col-sm-4">
-                <select
-                  class="form-select"
-                  (change)="onSort($event, districtData, 'shortDescription')"
-                >
-                  <option value="">Sorting Options</option>
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </select>
-              </div>
-              <div class="form-group col-sm-4">
+              <div class="col-sm-5 col-6">
                 <input
                   type="text"
                   class="form-control"
@@ -420,7 +406,7 @@
                   (input)="filterDistrict($event)"
                 />
               </div>
-              <div class="col-sm-4">
+              <div class="col-sm-7 col-6">
                 <div class="float-end">
                   <span class="icon-circle"
                     ><i
@@ -441,7 +427,7 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-12">
+              <div class="col-sm-12 col-12">
                 <p-table
                   #districtTable
                   [value]="districtData"
@@ -457,8 +443,14 @@
                 >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="head">Short Description</th>
-                      <th class="head">Name</th>
+                      <th class="head" pSortableColumn="shortDescription">
+                        Short Description<p-sortIcon
+                          field="shortDescription"
+                        ></p-sortIcon>
+                      </th>
+                      <th class="head" pSortableColumn="name">
+                        Name<p-sortIcon field="name"></p-sortIcon>
+                      </th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-district>
@@ -491,17 +483,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="form-group col-sm-3">
-            <select
-              class="form-select"
-              (change)="onSort($event, townData, 'shortDescription')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="form-group col-sm-3">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -511,7 +493,7 @@
               (input)="filterTown($event)"
             />
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openTownModal()"></i
@@ -526,7 +508,7 @@
           </div>
         </div>
         <div class="row mb-5">
-          <div class="col-12">
+          <div class="col-sm-12 col-12">
             <p-table
               #townTable
               [value]="townData"
@@ -542,8 +524,14 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Short Description</th>
-                  <th class="head">Name</th>
+                  <th class="head" pSortableColumn="shortDescription">
+                    Short Description<p-sortIcon
+                      field="shortDescription"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="name">
+                    Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-town>
@@ -623,9 +611,15 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Description</th>
-                  <th class="head">Day</th>
-                  <th class="head">Month</th>
+                  <th class="head" pSortableColumn="description">
+                    Description<p-sortIcon field="description"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="day">
+                    Day<p-sortIcon field="day"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="month">
+                    Month<p-sortIcon field="month"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-holiday>

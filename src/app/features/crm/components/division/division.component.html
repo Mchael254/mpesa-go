@@ -39,17 +39,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, divisionData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -59,7 +49,7 @@
               (input)="filterDivision($event)"
             />
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openDivisionModal()"></i
@@ -90,11 +80,23 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Division Name</th>
-                  <th class="head">Short Decription</th>
-                  <th class="head">Division Order</th>
-                  <th class="head">Division Status</th>
-                  <th class="head">Default</th>
+                  <th class="head" pSortableColumn="name">
+                    Division Name <p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="short_description">
+                    Short Decription<p-sortIcon
+                      field="short_description"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="order">
+                    Division Order<p-sortIcon field="order"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="status">
+                    Division Status<p-sortIcon field="status"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="is_default_division">
+                    Default<p-sortIcon field="is_default_division"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-division>
@@ -146,17 +148,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, divisionBranchData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -176,7 +168,7 @@
               onblur="(this.type='text')"
             />
           </div> -->
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"><i class="pi pi-pencil"></i></span>
             </div>
@@ -194,10 +186,18 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Division Name</th>
-                  <th class="head">Branch Name</th>
-                  <th class="head">WEF</th>
-                  <th class="head">WET</th>
+                  <th class="head" pSortableColumn="name">
+                    Division Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="branchName">
+                    Branch Name<p-sortIcon field="branchName"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="wef">
+                    WEF<p-sortIcon field="wef"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="wet">
+                    WET<p-sortIcon field="wet"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-branch>

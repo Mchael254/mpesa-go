@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -46,7 +45,7 @@ country data, including form validation and fetching data from services. */
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.css'],
 })
-export class CountryComponent implements OnInit, AfterViewInit {
+export class CountryComponent implements OnInit {
   @ViewChild('countyModal') countyModal: ElementRef;
   @ViewChild('districtModal') districtModal: ElementRef;
   @ViewChild('townModal') townModal: ElementRef;
@@ -172,8 +171,7 @@ export class CountryComponent implements OnInit, AfterViewInit {
     private mandatoryFieldsService: MandatoryFieldsService,
     private utilService: UtilService,
     private statusService: StatusService,
-    private globalMessagingService: GlobalMessagingService,
-    private cdr: ChangeDetectorRef
+    private globalMessagingService: GlobalMessagingService
   ) {}
 
   ngOnInit(): void {
@@ -187,15 +185,6 @@ export class CountryComponent implements OnInit, AfterViewInit {
     this.fetchAdminstrativeUnit();
     this.fetchSubadminstrativeUnit();
     this.fetchStatuses();
-  }
-
-  ngAfterViewInit() {
-    // Add a change event listener dynamically
-    // this.subadminSelect.nativeElement.addEventListener('change', (event) => {
-    //     this.onCityChange(event);
-    //     this.updateCardTitle(event, cardTitle);
-    //     this.updateCardTitle(event, subCardTitle);
-    // });
   }
 
   ngOnDestroy(): void {}
@@ -254,7 +243,6 @@ export class CountryComponent implements OnInit, AfterViewInit {
             }
           }
         });
-        // this.cdr.detectChanges();
       });
   }
 
@@ -907,25 +895,6 @@ export class CountryComponent implements OnInit, AfterViewInit {
   deleteState() {
     this.stateConfirmationModal.show();
   }
-
-  // confirmStateDelete() {
-  //   if (this.selectedState) {
-  //     const stateId = this.selectedState.id;
-  //     this.countryService.deleteState(stateId).subscribe((data: any) => {
-  //       this.globalMessagingService.displaySuccessMessage(
-  //         'success',
-  //         'Successfully deleted a state'
-  //       );
-  //       this.fetchMainCityStates(this.countrySelected.id);
-  //       this.selectedState = null;
-  //     });
-  //   } else {
-  //     this.globalMessagingService.displayErrorMessage(
-  //       'Error',
-  //       'No state is selected.'
-  //     );
-  //   }
-  // }
 
   confirmStateDelete() {
     if (this.selectedState) {
