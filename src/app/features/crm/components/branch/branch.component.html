@@ -56,17 +56,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, branchesData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -76,7 +66,7 @@
               (input)="filterBranch($event)"
             />
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -113,16 +103,44 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">ID</th>
-                  <th class="head">Ref</th>
-                  <th class="head">Name</th>
-                  <th class="head">Physical Address</th>
-                  <th class="head">Email</th>
-                  <th class="head">Postal Address</th>
-                  <th class="head">Contact</th>
-                  <th class="head">Manager</th>
-                  <th class="head">Manager Allowed</th>
-                  <th class="head">Override Commission</th>
+                  <th class="head" pSortableColumn="id">
+                    ID<p-sortIcon field="ref"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="ref">
+                    Ref<p-sortIcon field="ref"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="name">
+                    Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="physicalAddress">
+                    Physical Address<p-sortIcon
+                      field="physicalAddress"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="emailAddress">
+                    Email<p-sortIcon field="emailAddress"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="postalAddress">
+                    Postal Address<p-sortIcon
+                      field="postalAddress"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="telephone">
+                    Contact<p-sortIcon field="telephone"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="managerName">
+                    Manager<p-sortIcon field="managerName"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="managerAllowed">
+                    Manager Allowed<p-sortIcon
+                      field="managerAllowed"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="overrideCommissionAllowed">
+                    Override Commission<p-sortIcon
+                      field="overrideCommissionAllowed"
+                    ></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-branch>
@@ -159,17 +177,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, branchDivisionData, 'divisionName')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -179,7 +187,7 @@
               (input)="filterBranchDivision($event)"
             />
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -213,10 +221,22 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Division Name</th>
-                  <th class="head">Branch Name</th>
-                  <th class="head">Branch Division WEF</th>
-                  <th class="head">Branch Division WET</th>
+                  <th class="head" pSortableColumn="divisionName">
+                    Division Name<p-sortIcon field="divisionName"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="branchName">
+                    Branch Name<p-sortIcon field="branchName"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="withEffectiveFrom">
+                    Branch Division WEF<p-sortIcon
+                      field="withEffectiveFrom"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="withEffectiveTo">
+                    Branch Division WET<p-sortIcon
+                      field="withEffectiveTo"
+                    ></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-division>
@@ -247,17 +267,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, branchContacts, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -278,7 +288,7 @@
               onblur="(this.type='text')"
             />
           </div> -->
-          <div class="col-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -312,13 +322,29 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Contact Name</th>
-                  <th class="head">Designation</th>
-                  <th class="head">Mobile Number</th>
-                  <th class="head">Telephone</th>
-                  <th class="head">ID Number</th>
-                  <th class="head">Home Address</th>
-                  <th class="head">Email Address</th>
+                  <th class="head" pSortableColumn="name">
+                    Contact Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="designation">
+                    Designation<p-sortIcon field="designation"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="mobile">
+                    Mobile Number<p-sortIcon field="mobile"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="telephone">
+                    Telephone<p-sortIcon field="telephone"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="idNumber">
+                    ID Number<p-sortIcon field="idNumber"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="physicalAddress">
+                    Home Address<p-sortIcon
+                      field="physicalAddress"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="emailAddress">
+                    Email Address<p-sortIcon field="emailAddress"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-contact>

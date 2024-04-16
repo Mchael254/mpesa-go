@@ -10,17 +10,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-4">
-            <select
-              class="form-select"
-              (change)="onSort($event, userParametersData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -30,7 +20,7 @@
               (input)="filterParameters($event)"
             />
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="pi pi-pencil" (click)="editParameter()"></i
@@ -54,10 +44,18 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Name</th>
-                  <th class="head">Value</th>
-                  <th class="head">Description</th>
-                  <th class="head">Status</th>
+                  <th class="head" pSortableColumn="name">
+                    Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="value">
+                    Value<p-sortIcon field="value"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="description">
+                    Description<p-sortIcon field="description"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="status">
+                    Status<p-sortIcon field="status"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-param>

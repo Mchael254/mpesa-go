@@ -10,17 +10,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-3">
-            <select
-              class="form-select"
-              (change)="onSort($event, currenciesData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -30,7 +20,7 @@
               (input)="filterCurrencies($event)"
             />
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i class="fa-solid fa-plus" (click)="openCurrencyModal()"></i
@@ -64,11 +54,21 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Symbol</th>
-                  <th class="head">Description</th>
-                  <th class="head">Round</th>
-                  <th class="head">Number Words</th>
-                  <th class="head">Decimal Words</th>
+                  <th class="head" pSortableColumn="symbol">
+                    Symbol<p-sortIcon field="symbol"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="name">
+                    Description<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="roundingOff">
+                    Round<p-sortIcon field="roundingOff"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="numberWord">
+                    Number Words<p-sortIcon field="numberWord"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="decimalWord">
+                    Decimal Words<p-sortIcon field="decimalWord"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-currency>
@@ -100,16 +100,6 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-3">
-            <select
-              class="form-select"
-              (change)="onSort($event, currencyRatesData, 'targetCurrency')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
           <!-- <div class="form-group col-3">
             <select class="form-select" (change)="onFilterChange($event)">
               <option value="">Select Filter</option>
@@ -118,7 +108,7 @@
             </select>
           </div> -->
 
-          <div class="form-group col-3">
+          <div class="form-group col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -128,7 +118,7 @@
               (input)="filterExchangeCurrency($event)"
             />
           </div>
-          <div class="col-6">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -162,15 +152,37 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Exchange Currency</th>
-                  <th class="head">Rate</th>
-                  <th class="head">WEF Date</th>
-                  <th class="head">WET Date</th>
-                  <th class="head">Prepared By</th>
-                  <th class="head">Prepared Date</th>
-                  <th class="head">Authorized By</th>
-                  <th class="head">Authorized Date</th>
-                  <th class="head">Authorized</th>
+                  <th class="head" pSortableColumn="targetCurrency">
+                    Exchange Currency<p-sortIcon
+                      field="targetCurrency"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="rate">
+                    Rate<p-sortIcon field="rate"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="withEffectFromDate">
+                    WEF Date<p-sortIcon field="withEffectFromDate"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="withEffectToDate">
+                    WET Date<p-sortIcon field="withEffectToDate"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="preparedBy">
+                    Prepared By<p-sortIcon field="preparedBy"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="date">
+                    Prepared Date<p-sortIcon field="date"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="authorizedBy">
+                    Authorized By<p-sortIcon field="authorizedBy"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="authorizedDate">
+                    Authorized Date<p-sortIcon
+                      field="authorizedDate"
+                    ></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="authorized">
+                    Authorized<p-sortIcon field="authorized"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-rate>
@@ -214,17 +226,7 @@
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <div class="col-sm-3">
-            <select
-              class="form-select"
-              (change)="onSort($event, currencyDenominationData, 'name')"
-            >
-              <option value="">Sorting Options</option>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4 col-6">
             <input
               type="text"
               class="form-control"
@@ -234,7 +236,7 @@
               (input)="filterCurrencyDenomination($event)"
             />
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-8 col-6">
             <div class="float-end">
               <span class="icon-circle"
                 ><i
@@ -271,9 +273,15 @@
             >
               <ng-template pTemplate="header">
                 <tr>
-                  <th class="head">Value</th>
-                  <th class="head">Name</th>
-                  <th class="head">WEF</th>
+                  <th class="head" pSortableColumn="value">
+                    Value<p-sortIcon field="value"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="name">
+                    Name<p-sortIcon field="name"></p-sortIcon>
+                  </th>
+                  <th class="head" pSortableColumn="withEffectiveFrom">
+                    WEF<p-sortIcon field="withEffectiveFrom"></p-sortIcon>
+                  </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-deno>

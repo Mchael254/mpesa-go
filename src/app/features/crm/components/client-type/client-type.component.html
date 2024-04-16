@@ -13,17 +13,7 @@
         </div>
         <div class="card-body">
           <div class="row mb-3">
-            <div class="col-sm-3 col-4">
-              <select
-                class="form-select"
-                (change)="onSort($event, clientTypeData, 'clientTypeName')"
-              >
-                <option value="">Sorting Options</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-            <div class="col-sm-3 col-4">
+            <div class="col-sm-4 col-6">
               <input
                 type="text"
                 class="form-control"
@@ -33,7 +23,7 @@
                 (input)="filterClientType($event)"
               />
             </div>
-            <div class="col-sm-6 col-4">
+            <div class="col-sm-8 col-6">
               <div class="float-end">
                 <span class="icon-circle"
                   ><i
@@ -67,9 +57,18 @@
               >
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="head">{{ "crm.category" | translate }}</th>
-                    <th class="head">{{ "crm.client_type" | translate }}</th>
-                    <th class="head">{{ "crm.description" | translate }}</th>
+                    <th class="head" pSortableColumn="category">
+                      {{ "crm.category" | translate
+                      }}<p-sortIcon field="category"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="clientTypeName">
+                      {{ "crm.client_type" | translate
+                      }}<p-sortIcon field="clientTypeName"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="description">
+                      {{ "crm.description" | translate
+                      }}<p-sortIcon field="description"></p-sortIcon>
+                    </th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-client>
