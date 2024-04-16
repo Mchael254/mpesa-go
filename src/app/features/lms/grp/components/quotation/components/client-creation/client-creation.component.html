@@ -21,15 +21,14 @@
         <h5>Client details</h5>
 
         <form [formGroup]="clientDetailsForm">
-            <div class="row">
+            <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
-                    <br />
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" value="newClient" formControlName="clientType"
                             id="inlineRadio1" name="clientType" />
                         <label class="form-check-label" for="inlineRadio1">New Client</label>
                     </div>
-                    <div class="form-check form-check-inline">
+                    <div class="form-check form-check-inline" id="moveToEnd">
                         <input class="form-check-input" type="radio" value="existingClient" formControlName="clientType"
                             id="inlineRadio2" name="clientType" checked />
                         <label class="form-check-label" for="inlineRadio2">Existing Client</label>
@@ -37,7 +36,7 @@
                 </div>
             </div>
             
-            <div class="row">
+            <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4"  *ngIf="clientDetailsForm.get('clientType').value === 'newClient'">
                     <div>
                         <div>
@@ -203,7 +202,7 @@
             </div>
 
             <div style="padding-top: 60px;"><h5>Contact information</h5></div>
-            <div class="row">
+            <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div>
                         <div>
@@ -310,7 +309,7 @@
 
             <div style="padding-top: 60px;"><h5>Other details</h5></div>
 
-            <div class="row">
+            <div class="row" style="padding-top: 10px;">
                 <div class="col-md-4">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <label for="affiliatedToInsurer" style="color: black;">Affiliated to the insurer</label>
@@ -428,7 +427,7 @@
 <!-- modals begin -->
 <!-- modal to capture administrator details -->
 <div class="modal fade" tabindex="-1" #adminDetailsModal id="adminDetailsModal" aria-labelledby="adminDetailsModal" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="adminDetailsModal">Capture administrator details</h5>
@@ -437,7 +436,7 @@
       </div>
       <div class="modal-body">
       <form [formGroup]="adminDetailsForm">
-        <div class="row">
+        <div class="row" style="padding-top: 0;">
             <div class="col-md-6">
                 <div>
                     <div>

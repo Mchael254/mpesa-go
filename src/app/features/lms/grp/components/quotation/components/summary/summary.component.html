@@ -90,7 +90,8 @@
                     </tr>
                     <tr>
                         <td style="width: 50%; align-items: left; color: grey;">Client Name: </td>
-                        <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '' | titlecase }}
+                        <!-- <td style="width: 50%; align-items: right;">{{ quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '' | titlecase }} -->
+                            <td style="width: 50%; align-items: right;">{{ (quoteSummary?.[0]?.proposer_name ? quoteSummary?.[0]?.proposer_name.replace('null', '').trim() : '') | titlecase }}
                         </td>
                     </tr>
                 </table>
@@ -414,8 +415,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
-                        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
-                            (click)="closeCategorySummary()" (blur)="closeCategorySummary()"></button>
+                        <!-- <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="closeCategorySummary()" (blur)="closeCategorySummary()"></button> -->
                     </div>
                     <div class="modal-body">
                         <div class="card">
@@ -502,8 +503,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="coverSummaryModalLabel">Cover details</h5>
-                        <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
-                            (click)="closeCoverSummary()"></button>
+                        <!-- <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="closeCoverSummary()"></button> -->
                     </div>
                     <div class="modal-body">
                         <div style="text-align: right;">
