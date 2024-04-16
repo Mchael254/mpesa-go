@@ -12,17 +12,7 @@
           </div>
           <div class="card-body">
             <div class="row mb-3">
-              <div class="col-sm-4 col-4">
-                <select
-                  class="form-select"
-                  (change)="onSort($event, sectorsData, 'name')"
-                >
-                  <option value="">Sorting Options</option>
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </select>
-              </div>
-              <div class="col-sm-4 col-4">
+              <div class="col-sm-6 col-6">
                 <input
                   type="text"
                   class="form-control"
@@ -32,7 +22,7 @@
                   (input)="filterSectors($event)"
                 />
               </div>
-              <div class="col-sm-4 col-4">
+              <div class="col-sm-6 col-6">
                 <div class="float-end">
                   <span class="icon-circle"
                     ><i class="fa-solid fa-plus" (click)="openSectorModal()"></i
@@ -63,10 +53,14 @@
                 >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="head">
+                      <th class="head" pSortableColumn="shortDescription">
                         {{ "crm.short_description" | translate }}
+                        <p-sortIcon field="shortDescription"></p-sortIcon>
                       </th>
-                      <th class="head">{{ "crm.name" | translate }}</th>
+                      <th class="head" pSortableColumn="name">
+                        {{ "crm.name" | translate
+                        }}<p-sortIcon field="name"></p-sortIcon>
+                      </th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-sector>
@@ -101,17 +95,7 @@
           </div>
           <div class="card-body">
             <div class="row mb-3">
-              <div class="col-sm-4 col-4">
-                <select
-                  class="form-select"
-                  (change)="onSort($event, occupationsData, 'name')"
-                >
-                  <option value="">Sorting Options</option>
-                  <option value="asc">Ascending</option>
-                  <option value="desc">Descending</option>
-                </select>
-              </div>
-              <div class="col-sm-4 col-4">
+              <div class="col-sm-6 col-6">
                 <input
                   type="text"
                   class="form-control"
@@ -121,7 +105,7 @@
                   (input)="filterOccupations($event)"
                 />
               </div>
-              <div class="col-sm-4 col-4">
+              <div class="col-sm-6 col-6">
                 <div class="float-end">
                   <span class="icon-circle"
                     ><i
@@ -155,10 +139,14 @@
                 >
                   <ng-template pTemplate="header">
                     <tr>
-                      <th class="head">
+                      <th class="head" pSortableColumn="shortDescription">
                         {{ "crm.short_description" | translate }}
+                        <p-sortIcon field="shortDescription"></p-sortIcon>
                       </th>
-                      <th class="head">{{ "crm.name" | translate }}</th>
+                      <th class="head" pSortableColumn="name">
+                        {{ "crm.name" | translate
+                        }}<p-sortIcon field="name"></p-sortIcon>
+                      </th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-occupation>

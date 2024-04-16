@@ -13,17 +13,7 @@
         </div>
         <div class="card-body">
           <div class="row mb-3">
-            <div class="col-sm-3 col-4">
-              <select
-                class="form-select"
-                (change)="onSort($event, serviceProviderTypesData, 'name')"
-              >
-                <option value="">Sorting Options</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-            <div class="col-sm-3 col-4">
+            <div class="col-sm-4 col-6">
               <input
                 type="text"
                 class="form-control"
@@ -33,7 +23,7 @@
                 (input)="filterServiceProviderTypes($event)"
               />
             </div>
-            <div class="col-sm-6 col-4">
+            <div class="col-sm-8 col-6">
               <div class="float-end">
                 <span class="icon-circle"
                   ><i
@@ -70,15 +60,26 @@
               >
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="head">
+                    <th class="head" pSortableColumn="shortDescription">
                       {{ "crm.short_description" | translate }}
+                      <p-sortIcon field="shortDescription"></p-sortIcon>
                     </th>
-                    <th class="head">{{ "crm.name" | translate }}</th>
-                    <th class="head">{{ "crm.status" | translate }}</th>
-                    <th class="head">
+                    <th class="head" pSortableColumn="name">
+                      {{ "crm.name" | translate
+                      }}<p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="status">
+                      {{ "crm.status" | translate
+                      }}<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="witholdingTaxRate">
                       {{ "crm.withholding_tax_rate" | translate }}
+                      <p-sortIcon field="witholdingTaxRate"></p-sortIcon>
                     </th>
-                    <th class="head">{{ "crm.vat_rate" | translate }}</th>
+                    <th class="head" pSortableColumn="vatTaxRate">
+                      {{ "crm.vat_rate" | translate
+                      }}<p-sortIcon field="vatTaxRate"></p-sortIcon>
+                    </th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-provider>
@@ -119,17 +120,7 @@
         </div>
         <div class="card-body">
           <div class="row mb-3">
-            <div class="col-sm-3 col-4">
-              <select
-                class="form-select"
-                (change)="onSort($event, serviceProviderActivitiesData, 'name')"
-              >
-                <option value="">Sorting Options</option>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-            <div class="col-sm-3 col-4">
+            <div class="col-sm-4 col-6">
               <input
                 type="text"
                 class="form-control"
@@ -139,7 +130,7 @@
                 (input)="filterServiceProviderTypeActivity($event)"
               />
             </div>
-            <div class="col-sm-6 col-4">
+            <div class="col-sm-8 col-6">
               <div class="float-end">
                 <span class="icon-circle"
                   ><i
@@ -176,8 +167,12 @@
               >
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="head">Activity ID</th>
-                    <th class="head">Activity</th>
+                    <th class="head" pSortableColumn="name">
+                      Activity ID<p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th class="head" pSortableColumn="name">
+                      Activity<p-sortIcon field="name"></p-sortIcon>
+                    </th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-provider>
