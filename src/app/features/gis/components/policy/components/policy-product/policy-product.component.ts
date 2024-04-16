@@ -83,11 +83,13 @@ export class PolicyProductComponent {
   contractDetails: any;
   binderType: any;
 
-  policyDetails:any;
-  policyResponse:any;
+  policyDetails: any;
+  policyResponse: any;
 
-  selectedTransactionType:any;
+  selectedTransactionType: any;
 
+  paymentModesList: any;
+  paymentDetails: any;
   enableSelect: boolean = false;
   show: boolean = true;
   @ViewChild('dt1') dt1: Table | undefined;
@@ -114,7 +116,7 @@ export class PolicyProductComponent {
     private introducerService: IntroducersService,
     private currencyService: CurrencyService,
     private contractNamesService: ContractNamesService,
-    private policyService:PolicyService,
+    private policyService: PolicyService,
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
     public cdr: ChangeDetectorRef,
@@ -135,6 +137,7 @@ export class PolicyProductComponent {
     this.loadPolicySources();
     this.getMarketers(0, 1000, "createdDate");
     this.getIntroducers();
+    this.getPaymentModes();
 
   }
   ngOnDestroy(): void { }
@@ -144,7 +147,7 @@ export class PolicyProductComponent {
     this.toggleContractSelect(false);
 
   }
-  
+
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
       action_type: [''],
@@ -707,65 +710,98 @@ export class PolicyProductComponent {
     log.debug("Is coinsuaranace Checked:", isCoinsuranceChecked)
     log.debug("IsAdmin Fee Checked:", isAdminFeeAllowedChecked)
     log.debug("Is Cash Applicable Checked:", isCashApplicableChecked)
-       // Transform the transaction type based on the selected value
-   let transactionTypeValue = '';
-   switch (this.selectedTransactionType) {
-       case 'new-business':
-           transactionTypeValue = 'NB';
-           break;
-       case 'endorsement':
-           transactionTypeValue = 'ED';
-           break;
-           case 'contra-transaction':
-           transactionTypeValue = 'CT';
-           break;
-       // Add more cases for other transaction types as needed
-       default:
-           // Handle any other case or set a default value if necessary
-           break;
-   }
-   this.policyProductForm.get('transaction_type').setValue(transactionTypeValue);
+    // Transform the transaction type based on the selected value
+    let transactionTypeValue = '';
+    switch (this.selectedTransactionType) {
+      case 'new-business':
+        transactionTypeValue = 'NB';
+        break;
+      case 'endorsement':
+        transactionTypeValue = 'ED';
+        break;
+      case 'contra-transaction':
+        transactionTypeValue = 'CT';
+        break;
+      // Add more cases for other transaction types as needed
+      default:
+        // Handle any other case or set a default value if necessary
+        break;
+    }
+    this.policyProductForm.get('transaction_type').setValue(transactionTypeValue);
 
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
     this.policyService
-    .createPolicy(policyForm,this.user)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data) => {
+      .createPolicy(policyForm, this.user)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-        if (data) {
-          this.policyResponse = data;
-          log.debug("Create Policy Endpoint Response", this.policyResponse)
-          this.policyDetails = this.policyResponse.embedded[0]
-          log.debug("Policy Details", this.policyDetails)
-          this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created' );
+          if (data) {
+            this.policyResponse = data;
+            log.debug("Create Policy Endpoint Response", this.policyResponse)
+            this.policyDetails = this.policyResponse.embedded[0]
+            log.debug("Policy Details", this.policyDetails)
+            this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
 
-          const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
-          sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
-          this.router.navigate(['/home/gis/policy/risk-details']);
+            const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
+            sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+            this.router.navigate(['/home/gis/policy/risk-details']);
 
-          this.cdr.detectChanges();
-        
-        } else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
           this.globalMessagingService.displayErrorMessage(
             'Error',
-            'Something went wrong. Please try Again'
+            this.errorMessage
           );
-        }
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    });
+          log.info(`error >>>`, err);
+        },
+      });
   }
-  
+  getPaymentModes() {
+    this.policyService
+      .getPaymentModes()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.paymentModesList = data;
+            log.debug("Payment Name  list", this.paymentModesList)
+            this.paymentDetails = this.paymentModesList.embedded
+            log.debug("Payment Name details", this.paymentDetails)
+
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
 }

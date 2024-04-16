@@ -6,6 +6,9 @@ import { ApiService } from 'src/app/shared/services/api/api.service';
 import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from 'src/environments/api_service_config';
 import { Policy } from '../data/policy-dto';
+import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,5 +50,16 @@ export class PolicyService {
       return this.api.GET(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
     
   }
+  getPaymentModes(){
+    let page = 0;
+    let size = 100;
+  const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    
+    })
+    return this.api.GET(`/v2/policies/payment-modes?pageNo=0&pageSize=100`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
+  }
 }
