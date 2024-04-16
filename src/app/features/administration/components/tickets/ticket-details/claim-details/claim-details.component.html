@@ -119,15 +119,15 @@
       <div class="col-sm-4">
         <p>
           <label class="ticketLabel">Revision date:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{claimPaymentTransaction?.date}}</span>
         </p>
         <p>
           <label class="ticketLabel">Own gross amount:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{claimPaymentTransaction?.amount | number}}</span>
         </p>
         <p>
           <label class="ticketLabel">Revision remarks:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
         </p>
       </div>
     </ng-container>
@@ -144,7 +144,7 @@
         </p>
         <p>
           <label class="ticketLabel">Payment date:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{claimPaymentTransaction?.date}}</span>
         </p>
         <p>
           <label class="ticketLabel">Authorised date:</label>
@@ -186,7 +186,7 @@
         </p>
         <p>
           <label class="ticketLabel">Own gross amount:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{claimPaymentTransaction?.amount | number}}</span>
         </p>
         <p>
           <label class="ticketLabel">Voucher currency:</label>
@@ -236,7 +236,7 @@
         </p>
         <p>
           <label class="ticketLabel">Reinstatement amt:</label>
-          <span class="ticketDesc"></span>
+          <span class="ticketDesc">{{claimPaymentTransaction?.reinsurance_amount | number}}</span>
         </p>
       </div>
     </ng-container>
@@ -273,8 +273,11 @@
         >Undo make ready
         </button>
         <button
-          class="btn btn-primary me-2" style="font-size: 12px;"
-        >Make ready
+          class="btn btn-primary me-2" style="font-size: 12px;" (click)="makeReady()" [disabled]="isLoadingMakeUndo">
+          <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Make ready</span>
+          <ng-template #loadingMakeUndo>
+            <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+          </ng-template>
         </button>
         <button
           class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()" [disabled]="isLoadingAuthExc">

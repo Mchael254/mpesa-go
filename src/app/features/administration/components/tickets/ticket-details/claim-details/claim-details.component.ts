@@ -32,6 +32,7 @@ export class ClaimDetailsComponent implements OnInit {
 
   isLoadingAuthExc: boolean = false;
   isLoadingTransactionData: boolean = false;
+  isLoadingMakeUndo: boolean = false;
 
   constructor(private claimsService: ViewClaimService,
               private globalMessagingService: GlobalMessagingService,
@@ -156,5 +157,29 @@ export class ClaimDetailsComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+  }
+
+  makeReady() {
+    this.isLoadingMakeUndo = true;
+    const assignee = this.authService.getCurrentUserName();
+      const payload: any = {
+        claimNo: this.selectedSpringTickets?.ticket?.claimNo,
+        transactionNo: this.claimTransaction?.transactionNo,
+        transactionType: this.claimTransaction?.transactionCode,
+        user: assignee
+      }
+      log.info('pay', payload);
+      this.claimsService.claimMakeReady(payload)
+        .subscribe({
+          next: (data) => {
+            // this.makeReadyData = data;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully made ready claim transaction');
+            this.isLoadingMakeUndo = false;
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+            this.isLoadingMakeUndo = false;
+          }
+        })
   }
 }
