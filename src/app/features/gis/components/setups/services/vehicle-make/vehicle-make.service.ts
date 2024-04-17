@@ -1,14 +1,15 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
+import { AppConfigService } from '../../../../../../../app/core/config/app-config-service';
 import { vehicleMake } from '../../data/gisDTO';
 import { environment } from 'src/environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+
+import { SESSION_KEY } from '../../../../../../../app/features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../../../app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../../app/shared/services/api/api.service';
 
 @Injectable({
   providedIn: 'root'

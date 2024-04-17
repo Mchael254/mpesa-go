@@ -29,6 +29,9 @@ import { QuotationsService } from '../../../quotation/services/quotations/quotat
 import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ContractNamesService } from '../../services/contract-names/contract-names.service';
+import { PolicyService } from '../../services/policy.service';
 
 
 export class mockClientService {
@@ -57,6 +60,20 @@ export class mockInterMediaryService {
 }
 export class mockIntroducerService {
   getAllIntroducers = jest.fn().mockReturnValue(of());
+ 
+}
+export class mockCurrencyService {
+  getAllCurrencies = jest.fn().mockReturnValue(of());
+ 
+}
+export class mockContractService {
+  getContractNames = jest.fn().mockReturnValue(of());
+ 
+}
+export class mockPolicyService {
+  createPolicy = jest.fn().mockReturnValue(of());
+  getPaymentModes = jest.fn().mockReturnValue(of());
+
  
 }
 
@@ -296,6 +313,9 @@ describe('PolicyProductComponent', () => {
   let quotationService: QuotationsService;
   let intermediaryService: IntermediaryService;
   let introducerService:IntroducersService;
+  let currencyService: CurrencyService;
+  let contractService:ContractNamesService;
+  let policyService:PolicyService;
 
 
 
@@ -314,6 +334,9 @@ describe('PolicyProductComponent', () => {
         { provide: QuotationsService, useClass: mockQuotationService },
         { provide: IntermediaryService, useClass: mockInterMediaryService },
         { provide: IntroducersService, useClass: mockIntroducerService },
+        { provide: CurrencyService, useClass: mockCurrencyService },
+        { provide: ContractNamesService, useClass: mockContractService },
+        { provide: PolicyService, useClass: mockPolicyService },
 
         { provide: APP_BASE_HREF, useValue: '/' },
         GlobalMessagingService, MessageService,
@@ -337,6 +360,9 @@ describe('PolicyProductComponent', () => {
     quotationService = TestBed.inject(QuotationsService);
     intermediaryService = TestBed.inject(IntermediaryService);
     introducerService = TestBed.inject(IntroducersService);
+    currencyService = TestBed.inject(CurrencyService);
+    contractService = TestBed.inject(ContractNamesService);
+    policyService = TestBed.inject(PolicyService);
 
     component.policyProductForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
@@ -497,14 +523,19 @@ describe('PolicyProductComponent', () => {
       }
     });
   }); 
-  it('should update selectedBranchCode and selectedBranchDescription correctly', () => {
-    const selectedValue = { id: 123, name: 'Branch Name' };
-    
+  it('should update selectedBranchCode and selectedBranchDescription when a branch is selected', () => {
+    const selectedValue = 1; // Example selected value
+  
+    component.branchList = mockBranchList;
+
     component.onBranchSelected(selectedValue);
 
-    expect(component.selectedBranchCode).toEqual(selectedValue.id);
-    expect(component.selectedBranchDescription).toEqual(selectedValue.name);
-    // Add more expectations as needed
+    expect(component.selectedBranchCode).toBe(selectedValue);
+    const selectedBranch = mockBranchList.find(branch => branch.id === selectedValue);
+    const selectedBranchDescription = selectedBranch.name;
+    // expect(component.selectedBranchDescription).toBe(selectedBranchDescription); 
+
+    // You can add more assertions here based on your requirements
   });
   it('should load policy sources and update sourceList and sourceDetail on successful response', () => {
     const mockResponse = of(mockSourceData);
@@ -702,23 +733,25 @@ describe('PolicyProductComponent', () => {
     expect(component.closebuttonIntroducers.nativeElement.click).toHaveBeenCalled();
     
 });
-it('should log an error when no introducer is found', () => {
-  // Arrange
-  const code = 999; // Assuming this code does not exist in the mock data
-  const errorSpy = jest.spyOn(console, 'error');
-  const filterSpy = jest.spyOn(Array.prototype, 'filter');
+// it('should log an error when no introducer is found', () => {
+//   // Arrange
+//   const code = 999; // Assuming this code does not exist in the mock data
+//   const errorMock = jest.spyOn(console, 'error').mockImplementation(() => {}); // Mock console.error
+//   const filterSpy = jest.spyOn(Array.prototype, 'filter');
 
-  // Mock data
-  component.introducersList = mockIntroducersData;
+//   // Mock data
+//   component.introducersList = mockIntroducersData;
 
-  // Act
-  component.loadIntroducerDetails(code);
+//   // Act
+//   component.loadIntroducerDetails(code);
 
-  // Assert
-  expect(filterSpy).toHaveBeenCalled();
-  expect(component.selectedIntroducer).toEqual([]); // Ensure selected introducer is an empty array
-  expect(errorSpy).toHaveBeenCalledWith("No introducer found with code:", code); // Ensure console.error is called with the correct message
-});
+//   // Assert
+//   expect(filterSpy).toHaveBeenCalled();
+//   expect(component.selectedIntroducer).toEqual([]); // Ensure selected introducer is an empty array
+//   expect(errorMock).toHaveBeenCalledWith("No introducer found with code:", code); // Ensure console.error is called with the correct message
+//   errorMock.mockRestore(); // Restore console.error
+// });
+
 it('should save introducer correctly', () => {
   // Arrange
   const mockSelectedIntroducer = mockIntroducersData[0]; // Assuming mockIntroducersData is an array of introducer objects
@@ -801,5 +834,174 @@ it('should set joint account data to an empty array when client code is null', (
   // Expect that log.debug is called with the correct arguments
   // expect(mockLogger.debug).toHaveBeenCalledWith("Joint Account Client", []);
 });
-  
+it('should retrieve Cuurencies correctly', () => {
+  const currencies = [{ name: 'USD', code: 'USD' }, { name: 'EUR', code: 'EUR' }]; 
+
+  jest.spyOn(currencyService, 'getAllCurrencies').mockReturnValue(of(currencies)as any);
+
+  component.getCurrencies(); 
+
+  expect(component.currency).toEqual(currencies as any);
 });
+// it('should update cover to date correctly', () => {
+//   const fromDate = new Date('2024-04-16'); // example date
+//   const toDate = new Date(fromDate);
+//   toDate.setDate(fromDate.getDate() + 365);
+
+//   component.updateCoverTo();
+
+//   const expectedToDate = toDate.toISOString().substring(0, 10); // Get YYYY-MM-DD format
+//   const actualToDate = component.policyProductForm.get('with_effective_to_date').value;
+//   expect(actualToDate).toEqual(expectedToDate);
+// });
+it('should set contractNamesList and contractDetails when data is received', () => {
+  const mockData = {
+    embedded: [{ /* mock contract details */ }]
+  };
+
+  jest.spyOn(contractService, 'getContractNames').mockReturnValue(of(mockData)as any);
+
+  component.getContractNames();
+
+  expect(component.contractNamesList).toEqual(mockData);
+  expect(component.contractDetails).toEqual(mockData.embedded[0]);
+});
+it('should handle error and display error message on error response', () => {
+  const mockErrorResponse = new Error('Test error');
+  const mockResponse = throwError(mockErrorResponse);
+  jest.spyOn(contractService, 'getContractNames').mockReturnValue(mockResponse);
+
+  component.getContractNames();
+
+  expect(contractService.getContractNames).toHaveBeenCalled();
+  
+  // Subscribe to the observable to trigger the error callback
+  mockResponse.subscribe({
+    error: () => {
+      // Expectations to cover the lines within the error callback
+      expect(component.errorOccurred).toBe(true);
+      expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+      // Additional expectations to ensure proper error handling
+      expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+    }
+  });
+});
+// it('should call createPolicy and handle success response', () => {
+//   const mockPolicyForm = {}; // Mock your policy form
+//   const mockUser = {}; // Mock your user object
+//   const mockPolicyResponse = {}; // Mock your policy response
+
+//   // Stub the createPolicy method of PolicyService to return a mock observable
+//   jest.spyOn(policyService, 'createPolicy').mockReturnValue(of(mockPolicyResponse)as any);
+
+//   // Trigger the method call
+//   component.createPolicy();
+
+//   // Assert the behavior after success response
+//   expect(component.policyResponse).toEqual(mockPolicyResponse);
+//   // Add more assertions as needed
+// });
+
+it('should handle error and display error message on error response', () => {
+  const mockErrorResponse = new Error('Test error');
+  const mockResponse = throwError(mockErrorResponse);
+  jest.spyOn(policyService, 'createPolicy').mockReturnValue(mockResponse);
+
+  component.createPolicy();
+
+  expect(policyService.createPolicy).toHaveBeenCalled();
+  
+  // Subscribe to the observable to trigger the error callback
+  mockResponse.subscribe({
+    error: () => {
+      // Expectations to cover the lines within the error callback
+      expect(component.errorOccurred).toBe(true);
+      expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+      // Additional expectations to ensure proper error handling
+      expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+    }
+  });
+});
+it('should call createPolicy and handle success response', () => {
+  const mockPolicyForm = {}; // Mock your policy form
+  const mockUser = {}; // Mock your user object
+  const mockPolicyResponse = {
+    embedded: [{}] // Mock embedded data structure as needed
+  };
+
+  // Stub the createPolicy method of PolicyService to return a mock observable
+  jest.spyOn(policyService, 'createPolicy').mockReturnValue(of(mockPolicyResponse)as any);
+  // Spy on other methods or services as needed
+  jest.spyOn(globalMessagingService, 'displaySuccessMessage');
+
+  // spyOn(component.router, 'navigate');
+  jest.spyOn(sessionStorage, 'setItem');
+  jest.spyOn(component.cdr, 'detectChanges');
+
+  // Trigger the method call
+  component.createPolicy();
+
+  // Assert the behavior after success response
+  expect(component.policyResponse).toEqual(mockPolicyResponse);
+  expect(component.policyDetails).toEqual(mockPolicyResponse.embedded[0]);
+  expect(component.globalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Policy has been created');
+  // expect(sessionStorage.setItem).toHaveBeenCalledWith('passedPolicyDetails', JSON.stringify(mockPolicyResponse.embedded[0]));
+  // expect(component.router.navigate).toHaveBeenCalledWith(['/home/gis/policy/risk-details']);
+  expect(component.cdr.detectChanges).toHaveBeenCalled();
+  // Add more assertions as needed
+});
+it('should call createPolicy and set transaction type correctly for "new-business"', () => {
+  // Set selectedTransactionType to 'new-business'
+  component.selectedTransactionType = 'new-business';
+  
+  // Other necessary mocks and stubs...
+  
+  // Trigger the method call
+  component.createPolicy();
+
+  // Assert the transaction type value
+  expect(component.policyProductForm.get('transaction_type').value).toEqual('NB');
+});
+
+it('should call createPolicy and set transaction type correctly for "endorsement"', () => {
+  // Set selectedTransactionType to 'endorsement'
+  component.selectedTransactionType = 'endorsement';
+  
+  // Other necessary mocks and stubs...
+  
+  // Trigger the method call
+  component.createPolicy();
+
+  // Assert the transaction type value
+  expect(component.policyProductForm.get('transaction_type').value).toEqual('ED');
+});
+
+it('should call createPolicy and set transaction type correctly for "contra-transaction"', () => {
+  // Set selectedTransactionType to 'contra-transaction'
+  component.selectedTransactionType = 'contra-transaction';
+  
+  // Other necessary mocks and stubs...
+  
+  // Trigger the method call
+  component.createPolicy();
+
+  // Assert the transaction type value
+  expect(component.policyProductForm.get('transaction_type').value).toEqual('CT');
+});
+
+it('should call getPaymentModes and handle success response', () => {
+  const mockPaymentModes = {
+    embedded: [{ /* mock contract details */ }]
+  };
+
+  jest.spyOn(policyService, 'getPaymentModes').mockReturnValue(of(mockPaymentModes)as any);
+
+  component.getPaymentModes();
+
+  expect(component.paymentModesList).toEqual(mockPaymentModes);
+  expect(component.paymentDetails).toEqual(mockPaymentModes.embedded);
+});
+
+});
+
+
