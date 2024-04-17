@@ -22,6 +22,10 @@ import {UtilService} from "./util/util.service";
 import { SessionStorageService } from './session-storage/session-storage.service';
 import {StringManipulation} from "../../features/lms/util/string_manipulation";
 import { GlobalMessagingService } from './messaging/global-messaging.service';
+import { ApiService } from './api/api.service';
+import { API_CONFIG } from 'src/environments/api_service_config';
+import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import { Profile } from '../data/auth/profile';
 
 
 const log = new Logger('AuthService');
@@ -34,8 +38,8 @@ const log = new Logger('AuthService');
   providedIn: 'root'
 })
 export class AuthService implements OnDestroy {
-  private currentUserSubject = new BehaviorSubject<AccountContact | ClientAccountContact | WebAdmin>({} as AccountContact | ClientAccountContact | WebAdmin);
-  public currentUser$: Observable<AccountContact | ClientAccountContact | WebAdmin> = this.currentUserSubject.asObservable();
+  private currentUserSubject = new BehaviorSubject<Profile>({} as Profile);
+  public currentUser$: Observable<Profile> = this.currentUserSubject.asObservable();
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
   public isLoadingUserSubject = new BehaviorSubject<boolean>(false);
@@ -53,7 +57,8 @@ export class AuthService implements OnDestroy {
     private browserStorage: BrowserStorage,
     private localStorageService: LocalStorageService,
     private session_storage: SessionStorageService,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private api: ApiService,
   ) {
     this.isAuthenticated.pipe(
       distinctUntilChanged(),
@@ -102,12 +107,12 @@ export class AuthService implements OnDestroy {
 
       const baseUrl = this.appConfigService.config.contextPath.users_services;
       this.http
-        .get<AccountContact | ClientAccountContact | WebAdmin>(
-          `/${baseUrl}/administration/users/profile`,
+        .get<Profile>(
+          `/${baseUrl}/administration/users/entity-profile`,
           { headers: headers },
         )
         .subscribe(
-          (data: AccountContact | ClientAccountContact | WebAdmin) =>
+          (data: Profile) =>
             this.setAuth(data),
           (err) => this.purgeAuth(),
         );
@@ -121,7 +126,7 @@ export class AuthService implements OnDestroy {
    * Sets the authentication data and authenticated status
    * @param user {AccountContact | ClientAccountContact | WebAdmin} The user data
    */
-  setAuth(user: AccountContact | ClientAccountContact | WebAdmin) {
+  setAuth(user: Profile) {
     // set current user data into observable
     if (this.utilService.isUserAdmin(user)) {
       this.browserStorage.storeObj('activeUser', 'ADMIN');
@@ -195,6 +200,8 @@ export class AuthService implements OnDestroy {
     let headers: HttpHeaders;
       headers = new HttpHeaders({
         Accept: 'application/json',
+        entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
+        'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
       });
 
     let refresh_token: string = this.jwtService.getRefreshToken();
@@ -222,6 +229,8 @@ export class AuthService implements OnDestroy {
     headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
+      'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
     });
 
     this.getAuthToken(credentials, headers, (errMsg) => {
@@ -255,6 +264,8 @@ export class AuthService implements OnDestroy {
     headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      entityType: this.session_storage.get(SESSION_KEY.ENTITY_TYPE),
+      'X-TenantId': this.session_storage.get(SESSION_KEY.API_TENANT_ID)
     });
 
     this.getAuthVerification(credentials, headers, (data) => {
@@ -432,7 +443,7 @@ export class AuthService implements OnDestroy {
    * @returns {AccountContact | ClientAccountContact | WebAdmin}
    * @deprecated
    */
-  getCurrentUser(): AccountContact | ClientAccountContact | WebAdmin {
+  getCurrentUser(): Profile {
     let user = StringManipulation.returnNullIfEmpty(this.localStorageService.getItem('loginUserProfile'));
     if(null === user){
       this.session_storage.clear();
@@ -447,15 +458,16 @@ export class AuthService implements OnDestroy {
    */
   getCurrentUserName(): string {
     const user = this.getCurrentUser();
-    let user_name;
-    if (this.utilService.isUserAgent(user)) {
-      user_name = user.acccUsername || '';
-    } else if (this.utilService.isUserClient(user)) {
-      user_name = user.acwaUsername;
-    } else if (this.utilService.isUserAdmin(user)) {
-      user_name = user.username;
-    }
-    return user_name;
+    // let user_name;
+    // if (this.utilService.isUserAgent(user)) {
+    //   user_name = user.acccUsername || '';
+    // } else if (this.utilService.isUserClient(user)) {
+    //   user_name = user.acwaUsername;
+    // } else if (this.utilService.isUserAdmin(user)) {
+    //   user_name = user.username;
+    // }
+    // return user_name;
+    return user.fullName
   }
 
   // Update the user on the server
@@ -494,18 +506,24 @@ export class AuthService implements OnDestroy {
           // save the token
 
           this.jwtService.saveToken(data);
-          return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
+          return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, { headers });
         }),
       )
       .subscribe(
-        (data: AccountContact | ClientAccountContact | WebAdmin) => {
+        (data: Profile) => {
           this.setAuth(data);
-          log.info(data);
 
-          this.router
+          const entityType = headers.get('entityType');
+          if (entityType === 'MEMBER') {
+            const entityCode = data.code;
+            this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], { queryParams: { entityCode }});
+          } else {
+            this.router
             .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
             .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
             .catch((error) => log.error(error));
+          }
+          
         },
         (error) => {
           this.destroyUser();
@@ -565,7 +583,7 @@ export class AuthService implements OnDestroy {
     this.jwtService.destroyRefreshToken();
     // set current use to an empty object
     this.currentUserSubject.next(
-      {} as AccountContact | ClientAccountContact | WebAdmin,
+      {} as Profile,
     );
     // set auth status to false
     this.isAuthenticatedSubject.next(false);
@@ -591,7 +609,7 @@ export class AuthService implements OnDestroy {
 
   getUserDetails() {
     const baseUrl = this.appConfigService.config.contextPath.accounts_services;
-    return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${baseUrl}/api/me`).pipe()
+    return this.http.get<Profile>(`/${baseUrl}/api/me`).pipe()
       .subscribe((data) => {
         this.setAuth(data);
       });
@@ -654,7 +672,7 @@ export class AuthService implements OnDestroy {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     });
-    return this.http.post<string>(`/${(baseUrl)}/administration/users/profile`, JSON.stringify(userData), {headers:headers});
+    return this.http.post<string>(`/${(baseUrl)}/administration/users/entity-profile`, JSON.stringify(userData), {headers:headers});
   }
 
   /**
@@ -684,11 +702,11 @@ export class AuthService implements OnDestroy {
             concatMap((data: OauthToken) => {
               // save the token
               this.jwtService.saveToken(data);
-              return this.http.get<AccountContact | ClientAccountContact | WebAdmin>(`/${userBaseUrl}/administration/users/profile`);
+              return this.http.get<Profile>(`/${userBaseUrl}/administration/users/entity-profile`, { headers });
             }),
         )
         .subscribe(
-            (data: AccountContact | ClientAccountContact | WebAdmin) => {
+            (data: Profile) => {
               this.setAuth(data);
               log.info(data);
 

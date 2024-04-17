@@ -34,18 +34,18 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.partyAccountDetails = changes['partyAccountDetails']?.currentValue ?
-      changes['partyAccountDetails']?.currentValue : this.partyAccountDetails;
+    // this.partyAccountDetails = changes['partyAccountDetails']?.currentValue ?
+    //   changes['partyAccountDetails']?.currentValue : this.partyAccountDetails;
 
-    this.nokList = changes['nextOfKinDetailsList']?.currentValue ?
-      changes['nextOfKinDetailsList']?.currentValue : this.nokList;
+    // this.nokList = changes['nextOfKinDetailsList']?.currentValue ?
+    //   changes['nextOfKinDetailsList']?.currentValue : this.nokList;
 
     // this.wealthAmlDetails = changes['wealthAmlDetails']?.currentValue;
 
     // log.info(`partyAccountDetails ==> `, this.partyAccountDetails);
     // this.getWealthAmlDetails();
     this.getNokList();
-    this.getPaymentDetails();
+    // this.getPaymentDetails();
   }
 
   ngOnInit(): void {}

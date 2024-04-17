@@ -7,6 +7,7 @@ export enum  SESSION_KEY {
   ACCOUNT_CODE = 'account_code',
   POL_CODE = 'pol_code',
   ENDR_CODE = 'endr_code',
+  ENTITY_TYPE = 'entityType',
 
 
   // Quick Quote

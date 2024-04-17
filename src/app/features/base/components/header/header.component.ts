@@ -4,6 +4,7 @@ import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { Logger } from '../../../../shared/services/logger/logger.service';
+import { Profile } from 'src/app/shared/data/auth/profile';
 
 const log = new Logger("HeaderComponent");
 
@@ -17,7 +18,7 @@ const log = new Logger("HeaderComponent");
 @AutoUnsubscribe
 export class HeaderComponent implements OnInit {
   defaultLanguage: string = 'fi fi-gb fis';
-  user: any;
+  user: Profile;
 
   public showSideBar: boolean = false;
   @Output('toggleSideNav') toggleSideNav: EventEmitter<any> = new EventEmitter();
@@ -39,7 +40,7 @@ export class HeaderComponent implements OnInit {
     if (this.user?.image) {
       return this.user.image;
     } else {
-      const initials = this.user?.name?.split(' ')?.map((name: string) => name.charAt(0))?.join('');
+      const initials = this.user?.fullName?.split(' ')?.map((name: string) => name.charAt(0))?.join('');
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.width = 40;

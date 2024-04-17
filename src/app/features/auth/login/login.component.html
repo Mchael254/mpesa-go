@@ -89,7 +89,7 @@
       <ng-container *ngIf="!isLoading; else loading">
         <ng-container *ngFor="let entity of entities">
           <div class="col-6">
-            <div class="entity text-dark" (click)="authAttempt()">
+            <div class="entity text-dark" (click)="selectEntity(entity)">
               <i class="fa-solid fa-user" style="font-size: 3rem;"></i>
               <p>{{ entity | uppercase }}</p>
             </div>
