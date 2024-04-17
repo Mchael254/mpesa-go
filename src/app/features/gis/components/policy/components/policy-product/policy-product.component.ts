@@ -15,7 +15,7 @@ import { IntermediaryService } from '../.../../../../../../entities/services/int
 import { Observable } from 'rxjs';
 import { AgentDTO } from '../../../../../entities/data/AgentDTO';
 import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
 import { ContractNamesService } from '../../services/contract-names/contract-names.service';
 import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
@@ -621,7 +621,7 @@ export class PolicyProductComponent {
     this.currencyService.getAllCurrencies().subscribe({
       next: (res => {
         this.currency = res
-        console.log("Currency", res)
+        log.debug("Currency", res)
       })
     })
   }
