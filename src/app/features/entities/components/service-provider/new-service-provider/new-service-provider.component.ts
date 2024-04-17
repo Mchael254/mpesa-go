@@ -736,7 +736,7 @@ export class NewServiceProviderComponent {
           status: "A",
           dateCreated: serviceproviderFormValues.regDate,
           pinNumber: serviceproviderFormValues.pinNumber,
-          accountType: serviceproviderFormValues.providerType,
+          accountType: +serviceproviderFormValues.providerType,
           firstName: serviceproviderFormValues.firstName,
           lastName: serviceproviderFormValues.otherName,
           dateOfBirth: this.entityDetails?.dateOfBirth,
@@ -747,9 +747,8 @@ export class NewServiceProviderComponent {
           paymentDetails: payment,
           serviceProviderRequest: servProvider,
           wealthAmlDetails: wealth
-
-
         }
+        log.info(`service provider to save ==> `, saveServiceProvider);
         this.serviceProviderService.saveServiceProvider(saveServiceProvider)
           .pipe(
             takeUntil(this.destroyed$),
