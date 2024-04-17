@@ -1,21 +1,876 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RiskDetailsComponent } from './risk-details.component';
+import { of, throwError } from 'rxjs';
+import { ClientService } from '../../../../../entities/services/client/client.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SharedModule } from '../../../../../../shared/shared.module';
+import { FormBuilder, FormControl, FormGroup, FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BrowserStorage } from "../../../../../../shared/services/storage";
+import { APP_BASE_HREF } from '@angular/common';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import { MessageService } from 'primeng/api';
+import { AppConfigService } from '../../../../../../core/config/app-config-service';
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { Products, Subclasses, introducers } from '../../../setups/data/gisDTO';
+import { ProductsService } from '../../../setups/services/products/products.service';
+// import { TranslateService } from '@ngx-translate/core/dist/lib/translate.service';
+import { DEFAULT_LANGUAGE, TranslateService, TranslateModule, USE_DEFAULT_LANG, USE_EXTEND, USE_STORE } from '@ngx-translate/core';
+import { TranslateStore } from '@ngx-translate/core';
+import { TranslateLoader } from '@ngx-translate/core';
+import { TranslateCompiler } from '@ngx-translate/core';
+import { TranslateParser } from '@ngx-translate/core';
+import { MissingTranslationHandler } from '@ngx-translate/core';
+import { TranslateFakeLoader } from '@ngx-translate/core'
+import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
+import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
+import { QuotationsService } from '../../../quotation/services/quotations/quotations.service';
+import { IntermediaryService } from '../.../../../../../../entities/services/intermediary/intermediary.service';
+import { AgentDTO } from '../../../../../entities/data/AgentDTO';
+import { IntroducersService } from '../../../setups/services/introducers/introducers.service';
+import { CurrencyService } from '../../../../../../shared/services/setups/currency/currency.service';
+import { ContractNamesService } from '../../services/contract-names/contract-names.service';
+import { PolicyService } from '../../services/policy.service';
+import { PolicyContent, PolicyResponseDTO } from '../../data/policy-dto';
+import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
+import { BinderService } from '../../../setups/services/binder/binder.service';
+import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
+import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
+import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 
+export class mockPolicyService {
+  createPolicy = jest.fn().mockReturnValue(of());
+  getPaymentModes = jest.fn().mockReturnValue(of());
+  getPolicy = jest.fn().mockReturnValue(of());
+}
+export class mockProductSubclassService {
+  getProductSubclasses = jest.fn().mockReturnValue(of());
+
+} export class mockSubclassService {
+  getAllSubclasses = jest.fn().mockReturnValue(of());
+
+}
+export class mockBinderService {
+  getAllBindersQuick = jest.fn().mockReturnValue(of());
+}
+export class mockSubclassCovertypeService {
+  getSubclassCovertypeBySCode = jest.fn().mockReturnValue(of());
+}
+export class mockVehicleMakeService {
+  getAllVehicleMake = jest.fn().mockReturnValue(of());
+} export class mockVehicleModelService {
+  getAllVehicleModel = jest.fn().mockReturnValue(of());
+}
+const mockLogger = {
+  debug: jest.fn()
+};
+const mockPolicyContent: PolicyContent = {
+  agency: 123,
+  authorized_status: "Authorized",
+  basic_premium: 70000,
+  batch_no: 2020247746,
+  client_code: 324,
+  currency: "USD",
+  debit_owner: "John Doe",
+  endorsement_no: "ENDORSE123",
+  insureds: [
+    {
+      client: {
+        first_name: "Jane",
+        id: 456,
+        last_name: "Doe"
+      },
+      prp_code: 789
+    }
+  ],
+  introducer_code: 101,
+  marketer_code: 202,
+  policy_no: "MPC/MSA/2019/200026",
+  policy_remarks: "Renewal due next month",
+  policy_status: "RN",
+  policy_type: "Standard",
+  premium: 75000,
+  prepared_by: "Alice Smith",
+  prepared_date: "2024-04-17",
+  product: {
+    accept_unique_risks: "N",
+    accepts_multiple_classes: "Y",
+    allow_accommodation: "Y",
+    allow_motor_class: "N",
+    allow_open_policy: "N",
+    allow_same_day_renewal: "N",
+    are_installment_allowed: "y",
+    auto_generate_cover_note: "Y",
+    auto_post_reinsurance: "N",
+    check_schedule: "N",
+    claim_prefix: "AVI_CLM",
+    claim_screen_code: "AVI_CLM",
+    code: 2907,
+    commission_rate: 3,
+    description: "AVIATION HULL",
+    do_full_remittance: "Y",
+    does_escalation_reduction_apply: "N",
+    enable_spare_parts: "N",
+    enable_web: "Y",
+    endorsement_minimum_premium: 100000,
+    expires: "Y",
+    industry_code: 234,
+    insurance_type: "GENERAL",
+    insured_accumulation_limit: 1400000,
+    interface_type: "CASH",
+    is_assignment_allowed: "N",
+    is_default: "N",
+    is_loan_applicable: "Y",
+    is_marine: "N",
+    is_pin_required: "Y",
+    is_policy_number_editable: "N",
+    is_renewable: "N",
+    maximum_age: 35,
+    maximum_extensions: 10,
+    maximum_term: 5,
+    minimum_age: 10,
+    minimum_premium: 10000,
+    minimum_sub_classes: 1,
+    minimum_term: 4,
+    open_cover: "N",
+    order: 2,
+    organization_code: 2,
+    policy_accumulation_limit: 5000000,
+    policy_code_pages: 20,
+    policy_document_pages: 20,
+    policy_prefix: "P-AVIH",
+    policy_word_document: "path",
+    prerequisite_product_code: 534,
+    product_group_code: 80,
+    product_report_groups_code: 3323,
+    product_type: "Prod B",
+    prorata_type: "D",
+    schedule_order: 2,
+    short_description: 801,
+    short_name: "AVIH",
+    show_fap: "Y",
+    show_on_web_portal: "N",
+    show_sum_insured: "Y",
+    term_distribution: 2,
+    total_company_accumulation_limit: 839900,
+    underwriting_screen_code: "AVI_UNDWR",
+    web_details: "Details",
+    with_effect_from: "2015-01-01",
+    with_effect_to: "2015-01-14",
+    years: 3
+  },
+  promise_date: "2024-04-17",
+  renewal_date: "2021-02-25",
+  risk_information: [
+    {
+      allowed_commission_rate: 0,
+      basic_premium: 0,
+      binder_code: 0,
+      commission_amount: 0,
+      commission_rate: 0,
+      cover_type_code: 0,
+      cover_type_short_description: "string",
+      currency_code: 0,
+      date_cover_from: "2024-04-17",
+      date_cover_to: "2024-04-17",
+      del_sect: "string",
+      gross_premium: 0,
+      insureds: {
+        client: {
+          first_name: "string",
+          id: 0,
+          last_name: "string"
+        },
+        prp_code: 0
+      },
+      ipu_ncd_cert_no: "string",
+      loaded: "string",
+      lta_commission: 0,
+      net_premium: 0,
+      paid_premium: 0,
+      policy_batch_no: 0,
+      policy_number: "string",
+      policy_status: "string",
+      product_code: 0,
+      property_description: "string",
+      property_id: "string",
+      quantity: 0,
+      reinsurance_endorsement_number: "string",
+      renewal_area: "string",
+      risk_fp_override: 0,
+      risk_ipu_code: 0,
+      sections: [
+        {
+          div_factor: 0,
+          free_limit: 0,
+          limit_amount: 0,
+          multiplier_rate: 0,
+          pil_prem_rate: 0,
+          premium: 0,
+          rate_type: "string",
+          sect_code: 0,
+          sect_ipu_code: 0,
+          section_code: 0,
+          section_desc: "string",
+          section_short_desc: "string"
+        }
+      ],
+      stamp_duty: 0,
+      sub_class_code: 0,
+      sub_class_description: "string",
+      transaction_type: "string",
+      underwriting_year: 0,
+      value: 0
+    }
+  ],
+  tax_information: [
+    {
+      amount: 0,
+      batch_no: 0,
+      description: "string",
+      rate: 0,
+      rate_type: "string",
+      transaction_type_code: "string"
+    }
+  ],
+  total_premium: 0,
+  total_sum_insured: 800000,
+  transaction_type: "string",
+  type: "string",
+  under_writing_only: "string",
+  wef_dt: "2020-02-25",
+  wet_dt: "2020-02-25"
+};
+const mockResponse: PolicyResponseDTO = {
+  content: [mockPolicyContent],
+  empty: false,
+  first: true,
+  last: true,
+  number: 0,
+  number_of_elements: 1,
+  pageable: {
+    offset: 0,
+    page_number: 0,
+    page_size: 0,
+    paged: true,
+    sort: {
+      empty: true,
+      sorted: true,
+      unsorted: true
+    },
+    unpaged: true
+  },
+  size: 1,
+  sort: {
+    empty: true,
+    sorted: true,
+    unsorted: true
+  },
+  total_elements: 1,
+  total_pages: 1
+};
+const mockAllSubclassList: Subclasses[] = [
+  {
+    accomodation: 'Some value',
+    allowsDeclaration: 'Some value',
+    bondSubclass: 'Some value',
+    certificatePrefix: 'Some value',
+    claimGracePeriod: 'Some value',
+    claimPrefix: 'Some value',
+    claimReviewDays: 'Some value',
+    classCode: 'Some value',
+    code: 2,
+    declarationPenaltyPercentage: 'Some value',
+    description: 'Some value',
+    doesDisabilityScaleApply: 'Some value',
+    doesLoanApply: 'Some value',
+    doesReinsurancePoolApply: 'Some value',
+    doesTerritoryApply: 'Some value',
+    enableSchedule: 'Some value',
+    expiryPeriod: 'Some value',
+    freeCoverLimit: 'Some value',
+    generateCertificateAutomatically: 'Some value',
+    glAccountGroupCode: 'Some value',
+    isConveyanceTypeRequired: 'Some value',
+    isExcessOfLossApplicable: 'Some value',
+    isMandatory: 'Some value',
+    isQuakeRegionRequired: 'Some value',
+    isRenewable: 'Some value',
+    isRescueMandatory: 'Some value',
+    isRiskAddressRequired: 'Some value',
+    isRiskClassMandatory: 'Some value',
+    isStraightFlowEnabled: 'Some value',
+    isSurveyValuationRequired: 'Some value',
+    maxDeclarationPercentage: 'Some value',
+    maxInsuredAccumulationLimit: 'Some value',
+    maxNoClaimDiscountLevel: 'Some value',
+    maxPolicyAccumulationLimit: 'Some value',
+    noCertificate: 'Some value',
+    noRiSi: 'Some value',
+    organizationCode: 'Some value',
+    overrideReq: 'Some value',
+    policyPrefix: 'Some value',
+    prereqSubclassCode: 'Some value',
+    reinsureWotRiProg: 'Some value',
+    reportParameter: 'Some value',
+    riskDummy: 'Some value',
+    riskExpireTotalLoss: 'Some value',
+    riskIdFormat: 'Some value',
+    screenCode: 'Some value',
+    shortDescription: 'Some value',
+    showButcharge: 'Some value',
+    showNoClaimDiscount: 'Some value',
+    subClassId: 'Some value',
+    surveyLimitAccumulation: 'Some value',
+    totalCompanyAccumulationLimit: 'Some value',
+    underwritingScreenCode: 'Some value',
+    uniqueRisk: 'Some value',
+    useCoverPeriodRate: 'Some value',
+    webSubclassDetails: 'Some value',
+    withEffectFrom: 'Some value',
+    withEffectTo: 'Some value',
+    claimScreenCode: 'Some value' // Add the missing property
+  },
+]
+const mockAllSubclassList2: Subclasses[] = [
+  {
+    accomodation: 'Some value',
+    allowsDeclaration: 'Some value',
+    bondSubclass: 'Some value',
+    certificatePrefix: 'Some value',
+    claimGracePeriod: 'Some value',
+    claimPrefix: 'Some value',
+    claimReviewDays: 'Some value',
+    classCode: 'Some value',
+    code: 2,
+    declarationPenaltyPercentage: 'Some value',
+    description: 'Some value',
+    doesDisabilityScaleApply: 'Some value',
+    doesLoanApply: 'Some value',
+    doesReinsurancePoolApply: 'Some value',
+    doesTerritoryApply: 'Some value',
+    enableSchedule: 'Some value',
+    expiryPeriod: 'Some value',
+    freeCoverLimit: 'Some value',
+    generateCertificateAutomatically: 'Some value',
+    glAccountGroupCode: 'Some value',
+    isConveyanceTypeRequired: 'Some value',
+    isExcessOfLossApplicable: 'Some value',
+    isMandatory: 'Some value',
+    isQuakeRegionRequired: 'Some value',
+    isRenewable: 'Some value',
+    isRescueMandatory: 'Some value',
+    isRiskAddressRequired: 'Some value',
+    isRiskClassMandatory: 'Some value',
+    isStraightFlowEnabled: 'Some value',
+    isSurveyValuationRequired: 'Some value',
+    maxDeclarationPercentage: 'Some value',
+    maxInsuredAccumulationLimit: 'Some value',
+    maxNoClaimDiscountLevel: 'Some value',
+    maxPolicyAccumulationLimit: 'Some value',
+    noCertificate: 'Some value',
+    noRiSi: 'Some value',
+    organizationCode: 'Some value',
+    overrideReq: 'Some value',
+    policyPrefix: 'Some value',
+    prereqSubclassCode: 'Some value',
+    reinsureWotRiProg: 'Some value',
+    reportParameter: 'Some value',
+    riskDummy: 'Some value',
+    riskExpireTotalLoss: 'Some value',
+    riskIdFormat: 'Some value',
+    screenCode: 'Some value',
+    shortDescription: 'Some value',
+    showButcharge: 'Some value',
+    showNoClaimDiscount: 'Some value',
+    subClassId: 'Some value',
+    surveyLimitAccumulation: 'Some value',
+    totalCompanyAccumulationLimit: 'Some value',
+    underwritingScreenCode: 'Some value',
+    uniqueRisk: 'Some value',
+    useCoverPeriodRate: 'Some value',
+    webSubclassDetails: 'Some value',
+    withEffectFrom: 'Some value',
+    withEffectTo: 'Some value',
+    claimScreenCode: 'Some value' // Add the missing property
+  },
+]
+const mockData = {
+  _embedded: {
+    product_subclass_dto_list: [
+      {
+        code: 1,
+        is_mandatory: 'Yes',
+        sub_class_code: 101,
+        policy_document_order_number: 1001,
+        product_group_code: 201,
+        product_code: 301,
+        productShortDescription: 'Short description',
+        underwriting_screen_code: 'ABC',
+        date_with_effect_from: '2022-01-01',
+        date_with_effect_to: '2022-12-31',
+        version: 1
+      }
+    ]
+  }
+};
+const mockBinderList = {
+  _embedded: {
+    binder_dto_list: [
+      // Provide sample binder data
+      { binderId: 1, name: 'Binder 1', /* ... other properties ... */ },
+      { binderId: 2, name: 'Binder 2', /* ... other properties ... */ },
+    ],
+  },
+};
 describe('RiskDetailsComponent', () => {
   let component: RiskDetailsComponent;
   let fixture: ComponentFixture<RiskDetailsComponent>;
+  let globalMessagingService: GlobalMessagingService;
+  let policyService: PolicyService;
+  let ProductService: ProductsService;
+  let subclassService: SubclassesService;
+  let binderService: BinderService;
+  let subclassCoverTypesService: SubClassCoverTypesService;
+  let vehicleMakeService: VehicleMakeService;
+  let vehicleModelService: VehicleModelService
+
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [RiskDetailsComponent]
+      declarations: [RiskDetailsComponent],
+      imports: [HttpClientTestingModule, SharedModule, FormsModule, RouterTestingModule,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader } // Use TranslateFakeLoader
+        })],
+      providers: [
+        { provide: PolicyService, useClass: mockPolicyService },
+        { provide: ProductsService, useClass: mockProductSubclassService },
+        { provide: SubclassesService, useClass: mockSubclassService },
+        { provide: BinderService, useClass: mockBinderService },
+        { provide: SubClassCoverTypesService, useClass: mockSubclassCovertypeService },
+        { provide: VehicleMakeService, useClass: mockVehicleMakeService },
+        { provide: VehicleModelService, useClass: mockVehicleModelService },
+
+
+        { provide: APP_BASE_HREF, useValue: '/' },
+        GlobalMessagingService, MessageService,
+        FormBuilder,
+        { provide: AppConfigService, useValue: { config: { contextPath: { gis_services: 'gis/setups/api/v1' } } } },
+        { provide: USE_DEFAULT_LANG, useValue: true },
+        { provide: USE_STORE, useValue: true },
+        { provide: USE_EXTEND, useValue: true },
+        { provide: DEFAULT_LANGUAGE, useValue: true }
+      ]
     });
     fixture = TestBed.createComponent(RiskDetailsComponent);
     component = fixture.componentInstance;
+    globalMessagingService = TestBed.inject(GlobalMessagingService);
+    policyService = TestBed.inject(PolicyService);
+    ProductService = TestBed.inject(ProductsService);
+    subclassService = TestBed.inject(SubclassesService);
+    binderService = TestBed.inject(BinderService);
+    subclassCoverTypesService = TestBed.inject(SubClassCoverTypesService);
+    vehicleMakeService = TestBed.inject(VehicleMakeService);
+    vehicleModelService = TestBed.inject(VehicleModelService);
+
+    component.policyRiskForm = new FormGroup({});
+    component.fb = TestBed.inject(FormBuilder);
+
     fixture.detectChanges();
   });
-
+  afterEach(() => {
+    // Optionally clear mock function calls
+    jest.clearAllMocks();
+  });
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  it('should toggle NCD applicable field', () => {
+    // Initially, isNcdApplicable should be false
+    expect(component.isNcdApplicable).toBe(false);
+
+    // Call toggleNcdApplicableFields() with checked as true
+    component.toggleNcdApplicableFields(true);
+
+    // Assert that isNcdApplicable has been updated to true
+    expect(component.isNcdApplicable).toBe(true);
+
+    // Call toggleNcdApplicableFields() with checked as false
+    component.toggleNcdApplicableFields(false);
+
+    // Assert that isNcdApplicable has been updated to false again
+    expect(component.isNcdApplicable).toBe(false);
+  });
+  it('should toggle cash applicable field', () => {
+    // Initially, isCashApplicable should be false
+    expect(component.isCashApplicable).toBe(false);
+
+    // Call toggleCashApplicableField() with checked as true
+    component.toggleCashApplicableField(true);
+
+    // Assert that isCashApplicable has been updated to true
+    expect(component.isCashApplicable).toBe(true);
+
+    // Call toggleCashApplicableField() with checked as false
+    component.toggleCashApplicableField(false);
+
+    // Assert that isCashApplicable has been updated to false again
+    expect(component.isCashApplicable).toBe(false);
+  });
+  it('should call getPolicy and handle success response', () => {
+
+
+    // Stub the getPolicy method of PolicyService to return a mock observable
+    jest.spyOn(policyService, 'getPolicy').mockReturnValue(of(mockResponse) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+    jest.spyOn(component.policyRiskForm.controls['cover_days'], 'setValue');
+    jest.spyOn(component, 'onProductSelected');
+    jest.spyOn(component, 'getProductSubclass');
+    jest.spyOn(component.cdr, 'detectChanges');
+
+    // Debugging: Log values for debugging
+    console.log('passedCoverFrom:', component.passedCoverFrom);
+    console.log('passedCoverTo:', component.passedCoverTo);
+    console.log('passedCoverDays (before calculation):', component.passedCoverDays);
+
+    // Trigger the method call
+    component.getPolicy();
+
+    // Assert the behavior after success response
+    // expect(component.batchNo).toEqual(mockResponse.content[0].batch_no);
+    expect(component.policyResponse).toEqual(mockResponse);
+    expect(component.policyDetails).toEqual(mockResponse.content[0]);
+    expect(component.productCode).toEqual(mockResponse.content[0].product.code);
+    expect(component.passedCoverFrom).toEqual(mockResponse.content[0].wef_dt);
+    expect(component.passedCoverTo).toEqual(mockResponse.content[0].wet_dt);
+    expect(component.policyRiskForm.controls['cover_days'].setValue).toHaveBeenCalledWith(0);
+    expect(component.onProductSelected).toHaveBeenCalled();
+    expect(component.getProductSubclass).toHaveBeenCalled();
+    expect(component.cdr.detectChanges).toHaveBeenCalled();
+    // Add more assertions as needed
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(policyService, 'getPolicy').mockReturnValue(mockResponse);
+
+    component.getPolicy();
+
+    expect(policyService.getPolicy).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should call loadAllSubclass and handle success response', () => {
+
+    // Stub the getAllSubclasses method of SubclassService to return a mock observable
+    jest.spyOn(subclassService, 'getAllSubclasses').mockReturnValue(of(mockAllSubclassList) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+    jest.spyOn(component.cdr, 'detectChanges');
+
+    // Trigger the method call
+    component.loadAllSubclass();
+
+    // Assert the behavior after success response
+    expect(component.allSubclassList).toEqual(mockAllSubclassList);
+    // Add more assertions as needed
+
+    // Ensure that change detection has been triggered
+    expect(component.cdr.detectChanges).toHaveBeenCalled();
+  });
+  it('should fetch product subclasses and update subclass list', () => {
+    const mockProductCode = 123;
+
+
+    jest.spyOn(ProductService, 'getProductSubclasses').mockReturnValue(of(mockData));
+    component.allSubclassList = mockAllSubclassList;
+    jest.spyOn(component.cdr, 'detectChanges');
+
+    component.getProductSubclass();
+    // expect(ProductService.getProductSubclasses).toHaveBeenCalledWith(mockProductCode);
+    expect(component.cdr.detectChanges).toHaveBeenCalled();
+    expect(component.subClassList).toEqual(mockData._embedded.product_subclass_dto_list);
+
+    // Ensure allMatchingSubclasses is correctly populated based on allSubclassList and subClassList
+    const expectedMatchingSubclasses = mockAllSubclassList.filter(subclass =>
+      mockData._embedded.product_subclass_dto_list.some(dataSubclass =>
+        dataSubclass.sub_class_code === subclass.code
+      )
+    );
+    expect(component.allMatchingSubclasses).toEqual(expectedMatchingSubclasses);
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(ProductService, 'getProductSubclasses').mockReturnValue(mockResponse);
+
+    component.getProductSubclass();
+
+    expect(ProductService.getProductSubclasses).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should update selected subclass code and load covertype by subclass code', () => {
+    const selectedSubclassCode = 'mockSubclassCode';
+    const event = { target: { value: selectedSubclassCode } };
+
+    // Spy on the loadCovertypeBySubclassCode and loadAllBinders methods
+    const loadCovertypeBySubclassCodeSpy = jest.spyOn(component, 'loadCovertypeBySubclassCode');
+    const loadAllBindersSpy = jest.spyOn(component, 'loadAllBinders');
+
+    // Trigger the method with the mock event
+    component.onSubclassSelected(event);
+
+    // Expectations
+    expect(component.selectedSubclassCode).toEqual(selectedSubclassCode);
+    expect(loadCovertypeBySubclassCodeSpy).toHaveBeenCalledWith(selectedSubclassCode);
+    expect(loadAllBindersSpy).toHaveBeenCalled();
+  });
+  it('should load all binders', async () => {
+    // Mock data for testing
+
+
+    const binderServiceMock = {
+      getAllBindersQuick: jest.fn().mockReturnValue(of(mockBinderList))
+    };
+
+    // Manually inject the mocked service into the component
+    component['binderService'] = binderServiceMock as any;
+
+    // Set a sample selectedSubclassCode
+    component.selectedSubclassCode = '101';
+
+    // Spy on the detectChanges method
+    const detectChangesSpy = jest.spyOn(component.cdr, 'detectChanges');
+
+    // Trigger the method
+    await component.loadAllBinders();
+
+    // Verify that the binderList property is set correctly
+    expect(component.binderList).toEqual(mockBinderList);
+
+    // Verify that the binderListDetails property is set correctly
+    expect(component.binderListDetails).toEqual(mockBinderList._embedded.binder_dto_list);
+
+    // Verify that the detectChanges method is called
+    expect(detectChangesSpy).toHaveBeenCalled();
+
+    // Verify that the BinderService method is called with the correct arguments
+    expect(binderServiceMock.getAllBindersQuick).toHaveBeenCalledWith(component.selectedSubclassCode);
+  });
+  it('should load cover type by subclass code', async () => {
+    const mockSubclassCoverType = [
+      { coverTypeCode: 'CT001', coverTypeShortDescription: 'Description 1' },
+      // Add more cover types as needed
+    ];
+
+    jest.spyOn(subclassCoverTypesService, 'getSubclassCovertypeBySCode').mockReturnValue(of(mockSubclassCoverType));
+
+    // Set a mock subclass code for testing
+    const mockSubclassCode = 123;
+
+    // Call the method
+    await component.loadCovertypeBySubclassCode(mockSubclassCode);
+
+    // Expectations
+    expect(subclassCoverTypesService.getSubclassCovertypeBySCode).toHaveBeenCalledWith(mockSubclassCode);
+
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(subclassCoverTypesService, 'getSubclassCovertypeBySCode').mockReturnValue(mockResponse);
+    const mockSubclassCode = 123;
+
+    component.loadCovertypeBySubclassCode(mockSubclassCode);
+
+    expect(subclassCoverTypesService.getSubclassCovertypeBySCode).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should update selected cover type code', () => {
+    const selectedCoverTypeCode = 'mockCoverTypeCode';
+    const event = { target: { value: selectedCoverTypeCode } };
+
+    // Trigger the method with the mock event
+    component.onCoverTypeSelected(event);
+
+    // Expectations
+    expect(component.coverTypeCode).toEqual(selectedCoverTypeCode); // Ensure coverTypeCode is updated
+  });
+  it('should fetch vehicle makes and update vehicle make list', () => {
+    const mockData = ['Make1', 'Make2']; // Mock data for vehicle makes
+
+    // Stub the getAllSubclasses method of SubclassService to return a mock observable
+    jest.spyOn(vehicleMakeService, 'getAllVehicleMake').mockReturnValue(of(mockData) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+    jest.spyOn(component.cdr, 'detectChanges');
+
+    // Trigger the method call
+    component.getVehicleMake();
+
+    // Assert the behavior after success response
+    expect(component.vehicleMakeList).toEqual(mockData as any);
+    // Add more assertions as needed
+
+    // Ensure that change detection has been triggered
+    expect(component.cdr.detectChanges).toHaveBeenCalled();
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(vehicleMakeService, 'getAllVehicleMake').mockReturnValue(mockResponse);
+
+    component.getVehicleMake();
+
+    expect(vehicleMakeService.getAllVehicleMake).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should update selected vehicle make code and fetch vehicle models', () => {
+    // Mock data
+    const selectedValue = 'mockCode1';
+    const vehicleMakeList = [
+      { code: 'mockCode1', name: 'Make1' },
+      { code: 'mockCode2', name: 'Make2' }
+    ];
+    const expectedSelectedVehicleMakeCode = 'mockCode1';
+    const expectedSelectedVehicleMakeName = 'Make1';
+
+    // Set the vehicle make list in the component
+    component.vehicleMakeList = vehicleMakeList as any;
+
+    // Call the method
+    component.onVehicleMakeSelected(selectedValue);
+
+    // Expectations
+    expect(component.selectedVehicleMakeCode).toEqual(expectedSelectedVehicleMakeCode);
+    expect(component.selectedVehicleMakeName).toEqual(expectedSelectedVehicleMakeName);
+  });
+  it('should fetch vehicle models and update filtered vehicle model list', () => {
+    const mockData = {
+      _embedded: {
+        vehicle_model_dto_list: [
+          { id: 1, vehicle_make_code: 'make1', name: 'Model1' },
+          { id: 2, vehicle_make_code: 'make2', name: 'Model2' }
+        ]
+      }
+    };
+    const expectedFilteredVehicleModel = [
+      { id: 1, vehicle_make_code: 'make1', name: 'Model1' }
+    ];
+    const selectedVehicleMakeCode = 'make1';
+
+    // Mock the return value of the service method
+    jest.spyOn(vehicleModelService, 'getAllVehicleModel').mockReturnValue(of(mockData) as any);
+
+    // Set selected vehicle make code in the component
+    component.selectedVehicleMakeCode = selectedVehicleMakeCode;
+
+    // Call the method
+    component.getVehicleModel();
+    jest.spyOn(component.cdr, 'detectChanges');
+
+
+    // Expectations
+    // expect(vehicleModelService.getAllVehicleModel).toHaveBeenCalled();
+    expect(component.vehicleModelList).toEqual(mockData);
+    expect(component.vehicleModelDetails).toEqual(mockData._embedded.vehicle_model_dto_list as any);
+    expect(component.filteredVehicleModel).toEqual(expectedFilteredVehicleModel);
+    // expect(component.cdr.detectChanges).toHaveBeenCalled();
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(vehicleModelService, 'getAllVehicleModel').mockReturnValue(mockResponse);
+
+    component.getVehicleModel();
+
+    expect(vehicleModelService.getAllVehicleModel).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should update selected vehicle model name and vehicle make model', () => {
+    const selectedVehicleModel = { code: 'model1', name: 'Model1' };
+    const expectedSelectedVehicleModelName = 'Model1';
+    const expectedVehicleMakeModel = component.selectedVehicleMakeName + ' ' + expectedSelectedVehicleModelName;
+
+    // Set filtered vehicle model list in the component
+    component.filteredVehicleModel = [selectedVehicleModel];
+
+    // Call the method
+    component.onVehicleModelSelected(selectedVehicleModel.code);
+
+    // Expectations
+    expect(component.selectedVehicleModelName).toEqual(expectedSelectedVehicleModelName);
+    expect(component.vehiclemakeModel).toEqual(expectedVehicleMakeModel);
+  });
+  // it('should handle case when selected vehicle model is not found', () => {
+  //   const selectedVehicleModelCode = 'nonExistentCode';
+
+  //   // Spy on console.error to capture the output
+  //   const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+  //   // Call the method with a non-existent vehicle model code
+  //   component.onVehicleModelSelected(selectedVehicleModelCode);
+
+  //   // Expectations
+  //   expect(consoleErrorSpy).toHaveBeenCalledWith('Selected Vehicle Model not found');
+  //   // Ensure selectedVehicleModelName and vehiclemakeModel are not updated
+  //   expect(component.selectedVehicleModelName).toBeUndefined();
+  //   expect(component.vehiclemakeModel).toBeUndefined();
+  // });
 });

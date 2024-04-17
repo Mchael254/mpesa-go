@@ -4,8 +4,9 @@ import {AppConfigService} from "../../../../../../core/config/app-config-service
 import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {Subclass, SubclassesDTO} from "../../data/gisDTO";
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../../app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })

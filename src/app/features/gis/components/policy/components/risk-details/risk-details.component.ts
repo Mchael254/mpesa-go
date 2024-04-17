@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Subclass, Subclasses, subclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
@@ -11,6 +11,7 @@ import { SubClassCoverTypesService } from '../../../setups/services/sub-class-co
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
+import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -27,8 +28,8 @@ export class RiskDetailsComponent {
 
   passedPolicyDetails: any;
   batchNo: any;
-  policyResponse: any;
-  policyDetails: any;
+  policyResponse:PolicyResponseDTO;
+  policyDetails: PolicyContent;
 
   errorMessage: string;
   errorOccurred: boolean;
@@ -166,16 +167,16 @@ export class RiskDetailsComponent {
     this.isCashApplicable = checked;
   }
   getPolicy() {
-    this.batchNo = this.passedPolicyDetails.batchNumber;
+    this.batchNo = this.passedPolicyDetails?.batchNumber;
     log.debug("Batch No:", this.batchNo)
     this.policyService
       .getPolicy(this.batchNo)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next: (data) => {
+        next: (data: any) => {
 
-          if (data) {
-            this.policyResponse = data;
+          if (data && data.content && data.content.length > 0) {
+            this.policyResponse = data; 
             log.debug("Get Policy Endpoint Response", this.policyResponse)
             this.policyDetails = this.policyResponse.content[0]
             log.debug("Policy Details", this.policyDetails)
@@ -379,7 +380,7 @@ export class RiskDetailsComponent {
     log.debug("Cover Type Code:", this.coverTypeCode)
   }
   onProductSelected() {
-    this.motorClassAllowed = this.policyDetails.product.allowMotorClass;
+    this.motorClassAllowed = this.policyDetails.product.allow_motor_class;
     log.debug("Motor Class Allowed Value", this.motorClassAllowed);
     if (this.motorClassAllowed === 'Y') {
       this.showMotorSubclassFields = true;

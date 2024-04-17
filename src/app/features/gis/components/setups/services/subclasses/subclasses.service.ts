@@ -4,11 +4,11 @@ import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Clauses, Subclasses, subclassClauses } from '../../data/gisDTO';
 import { environment } from '../../../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import { SESSION_KEY } from '../../../../../../../app/features/lms/util/session_storage_enum';
+import { StringManipulation } from '../../../../../../../app/features/lms/util/string_manipulation';
+import { SessionStorageService } from '../../../../../../shared/services/session-storage/session-storage.service';
+import { API_CONFIG } from '../../../../../../../environments/api_service_config';
+import { ApiService } from '../../../../../../../app/shared/services/api/api.service';
 @Injectable({
   providedIn: 'root'
 })
