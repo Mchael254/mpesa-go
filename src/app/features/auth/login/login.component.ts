@@ -120,7 +120,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
       this.isLoading = false;
     });
-    
+
   }
 
   /**
@@ -143,7 +143,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.authenticateUser(authenticationData, (data) => {
       if(data != null){
-        
+
         if (data.allowMultifactor === 'N') {
           log.info(`multi-factor authentication disabled. By-passing OTP...`, data);
           this.authService.attemptAuth(authenticationData);
@@ -254,7 +254,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.entities = tenant.authType;
     this.tenant_id = tenant.name;
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
-    if (this.entities.length === 1) this.authAttempt();
+    if (this.entities.length === 1) {
+      const entityType = this.entities[0];
+      this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entityType);
+      log.info(`entity type a ===> `, entityType);
+      this.authAttempt()
+    };
+  }
+
+  selectEntity(entity: string): void {
+    this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entity);
+    log.info(`entity type b ===> `, entity);
+    this.authAttempt();
   }
 
   /**
@@ -267,7 +278,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 }
 
-interface Tenant { 
-  name: string, 
-  authType: string[] 
+interface Tenant {
+  name: string,
+  authType: string[]
 }

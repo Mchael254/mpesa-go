@@ -18,9 +18,9 @@
         <div class="dropdown profile">
           <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span class="float-end">
-              <img [src]="getUserImage()" class="rounded-circle" [alt]="user?.name?.substring(0, 1)+'W'">
+              <img [src]="getUserImage()" class="rounded-circle" [alt]="user?.fullName?.substring(0, 1)+'W'">
               <!-- {{user?.name?.substring(0, 1)?.toUppercase() | uppercase}} -->
-              {{ user?.name || '' }}
+              {{ user?.fullName || '' }}
             </span>
           </button>
           <ul class="dropdown-menu">
