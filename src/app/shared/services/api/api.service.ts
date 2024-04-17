@@ -21,13 +21,14 @@ export class ApiService {
 
   private getHeaders(): HttpHeaders {
     console.log(this.session_storage.getItem('SESSION_TOKEN'));
-    
 
     let headers = new HttpHeaders()
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/json')
     .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
-    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '');
+    .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
+    .set('entityType', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.ENTITY_TYPE)));
+
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -56,9 +57,7 @@ export class ApiService {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
     const url = `${this.baseURL}/${endpoint}`;    
     let headers: HttpHeaders = this.getHeaders();
-    // if(params!==null){
-    //    return this.http.get<T>(url, { headers, params });
-    // }
+    
     let config = {}
     if(params===null){
       config = {headers}
