@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {AccountReqPartyId, ReqPartyById} from 'src/app/features/entities/data/entityDto';
-import { PartyTypeDto } from 'src/app/features/entities/data/partyTypeDto';
-import { Logger } from 'src/app/shared/services';
 import {PartyAccountsDetails} from "../../../../data/accountDTO";
+import {Logger} from "../../../../../../shared/services";
+import {PartyTypeDto} from "../../../../data/partyTypeDto";
 
 const log = new Logger('EntityBasicInfoComponent');
 
