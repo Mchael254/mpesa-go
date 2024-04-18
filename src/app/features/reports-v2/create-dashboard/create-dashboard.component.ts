@@ -171,12 +171,7 @@ export class CreateDashboardComponent implements OnInit {
       log.info('rep id', formValues.reportName[0].id);
 
       const loggedInUser = this.authService.getCurrentUser();
-      let id:number;
-      if (this.utilService.isUserAdmin(loggedInUser)) {
-        id = loggedInUser.id;
-
-      }
-      const createdByID = id;
+            
       let selectedReports = formValues.reportName;
 
       const report: DashboardReports[] = selectedReports.map((selectedReport, index) => {
@@ -192,7 +187,7 @@ export class CreateDashboardComponent implements OnInit {
 
       const saveDashboard: CreateUpdateDashboardDTO = {
         organizationId: 2,
-        createdBy: createdByID,
+        createdBy: loggedInUser.code,
         dashboardReports: report,
         id: 0,
         name: formValues.dashboardName

@@ -15,11 +15,11 @@ import {
 import {PartyTypeDto} from '../../data/partyTypeDto';
 import {PartyAccountsDetails} from '../../data/accountDTO';
 import {UtilService} from "../../../../shared/services/util/util.service";
-import {ApiService} from 'src/app/shared/services/api/api.service';
-import {API_CONFIG} from 'src/environments/api_service_config';
-import {ClaimsDTO} from 'src/app/features/gis/data/claims-dto';
 import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
 import {Bank} from "../../data/BankDto";
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
+import {ClaimsDTO} from "../../../gis/data/claims-dto";
 
 @Injectable({
   providedIn: 'root',

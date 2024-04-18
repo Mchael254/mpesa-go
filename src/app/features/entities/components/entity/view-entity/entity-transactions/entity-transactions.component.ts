@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EntityService } from 'src/app/features/entities/services/entity/entity.service';
-import { Logger } from 'src/app/shared/services';
 import {Pagination} from "../../../../../../shared/data/common/pagination";
 import {ClaimsDTO} from "../../../../../gis/data/claims-dto";
+import {EntityService} from "../../../../services/entity/entity.service";
+import {Logger} from "../../../../../../shared/services";
 
 const log = new Logger('EntityTransactionComponent')
 

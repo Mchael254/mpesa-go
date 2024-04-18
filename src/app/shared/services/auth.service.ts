@@ -23,9 +23,8 @@ import { SessionStorageService } from './session-storage/session-storage.service
 import {StringManipulation} from "../../features/lms/util/string_manipulation";
 import { GlobalMessagingService } from './messaging/global-messaging.service';
 import { ApiService } from './api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { Profile } from '../data/auth/profile';
+import {SESSION_KEY} from "../../features/lms/util/session_storage_enum";
 
 
 const log = new Logger('AuthService');
@@ -523,7 +522,7 @@ export class AuthService implements OnDestroy {
             .then((_) => (this.redirectUrl = this.defaultRedirectUrl))
             .catch((error) => log.error(error));
           }
-          
+
         },
         (error) => {
           this.destroyUser();

@@ -8,9 +8,9 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {Logger} from 'src/app/shared/services';
 import {CountryDto} from "../../../../../../shared/data/common/countryDto";
 import {EntityService} from "../../../../services/entity/entity.service";
+import {Logger} from "../../../../../../shared/services";
 
 const log = new Logger('EntityOtherDetails');
 
@@ -34,26 +34,17 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    // this.partyAccountDetails = changes['partyAccountDetails']?.currentValue ?
-    //   changes['partyAccountDetails']?.currentValue : this.partyAccountDetails;
-
-    // this.nokList = changes['nextOfKinDetailsList']?.currentValue ?
-    //   changes['nextOfKinDetailsList']?.currentValue : this.nokList;
-
-    // this.wealthAmlDetails = changes['wealthAmlDetails']?.currentValue;
-
-    // log.info(`partyAccountDetails ==> `, this.partyAccountDetails);
-    // this.getWealthAmlDetails();
-    this.getNokList();
-    // this.getPaymentDetails();
+    // this.getNokList();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getNokList();
+  }
 
   getCountryName(id: number): string {
     if (this.countries?.length > 0) {
       const country: CountryDto = this.countries.filter((item: CountryDto):boolean => item.id === id)[0];
-      log.info(`country name ==> `, country);
+      // log.info(`country name ==> `, country);
       return country?.name
     }
   }
@@ -69,7 +60,7 @@ export class EntityOtherDetailsComponent implements OnInit, OnChanges {
   getNokList(): void {
     if (this.partyAccountDetails?.nextOfKinDetailsList) {
       this.nokList = this.partyAccountDetails?.nextOfKinDetailsList;
-      log.info(`nok list ==> `, this.nokList);
+      // log.info(`nok list ==> `, this.nokList);
     }
   }
 
