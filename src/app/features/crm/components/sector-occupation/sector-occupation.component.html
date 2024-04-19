@@ -264,9 +264,8 @@
                 >Select Occupations</label
               >
               <p-multiSelect
-                [options]="occupationsData"
-                [ngModel]="selectedOccupations"
-                (ngModelChange)="updateSelectedOccupations($event)"
+                [options]="occupationsData2"
+                [(ngModel)]="selectedOccupations"
                 [filter]="true"
                 optionLabel="name"
                 id="occupation"
@@ -372,9 +371,8 @@
             <div class="col-sm-12 mb-3">
               <label for="sector" class="form-label">Select Sectors</label>
               <p-multiSelect
-                [options]="sectorsData"
-                [ngModel]="selectedSectors"
-                (ngModelChange)="updateSelectedSectors($event)"
+                [options]="sectorsData2"
+                [(ngModel)]="selectedSectors"
                 [filter]="true"
                 optionLabel="name"
                 id="sector"
