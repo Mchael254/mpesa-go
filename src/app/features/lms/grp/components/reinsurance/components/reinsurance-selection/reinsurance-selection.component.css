@@ -1,7 +1,15 @@
 .container {
-    width: 1216px;
-    min-height: 656px;
-    flex-shrink: 0;
+    width: 100%;
+    background: #F5F6F8;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+
+  .main {
+    padding:0 48px 48px 48px;
     background: #FFF;
 }
 
@@ -18,10 +26,6 @@
     text-align: center;
     display: flex;
     justify-content: center;
-}
-
-.main {
-    padding: 48px;
 }
 
 .policy-summary {
@@ -97,7 +101,7 @@
     flex-shrink: 0;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.20);
-    background: #FFF;
+    /* background: #FFF; */
 }
 
 /* search form and select column dropdown begins */
@@ -179,7 +183,7 @@ p-multiSelect {
 
     .p-datatable-thead {
         border-radius: 4px 0px 0px 0px;
-        background: #BAD0E4;
+        background-color: #579cdc;
     }
 }
 
@@ -211,15 +215,14 @@ p-multiSelect {
 }
 
 .stepper {
+    display: flex;
     background-color: #F5F6F8;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 600px) {
     .container {
-      width: 100%;
-      height: auto;
+        width: 100%;
     }
-
     .form-select {
         width: 100%;
     }

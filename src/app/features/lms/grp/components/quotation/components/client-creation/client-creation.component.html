@@ -388,14 +388,18 @@
                                         <p-overlayPanel #op>
                                             <div class="action-buttons">
                                                 <!-- Edit button -->
-                                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditAdminDetailsModal(item)"
-                                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>&nbsp;
-                                                    <!-- Delete button -->
-                                                        <p-button
-                                                        label="Delete" icon="pi pi-trash" (click)="deleteAdminDetails(item, $event)"
-                                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
-                                                    
+                                                <div class="button-wrapper">
+                                                    <p-button label="Edit" icon="pi pi-pencil" (click)="showEditAdminDetailsModal(item)"
+                                                        styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                                                </div>
+                                            
+                                                <!-- Delete button -->
+                                                <div class="button-wrapper">
+                                                    <p-button label="Delete" icon="pi pi-trash" (click)="deleteAdminDetails(item, $event)"
+                                                        styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                                                </div>
                                             </div>
+                                            
                                         </p-overlayPanel>
                                         <!-- Ellipsis container -->
                                         <div class="button-container">
