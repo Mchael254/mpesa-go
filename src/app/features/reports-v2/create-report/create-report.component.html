@@ -3,7 +3,7 @@
     <div class="card-header bg-transparent my-2">
       <span class="float-start text-primary fw-bold">
         <i class="pi pi-chevron-left"></i>
-        <a class="text-primary" routerLink="/home/reportsv2/main">{{ 'report.reports' | translate }}</a> 
+        <a class="text-primary" routerLink="/home/reportsv2/main">{{ 'report.reports' | translate }}</a>
       </span>
     </div>
     <div class="card-body">
@@ -16,11 +16,11 @@
           <h6 class="text-black">
             {{ 'report.report_name' | translate }}<span class="text-danger">*</span>
           </h6>
-          <input 
-            type="text" 
-            class="form-control form-control" 
+          <input
+            type="text"
+            class="form-control form-control"
             placeholder="Pilot report"
-            (input)="onReportNameChange($event)" 
+            (input)="onReportNameChange($event)"
             style="padding: 8px"
           >
           <h6 class="text-black mt-3">
@@ -53,7 +53,7 @@
             </div>
           </form>
 
-          <div class="text-center" *ngIf="subjectAreaCategories === null; 
+          <div class="text-center" *ngIf="subjectAreaCategories === null;
             else showSubjectAreaCategories" style="padding: 4rem 0;"
           >
             <p-progressSpinner
@@ -68,16 +68,16 @@
             <div *ngIf="metrics?.subCategory?.length > 0" class="subject-area my-4">
               <span class="fw-medium ms-1 my-1">{{ metrics.name }}</span>
               <div class="content">
-                <input 
-                  type="search" 
-                  class="form-control m-2" 
+                <input
+                  type="search"
+                  class="form-control m-2"
                   placeholder="Search"
                   style="width: 94%; border-radius: 8px;"
                   (keyup)="filterMetricsAndDimensions($event, metrics.subCategory, 'metrics')"
                 >
                 <div *ngFor="let subCategory of filteredMetrics" class="btn-group dropend">
                   <button class="btn btn-link dropdown-toggle text-dark" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ subCategory.name }} 
+                    {{ subCategory.name }}
                   </button>
                   <ul class="dropdown-menu">
                     <li *ngFor="let categoryAreas of subCategory.categoryAreas"
@@ -91,9 +91,9 @@
           <div *ngIf="dimensions.length > 0">
             <span class="fw-medium ms-1 my-1">{{ 'report.filters' | translate }}</span>
             <div style="border: solid 1px #eee; border-radius: 5px;">
-              <input 
-                type="search" 
-                class="form-control m-2" 
+              <input
+                type="search"
+                class="form-control m-2"
                 placeholder="Search"
                 style="width: 94%; border-radius: 8px;"
                 (keyup)="filterMetricsAndDimensions($event, dimensions, 'dimensions')"

@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {BreadCrumbItem} from "../../../shared/data/common/BreadCrumbItem";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger} from "../../../shared/services";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
@@ -15,6 +15,7 @@ import { ReportV2 } from '../../../shared/data/reports/report';
 import { AuthService } from '../../../shared/services/auth.service';
 import { tap } from 'rxjs';
 import { ChatBotComponent } from '../chat-bot/chat-bot.component';
+import {Profile} from "../../../shared/data/auth/profile";
 
 const log = new Logger('CreateReportComponent');
 @Component({
@@ -49,7 +50,7 @@ export class CreateReportComponent implements OnInit {
   public isCriteriaButtonActive: boolean = true;
   reportName: string = '';
   reportNameRec: string = 'Report Name';
-  metrics: any = {}; 
+  metrics: any = {};
   filteredMetrics: any = [];
   filters: any = [];
   sort: any = [];
@@ -58,7 +59,7 @@ export class CreateReportComponent implements OnInit {
   public selectedReport: ReportV2;
   public reportId: number;
 
-  private currentUser;
+  private currentUser: Profile;
   public showChatBot: boolean = false;
 
   constructor(
@@ -106,7 +107,7 @@ export class CreateReportComponent implements OnInit {
       searchTerm: [''],
       subjectArea: ['']
     });
-  }  
+  }
 
   /**
    * 1. gets a specific report by it's id
@@ -179,7 +180,7 @@ export class CreateReportComponent implements OnInit {
   /**
    * The function "getSubjectAreas" retrieves subject areas from a report service and logs them.
    */
-  getSubjectAreas(): void {    
+  getSubjectAreas(): void {
     this.reportService.getSubjectAreas()
     .pipe(take(1))
     .subscribe({
@@ -319,7 +320,7 @@ export class CreateReportComponent implements OnInit {
 
   viewPreview(): void {
     // const reportNameRec = this.reportName === '' ? this.selectedReport?.name : '';
-    
+
     let filters = [];
     if (this.filters.length > 0) {
       this.filters.forEach(filter => filters.push(filter.filter));
@@ -363,7 +364,7 @@ export class CreateReportComponent implements OnInit {
 
     const report: ReportV2 = {
       charts: [],
-      createdBy: this.currentUser.id,
+      createdBy: this.currentUser.code,
       createdDate: '',
       dashboardId: null,
       dimensions: JSON.stringify(dimensions),
