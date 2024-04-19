@@ -127,13 +127,13 @@ export class AuthService implements OnDestroy {
    */
   setAuth(user: Profile) {
     // set current user data into observable
-    if (this.utilService.isUserAdmin(user)) {
-      this.browserStorage.storeObj('activeUser', 'ADMIN');
-    } else if (this.utilService.isUserAgent(user)) {
-      this.browserStorage.storeObj('activeUser', 'AGENT');
-    } else if (this.utilService.isUserClient(user)) {
-      this.browserStorage.storeObj('activeUser', 'CLIENT');
-    }
+    // if (this.utilService.isUserAdmin(user)) {
+    //   this.browserStorage.storeObj('activeUser', 'ADMIN');
+    // } else if (this.utilService.isUserAgent(user)) {
+    //   this.browserStorage.storeObj('activeUser', 'AGENT');
+    // } else if (this.utilService.isUserClient(user)) {
+    //   this.browserStorage.storeObj('activeUser', 'CLIENT');
+    // }
     this.localStorageService.setItem('loginUserProfile', user);
     this.currentUserSubject.next(user);
     // set isAuthenticated
@@ -511,7 +511,7 @@ export class AuthService implements OnDestroy {
       .subscribe(
         (data: Profile) => {
           this.setAuth(data);
-
+          log.info(`logged in user`, data);
           const entityType = headers.get('entityType');
           if (entityType === 'MEMBER') {
             const entityCode = data.code;
@@ -707,7 +707,6 @@ export class AuthService implements OnDestroy {
         .subscribe(
             (data: Profile) => {
               this.setAuth(data);
-              log.info(data);
 
               this.router
                   .navigateByUrl(this.redirectUrl || this.defaultRedirectUrl)
