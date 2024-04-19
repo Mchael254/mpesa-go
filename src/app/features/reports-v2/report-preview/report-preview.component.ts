@@ -19,6 +19,7 @@ import {GlobalMessagingService} from "../../../shared/services/messaging/global-
 import _default from "chart.js/dist/core/core.interaction";
 import dataset = _default.modes.dataset;
 import { ColorScheme } from '../../../shared/data/reports/color-scheme';
+import {Profile} from "../../../shared/data/auth/profile";
 
 const log = new Logger('ReportPreviewComponent')
 
@@ -83,9 +84,10 @@ export class ReportPreviewComponent implements OnInit{
   });
   public tableDetails: TableDetail = {};
   public isPreviewResultAvailable: boolean = true;
+  public loadingComplete: boolean = false;
   public reportNameRec: string;
   public saveReportForm: FormGroup;
-  private currentUser;
+  private currentUser: Profile;
   public styleType: string = 'table';
   public dashboards: any[] = [];
 
@@ -202,7 +204,7 @@ export class ReportPreviewComponent implements OnInit{
           this.displayChartTypes.push(chart);
         });
         log.info(`display chart types `, this.displayChartTypes, report.charts, isEditing)
-        
+
         this.fetchFilterConditions();
         this.populateSelectedFilters(this.filters);
         this.loadChart();
@@ -210,10 +212,10 @@ export class ReportPreviewComponent implements OnInit{
         this.createSaveReportForm();
         this.createChartTypeForm();
         this.fetchDashboards();
-        
+
       },
       error: (err) => {
-        this.globalMessagingService.displayErrorMessage('error', err.message);
+        this.globalMessagingService.displayErrorMessage('Report fetching error', err.message);
       }
     })
   }
@@ -483,7 +485,7 @@ export class ReportPreviewComponent implements OnInit{
     // }
 
     log.info(`filters from load >>>`, this.filters);
-      
+
     this.isPreviewResultAvailable = false;
     const filters = this.isEmpty(this.filters) ? [] : this.filters;
     const query = {
@@ -491,7 +493,8 @@ export class ReportPreviewComponent implements OnInit{
       dimensions: this.dimensions,
       filters,
       order: this.sort,
-      limit: 20
+      limit: 20,
+      // offset: 20
     }
     log.info(`query for cube >>> `, query);
 
@@ -508,13 +511,16 @@ export class ReportPreviewComponent implements OnInit{
       };
 
       this.isPreviewResultAvailable = true;
+      this.loadingComplete = true;
 
       this.tableDetails = this.reportService.prepareTableData(
         reportLabels, reportData, this.dimensions, this.measures, this.criteria
       );
     },
     (err) => {
-      this.globalMessagingService.displayErrorMessage('Error', err);
+      this.globalMessagingService.displayErrorMessage('CubeJS Error', err);
+      this.isPreviewResultAvailable = false;
+      this.loadingComplete = true;
     });
   }
 
@@ -603,7 +609,7 @@ export class ReportPreviewComponent implements OnInit{
 
     const report: ReportV2 = {
       charts,
-      createdBy: this.currentUser.id,
+      createdBy: this.currentUser.code,
       createdDate: "",
       dashboardId: formValues.dashboard,
       dimensions: JSON.stringify(dimensionsToSave),
