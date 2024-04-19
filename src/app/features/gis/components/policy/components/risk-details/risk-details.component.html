@@ -198,7 +198,7 @@
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="subclass" class="required risk-label" id="subclass">{{'gis.policy.cover_from' |
+                            <label for="coverFrom" class="required risk-label" id="coverFrom">{{'gis.policy.cover_from' |
                                 translate}}</label>
                             <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverFrom"
                                 formControlName="date_cover_from">
@@ -206,7 +206,7 @@
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' |
                                 translate}}</label>
-                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverTo"
+                            <input type="date" id="coverTo" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverTo"
                                 formControlName="date_cover_to">
 
                         </div>
@@ -273,7 +273,7 @@
                             <div class="mb-1 col-sm-4 col-12">
                                 <label class=" risk-label">  {{'gis.policy.ncd_certificate_number' | translate}}</label>
                                 <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
-                                    formControlName="property_id">
+                                    formControlName="ipu_ncd_cert_no">
                             </div>
                         </div>
                          <!-- CASH APPLICABLE FIELDS -->
@@ -363,9 +363,9 @@
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label class="required risk-label">{{'gis.policy.risk_town'|translate}}</label>
-                            <p-dropdown  [options]="" optionValue="code"
-                                optionLabel="description"  placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+                            <p-dropdown  [options]="townList" optionValue="id"
+                                optionLabel="name"  placeholder=" "
+                                [filterBy]="'name'" [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"

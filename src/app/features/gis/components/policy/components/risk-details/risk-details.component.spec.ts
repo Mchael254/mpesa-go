@@ -38,6 +38,10 @@ import { BinderService } from '../../../setups/services/binder/binder.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
+import { StaffService } from '../../../../../entities/services/staff/staff.service';
+import { StaffDto } from '../../../../../entities/data/StaffDto';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { CountryDto, StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
 
 export class mockPolicyService {
   createPolicy = jest.fn().mockReturnValue(of());
@@ -59,9 +63,20 @@ export class mockSubclassCovertypeService {
 }
 export class mockVehicleMakeService {
   getAllVehicleMake = jest.fn().mockReturnValue(of());
-} export class mockVehicleModelService {
+}
+ export class mockVehicleModelService {
   getAllVehicleModel = jest.fn().mockReturnValue(of());
 }
+export class MockBrowserStorage {
+
+}
+export class mockStaffService {
+  getStaffById = jest.fn().mockReturnValue(of());
+}export class mockCountryService {
+  getMainCityStatesByCountry = jest.fn().mockReturnValue(of());
+  getTownsByMainCityState = jest.fn().mockReturnValue(of());
+}
+
 const mockLogger = {
   debug: jest.fn()
 };
@@ -424,6 +439,94 @@ const mockBinderList = {
     ],
   },
 };
+const userDetailsMock: StaffDto = {
+  id: 1,
+  name: 'John Doe',
+  username: 'johndoe',
+  userType: 'admin',
+  emailAddress: 'john@example.com',
+  status: 'active',
+  profileImage: 'path/to/image.jpg',
+  department: 'Engineering',
+  manager: 'Jane Smith',
+  telNo: '123-456-7890',
+  phoneNumber: '987-654-3210',
+  otherPhone: '555-555-5555',
+  countryCode: 123,
+  townCode: 456,
+  personelRank: 'Manager',
+  city: 789,
+  physicalAddress: '123 Main St',
+  postalCode: '12345',
+  departmentCode: 101,
+  activatedBy: 'Admin',
+  updateBy: 'User',
+  dateCreated: '2024-04-19',
+  dateActivated: '2024-04-20',
+  granter: 'Supervisor',
+  branchId: 1001,
+  accountId: 2001,
+  accountManager: 3001,
+  profilePicture: 'path/to/profile.jpg',
+  organizationId: 4001,
+  organizationGroupId: 5001,
+  supervisorId: 6001,
+  supervisorCode: 7001,
+  organizationCode: 8001,
+  pinNumber: '1234',
+  gender: 'Male'
+};
+const mockCountry: CountryDto = {
+  adminRegMandatory: 'Yes',
+  adminRegType: 'Type A',
+  currSerial: 123,
+  currency: {
+    createdBy: 'Admin',
+    createdDate: '2024-04-19',
+    decimalWord: 'Decimal',
+    id: 456,
+    modifiedBy: 'User',
+    modifiedDate: '2024-04-20',
+    name: 'Currency',
+    numberWord: 'Number',
+    roundingOff: 2,
+    symbol: '$'
+  },
+  drugTraffickingStatus: 'High',
+  drugWefDate: '2024-04-21',
+  drugWetDate: '2024-04-22',
+  highRiskWefDate: '2024-04-23',
+  highRiskWetDate: '2024-04-24',
+  id: 789,
+  isShengen: 'No',
+  mobilePrefix: 123,
+  name: 'Country',
+  nationality: 'National',
+  risklevel: 'High',
+  short_description: 'Country short description',
+  subAdministrativeUnit: 'Unit',
+  telephoneMaximumLength: 10,
+  telephoneMinimumLength: 7,
+  unSanctionWefDate: '2024-04-25',
+  unSanctionWetDate: '2024-04-26',
+  unSanctioned: 'No',
+  zipCode: 12345,
+  zipCodeString: '12345'
+};
+const mockState: StateDto = {
+  country: mockCountry,
+  id: 123,
+  shortDescription: 'State short description',
+  name: 'State'
+};
+const mockTown: TownDto = {
+  id: 456,
+  country: mockCountry,
+  shortDescription: 'Town short description',
+  name: 'Town',
+  state: mockState
+};
+
 describe('RiskDetailsComponent', () => {
   let component: RiskDetailsComponent;
   let fixture: ComponentFixture<RiskDetailsComponent>;
@@ -434,7 +537,9 @@ describe('RiskDetailsComponent', () => {
   let binderService: BinderService;
   let subclassCoverTypesService: SubClassCoverTypesService;
   let vehicleMakeService: VehicleMakeService;
-  let vehicleModelService: VehicleModelService
+  let vehicleModelService: VehicleModelService;
+  let staffService:StaffService;
+  let countryService:CountryService;
 
 
 
@@ -450,9 +555,12 @@ describe('RiskDetailsComponent', () => {
         { provide: ProductsService, useClass: mockProductSubclassService },
         { provide: SubclassesService, useClass: mockSubclassService },
         { provide: BinderService, useClass: mockBinderService },
+        { provide: BrowserStorage, useClass: MockBrowserStorage },
         { provide: SubClassCoverTypesService, useClass: mockSubclassCovertypeService },
         { provide: VehicleMakeService, useClass: mockVehicleMakeService },
         { provide: VehicleModelService, useClass: mockVehicleModelService },
+        { provide: StaffService, useClass: mockStaffService },
+        { provide: CountryService, useClass: mockCountryService },
 
 
         { provide: APP_BASE_HREF, useValue: '/' },
@@ -475,6 +583,8 @@ describe('RiskDetailsComponent', () => {
     subclassCoverTypesService = TestBed.inject(SubClassCoverTypesService);
     vehicleMakeService = TestBed.inject(VehicleMakeService);
     vehicleModelService = TestBed.inject(VehicleModelService);
+    staffService = TestBed.inject(StaffService);
+    countryService = TestBed.inject(CountryService);
 
     component.policyRiskForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
@@ -873,4 +983,123 @@ describe('RiskDetailsComponent', () => {
   //   expect(component.selectedVehicleModelName).toBeUndefined();
   //   expect(component.vehiclemakeModel).toBeUndefined();
   // });
+  it('should get user details', () => {
+    
+
+    jest.spyOn(staffService, 'getStaffById').mockReturnValue(of(userDetailsMock) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+
+    component.userId = 123; 
+
+    component.getUserDetails();
+
+    expect(component.detailedUserInfo).toEqual(userDetailsMock);
+    expect(component.userCountryCode).toEqual(userDetailsMock.countryCode);
+    // Add more assertions as needed
+
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(staffService, 'getStaffById').mockReturnValue(mockResponse);
+
+    component.getUserDetails();
+
+    expect(staffService.getStaffById).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should get risk locations', () => {
+    
+    jest.spyOn(countryService, 'getMainCityStatesByCountry').mockReturnValue(of(mockState) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+
+    component.userId = 123; 
+
+    component.getRiskLocation();
+
+    expect(component.statesList).toEqual(mockState as any);
+
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(countryService, 'getMainCityStatesByCountry').mockReturnValue(mockResponse);
+
+    component.getRiskLocation();
+
+    expect(countryService.getMainCityStatesByCountry).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
+  it('should call getRiskTown when state is selected', () => {
+    const selectedStateId = 123; // Example selected state ID
+
+    // Mocking getRiskTown method
+    component.getRiskTown = jest.fn();
+
+    // Call the method
+    component.onStateSelected(selectedStateId);
+
+    // Expectations
+    expect(component.selectedStateId).toEqual(selectedStateId);
+    expect(component.getRiskTown).toHaveBeenCalled();
+    // expect(mockLogger.debug).toHaveBeenCalledWith('SELECTED State Id:', selectedStateId);
+  });
+  it('should get risk Towns', () => {
+    
+    jest.spyOn(countryService, 'getTownsByMainCityState').mockReturnValue(of(mockTown) as any);
+
+    // Spy on other methods or services as needed
+    jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
+
+    component.userId = 123; 
+
+    component.getRiskTown();
+
+    expect(component.townList).toEqual(mockTown as any);
+
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(countryService, 'getTownsByMainCityState').mockReturnValue(mockResponse);
+
+    component.getRiskTown();
+
+    expect(countryService.getTownsByMainCityState).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
 });
