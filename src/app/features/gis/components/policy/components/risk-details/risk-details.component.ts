@@ -12,10 +12,10 @@ import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
-import { StateDto } from 'src/app/shared/data/common/countryDto';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
-import { StaffDto } from 'src/app/features/entities/data/StaffDto';
+import { StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
+import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
+import { StaffService } from '../../../../../entities/services/staff/staff.service';
+import { StaffDto } from '../../../../../entities/data/StaffDto';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -77,6 +77,8 @@ export class RiskDetailsComponent {
   statesList: StateDto[];
   selectedStateId: any;
 
+  townList:TownDto[];
+
   constructor(
     public fb: FormBuilder,
     private policyService: PolicyService,
@@ -106,7 +108,7 @@ export class RiskDetailsComponent {
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.passedUserDetails = JSON.parse(passedUserDetailsString);
     log.debug("Passed User Details:", this.passedUserDetails);
-    this.userId= this.passedUserDetails.code
+    this.userId= this.passedUserDetails?.code
     log.debug("Passed User Id:", this.userId);
     if(this.userId){
       this.getUserDetails();
@@ -578,8 +580,7 @@ export class RiskDetailsComponent {
           if (data) {
             this.statesList = data;
             log.debug("State  list", this.statesList)
-            // this.paymentDetails = this.paymentModesList.embedded
-            // log.debug("Payment Name details", this.paymentDetails)
+            
 
             this.cdr.detectChanges();
 
@@ -604,9 +605,46 @@ export class RiskDetailsComponent {
   }
   onStateSelected(selectedValue: any) {
     this.selectedStateId = selectedValue;
-
+    if(this.selectedStateId){
+      this.getRiskTown();
+    }
     log.debug("SELECTED State Id:", this.selectedStateId)
 
+  }
+  getRiskTown(){
+    this.countryService
+    .getTownsByMainCityState(this.selectedStateId)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next:(data:any) =>{
+        if(data){
+          this.townList=data;
+          log.debug("Town List:",this.townList)
+          // this.userCountryCode= this.detailedUserInfo.countryCode;
+          // log.debug("User country code:",this.userCountryCode);
+          // if(this.userCountryCode){
+          //   this.getRiskLocation();
+          // }
+
+        }
+        else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    })
   }
 
 }
