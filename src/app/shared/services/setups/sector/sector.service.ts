@@ -3,7 +3,7 @@ import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 
 import { Logger } from '../../logger/logger.service';
-import { SectorDTO } from '../../../data/common/sector-dto';
+import { PostSectorDTO, SectorDTO } from '../../../data/common/sector-dto';
 import { ApiService } from '../../api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
 
@@ -23,9 +23,16 @@ export class SectorService {
    * @param organizationId Organization ID
    * @returns {SectorDTO[]} List of sector
    */
-  getSectors(organizationId: number): Observable<SectorDTO[]> {
+  getSectors(organizationId?: number): Observable<SectorDTO[]> {
     log.info('Fetching Sectors');
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+
+    const paramsObj: { [param: string]: string } = {};
+
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<SectorDTO[]>(
       `sectors`,
@@ -41,16 +48,19 @@ export class SectorService {
     );
   }
 
-  createSector(data: SectorDTO): Observable<SectorDTO> {
-    return this.api.POST<SectorDTO>(
+  createSector(data: PostSectorDTO): Observable<PostSectorDTO> {
+    return this.api.POST<PostSectorDTO>(
       `sectors`,
       JSON.stringify(data),
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
-  updateSector(sectorId: number, data: SectorDTO): Observable<SectorDTO> {
-    return this.api.PUT<SectorDTO>(
+  updateSector(
+    sectorId: number,
+    data: PostSectorDTO
+  ): Observable<PostSectorDTO> {
+    return this.api.PUT<PostSectorDTO>(
       `sectors/${sectorId}`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
