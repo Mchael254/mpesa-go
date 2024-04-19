@@ -1,11 +1,14 @@
 <div class="container">
-    <div class="row stepper">
-        <div class="col-md-12">
+    <!-- <div class="row stepper col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
+      </div> -->
+      <div class="row col-12">
+        <div class="col-12">
           <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
         </div>
       </div>
-    <span class="reinsurance-title">Reinsurance</span>
     <div class="main">
+        <span class="reinsurance-title">Reinsurance</span>
 
         <div>
             <span class="policy-summary">Policy summary</span>
@@ -122,7 +125,7 @@
     </div>
 
 </div>
-<div style="display: flex; justify-content: flex-end; padding-top: 12px; padding-right: 35px;">
+<div style="display: flex; justify-content: flex-end; padding-top: 12px; padding-right: 48px;">
     <button class="proceed-button" (click)="proceed()">
         <span class="button-text">Proceed</span>
     </button>
