@@ -27,7 +27,7 @@ export class ApiService {
     .set('Content-Type', 'application/json')
     .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
     .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
-    .set('entityType', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.ENTITY_TYPE)));
+    .set('entityType', "usr");
 
 
     // // For General File Downloads (e.g., PDF, Images)

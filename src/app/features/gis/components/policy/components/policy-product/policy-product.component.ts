@@ -362,6 +362,8 @@ export class PolicyProductComponent {
     this.user = this.authService.getCurrentUserName()
     this.userDetails = this.authService.getCurrentUser();
     log.info('Login UserDetails', this.userDetails);
+    const passedUserDetailsString = JSON.stringify(this.userDetails);
+    sessionStorage.setItem('passedUserDetails', passedUserDetailsString);
     this.userBranchId = this.userDetails?.branchId;
     log.debug("Branch Id", this.userBranchId);
     this.fetchBranches();
@@ -618,12 +620,12 @@ export class PolicyProductComponent {
     log.debug("JOINT ACCOUNT NAME:", this.jointAccountName)
   }
   getCurrencies() {
-    this.currencyService.getAllCurrencies().subscribe({
-      next: (res => {
-        this.currency = res
-        log.debug("Currency", res)
-      })
-    })
+    // this.currencyService.getAllCurrencies().subscribe({
+    //   next: (res => {
+    //     this.currency = res
+    //     log.debug("Currency", res)
+    //   })
+    // })
   }
   updateCoverTo(): void {
 
