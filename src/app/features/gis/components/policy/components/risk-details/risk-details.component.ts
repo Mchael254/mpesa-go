@@ -12,6 +12,10 @@ import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
+import { StateDto } from 'src/app/shared/data/common/countryDto';
+import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import { StaffService } from 'src/app/features/entities/services/staff/staff.service';
+import { StaffDto } from 'src/app/features/entities/data/StaffDto';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -28,9 +32,14 @@ export class RiskDetailsComponent {
 
   passedPolicyDetails: any;
   batchNo: any;
-  policyResponse:PolicyResponseDTO;
+  policyResponse: PolicyResponseDTO;
   policyDetails: PolicyContent;
 
+  passedUserDetails: any;
+  userId:any;
+  detailedUserInfo:StaffDto;
+  userCountryCode:any;
+  
   errorMessage: string;
   errorOccurred: boolean;
 
@@ -65,6 +74,9 @@ export class RiskDetailsComponent {
 
   motorProduct: boolean;
 
+  statesList: StateDto[];
+  selectedStateId: any;
+
   constructor(
     public fb: FormBuilder,
     private policyService: PolicyService,
@@ -74,7 +86,8 @@ export class RiskDetailsComponent {
     private subclassCoverTypesService: SubClassCoverTypesService,
     public vehicleMakeService: VehicleMakeService,
     public vehicleModelService: VehicleModelService,
-
+    public countryService: CountryService,
+    public staffService :StaffService,
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
     public cdr: ChangeDetectorRef,
@@ -88,12 +101,62 @@ export class RiskDetailsComponent {
     this.getVehicleMake();
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
-    console.log("Passed Policy Details:", this.passedPolicyDetails);
+    log.debug("Passed Policy Details:", this.passedPolicyDetails);
+
+    const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
+    this.passedUserDetails = JSON.parse(passedUserDetailsString);
+    log.debug("Passed User Details:", this.passedUserDetails);
+    this.userId= this.passedUserDetails.code
+    log.debug("Passed User Id:", this.userId);
+    if(this.userId){
+      this.getUserDetails();
+    }else{
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'User ID not found'
+      );
+    }
+
     this.createPolicyRiskForm();
     this.getPolicy();
+
   }
   ngOnDestroy(): void { }
+  getUserDetails() {
+    this.staffService
+      .getStaffById(this.userId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next:(data:any) =>{
+          if(data){
+            this.detailedUserInfo=data;
+            log.debug("Detailed User Details:",this.detailedUserInfo)
+            this.userCountryCode= this.detailedUserInfo.countryCode;
+            log.debug("User country code:",this.userCountryCode);
+            if(this.userCountryCode){
+              this.getRiskLocation();
+            }
 
+          }
+          else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      })
+  }
   createPolicyRiskForm() {
     this.policyRiskForm = this.fb.group({
 
@@ -176,7 +239,7 @@ export class RiskDetailsComponent {
         next: (data: any) => {
 
           if (data && data.content && data.content.length > 0) {
-            this.policyResponse = data; 
+            this.policyResponse = data;
             log.debug("Get Policy Endpoint Response", this.policyResponse)
             this.policyDetails = this.policyResponse.content[0]
             log.debug("Policy Details", this.policyDetails)
@@ -486,7 +549,7 @@ export class RiskDetailsComponent {
         },
       });
   }
-  onVehicleModelSelected(selectedVehivleModel:any) {
+  onVehicleModelSelected(selectedVehivleModel: any) {
     const selectedValue = selectedVehivleModel
     log.debug("SELECTED vehicle make CODE:", selectedValue)
 
@@ -505,7 +568,46 @@ export class RiskDetailsComponent {
     console.log('Selected Vehicle make model combined ', this.vehiclemakeModel);
 
   }
+  getRiskLocation() {
+    this.countryService
+      .getMainCityStatesByCountry(this.userCountryCode)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
- 
+          if (data) {
+            this.statesList = data;
+            log.debug("State  list", this.statesList)
+            // this.paymentDetails = this.paymentModesList.embedded
+            // log.debug("Payment Name details", this.paymentDetails)
+
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+  onStateSelected(selectedValue: any) {
+    this.selectedStateId = selectedValue;
+
+    log.debug("SELECTED State Id:", this.selectedStateId)
+
+  }
+
 }
 

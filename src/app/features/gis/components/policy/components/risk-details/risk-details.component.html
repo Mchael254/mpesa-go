@@ -356,9 +356,9 @@
 
                         <div class="mb-1 col-sm-4 col-12">
                             <label for="riskLocation" class="required risk-label" id="riskLocation">{{'gis.policy.risk_location'|translate}}</label>
-                            <p-dropdown  [options]="" optionValue="code"
-                                optionLabel="description"  placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+                            <p-dropdown  [options]="statesList" optionValue="id"
+                                optionLabel="name"  placeholder=" " (onChange)="onStateSelected($event.value)"
+                                [filterBy]="'name'" [filter]="true"></p-dropdown>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
