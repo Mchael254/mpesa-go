@@ -8,8 +8,14 @@ import {
 } from '@angular/forms';
 
 import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
-import { OccupationDTO } from '../../../../shared/data/common/occupation-dto';
-import { SectorDTO } from '../../../../shared/data/common/sector-dto';
+import {
+  OccupationDTO,
+  PostOccupationDTO,
+} from '../../../../shared/data/common/occupation-dto';
+import {
+  PostSectorDTO,
+  SectorDTO,
+} from '../../../../shared/data/common/sector-dto';
 import { SectorService } from '../../../../shared/services/setups/sector/sector.service';
 import { OccupationService } from '../../../../shared/services/setups/occupation/occupation.service';
 import { UtilService } from '../../../../shared/services/util/util.service';
@@ -41,11 +47,14 @@ export class SectorOccupationComponent implements OnInit {
   public createOccupationForm: FormGroup;
 
   public sectorsData: SectorDTO[];
+  public sectorsData2: SectorDTO[];
   public occupationsData: OccupationDTO[];
+  public occupationsData2: OccupationDTO[];
   public selectedSector: SectorDTO;
   public selectedOccupation: OccupationDTO;
-  public selectedOccupations: OccupationDTO[] = [];
+  public selectedOccupations: any[] = [];
   public selectedSectors: SectorDTO[] = [];
+  public currentOccupations: OccupationDTO[];
 
   public groupId: string = 'sectorTab';
   public ogroupId: string = 'occupationTab';
@@ -87,8 +96,8 @@ export class SectorOccupationComponent implements OnInit {
   ngOnInit(): void {
     this.SectorsForm();
     this.OccupationsForm();
-    this.fetchSectors(2);
-    this.fetchOccupations(2);
+    this.fetchSectors();
+    this.fetchOccupations();
   }
 
   ngOnDestroy(): void {}
@@ -163,7 +172,7 @@ export class SectorOccupationComponent implements OnInit {
     return this.createOccupationForm.controls;
   }
 
-  updateSelectedOccupations(selectedOccupations: OccupationDTO[]) {
+  updateSelectedOccupations(selectedOccupations: any[]) {
     this.selectedOccupations = selectedOccupations;
   }
 
@@ -179,7 +188,7 @@ export class SectorOccupationComponent implements OnInit {
    * passed to the `getSectors` method of the `sectorService` to retrieve the sectors data associated
    * with that particular organization
    */
-  fetchSectors(organizationId: number) {
+  fetchSectors(organizationId?: number) {
     this.sectorService
       .getSectors(organizationId)
       .pipe(untilDestroyed(this))
@@ -187,6 +196,7 @@ export class SectorOccupationComponent implements OnInit {
         next: (data) => {
           if (data) {
             this.sectorsData = data;
+            this.sectorsData2 = data;
             log.info(`Fetched Sectors Data`, this.sectorsData);
           } else {
             this.errorOccurred = true;
@@ -217,7 +227,7 @@ export class SectorOccupationComponent implements OnInit {
    * service to fetch occupation data based on the provided `sectorId`. The fetched data is then stored
    * in the `
    */
-  fetchOccupations(organizationId: number) {
+  fetchOccupations(organizationId?: number) {
     this.occupationServive
       .getOccupations(organizationId)
       .pipe(untilDestroyed(this))
@@ -225,6 +235,7 @@ export class SectorOccupationComponent implements OnInit {
         next: (data) => {
           if (data) {
             this.occupationsData = data;
+            this.occupationsData2 = data;
             log.info(`Fetched Occuption Data`, this.occupationsData);
           } else {
             this.errorOccurred = true;
@@ -254,7 +265,7 @@ export class SectorOccupationComponent implements OnInit {
       .subscribe({
         next: (data) => {
           if (data) {
-            // Append the fetched data to existing occupationsData array
+            // // Append the fetched data to existing occupationsData array
             // this.occupationsData.push(...data);
             this.occupationsData = data;
             log.info(
@@ -433,13 +444,21 @@ export class SectorOccupationComponent implements OnInit {
     if (!this.selectedSector) {
       const sectorFormValues = this.createSectorForm.getRawValue();
 
-      const saveSector: SectorDTO = {
+      const saveSector: PostSectorDTO = {
         id: null,
         shortDescription: sectorFormValues.shortDescription,
         name: sectorFormValues.name,
-        sectorWefDate: null,
-        sectorWetDate: null,
         organizationId: 2,
+        sectorWefDate: new Date().toISOString(),
+        sectorWetDate: null,
+        assignedOccupations: sectorFormValues.occupation.map(
+          (occupation: OccupationDTO) => ({
+            occupationId: occupation.id,
+            sectorId: 0,
+            wefDate: new Date().toISOString(),
+            wetDate: null,
+          })
+        ),
       };
       this.sectorService.createSector(saveSector).subscribe({
         next: (data) => {
@@ -449,7 +468,7 @@ export class SectorOccupationComponent implements OnInit {
               'Successfully Created a Sector'
             );
             this.createSectorForm.reset();
-            this.fetchSectors(2);
+            this.fetchSectors();
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -474,13 +493,59 @@ export class SectorOccupationComponent implements OnInit {
 
       const sectorId = this.selectedSector.id;
 
-      const updateSector: SectorDTO = {
+      const selectedOccupation = this.occupationsData2.filter((occupation) =>
+        this.selectedSector.assignedOccupations.some(
+          (sectorOccupation) => sectorOccupation.occupationId === occupation.id
+        )
+      );
+
+      const updatedOccupations: OccupationDTO[] = sectorFormValues.occupation;
+
+      const removedOccupations: OccupationDTO[] = selectedOccupation.filter(
+        (currentOccupation) =>
+          !updatedOccupations.some(
+            (updatedOccupation) => updatedOccupation.id === currentOccupation.id
+          )
+      );
+
+      const addedOccupations: OccupationDTO[] = updatedOccupations.filter(
+        (updatedOccupation) =>
+          !this.occupationsData.some(
+            (currentOccupation) => currentOccupation.id === updatedOccupation.id
+          )
+      );
+
+      // Prepare the updateSector DTO
+      const updateSector: PostSectorDTO = {
         id: sectorId,
         shortDescription: sectorFormValues.shortDescription,
         name: sectorFormValues.name,
+        organizationId: this.selectedSector.organizationId,
         sectorWefDate: this.selectedSector.sectorWefDate,
         sectorWetDate: this.selectedSector.sectorWetDate,
-        organizationId: this.selectedSector.organizationId,
+        assignedOccupations: [
+          // Include occupations that are not removed
+          ...selectedOccupation
+            .filter(
+              (occupation) =>
+                !removedOccupations.some(
+                  (removed) => removed.id === occupation.id
+                )
+            )
+            .map((occupation: OccupationDTO) => ({
+              occupationId: occupation.id,
+              sectorId: sectorId,
+              wefDate: occupation.wefDate,
+              wetDate: occupation.wetDate,
+            })),
+          // Include newly added occupations
+          ...addedOccupations.map((occupation: OccupationDTO) => ({
+            occupationId: occupation.id,
+            sectorId: sectorId,
+            wefDate: new Date().toISOString(),
+            wetDate: null,
+          })),
+        ],
       };
 
       this.sectorService.updateSector(sectorId, updateSector).subscribe({
@@ -491,7 +556,8 @@ export class SectorOccupationComponent implements OnInit {
               'Successfully Updated a Sector'
             );
             this.createSectorForm.reset();
-            this.fetchSectors(2);
+            this.fetchSectors();
+            this.fetchOccupations();
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -517,9 +583,17 @@ export class SectorOccupationComponent implements OnInit {
   editSector() {
     if (this.selectedSector) {
       this.openSectorModal();
+
+      const selectedOccupation = this.occupationsData2.filter((occupation) =>
+        this.selectedSector.assignedOccupations.some(
+          (sectorOccupation) => sectorOccupation.occupationId === occupation.id
+        )
+      );
+
       this.createSectorForm.patchValue({
         shortDescription: this.selectedSector.shortDescription,
         name: this.selectedSector.name,
+        occupation: selectedOccupation,
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
@@ -544,7 +618,8 @@ export class SectorOccupationComponent implements OnInit {
               'Successfully deleted a Sector'
             );
             this.selectedSector = null;
-            this.fetchSectors(2);
+            this.fetchOccupationBySectorId(sectorId);
+            this.fetchSectors();
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';
@@ -620,14 +695,21 @@ export class SectorOccupationComponent implements OnInit {
     if (!this.selectedOccupation) {
       const occupationFormValues = this.createOccupationForm.getRawValue();
 
-      const saveOccupation: OccupationDTO = {
+      const saveOccupation: PostOccupationDTO = {
         id: null,
         shortDescription: occupationFormValues.shortDescription,
         name: occupationFormValues.name,
-        wefDate: null,
-        wetDate: null,
         organizationId: 2,
+        wefDate: new Date().toISOString(),
+        wetDate: null,
+        assignedSectors: occupationFormValues.sector.map((sector) => ({
+          occupationId: null,
+          sectorId: sector.sectorId,
+          wefDate: new Date().toISOString(),
+          wetDate: null,
+        })),
       };
+
       this.occupationServive.createOccupation(saveOccupation).subscribe({
         next: (data) => {
           if (data) {
@@ -635,7 +717,7 @@ export class SectorOccupationComponent implements OnInit {
               'Success',
               'Successfully Created an Occupation'
             );
-            this.fetchOccupations(2);
+            this.fetchOccupations();
             this.createOccupationForm.reset();
           } else {
             this.errorOccurred = true;
@@ -660,13 +742,57 @@ export class SectorOccupationComponent implements OnInit {
       const occupationFormValues = this.createOccupationForm.getRawValue();
       const occupationId = this.selectedOccupation.id;
 
-      const updateOccupation: OccupationDTO = {
+      const selectedSectors = this.sectorsData.filter((sector) =>
+        this.selectedOccupation.assignedSectors.some(
+          (occupationSector) => occupationSector.sectorId === sector.id
+        )
+      );
+
+      const updatedSectors: SectorDTO[] = occupationFormValues.sector;
+
+      const removedSectors: SectorDTO[] = selectedSectors.filter(
+        (currentSector) =>
+          !updatedSectors.some(
+            (updatedSector) => updatedSector.id === currentSector.id
+          )
+      );
+
+      const addedSectors: SectorDTO[] = updatedSectors.filter(
+        (updatedSector) =>
+          !selectedSectors.some(
+            (currentSector) => currentSector.id === updatedSector.id
+          )
+      );
+
+      // Prepare the updateOccupation DTO
+      const updateOccupation: PostOccupationDTO = {
         id: occupationId,
         shortDescription: occupationFormValues.shortDescription,
         name: occupationFormValues.name,
+        organizationId: this.selectedOccupation.organizationId,
         wefDate: this.selectedOccupation.wefDate,
         wetDate: this.selectedOccupation.wetDate,
-        organizationId: this.selectedOccupation.organizationId,
+        assignedSectors: [
+          // Include sectors that are not removed
+          ...selectedSectors
+            .filter(
+              (sector) =>
+                !removedSectors.some((removed) => removed.id === sector.id)
+            )
+            .map((sector: SectorDTO) => ({
+              occupationId: occupationId,
+              sectorId: sector.id,
+              wefDate: sector.sectorWefDate,
+              wetDate: sector.sectorWetDate,
+            })),
+          // Include newly added sectors
+          ...addedSectors.map((sector: SectorDTO) => ({
+            occupationId: occupationId,
+            sectorId: sector.id,
+            wefDate: new Date().toISOString(),
+            wetDate: null,
+          })),
+        ],
       };
       this.occupationServive
         .updateOccupation(occupationId, updateOccupation)
@@ -677,7 +803,7 @@ export class SectorOccupationComponent implements OnInit {
                 'Success',
                 'Successfully Updated an Occupation'
               );
-              this.fetchOccupations(2);
+              this.fetchOccupations();
               this.selectedOccupation = null;
               this.createOccupationForm.reset();
             } else {
@@ -705,9 +831,15 @@ export class SectorOccupationComponent implements OnInit {
   editOccupation() {
     if (this.selectedOccupation) {
       this.openOccupationModal();
+      const selectedSectors = this.sectorsData.filter((sector) =>
+        this.selectedOccupation.assignedSectors.some(
+          (occupationSector) => occupationSector.sectorId === sector.id
+        )
+      );
       this.createOccupationForm.patchValue({
         shortDescription: this.selectedOccupation.shortDescription,
         name: this.selectedOccupation.name,
+        sector: selectedSectors,
       });
     } else {
       this.globalMessagingService.displayErrorMessage(
@@ -732,7 +864,7 @@ export class SectorOccupationComponent implements OnInit {
               'Successfully deleted Occupation'
             );
             this.selectedOccupation = null;
-            this.fetchOccupations(2);
+            this.fetchOccupations();
           } else {
             this.errorOccurred = true;
             this.errorMessage = 'Something went wrong. Please try Again';

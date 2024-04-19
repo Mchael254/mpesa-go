@@ -6,6 +6,7 @@ import { Logger } from '../../logger/logger.service';
 import {
   OccupationDTO,
   OccupationSectorDTO,
+  PostOccupationDTO,
 } from '../../../data/common/occupation-dto';
 import { ApiService } from '../../api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
@@ -27,9 +28,15 @@ export class OccupationService {
    * @param organizationId Organization ID
    * @returns {Observable<OccupationDTO[]>} List of occupations
    */
-  getOccupations(organizationId: number): Observable<OccupationDTO[]> {
+  getOccupations(organizationId?: number): Observable<OccupationDTO[]> {
     log.info('Fetching Occupations');
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+    const paramsObj: { [param: string]: string } = {};
+
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<OccupationDTO[]>(
       `occupations`,
@@ -47,13 +54,13 @@ export class OccupationService {
 
   getOccupationBySectorId(sectorId: number): Observable<OccupationDTO[]> {
     return this.api.GET<OccupationDTO[]>(
-      `occupations/${sectorId}/occupations`,
+      `sectors/${sectorId}/occupations`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 
-  createOccupation(data: OccupationDTO): Observable<OccupationDTO> {
-    return this.api.POST<OccupationDTO>(
+  createOccupation(data: PostOccupationDTO): Observable<PostOccupationDTO> {
+    return this.api.POST<PostOccupationDTO>(
       `occupations`,
       JSON.stringify(data),
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
@@ -72,9 +79,9 @@ export class OccupationService {
 
   updateOccupation(
     occupationId: number,
-    data: OccupationDTO
-  ): Observable<OccupationDTO> {
-    return this.api.PUT<OccupationDTO>(
+    data: PostOccupationDTO
+  ): Observable<PostOccupationDTO> {
+    return this.api.PUT<PostOccupationDTO>(
       `occupations/${occupationId}`,
       data,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
