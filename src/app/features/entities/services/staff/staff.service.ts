@@ -89,7 +89,7 @@ export class StaffService {
    */
   getStaffById(id: number): Observable<StaffDto> {
     return this.api.GET<StaffDto>(
-      `administration/users/${id}`,
+      `users/${id}`,
       API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
     );
   }
