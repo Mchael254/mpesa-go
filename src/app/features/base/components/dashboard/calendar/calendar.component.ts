@@ -12,6 +12,7 @@ import {GlobalMessagingService} from "../../../../../shared/services/messaging/g
 import {CalendarService} from "../../../services/calendar.service";
 import {take} from "rxjs/operators";
 import * as moment from "moment";
+import {Profile} from "../../../../../shared/data/auth/profile";
 
 const log = new Logger('CalendarComponent');
 
@@ -30,7 +31,7 @@ export class CalendarComponent implements OnInit {
 
   eventsData: CalendarEventReqDTO[] = [];
   events: CalendarEventReqDTO[] = [];
-  loggedInUser = this.authService.getCurrentUserName();
+  loggedInUser: Profile = this.authService.getCurrentUser();
   public liTag = '';
   public daysToDisplay: CalendarDay[] = [];
 
@@ -116,7 +117,7 @@ export class CalendarComponent implements OnInit {
       eventDate: [''],
     });
     this.newEventForm.patchValue({
-      userName: this.loggedInUser,
+      userName: this.loggedInUser.userName,
       eventDate: new Date()
     });
   }
@@ -294,7 +295,7 @@ export class CalendarComponent implements OnInit {
   }
 
   getEvents(dateString: string): void {
-    const userName= this.loggedInUser;
+    const userName= this.loggedInUser.userName;
     // log.info(`logged In User >>>`, this.loggedInUser);
     this.calendarService.getCalendarEvent(userName)
       .pipe(
@@ -347,7 +348,7 @@ export class CalendarComponent implements OnInit {
       memo: eventFormValues.details,
       startDate: new Date(eventFormValues.fromDate).toISOString(),
       title: eventFormValues.eventTitle,
-      user: this.loggedInUser
+      user: this.loggedInUser.userName
     }
     // log.info(`calendarEvent to save >>>`, saveCalendarEvent)
 

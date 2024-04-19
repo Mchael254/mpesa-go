@@ -141,7 +141,8 @@ export class ReportService {
       title: '',
       paginator: true,
       url: '',
-      urlIdentifier: ''
+      urlIdentifier: '',
+      rowsPerPage: 20
     }
 
     return tableDetails;
