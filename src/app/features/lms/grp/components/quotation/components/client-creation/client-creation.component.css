@@ -230,6 +230,18 @@ td {
   padding: 2px;
 }
 
+/* overlay popup*/
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-wrapper {
+  width: 100%;
+}
+/* overlay popup*/
+
 
 @media screen and (max-width: 768px) {
   .container {
