@@ -1,5 +1,7 @@
 <div class="container ">
     <p class="titleMain mt-3">{{'gis.policy.underwriting_risk_details' | translate}}</p>
+    <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+
     <div class="container mx-2 mt-n1">
         <div class="card mb-3 px-2" style=" position: relative;">
             <div class="card-body">
@@ -452,9 +454,10 @@
                         <div class=" mb-1 col-sm-4 col-12" >
                             <label for="surveyDate" class="required risk-label"
                                 id="surveyDate">{{'gis.policy.territory'|translate}}</label><br>
-                                <p-dropdown  [options]="" optionValue="code"
-                                optionLabel="description"  placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
+                                <p-dropdown  formControlName="property_id" [options]="countryList" optionValue="id"
+                                optionLabel="name"  [placeholder]="userCountryName"
+                                [filterBy]="'name'" [filter]="true"  [ngModel]="userCountryName"></p-dropdown>
+                               
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
