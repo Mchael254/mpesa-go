@@ -12,10 +12,11 @@ import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
 import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
-import { StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
+import { CountryDto, StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
 import { StaffService } from '../../../../../entities/services/staff/staff.service';
 import { StaffDto } from '../../../../../entities/data/StaffDto';
+import underwritingSteps from '../../data/underwriting-steps.json'
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -25,6 +26,7 @@ const log = new Logger("RiskDetailsComponent");
   styleUrls: ['./risk-details.component.css']
 })
 export class RiskDetailsComponent {
+  steps=underwritingSteps
   policyRiskForm: FormGroup;
   show: boolean = true;
   isNcdApplicable: boolean = false;
@@ -76,9 +78,9 @@ export class RiskDetailsComponent {
 
   statesList: StateDto[];
   selectedStateId: any;
-
-  townList:TownDto[];
-
+   townList:TownDto[];
+   countryList:CountryDto[];
+   userCountryName:any;
   constructor(
     public fb: FormBuilder,
     private policyService: PolicyService,
@@ -137,6 +139,7 @@ export class RiskDetailsComponent {
             log.debug("User country code:",this.userCountryCode);
             if(this.userCountryCode){
               this.getRiskLocation();
+              this.getRiskTerritory()
             }
 
           }
@@ -534,11 +537,8 @@ export class RiskDetailsComponent {
 
           } else {
             this.errorOccurred = true;
-            this.errorMessage = 'Something went wrong. Please try Again';
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Something went wrong. Please try Again'
-            );
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
           }
         },
         error: (err) => {
@@ -586,11 +586,8 @@ export class RiskDetailsComponent {
 
           } else {
             this.errorOccurred = true;
-            this.errorMessage = 'Something went wrong. Please try Again';
-            this.globalMessagingService.displayErrorMessage(
-              'Error',
-              'Something went wrong. Please try Again'
-            );
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
           }
         },
         error: (err) => {
@@ -629,12 +626,10 @@ export class RiskDetailsComponent {
         }
         else {
           this.errorOccurred = true;
-          this.errorMessage = 'Something went wrong. Please try Again';
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            'Something went wrong. Please try Again'
-          );
+          this.errorMessage = 'Empty response received from the server.';
+          this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
         }
+        
       },
       error: (err) => {
 
@@ -646,6 +641,42 @@ export class RiskDetailsComponent {
       },
     })
   }
+
+getRiskTerritory() {
+  this.countryService
+    .getCountries()
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data: any) => {
+        if (data && data.length > 0) {
+          this.countryList = data;
+          console.log("Country List:", this.countryList);
+
+          const country = this.countryList.find(country => country.id === this.userCountryCode);
+          console.log("User Country:", country);
+
+          if (country) {
+            this.userCountryName = country.name;
+            console.log("User Country Name:", this.userCountryName);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'User country not found in the list.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Empty response received from the server.';
+          this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+        }
+      },
+      error: (err) => {
+        this.errorOccurred = true;
+        this.errorMessage = 'An error occurred while fetching countries.';
+        this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+        log.debug('Error:', err);
+      },
+    });
+}
 
 }
 
