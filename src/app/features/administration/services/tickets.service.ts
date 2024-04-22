@@ -202,7 +202,7 @@ export class TicketsService {
   // get ticket count per module for the logged in user
   getTicketCount(): Observable<TicketCountDTO[]> {
 
-    const assignee = this.authService.getCurrentUserName();
+    const assignee = this.authService.getCurrentUser().userName;
     const params = new HttpParams()
       .set('assignee', `${assignee}`)
 
