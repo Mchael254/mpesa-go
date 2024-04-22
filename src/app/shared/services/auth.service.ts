@@ -511,7 +511,9 @@ export class AuthService implements OnDestroy {
       .subscribe(
         (data: Profile) => {
           this.setAuth(data);
+
           log.info(`logged in user`, data);
+
           const entityType = headers.get('entityType');
           if (entityType === 'MEMBER') {
             const entityCode = data.code;

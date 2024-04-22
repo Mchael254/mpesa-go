@@ -115,7 +115,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (tenants.length <= 1) {
         this.tenant_id = tenants[0].name;
         this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
-        this.authAttempt();
+
+        const entities = tenants[0].authType;
+        if (entities.length <= 1) {
+          const entity = entities[0];
+          this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entity);
+          this.authAttempt();
+        } else {
+          this.entities = entities;
+        }
+
       }
 
       this.isLoading = false;
@@ -254,12 +263,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.entities = tenant.authType;
     this.tenant_id = tenant.name;
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
+
     if (this.entities.length === 1) {
       const entityType = this.entities[0];
       this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entityType);
       log.info(`entity type a ===> `, entityType);
       this.authAttempt()
-    };
+    }
   }
 
   selectEntity(entity: string): void {

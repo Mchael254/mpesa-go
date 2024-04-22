@@ -27,8 +27,7 @@ export class ApiService {
     .set('Content-Type', 'application/json')
     .set('X-TenantId', StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)))
     .set('SESSION_TOKEN', this.session_storage.getItem('SESSION_TOKEN') || '')
-    .set('entityType', "usr");
-
+    .set('entityType', this.session_storage.get(SESSION_KEY.ENTITY_TYPE));
 
     // // For General File Downloads (e.g., PDF, Images)
     // headers = headers.append('Content-Type', 'application/octet-stream');
@@ -55,9 +54,9 @@ export class ApiService {
 
   GET<T>(endpoint: string, BASE_SERVICE: API_CONFIG = API_CONFIG.SETUPS_SERVICE_BASE_URL, params= null): Observable<T> {
     this.baseURL = environment.API_URLS.get(BASE_SERVICE);
-    const url = `${this.baseURL}/${endpoint}`;    
+    const url = `${this.baseURL}/${endpoint}`;
     let headers: HttpHeaders = this.getHeaders();
-    
+
     let config = {}
     if(params===null){
       config = {headers}
@@ -90,7 +89,7 @@ export class ApiService {
        url = `${this.baseURL}/${endpoint}`;
     }
     const headers = this.getHeaders();
-    
+
     return this.http.post(url, data, { headers, params, responseType: 'blob' });
   }
 

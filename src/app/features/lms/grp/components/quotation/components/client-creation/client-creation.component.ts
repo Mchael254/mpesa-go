@@ -72,8 +72,8 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private clientType_service: ClientTypeService,
     private coverageService: CoverageService,
-    
-    
+
+
   ) {
     this.maxDate = new Date();
     const currentDate: Date = new Date();
@@ -96,7 +96,7 @@ export class ClientCreationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
 clientCreationForm() {
@@ -213,7 +213,7 @@ capitalizeFirstLetterOfEachWord(str) {
   return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
 }
 
-/* Function to patch data into the clientDetailsForm 
+/* Function to patch data into the clientDetailsForm
 when existing client is selected.*/
 patchClientData(client: ClientDTO) {
   this.clientDetailsForm.patchValue({
@@ -239,8 +239,8 @@ patchClientData(client: ClientDTO) {
   console.log("IdOfPAtched", this.patchedClientId)
 }
 
-/* Method to show searched clients names in dropdown 
-that match typed letters in existing client search field. 
+/* Method to show searched clients names in dropdown
+that match typed letters in existing client search field.
 It oauto opens dropdown
 */
 openDropdown() {
@@ -265,7 +265,7 @@ searchClient() {
   this.clientDetailsForm.get('clientName').valueChanges.pipe(debounceTime(900), distinctUntilChanged())
   .subscribe((clientTyped) => {
     this.clientId = clientTyped.value;
-    
+
     console.log("clientSelectedID", this.clientId)
 
     /*...Help get selected client's details.
@@ -275,7 +275,7 @@ searchClient() {
       this.getClientById(this.clientId);
     }
 
-      /*...Fetches admin details for every client 
+      /*...Fetches admin details for every client
       whenever a client is selected.
       */
     if(this.storedClientCode !== null || this.storedClientCode !== undefined) {
@@ -307,7 +307,7 @@ searchClient() {
         });
         this.openDropdown();
       });
-    }    
+    }
     else {
       this.getClientList();
     }
@@ -397,7 +397,7 @@ getOccupations() {
     }
   }
 
-  /* Prevents typing to registration NO when mode of 
+  /* Prevents typing to registration NO when mode of
     identity is not selected */
   onRegistrationNumberKeydown(event: KeyboardEvent) {
     if (!this.modeOfIdentityId) {
@@ -414,12 +414,12 @@ getOccupations() {
   of selected mode of Identity then display error message. */
   validateRegistrationNumber() {
     const registrationNumber = this.clientDetailsForm.get('registrationNumber').value;
-  
+
     if (registrationNumber === null || registrationNumber === undefined) {
       this.modeOfIdentityErrorMessage = 'Registration number is required';
       return this.modeOfIdentityErrorMessage;
     }
-  
+
     if (this.modeOfIdentityFormat && registrationNumber) {
       const regex = new RegExp(this.modeOfIdentityFormat);
       if (!regex.test(registrationNumber)) {
@@ -453,17 +453,17 @@ getOccupations() {
           default:
             errorMessage += 'Please enter the correct format.';
         }
-        
+
         // Set form control errors and return error message
         this.clientDetailsForm.get('registrationNumber').setErrors({ 'incorrectFormat': true });
         this.modeOfIdentityErrorMessage = errorMessage;
         return this.modeOfIdentityErrorMessage;
       }
     }
-    
+
     return null;
   }
-  
+
 
 getCountryList() {
   this.country_service
@@ -649,8 +649,8 @@ highlightInvalid(field: string): boolean {
         this.spinner_Service.hide('download_view');
 
         /*
-        together with the method -highlightInvalid(field: string), it helps 
-         highlight all invalid form fields on click of Continue button 
+        together with the method -highlightInvalid(field: string), it helps
+         highlight all invalid form fields on click of Continue button
          */
         Object.keys(this.clientDetailsForm.controls).forEach(field => {
           const control = this.clientDetailsForm.get(field);
@@ -729,13 +729,13 @@ highlightInvalid(field: string): boolean {
             });
           }
         );
-        
+
       }
 
     }
   }
 
-  /*Method to call on press of continue after 
+  /*Method to call on press of continue after
   selecting add administrator for created client*/
   continueAfterAddingAdmin() {
     this.router.navigate(['/home/lms/grp/quotation/quick']);
