@@ -75,6 +75,7 @@ export class mockStaffService {
 }export class mockCountryService {
   getMainCityStatesByCountry = jest.fn().mockReturnValue(of());
   getTownsByMainCityState = jest.fn().mockReturnValue(of());
+  getCountries = jest.fn().mockReturnValue(of());
 }
 
 const mockLogger = {
@@ -513,6 +514,47 @@ const mockCountry: CountryDto = {
   zipCode: 12345,
   zipCodeString: '12345'
 };
+const mockCountries: CountryDto[] = [
+  {
+    adminRegMandatory: 'Sample',
+    adminRegType: 'Sample',
+    currSerial: 1,
+    currency: {
+      createdBy: 'Sample',
+      createdDate: '2024-04-23',
+      decimalWord: 'Sample',
+      id: 1,
+      modifiedBy: 'Sample',
+      modifiedDate: '2024-04-23',
+      name: 'Sample',
+      numberWord: 'Sample',
+      roundingOff: 1,
+      symbol: 'Sample'
+    },
+    drugTraffickingStatus: 'Sample',
+    drugWefDate: '2024-04-23',
+    drugWetDate: '2024-04-23',
+    highRiskWefDate: '2024-04-23',
+    highRiskWetDate: '2024-04-23',
+    id: 1,
+    isShengen: 'Sample',
+    mobilePrefix: 1,
+    name: 'United States',
+    nationality: 'Sample',
+    risklevel: 'Sample',
+    short_description: 'Sample',
+    subAdministrativeUnit: 'Sample',
+    telephoneMaximumLength: 1,
+    telephoneMinimumLength: 1,
+    unSanctionWefDate: '2024-04-23',
+    unSanctionWetDate: '2024-04-23',
+    unSanctioned: 'Sample',
+    zipCode: 1,
+    zipCodeString: 'Sample'
+  }
+];
+
+
 const mockState: StateDto = {
   country: mockCountry,
   id: 123,
@@ -664,6 +706,15 @@ describe('RiskDetailsComponent', () => {
     expect(component.cdr.detectChanges).toHaveBeenCalled();
     // Add more assertions as needed
   });
+  it('should display error message if no policy is created', async () => {
+
+    jest.spyOn(policyService, 'getPolicy').mockReturnValue(of(null)); 
+
+    component.getPolicy();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+  });
   it('should handle error and display error message on error response', () => {
     const mockErrorResponse = new Error('Test error');
     const mockResponse = throwError(mockErrorResponse);
@@ -703,6 +754,35 @@ describe('RiskDetailsComponent', () => {
     // Ensure that change detection has been triggered
     expect(component.cdr.detectChanges).toHaveBeenCalled();
   });
+  it('should display error message if no subclass are received', async () => {
+
+    jest.spyOn(subclassService, 'getAllSubclasses').mockReturnValue(of(null)); 
+
+    component.loadAllSubclass();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(subclassService, 'getAllSubclasses').mockReturnValue(mockResponse);
+
+    component.loadAllSubclass();
+
+    expect(subclassService.getAllSubclasses).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
   it('should fetch product subclasses and update subclass list', () => {
     const mockProductCode = 123;
 
@@ -723,6 +803,15 @@ describe('RiskDetailsComponent', () => {
       )
     );
     expect(component.allMatchingSubclasses).toEqual(expectedMatchingSubclasses);
+  });
+  it('should display error message if no product subclass are received', async () => {
+
+    jest.spyOn(ProductService, 'getProductSubclasses').mockReturnValue(of(null)); 
+
+    component.getProductSubclass();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
   });
   it('should handle error and display error message on error response', () => {
     const mockErrorResponse = new Error('Test error');
@@ -792,6 +881,36 @@ describe('RiskDetailsComponent', () => {
     // Verify that the BinderService method is called with the correct arguments
     expect(binderServiceMock.getAllBindersQuick).toHaveBeenCalledWith(component.selectedSubclassCode);
   });
+  it('should display error message if no binders are received', async () => {
+    const mockSubclassCode = 123;
+
+    jest.spyOn(binderService, 'getAllBindersQuick').mockReturnValue(of(null)); 
+
+    component.loadAllBinders();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+  });
+  it('should handle error and display error message on error response', () => {
+    const mockErrorResponse = new Error('Test error');
+    const mockResponse = throwError(mockErrorResponse);
+    jest.spyOn(binderService, 'getAllBindersQuick').mockReturnValue(mockResponse);
+
+    component.loadAllBinders();
+
+    expect(binderService.getAllBindersQuick).toHaveBeenCalled();
+
+    // Subscribe to the observable to trigger the error callback
+    mockResponse.subscribe({
+      error: () => {
+        // Expectations to cover the lines within the error callback
+        expect(component.errorOccurred).toBe(true);
+        expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
+        // Additional expectations to ensure proper error handling
+        expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
+      }
+    });
+  });
   it('should load cover type by subclass code', async () => {
     const mockSubclassCoverType = [
       { coverTypeCode: 'CT001', coverTypeShortDescription: 'Description 1' },
@@ -830,6 +949,16 @@ describe('RiskDetailsComponent', () => {
         expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
       }
     });
+  });
+  it('should display error message if no subclass Covertypes are received', async () => {
+    const mockSubclassCode = 123;
+
+    jest.spyOn(subclassCoverTypesService, 'getSubclassCovertypeBySCode').mockReturnValue(of(null)); 
+
+    component.loadCovertypeBySubclassCode(mockSubclassCode);
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
   });
   it('should update selected cover type code', () => {
     const selectedCoverTypeCode = 'mockCoverTypeCode';
@@ -880,6 +1009,14 @@ describe('RiskDetailsComponent', () => {
         expect(component.globalMessagingService.displayErrorMessage).toHaveBeenCalledWith('Error', 'Something went wrong. Please try Again');
       }
     });
+  });
+  it('should display error message if no vehicle models are received', async () => {
+    jest.spyOn(vehicleMakeService, 'getAllVehicleMake').mockReturnValue(of(null)); 
+
+    component.getVehicleMake();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
   });
   it('should update selected vehicle make code and fetch vehicle models', () => {
     // Mock data
@@ -953,6 +1090,14 @@ describe('RiskDetailsComponent', () => {
       }
     });
   });
+  it('should display error message if no vehicle models are received', async () => {
+    jest.spyOn(vehicleModelService, 'getAllVehicleModel').mockReturnValue(of(null)); 
+
+    component.getVehicleModel();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Empty response received from the server.');
+  });
   it('should update selected vehicle model name and vehicle make model', () => {
     const selectedVehicleModel = { code: 'model1', name: 'Model1' };
     const expectedSelectedVehicleModelName = 'Model1';
@@ -999,6 +1144,14 @@ describe('RiskDetailsComponent', () => {
     expect(component.userCountryCode).toEqual(userDetailsMock.countryCode);
     // Add more assertions as needed
 
+  });
+  it('should display error message if no user details are received', async () => {
+    jest.spyOn(staffService, 'getStaffById').mockReturnValue(of(null)); 
+
+    component.getUserDetails();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Something went wrong. Please try Again');
   });
   it('should handle error and display error message on error response', () => {
     const mockErrorResponse = new Error('Test error');
@@ -1054,6 +1207,14 @@ describe('RiskDetailsComponent', () => {
       }
     });
   });
+  it('should display error message if no states are received', async () => {
+    jest.spyOn(countryService, 'getMainCityStatesByCountry').mockReturnValue(of(null)); 
+
+    component.getRiskLocation();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Empty response received from the server.');
+  });
   it('should call getRiskTown when state is selected', () => {
     const selectedStateId = 123; // Example selected state ID
 
@@ -1102,4 +1263,56 @@ describe('RiskDetailsComponent', () => {
       }
     });
   });
+   it('should display error message if no towns are received', async () => {
+    jest.spyOn(countryService, 'getTownsByMainCityState').mockReturnValue(of(null)); // Mock empty response
+
+    component.getRiskTown();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Empty response received from the server.');
+  });
+  it('should set userCountryName if country is found', async () => {
+    const mockUserCountryCode = 1;
+
+    jest.spyOn(countryService, 'getCountries').mockReturnValue(of(mockCountries) as any);
+    component.userCountryCode = mockUserCountryCode
+    component.getRiskTerritory();
+
+    expect(component.countryList).toEqual(mockCountries);
+
+    expect(component.userCountryName).toEqual('United States');
+  });
+  it('should display error message if countries response is empty', async () => {
+    jest.spyOn(countryService, 'getCountries').mockReturnValue(of([]));
+
+    component.getRiskTerritory();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('Empty response received from the server.');
+  });
+  it('should display error message if an error occurs during HTTP request', async () => {
+    const mockError = new Error('An error occurred');
+    jest.spyOn(countryService, 'getCountries').mockReturnValue(throwError(mockError));
+
+    component.getRiskTerritory();
+
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('An error occurred while fetching countries.');
+  });
+  it('should display error message if country is not found', async () => {
+    const mockUserCountryCode = 56; // Mock user's country code that does not exist in the mock data
+  
+   
+  
+    jest.spyOn(countryService, 'getCountries').mockReturnValue(of(mockCountries)as any);
+  
+   
+    component.userCountryCode = mockUserCountryCode
+    component.getRiskTerritory();
+
+  
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toEqual('User country not found in the list.');
+  });
+  
 });

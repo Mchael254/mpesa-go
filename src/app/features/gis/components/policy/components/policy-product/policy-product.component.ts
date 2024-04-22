@@ -19,6 +19,7 @@ import { CurrencyService } from '../../../../../../shared/services/setups/curren
 import { ContractNamesService } from '../../services/contract-names/contract-names.service';
 import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
+import underwritingSteps from '../../data/underwriting-steps.json'
 
 const log = new Logger("PolicyProductComponent");
 
@@ -28,7 +29,7 @@ const log = new Logger("PolicyProductComponent");
   styleUrls: ['./policy-product.component.css']
 })
 export class PolicyProductComponent {
-
+  steps=underwritingSteps
   clientData: ClientDTO[];
   clientDetails: ClientDTO;
   clientType: any;
