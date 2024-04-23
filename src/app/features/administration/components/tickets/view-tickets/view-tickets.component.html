@@ -40,24 +40,26 @@
 
 <div  class="d-flex my-4 mx-4">
 <!--  <button class="btn btn-success" (click)="generateAuthorizeOtp()" style="margin-right: 1rem;">Authorize</button>-->
-  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task" style="margin-right: 1rem;">Reassign</button>
-  <button class="btn btn-success" (click)="authorizePolicy()" style="margin-right: 1rem;">Authorize</button>
-  <button class="btn btn-outline-primary" (click)="goToDispatch()">Mass Dispatch</button>
+  <button class="btn btn-primary border-radius-none" (click)="processReassignTask()" id="btn-reassign-task" style="margin-right: 1rem;">
+    {{'mngt_wrkflw.tickets.reassign' | translate }}
+  </button>
+  <button class="btn btn-success" (click)="authorizePolicy()" style="margin-right: 1rem;">{{'mngt_wrkflw.tickets.authorize' | translate }}</button>
+  <button class="btn btn-outline-primary" (click)="goToDispatch()">{{'base.dispatch' | translate | titlecase }}</button>
 </div>
 
 <div class="d-flex my-4 mx-4">
   <form [formGroup]="sortingForm" style="background: none; display: contents">
     <div class="row">
       <div class="col-lg-3 col-sm-6 col-6">
-        <label>From</label><br>
+        <label>{{'mngt_wrkflw.tickets.from' | translate }}</label><br>
         <input type="date" class="form-control" formControlName="fromDate" (change)="sortTickets()">
       </div>
       <div class="col-lg-3 col-sm-6 col-6">
-        <label>To</label><br>
+        <label>{{'mngt_wrkflw.tickets.to' | translate }}</label><br>
         <input type="date" class="form-control" formControlName="toDate" (change)="sortTickets()">
       </div>
       <div class="col-lg-3 col-sm-6 col-6">
-        <label>Type</label><br>
+        <label>{{'mngt_wrkflw.tickets.type' | translate }}</label><br>
         <select class="form-control form-select" formControlName="ticketTypes" id="type" (change)="sortTickets()">
           <option value="" disabled selected>Select option</option>
           <option value="">All</option>
@@ -66,7 +68,7 @@
         </select>
       </div>
       <div class="col-lg-3 col-sm-6 col-6">
-        <label>Module</label><br>
+        <label>{{'mngt_wrkflw.tickets.module' | translate }}</label><br>
         <!--          <select formControlName="ticketModules" id="module" [(ngModel)]="selectedModule" (change)="searchModule($event)">-->
         <select class="form-control form-select" formControlName="ticketModules" id="module" (change)="sortTickets()">
           <option value="" selected>Select option</option>
@@ -307,28 +309,28 @@
         <ng-template pTemplate="header">
           <tr>
             <th class="head">
-              Select All
+              {{'mngt_wrkflw.tickets.selectAll' | translate }}
             </th>
             <th class="head" pSortableColumn="date">
-              Created On <p-sortIcon field="date"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.createdOn'| translate }} <p-sortIcon field="date"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="task.activityName">
-              Ticket Name <p-sortIcon field="task.activityName"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.ticketName' | translate }} <p-sortIcon field="task.activityName"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="sysModule">
-              Ref No. <p-sortIcon field="sysModule"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.refNo' | translate }}. <p-sortIcon field="sysModule"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="clientName">
-              Client <p-sortIcon field="clientName"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.client' | translate }} <p-sortIcon field="clientName"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="agentName">
-              Intermediary <p-sortIcon field="agentName"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.intermediary' | translate }} <p-sortIcon field="agentName"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="reporter">
-              Ticket From <p-sortIcon field="reporter"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.ticketFrom' | translate }} <p-sortIcon field="reporter"></p-sortIcon>
             </th>
             <th class="head" pSortableColumn="assignee">
-              Ticket Assignee <p-sortIcon field="assignee"></p-sortIcon>
+              {{'mngt_wrkflw.tickets.ticketAssignee' | translate }} <p-sortIcon field="assignee"></p-sortIcon>
             </th>
             <th></th>
           </tr>

@@ -57,12 +57,18 @@ export class MassDocumentDispatchComponent implements OnInit {
     this.createDocDispatchForm();
   }
 
+  /**
+   * The function creates a form group for document dispatch with a single control for the document dispatched.
+   */
   createDocDispatchForm() {
     this.docDispatchForm = this.fb.group({
       documentDispatched: ['']
     })
   }
 
+  /**
+   * The function `openDocDispatchModal` displays a modal with a backdrop if it exists.
+   */
   openDocDispatchModal() {
     const modal = document.getElementById('docDispatchToggle');
     if (modal) {
@@ -74,6 +80,10 @@ export class MassDocumentDispatchComponent implements OnInit {
       }
     }
   }
+
+  /**
+   * The function `closeDocDispatchModal` hides a modal and its backdrop if they are currently displayed.
+   */
   closeDocDispatchModal() {
     const modal = document.getElementById('docDispatchToggle');
     if (modal) {
@@ -86,6 +96,9 @@ export class MassDocumentDispatchComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `openDocConfirmModal` displays a modal with a backdrop for confirming a document.
+   */
   openDocConfirmModal() {
     const modal = document.getElementById('docConfirmToggle');
     if (modal) {
@@ -98,6 +111,9 @@ export class MassDocumentDispatchComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeDocConfirmModal` hides a modal with the ID 'docConfirmToggle' and its backdrop.
+   */
   closeDocConfirmModal() {
     const modal = document.getElementById('docConfirmToggle');
     if (modal) {
@@ -110,6 +126,9 @@ export class MassDocumentDispatchComponent implements OnInit {
     }
   }
 
+  /**
+   * The function getAllTickets retrieves data based on the specified page index, page size, and type.
+   */
   getAllTickets(
     pageIndex: number,
     pageSize: number,) {
@@ -121,33 +140,40 @@ export class MassDocumentDispatchComponent implements OnInit {
         );
   }
 
+  /**
+   * The function `lazyLoadTickets` is used to load tickets lazily based on the event parameters, with additional logic to
+   * handle filtering from the dashboard screen.
+   * @param {LazyLoadEvent | TableLazyLoadEvent} event - The `lazyLoadTickets` function takes an event parameter of type
+   * `LazyLoadEvent` or `TableLazyLoadEvent`. This event parameter is used to determine the pagination details such as page
+   * index, sort field, sort order, and page size for loading tickets.
+   */
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
 
-    const ticketFilter:any = this.ticketsService.ticketFilterObject();
+    const pageIndex = event.first / event.rows;
+    const queryColumn = event.sortField;
+    const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
+    const pageSize = event.rows;
+    log.info('sortorder',queryColumn);
 
-    if(!ticketFilter?.fromDashboardScreen) {
-      const pageIndex = event.first / event.rows;
-      const queryColumn = event.sortField;
-      const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
-      const pageSize = event.rows;
-      log.info('sortorder',queryColumn);
+    this.getAllTickets(pageIndex, pageSize)
+      .pipe(untilDestroyed(this))
+      .subscribe((data:Pagination<TicketsDTO>) => {
+          this.springTickets = data;
+          this.cdr.detectChanges();
+          this.ticketsService.setCurrentTickets(this.springTickets.content);
+          this.spinner.hide();
 
-      this.getAllTickets(pageIndex, pageSize)
-        .pipe(untilDestroyed(this))
-        .subscribe((data:Pagination<TicketsDTO>) => {
-            this.springTickets = data;
-            this.cdr.detectChanges();
-            this.ticketsService.setCurrentTickets(this.springTickets.content);
-            this.spinner.hide();
-
-          },
-          error => {
-            this.spinner.hide();
-          })
-    }
+        },
+        error => {
+          this.spinner.hide();
+        })
 
   }
 
+  /**
+   * The function `getReportsToPrepare` fetches dispatch reports for a given ticket and displays them in a modal if
+   * available, otherwise shows an error message.
+   */
   getReportsToPrepare(ticket: TicketsDTO) {
     this.selectedTicket = ticket;
     log.info('ticket>', ticket);
@@ -171,6 +197,10 @@ export class MassDocumentDispatchComponent implements OnInit {
       )
   }
 
+  /**
+   * The `prepareDocuments` function prepares and dispatches documents based on the form values and displays success or
+   * error messages accordingly.
+   */
   prepareDocuments() {
     const scheduleFormValues = this.docDispatchForm.getRawValue();
     if (scheduleFormValues.documentDispatched.length > 0) {
@@ -202,6 +232,10 @@ export class MassDocumentDispatchComponent implements OnInit {
     }
   }
 
+  /**
+   * The `savePreparedDocs` function prepares documents for a selected ticket's policy code and displays success or error
+   * messages accordingly.
+   */
   savePreparedDocs() {
     this.policiesService.prepareDocuments(this.selectedTicket?.ticket?.policyCode)
       .subscribe({
@@ -215,6 +249,13 @@ export class MassDocumentDispatchComponent implements OnInit {
       })
   }
 
+  /**
+   * The onSave function in TypeScript retrieves selected ticket codes, validates the selection, dispatches documents, and
+   * displays success or error messages accordingly.
+   * @returns The `onSave()` function returns a boolean value. If there are no selected ticket codes, it returns `false`
+   * after displaying an error message. Otherwise, it returns nothing after dispatching documents and displaying success or
+   * error messages.
+   */
   onSave() {
     const selectedTicketCodes = this.selectedSpringTickets.map(ticket => ticket.ticket.policyCode);
 
@@ -236,6 +277,13 @@ export class MassDocumentDispatchComponent implements OnInit {
       })
     this.cdr.detectChanges();
   }
+
+  /**
+   * The `filterDocs` function filters a table based on the input value from an HTML input element.
+   * @param {Event} event - The `event` parameter in the `filterDocs` function is an Event object that represents an event
+   * being handled, such as a user input event. It is used to extract the value entered by the user in an HTML input
+   * element to perform filtering on a table or list of documents.
+   */
   filterDocs(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dispatchDocsTable.filterGlobal(filterValue, 'contains');
