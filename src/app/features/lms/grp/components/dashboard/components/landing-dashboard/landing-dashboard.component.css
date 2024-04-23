@@ -200,6 +200,7 @@ table {
 
 .td-data {
     color: black;
+    white-space: nowrap;
 }
 
 td:first-child {

@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { Logger } from 'src/app/shared/services';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { DashboardService } from '../../services/dashboard.service';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
@@ -16,27 +18,42 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   columnOptions: SelectItem[];
   selectedColumns: string[];
   years: number[] = [];
-  policySelected: string = 'PolicyAKA123';
+  selectedPolicyNumber: string;
+  selectedPolicyCode: number;
+  memberCode: number;
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  breadCrumbItems: BreadCrumbItem[] = [
-    { label: 'Dashboard', url: '/home/lms/grp/dashboard/dashboard-screen' },
-    { label: this.policySelected, url: '/home/lms/grp/dashboard/policy-details' },
-  ];
+  breadCrumbItems: BreadCrumbItem[] = [];
   selectedRowIndex: number;
   pensionWithLifeRider: boolean = false;
   gla: boolean = false;
   investment: boolean = false;
   investmentWithRider: boolean = false;
 
-  constructor() { }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private dashboardService: DashboardService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+    this.selectedPolicyNumber = this.activatedRoute.snapshot.queryParams['policyNumber'];
+    this.memberCode = this.activatedRoute.snapshot.queryParams['entityCode'];
+    this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
     this.populateYears();
     this.adminDetsTableColumns();
+    this.populateBreadCrumbItems();
+    this.getMemberAllPensionDepositReceipts();
   }
 
   ngOnDestroy(): void {
 
+  }
+
+  populateBreadCrumbItems(): void {
+    this.breadCrumbItems = [
+      { label: 'Dashboard', url: '/home/lms/grp/dashboard/dashboard-screen' },
+      { label: this.selectedPolicyNumber, url: '/home/lms/grp/dashboard/policy-details' },
+    ];
   }
 
   showContent(content: string) {
@@ -125,6 +142,12 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       log.info("dummydataPassed", dummyData);
       this.showReceiptsModal();
     }
+  }
+
+  getMemberAllPensionDepositReceipts() {
+    this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.memberCode).subscribe((res) => {
+      log.info("MemberAllPensionDepositReceipts-->", res)
+    })
   }
 
 }

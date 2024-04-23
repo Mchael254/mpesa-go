@@ -63,22 +63,22 @@
         <div class="info">
             <div>
                 <label class="label-name" for="name">Name:</label>
-                <span class="label-desc" id="name">Johnanesburg Doedino</span>
+                <span class="label-desc" id="name">{{ userProfileData.fullName }}</span>
             </div>
     
             <div>
                 <label class="label-name" for="national-id">National ID:</label>
-                <span class="label-desc" id="national-id">1234567890</span>
+                <span class="label-desc" id="national-id">{{ userProfileData.idNo }}</span>
             </div>
 
             <div>
                 <label class="label-name" for="phone">Phone number:</label>
-                <span class="label-desc" id="phone">123-456-7890</span>
+                <span class="label-desc" id="phone">{{ userProfileData.teleponeNo }}</span>
             </div>
     
             <div>
                 <label class="label-name" for="email">Email:</label>
-                <span class="label-desc" id="email">Johnanesburg@example.com</span>
+                <span class="label-desc" id="email">{{ userProfileData.userName }}</span>
             </div>
     
         </div>
@@ -88,21 +88,21 @@
     <div class="dashboard">Dashboard</div>
     <div class="container2">
         <div class="title"><span id="title">Policies</span></div>
-        <div class="box" (click)="navigateToPolDets()">
-            <label class="active-label">Active</label>
+        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ getStatusDescription(memberPolicies[0]?.status) }}</label>
             <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
-                    <td class="td-data">PensionPensionPension</td>
+                    <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
                 </tr>
                 <tr>
                     <td>Policy number:</td>
-                    <td class="td-data">dsffghg7</td>
+                    <td class="td-data">{{ memberPolicies[0]?.policy_number }}</td>
                 </tr>
                 <tr>
                     <td>Member number:</td>
-                    <td class="td-data">97865</td>
+                    <td class="td-data">{{ memberPolicies[0]?.member_number }}</td>
                 </tr>
                 <tr>
                     <td>Fund value:</td>
@@ -113,21 +113,21 @@
         </div>
         
 
-        <div class="box" (click)="navigateToPolDets()">
-            <label class="active-label">Active</label>
+        <div *ngIf="memberPolicies && memberPolicies.length > 1" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ memberPolicies[1]?.status | titlecase }}</label>
             <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
-                    <td class="td-data">PensionPensionPension</td>
+                    <td class="td-data">{{ memberPolicies[1]?.description | titlecase }}</td>
                 </tr>
                 <tr>
                     <td>Policy number:</td>
-                    <td class="td-data">dsffghg7</td>
+                    <td class="td-data">{{ memberPolicies[1]?.policy_number }}</td>
                 </tr>
                 <tr>
                     <td>Member number:</td>
-                    <td class="td-data">97865</td>
+                    <td class="td-data">{{ memberPolicies[1]?.member_number }}</td>
                 </tr>
                 <tr>
                     <td>Fund value:</td>
@@ -137,21 +137,21 @@
         </div>
         </div>
         
-        <div class="box" (click)="navigateToPolDets()">
-            <label class="active-label">Active</label>
+        <div *ngIf="memberPolicies && memberPolicies.length > 2" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ memberPolicies[2]?.status | titlecase }}</label>
             <div class="scroll-content">
             <table>
                 <tr>
                     <td>Policy:</td>
-                    <td class="td-data">PensionPensionPension</td>
+                    <td class="td-data">{{ memberPolicies[2]?.description | titlecase }}</td>
                 </tr>
                 <tr>
                     <td>Policy number:</td>
-                    <td class="td-data">dsffghg7</td>
+                    <td class="td-data">{{ memberPolicies[2]?.policy_number }}</td>
                 </tr>
                 <tr>
                     <td>Member number:</td>
-                    <td class="td-data">97865</td>
+                    <td class="td-data">{{ memberPolicies[2]?.member_number }}</td>
                 </tr>
                 <tr>
                     <td>Fund value:</td>
