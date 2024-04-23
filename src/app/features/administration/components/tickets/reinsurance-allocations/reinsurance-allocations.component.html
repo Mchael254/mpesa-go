@@ -4,19 +4,19 @@
       <ul class="nav nav-tabs flex-column mb-3" id="ex1" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab"
-             aria-controls="ex1-tabs-1" aria-selected="false">Treaty risk ceding</a>
+             aria-controls="ex1-tabs-1" aria-selected="false">{{'mngt_wrkflw.reinsurance.treatyRiskCeding' | translate }}</a>
         </li>
         <li class="nav-item" role="presentation">
           <a class="nav-link" id="ex1-tab-2" data-bs-toggle="tab" href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2"
-             aria-selected="true">Previous ceding</a>
+             aria-selected="true">{{'mngt_wrkflw.reinsurance.previousCeding' | translate }}</a>
         </li>
         <li class="nav-item" role="presentation">
           <a class="nav-link" id="ex1-tab-3" data-bs-toggle="tab" href="#ex1-tabs-3" role="tab" aria-controls="ex1-tabs-3"
-             aria-selected="false">Treaty setup</a>
+             aria-selected="false">{{'mngt_wrkflw.reinsurance.treatySetup' | translate }}</a>
         </li>
         <li class="nav-item" role="presentation">
           <a class="nav-link" id="ex1-tab-4" data-bs-toggle="tab" href="#ex1-tabs-4" role="tab" aria-controls="ex1-tabs-4"
-             aria-selected="false">Policy facre ceding</a>
+             aria-selected="false">{{'mngt_wrkflw.reinsurance.policyFacreCeding' | translate }}</a>
         </li>
       </ul>
     </div>
@@ -24,9 +24,9 @@
       <div class="mb-3">
 
         <form [formGroup]="risksForm">
-          <label class="col-form-label text-primary fw-bold w-100">Risks</label>
+          <label class="col-form-label text-primary fw-bold w-100">{{'mngt_wrkflw.reinsurance.risks' | translate }}</label>
           <button
-            class="btn btn-primary" style="font-size: 12px;" (click)="populateAllocations()">Populate allocations
+            class="btn btn-primary" style="font-size: 12px;" (click)="populateAllocations()">{{'mngt_wrkflw.reinsurance.populateAllocations' | translate }}
           </button>
           <input
             type="text" class="form-control mt-2" placeholder="Search for a risk"
@@ -50,7 +50,7 @@
     <div class="card p-2">
       <div class="tab-content" id="ex1-content">
         <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel" aria-labelledby="ex1-tab-1">
-          <label class="text-primary mb-2">Treaty risk ceding</label>
+          <label class="text-primary mb-2">{{'mngt_wrkflw.reinsurance.treatyRiskCeding' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -69,14 +69,14 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Current</th>
-                <th>Gross retn</th>
-                <th>Risk ID</th>
-                <th>Risk desc</th>
-                <th>Subclass</th>
-                <th>Special retn</th>
-                <th>Excess</th>
-                <th>Excess %</th>
+                <th>{{'mngt_wrkflw.reinsurance.current' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.grossRetn' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.riskID' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.riskDesc' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.subclass' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.specialRetn' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.excess' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.excess' | translate }} %</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-risKCedingDetail>
@@ -104,7 +104,7 @@
 
           <div class="mt-5">
             <p-tabView>
-              <p-tabPanel header="Treaty RI summary">
+              <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyRiSummary' | translate }}">
                 <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
                 <p-table
                   [autoLayout]="true"
@@ -123,16 +123,16 @@
 
                   <ng-template pTemplate="header">
                     <tr>
-                      <th>Treaty</th>
-                      <th>Rate</th>
-                      <th>Rate type</th>
-                      <th>P rate</th>
-                      <th>RI amount</th>
-                      <th>Cession %</th>
-                      <th>Premium</th>
-                      <th>Prem tax</th>
-                      <th>Comm</th>
-                      <th>Remarks</th>
+                      <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
+                      <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                      <th>{{'mngt_wrkflw.policyDetails.rateType' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.pRate' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.riAmount' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.cession' | translate }} %</th>
+                      <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.comm' | translate }}</th>
+                      <th>{{'mngt_wrkflw.reinsurance.remarks' | translate }}</th>
                     </tr>
                   </ng-template>
                   <ng-template pTemplate="body" let-risKRIDetail>
@@ -161,22 +161,22 @@
 
                     </div>
                     <div class="col-2 text-center">
-                      <label class="col-form-label text-dark fw-medium">P rate</label>
+                      <label class="col-form-label text-dark fw-medium">{{'mngt_wrkflw.reinsurance.pRate' | translate }}</label>
                     </div>
                     <div class="col-2 text-center">
-                      <label class="col-form-label text-dark fw-medium">RI amount</label>
+                      <label class="col-form-label text-dark fw-medium">{{'mngt_wrkflw.reinsurance.riAmount' | translate }}</label>
                     </div>
                     <div class="col-2 text-center">
-                      <label class="col-form-label text-dark fw-medium">Cession</label>
+                      <label class="col-form-label text-dark fw-medium">{{'mngt_wrkflw.reinsurance.cession' | translate }}</label>
                     </div>
                     <div class="col-2 text-center">
-                      <label class="col-form-label text-black fw-medium">Premium</label>
+                      <label class="col-form-label text-black fw-medium">{{'mngt_wrkflw.policyDetails.premium' | translate }}</label>
                     </div>
                   </div>
 
                   <div class="row g-3 align-items-center mt-1">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label">Company net retention</label>
+                      <label class="col-form-label">{{'mngt_wrkflw.reinsurance.companyNetRetention' | translate }}</label>
                     </div>
                     <div class="col-2">
                       <input type="text" class="form-control" formControlName="companyNetPRate">
@@ -194,7 +194,7 @@
 
                   <div class="row g-3 align-items-center">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label">Reinsurance pool</label>
+                      <label class="col-form-label">{{'mngt_wrkflw.reinsurance.reinsurancePool' | translate }}</label>
                     </div>
                     <div class="col-2">
                       <input type="text" class="form-control" formControlName="reinsurancePRate">
@@ -212,7 +212,7 @@
 
                   <div class="row g-3 align-items-center">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label">Treaty cessions</label>
+                      <label class="col-form-label">{{'mngt_wrkflw.reinsurance.treatyCessions' | translate }}</label>
                     </div>
                     <div class="col-2">
                       <input type="text" class="form-control" formControlName="treatyPRate">
@@ -230,7 +230,7 @@
 
                   <div class="row g-3 align-items-center">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label">Facre cessions</label>
+                      <label class="col-form-label">{{'mngt_wrkflw.reinsurance.facreSessions' | translate }}</label>
                     </div>
                     <div class="col-2">
                       <input type="text" class="form-control" formControlName="facrePRate">
@@ -248,7 +248,7 @@
 
                   <div class="row g-3 align-items-center">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label text-dark fw-bold">Total</label>
+                      <label class="col-form-label text-dark fw-bold">{{'mngt_wrkflw.reinsurance.total' | translate }}</label>
                     </div>
                     <div class="col-2"></div>
                     <div class="col-2">
@@ -264,7 +264,7 @@
 
                   <div class="row g-3 align-items-center">
                     <div class="col-4 mb-2">
-                      <label class="col-form-label">Excess</label>
+                      <label class="col-form-label">{{'mngt_wrkflw.reinsurance.excess' | translate }}</label>
                     </div>
                     <div class="col-2"></div>
                     <div class="col-2">
@@ -279,7 +279,7 @@
                   </div>
                 </form>
               </p-tabPanel>
-              <p-tabPanel header="Treaty participants">
+              <p-tabPanel header="{{'mngt_wrkflw.reinsurance.treatyPart' | translate }}">
                 <div class="d-flex justify-content-end">
               <span class="icon-circle "
               ><i class="pi pi-pencil"></i
@@ -304,14 +304,14 @@
 
                     <ng-template pTemplate="header">
                       <tr>
-                        <th>Reinsurer</th>
-                        <th>Rate</th>
-                        <th>Rein prem tax</th>
-                        <th>Prem tax</th>
-                        <th>Sum reinsured</th>
-                        <th>Premium</th>
-                        <th>Commission</th>
-                        <th>Treaty</th>
+                        <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.facreSessions' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.reinPremTax' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.sumReinsured' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-treatyParticipant>
@@ -335,19 +335,19 @@
                 </div>
 
               </p-tabPanel>
-              <p-tabPanel header="Facre ceding">
+              <p-tabPanel header="{{'mngt_wrkflw.reinsurance.facreCeding' | translate }}">
                 <div class="row">
                   <div class="col-6 d-flex ">
                     <button
-                      class="btn btn-primary" style="font-size: 12px;">Facre out offer slip
+                      class="btn btn-primary" style="font-size: 12px;">{{'mngt_wrkflw.reinsurance.facreOutOfferSlip' | translate }}
                     </button>
                     <button
-                      class="btn btn-primary" style="font-size: 12px;">Reinsurers debit/credit note
+                      class="btn btn-primary" style="font-size: 12px;">{{'mngt_wrkflw.reinsurance.reinsurersDebitCreditNote' | translate }}
                     </button>
                   </div>
                   <div class="col-6 d-flex justify-content-end">
                     <button
-                      class="btn btn-primary" style="font-size: 12px;">Import CSV file
+                      class="btn btn-primary" style="font-size: 12px;">{{'mngt_wrkflw.reinsurance.importCSV' | translate }}
                     </button>
                     <span class="icon-circle "
                     ><i class="pi pi-plus"></i
@@ -382,15 +382,15 @@
 
                     <ng-template pTemplate="header">
                       <tr>
-                        <th>Reinsurer name</th>
-                        <th>Broker name</th>
-                        <th>Facre account Id</th>
-                        <th>Rate/amount</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Cession rate</th>
-                        <th>Comm %</th>
-                        <th>Vat %</th>
+                        <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.brokerName' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.facreAccountId' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.rateAmount' | translate }}</th>
+                        <th>{{'entities.amount' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.cessionRate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.importCSV' | translate }} %</th>
+                        <th>{{'mngt_wrkflw.reinsurance.vat' | translate }} %</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-facreCeding>
@@ -415,7 +415,7 @@
                 </div>
 
               </p-tabPanel>
-              <p-tabPanel header="Reinsurance pool">
+              <p-tabPanel header="{{'mngt_wrkflw.reinsurance.reinsurancePool' | translate }}">
                 <div>
                   <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
                   <p-table
@@ -435,14 +435,14 @@
 
                     <ng-template pTemplate="header">
                       <tr>
-                        <th>Risk premium</th>
-                        <th>Trt own ret amt</th>
-                        <th>Pool rate</th>
-                        <th>Pool amt</th>
-                        <th>Pool own ret prem</th>
-                        <th>Comm rate</th>
-                        <th>Comm amt</th>
-                        <th>Vat rate</th>
+                        <th>{{'mngt_wrkflw.reinsurance.riskPremium' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.trtOwnRetAmt' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.poolRate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.poolAmt' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.poolOwnRetPrem' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.commRate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.commAmt' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.vatRate' | translate }}</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-reinsurancePool>
@@ -466,17 +466,17 @@
                 </div>
 
               </p-tabPanel>
-              <p-tabPanel header="XOL UW cessions">
+              <p-tabPanel header="{{'mngt_wrkflw.reinsurance.xolUwCess' | translate }}">
                 <div class="row g-3 align-items-center">
                   <div class="col-3 mb-2" style="padding-right: 0px">
-                    <label class="col-form-label" style="font-size: 13px;">VMLP excess sum insured</label>
+                    <label class="col-form-label" style="font-size: 13px;">{{'mngt_wrkflw.reinsurance.vmlpExcessSI' | translate }}</label>
                   </div>
                   <div class="col-2">
                     <input type="text" class="form-control">
                   </div>
 
                   <div class="col-2 mb-2">
-                    <label class="col-form-label" style="font-size: 13px;">VMLP excess premium</label>
+                    <label class="col-form-label" style="font-size: 13px;">{{'mngt_wrkflw.reinsurance.vmlpExcessPrem' | translate }}</label>
                   </div>
                   <div class="col-2">
                     <input type="text" class="form-control">
@@ -484,7 +484,7 @@
 
                   <div class="col-3">
                     <button
-                      class="btn btn-primary" style="font-size: 12px; float: right;">Update premium rate
+                      class="btn btn-primary" style="font-size: 12px; float: right;">{{'mngt_wrkflw.reinsurance.updatePremRate' | translate }}
                     </button>
                   </div>
                 </div>
@@ -507,14 +507,14 @@
 
                     <ng-template pTemplate="header">
                       <tr>
-                        <th>Name</th>
-                        <th>Year</th>
-                        <th>Capacity</th>
-                        <th>Comp. own amount</th>
-                        <th>Treaty SI</th>
-                        <th>VMLP SI</th>
-                        <th>Premium rate</th>
-                        <th>Premium</th>
+                        <th>{{'report.name' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.yr' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.capacity' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.compOwnAmount' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.treatySI' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.vmlpSI' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.premium' | translate }} {{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-reinsuranceXolPremium>
@@ -555,13 +555,13 @@
 
                     <ng-template pTemplate="header">
                       <tr>
-                        <th>Reinsurer</th>
-                        <th>Rate</th>
-                        <th>Prem tax</th>
-                        <th>Rein prem tax</th>
-                        <th>Sum reinsured</th>
-                        <th>Premium</th>
-                        <th>Commission</th>
+                        <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.premTax' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.reinPremTax' | translate }}</th>
+                        <th>{{'mngt_wrkflw.reinsurance.sumReinsured' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                        <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-reXolPremiumParticipant>
@@ -589,7 +589,7 @@
 
         </div>
         <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-          <label class="text-primary mb-2">Previous ceding</label>
+          <label class="text-primary mb-2">{{'mngt_wrkflw.reinsurance.previousCeding' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -608,13 +608,13 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Comp gross ret</th>
-                <th>Net comp ret</th>
-                <th>Facre ceded</th>
-                <th>Retention rate</th>
-                <th>Group risk pct</th>
-                <th>Group top loc</th>
-                <th>RI prem</th>
+                <th>{{'mngt_wrkflw.reinsurance.compGrossRet' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.netCompRet' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.facreCeded' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.retentionRate' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.groupRiskPct' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.groupTopLoc' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.riPrem' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-previousCeding>
@@ -635,7 +635,7 @@
             </ng-template>
           </p-table>
 
-          <label class="text-primary mt-5 mb-2">Treaty cessions</label>
+          <label class="text-primary mt-5 mb-2">{{'mngt_wrkflw.reinsurance.treatyCessions' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -654,10 +654,10 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Treaty</th>
-                <th>Cession pct</th>
-                <th>Premium</th>
-                <th>Comm</th>
+                <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.cessionPct' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.comm' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-treatyCession>
@@ -675,7 +675,7 @@
             </ng-template>
           </p-table>
 
-          <label class="text-primary mt-5 mb-2">Facre cessions</label>
+          <label class="text-primary mt-5 mb-2">{{'mngt_wrkflw.reinsurance.facreSessions' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -694,11 +694,11 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Reinsurer name</th>
-                <th>Reinsurer</th>
-                <th>Rate</th>
-                <th>Premium</th>
-                <th>Commission</th>
+                <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.reinsurer' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.premium' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.commission' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-facreCession>
@@ -718,7 +718,7 @@
           </p-table>
         </div>
         <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-          <label class="text-primary mb-2">Treaty setup</label>
+          <label class="text-primary mb-2">{{'mngt_wrkflw.reinsurance.treatySetup' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -737,15 +737,15 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Treaty</th>
-                <th>Treaty type</th>
-                <th>Currency</th>
-                <th>Rate type</th>
-                <th>U/W year</th>
-                <th>Comm rate</th>
-                <th>SI stating from</th>
-                <th>Limit</th>
-                <th>Rate</th>
+                <th>{{'mngt_wrkflw.reinsurance.treaty' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.treatyType' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.currency' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.rateType' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.U/WYear' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.commRate' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.siStatingFrom' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.limit' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-treatySetup>
@@ -769,7 +769,7 @@
           </p-table>
         </div>
         <div class="tab-pane fade" id="ex1-tabs-4" role="tabpanel" aria-labelledby="ex1-tab-4">
-          <label class="text-primary mb-2">Policy facre ceding</label>
+          <label class="text-primary mb-2">{{'mngt_wrkflw.reinsurance.policyFacreCeding' | translate }}</label>
           <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
           <p-table
             [autoLayout]="true"
@@ -788,14 +788,14 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th>Reinsurer name</th>
-                <th>Facre account id</th>
-                <th>Rate/amount</th>
-                <th>Rate</th>
-                <th>Date</th>
-                <th>Comm %</th>
-                <th>Management type</th>
-                <th>Management value</th>
+                <th>{{'mngt_wrkflw.reinsurance.reinsurerName' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.facreAccountId' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.rateAmount' | translate }}</th>
+                <th>{{'mngt_wrkflw.policyDetails.rate' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.date' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.comm' | translate }} %</th>
+                <th>{{'mngt_wrkflw.reinsurance.managementType' | translate }}</th>
+                <th>{{'mngt_wrkflw.reinsurance.managementValue' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-policyFacreCeding>
