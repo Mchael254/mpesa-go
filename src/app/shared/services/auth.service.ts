@@ -517,6 +517,8 @@ export class AuthService implements OnDestroy {
           const entityType = headers.get('entityType');
           if (entityType === 'MEMBER') {
             const entityCode = data.code;
+            const entityIdNo = data.idNo;
+            this.session_storage.set('memberProfile', data);
             this.router.navigate(['/home/lms/grp/dashboard/dashboard-screen'], { queryParams: { entityCode }});
           } else {
             this.router
