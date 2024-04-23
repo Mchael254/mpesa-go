@@ -28,58 +28,58 @@
     <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'P' || selectedSpringTickets?.ticket?.sysModule === 'RT'">
       <p-tabPanel header="Policy details">
 
-        <label class="text-primary mb-3">Policy details</label>
+        <label class="text-primary mb-3">{{'mngt_wrkflw.policyDetails.policyDetails' | translate | titlecase }}</label>
         <div class="row">
           <div class="col-sm-3">
             <p>
-              <label class="ticketLabel">Client:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.client' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ selectedSpringTickets?.clientName }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Currency:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.currency' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.currency }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Agency:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.agency' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ selectedSpringTickets?.agentName }}</span>
             </p>
           </div>
 
           <div class="col-sm-3">
             <p *ngIf="selectedSpringTickets?.ticket.policyCode">
-              <label class="ticketLabel">Policy No:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.tickets.policyNo' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.policy_no }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Total S.I.:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.totalSI' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Transaction type:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.tickets.transactionType' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.policy_status }}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
-              <label class="ticketLabel">Endorse. No:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.endorseNo' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.endorsement_no }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Premium:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.premium' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.premium }}</span>
             </p>
             <p>
-              <label class="ticketLabel">Ticket Remarks:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.ticketRemarks' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
             </p>
           </div>
           <div class="col-sm-2">
             <p>
-              <label class="ticketLabel">Cover From:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.coverFrom' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
             </p>
             <p>
-              <label class="ticketLabel">Cover To:</label>
+              <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.coverTo' | translate | titlecase }}:</label>
               <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
             </p>
           </div>
@@ -168,14 +168,14 @@
   </p-tabView>
   <div class="row action-buttons my-2 p-1">
     <div class="col-sm-5">
-      <button class="btn btn-outline-secondary" (click)="backToPrevious()">Back</button>
+      <button class="btn btn-outline-secondary" (click)="backToPrevious()">{{'mngt_wrkflw.tickets.back' | translate }}</button>
     </div>
     <div class="col-sm-7">
       <button
         class="btn btn-outline-primary reassign-btn"
         (click)="openReassignModal()"
       >
-        Reassign
+        {{'mngt_wrkflw.tickets.reassign' | translate | titlecase }}
       </button>
 
       <button
@@ -183,7 +183,7 @@
         (click)="onClickAuthorize()"
         *ngIf="activeIndex === 2"
       >
-        Authorize
+        {{'mngt_wrkflw.tickets.authorize' | translate | titlecase }}
       </button>
 
       <button
@@ -191,14 +191,14 @@
         (click)="onClickReinsure()"
         *ngIf="activeIndex === 1 && selectedSpringTickets?.ticket?.sysModule === 'P' "
       >
-        Reinsure
+        {{'mngt_wrkflw.policyDetails.reinsure' | translate | titlecase }}
       </button>
 
       <button
-        class="btn btn-primary ms-2 reinsure-btn"
+        class="btn btn-primary ms-2 reinsure-btn" (click)="onAuthorizeClaim()"
         *ngIf="selectedSpringTickets?.ticket?.sysModule === 'C' && activeIndex === 0"
       >
-        Authorize claim
+        {{'mngt_wrkflw.policyDetails.authorizeClaim' | translate | titlecase }}
       </button>
     </div>
   </div>

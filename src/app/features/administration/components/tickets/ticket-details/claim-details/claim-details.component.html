@@ -269,10 +269,6 @@
 
       <div class="col-sm-12 col-md-6 d-flex justify-content-end">
         <button
-          class="btn btn-outline-primary me-2" style="font-size: 12px;"
-        >Undo make ready
-        </button>
-        <button
           class="btn btn-primary me-2" style="font-size: 12px;" (click)="makeReady()" [disabled]="isLoadingMakeUndo">
           <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Make ready</span>
           <ng-template #loadingMakeUndo>
@@ -314,16 +310,16 @@
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             <!--        Select-->
           </th>
-          <th>ID</th>
-          <th>Description</th>
-          <th>Remarks</th>
-          <th>Set standard</th>
-          <th>Used standard</th>
-          <th>Authorized</th>
-          <th>Submission date</th>
-          <th>Authorized by</th>
-          <th>Authorized date</th>
-          <th>Created By</th>
+          <th>{{'base.id' | translate }}</th>
+          <th>{{'mngt_wrkflw.policyDetails.description' | translate }}</th>
+          <th>{{'mngt_wrkflw.reinsurance.remarks' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.setStandard' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.usedStandard' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.submissionDate' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorizedBy' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorizedDate' | translate }}</th>
+          <th>{{'report.created_by' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-exception>
@@ -338,11 +334,11 @@
         </span>
           </td>
           <td>
-            <span title="{{exception?.underwriting_decision}}">
+            <span title="{{exception?.underwriting_decision}}" (click)="toggleDropdown(exception)">
             {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
           </span>
 
-            <ng-container *ngIf="!exception.underwriting_decision">
+            <ng-container *ngIf="!exception.underwriting_decision || showDropdownForException === exception">
               <p-dropdown
                 [options]="completionRemarksData"
                 optionLabel="remark"
@@ -380,7 +376,7 @@
   </div>
 </div>
 
-<div class="row mt-5 mb-2 card">
+<div class="row mt-5 mb-2 card" *ngIf="authorizationLevelsData?.length > 0">
   <div class="col-12 mt-2 mb-2">
     <label class="text-primary">Authorization levels</label>
 
@@ -401,21 +397,21 @@
       [rowHover]="true"
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
-
+      [value]="authorizationLevelsData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
-
+      [(selection)]="selectedAuthorizationLevel"
       scrollHeight="400px"
       currentPageReportTemplate="{first} - {last} of {totalRecords}"
     >
 
       <ng-template pTemplate="header">
         <tr>
-          <th>Level</th>
-          <th>Authorized</th>
-          <th>Role name</th>
-          <th>Authorize date</th>
+          <th>{{'mngt_wrkflw.exceptions.level' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.roleName' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorizeDate' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-authlevels>

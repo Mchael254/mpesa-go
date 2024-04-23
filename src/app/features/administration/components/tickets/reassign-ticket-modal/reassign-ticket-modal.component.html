@@ -4,7 +4,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header border-bottom-0">
-        <h5 class="modal-title fs-5 header" id="usersModalTitle">Reassign Task</h5>
+        <h5 class="modal-title fs-5 header" id="usersModalTitle">{{'mngt_wrkflw.tickets.reassignTask' | translate }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="emitAction()" aria-label="Close"></button>
       </div>
 
@@ -12,7 +12,7 @@
         <div class="modal-body">
           <div class="row">
             <div class="col-3">
-              <label for="modalUserAssignTo">User</label>
+              <label for="modalUserAssignTo">{{'mngt_wrkflw.tickets.user' | translate }}</label>
             </div>
             <div class="col-7">
               <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
@@ -30,7 +30,7 @@
 
           <div *ngIf="showDefaultUser" class="row mt-2">
             <div class="col-3">
-              <label for="modalDefaultGroupUser">Default User</label>
+              <label for="modalDefaultGroupUser">{{'mngt_wrkflw.tickets.defaultUser' | translate }}</label>
             </div>
             <div class="col-7">
               <input type="text" name="modalDefaultGroupUser" formControlName="modalDefaultGroupUser" id="modalDefaultGroupUser" class="form-control w-100 h-39 border border-secondary">
@@ -44,7 +44,7 @@
 
           <div class="row mt-2">
             <div class="col-3">
-              <label for="modalTicketComments">Comments</label>
+              <label for="modalTicketComments">{{'mngt_wrkflw.tickets.comments' | translate }}</label>
             </div>
             <div class="col-9">
               <textarea rows="10" id="modalTicketComments" class="border border-1 border-secondary w-100" style="--bs-border-opacity: 0.15; min-width: 94%;"
@@ -56,8 +56,8 @@
 
         <div class="modal-footer d-block float-end" style="border-top:0">
           <button class="btn btn-primary cancelBtn" id="cancelReassignBtn" (click)="clearReassignModalFields()"
-                  #cancelReassign>Cancel</button>
-          <button class="btn btn-outline-primary float-right reassign" id="reassignTktBtn" (click)="reassignTicket()">Reassign</button>
+                  #cancelReassign>{{'mngt_wrkflw.tickets.cancel' | translate }}</button>
+          <button class="btn btn-outline-primary float-right reassign" id="reassignTktBtn" (click)="reassignTicket()">{{'mngt_wrkflw.tickets.reassign' | translate }}</button>
         </div>
       </form>
     </div>

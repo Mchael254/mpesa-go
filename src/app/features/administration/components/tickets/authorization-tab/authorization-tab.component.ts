@@ -280,6 +280,12 @@ export class AuthorizationTabComponent implements OnInit{
     }
   }
 
+  /**
+   * The function `toggleDropdown` toggles the visibility of a dropdown based on the exception parameter.
+   * @param {any} exception - The `exception` parameter in the `toggleDropdown` function represents the exception for which
+   * the dropdown is being toggled. When the function is called, it checks if the dropdown is currently shown for the
+   * provided exception. If it is shown, it hides the dropdown.
+   */
   toggleDropdown(exception: any) {
     if (this.showDropdownForException === exception) {
       this.showDropdownForException = null; // Hide the dropdown if already shown

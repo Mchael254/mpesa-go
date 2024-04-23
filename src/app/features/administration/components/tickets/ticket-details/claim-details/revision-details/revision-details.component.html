@@ -793,8 +793,8 @@
       [resizableColumns]="true"
       [showCurrentPageReport]="true"
       [rows]="pageSize || 5"
-      [totalRecords]="perilsData?.length"
-      [value]="perilsData"
+      [totalRecords]="remarksData?.length"
+      [value]="remarksData"
       [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
       responsiveLayout="stack"
       [scrollable]="true"
@@ -809,11 +809,11 @@
           <th>Description</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-receipt>
+      <ng-template pTemplate="body" let-remark>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount}}</td>
+          <td>{{remark.pending_reason_short_description}}</td>
+          <td>{{remark.pending_reason_description}}</td>
+          <td>{{remark.description}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">

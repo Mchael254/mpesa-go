@@ -85,6 +85,10 @@ export class TicketReportsComponent implements OnInit {
     ];*/
   }
 
+  /**
+   * The function creates a form group for document dispatch with fields for dispatch documents, rejection description, and
+   * document dispatched.
+   */
   createDocDispatchForm() {
     this.docDispatchForm = this.fb.group({
       dispatchDocuments: [''],
@@ -233,6 +237,13 @@ export class TicketReportsComponent implements OnInit {
     }];
   }
 
+  /**
+   * The fetchReport function fetches a report in either PDF or HTML format, displays it in a modal, and handles error
+   * messages.
+   * @param {any} report - The `fetchReport` function takes a `report` parameter, which is expected to be an object
+   * containing information about the report to be fetched. The function then sets the `isLoadingReport` flag to true,
+   * determines the format of the report (PDF or HTML) based on the `selectedFormat`,
+   */
   fetchReport(report:any) {
     this.isLoadingReport = true;
     const format = this.selectedFormat === 'PDF' ? 'PDF' : 'HTML';
@@ -256,6 +267,9 @@ export class TicketReportsComponent implements OnInit {
         })
   }
 
+  /**
+   * The function `openReportsModal` displays a modal with a backdrop if it exists.
+   */
   openReportsModal() {
     const modal = document.getElementById('reportsModalToggle');
     if (modal) {
@@ -268,6 +282,9 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeReportsModal` hides the reports modal and its backdrop if they are currently displayed.
+   */
   closeReportsModal() {
     const modal = document.getElementById('reportsModalToggle');
     if (modal) {
@@ -280,6 +297,9 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `openDocDispatchModal` displays a modal with a backdrop.
+   */
   openDocDispatchModal() {
     const modal = document.getElementById('docDispatchToggle');
     if (modal) {
@@ -291,6 +311,10 @@ export class TicketReportsComponent implements OnInit {
       }
     }
   }
+
+  /**
+   * The function `closeDocDispatchModal` hides a modal with the ID 'docDispatchToggle' and its backdrop.
+   */
   closeDocDispatchModal() {
     const modal = document.getElementById('docDispatchToggle');
     if (modal) {
@@ -303,6 +327,9 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `getDispatchReasons` retrieves dispatch rejection reasons for a specific policy type and logs the data.
+   */
   getDispatchReasons() {
     // this.spinner.show();
     this.policiesService.getDispatchRejectionReasons('EDD')
@@ -318,6 +345,10 @@ export class TicketReportsComponent implements OnInit {
       )
   }
 
+  /**
+   * The `saveDispatchRejection` function saves a dispatch rejection reason with relevant details and displays success or
+   * error messages accordingly.
+   */
   saveDispatchRejection() {
     // log.info('>>>>', event.value)
     const scheduleFormValues = this.docDispatchForm.getRawValue();
@@ -352,6 +383,10 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `getReportsToPrepare` fetches dispatch reports using policy details and stores the data in
+   * `documentsToDispatchData`.
+   */
   getReportsToPrepare() {
     this.policiesService.fetchDispatchReports(this.policyDetails?.ticket?.policyCode, this.policyDetails?.ticket?.endorsment)
       .pipe(
@@ -366,6 +401,10 @@ export class TicketReportsComponent implements OnInit {
       )
   }
 
+  /**
+   * The function `getReportsDispatched` fetches and logs document dispatch codes from a service and stores the data in a
+   * component property.
+   */
   getReportsDispatched() {
     this.policiesService.fetchReportsDispatched(this.policyDetails?.ticket?.policyCode)
       .pipe(
@@ -416,6 +455,9 @@ export class TicketReportsComponent implements OnInit {
     }
   }
 
+  /**
+   * The `savePreparedDocs` function prepares documents for a policy and displays success or error messages accordingly.
+   */
   savePreparedDocs() {
     this.policiesService.prepareDocuments(this.policyDetails?.ticket?.policyCode)
       .subscribe({
@@ -430,6 +472,10 @@ export class TicketReportsComponent implements OnInit {
       })
   }
 
+  /**
+   * The onSave function checks if a policy code exists, dispatches documents, displays success or error messages, fetches
+   * dispatched documents, and closes a modal.
+   */
   onSave() {
     if (this.policyDetails?.ticket?.policyCode) {
       const payload: any[] = [
@@ -449,7 +495,6 @@ export class TicketReportsComponent implements OnInit {
         })
       this.cdr.detectChanges();
     }
-    // this.globalMessagingService.displaySuccessMessage('Success', 'Saved');
   }
 
   ngOnDestroy(): void {
