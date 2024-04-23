@@ -308,6 +308,9 @@ export class AuthorizePolicyModalComponent implements OnInit {
     },1500);
   }
 
+  /**
+   * The function `getDispatchReasons` retrieves dispatch rejection reasons for a specific policy type and logs the data.
+   */
   getDispatchReasons() {
     // this.spinner.show();
     this.policiesService.getDispatchRejectionReasons('EDD')
@@ -323,6 +326,10 @@ export class AuthorizePolicyModalComponent implements OnInit {
       )
   }
 
+  /**
+   * This function saves a dispatch rejection reason with relevant details and displays success or error messages
+   * accordingly.
+   */
   saveDispatchRejection() {
     // log.info('>>>>', event.value)
     const scheduleFormValues = this.scheduleCheckForm.getRawValue();
@@ -357,6 +364,9 @@ export class AuthorizePolicyModalComponent implements OnInit {
     }
   }
 
+  /**
+   * This function fetches dispatch reports for a specific policy and stores the data in a variable.
+   */
   getReportsToPrepare() {
     this.policiesService.fetchDispatchReports(this.policyDetails?.ticket?.policyCode, this.policyDetails?.ticket?.endorsment)
       .pipe(
@@ -370,6 +380,10 @@ export class AuthorizePolicyModalComponent implements OnInit {
       )
   }
 
+  /**
+   * The function `getReportsDispatched` fetches reports dispatched for a specific policy code and logs the document
+   * dispatch codes and the fetched data.
+   */
   getReportsDispatched() {
     this.policiesService.fetchReportsDispatched(this.policyDetails?.ticket?.policyCode)
       .pipe(
@@ -420,6 +434,9 @@ export class AuthorizePolicyModalComponent implements OnInit {
     }
   }
 
+  /**
+   * The `savePreparedDocs` function prepares documents for a policy and displays success or error messages accordingly.
+   */
   savePreparedDocs() {
     this.policiesService.prepareDocuments(this.policyDetails?.ticket?.policyCode)
       .subscribe({
@@ -434,6 +451,10 @@ export class AuthorizePolicyModalComponent implements OnInit {
       })
   }
 
+  /**
+   * The onSave function checks if a policy code exists, then dispatches documents and displays success or error messages
+   * accordingly.
+   */
   onSave() {
     if (this.policyDetails?.ticket?.policyCode) {
       const payload: any[] = [

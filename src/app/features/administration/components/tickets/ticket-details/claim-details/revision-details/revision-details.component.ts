@@ -29,6 +29,7 @@ export class RevisionDetailsComponent implements OnInit {
   nonPropReinsurerData: any[];
   claimBankData: any[];
   perilsPaymentData: any[];
+  remarksData: any[];
 
   constructor(
     private globalMessagingService: GlobalMessagingService,
@@ -57,6 +58,8 @@ export class RevisionDetailsComponent implements OnInit {
       this.getNonPropReinsurers();
       this.getClaimBankDetails();
       this.getPerilsClaimPayment();
+      this.getRemarks();
+
 
     },1500);
   }
@@ -197,6 +200,19 @@ export class RevisionDetailsComponent implements OnInit {
         next: (data) => {
           this.perilsPaymentData = data.embedded[0];
           log.info('perilsPayment>>', this.perilsPaymentData);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.message);
+        }
+      })
+  }
+
+  getRemarks() {
+    this.viewClaimService.getRemarks(this.selectedSpringTickets?.ticket?.policyCode.toString(),this.selectedSpringTickets?.ticket?.claimNo, 'C')
+      .subscribe({
+        next: (data) => {
+          this.remarksData = data.embedded[0];
+          log.info('remarks>>', this.remarksData);
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.message);

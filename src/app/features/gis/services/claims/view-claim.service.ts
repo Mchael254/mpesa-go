@@ -135,7 +135,28 @@ export class ViewClaimService {
     return this.api.GET<any>(`api/v1/claims/peril-details-payment?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 
+  getRemarks(batchNo: string, claimNo: string, level: string):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('batchNo', `${batchNo}`)
+      .set('claimNo', `${claimNo}`)
+      .set('level', `${level}`)
+    return this.api.GET<any>(`api/v1/claims/remarks-details?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
+  getClaimRevisionDetails(claimNo: string, transactionNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('claimNo', `${claimNo}`)
+      .set('transactionNo', `${transactionNo}`)
+    return this.api.GET<any>(`api/v1/claims/revision-details?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
   claimMakeReady(data: any): Observable<any> {
     return this.api.POST<any>(`api/v1/claims/make-ready`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
+  }
+
+  authorizeClaims(data: any): Observable<any> {
+    return this.api.POST<any>(`api/v1/claims/authorise-claims`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
 }
