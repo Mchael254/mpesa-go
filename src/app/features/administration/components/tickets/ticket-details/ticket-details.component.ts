@@ -8,9 +8,6 @@ import { throwError} from "rxjs";
 import {catchError, take} from "rxjs/operators";
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {AuthService} from "../../../../../shared/services/auth.service";
-
-const log = new Logger('ViewTicketsComponent');
-
 import {ActivatedRoute, Router} from "@angular/router";
 import {BreadCrumbItem} from "../../../../../shared/data/common/BreadCrumbItem";
 import {ReinsuranceAllocationsComponent} from "../reinsurance-allocations/reinsurance-allocations.component";
@@ -19,7 +16,9 @@ import {AuthorizePolicyModalComponent} from "../authorize-policy-modal/authorize
 import {Pagination} from "../../../../../shared/data/common/pagination";
 import {ClaimsDTO} from "../../../../gis/data/claims-dto";
 import {ViewClaimService} from "../../../../gis/services/claims/view-claim.service";
+import {ClaimDetailsComponent} from "./claim-details/claim-details.component";
 
+const log = new Logger('ViewTicketsComponent');
 @Component({
   selector: 'app-ticket-details',
   templateUrl: './ticket-details.component.html',
@@ -50,6 +49,7 @@ export class TicketDetailsComponent implements OnInit {
   showReassignTicketsModal: boolean;
   @ViewChild(ReinsuranceAllocationsComponent) reinsuranceAllocationsComp: ReinsuranceAllocationsComponent;
   @ViewChild(AuthorizePolicyModalComponent) authorizePolicyComponent: AuthorizePolicyModalComponent;
+  @ViewChild(ClaimDetailsComponent) claimDetailsComponent: ClaimDetailsComponent;
 
   claimsData: Pagination<ClaimsDTO> = <Pagination<ClaimsDTO>>{};
   claim: ClaimsDTO;
@@ -100,6 +100,9 @@ export class TicketDetailsComponent implements OnInit {
     }
   }
 
+  /**
+   * This function fetches policy details for a given batch number and stores them in local storage.
+   */
   fetchPolicyDetails(batchNumber: number) {
     this.ticketService.getPolicyDetails(batchNumber)
       .pipe(take(1))
@@ -111,6 +114,9 @@ export class TicketDetailsComponent implements OnInit {
       })
   }
 
+  /**
+   * The fetchClaimDetails function retrieves claim details by claim number and stores them in local storage.
+   */
   fetchClaimDetails(code:any) {
     this.claimsService.getClaimByClaimNo(code)
       .pipe(take(1))
@@ -126,11 +132,21 @@ export class TicketDetailsComponent implements OnInit {
         })
   }
 
+  /**
+   * The function `callGenerateAuthorizeOtp` sets the `selectedTickets` array with the `selectedTicket` element and then
+   * calls the `generateAuthorizeOtp` function.
+   */
   callGenerateAuthorizeOtp() {
     this.selectedTickets = [this.selectedTicket];
     this.generateAuthorizeOtp();
   }
 
+  /**
+   * The function `generateAuthorizeOtp` checks selected tickets, performs OTP request check, and authorizes tickets with
+   * or without OTP based on certain conditions.
+   * @returns The `generateAuthorizeOtp()` function returns either a warning message if no tickets are selected, or it
+   * proceeds with the authorization process based on the selected tickets and OTP verification.
+   */
   generateAuthorizeOtp() {
     // Get the selected tickets from the table
     const selectedTickets = this.selectedTickets;
@@ -181,6 +197,17 @@ export class TicketDetailsComponent implements OnInit {
       });
   }
 
+  /**
+   * The function `otpRequestCheck` processes an array of ticket codes to make asynchronous requests based on the system
+   * module, logging the responses accordingly.
+   * @param {string[]} ticketCodes - The `otpRequestCheck` function takes an array of `ticketCodes` as input. These
+   * `ticketCodes` represent system modules for which the function will perform specific actions. The function iterates
+   * over each `ticketCode` in the array and based on the system module type ('Q', 'C
+   * @returns The `otpRequestCheck` function returns a Promise that resolves to an array of objects. Each object in the
+   * array contains the `sysModule` property which represents the system module code (e.g., 'Q', 'C', default), and the
+   * `response` property which holds the response data obtained from different service calls based on the system module
+   * code.
+   */
   otpRequestCheck(ticketCodes: string[]) {
     log.info('Value from selectedTickets:', ticketCodes);
 
@@ -223,6 +250,10 @@ export class TicketDetailsComponent implements OnInit {
     return Promise.all(ticketPromises);
   }
 
+  /**
+   * The `authorizeTickets` function authorizes selected tickets, displays appropriate success or failure messages, and
+   * updates the UI accordingly.
+   */
   authorizeTickets() {
     // Show the spinner
     this.showSpinner = true;
@@ -291,6 +322,15 @@ export class TicketDetailsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  /**
+   * The function `sendVerificationOtp` sends a verification OTP to a specified username through a specified channel.
+   * @param {string} username - The `username` parameter typically refers to the user's unique identifier or username used
+   * for authentication purposes. It could be an email address, phone number, or any other identifier depending on the
+   * system's requirements.
+   * @param {string} channel - The `channel` parameter in the `sendVerificationOtp` function is typically used to specify
+   * the communication channel through which the OTP (One-Time Password) will be sent to the user. This could be an email
+   * address, phone number (via SMS), or any other method of communication that supports sending
+   */
   sendVerificationOtp(username: string, channel: string) {
     this.authService.sentVerificationOtp(username, channel)
       .pipe(take(1))
@@ -303,6 +343,9 @@ export class TicketDetailsComponent implements OnInit {
       })
   }
 
+  /**
+   * The `openModal` function opens a modal by adding the 'show' class and setting the display property to 'block'.
+   */
   openModal() {
     const modal = document.getElementById('exampleModalCenter');
     if (modal) {
@@ -315,30 +358,59 @@ export class TicketDetailsComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `backToPrevious` navigates the user back to the tickets page in the administration section of the home
+   * page.
+   */
   backToPrevious(): void {
     this.router.navigate(['/home/administration/tickets'])
   }
 
+  /**
+   * The onClickReinsure function calls the reinsureRisk method on the Reinsurance Allocations Component.
+   */
   onClickReinsure() {
     this.reinsuranceAllocationsComp.reinsureRisk();
   }
 
+  /**
+   * The onClickAuthorize function opens a modal in the authorizePolicyComponent related to debt owners.
+   */
   onClickAuthorize() {
     this.authorizePolicyComponent.openDebtOwnerModal();
   }
 
+  /**
+   * The `onAuthorizeClaim` function calls the `authorizeClaim` method of the `claimDetailsComponent`.
+   */
+  onAuthorizeClaim() {
+    this.claimDetailsComponent.authorizeClaim();
+  }
+
+  /**
+   * The function `toggleReassignModal` toggles the visibility of a modal for reassigning tickets.
+   */
   toggleReassignModal(visible: boolean) {
     this.showReassignTicketsModal = visible;
   }
 
+  /**
+   * The function openReassignModal toggles the reassign modal to true.
+   */
   openReassignModal() {
     this.toggleReassignModal(true);
   }
 
+  /**
+   * The `handleAction` function closes a modal after performing an action.
+   */
   handleAction(event: void) {
     this.toggleReassignModal(false); // Close the modal after performing the action
   }
 
+  /**
+   * The function reassignSubmitted toggles a modal and logs information when a reassign dto event is received.
+   */
   reassignSubmitted(event) {
     if(event){
       this.toggleReassignModal(false);

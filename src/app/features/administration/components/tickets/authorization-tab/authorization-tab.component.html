@@ -71,16 +71,16 @@
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
           <!--        Select-->
         </th>
-        <th>ID</th>
-        <th>Description</th>
-        <th>Remarks</th>
-        <th>Set standard</th>
-        <th>Used standard</th>
-        <th pSortableColumn="is_authorized" style="width:20%">Authorized<p-sortIcon field="is_authorized"></p-sortIcon></th>
-        <th>Submission date</th>
-        <th>Authorized by</th>
-        <th>Authorized date</th>
-        <th>Created By</th>
+        <th>{{'base.id' | translate }}</th>
+        <th>{{'mngt_wrkflw.policyDetails.description' | translate }}</th>
+        <th>{{'mngt_wrkflw.reinsurance.remarks' | translate }}</th>
+        <th>{{'mngt_wrkflw.exceptions.setStandard' | translate }}</th>
+        <th>{{'mngt_wrkflw.exceptions.usedStandard' | translate }}</th>
+        <th pSortableColumn="is_authorized" style="width:20%">{{'mngt_wrkflw.exceptions.authorized' | translate }}<p-sortIcon field="is_authorized"></p-sortIcon></th>
+        <th>{{'mngt_wrkflw.exceptions.submissionDate' | translate }}</th>
+        <th>{{'mngt_wrkflw.exceptions.authorizedBy' | translate }}</th>
+        <th>{{'mngt_wrkflw.exceptions.authorizedDate' | translate }}</th>
+        <th>{{'report.created_by' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-exception>
@@ -171,13 +171,13 @@
 
       <ng-template pTemplate="header">
         <tr>
-          <th>Receipt no</th>
-          <th>Receipt date</th>
-          <th>Receipt amount</th>
-          <th>Receipt balance</th>
-          <th>Receipt settlement</th>
-          <th>Debit/credit</th>
-          <th>Receipt by</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptNo' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptDate' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptAmount' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptBalance' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptSettlement' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.debitCredit' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.receiptBy' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-receipt>
@@ -234,10 +234,10 @@
 
       <ng-template pTemplate="header">
         <tr>
-          <th>Level</th>
-          <th>Authorized</th>
-          <th>Role name</th>
-          <th>Authorize date</th>
+          <th>{{'mngt_wrkflw.exceptions.level' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.roleName' | translate }}</th>
+          <th>{{'mngt_wrkflw.exceptions.authorizeDate' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-authlevels>

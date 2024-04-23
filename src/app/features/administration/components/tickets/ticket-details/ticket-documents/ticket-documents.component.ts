@@ -143,7 +143,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
     switch (ticketModule) {
       case  allTicketModules.claims:
         this.fetchClaimDocuments(this.currentTicket?.ticket?.claimNo);
-        this.fetchClaimantDocuments(this.currentTicket?.ticket?.claimNo); ///should add service provider code
+        this.fetchClaimantDocuments(this.currentTicket?.ticket?.claimNo); ///should add claimant number
         this.fetchServiceProvDocuments(this.currentTicket?.ticket?.claimNo); ///should add service provider code
         break;
       case allTicketModules.quotation:
@@ -259,7 +259,7 @@ export class TicketDocumentsComponent implements OnInit, OnDestroy{
       return;
     }
     //
-    this.dmsService.fetchDocumentsByClaimantNo(claimantNo)
+    this.dmsService.fetchDocumentsByClaimNo(claimantNo)
       .pipe(untilDestroyed(this))
       .subscribe( clientDocuments => {
           this.viewDocs = clientDocuments;

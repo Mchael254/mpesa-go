@@ -2,14 +2,14 @@
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6 text-primary" id="debtOwnerToggleLabel">Debt owner and promise date</h1>
+        <h1 class="modal-title fs-6 text-primary" id="debtOwnerToggleLabel">{{'mngt_wrkflw.tickets.debtOwnerPromiseDate' | translate }}</h1>
         <button type="button" class="btn-close" (click)="closeDebtOwnerModal()"></button>
       </div>
       <form [formGroup]="debtOwnerForm" class="clearfix">
         <div class="modal-body">
           <div class="row">
             <div class="col-12">
-              <label for="modalUserAssignTo" class="text-dark">Debt owner</label>
+              <label for="modalUserAssignTo" class="text-dark">{{'mngt_wrkflw.tickets.debtOwner' | translate }}</label>
             </div>
             <div class="col-9">
               <input type="text" id="modalUserAssignTo" class="form-control w-100 h-39 border border-secondary" formControlName="modalUserAssignTo" name="modalUserAssignTo">
@@ -24,7 +24,7 @@
 
           <div *ngIf="showDefaultUser" class="row mt-2">
             <div class="col-3">
-              <label for="modalDefaultGroupUser">Default User</label>
+              <label for="modalDefaultGroupUser">{{'mngt_wrkflw.tickets.defaultUser' | translate }}</label>
             </div>
             <div class="col-7">
               <input type="text" name="modalDefaultGroupUser" formControlName="modalDefaultGroupUser" id="modalDefaultGroupUser" class="form-control w-100 h-39 border border-secondary">
@@ -38,7 +38,7 @@
 
           <div class="row mt-2">
             <div class="col-12">
-              <label class="text-dark">Promise date</label>
+              <label class="text-dark">{{'mngt_wrkflw.tickets.promiseDate' | translate }}</label>
             </div>
             <div class="col-12">
               <input type="date" name="" class="form-control" formControlName="promiseDate">
@@ -48,10 +48,10 @@
 
         <div class="modal-footer d-block float-end" style="border-top:0">
           <button class="btn btn-primary cancelBtn" id="cancelDebtOwnerBtn"
-                  #cancelDebtOwner (click)="closeDebtOwnerModal()">Cancel</button>
+                  #cancelDebtOwner (click)="closeDebtOwnerModal()">{{'mngt_wrkflw.tickets.cancel' | translate }}</button>
           <button class="btn btn-outline-primary float-right"  id="scheduleBtn"
                   (click)="saveDebitOwnerAndPromiseDate()" [disabled]="isLoadingNext">
-            <span *ngIf="!isLoadingNext; else loadingNext">Next</span>
+            <span *ngIf="!isLoadingNext; else loadingNext">{{'mngt_wrkflw.tickets.next' | translate }}</span>
             <ng-template #loadingNext>
               <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
             </ng-template>
@@ -65,35 +65,35 @@
   <div class="modal-dialog modal-dialog-centered" style="width: 350px">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6 text-primary" id="scheduleModalToggleLabel">Schedule check</h1>
+        <h1 class="modal-title fs-6 text-primary" id="scheduleModalToggleLabel">{{'mngt_wrkflw.tickets.scheduleCheck' | translate }}</h1>
         <button type="button" class="btn-close" (click)="closeScheduleModal()"></button>
       </div>
       <div class="modal-body">
         <div class="col-12 mb-3">
-          <label for="scheduleReadyAuth" class="form-label w-100">Is this the schedule ready for authorization?</label>
+          <label for="scheduleReadyAuth" class="form-label w-100">{{'mngt_wrkflw.tickets.readyForAuthorization' | translate }}</label>
           <form [formGroup]="scheduleCheckForm">
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="Y">
-              <label class="form-label" for="scheduleReadyAuth">Yes</label>
+              <label class="form-label" for="scheduleReadyAuth">{{'mngt_wrkflw.tickets.yes' | translate }}</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" formControlName="scheduleReadyAuth" id="scheduleReadyAuth" value="N">
-              <label class="form-label" for="scheduleReadyAuth">No</label>
+              <label class="form-label" for="scheduleReadyAuth">{{'mngt_wrkflw.tickets.no' | translate }}</label>
             </div>
 
             <div *ngIf="scheduleCheckForm.get('scheduleReadyAuth').value === 'Y'">
-              <label for="dispatchDocuments" class="form-label w-100">Dispatch documents?</label><br>
+              <label for="dispatchDocuments" class="form-label w-100">{{'mngt_wrkflw.tickets.dispatchDocuments' | translate }}?</label><br>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="Y">
-                <label class="form-label" for="dispatchDocuments">Yes</label>
+                <label class="form-label" for="dispatchDocuments">{{'mngt_wrkflw.tickets.yes' | translate }}</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" formControlName="dispatchDocuments" id="dispatchDocuments" value="N">
-                <label class="form-label" for="dispatchDocuments">No</label>
+                <label class="form-label" for="dispatchDocuments">{{'mngt_wrkflw.tickets.no' | translate }}</label>
               </div>
             </div>
             <div *ngIf="scheduleCheckForm.get('dispatchDocuments').value === 'Y'">
-              <label class="form-label w-100">Documents to dispatch</label><br>
+              <label class="form-label w-100">{{'mngt_wrkflw.tickets.documentsToDispatch' | translate }}</label><br>
 
               <p-multiSelect
                 [options]="documentsToDispatchData"
@@ -113,7 +113,7 @@
               </p-multiSelect>
             </div>
             <div *ngIf="scheduleCheckForm.get('dispatchDocuments').value === 'N'">
-              <label for="dispatchDocuments" class="form-label w-100">Reason for rejection</label><br>
+              <label for="dispatchDocuments" class="form-label w-100">{{'mngt_wrkflw.tickets.reasonForRejection' | translate }}</label><br>
 
               <p-dropdown
                 [options]="dispatchReasonsData"
@@ -138,7 +138,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" (click)="onAuthorize()" [disabled]="isLoading">
-          <span *ngIf="!isLoading; else loading">Authorize</span>
+          <span *ngIf="!isLoading; else loading">{{'mngt_wrkflw.tickets.authorize' | translate }}</span>
           <ng-template #loading>
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
           </ng-template>
