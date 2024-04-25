@@ -44,7 +44,7 @@
       <label class="form-check-label form-label" for="rememberMe">{{ 'auth.remember_me' | translate }}</label>
     </div>
     <div class="mb-3">
-      <button 
+      <button
         [disabled]="isLoading"
         type="submit"
         id="login-submit"
@@ -52,7 +52,7 @@
         (click)='fetchUserTenants()'
         i18n='Login|Auth Login Action@@authLoginActionBtn'
       >
-        
+
         <span *ngIf="!isLoading; else loading">{{ 'auth.login' | translate }}</span>
         <ng-template #loading>
           <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
@@ -60,10 +60,11 @@
       </button>
     </div>
   </form>
-</div> 
+</div>
 
 
-<div *ngIf="tenants.length > 0 && entities.length === 0">
+<!--<div *ngIf="tenants.length > 0 && entities.length === 0">-->
+<div *ngIf="shouldShowTenants">
   <div class="card-body">
     <h5 class="mb-3 text-dark text-start">{{ 'auth.choose_tenant' | translate }}</h5>
     <ng-container *ngFor="let tenant of tenants">
@@ -76,7 +77,8 @@
   </div>
 </div>
 
-<div *ngIf="tenants.length > 0 && entities.length > 0">
+<!--<div *ngIf="tenants.length > 0 && entities.length > 0">-->
+<div *ngIf="shouldShowEntities">
   <div class="card-body">
     <div class="text-start mb-3">
       <a href="javascript:void(0)" class="text-primary" (click)="showTenants()">
@@ -84,9 +86,9 @@
       </a>
     </div>
     <h5 class="mb-3 text-dark text-start">{{ 'auth.choose_entity' | translate }}</h5>
-    
+
     <div class="row">
-      <ng-container *ngIf="!isLoading; else loading">
+      <ng-container>
         <ng-container *ngFor="let entity of entities">
           <div class="col-6">
             <div class="entity text-dark" (click)="selectEntity(entity)">
@@ -96,11 +98,15 @@
           </div>
         </ng-container>
       </ng-container>
-      <ng-template #loading>
+      <!--<ng-template #loading>
         <i class="pi pi-spin pi-spinner text-dark" style="font-size: 2rem"></i>
-      </ng-template>
+      </ng-template>-->
     </div>
   </div>
+</div>
+
+<div *ngIf="isLoading">
+  <i class="pi pi-spin pi-spinner text-dark" style="font-size: 2rem"></i>
 </div>
 
 
