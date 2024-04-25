@@ -675,14 +675,20 @@
                                     <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
-                                <div class="form-check mt-4">
+                                <!-- <div class="form-check mt-4">
                                     <input class="form-check-input" type="checkbox" value="" id="policy_generated">
                                     <label class="form-check-label"  for="policy_generated">
                                         {{'gis.policy.policy_generated' | translate}}
                                     </label>
-                                </div>
+                                </div> -->
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" id="policy_generated">
+                                    <label class="form-check-label" for="policy_generated">
+                                      {{ 'gis.policy.policy_generated' | translate }}
+                                    </label>
+                                  </div>
                             </div>
-                            <div class=" mb-1 col-sm-4 col-12">
+                            <div class=" mb-1 col-sm-4 col-12" *ngIf="isPolicyGeneratedOutsideSystem">
                                     <label class="form-check-label" class="product-label" for="old_policy_no">
                                         {{'gis.policy.old_policy_no' | translate}}
                                     </label>
@@ -692,19 +698,19 @@
                         </div>
                         <!-- ROW 6 -->
                         <div class="row mb-4">
-                            <div class=" mb-1 col-sm-4 col-12">
+                            <div class=" mb-1 col-sm-4 col-12" *ngIf="isPolicyGeneratedOutsideSystem">
                                     <label class="form-check-label" class="product-label" for="old_agent_no">
                                         {{'gis.policy.old_agent_no' | translate}}
                                     </label>
                                     <input class="form-control form-control-sm mb-1" type="text" value="" id="payment_plan">
                             </div>
-                            <div class=" mb-1 col-sm-4 col-12">
+                            <div class=" mb-1 col-sm-3 col-12" *ngIf="isPolicyGeneratedOutsideSystem">
                                 <label class="form-check-label" class="product-label" for="reference_no">
                                     {{'gis.policy.reference_no' | translate}}
                                 </label>
-                                <input class="form-control form-control-sm mb-1" type="text" value="" id="reference_no">
+                                <input class="form-control form-control-sm mb-1" type="text" value="" id="reference_no" placeholder="Ref / Risk Note No. /Credit Note No.">
                             </div>
-                            <div class=" mb-1 col-sm-4 col-12">
+                            <!-- <div class=" mb-1 col-sm-5 col-12">
                                     <label class="form-check-label" class="product-label" for="import_risks">
                                         {{'gis.policy.import_risks' | translate}}
                                     </label>
@@ -728,8 +734,36 @@
                                 </div>
                                   
 
-                             </div>
+                             </div> -->
 
+                        </div>
+                        <!-- ROW 7 -->
+                        <div class="row mb-4">
+                            <div class=" mb-1 col-sm-5 col-12">
+                                <label class="form-check-label" class="product-label" for="import_risks">
+                                    {{'gis.policy.import_risks' | translate}}
+                                </label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="another_policy">
+                                        <label class="form-check-label"  for="another_policy">
+                                            {{'gis.policy.another_policy' | translate}}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="from_csv">
+                                        <label class="form-check-label"  for="from_csv">
+                                            {{'gis.policy.from_csv' | translate}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                              
+
+                         </div>
                         </div>
                     </div>
                     <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapsePolicy"

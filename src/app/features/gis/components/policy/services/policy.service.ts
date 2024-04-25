@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { Policy } from '../data/policy-dto';
+import { Policy, RiskInformation } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 
@@ -60,6 +60,10 @@ export class PolicyService {
     
     })
     return this.api.GET(`/v2/policies/payment-modes?pageNo=0&pageSize=100`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  addPolicyRisk(batchNo: number,data:RiskInformation,user){
+    return this.api.POST(`/v1/policy-Risks-Controller?batchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }
