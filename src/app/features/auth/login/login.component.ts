@@ -32,6 +32,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   private tenant_id: any;
   public tenants: Tenant[] = [];
   public entities: string[] = [];
+  public shouldShowTenants: boolean = false;
+  public shouldShowEntities: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -110,22 +112,33 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: rawData.password,
     };
     this.authService.fetchUserTenants(authenticationData, (tenants) => {
+
       log.info(`user tenants >>>`, tenants);
       this.tenants = tenants;
-      if (tenants.length <= 1) {
+
+      if (tenants.length === 0) {
+        this.authAttempt();
+      } else if (tenants.length === 1) {
         this.tenant_id = tenants[0].name;
         this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
-
         const entities = tenants[0].authType;
-        if (entities.length <= 1) {
-          const entity = entities[0];
-          this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entity);
+
+        if (entities.length === 0 || entities.length === 1) {
+          this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entities[0]);
+          this.entities = entities;
           this.authAttempt();
-        } else {
+        } else if (entities.length > 0) {
+          this.shouldShowEntities = true;
           this.entities = entities;
         }
 
+      } else if (tenants.length > 1) {
+        this.shouldShowTenants = true;
+        this.shouldShowEntities = false;
+        this.entities = tenants[0].authType;
       }
+
+      log.info(`entities >>> `, this.entities);
 
       this.isLoading = false;
     });
@@ -263,12 +276,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.entities = tenant.authType;
     this.tenant_id = tenant.name;
     this.sessionStorageService.set(SESSION_KEY.API_TENANT_ID, this.tenant_id);
+    this.shouldShowTenants = false;
 
-    if (this.entities.length === 1) {
+    if (this.entities.length === 0 || this.entities.length === 1) {
       const entityType = this.entities[0];
       this.sessionStorageService.set(SESSION_KEY.ENTITY_TYPE, entityType);
       log.info(`entity type a ===> `, entityType);
       this.authAttempt()
+    } else if (this.entities.length > 1) {
+      this.shouldShowEntities = true;
     }
   }
 
@@ -284,6 +300,8 @@ export class LoginComponent implements OnInit, OnDestroy {
    */
   showTenants(): void {
     this.entities = [];
+    this.shouldShowTenants = true;
+    this.shouldShowEntities = false;
   }
 
 }
