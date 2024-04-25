@@ -102,6 +102,20 @@ const routes: Routes = [
                 (m) => m.DashboardModule
               ),
           },
+          {
+            path: 'service-request',
+            loadChildren: () =>
+              import('./grp/components/service-request/service-request.module').then(
+                (m) => m.ServiceRequestModule
+              ),
+          },
+          {
+            path: 'downloads',
+            loadChildren: () =>
+              import('./grp/components/downloads/downloads.module').then(
+                (m) => m.DownloadsModule
+              ),
+          },
         ],
       },
 

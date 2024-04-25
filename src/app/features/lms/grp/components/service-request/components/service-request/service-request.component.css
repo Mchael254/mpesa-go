@@ -1,0 +1,124 @@
+.main {
+    padding: 40px 40px 20px 20px;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+}
+
+.title {
+    /* color: #00529B; */
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+/*Table styles*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+}
+
+td {
+    padding: 2px;
+    white-space: nowrap;
+}
+
+tr {
+    border-bottom: none !important;
+}
+
+tr:hover {
+    background-color: #BAD0E4;
+}
+
+.selected-row {
+    background-color: #cce5ff !important;
+    /*Changes row color on click*/
+}
+
+/*Table styles End*/
+
+/* CSS for X button, to close modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-red-button {
+    color: transparent;
+    background-color: transparent;
+    border: none;
+}
+
+.custom-red-button::before {
+    content: "X";
+    color: #EE3945;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* End of CSS for X button, to close modal */
+
+.modal-header,
+.modal-footer {
+    border: none;
+    /* Removes the border between header/footer and body of modal */
+}
+
+.title-desc {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.table-label {
+    color: #868E96;
+}
+
+.table-label-desc {
+    color: black;
+}
+
+.sReqSummary-table-container {
+    overflow-x: auto;
+    display: flex;
+}
+
+.row-spacing {
+    padding-top: 30px;
+}
+
+.choose-file {
+    display: inline-flex;
+    height: 24px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #00529B;
+    background-color: #FFF;
+}
+
+.file-text {
+    color: #00529B;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
