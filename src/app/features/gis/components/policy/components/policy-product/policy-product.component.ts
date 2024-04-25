@@ -93,6 +93,9 @@ export class PolicyProductComponent {
   paymentDetails: any;
   enableSelect: boolean = false;
   show: boolean = true;
+  isPolicyGeneratedOutsideSystem: boolean = false;
+
+
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('dt2') dt2: Table | undefined;
   @ViewChild('dt3') dt3: Table | undefined;
@@ -621,12 +624,12 @@ export class PolicyProductComponent {
     log.debug("JOINT ACCOUNT NAME:", this.jointAccountName)
   }
   getCurrencies() {
-    // this.currencyService.getAllCurrencies().subscribe({
-    //   next: (res => {
-    //     this.currency = res
-    //     log.debug("Currency", res)
-    //   })
-    // })
+    this.currencyService.getAllCurrencies().subscribe({
+      next: (res => {
+        this.currency = res
+        log.debug("Currency", res)
+      })
+    })
   }
   updateCoverTo(): void {
 
@@ -806,5 +809,9 @@ export class PolicyProductComponent {
           log.info(`error >>>`, err);
         },
       });
+  }
+  onCheckboxChange(event: any) {
+    log.debug("Value passed by the checkbox:", event.target.checked)
+    this.isPolicyGeneratedOutsideSystem = event.target.checked;
   }
 }

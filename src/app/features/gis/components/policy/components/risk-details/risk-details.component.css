@@ -27,12 +27,12 @@
 
 }
 .riskInput {
-    height: 39px;
+    height: 33px;
 }
-/* .selectInput {
+.selectInput {
     height: 30px;
     border-radius: 4px;
-} */
+}
 .more {
     color: #00529B;
     font-family: Roboto;
@@ -95,3 +95,6 @@
         padding:0;
         padding-bottom:16px;
       }
+      .search-icon {
+        margin-top: -12px
+    }

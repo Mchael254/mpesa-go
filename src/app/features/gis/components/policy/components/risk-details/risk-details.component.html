@@ -15,8 +15,12 @@
                                 translate}}</label>
                             <div formGroupName="insureds">
                                 <div formGroupName="client">
-                                    <input type="text" id="insured" class="form-control form-control-sm mb-1 riskInput"
-                                        formControlName="id" readonly>
+                                   
+                                    <input type="text" id="quote-input"
+                                        class="form-select form-control form-control-sm mb-1" formControlName="id"
+                                        [(ngModel)]="passedClientName" data-bs-toggle="modal"
+                                        data-bs-target="#clientModal" readonly>
+                                   
                                 </div>
                             </div>
 
@@ -48,7 +52,7 @@
                             <label for="riskDescription" class="required risk-label"
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="property_description" [(ngModel)]="vehiclemakeModel">
+                                formControlName="sub_class_code" [(ngModel)]="vehiclemakeModel">
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
@@ -68,11 +72,11 @@
 
                             </select> -->
                             <select class="form-select form-control-sm selectInput" id="subclass"
-                            formControlName="sub_class_code"  (change)="onSubclassSelected($event)">
-                            <option value=""></option>
-                            <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
-                                {{subclass.description | sentenceCase}}</option>
-                        </select>
+                                formControlName="sub_class_code" (change)="onSubclassSelected($event)">
+                                <option value=""></option>
+                                <option *ngFor="let subclass of allMatchingSubclasses" [value]="subclass.code">
+                                    {{subclass.description | sentenceCase}}</option>
+                            </select>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('sub_class_code').hasError('required') && policyRiskForm.get('sub_class_code').touched"
                                 class="form-text text-danger">
@@ -87,8 +91,8 @@
                                 <option></option>
 
                             </select> -->
-                            <select class="form-select form-control-sm mb-1 ms-n4selectInput" id="binder"
-                                formControlName="binder_code" >
+                            <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="binder"
+                                formControlName="binder_code">
                                 <option></option>
                                 <option *ngFor="let binder of binderListDetails" [value]="binder.code">{{
                                     binder.binder_short_description | sentenceCase }}</option>
@@ -109,11 +113,11 @@
 
                             </select> -->
                             <select class="form-select form-control-sm selectInput" id="coverType"
-                            formControlName="cover_type_code"  (change)="onCoverTypeSelected($event)">
-                            <option value=""></option>
-                            <option *ngFor="let coverType of subclassCoverType" [value]="coverType.code">
-                                {{coverType.description | sentenceCase}}</option>
-                        </select>
+                                formControlName="cover_type_code" (change)="onCoverTypeSelected($event)">
+                                <option value=""></option>
+                                <option *ngFor="let coverType of subclassCoverType" [value]="coverType.code">
+                                    {{coverType.description | sentenceCase}}</option>
+                            </select>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('cover_type_code').hasError('required') && policyRiskForm.get('cover_type_code').touched"
                                 class="form-text text-danger">
@@ -123,100 +127,102 @@
                     </div>
                     <!-- MOTOR SUBCLASS FIELDS -->
                     <div *ngIf="showMotorSubclassFields">
-                    <div class="row mb-4">
-                        <div class="mb-1 col-sm-4 col-12">
-                            <label for="vehiclemake" class="required risk-label" id="vehiclemake">Vehicle Make</label><br>
-                            <p-dropdown  [options]="vehicleMakeList" optionValue="code"
-                            optionLabel="name" (onChange)="onVehicleMakeSelected($event.value)" placeholder=" "
-                            [filterBy]="'name'" [filter]="true"></p-dropdown>
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <label for="vehicleModel" class="required risk-label" id="vehicleModel">Vehicle model</label><br>
-                            <p-dropdown  [options]="filteredVehicleModel" optionValue="code"
-                            optionLabel="name" (onChange)="onVehicleModelSelected($event.value)" placeholder=" "
-                            [filterBy]="'name'" [filter]="true"></p-dropdown>
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label for="vehiclemake" class="required risk-label" id="vehiclemake">Vehicle
+                                    Make</label><br>
+                                <p-dropdown [options]="vehicleMakeList" optionValue="code" optionLabel="name"
+                                    (onChange)="onVehicleMakeSelected($event.value)" placeholder=" " [filterBy]="'name'"
+                                    [filter]="true"></p-dropdown>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label for="vehicleModel" class="required risk-label" id="vehicleModel">Vehicle
+                                    model</label><br>
+                                <p-dropdown [options]="filteredVehicleModel" optionValue="code" optionLabel="name"
+                                    (onChange)="onVehicleModelSelected($event.value)" placeholder=" "
+                                    [filterBy]="'name'" [filter]="true"></p-dropdown>
 
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12 ">
-                            <label for="riskCoverDays" class=" risk-label required"
-                                id="modelYear">Model year</label>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12 ">
+                                <label for="riskCoverDays" class=" risk-label required" id="modelYear">Model
+                                    year</label>
                                 <select class="form-select form-control-sm selectInput" id="modelYear"
-                                formControlName="sub_class_code"  >
-                                <option value=""></option>
-                                <option value=""></option>
-                            </select>
+                                    formControlName="sub_class_code">
+                                    <option value=""></option>
+                                    <option value=""></option>
+                                </select>
 
 
-                            <!-- Display error message under the field -->
-                            <!-- <div *ngIf="policyProductForm.get('product_code').hasError('required') && policyProductForm.get('product_code').touched"
+                                <!-- Display error message under the field -->
+                                <!-- <div *ngIf="policyProductForm.get('product_code').hasError('required') && policyProductForm.get('product_code').touched"
                                 class="form-text text-danger">
                                 Product is required.
                             </div> -->
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="mb-1 col-sm-4 col-12">
-                         
-                        <div class="form-check pt-4">
-
-                            <input class="form-check-input me-2" type="checkbox" id="insuredDriver">
-
-                            <label class="risk-label form-check-label" for="insuredDriver">
-                                Insured as regular driver
-                            </label>
-                        </div>
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <div class="form-check pt-4">
-
-                                <input class="form-check-input me-2" type="checkbox" id="logBookAvailable">
-
-                                <label class="risk-label form-check-label" for="logBookAvailable">
-                                    Log book available
-                                </label>
-                            </div>
-
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12 ">
-                            <div class="form-check pt-4">
-
-                                <input class="form-check-input me-2" type="checkbox" id="logBookUnderInsured">
-
-                                <label class="risk-label form-check-label" for="logBookUnderInsured">
-                                    Log book under insured name
-                                </label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="mb-1 col-sm-4 col-12">
-                            <label for="logbook" class="required risk-label"
-                            id="logbook">Logbook</label><br>
-                        <input type="text" id="logbook" class="form-control form-control-sm mb-1 riskInput"
-                            formControlName="property_description">
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+
+                                <div class="form-check pt-4">
+
+                                    <input class="form-check-input me-2" type="checkbox" id="insuredDriver">
+
+                                    <label class="risk-label form-check-label" for="insuredDriver">
+                                        Insured as regular driver
+                                    </label>
+                                </div>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+
+                                    <input class="form-check-input me-2" type="checkbox" id="logBookAvailable">
+
+                                    <label class="risk-label form-check-label" for="logBookAvailable">
+                                        Log book available
+                                    </label>
+                                </div>
+
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12 ">
+                                <div class="form-check pt-4">
+
+                                    <input class="form-check-input me-2" type="checkbox" id="logBookUnderInsured">
+
+                                    <label class="risk-label form-check-label" for="logBookUnderInsured">
+                                        Log book under insured name
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="row mb-4">
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label for="logbook" class="required risk-label" id="logbook">Logbook</label><br>
+                                <input type="text" id="logbook" class="form-control form-control-sm mb-1 riskInput"
+                                   >
+                            </div>
+                        </div>
                     </div>
                     <!-- ROW 3 -->
                     <div class="row mb-4">
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="coverFrom" class="required risk-label" id="coverFrom">{{'gis.policy.cover_from' |
+                            <label for="coverFrom" class="required risk-label" id="coverFrom">{{'gis.policy.cover_from'
+                                |
                                 translate}}</label>
-                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverFrom"
-                                formControlName="date_cover_from">
+                            <input type="date" id="coverFrom" class="form-control form-control-sm mb-1 riskInput"
+                                [(ngModel)]="passedCoverFrom" formControlName="date_cover_from">
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="coverTo" class="required risk-label" id="coverTo">{{'gis.policy.cover_to' |
                                 translate}}</label>
-                            <input type="date" id="coverTo" class="form-control form-control-sm mb-1 riskInput" [(ngModel)]="passedCoverTo"
-                                formControlName="date_cover_to">
+                            <input type="date" id="coverTo" class="form-control form-control-sm mb-1 riskInput"
+                                [(ngModel)]="passedCoverTo" formControlName="date_cover_to">
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="riskCoverDays" class=" risk-label"
                                 id="riskCoverDays">{{'gis.policy.risk_cover_days' | translate}}</label>
-                            <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput" 
-                            formControlName="cover_days" readonly>
+                            <input type="text" id="riskCoverDays" class="form-control form-control-sm mb-1 riskInput"
+                                formControlName="cover_days" readonly>
 
 
                             <!-- Display error message under the field -->
@@ -268,41 +274,41 @@
                         <!-- NCD APPLICABLE FIELDS -->
                         <div class="row mb-4" *ngIf="isNcdApplicable">
                             <div class="mb-1 col-sm-4 col-12">
-                                <label class=" risk-label">  {{'gis.policy.ncd_level' | translate}}</label>
+                                <label class=" risk-label"> {{'gis.policy.ncd_level' | translate}}</label>
                                 <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="property_id">
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
-                                <label class=" risk-label">  {{'gis.policy.ncd_certificate_number' | translate}}</label>
+                                <label class=" risk-label"> {{'gis.policy.ncd_certificate_number' | translate}}</label>
                                 <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="ipu_ncd_cert_no">
                             </div>
                         </div>
-                         <!-- CASH APPLICABLE FIELDS -->
+                        <!-- CASH APPLICABLE FIELDS -->
                         <div class="row mb-4" *ngIf="isCashApplicable">
                             <div class="mb-1 col-sm-4 col-12">
-                                <label class=" risk-label">  {{'gis.policy.cash_level' | translate}}</label>
+                                <label class=" risk-label"> {{'gis.policy.cash_level' | translate}}</label>
                                 <input type="number" id="riskId" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="property_id">
                             </div>
-                            
+
                         </div>
                         <!-- ROW 5 -->
                         <div class="row mb-4">
                             <div class="mb-1 col-sm-4 col-12">
 
-                                <label class=" risk-label">  {{'gis.policy.conveyance_type' | translate}}</label>
+                                <label class=" risk-label"> {{'gis.policy.conveyance_type' | translate}}</label>
                                 <select class="form-select form-control-sm mb-1 ms-n4 selectInput" id="subclass"
                                     formControlName="sub_class_code">
                                     <option value=""></option>
-                                    <option value="">  {{'gis.policy.by_sea' | translate}}</option>
-                                    <option value="">  {{'gis.policy.by_air' | translate}}</option>
-                                    <option value="">  {{'gis.policy.by_road' | translate}}</option>
-                                    <option value="">  {{'gis.policy.by_sea_rail_road' | translate}}</option>
-                                    <option value="">  {{'gis.policy.by_sea_road' | translate}}</option>
-                                    <option value="">  {{'gis.policy.by_air_road' | translate}}</option>
-                                    <option value="">  {{'gis.policy.not_applicable' | translate}}</option>
-                                    <option value="">  {{'gis.policy.none' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_sea' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_air' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_road' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_sea_rail_road' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_sea_road' | translate}}</option>
+                                    <option value=""> {{'gis.policy.by_air_road' | translate}}</option>
+                                    <option value=""> {{'gis.policy.not_applicable' | translate}}</option>
+                                    <option value=""> {{'gis.policy.none' | translate}}</option>
                                 </select>
                             </div>
 
@@ -317,7 +323,7 @@
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
 
-                                <label class=" risk-label">  {{'gis.policy.installment_payment_pct' | translate}}</label>
+                                <label class=" risk-label"> {{'gis.policy.installment_payment_pct' | translate}}</label>
                                 <input type="text" id="riskId" class="form-control form-control-sm mb-1 riskInput"
                                     formControlName="property_id">
                             </div>
@@ -346,6 +352,72 @@
                                 data-target="#collapseExample"></i><i class="pi pi-angle-double-down"
                                 style="font-size:13px" *ngIf="show" data-toggle="collapse"
                                 data-target="#collapseExample"></i></span> </p>
+                    <!-- Client Modal -->
+                    <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-body">
+                                    <button type="button" #closebutton class="float-end btn-close"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <p class="text-start" id="selectClient">{{'gis.policy.select_client' | translate}}
+                                    </p>
+
+                                    <p-table #dt1 [value]="clientData" [tableStyle]="{'max-width': '465px'}"
+                                        selectionMode="single" [resizableColumns]="true" styleClass="p-datatable-sm"
+                                        responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true"
+                                        [paginator]="true" [rows]="5" [scrollable]="true" scrollDirection="horizontal"
+                                        [showCurrentPageReport]="true"
+                                        currentPageReportTemplate=" {first} - {last} of {totalRecords}"
+                                        [globalFilterFields]="['idNumber', 'emailAddress','lastName','emailAddress']">
+                                        <ng-template pTemplate="caption">
+                                            <div class="flex">
+                                                <span class="p-input-icon-left ml-auto">
+                                                    <i class="pi pi-search search-icon"></i>
+                                                </span>
+                                                <input class="search-input" pInputText type="text"
+                                                    (input)="applyFilterGlobal($event, 'contains')"
+                                                    placeholder="Search" />
+
+                                            </div>
+                                        </ng-template>
+                                        <ng-template pTemplate="header">
+
+                                            <tr id="product">
+                                                <th>{{'gis.policy.id_no' | translate}}</th>
+                                                <th>{{'gis.policy.name' | translate}}</th>
+                                                <th>{{'gis.policy.email' | translate}}</th>
+
+                                            </tr>
+                                        </ng-template>
+
+                                        <ng-template let-clientData pTemplate="body">
+                                            <tr id="productData" [pSelectableRow]=""
+                                                (click)="loadClientDetails(clientData.id);">
+
+                                                <td>
+                                                    {{clientData.idNumber}}
+                                                </td>
+                                                <td>
+                                                    {{clientData.firstName+" "+clientData.lastName}}
+                                                </td>
+                                                <td>
+                                                    {{clientData.emailAddress}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+
+                                    </p-table>
+                                    <br>
+                                    <!-- <button class="btn btn-primary float-end" data-bs-dismiss="modal" (click)="saveclient()">Save Details</button> -->
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
                 </form>
 
             </div>
@@ -353,20 +425,20 @@
         <div class="card mb-3 px-2" style=" position: relative;">
             <div class="card-body">
                 <form [formGroup]="policyRiskForm">
-                     <!-- ROW 1 -->
-                     <div class="row mb-4">
+                    <!-- ROW 1 -->
+                    <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="riskLocation" class="required risk-label" id="riskLocation">{{'gis.policy.risk_location'|translate}}</label>
-                            <p-dropdown  [options]="statesList" optionValue="id"
-                                optionLabel="name"  placeholder=" " (onChange)="onStateSelected($event.value)"
-                                [filterBy]="'name'" [filter]="true"></p-dropdown>
+                            <label for="riskLocation" class="required risk-label"
+                                id="riskLocation">{{'gis.policy.risk_location'|translate}}</label>
+                            <p-dropdown [options]="statesList" optionValue="id" optionLabel="name" placeholder=" "
+                                (onChange)="onStateSelected($event.value)" [filterBy]="'name'"
+                                [filter]="true"></p-dropdown>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label class="required risk-label">{{'gis.policy.risk_town'|translate}}</label>
-                            <p-dropdown  [options]="townList" optionValue="id"
-                                optionLabel="name"  placeholder=" "
+                            <p-dropdown [options]="townList" optionValue="id" optionLabel="name" placeholder=" "
                                 [filterBy]="'name'" [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->
@@ -375,11 +447,11 @@
                                 Risk Town is required.
                             </div>
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12" >
+                        <div class=" mb-1 col-sm-4 col-12">
                             <label for="riskAddress" class=" risk-label"
                                 id="riskAddress">{{'gis.policy.risk_address'|translate}}</label><br>
                             <input type="text" id="riskAddress" class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="property_description">
+                               >
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
@@ -387,25 +459,25 @@
                                 Risk Address is required.
                             </div>
                         </div>
-                       
+
                     </div>
-                     <!-- ROW 2 -->
-                     <div class="row mb-4">
+                    <!-- ROW 2 -->
+                    <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="riskDetails" class=" risk-label" id="riskLocation">{{'gis.policy.risk_details'|translate}}</label>
+                            <label for="riskDetails" class=" risk-label"
+                                id="riskLocation">{{'gis.policy.risk_details'|translate}}</label>
                             <input type="text" id="riskDetails" class="form-control form-control-sm mb-1 riskInput"
-                            formControlName="property_description">
+                               >
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label class="required risk-label">{{'gis.policy.survey_risk'|translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                            >
-                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
-                            <option value="N">{{'gis.policy.no' | translate}}</option>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                                <option value="N">{{'gis.policy.no' | translate}}</option>
 
-                        </select>
+                            </select>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
@@ -413,10 +485,10 @@
                                 Risk Town is required.
                             </div>
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12" >
+                        <div class=" mb-1 col-sm-4 col-12">
                             <label for="surveyDate" class="required risk-label"
                                 id="surveyDate">{{'gis.policy.Survey_date'|translate}}</label><br>
-                                <input type="date" id="surveyDate" class="form-control form-control-sm mb-1 riskInput" 
+                            <input type="date" id="surveyDate" class="form-control form-control-sm mb-1 riskInput"
                                 formControlName="date_cover_to">
 
                             <!-- Display error message under the field -->
@@ -425,25 +497,25 @@
                                 Risk Address is required.
                             </div>
                         </div>
-                       
+
                     </div>
-                       <!-- ROW 3 -->
-                       <div class="row mb-4">
+                    <!-- ROW 3 -->
+                    <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="computeMaxExposure" class="required risk-label" id="riskLocation">{{'gis.policy.compute_maximum_exposure'|translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                           >
-                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
-                            <option value="N">{{'gis.policy.no' | translate}}</option>
+                            <label for="computeMaxExposure" class="required risk-label"
+                                id="riskLocation">{{'gis.policy.compute_maximum_exposure'|translate}}</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                                <option value="N">{{'gis.policy.no' | translate}}</option>
 
-                        </select>
+                            </select>
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label class=" risk-label">{{'gis.policy.max_exposure_amount'|translate}}</label>
-                            <input type="number" id="maxExposureAmount" class="form-control form-control-sm mb-1 riskInput"
-                            formControlName="property_id">
+                            <input type="number" id="maxExposureAmount"
+                                class="form-control form-control-sm mb-1 riskInput" formControlName="property_id">
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
@@ -451,13 +523,13 @@
                                 Risk Town is required.
                             </div>
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12" >
+                        <div class=" mb-1 col-sm-4 col-12">
                             <label for="surveyDate" class="required risk-label"
                                 id="surveyDate">{{'gis.policy.territory'|translate}}</label><br>
-                                <p-dropdown  formControlName="property_id" [options]="countryList" optionValue="id"
-                                optionLabel="name"  [placeholder]="userCountryName"
-                                [filterBy]="'name'" [filter]="true"  [ngModel]="userCountryName"></p-dropdown>
-                               
+                            <p-dropdown formControlName="property_id" [options]="countryList" optionValue="id"
+                                optionLabel="name" [placeholder]="userCountryName" [filterBy]="'name'" [filter]="true"
+                                [ngModel]="userCountryName"></p-dropdown>
+
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
@@ -465,130 +537,128 @@
                                 Risk Address is required.
                             </div>
                         </div>
-                       
+
                     </div>
-                     <!-- ROW 4 -->
-                     <div class="row mb-4">
+                    <!-- ROW 4 -->
+                    <div class="row mb-4">
 
                         <div class="mb-1 col-sm-4 col-12">
-                            <label for="newRisk" class="required risk-label" id="riskLocation">{{'gis.policy.new_risk'|translate}}?</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                           >
-                            <option value="Y">{{'gis.policy.yes' | translate}}</option>
-                            <option value="N">{{'gis.policy.no' | translate}}</option>
+                            <label for="newRisk" class="required risk-label"
+                                id="riskLocation">{{'gis.policy.new_risk'|translate}}?</label>
+                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                <option value="Y">{{'gis.policy.yes' | translate}}</option>
+                                <option value="N">{{'gis.policy.no' | translate}}</option>
 
-                        </select>
+                            </select>
 
                         </div>
-                        
-                       
+
+
                     </div>
                     <div class="collapse" id="collapseRiskOtherDetails">
-                         <!-- ROW 5 -->
-                       <div class="row mb-4">
+                        <!-- ROW 5 -->
+                        <div class="row mb-4">
 
-                        <div class="mb-1 col-sm-4 col-12">
-                            <label for="emlLocation" class="required risk-label" id="emlLocation">{{'gis.policy.eml_top_location_level'|translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                           >
-                            <option value="">RSK</option>
-                            <option value="">SEC</option>
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label for="emlLocation" class="required risk-label"
+                                    id="emlLocation">{{'gis.policy.eml_top_location_level'|translate}}</label>
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                    <option value="">RSK</option>
+                                    <option value="">SEC</option>
 
-                        </select>
+                                </select>
+
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label class=" risk-label">{{'gis.policy.period_rates'|translate}}</label>
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                    <option value="">{{'gis.policy.prorata'|translate}}</option>
+                                    <option value="">{{'gis.policy.short_period_rates'|translate}}</option>
+                                    <option value="">{{'gis.policy.full'|translate}}</option>
+
+                                </select>
+
+
+                                <!-- Display error message under the field -->
+                                <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                    class="form-text text-danger">
+                                    Risk Town is required.
+                                </div>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="risk-label form-check-label" for="flexCheckDefault">
+                                        {{'gis.policy.retroactive_cover'|translate}}
+                                    </label>
+                                </div>
+                                <!-- Display error message under the field -->
+                                <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                    class="form-text text-danger">
+                                    Risk Address is required.
+                                </div>
+                            </div>
 
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <label class=" risk-label">{{'gis.policy.period_rates'|translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                           >
-                            <option value="">{{'gis.policy.prorata'|translate}}</option>
-                            <option value="">{{'gis.policy.short_period_rates'|translate}}</option>
-                            <option value="">{{'gis.policy.full'|translate}}</option>
+                        <!-- ROW 6 -->
+                        <div class="row mb-4">
 
-                        </select>
+                            <div class="mb-1 col-sm-4 col-12">
+                                <div class="form-check pt-4">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    <label class="risk-label form-check-label" for="flexCheckDefault">
+                                        {{'gis.policy.maintenance_cover'|translate}}
+                                    </label>
+                                </div>
 
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
-                                class="form-text text-danger">
-                                Risk Town is required.
                             </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label for="surveyDate" class="required risk-label"
+                                    id="surveyDate">{{'gis.policy.quake_flood_zone'|translate}}</label><br>
+
+                                <p-dropdown [options]="" optionValue="code" optionLabel="description" placeholder=" "
+                                    [filterBy]="'description'" [filter]="true"></p-dropdown>
+
+
+
+                                <!-- Display error message under the field -->
+                                <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
+                                    class="form-text text-danger">
+                                    Risk Town is required.
+                                </div>
+                            </div>
+                            <div class=" mb-1 col-sm-4 col-12">
+                                <label for="surveyDate" class="required risk-label"
+                                    id="surveyDate">{{'gis.policy.relational_group'|translate}}</label><br>
+                                <p-dropdown [options]="" optionValue="code" optionLabel="description" placeholder=" "
+                                    [filterBy]="'description'" [filter]="true"></p-dropdown>
+                                <!-- Display error message under the field -->
+                                <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
+                                    class="form-text text-danger">
+                                    Risk Address is required.
+                                </div>
+                            </div>
+
                         </div>
-                        <div class=" mb-1 col-sm-4 col-12" >
-                            <div class="form-check pt-4">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                <label class="risk-label form-check-label" for="flexCheckDefault">
-                                    {{'gis.policy.retroactive_cover'|translate}}
-                                </label>
+                        <!-- ROW 7 -->
+                        <div class="row mb-4">
+
+                            <div class="mb-1 col-sm-4 col-12">
+                                <label for="newRisk" class="required risk-label"
+                                    id="riskLocation">{{'gis.policy.risk_class'|translate}}</label>
+                                <select class="form-select form-control-sm mb-1 ms-n4" id="product-input">
+                                    <option value=""></option>
+                                    <option value=""></option>
+                                </select>
+
                             </div>
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
-                                class="form-text text-danger">
-                                Risk Address is required.
-                            </div>
+
+
                         </div>
-                       
                     </div>
-                       <!-- ROW 6 -->
-                       <div class="row mb-4">
-
-                        <div class="mb-1 col-sm-4 col-12">
-                            <div class="form-check pt-4">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                <label class="risk-label form-check-label" for="flexCheckDefault">
-                                    {{'gis.policy.maintenance_cover'|translate}}
-                                </label>
-                            </div>
-
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12">
-                            <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">{{'gis.policy.quake_flood_zone'|translate}}</label><br>
-                               
-                                <p-dropdown  [options]="" optionValue="code"
-                                optionLabel="description"  placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
-
-
-
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('property_id').hasError('required') && policyRiskForm.get('property_id').touched"
-                                class="form-text text-danger">
-                                Risk Town is required.
-                            </div>
-                        </div>
-                        <div class=" mb-1 col-sm-4 col-12" >
-                            <label for="surveyDate" class="required risk-label"
-                                id="surveyDate">{{'gis.policy.relational_group'|translate}}</label><br>
-                                <p-dropdown  [options]="" optionValue="code"
-                                optionLabel="description"  placeholder=" "
-                                [filterBy]="'description'" [filter]="true"></p-dropdown>
-                            <!-- Display error message under the field -->
-                            <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
-                                class="form-text text-danger">
-                                Risk Address is required.
-                            </div>
-                        </div>
-                       
-                    </div>
-                     <!-- ROW 7 -->
-                     <div class="row mb-4">
-
-                        <div class="mb-1 col-sm-4 col-12">
-                            <label for="newRisk" class="required risk-label" id="riskLocation">{{'gis.policy.risk_class'|translate}}</label>
-                            <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                            >
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
-
-                        </div>
-                        
-                       
-                    </div>
-                    </div>
-                    <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapseRiskOtherDetails"
-                        aria-expanded="false" aria-controls="collapseExample"> {{'gis.policy.more_details' |
+                    <p class="more " (click)="show=!show" data-bs-toggle="collapse"
+                        data-bs-target="#collapseRiskOtherDetails" aria-expanded="false"
+                        aria-controls="collapseExample"> {{'gis.policy.more_details' |
                         translate}}<span class="ml-1" data-toggle="collapse" data-target="#collapseRiskOtherDetails"
                             aria-expanded="false" aria-controls="collapseExample"> <i class="pi pi-angle-double-up"
                                 style="font-size:13px" *ngIf="!show" data-toggle="collapse"
@@ -596,6 +666,10 @@
                                 style="font-size:13px" *ngIf="show" data-toggle="collapse"
                                 data-target="#collapseRiskOtherDetails"></i></span> </p>
                 </form>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" (click)="addPolicyRisk()">{{'gis.policy.next' |
+                    translate}}</button>
             </div>
         </div>
 

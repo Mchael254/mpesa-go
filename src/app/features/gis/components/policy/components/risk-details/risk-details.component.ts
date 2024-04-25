@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Logger, untilDestroyed } from '../../../../../../shared/shared.module'
 import { PolicyService } from '../../services/policy.service';
@@ -17,6 +17,9 @@ import { CountryService } from '../../../../../../shared/services/setups/country
 import { StaffService } from '../../../../../entities/services/staff/staff.service';
 import { StaffDto } from '../../../../../entities/data/StaffDto';
 import underwritingSteps from '../../data/underwriting-steps.json'
+import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
+import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { Table } from 'primeng/table';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -49,18 +52,28 @@ export class RiskDetailsComponent {
   allSubclassList: Subclasses[]
   allMatchingSubclasses = [];
   selectedSubclassCode: any;
+  selectedSubclass:any;
+
   productCode: any;
 
   binderList: any;
   binderListDetails: any;
 
   subclassCoverType: subclassCoverTypes[] = [];
+  selectedCoverType:any;
   coverTypeCode: any;
   coverTypeDesc: any;
 
   passedCoverFrom: any;
   passedCoverTo: any;
   passedCoverDays: any;
+  passedClientCode:any;
+  passedClientName:any;
+  passedClient:any;
+
+  clientData: ClientDTO[];
+  clientDetails: ClientDTO;
+  clientList:any;
 
   showMotorSubclassFields: boolean = false;
   motorClassAllowed: any;
@@ -81,6 +94,10 @@ export class RiskDetailsComponent {
    townList:TownDto[];
    countryList:CountryDto[];
    userCountryName:any;
+   @ViewChild('dt1') dt1: Table | undefined;
+   @ViewChild('closebutton') closebutton;
+
+
   constructor(
     public fb: FormBuilder,
     private policyService: PolicyService,
@@ -95,6 +112,8 @@ export class RiskDetailsComponent {
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
     public cdr: ChangeDetectorRef,
+    private clientService: ClientService,
+
 
   ) {
 
@@ -254,6 +273,8 @@ export class RiskDetailsComponent {
             log.debug("COVER FROM", this.passedCoverFrom);
             this.passedCoverTo = this.policyDetails.wet_dt;
             log.debug("COVER TO", this.passedCoverTo);
+            this.passedClientCode = this.policyDetails.client_code
+            log.debug("CLIENT CODE", this.passedClientCode);
 
 
             // Calculate cover days
@@ -267,6 +288,7 @@ export class RiskDetailsComponent {
 
             this.onProductSelected();
             this.getProductSubclass();
+            this.loadAllClients();
             this.cdr.detectChanges();
 
           } else {
@@ -365,11 +387,82 @@ export class RiskDetailsComponent {
         },
       });
   }
+  loadAllClients() {
+    this.clientService
+      .getClients(0, 100)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.clientList = data;
+            log.debug("CLIENT DATA:", this.clientList)
+            this.clientData = this.clientList.content
+            log.debug("CLIENT DATA:", this.clientData)
+            const selectedClient = this.clientData.find(client => client.id === this.passedClientCode);
+            log.debug("Passed CLient",selectedClient)
+            this.passedClient=selectedClient
+            log.debug("Passed CLient  not inusured",selectedClient)
+
+            this.passedClientName= selectedClient.firstName + ' ' + selectedClient.lastName;
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+   /**
+   * Applies a global filter to a DataTable.
+   * - Retrieves the input value from the event target.
+   * - Calls the DataTable's 'filterGlobal' method with the input value and a specified string value.
+   * @method applyFilterGlobal
+   * @param {Event} $event - The event triggering the filter application.
+   * @param {string} stringVal - The specified string value for filtering.
+   * @return {void}
+   */
+   applyFilterGlobal($event, stringVal) {
+    this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  loadClientDetails(id) {
+    log.info("Client Id:", id)
+    this.clientService.getClientById(id).subscribe(data => {
+      this.clientDetails = data;
+      log.debug("Selected Client Details:", this.clientDetails)
+      // this.getCountries();
+      this.saveclient()
+      this.closebutton.nativeElement.click();
+      // this.updateJointAccountData();
+    })
+  }
+  saveclient() {
+    // this.clientCode = this.clientDetails.id;
+    this.passedClient=this.clientDetails
+    log.debug("THE INSURRED FULL INFO",this.passedClient)
+    this.passedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
+    log.debug("another insured chosen:", this.passedClientName)
+  }
   onSubclassSelected(event: any) {
     const selectedValue = event.target.value;
-    this.selectedSubclassCode = selectedValue;
+    this.selectedSubclassCode = parseInt(selectedValue);
     // Perform your action based on the selected value
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code')
+    const selectedSubclass = this.allMatchingSubclasses.find( subclass => subclass.code === this.selectedSubclassCode)
+    this.selectedSubclass = selectedSubclass;
+    log.debug(this.selectedSubclass, 'Selected Subclass Info')
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders();
@@ -444,11 +537,17 @@ export class RiskDetailsComponent {
   }
   onCoverTypeSelected(event: any) {
     const selectedValue = event.target.value;
-    this.coverTypeCode = selectedValue;
+    this.coverTypeCode = parseInt(selectedValue);
     log.debug("Cover Type Code:", this.coverTypeCode)
+    const selectedCover = this.subclassCoverType.find(cover => cover.code === this.coverTypeCode)
+
+    this.selectedCoverType = selectedCover;
+    log.debug("Cover Type selected:",selectedCover)
+
   }
   onProductSelected() {
-    this.motorClassAllowed = this.policyDetails.product.allow_motor_class;
+    log.debug("allow moto class field",this.policyDetails.product.allowMotorClass)
+    this.motorClassAllowed = this.policyDetails.product.allowMotorClass;
     log.debug("Motor Class Allowed Value", this.motorClassAllowed);
     if (this.motorClassAllowed === 'Y') {
       this.showMotorSubclassFields = true;
@@ -677,6 +776,21 @@ getRiskTerritory() {
       },
     });
 }
+addPolicyRisk(){
+  this.policyRiskForm.get('insureds.client.first_name').setValue(this.passedClient?.firstName);
+  this.policyRiskForm.get('insureds.client.last_name').setValue(this.passedClient?.lastName);
+  this.policyRiskForm.get('insureds.client.id').setValue(this.passedClient?.id);
+  this.policyRiskForm.get('cover_type_short_description').setValue(this.selectedCoverType?.description);
+  this.policyRiskForm.get('policy_batch_no').setValue(this.policyDetails.batch_no);
+  this.policyRiskForm.get('policy_number').setValue(this.policyDetails.policy_no);
+  this.policyRiskForm.get('product_code').setValue(this.policyDetails.product.code);
+  this.policyRiskForm.get('sub_class_description').setValue(this.selectedSubclass.description);
+  this.policyRiskForm.get('transaction_type').setValue(this.policyDetails.transaction_type);
+  
+  
 
+  log.debug("MY RISK FORM", JSON.stringify(this.policyRiskForm.value))
+
+}
 }
 
