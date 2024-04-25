@@ -1,0 +1,140 @@
+<div class="container ">
+    <p class="titleMain mt-3">Underwriting: Co-insurance Details</p>
+    <div class="container mx-2 mt-n1">
+        <div class="card mb-3 px-2" style=" position: relative;">
+            <div class="card-body">
+                <p class="subheading">Co-insurance details</p>
+                <div class="row mb-4">
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" (change)="onCheckboxChange($event)"
+                                id="coinsurance_leader">
+                            <label class="form-check-label product-label" for="coinsurance_leader">
+                                Co-insurance leader
+                            </label>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="form-check">
+                            <input class="form-check-input " type="checkbox" value="" id="coinsurance_gross">
+                            <label class="form-check-label product-label" for="coinsurance_gross">
+                                Co-insurance gross SI
+                            </label>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="coinsurance_leader_combined"
+                                formControlName="is_coinsurance">
+                            <label class="form-check-label product-label" for="coinsurance_leader_combined">
+                                Co-insurance leader combined
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="mb-1 col-sm-4 col-12">
+                        <label for="client" class=" product-label" id="client">Co-insurance %</label>
+                        <input type="number" id="quote-input" class="form-control form-control-sm mb-1"
+                            formControlName="client_code">
+                    </div>
+                    <div class="mb-1 col-sm-4 col-12" *ngIf="isCoinsuaranceLeader">
+                        <label for="client" class="product-label" id="client">Co-insurance fee %</label>
+                        <input type="number" id="quote-input" class="form-control form-control-sm mb-1"
+                            formControlName="client_code">
+                    </div>
+
+
+                </div>
+                <div class="row mb-4">
+                    <div class="col-sm-4 col-12 ">
+                    </div>
+                    <div class="col-sm-4 col-12 ">
+                    </div>
+                    <div class="col-sm-4 col-12 ">
+                        <button class="btn btn-primary mt-3 float-end">Save </button>
+                    </div>
+                </div>
+                <p class="subheading2">Co-insurers</p>
+
+                <div class="row">
+                    <div class="col-sm-3">
+
+                    </div>
+                    <div class="col-sm-9 d-flex justify-content-end">
+                        <div class="row  mb-2">
+
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-3">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#addThirdDetails" title="Edit">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#editThirdDetails" title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#deleteThirdDetails" title="Edit">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <p-table [tableStyle]="{'min-width': '300px'}" selectionMode="single" dataKey="code" editMode="row">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Name</th>
+                            <th>Leader</th>
+                            <th>Percentage</th>
+                            <th>Premium</th>
+                            <th>Fee rate</th>
+                            <th>Fee amount</th>
+                            <th>Policy no</th>
+
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-editing="editing" let-ri="rowIndex">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+
+
+
+                            <td>
+                                <!-- <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"  class="p-button-rounded p-button-text"></button> -->
+
+                                <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                    class="p-button-rounded p-button-text">
+                                    <i class="fas fa-pencil"></i>
+                                </button>
+
+
+                                <!-- <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="updateRiskSection()" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"></button> -->
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+               
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

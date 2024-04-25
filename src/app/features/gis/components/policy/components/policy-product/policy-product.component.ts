@@ -29,7 +29,7 @@ const log = new Logger("PolicyProductComponent");
   styleUrls: ['./policy-product.component.css']
 })
 export class PolicyProductComponent {
-  steps=underwritingSteps
+  steps = underwritingSteps
   clientData: ClientDTO[];
   clientDetails: ClientDTO;
   clientType: any;
@@ -738,43 +738,57 @@ export class PolicyProductComponent {
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
-    this.policyService
-      .createPolicy(policyForm, this.user)
-      .pipe(untilDestroyed(this))
-      .subscribe({
-        next: (data) => {
+    if (this.policyProductForm.value.is_coinsurance == 'Y') {
+      log.debug("NAVIGATING TO COINSUARANCE PAGE")
+      this.router.navigate(['/home/gis/policy/coinsuarance-details'])
+      sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
+    } 
+    // else if () {
+    //   this.router.navigate(['/home/gis/quotation/quick-quote'])
+    //   sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
+    // } 
+    else {
+      this.policyService
+        .createPolicy(policyForm, this.user)
+        .pipe(untilDestroyed(this))
+        .subscribe({
+          next: (data) => {
 
-          if (data) {
-            this.policyResponse = data;
-            log.debug("Create Policy Endpoint Response", this.policyResponse)
-            this.policyDetails = this.policyResponse.embedded[0]
-            log.debug("Policy Details", this.policyDetails)
-            this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
+            if (data) {
+              this.policyResponse = data;
+              log.debug("Create Policy Endpoint Response", this.policyResponse)
+              this.policyDetails = this.policyResponse.embedded[0]
+              log.debug("Policy Details", this.policyDetails)
+              this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
 
-            const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
-            sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
-            this.router.navigate(['/home/gis/policy/risk-details']);
+              const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
+              sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+              this.router.navigate(['/home/gis/policy/risk-details']);
 
-            this.cdr.detectChanges();
+              this.cdr.detectChanges();
 
-          } else {
-            this.errorOccurred = true;
-            this.errorMessage = 'Something went wrong. Please try Again';
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              'Something went wrong. Please try Again'
+              this.errorMessage
             );
-          }
-        },
-        error: (err) => {
+            log.info(`error >>>`, err);
+          },
+        });
+    }
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            this.errorMessage
-          );
-          log.info(`error >>>`, err);
-        },
-      });
+
+
   }
   getPaymentModes() {
     this.policyService

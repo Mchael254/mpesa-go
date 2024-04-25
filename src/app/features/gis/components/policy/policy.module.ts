@@ -16,6 +16,7 @@ import { MenuModule } from 'primeng/menu';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { TreeModule } from 'primeng/tree';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
+import { CoinsuaranceDetailsComponent } from './components/coinsuarance-details/coinsuarance-details.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { RiskDetailsComponent } from './components/risk-details/risk-details.com
     ListPoliciesComponent,
     UnderwritingComponent,
     PolicyProductComponent,
-    RiskDetailsComponent
+    RiskDetailsComponent,
+    CoinsuaranceDetailsComponent
   ],
   imports: [
     CommonModule,
