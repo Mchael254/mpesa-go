@@ -1,0 +1,52 @@
+.main {
+    padding: 40px 40px 20px 20px;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+}
+
+.title {
+    /* color: #00529B; */
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-label,
+.pi {
+    color: #000;
+}
+
+.pi-arrow-down {
+    text-decoration: underline;
+}
+
+.icons {
+    display: none;
+    margin-right: 200px;
+}
+
+
+li:hover .icons {
+    display: inline-block;
+    cursor: pointer;
+}
+
+li:hover .item-label {
+    color: blue;
+    text-decoration: underline;
+}
+
+.pi {
+    margin-right: 30px;
+}

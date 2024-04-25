@@ -1,0 +1,266 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="title">My service requests</div>
+        <div
+            style="margin-bottom: 8px; display: flex; justify-content: end; width: 100%; height: 100%; overflow-x: auto;">
+            <p-button label="New request" [style]="{'border-radius': '4px'}"
+                (click)="showNewServiceReqModal()"></p-button></div>
+        <div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: calc(100% / 7);">Receipt number</th>
+                        <th style="width: calc(100% / 7);">Category</th>
+                        <th style="width: calc(100% / 7);">Summary</th>
+                        <th style="width: calc(100% / 7);">Date</th>
+                        <th style="width: calc(100% / 7);">Status</th>
+                        <th style="width: calc(100% / 7);">Due date</th>
+                        <th style="width: calc(100% / 7);">Lapsed date</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+                    <tr (click)="onReceiptsTableRowClick(item, rowIndex)"
+                        [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+                        <td id="table-align">{{ item.receiptNumber }}</td>
+                        <td id="table-align">{{ item.category }}</td>
+                        <td id="table-align">{{ item.summary }}</td>
+                        <td id="table-align">{{ item.date }}</td>
+                        <td id="table-align">{{ item.status }}</td>
+                        <td id="table-align">{{ item.dueDate }}</td>
+                        <td id="table-align">{{ item.lapsedDate }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<!-- modals -->
+<!-- modal on service request row click -->
+<div class="modal fade" tabindex="-1" #serviceReqSummaryModal id="serviceReqSummaryModal"
+    aria-labelledby="serviceReqSummaryModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title float-left" id="serviceReqSummaryModal">Service request summary</h5>
+                <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeServiceReqSummaryModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="sReqSummary-table-container col-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                        <table class="receipt-table">
+                            <tr>
+                                <td class="table-label">Category:</td>
+                                <td class="table-label-desc">Inquiry</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Category type:</td>
+                                <td class="table-label-desc">Complaint</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Policy:</td>
+                                <td class="table-label-desc">PL/001/CLO</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                        <table class="receipt-table">
+                            <tr>
+                                <td class="table-label">Policy member:</td>
+                                <td class="table-label-desc">John Deere</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Summary:</td>
+                                <td class="table-label-desc">Wrong amount</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Description:</td>
+                                <td class="table-label-desc">Wrong amount entered</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of modal on service request row click -->
+
+<!-- new request modal -->
+<div class="modal fade" tabindex="-1" #newServiceReqModal id="newServiceReqModal" aria-labelledby="newServiceReqModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title float-left" id="newServiceReqModal">Service request</h5>
+                <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeNewServiceReqModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newRequestForm">
+                    <div class="row" style="padding-top: 10px;">
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="category" style="color: black;">Category<span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" [id]="'category'" formControlName="category">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option [value]=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="categoryType" style="color: black;">Category type<span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" [id]="'categoryType'" formControlName="categoryType">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option [value]=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="policy" style="color: black;">Policy<span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" [id]="'policy'" formControlName="policy">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-spacing">
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="policyMembers" style="color: black;">Policy members<span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" [id]="'policyMembers'" formControlName="policyMembers">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option [value]=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="contactMethod" style="color: black;">Preferred contact method<span
+                                        style="color: red;">*</span></label>
+                                <select class="form-select" [id]="'contactMethod'" formControlName="contactMethod">
+                                    <option selected="true" disabled="disabled"></option>
+                                    <option [value]=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div>
+                                <div>
+                                    <label for="contactTime" style="color: black;">Preferred contact time<span
+                                            style="color: red;">*</span></label>
+                                </div>
+                                <div class="form-group">
+                                    <div>
+                                        <p-calendar formControlName="contactTime" dateFormat="dd/mm/yy"
+                                            [showIcon]="true" [showButtonBar]="true" placeholder="dd/mm/yy">
+                                        </p-calendar>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-spacing">
+                        <div class="col-md-4">
+                            <div>
+                                <div>
+                                    <label for="dueDate" style="color: black;">Due date<span
+                                            style="color: red;">*</span></label>
+                                </div>
+                                <div class="form-group">
+                                    <div>
+                                        <p-calendar formControlName="dueDate" dateFormat="dd/mm/yy" [showIcon]="true"
+                                            [showButtonBar]="true" placeholder="dd/mm/yy">
+                                        </p-calendar>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div>
+                                <div>
+                                    <label for="summary" style="color: black;">Summary<span
+                                            style="color: red;">*</span></label>
+                                </div>
+                                <div class="form-group">
+                                    <div>
+                                        <input type="text" pInputText class="form-control" id="summary"
+                                            [style]="{ width: '100%' }" formControlName="summary">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div>
+                                <div>
+                                    <label for="description" style="color: black;">Description<span
+                                            style="color: red;">*</span></label>
+                                </div>
+                                <div class="form-group">
+                                    <div>
+                                        <textarea type="text-area" pInputTextarea class="form-control" id="description"
+                                            [style]="{ width: '100%' }" formControlName="description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-spacing">
+                        <div class="col-md-4">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label for="fileUpload" style="color: black;">Upload file<span
+                                        style="color: red;">*</span></label>
+                                <div
+                                    style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+                                    <select class="form-select" [id]="'fileUpload'" formControlName="fileUpload"
+                                        style="margin-right: 10px;">
+                                        <option selected="true" disabled="disabled"></option>
+                                        <option [value]=""></option>
+                                    </select>
+                                    <button class="choose-file">
+                                        <span class="file-text">Choose file</span>
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="submitNewReqForm()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- new request modal end -->
+<!-- modals -->
