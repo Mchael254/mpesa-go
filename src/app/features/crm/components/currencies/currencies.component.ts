@@ -108,21 +108,6 @@ export class CurrenciesComponent implements OnInit {
   }
 
   /**
-   * The function updates the value of a form control by adding a specified change value, ensuring the
-   * new value is not less than zero.
-   * @param {number} change - The change parameter is a number that represents the amount by which the
-   * value should be changed. It can be positive or negative.
-   * @param {FormGroup} form - The "form" parameter is a FormGroup object, which represents a group of
-   * FormControl objects. It is used to manage the form controls and their values.
-   * @param {string} formControlName - The `formControlName` parameter is the name of the form control
-   * in the `form` FormGroup that you want to update.
-   */
-  updateRound(change: number, form: FormGroup, formControlName: string) {
-    const newValue = Math.max(form.get(formControlName).value + change, 0);
-    form.get(formControlName).setValue(newValue);
-  }
-
-  /**
    * The function `sliceString` takes a string as input and returns a sliced version of the string if
    * it is longer than 35 characters, otherwise it returns the original string.
    * @param {string} str - The parameter `str` is a string that represents the input string that needs

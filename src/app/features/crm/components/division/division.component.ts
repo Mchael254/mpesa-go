@@ -15,6 +15,7 @@ import { OrganizationService } from '../../services/organization.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { untilDestroyed } from '../../../../shared/services/until-destroyed';
 import {
+  BranchDivisionDTO,
   OrganizationDTO,
   OrganizationDivisionDTO,
 } from '../../data/organization-dto';
@@ -46,7 +47,7 @@ export class DivisionComponent implements OnInit {
 
   public organizationsData: OrganizationDTO[];
   public divisionData: OrganizationDivisionDTO[];
-  public divisionBranchData: any;
+  public divisionBranchData: BranchDivisionDTO[];
   public selectedRadioValue: string | null = null;
   public selectedOrg: OrganizationDTO;
   public selectOrganization: OrganizationDTO;
@@ -157,6 +158,16 @@ export class DivisionComponent implements OnInit {
       });
   }
 
+  fetchOrganizationDivisionBranch(divisionId: number) {
+    this.organizationService
+      .getOrganizationDivisionBranch(divisionId)
+      .pipe(untilDestroyed(this))
+      .subscribe((data) => {
+        this.divisionBranchData = data;
+        log.info('Division Branch Data', this.divisionBranchData);
+      });
+  }
+
   filterDivision(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.divisionTable.filterGlobal(filterValue, 'contains');
@@ -196,6 +207,7 @@ export class DivisionComponent implements OnInit {
 
   onDivisionRowSelect(division: OrganizationDivisionDTO) {
     this.selectedDivision = division;
+    this.fetchOrganizationDivisionBranch(this.selectedDivision.id);
   }
 
   saveDivision() {

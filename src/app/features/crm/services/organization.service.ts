@@ -104,6 +104,15 @@ export class OrganizationService {
     );
   }
 
+  getOrganizationDivisionBranch(
+    divisionId: number
+  ): Observable<BranchDivisionDTO[]> {
+    return this.api.GET<BranchDivisionDTO[]>(
+      `divisions/${divisionId}/branches`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
   createOrganizationDivision(
     data: OrganizationDivisionDTO
   ): Observable<OrganizationDivisionDTO> {
