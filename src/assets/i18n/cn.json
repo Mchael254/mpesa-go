@@ -178,6 +178,7 @@
     "Cheque signing": "支票签署"
   },
   "crm": {
+    "activity": "活动",
     "category": "类别",
     "client_type": "客户类型",
     "description": "描述",
@@ -185,10 +186,12 @@
     "no_client_found": "未找到客户类型。",
     "no_occupation_found": "未找到职业。",
     "no_sector_found": "未找到行业。",
+    "no_service_provider_type_activity_found": "未找到服务提供者类型活动",
     "no_service_provider_type_found": "未找到服务提供者类型",
     "occupation": "职业",
     "search": "搜索",
     "sector": "行业",
+    "service_provider_type_activity": "服务提供者类型活动",
     "service_provider_type": "服务提供者类型",
     "short_description": "简短描述",
     "status": "状态",
@@ -756,7 +759,7 @@
   },
   "setups": {},
   "mngt_wrkflw": {
-    "tickets" : {
+    "tickets": {
       "reassign": "重新分配",
       "authorize": "授权",
       "from": "从",
@@ -858,7 +861,6 @@
       "importCSV": "导入CSV文件",
       "reinsurerName": "再保人姓名",
       "brokerName": "经纪人姓名",
-      "facreAccountId": "Facre账户ID",
       "rateAmount": "费率/金额",
       "cessionRate": "转让率",
       "vat": "增值税",
