@@ -1,20 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, of, switchMap } from 'rxjs';
-import { MedicalHistoryService } from 'src/app/features/lms/service/medical-history/medical-history.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../../../../environments/environment';
 import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
 import {StringManipulation} from "../../../../../util/string_manipulation";
 import {RelationTypesService} from "../../../../../service/relation-types/relation-types.service";
-import { Utils } from 'src/app/features/lms/util/util';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {Utils} from "../../../../../util/util";
+import {MedicalHistoryService} from "../../../../../service/medical-history/medical-history.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 @Component({
   selector: 'app-medical-history',
@@ -111,7 +111,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     .subscribe((data) =>{
       this.diseaseList = data['data'];
       this.getMedicalHistoryByClientId();
-    });      
+    });
 
   }
 
@@ -119,7 +119,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     this.spinner_service.show('medical_history_screen');
     this.crm_client_service.getClientById(code).subscribe(data =>{
       this.gender=data['gender'];
-            
+
       this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
       this.spinner_service.hide('medical_history_screen');
 
@@ -130,7 +130,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
       this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
       this.spinner_service.hide('medical_history_screen');
 
-      
+
     })
   }
 
@@ -140,7 +140,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
 
   getMedicalHistoryByClientId() {
     this.spinner_service.show('medical_history_screen');
-    let tenant_id = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID)); 
+    let tenant_id = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID));
     this.medical_history_service
       .getMedicalHistoryByTenantIdAndClientCode(tenant_id, this.util.getClientCode())
       .pipe(finalize(() => this.spinner_service.hide('medical_history_screen')))
@@ -199,7 +199,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     this.medicalListOne.indexOf(pol, x);
     this.medicalHistoryTableOne.patchValue(pol.length > 0 ? pol[0] : {});
   }
-  
+
   editPolicyTwo(x: any) {
     let pol = this.medicalListTwo
       .filter((data, i) => {
@@ -260,19 +260,19 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let pol_data = this.medicalListOne.filter((data, i) => {
       return i === x;
     })[0];
-    
-    let record  = {...pol_data, ...this.medicalHistoryTableOne.value};    
+
+    let record  = {...pol_data, ...this.medicalHistoryTableOne.value};
     let medical_record = {...record, meh_code: {...this.medicalHistoryTableOne.value}['code']};
     medical_record['code'] = this.util.getClientCode();
     medical_record['meh_code'] = this.util.getClientCode();
     medical_record['client_code'] = this.util.getClientCode();
     console.log(medical_record);
-    
+
 
     this.saveMedicalHistoryDependant(medical_record)
     .subscribe((pol_sub_data) => {
       console.log(pol_sub_data);
-      
+
       this.medicalListOne = this.medicalListOne.map((data, i) => {
 
         if (i === x) {
@@ -312,7 +312,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
 
   private addEntity(d: any[]) {
     console.log(d);
-    
+
     this.editEntity = true;
     if(d===undefined){
       console.log(d);
@@ -332,7 +332,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
   }
 
   saveMedicalHistory(data: any) {
-    let ins = { ...data};    
+    let ins = { ...data};
     ins['clnt_code'] = this.util.getClientCode();
     // ins['prp_code'] = client_code;
     // ins['prp_code'] = null;
@@ -348,7 +348,7 @@ export class MedicalHistoryComponent implements OnDestroy, OnInit {
     let val = {...this.medicalHistoryForm.value};
     val['physical_challenge'] = val['physical_challenge'] === 'Y';
     val['client_code'] = this.util.getClientCode();
-    val['tenant_id'] = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID));    
+    val['tenant_id'] = StringManipulation.returnNullIfEmpty(this.session_service.get(SESSION_KEY.API_TENANT_ID));
     if(this.medicalListOne?.length>0){
       val = {...val, dependants_info:[...this.medicalListOne]}
     };

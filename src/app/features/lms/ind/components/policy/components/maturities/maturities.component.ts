@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { Utils } from 'src/app/features/lms/util/util';
-import { TableDetail } from 'src/app/shared/data/table-detail';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {TableDetail} from "../../../../../../../shared/data/table-detail";
+import {Utils} from "../../../../../util/util";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {PoliciesService} from "../../../../../service/policies/policies.service";
+
 
 @Component({
   selector: 'app-maturities',
@@ -39,9 +38,9 @@ export class MaturitiesComponent {
     this.util = new Utils(this.session_storage_service);
 
     this.listPolicyMaturities()
-    
+
   }
-  
+
   ngOnInit(): void {
   }
 
@@ -53,7 +52,7 @@ export class MaturitiesComponent {
         r['maturity_type'] = r['maturity_type']==='P'?'Partial':'Full';
         return r
       })
-      
+
       this.quotationListInd['rows'] = data
       this.spinner_service.hide('maturities')
     }, err=>{

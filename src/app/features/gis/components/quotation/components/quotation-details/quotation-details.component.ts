@@ -1,30 +1,30 @@
 import { Component, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { CurrencyDTO } from 'src/app/shared/data/common/bank-dto';
-import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
-import { ClauseService } from 'src/app/features/gis/services/clause/clause.service';
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 // import { Modal } from 'bootstrap';
 import { introducersDTO } from '../../data/introducersDTO';
-import { Logger } from 'src/app/shared/services/logger/logger.service';
-import { AccountContact } from 'src/app/shared/data/account-contact';
-import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
-import { WebAdmin } from 'src/app/shared/data/web-admin';
 import { ProductSubclassService } from '../../../setups/services/product-subclass/product-subclass.service';
 import { Table } from 'primeng/table';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import {NgxSpinnerService} from 'ngx-spinner';
+import {OrganizationBranchDto} from "../../../../../../shared/data/common/organization-branch-dto";
+import {CurrencyDTO} from "../../../../../../shared/data/common/currency-dto";
+import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
+import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
+import {ClauseService} from "../../../../services/clause/clause.service";
+import {ProductService} from "../../../../services/product/product.service";
+import {AuthService} from "../../../../../../shared/services/auth.service";
+import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
+import {Logger} from "../../../../../../shared/services";
+import {AccountContact} from "../../../../../../shared/data/account-contact";
+import { ClientAccountContact } from 'src/app/shared/data/client-account-contact';
+import { WebAdmin } from 'src/app/shared/data/web-admin';
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 const log = new Logger('QuotationDetails');
 @Component({
   selector: 'app-quotation-details',
@@ -81,7 +81,7 @@ export class QuotationDetailsComponent {
     private spinner: NgxSpinnerService,
     public  agentService:IntermediaryService,
     public  quotationService:QuotationsService,
-    public  productSubclass:ProductSubclassService,   
+    public  productSubclass:ProductSubclassService,
     private globalMessagingService: GlobalMessagingService,
 
   ){}
@@ -94,12 +94,12 @@ export class QuotationDetailsComponent {
     // this.formData = this.sharedService.getFormData();
     this.createQuotationForm();
     this.getAgents()
-    
+
     this.getIntroducers();
     this.getQuotationSources()
     this.quickQuoteDetails()
-    
-  
+
+
     const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
     const clientFormDetails = sessionStorage.getItem('clientFormData');
     log.debug(quotationFormDetails)
@@ -107,7 +107,7 @@ export class QuotationDetailsComponent {
     if (quotationFormDetails) {
       const parsedData = JSON.parse(quotationFormDetails);
       this.quotationForm.patchValue(parsedData);
-      
+
       log.debug(parsedData)
     }
     if(clientFormDetails){
@@ -116,7 +116,7 @@ export class QuotationDetailsComponent {
       this.quotationForm.controls['branchCode'].setValue(clientData.branchCode);
       this.quotationForm.controls['clientType'].setValue(clientData.clientTypeId);
     }
-  
+
     log.debug(this.quotationForm.value)
 
   }
@@ -142,7 +142,7 @@ export class QuotationDetailsComponent {
 
         console.log("Test currency",this.currency)
         this.currency.forEach(el=>{
-          
+
           if(el.symbol === this.quickQuotationDetails.currency){
             console.log("Test currency", el)
             this.quotationForm.controls['currencyCode'].setValue(el);
@@ -164,7 +164,7 @@ export class QuotationDetailsComponent {
 /**
  * Retrieves currency data from the bank service and assigns it to the 'currency' property.
  */
-  getCurrency(){  
+  getCurrency(){
     this.bankService.getCurrencies().subscribe(data=>{
       this.currency = data
     })
@@ -187,9 +187,9 @@ export class QuotationDetailsComponent {
     this.producSetupService.getAllProducts().subscribe(res=>{
       const ProdList = res
       this.products = ProdList
-    
+
     })
-  
+
   }
    /**
    * Retrieves the current user and stores it in the 'user' property.
@@ -198,7 +198,7 @@ export class QuotationDetailsComponent {
    */
   getuser(){
    this.user = this.authService.getCurrentUserName()
-   
+
   }
   getQuotationSources(){
     this.quotationService.getAllQuotationSources().subscribe(res=>{
@@ -253,10 +253,10 @@ export class QuotationDetailsComponent {
  */
   saveQuotationDetails(){
     this.spinner.show()
-    
+
     this.sharedService.setQuotationFormDetails(this.quotationForm.value);
     sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
-    
+
     if(this.quotationForm.value.multiUser == 'Y'){
         /**
      * Creates a new quotation with multi-user and navigates to quote assigning.
@@ -265,26 +265,26 @@ export class QuotationDetailsComponent {
      * @return {Observable<any>} - An observable of the response containing created quotation data.
      */
     if(this.quickQuotationDetails){
-      console.log("Quick Quotation results")    
+      console.log("Quick Quotation results")
       this.router.navigate(['/home/gis/quotation/quote-assigning'])
       this.spinner.hide()
-      
+
     }else{
       this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
         this.quotationNo = data;
         this.spinner.hide()
-        console.log(this.quotationNo,"Quotation results:")    
+        console.log(this.quotationNo,"Quotation results:")
         this.router.navigate(['/home/gis/quotation/quote-assigning'])
       },(error: HttpErrorResponse) => {
         log.info(error);
         this.spinner.hide()
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-       
+
       })
     }
-    
-  
-    
+
+
+
     }else{
     if (this.isChecked) {
         /**
@@ -310,11 +310,11 @@ export class QuotationDetailsComponent {
               log.info(error);
               this.spinner.hide()
               this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-             
+
             })
         }
-  
-    
+
+
     } else {
        /**
        * Creates a new quotation and navigates to risk section details based on user preferences.
@@ -323,10 +323,10 @@ export class QuotationDetailsComponent {
        * @return {Observable<any>} - An observable of the response containing created quotation data.
        */
 
-    if(this.quickQuotationDetails){ 
+    if(this.quickQuotationDetails){
       this.router.navigate(['/home/gis/quotation/risk-section-details']);
       this.spinner.hide()
-      
+
      }else{
       this.quotationService.createQuotation(this.quotationForm.value,this.user).subscribe(data=>{
         this.quotationNo = data;
@@ -339,19 +339,19 @@ export class QuotationDetailsComponent {
         sessionStorage.setItem('quotationFormDetails', JSON.stringify(this.quotationForm.value));
         this.selectedProductClauses(this.quotationCode)
         this.sharedService.setQuotationDetails(this.quotationNum,this.quotationCode);
-    
+
         this.router.navigate(['/home/gis/quotation/risk-section-details']);
         },(error: HttpErrorResponse) => {
           log.info(error);
           this.spinner.hide()
           this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-         
+
         })
      }
 
-    
-    } 
-  }  
+
+    }
+  }
 }
    /**
    * Applies a global filter to the DataTable.
@@ -380,14 +380,14 @@ export class QuotationDetailsComponent {
    * @method agentShortDesc
    * @param {string} id - The ID of the agent for which to retrieve the short description.
    * @return {void}
-   */ 
+   */
   agentShortDesc(){
     this.agentService.getAgentById(this.quotationForm.value.agentCode.id).subscribe(data=>{
       this.agentDetails = data
       this.quotationForm.controls['agentShortDescription'].setValue(this.agentDetails.shortDesc);
-     
+
     })
-    
+
   }
   getAgentById(data){
     this.agentService.getAgentById(data).subscribe({
@@ -415,8 +415,8 @@ onResize(event: any) {
   getExistingQuotations(){
     const clientId = this.quotationForm.value.clientCode
     const fromDate = this.quotationForm.value.withEffectiveFromDate
-    const fromTo = this.quotationForm.value.withEffectiveToDate 
-    
+    const fromTo = this.quotationForm.value.withEffectiveToDate
+
     // Set currency code in the form
     this.quotationForm.controls['currencyCode'].setValue(this.quotationForm.value.currencyCode.id);
     this.quotationForm.controls['productCode'].setValue(this.quotationForm.value.productCode.code);
@@ -435,13 +435,13 @@ onResize(event: any) {
         // const myModal = new Modal(element);
         // myModal.show();
       }else{
-       
+
         this.saveQuotationDetails()
       }
-     
+
     })
 
-    
+
   }
     /**
    * Retrieves introducers and populates the 'introducers' property.
@@ -467,7 +467,7 @@ onResize(event: any) {
       },(error: HttpErrorResponse) => {
         log.info(error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-       
+
       }
     )
   }
@@ -478,11 +478,11 @@ onResize(event: any) {
    * @return {void}
    */
 updateCoverToDate(e) {
-    
+
     const coverFromDate= e.target.value
-   
+
     // this.producSetupService.getProductByCode(this.quotationForm.value.productCode).subscribe(res=>{
-    //   this.productDetails = res 
+    //   this.productDetails = res
     //   console.log(this.productDetails)
       // if(this.productDetails.expires === 'Y'){
         this.producSetupService.getCoverToDate(coverFromDate,this.quotationForm.value.productCode.code).subscribe(res=>{
@@ -490,19 +490,19 @@ updateCoverToDate(e) {
           console.log(this.midnightexpiry)
           this.quotationForm.controls['withEffectiveToDate'].setValue(this.midnightexpiry._embedded[0].coverToDate)
         })
-       
+
       // }else {
       //   const selectedDate = new Date(coverFromDate);
       //   selectedDate.setFullYear(selectedDate.getFullYear() + 1);
       //   const coverToDate = selectedDate.toISOString().split('T')[0];
       //   this.quotationForm.controls['withEffectiveToDate'].setValue(coverToDate);
-  
-       
+
+
       // }
     // })
-     
+
   }
- 
+
   /**
    * Updates the quotation expiry date in the form based on the selected RFQ date.
    * @method updateQuotationExpiryDate
@@ -518,7 +518,7 @@ updateQuotationExpiryDate(e){
     this.quotationForm.controls['expiryDate'].setValue(expiryDate);
 
     log.debug(expiryDate)
-  } 
+  }
 }
   /**
    * Retrieves product clauses based on the provided product code.

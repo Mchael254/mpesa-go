@@ -1,17 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import stepData from '../../data/steps.json';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { ClientHistoryService } from 'src/app/features/lms/service/client-history/client-history.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
 import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
 import { Util } from 'leaflet';
-import { Utils } from 'src/app/features/lms/util/util';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {Utils} from "../../../../../util/util";
+import {ClientHistoryService} from "../../../../../service/client-history/client-history.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 @Component({
   selector: 'app-insurance-history',
@@ -95,7 +93,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     })[0];
     let data  = this.insuranceHistoryFormOne.value;
     console.log(data);
-    
+
     if(!data?.cover_status || data['cover_status']===''){
       this.toast.danger('Select cover status', 'Insurance history'.toUpperCase());
       this.spinner_service.hide('ins_view');
@@ -105,9 +103,9 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     if(data['premium'] > data['sum_assured']){
       this.toast.danger('The Premium amount exceeds the sum assured', 'Insurance history'.toUpperCase())
       this.spinner_service.hide('ins_view');
-      return;  
+      return;
     }
-    
+
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormOne.value,
@@ -115,7 +113,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
     .subscribe((pol_sub_data) => {
-      this.editFirstForm = false;      
+      this.editFirstForm = false;
       this.policyListOne = this.policyListOne.map((data, i) => {
         if (i === x) {
           // let temp = this.insuranceHistoryFormOne.value;
@@ -149,14 +147,14 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       this.spinner_service.hide('ins_view');
       return;
     }
-    
+
 
     if(data['premium'] > data['sum_assured']){
       this.toast.danger('The Premium amount exceeds the sum assured', 'Insurance history'.toUpperCase())
       this.spinner_service.hide('ins_view');
-      return;  
+      return;
     }
-    
+
     this.saveInsuranceHistory({
       ...pol_data,
       ...this.insuranceHistoryFormTwo.value,
@@ -167,7 +165,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       this.editFirstForm = false;
       this.policyListTwo = this.policyListTwo.map((data, i) => {
         console.log(pol_sub_data);
-        
+
         if (i === x) {
           let temp = pol_sub_data['data'];
           temp['isEdit'] = false;
@@ -222,7 +220,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
 
   deletePolicyListOne(i: number) {
     this.spinner_service.show('ins_view');
-    let deleted_pol = this.policyListOne.find((data, x) => {return i === x});    
+    let deleted_pol = this.policyListOne.find((data, x) => {return i === x});
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
@@ -247,13 +245,13 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     }).filter(data => { return data?.code});
     this.editFirstForm = true;
 
-    
+
   }
 
 
   deletepolicyListTwo(i: number) {
     this.spinner_service.show('ins_view');
-    let deleted_pol = this.policyListTwo.find((data, x) => {return i === x});    
+    let deleted_pol = this.policyListTwo.find((data, x) => {return i === x});
     this.client_history_service.deleteInsuranceHistory(deleted_pol['code'])
     .pipe(finalize(()=>    this.spinner_service.hide('ins_view')
     ))
@@ -329,7 +327,7 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
       });
   }
 
-  
+
 
   getAllCoverStatusTypes() {
     this.client_history_service
@@ -378,10 +376,10 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     if(this.policyListOne.length>0){
       this.policyListOne.forEach((m, i)=>{
         this.deletePolicyListOne(i)
-  
-      });  
+
+      });
     }
-      
+
   }
 
   selectSecondQuestion(){
@@ -390,8 +388,8 @@ export class InsuranceHistoryComponent implements OnInit, OnDestroy {
     this.policyListTwo.forEach((m, i)=>{
       this.deletepolicyListTwo(i)
 
-    });  
-  }  
+    });
+  }
   }
 
   // private addEntity(d: FormGroup) {

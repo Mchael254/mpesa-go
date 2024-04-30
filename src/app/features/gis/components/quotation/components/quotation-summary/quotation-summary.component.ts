@@ -1,25 +1,25 @@
 import { Component } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { Logger } from 'src/app/shared/services/logger/logger.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
 import { Router } from '@angular/router';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
-import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
-import { ProductService } from 'src/app/features/gis/services/product/product.service';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
+
 import {NgxSpinnerService} from 'ngx-spinner';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
 import { MenuItem } from 'primeng/api';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators'; 
+import { takeUntil } from 'rxjs/operators';
+import {IntermediaryService} from "../../../../../entities/services/intermediary/intermediary.service";
+import {ProductService} from "../../../../services/product/product.service";
+import {AuthService} from "../../../../../../shared/services/auth.service";
+import {BranchService} from "../../../../../../shared/services/setups/branch/branch.service";
+import {BankService} from "../../../../../../shared/services/setups/bank/bank.service";
+import {Logger} from "../../../../../../shared/services";
+import {GlobalMessagingService} from "../../../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('QuotationSummaryComponent');
 
@@ -35,7 +35,7 @@ export class QuotationSummaryComponent {
   quotationNumber:any;
   quotationDetails:any
   quotationView:any
-  moreDetails:any 
+  moreDetails:any
   clientDetails:any
   agents:any;
   agentName:any
@@ -108,9 +108,9 @@ export class QuotationSummaryComponent {
 
     this.quotationCode=sessionStorage.getItem('quotationCode');
     this.quotationNumber=sessionStorage.getItem('quotationNum');
-    
+
     this.moreDetails=sessionStorage.getItem('quotationFormDetails')
-   
+
     const storedData = sessionStorage.getItem('clientFormData');
     this.clientDetails=JSON.parse(storedData);
     this.prodCode = JSON.parse(this.moreDetails).productCode
@@ -122,9 +122,9 @@ export class QuotationSummaryComponent {
     this.externalClaimsExperience(this.clientCode)
     this.internalClaimsExperience(this.clientCode)
     this.getbranch()
-    this.quotationDetails = JSON.parse(this.moreDetails) 
+    this.quotationDetails = JSON.parse(this.moreDetails)
     this.spinner.show()
-    
+
     this.getPremiumComputationDetails()
     console.log(this.quotationDetails , "MORE DETAILS TEST")
     this.getAgent();
@@ -133,13 +133,13 @@ export class QuotationSummaryComponent {
     this.loadAllSubclass();
     this.createSmsForm();
     this.getDocumentTypes();
-    
+
 
 
     this.menuItems = [
       {
         label: 'Claims Experience',
-        
+
         items: [
             {
                 label: 'External',
@@ -156,13 +156,13 @@ export class QuotationSummaryComponent {
   ]
 
 }]
-    
+
   }
 
 external(){
   this.showExternalClaims = true;
   this.showInternalClaims = false;
-  
+
 }
 internal(){
 
@@ -183,7 +183,7 @@ internal(){
        // Extracts product details for each quotation product.
       this.quotationProducts = this.quotationView.quotationProduct
       this.riskDetails = this.quotationView.riskInformation
-      
+
       // this.riskInfo.push(this.riskDetails.sectionsDetails)
       this.taxDetails = this.quotationView.taxInformation
       log.debug(this.taxDetails)
@@ -209,17 +209,17 @@ internal(){
     )
   }
   getSections(data){
-    
+
     this.riskDetails.forEach(el=>{
-   
+
       if(data===el.code){
         this.sections = el.sectionsDetails
         this.schedules = [el.scheduleDetails.level1]
       }
-      
+
     })
     console.log(this.schedules,"schedules Details")
-    
+
   }
   /**
    * Navigates to the edit details page.
@@ -239,7 +239,7 @@ internal(){
       this.productDetails.push(res)
       console.log("Product details", this.productDetails)
     })
- 
+
 
   }
   getbranch(){
@@ -261,7 +261,7 @@ internal(){
    */
     this.agentService.getAgents().subscribe(data=>{
       this.agents = data.content
-     
+
     })
   }
   toggleProductDetails() {
@@ -285,7 +285,7 @@ internal(){
       this.user = this.authService.getCurrentUserName()
       this.quotationService.getUserProfile().subscribe(res=>{
         this.userDetails = res
-       
+
       })
      }
   makeReady(){
@@ -320,14 +320,14 @@ internal(){
           this.messageService.displayErrorMessage('error', e.error.message)
         }
       }
-    ) 
-  
+    )
+
   }
   confirm(){
     this.quotationService.confirmQuotation(this.quotationCode,this.user).subscribe(
       {
         next: (res) => {
-          this.authoriseQuotation = !this.authoriseQuotation; 
+          this.authoriseQuotation = !this.authoriseQuotation;
           this.confirmQuotation = !this.confirmQuotation;
           this.getQuotationDetails(this.quotationNumber);
           this.messageService.displaySuccessMessage('Success','Quotation Authorization Confirmed')
@@ -356,14 +356,14 @@ internal(){
        this.externalClaims = res
 
       this.externalTable = this.externalClaims.content
-      
+
       log.debug(this.externalTable)
-      
+
     })
   }
   internalClaimsExperience(clientCode){
     this.quotationService.getInternalClaimsExperience(clientCode).subscribe(res=>{
-      this.internalClaims = res 
+      this.internalClaims = res
       this.internalTable = this.internalClaims.content
       log.debug(this.internalTable)
     })
@@ -398,7 +398,7 @@ internal(){
     error: (error: HttpErrorResponse) => {
       log.info(error);
       this.globalMessagingService.displayErrorMessage('Error', 'Error, you cannot compute premium, check quotation details and try again.' );
-     
+
     }    }
     )
   }
@@ -408,9 +408,9 @@ internal(){
    * @return {void}
    */
    computePremium(){
-    
+
     this.quotationService.computePremium(this.computationDetails).subscribe(
-   {  
+   {
     next:(res)=>{
       this.globalMessagingService.displaySuccessMessage('Success', 'Premium successfully computed' );
           this.premium = res
@@ -419,8 +419,8 @@ internal(){
     error : (error: HttpErrorResponse) => {
       log.info(error);
       this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-     
-      }  
+
+      }
     }
       )
   }
@@ -437,25 +437,25 @@ internal(){
     this.router.navigate(['/home/gis/quotation/quotation-details'])
   }
   createEmailForm(){
-    
+
     this.emailForm = this.fb.group({
       from: ['', [Validators.required, Validators.email]],
       clientCode: ['', Validators.required],
       emailAggregator: ['N', Validators.required],
       fromName: ['', Validators.required],
       message: ['', Validators.required],
-      sendOn: ['', Validators.required], 
+      sendOn: ['', Validators.required],
       status: ['D', Validators.required],
       subject: ['', Validators.required],
       systemCode: ['0', Validators.required],
       systemModule: ['NB', Validators.required],
       address: ['', Validators.required],
       cc: ['', Validators.required],
-      bcc: ['', Validators.required],  
+      bcc: ['', Validators.required],
     });
   }
   createSmsForm(){
-    
+
     this.smsForm = this.fb.group({
       message: ['', Validators.required],
       recipients: ['', Validators.required],
@@ -469,8 +469,8 @@ internal(){
     console.log(this.clientDetails)
     console.log(this.emailForm.value)
 
-    
-      
+
+
 
       const payload = {
         address: [
@@ -488,7 +488,7 @@ internal(){
         subject: this.emailForm.value.subject,
         systemCode: this.emailForm.value.systemCode,
         systemModule: this.emailForm.value.systemModule,
-        
+
       };
       this.quotationService.sendEmail(payload).subscribe(
         {next:(res)=>{
@@ -498,7 +498,7 @@ internal(){
       },error : (error: HttpErrorResponse) => {
         log.info(error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-       
+
         }  })
       console.log('Submitted payload:',JSON.stringify(payload) );
   }
@@ -509,8 +509,8 @@ sendSms(){
     ],
     message:this.smsForm.value.message,
     sender:this.smsForm.value.sender,
-    
-    
+
+
   };
   this.quotationService.sendSms(payload).subscribe(
     {
@@ -519,7 +519,7 @@ sendSms(){
       },error : (error: HttpErrorResponse) => {
         log.info(error);
         this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later' );
-       
+
         }
 
     }
@@ -537,13 +537,13 @@ sendSms(){
             this.globalMessagingService.displaySuccessMessage('Success', this.limits.message );
             console.log(res)
           }
-          
+
           }
         )
       }
     }
     )
-   
+
   }
   getExcesses(riskCode){
     this.quotationService.getLimits(this.prodCode,'E',riskCode).subscribe({
@@ -559,7 +559,7 @@ sendSms(){
     return this.subclassService.getAllSubclasses().subscribe(data=>{
       this.allSubclassList=data;
       log.debug(this.allSubclassList," from the service All Subclass List");
-   
+
     })
   }
   getProductSubclass(code){
@@ -568,13 +568,13 @@ sendSms(){
         next:(res)=>{
           this.subclassList = res._embedded.product_subclass_dto_list;
           log.debug(this.subclassList, 'Product Subclass List');
-    
-    
+
+
           this.subclassList.forEach(element => {
             const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
             this.productSubclass  = matchingSubclasses // Merge matchingSubclasses into allMatchingSubclasses
           });
-      
+
           log.debug("Retrieved Subclasses by code", this.productSubclass);
               }
       }
@@ -584,8 +584,8 @@ sendSms(){
   getDocumentTypes(){
     this.quotationService.documentTypes('C').pipe(takeUntil(this.ngUnsubscribe)).subscribe({
         next:(res)=>{
-          this.documentTypes = res 
-         
+          this.documentTypes = res
+
         }
     })
   }

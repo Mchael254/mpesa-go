@@ -2,25 +2,25 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import stepData from '../../data/steps.json';
 import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { CountryDto, StateDto, TownDto } from 'src/app/shared/data/common/countryDto';
 import { map, of, switchMap } from 'rxjs';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ClientDTO, ClientTypeDTO } from 'src/app/features/entities/data/ClientDTO';
 import { Dropdown } from 'primeng/dropdown';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AdministratorService } from '../../service/contact-person/administrator.service';
 import { ContactPersonDTO } from '../../models/contactPerson/administratoDto';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { ClientTypeService } from 'src/app/shared/services/setups/client-type/client-type.service';
 import { IdentityTypeDTO } from '../../models/IdentityTypes/IdentityTypeDTO';
 import { OccupationDTO } from '../../models/coverTypes/coverTypesDto';
 import { CoverageService } from '../../service/coverage/coverage.service';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {CountryDto, StateDto, TownDto} from "../../../../../../../shared/data/common/countryDto";
+import {ClientDTO, ClientTypeDTO} from "../../../../../../entities/data/ClientDTO";
+import {CountryService} from "../../../../../../../shared/services/setups/country/country.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ClientTypeService} from "../../../../../../../shared/services/setups/client-type/client-type.service";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {Pagination} from "../../../../../../../shared/data/common/pagination";
 
 @AutoUnsubscribe
 @Component({

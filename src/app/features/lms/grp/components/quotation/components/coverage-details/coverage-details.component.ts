@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { formatDate } from '@angular/common';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MessageService, SelectItem } from "primeng/api";
 import { CategoryDetailsDto } from '../../models/categoryDetails';
@@ -12,6 +10,8 @@ import { CoverageService } from '../../service/coverage/coverage.service';
 import { CoverTypesDto, SelectRateTypeDTO, CoverTypePerProdDTO, PremiumMaskDTO, OccupationDTO } from '../../models/coverTypes/coverTypesDto';
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
 import stepData from '../../data/steps.json';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 
 @AutoUnsubscribe
@@ -70,7 +70,7 @@ steps = stepData;
     private messageService: MessageService,
     private http: HttpClient
     ) {}
-    
+
 ngOnInit() {
   this.retrievQuoteDets();
   this.searchFormMember();
@@ -90,7 +90,7 @@ ngOnInit() {
   this.getPmasCodeToEdit();
   this.memberDetailsColumns();
   this.aggregateCvtDetsColumns();
-  
+
 }
 
 ngOnDestroy(): void {
@@ -169,7 +169,7 @@ addMemberDependantType = [
 //     this.quotationCode = queryParams['quotationCode'];
 //   });
 // }
- 
+
 
 searchFormMember() {
   this.searchFormMemberDets = this.fb.group({
@@ -192,7 +192,7 @@ detailedCoverDetails(){
     rateDivFactor: [""],
   });
 }
-  
+
   aggregateDetailsForm() {
     this.aggregateForm = this.fb.group({
       aggregateCoverType: [""],
@@ -211,7 +211,7 @@ detailedCoverDetails(){
       multiplesOfEarnings: [""]
     });
   }
-  
+
   categoryDetailsForm() {
     this.categoryDetailForm = this.fb.group({
     description: ["", [Validators.required]],
@@ -236,7 +236,7 @@ memberDetsForm() {
     joiningDate: ["", Validators.required],
   });
 }
- 
+
   showDetailedCoverDetailsModal() {
     const modal = document.getElementById('detailedModal');
     if (modal) {
@@ -270,9 +270,9 @@ memberDetsForm() {
         console.log("this.selectedRateTypeDet", this.selectedRateType)
       });
     }
-    
+
   }
-  
+
   showEditDetailedCoverDetailsModal(coverTypes: CoverTypesDto) {
     this.isEditMode = true;
     console.log("detailedEdit", this.isEditMode)
@@ -546,11 +546,11 @@ handleFileChange(event) {
   getCoverTypesPerProduct() {
     this.coverageService.getCoverTypesPerProduct(this.productCode).subscribe((coversPerProd: CoverTypePerProdDTO[]) => {
       console.log("coversPerProd", coversPerProd);
-    
+
       const formatCvtDesc = (desc) => {
         return desc.charAt(0).toLowerCase() + desc.slice(1).toLowerCase();
       };
-    
+
       const uniqueCvtDescs = new Set();
       this.coverTypePerProd = coversPerProd.filter(item => {
         if (!uniqueCvtDescs.has(item.cvt_desc)) {
@@ -561,17 +561,17 @@ handleFileChange(event) {
         return false;
       });
     });
-    
+
   }
 
   // getCoverTypesPerProduct() {
   //   this.coverageService.getCoverTypesPerProduct(this.productCode).subscribe((coversPerProd: CoverTypePerProdDTO[]) => {
   //     console.log("coversPerProd", coversPerProd);
-  
+
   //     const formatCvtDesc = (desc) => {
   //       return desc.charAt(0).toLowerCase() + desc.slice(1).toLowerCase();
   //     };
-  
+
   //     const uniqueCvtDescs = new Set();
   //     this.coverTypePerProd = coversPerProd.filter(item => {
   //       if (!uniqueCvtDescs.has(item.cvt_desc)) {
@@ -581,7 +581,7 @@ handleFileChange(event) {
   //             if (!this.coverTypes.some(coverType => formatCvtDesc(coverType.cvt_desc) === formattedCvtDesc)) {
   //               return true;
   //             }
-          
+
   //       }
   //       return false;
   //     });
@@ -598,7 +598,7 @@ handleFileChange(event) {
   onSaveCatDets() {
     const categoryDetailFormData = this.categoryDetailForm.value;
     console.log("categoryDetailFormData", categoryDetailFormData)
-   
+
     const mappedCatDetails = {
       short_description: categoryDetailFormData.shortDescription,
       category_category: categoryDetailFormData.description,
@@ -633,7 +633,7 @@ handleFileChange(event) {
         (catDets: CategoryDetailsDto) => {
           this.getCategoryDets();
           // this.categoryDetails.push(catDets);
-          
+
           this.categoryDetailForm.reset();
           this.cdr.detectChanges();
           this.spinner_Service.hide('download_view');
@@ -648,7 +648,7 @@ handleFileChange(event) {
     } else {
       this.messageService.add({severity: 'error', summary: 'summary', detail: 'Fill all fields'});
     }
-    
+
   }
 
   onSaveEditCatDets() {
@@ -656,7 +656,7 @@ handleFileChange(event) {
       const categoryDetailFormData = this.categoryDetailForm.value;
       this.closeCategoryDetstModal();
       this.spinner_Service.show('download_view');
-    
+
     console.log("categoryDetailFormData", categoryDetailFormData);
       const mappedCatDetails = {
         short_description: categoryDetailFormData.shortDescription,
@@ -707,15 +707,15 @@ handleFileChange(event) {
     this.spinner_Service.hide('download_view');
     this.messageService.add({severity: 'error', summary: 'summary', detail: 'Fill all fields'});
   }
-    
+
   }
-  
+
   deleteCategoryDets(categoryDetails) {
     const confirmation = window.confirm('Are you sure you want to delete this category?');
     if (confirmation) {
       this.spinner_Service.show('download_view');
       const categoryIdToDelete = categoryDetails.category_unique_code;
-  
+
       this.coverageService.deleteCategoryDetails(categoryIdToDelete).subscribe((del) => {
         this.cdr.detectChanges();
         this.categoryDetails = this.categoryDetails.filter(item => item.category_unique_code !== categoryIdToDelete);
@@ -744,7 +744,7 @@ handleFileChange(event) {
       this.aggregateForm.get('aggrgatePremiumMask')?.valueChanges.subscribe((selectedPmasShtDesc: string) => {
         if (selectedPmasShtDesc) {
           const selectedMask = this.premiumMask.find(mask => mask['pmas_sht_desc'] === selectedPmasShtDesc);
-      
+
           if (selectedMask) {
             this.selectedPmasCode = selectedMask.pmas_code;
             console.log("this.selectedPmasCodeRest", this.selectedPmasCode);
@@ -755,7 +755,7 @@ handleFileChange(event) {
       this.detailedCovDetsForm.get('premiumMask')?.valueChanges.subscribe((selectedPmasShtDesc: string) => {
         if (selectedPmasShtDesc) {
           const selectedMask = this.premiumMask.find(mask => mask['pmas_sht_desc'] === selectedPmasShtDesc);
-      
+
           if (selectedMask) {
             this.selectedPmasCode = selectedMask.pmas_code;
             console.log("this.selectedPmasCodeRest", this.selectedPmasCode);
@@ -763,7 +763,7 @@ handleFileChange(event) {
         }
       });
     }
-    
+
   }
 
   getSelectedPmasCode(event: any) {
@@ -799,7 +799,7 @@ handleFileChange(event) {
 
       };
     const coverToPostArray = [coverToPost];
-    
+
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
       this.cdr.detectChanges();
@@ -847,7 +847,7 @@ handleFileChange(event) {
       };
     console.log("coverToPostForNewCover", coverToPost)
     const coverToPostArray = [coverToPost];
-    
+
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
       this.cdr.detectChanges();
@@ -892,7 +892,7 @@ handleFileChange(event) {
       };
     const coverToPostArray = [coverToPost];
     console.log("coverToPost edit", coverToPost)
-    
+
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
       this.getCategoryDets();
@@ -947,7 +947,7 @@ handleFileChange(event) {
     };
     console.log("coverToPostArrayForEditedCover", coverToPost)
     const coverToPostArray = [coverToPost];
-    
+
     this.coverageService.postCoverType(coverToPostArray).subscribe((coverDets) => {
       this.getCoverTypes();
       this.getCategoryDets();
@@ -971,7 +971,7 @@ handleFileChange(event) {
       this.spinner_Service.show('download_view');
       const coverIdToDelete = coverTypes.cover_type_unique_code;
       const quotationCode = this.quotationCode;
-  
+
       this.coverageService.deleteCoverType(quotationCode, coverIdToDelete).subscribe((del) => {
         this.getCoverTypes();
         this.cdr.detectChanges();
@@ -1014,7 +1014,7 @@ handleFileChange(event) {
     }
     );
   }
-  
+
   getMembers() {
     this.coverageService.getMembers(this.quotationCode).subscribe((members: MembersDTO[]) => {
       console.log("members", members)
@@ -1031,7 +1031,7 @@ handleFileChange(event) {
       this.spinner_Service.show('download_view');
       const coverIdToDelete = membersDetails.member_code;
       const quotationCode = this.quotationCode;
-      // const dependantTypeCode = membersDetails.dependant_type_code 
+      // const dependantTypeCode = membersDetails.dependant_type_code
       const dependantTypeCode = 1000
       const quoteDto = {
         member_code: coverIdToDelete,
@@ -1039,7 +1039,7 @@ handleFileChange(event) {
       };
       console.log("memberTodel", coverIdToDelete, quoteDto)
       this.coverageService.deleteMember(quotationCode, quoteDto).subscribe((del) => {
-       
+
         this.getMembers();
         this.cdr.detectChanges();
         this.membersDetails = this.membersDetails.filter(item => item.member_code !== coverIdToDelete);
@@ -1069,5 +1069,5 @@ handleFileChange(event) {
       console.log("this.occupation", this.occupation);
     })
   }
-  
+
 }

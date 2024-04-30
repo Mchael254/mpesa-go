@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { EndorsementService } from 'src/app/features/lms/service/endorsement/endorsement.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { Utils } from 'src/app/features/lms/util/util';
-import { TableDetail } from 'src/app/shared/data/table-detail';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {TableDetail} from "../../../../../../../shared/data/table-detail";
+import {Utils} from "../../../../../util/util";
+import {EndorsementService} from "../../../../../service/endorsement/endorsement.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
 
 @Component({
   selector: 'app-exceptions',
@@ -184,7 +183,7 @@ export class ExceptionsComponent implements OnInit {
             'Exception Details'.toUpperCase()
           );
           this.spinner_service.hide('exceptions');
-          
+
         }
       );
   }
@@ -212,7 +211,7 @@ export class ExceptionsComponent implements OnInit {
         "code": data['code'],
         "value": data['value']
       }
-      
+
 
       this.spinner_service.show('exceptions');
       this.endorsement_service

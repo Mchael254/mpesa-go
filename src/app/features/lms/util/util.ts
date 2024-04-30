@@ -1,6 +1,6 @@
-import { SessionStorageService } from "src/app/shared/services/session-storage/session-storage.service";
 import { StringManipulation } from "./string_manipulation";
 import { SESSION_KEY } from "./session_storage_enum";
+import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 
 export class Utils {
   constructor(private session_storage: SessionStorageService){}
@@ -36,32 +36,32 @@ export class Utils {
 
   public getQuoteCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    return quote_code===null?null:quote_code['quote_code'];  
+    return quote_code===null?null:quote_code['quote_code'];
   }
 
   public getProposalCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    return quote_code===null?null:quote_code['proposal_code'];  
+    return quote_code===null?null:quote_code['proposal_code'];
   }
 
   public getTelQuoteCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    return quote_code===null?null:quote_code['quote_no'];  
+    return quote_code===null?null:quote_code['quote_no'];
   }
 
   public getWebQuoteCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS));
-    return quote_code===null?null:quote_code['code'];  
+    return quote_code===null?null:quote_code['code'];
   }
 
   public getEndrCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
-    return quote_code?quote_code?.endr_code:null;  
+    return quote_code?quote_code?.endr_code:null;
   }
 
   public getPolCode(){
     let quote_code = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
-    return quote_code?quote_code?.pol_code:null;  
+    return quote_code?quote_code?.pol_code:null;
   }
 
   public isTelQuoteOrWebQuote(type='TEL'){

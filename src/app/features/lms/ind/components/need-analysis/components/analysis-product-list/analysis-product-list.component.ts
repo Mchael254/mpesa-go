@@ -1,6 +1,6 @@
 import { Component, Input, OnInit} from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
+import {ProductService} from "../../../../../service/product/product.service";
 
 @Component({
   selector: 'app-analysis-product-list',

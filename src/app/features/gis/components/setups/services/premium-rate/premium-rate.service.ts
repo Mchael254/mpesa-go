@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Premiums } from '../../data/gisDTO';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,7 @@ export class PremiumRateService {
   baseurl = this.appConfig.config.contextPath.gis_services;
   crmurl = this.appConfig.config.contextPath.setup_services;
   setupsbaseurl = "setups/api/v1"
-  
+
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
@@ -23,7 +24,7 @@ export class PremiumRateService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
     }
 
@@ -61,7 +62,7 @@ return throwError(errorMessage);
       catchError(this.errorHandl)
     )
   }
-  
+
   getPremiums(code:any):Observable<Premiums[]>{
     return this.api.GET<Premiums[]>(`api/v1/premium-rates/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
@@ -75,7 +76,7 @@ return throwError(errorMessage);
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updatePremium(data:Premiums,id:any): Observable<Premiums> {
       console.log(JSON.stringify(data))
       return this.api.PUT<Premiums>(`api/v1/premium-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)

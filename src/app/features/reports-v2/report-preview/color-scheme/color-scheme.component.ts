@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import {Logger} from "../../../../shared/services";
-import { ColorScheme } from 'src/app/shared/data/reports/color-scheme';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ColorSchemeService } from '../../services/color-scheme.service';
 import { take } from 'rxjs';
-import { GlobalMessagingService } from 'src/app/shared/services/messaging/global-messaging.service';
+import {ColorScheme} from "../../../../shared/data/reports/color-scheme";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger(`ColorSchemeComponent`);
 
@@ -21,8 +21,8 @@ export class ColorSchemeComponent implements OnInit {
   public colourSchemes: ColorScheme[] = [
     {
       id: null,
-      name: "Scheme A", 
-      colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'], 
+      name: "Scheme A",
+      colors: ['#4f1025', '#c5003e', '#d9ff5b', '#78aa00', '#15362d'],
       selected: true
     },
   ];
@@ -71,14 +71,14 @@ export class ColorSchemeComponent implements OnInit {
       this.fields.push(field);
     }
     // log.info(`fields >>>`, this.fields, typeof formGroupFields);
-    
+
     return formGroupFields;
   }
 
 
   /**
    * Emits the selected colorScheme to the parent object
-   * @param selectedScheme 
+   * @param selectedScheme
    * @returns void
    */
   selectColorScheme(selectedScheme): void {

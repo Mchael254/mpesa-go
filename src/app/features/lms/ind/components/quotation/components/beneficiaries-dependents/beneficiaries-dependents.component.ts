@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
-
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { PartyService } from 'src/app/features/lms/service/party/party.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { finalize } from 'rxjs/operators';
-import { Utils } from 'src/app/features/lms/util/util';
-import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
-import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {Utils} from "../../../../../util/util";
+import {PartyService} from "../../../../../service/party/party.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {RelationTypesService} from "../../../../../service/relation-types/relation-types.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {finalize} from "rxjs";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import {DataManipulation} from "../../../../../../../shared/utils/data-manipulation";
 
 
 @Component({
@@ -47,10 +46,10 @@ export class BeneficiariesDependentsComponent implements OnInit{
 
 
 
-  constructor(private fb: FormBuilder, 
-    private spinner_service: NgxSpinnerService, 
-    private party_service: PartyService, 
-    private session_storage: SessionStorageService, 
+  constructor(private fb: FormBuilder,
+    private spinner_service: NgxSpinnerService,
+    private party_service: PartyService,
+    private session_storage: SessionStorageService,
     private toast: ToastService,
     private relation_type_service: RelationTypesService,
     private router: Router
@@ -201,7 +200,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
     let dep = { ...this.dependentForm.value };
     dep['dty_code']=1001;
     this.editDepEntity = true;
-    
+
     return this.party_service.saveDependent(dep)
         .pipe(
           finalize(() => {
@@ -222,7 +221,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
             this.toast.danger(err?.error?.errors[0], 'SAVE DEPENDENT ');
           }
         );
-    
+
   }
 
   deleteBeneficiary(i: number) {
@@ -238,7 +237,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
         this.toast.success('Delete data successfully', 'DELETE BENEFICIARY');
         this.spinner_service.hide('ben_view')
 
-      }, 
+      },
       err=>{
         this.editEntity = false;
         this.toast.danger('Fail to Delete data successfully', 'DELETE BENEFICIARY');
@@ -251,7 +250,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
   deleteDependent(i: number) {
     this.editDepEntity = true;
     let dep: any = this.dependentList.filter((data, x) => x === i)[0];
-    
+
     if(dep?.id_no){
       this.toast.danger('Cannot delete self dependent', 'Dependent'.toUpperCase());
       return;
@@ -419,7 +418,7 @@ export class BeneficiariesDependentsComponent implements OnInit{
 
       });
   }
-  
+
   calculateAge(dateOfBirth: string | number | Date): number {
     const today = new Date();
     const dob = new Date(dateOfBirth);
