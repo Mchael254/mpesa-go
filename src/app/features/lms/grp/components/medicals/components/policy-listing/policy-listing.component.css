@@ -1,0 +1,166 @@
+.main {
+    padding: 40px 40px 20px 20px;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+/* table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th {
+    text-align: left;
+    padding: 8px;
+    background-color: #BAD0E4;
+    white-space: nowrap;
+  }
+  
+  td {
+    padding: 2px;
+    white-space: nowrap;
+  }
+
+  tr {
+    border-bottom: none !important;
+    height: 40px;
+  }
+  
+/* table end*/
+
+/* multiselect and form*/
+.container-fil {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .filter-container {
+    display: flex;
+  }
+  
+  .filter-selectors {
+    display: flex;
+    margin-right: 15px;
+  }
+
+  .filter-selectors p-dropdown {
+    margin-right: 10px;
+  }
+
+  .filter-label {
+    color: black;
+    margin-right: 5px;
+    white-space: nowrap;
+  }
+   
+  :host ::ng-deep .p-dropdown {
+    width: 200px;
+    margin-bottom: 8px;
+  }
+  
+  .form-search {
+    position: relative;
+    width: 270px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .form-search .fa-search {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    color: #9ca3af;
+  }
+  
+  .form-input {
+    height: 35px;
+    text-indent: 33px;
+    border-radius: 4px;
+    width: 100%;
+    flex: 1;
+  }
+  
+  .form-input:focus {
+    box-shadow: none;
+    border: 1;
+  }
+  
+  p-multiSelect {
+    margin-left: 15px;
+    margin-top: 15px;
+  }
+  
+
+:host ::ng-deep .p-multiselect-label-container {
+    display: none;
+}
+
+:host ::ng-deep .p-multiselect {
+    height: auto;
+}
+
+:host ::ng-deep .p-multiselect-panel {
+    max-height: 300px;
+    max-width: 100%;
+    overflow-y: auto;
+}
+
+:host ::ng-deep .p-multiselect-trigger {
+    width: 20px;
+    height: 20px;
+}
+
+@media (max-width: 768px) {
+    .container-fil {
+        flex-direction: column;
+    }
+
+    .filter-container {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .form-search {
+        width: 100%;
+      }
+
+      .filter-selectors {
+        display: flex;
+      }
+
+      .filter-selectors p-dropdown, input {
+        margin: 10px;
+      }
+
+      .filter-label {
+        justify-content: flex-start;
+      }
+
+      .form-search .fa-search {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 20px;
+        color: #9ca3af;
+      }
+
+      :host ::ng-deep .p-dropdown, .input {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+}
+
+@media (max-width: 450px) {
+    :host ::ng-deep .filter-selectors .p-dropdown {
+        width: 200px;
+        margin-bottom: 8px;
+    }
+    
+}
+/* multiselect and search form ends */

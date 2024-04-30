@@ -1,0 +1,12 @@
+[
+    {
+      "number": 1,
+      "title": "Medical reqirements",
+      "link": "/home/lms/grp/medicals/requirements"
+    },  
+    {
+        "number": 2,
+        "title": "Product details",
+        "link": "/home/lms/grp/medicals/uploads"
+      }
+    ]

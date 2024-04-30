@@ -116,6 +116,13 @@ const routes: Routes = [
                 (m) => m.DownloadsModule
               ),
           },
+          {
+            path: 'medicals',
+            loadChildren: () =>
+              import('./grp/components/medicals/medicals.module').then(
+                (m) => m.MedicalsModule
+              ),
+          },
         ],
       },
 
