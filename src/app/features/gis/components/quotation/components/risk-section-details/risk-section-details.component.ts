@@ -10,8 +10,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { Calendar } from 'primeng/calendar';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 import { riskSection } from '../../data/quotationsDTO';
 import { MessageService } from 'primeng/api';
@@ -23,6 +21,8 @@ import { ProductsService } from '../../../setups/services/products/products.serv
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-clauses.service';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
+import {ClientDTO} from "../../../../../entities/data/ClientDTO";
+import {ClientService} from "../../../../../entities/services/client/client.service";
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -163,15 +163,15 @@ export class RiskSectionDetailsComponent {
     public fb:FormBuilder,
     public cdr:ChangeDetectorRef,
     private renderer: Renderer2
-   
+
   ){}
     public isCollapsibleOpen = false;
     public isOtherDetailsOpen = false;
     public isSectionDetailsOpen = false;
     public isThirdDetailsOpen = false;
- 
+
     ngOnInit(): void {
-      
+
       const quotationFormDetails = sessionStorage.getItem('quotationFormDetails');
       this.formData = JSON.parse(quotationFormDetails) ;
       this.clientFormData=this.sharedService.getFormData();
@@ -193,12 +193,12 @@ export class RiskSectionDetailsComponent {
 
       // this.loadFormData();
 
-      this.createSectionDetailsForm();  
+      this.createSectionDetailsForm();
       this.createScheduleDetailsForm();
 
       const riskFormDetails = sessionStorage.getItem('riskFormData');
       console.log('Risk form details session storage',riskFormDetails,)
-      
+
       const sections=sessionStorage.getItem('sections')
       console.log("Sections",sections)
       if (sections){
@@ -216,10 +216,10 @@ export class RiskSectionDetailsComponent {
       //   const parsedData = JSON.parse(riskFormDetails);
       //   console.log(parsedData)
       //   this.riskDetailsForm.setValue(parsedData);
-        
+
       // }
 
-      
+
       this.riskDetailsForm.get('propertyId').valueChanges.subscribe((value) => {
         this.riskIdPassed(value);
       });
@@ -232,10 +232,10 @@ export class RiskSectionDetailsComponent {
         this.updateCoverToDate();
       });
 
-    
 
 
-      
+
+
   }
   ngOnDestroy(): void {}
 
@@ -246,30 +246,30 @@ export class RiskSectionDetailsComponent {
 onResize(event: any) {
   this.modalHeight = event.height;
 }
-  /** 
+  /**
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Schedule section. 
+ * state of a Schedule section.
  */
   toggleSchedule() {
     this.isCollapsibleOpen = !this.isCollapsibleOpen;
   }
-   /** 
+   /**
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Other Details section. 
+ * state of a Other Details section.
  */
   toggleOtherDetails() {
     this.isOtherDetailsOpen = !this.isOtherDetailsOpen;
   }
-   /** 
+   /**
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Section. 
+ * state of a Section.
  */
   toggleSectionDetails() {
     this.isSectionDetailsOpen = !this.isSectionDetailsOpen;
   }
-   /** 
+   /**
  * This method toggles the 'isCollapsibleOpen' property, which controls the open/closed
- * state of a Third section. 
+ * state of a Third section.
  */
   toggleThirdDetails() {
     this.isThirdDetailsOpen = !this.isThirdDetailsOpen;
@@ -320,7 +320,7 @@ updateCoverToDate() {
       this.loadFormData()
     })
   }
-  /** 
+  /**
  * Loads form data from a shared quotation service.
  * Retrieves and assigns various form-related details and initiates related data requests.
  */
@@ -334,13 +334,13 @@ updateCoverToDate() {
     this.getProductByCode();
     this.getProductSubclass(this.selectProductCode);
     // this.getSubclasses();
-    
+
     this.getClient();
-    
+
   }
 
-  
- 
+
+
    /**
  * Retrieves product subclasses for a specific product.
  *
@@ -358,7 +358,7 @@ updateCoverToDate() {
   //     this.cdr.detectChanges();
   //   })
   // }
-  
+
   getProductSubclass(code: number) {
     this.gisService.getProductSubclasses(code).subscribe(data => {
       this.subClassList = data._embedded.product_subclass_dto_list;
@@ -369,15 +369,15 @@ updateCoverToDate() {
         const matchingSubclasses = this.allSubclassList.filter(subCode => subCode.code === element.sub_class_code);
         this.allMatchingSubclasses.push(...matchingSubclasses); // Merge matchingSubclasses into allMatchingSubclasses
       });
-  
+
       log.debug("Retrieved Subclasses by code", this.allMatchingSubclasses);
-  
-  
+
+
       this.cdr.detectChanges();
     });
   }
- 
- /** 
+
+ /**
  * Handles subclass selection.
  * Updates the selected subclass code, logs the selection, and loads related data.
  * It loads cover types, binders, and subclass clauses based on the selected value.
@@ -411,7 +411,7 @@ updateCoverToDate() {
       // this.loadSubclassSectionCovertype();
 
     }
-  
+
   /**
  * Fetches client data and updates properties.
  * Retrieves client details via an HTTP request and updates properties
@@ -500,7 +500,7 @@ updateCoverToDate() {
         this.cdr.detectChanges();
     });
   }
- 
+
   /**
  * Retrieves subclass clauses and updates related properties.
  * Sends an HTTP request to fetch subclass clauses, filters them based on a provided 'code',
@@ -525,7 +525,7 @@ updateCoverToDate() {
 
   //   // Perform your action based on the selected value
   //   console.log(`Selected value: ${selectedValue}`);
-   
+
   // }
 
   /**
@@ -552,11 +552,11 @@ updateCoverToDate() {
       // Handle the case when there are no subClauseCodes
       return;
     }
-  
+
     // Make the request to get all clauses based on the subClauseCodes
     this.subclassService.getAllClauses().subscribe(data => {
       this.clauseList = data._embedded.clause_dto_list;
-  
+
       // Filter clauseList based on subClauseCodes
       this.selectedClauseList = this.clauseList.filter(clause => subClauseCodes.includes(clause.code));
       sessionStorage.setItem("riskClauses",JSON.stringify(this.selectedClauseList))
@@ -564,7 +564,7 @@ updateCoverToDate() {
       log.debug('ClauseSelectdList', this.selectedClauseList);
     });
   }
-  
+
   /**
  * Navigates back to the quotation details page.
  * Uses the Angular Router to navigate to the 'quotation-details' page within the 'gis' module
@@ -592,7 +592,7 @@ updateCoverToDate() {
 
   // onVehicleMakeSelected(event: any) {
   //   log.debug("event logged",event.target.value[0].code)
-  //   const selectedValue = event.target.value; 
+  //   const selectedValue = event.target.value;
   //   this.selectedVehicleMakeCode=selectedValue;
   //   console.log(`Selected vehicle value: ${selectedValue}`);
   //   log.debug(this.selectedVehicleMakeCode,'Sekected vehicle make Code')
@@ -605,13 +605,13 @@ updateCoverToDate() {
 
     this.selectedVehicleMakeCode=selectedValue;
 
-  
+
     // Convert selectedValue to the appropriate type (e.g., number)
     const typedSelectedValue = this.convertToCorrectType(selectedValue);
-  
+
     // Find the selected object using the converted value
     const selectedObject = this.vehicleMakeList.find(vehicleMake => vehicleMake.code === typedSelectedValue);
-  
+
     // Check if the object is found
     if (selectedObject) {
       console.log('Selected Vehicle Object:', selectedObject);
@@ -622,15 +622,15 @@ updateCoverToDate() {
     this.getVehicleModel();
     this.selectedVehicleMakeName=selectedObject.name
   }
-  
+
   convertToCorrectType(value: any): any {
     // Implement the conversion logic based on the actual type of your identifier
     // For example, if your identifier is a number, you can use parseInt or parseFloat
     // If it's another type, implement the conversion accordingly
     return parseInt(value, 10); // Adjust based on your actual data type
   }
-  
-  
+
+
   getVehicleModel(){
     this.vehicleModelService.getAllVehicleModel().subscribe(data =>{
       this.vehicleModelList=data;
@@ -644,13 +644,13 @@ updateCoverToDate() {
   }
   onVehicleModelSelected(event: any) {
     const selectedValue = event.target.value;
-  
+
     // Convert selectedValue to the appropriate type (e.g., number)
     const typedSelectedValue = this.convertToCorrectType(selectedValue);
-  
+
     // Find the selected object using the converted value
     const selectedObject = this.filteredVehicleModel.find(vehicleModel => vehicleModel.code === typedSelectedValue);
-  
+
     // Check if the object is found
     if (selectedObject) {
       console.log('Selected Vehicle Model:', selectedObject);
@@ -663,14 +663,14 @@ updateCoverToDate() {
     console.log('Selected Vehicle make model',this.vehiclemakeModel);
 
   }
-  
+
   convertModelToCorrectType(value: any): any {
     // Implement the conversion logic based on the actual type of your code property
     // For example, if your code property is a number, you can use parseInt or parseFloat
     // If it's another type, implement the conversion accordingly
     return parseInt(value, 10); // Adjust based on your actual data type
   }
-  
+
   createRiskDetail(){
     const risk = this.riskDetailsForm.value;
     // const dateWithEffectFromC=risk.dateRange[0];
@@ -688,7 +688,7 @@ updateCoverToDate() {
     this.quotationService.createQuotationRisk(this.quotationCode,riskArray).subscribe(data =>{
       this.quotationRiskData=data;
 
-      // this.quotationRiskCode = this.quotationRiskData._embedded[0]; 
+      // this.quotationRiskCode = this.quotationRiskData._embedded[0];
       // this.quotationRiskCode.forEach(([key, value]) => {
       //   console.log(`${key}: ${value}`);
       // });
@@ -704,7 +704,7 @@ updateCoverToDate() {
       } else {
         console.log("The quotationRiskCode object is not defined.");
       }
-      
+
       log.debug( this.quotationRiskData,"Quotation Risk Code Data");
       log.debug( this.quotationRiskCode,"Quotation Risk Code ");
       try {
@@ -751,48 +751,48 @@ updateCoverToDate() {
       log.debug("Subclass Section Covertype:",this.subclassSectionCoverList);
       this.mandatorySections=this.subclassSectionCoverList.filter(section=>section.subClassCode == this.selectedSubclassCode && section.isMandatory =="Y");
       log.debug("Mandatory Section Covertype:",this.mandatorySections);
-  
+
       if(this.mandatorySections.length > 0){
         this.selectedSectionList = this.mandatorySections[0];
         log.debug("Selected Section ", this.selectedSectionList)
-  
+
       }else {
-  
+
       }
       // this.sharedService.setQuickSectionDetails(this.mandatorySections);
       this.filterMandatorySections()
     })
   }
-  
+
   filterMandatorySections(){
     log.debug("selectedCover should be coverdesc",this.selectedCoverType)
         if (this.selectedCoverType) {
-          this.filteredMandatorySections = this.mandatorySections.filter(section => 
+          this.filteredMandatorySections = this.mandatorySections.filter(section =>
             section.coverTypeShortDescription == (this.selectedCoverType == "COMP" ? "COMPREHENSIVE" : this.selectedCoverType));
               log.debug("Filtered Section", this.filteredMandatorySections);
         } else {
           this.filteredMandatorySections = this.mandatorySections;
         }
       }
-     
+
       riskIdPassed(event: any): void {
-        
-      
+
+
         if (event instanceof Event) {
           this.passedRiskId = (event.target as HTMLInputElement).value;
         } else {
           this.passedRiskId = event;
         }
-      
+
         if ( this.passedRiskId !== undefined) {
           console.log('Passed Risk Id',  this.passedRiskId);
         } else {
           console.error('Unable to retrieve value from the event object.');
         }
       }
-      
-      
-      
+
+
+
       matchesSearch(description: string): boolean {
         return description.toLowerCase().includes(this.searchText.toLowerCase());
       }
@@ -824,7 +824,7 @@ updateCoverToDate() {
       sumInsuredRate: ['']
   });
   }
-  
+
   onCheckboxChange(section: subclassSection) {
 
     log.debug("Checked Section Data",section)
@@ -834,8 +834,8 @@ updateCoverToDate() {
     this.getPremiumRates()
     this.getSectionbyCode()
   }
-  
-  
+
+
   /**
  * Creates a new risk section associated with the current risk.
  * Takes section data from the 'sectionDetailsForm', sends it to the server
@@ -868,7 +868,7 @@ updateCoverToDate() {
     log.debug("Section Form Array",this.sectionArray)
 
     this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
-      
+
       try {
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
         this.sectionDetailsForm.reset()
@@ -878,7 +878,7 @@ updateCoverToDate() {
       }
     })
   }
-  
+
   onSelectSection(event: any){
     this.selectedSection=event;
     log.info("Patched section",this.selectedSection)
@@ -905,19 +905,19 @@ updateCoverToDate() {
 
         this.sectionDetailsForm.reset()
         log.info(section)
-        
+
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
       }catch(error){
         log.info(section)
         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
         this.sectionDetailsForm.reset()
-      }  
+      }
     })
   }
 
    onEditButtonClick(selectedSection: any) {
     this.selectedSection = selectedSection;
-    
+
     // Open the modal
     const modalElement: HTMLElement | null = this.editSectionModal.nativeElement;
     if (modalElement) {
@@ -974,7 +974,7 @@ updateCoverToDate() {
       version: [''],
     });
   }
-  
+
   createSchedule() {
     const schedule = this.scheduleDetailsForm.value;
   log.debug("passedriskid",this.passedRiskId);
@@ -997,7 +997,7 @@ updateCoverToDate() {
     schedule.riskCode = this.riskCode;
     schedule.transactionType = "Q";
     schedule.version = 0;
-  
+
     this.quotationService.createSchedule(schedule).subscribe(
       (data) => {
         try {
@@ -1041,19 +1041,19 @@ updateCoverToDate() {
       const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
       if (index !== -1) {
         this.scheduleList[index] = this.updatedSchedule;
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       }
-     
+
       try{
-       
+
         this.scheduleDetailsForm.reset()
         this.messageService.add({severity:'success', summary: 'Success', detail: 'Schedule Updated'});
       }catch(error){
         this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
         this.scheduleDetailsForm.reset()
-      }  
+      }
     })
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
 
   }
   deleteScheduleForLevel() {
@@ -1074,16 +1074,16 @@ updateCoverToDate() {
   deleteSchedule() {
     if (this.selectedSchedule && this.selectedSchedule.code) {
       let level = this.passedlevel;
-  
+
       // Ensure that level is a number
       if (typeof level === 'number') {
         let scheduleCode = this.selectedSchedule.code;
         let riskCode = this.selectedSchedule.riskCode;
-  
+
         this.quotationService.deleteSchedule(level, riskCode, scheduleCode).subscribe(() => {
           // Remove the deleted schedule from the scheduleList
           this.scheduleList = this.scheduleList.filter(schedule => schedule.code !== scheduleCode);
-  
+
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Successfully' });
         }, error => {
           console.error('Error deleting schedule:', error);
@@ -1098,9 +1098,9 @@ updateCoverToDate() {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Select a Schedule to continue' });
     }
   }
-  
-  
- 
+
+
+
 
   finish(){
     console.log('sections',this.sectionArray)
@@ -1137,7 +1137,7 @@ updateCoverToDate() {
       log.debug("Risk Clauses List:",this.riskClausesList)
     })
   }
-   
+
   onSelectRiskClauses(event: any){
     this.selectedRiskClause=event;
     log.info("Patched Risk Section",this.selectedRiskClause);
@@ -1146,7 +1146,7 @@ updateCoverToDate() {
     log.debug("SELECTED PRODUCT CODE:",this.selectProductCode);
     log.debug("SELECTED RISK CODE:",this.riskCode);
     log.debug("SELECTED Quote CODE:",this.quotationCode);
-    
+
     this.captureRiskClause();
   }
   // captureRiskClause(){
@@ -1172,7 +1172,7 @@ updateCoverToDate() {
           }
         },
         // error: (err) => {
-         
+
         //   this.globalMessagingService.displayErrorMessage(
         //     'Error',
         //     this.errorMessage

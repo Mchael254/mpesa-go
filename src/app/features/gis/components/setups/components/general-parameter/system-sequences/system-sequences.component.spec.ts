@@ -8,7 +8,7 @@ import {MessageService} from "primeng/api";
 import { IntermediaryService } from '../../../../../../entities/services/intermediary/intermediary.service';
 import { ProductService } from '../../../../../../gis/services/product/product.service';
 import { of, throwError } from 'rxjs';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
+import {BranchService} from "../../../../../../../shared/services/setups/branch/branch.service";
 
 describe('SystemSequencesComponent', () => {
   let component: SystemSequencesComponent;

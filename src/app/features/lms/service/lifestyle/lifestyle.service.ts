@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class LifestyleService {
 
   constructor(private api:ApiService) {}
 
-  getClientLifeStyleById(code: number){    
+  getClientLifeStyleById(code: number){
     return this.api.GET(`${this.LIFESTYLE_BASE_URL}?clientCode=${code}`, API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL);
   }
 

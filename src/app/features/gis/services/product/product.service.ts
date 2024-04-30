@@ -4,11 +4,11 @@ import { Observable, catchError, forkJoin, map, retry, throwError } from 'rxjs';
 import { APP_CONFIG, AppConfigService } from '../../../../core/config/app-config-service';
 import { FormScreen, Product_group, Products, SubclassesDTO, productDocument, report } from '../../components/setups/data/gisDTO';
 import { environment } from '../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {StringManipulation} from "../../../lms/util/string_manipulation";
+import {SESSION_KEY} from "../../../lms/util/session_storage_enum";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
 @Injectable({
   providedIn: 'root'
 })

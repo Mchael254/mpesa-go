@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize, map, switchMap } from 'rxjs';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
-import { TableDetail } from 'src/app/shared/data/table-detail';
-import { Logger } from 'src/app/shared/services';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+
 import { SESSION_KEY } from '../../util/session_storage_enum';
+import {QuotationService} from "../../service/quotation/quotation.service";
+import {ProductService} from "../../service/product/product.service";
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import {Logger} from "../../../../shared/services";
+import {TableDetail} from "../../../../shared/data/table-detail";
 
 const logger = new Logger('QuotationComponent');
 @Component({
@@ -169,7 +170,7 @@ export class QuotationListComponent implements OnInit {
     // this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
 
- 
+
 
   submitForm(data: any) {
     logger.info(data);

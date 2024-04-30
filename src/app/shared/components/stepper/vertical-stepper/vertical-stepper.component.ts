@@ -1,6 +1,6 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Step } from 'src/app/shared/data/steps';
+import {Step} from "../../../data/steps";
 
 @Component({
   selector: 'app-vertical-stepper',

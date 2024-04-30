@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { FormsService } from '../../service/forms/forms.service';
+import {ToastService} from "../../../../../../shared/services/toast/toast.service";
+import {DataManipulation} from "../../../../../../shared/utils/data-manipulation";
 
 @Component({
   selector: 'app-lms-individual',
@@ -116,7 +116,7 @@ export class LmsIndividualComponent implements OnInit {
        return (data['system_name']===this.screenData['system'] && data['module']===this.screenData['module'] && data['screen_name']===this.screenData['screen_name'])
     }).map(data =>{
       // console.log(data);
-      
+
       let tr =  data['inputs']['en'];
       tr['name'] = data?.form_name
       tr['code'] = data['code'];
@@ -137,7 +137,7 @@ export class LmsIndividualComponent implements OnInit {
 
   selectForm(form: any, is_empty=false) {
     console.log(form);
-    
+
     if(is_empty){
       this.formsForm.reset();
     }else{

@@ -22,8 +22,8 @@ import {environment} from "../../../../environments/environment";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {ApiService} from "../../../shared/services/api/api.service";
 import { StringManipulation } from '../../lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { SESSION_KEY } from '../../lms/util/session_storage_enum';
+import {SessionStorageService} from "../../../shared/services/session-storage/session-storage.service";
 
 const log = new Logger('TicketsService');
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
 
 @Component({
   selector: 'app-questions',

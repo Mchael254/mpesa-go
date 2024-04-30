@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
 import { CategoryDetailsDto } from '../../models/categoryDetails';
+import {API_CONFIG} from "../../../../../../../../environments/api_service_config";
+import {ApiService} from "../../../../../../../shared/services/api/api.service";
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +53,7 @@ export class CoverageService {
   downloadMemberUploadTemplate(productType, productCode) {
     return this.api.FILEDOWNLOAD(`template/generate/${productType}/${productCode}`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
-  
+
   getMembers(quotationCode) {
     return this.api.GET(`quotations/${quotationCode}/members`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
@@ -69,11 +69,11 @@ export class CoverageService {
   deleteMember(quotationCode, quoteDto) {
     return this.api.DELETE(`quotations/${quotationCode}/members`, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL, quoteDto);
   }
-  
+
   computePremium(quotationCode) {
     return this.api.POST(`quotations/${quotationCode}/compute-premium`, null, API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }
-  
+
   getOccupation() {
     return this.api.GET(`occupations`,  API_CONFIG.GRP_QUOTATIONS_SERVICE_BASE_URL);
   }

@@ -2,8 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs/internal/observable/of';
 import { map } from 'rxjs/internal/operators/map';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
+
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class DmsService {
 
   downloadFileById(url: string) {
     console.log(url);
-    
+
     return this.api.GET(url.replace('https://mutual-uat.turnkeyafrica.com/alfrescoServices/', ''), API_CONFIG.DMS_SERVICE).pipe(map((data) => of(this.downloadFile(data['byteData'], `${data['docName']}`))))
 
     // return this.http.get(url).pipe(map((data) => of(this.downloadFile(data['byteData'], `${data['docName']}`))))

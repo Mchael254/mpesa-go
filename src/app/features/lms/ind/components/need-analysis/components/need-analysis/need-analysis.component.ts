@@ -1,11 +1,10 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { NeedAnalysisService } from 'src/app/features/setups/service/need-analysis/need-analysis.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { environment } from 'src/environments/environment';
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import {NeedAnalysisService} from "../../../../../../setups/service/need-analysis/need-analysis.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 @Component({
   selector: 'app-need-analysis',

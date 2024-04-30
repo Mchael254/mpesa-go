@@ -1,10 +1,10 @@
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { LocalStorageService } from 'src/app/shared/services/local-storage/local-storage.service';
 import { Logger } from '../../../../shared/services/logger/logger.service';
-import { Profile } from 'src/app/shared/data/auth/profile';
+import {AutoUnsubscribe} from "../../../../shared/services/AutoUnsubscribe";
+import {Profile} from "../../../../shared/data/auth/profile";
+import {AuthService} from "../../../../shared/services/auth.service";
+import {LocalStorageService} from "../../../../shared/services/local-storage/local-storage.service";
 
 const log = new Logger("HeaderComponent");
 

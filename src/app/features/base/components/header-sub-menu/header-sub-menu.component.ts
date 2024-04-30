@@ -6,11 +6,11 @@ import {
 } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { SidebarMenu } from '../../model/sidebar.menu';
-import { Logger } from 'src/app/shared/services';
 import { Router } from '@angular/router';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import {EntityService} from "../../../entities/services/entity/entity.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {Logger} from "../../../../shared/services";
+import {AutoUnsubscribe} from "../../../../shared/services/AutoUnsubscribe";
 
 const log = new Logger("HeaderSubMenuComponent")
 @Component({

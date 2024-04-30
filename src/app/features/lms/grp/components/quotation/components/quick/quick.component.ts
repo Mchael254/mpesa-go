@@ -1,19 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { IntermediaryService } from 'src/app/features/entities/services/intermediary/intermediary.service';
-import { AgentDTO } from 'src/app/features/entities/data/AgentDTO';
 import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
-import { BranchService } from 'src/app/shared/services/setups/branch/branch.service';
-import { OrganizationBranchDto } from 'src/app/shared/data/common/organization-branch-dto';
-import { CurrencyService } from 'src/app/shared/services/setups/currency/currency.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { formatDate } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MessageService } from "primeng/api";
@@ -24,6 +13,16 @@ import { GrpQuoteDetails } from '../../models/quoteDetails';
 import { PayFrequencyService } from '../../service/pay-frequency/pay-frequency.service';
 import { QuickService } from '../../service/quick/quick.service';
 import stepData from '../../data/steps.json';
+
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {AgentDTO} from "../../../../../../entities/data/AgentDTO";
+import {OrganizationBranchDto} from "../../../../../../../shared/data/common/organization-branch-dto";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {ProductService} from "../../../../../service/product/product.service";
+import {IntermediaryService} from "../../../../../../entities/services/intermediary/intermediary.service";
+import {BranchService} from "../../../../../../../shared/services/setups/branch/branch.service";
+import {CurrencyService} from "../../../../../../../shared/services/setups/currency/currency.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 
 @AutoUnsubscribe
@@ -131,7 +130,7 @@ highlightInvalid(field: string): boolean {
 //     console.log("clientCodeFromClientCreation", this.clientCode)
 //   });
 // }
-  
+
 
   capitalizeFirstLetterOfEachWord(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
@@ -269,7 +268,7 @@ highlightInvalid(field: string): boolean {
 
   onContinue () {
     console.log("quickForm", this.quickForm.value)
-    
+
     if(this.quickForm.valid) {
       const quickFormQuotationCalcType = this.quickForm.get("quotationCalcType").value;
       const commissionRatePattern = /^[0-9]*(\.[0-9]+)?$/;
@@ -308,7 +307,7 @@ highlightInvalid(field: string): boolean {
         const quoteData = {
           formData
         };
-        
+
         if(this.quotationCode === null || this.quotationCode === undefined) {
           this.spinner_Service.show('download_view');
           this.quickService.postQuoteDetails(apiRequest).subscribe((details: GrpQuoteDetails) => {
@@ -318,7 +317,7 @@ highlightInvalid(field: string): boolean {
             sessionStorage.setItem('quotationResponse', JSON.stringify(this.quoteDetails));
             //Store the obj quoteData in sessionStorage
             this.session_storage.set('quotation_code', JSON.stringify(quoteData));
-    
+
             // this.router.navigate(['/home/lms/grp/quotation/coverage'], {
             //   queryParams: {
             //     quotationCalcType: quickFormQuotationCalcType,
@@ -328,13 +327,13 @@ highlightInvalid(field: string): boolean {
             this.spinner_Service.hide('download_view');
             this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation generated successfully'});
             this.router.navigate(['/home/lms/grp/quotation/coverage']);
-            
+
           },
           (error) => {
             console.log(error)
             this.spinner_Service.hide('download_view');
             this.messageService.add({severity: 'error', summary: 'summary', detail: 'Error processing the quote. Please try again'});
-        
+
           }
           );
         } else {
@@ -343,23 +342,23 @@ highlightInvalid(field: string): boolean {
           this.quickService.updateQuoteDetails(this.quotationCode, apiRequest).subscribe((details: GrpQuoteDetails) => {
             this.quoteDetails = details;
             this.session_storage.set('quotation_code', JSON.stringify(quoteData));
-    
+
             this.spinner_Service.hide('download_view');
             this.messageService.add({severity: 'Success', summary: 'summary', detail: 'Quotation updated successfully'});
             this.router.navigate(['/home/lms/grp/quotation/coverage']);
-            
+
           },
           (error) => {
             console.log(error)
             this.spinner_Service.hide('download_view');
             this.messageService.add({severity: 'error', summary: 'summary', detail: 'Error processing the quote update. Please try again'});
-        
+
           }
           );
         }
       } else {/*
-      together with the method -highlightInvalid(field: string), it helps 
-       highlight all invalid form fields on click of Continue button 
+      together with the method -highlightInvalid(field: string), it helps
+       highlight all invalid form fields on click of Continue button
        */
       Object.keys(this.quickForm.controls).forEach(field => {
         const control = this.quickForm.get(field);

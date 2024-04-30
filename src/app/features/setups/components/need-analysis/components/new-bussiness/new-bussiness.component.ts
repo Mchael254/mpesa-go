@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { NeedAnalysisService } from 'src/app/features/setups/service/need-analysis/need-analysis.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { environment } from 'src/environments/environment';
+import {ProductService} from "../../../../../lms/service/product/product.service";
+import {NeedAnalysisService} from "../../../../service/need-analysis/need-analysis.service";
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import {ToastService} from "../../../../../../shared/services/toast/toast.service";
+import {StringManipulation} from "../../../../../lms/util/string_manipulation";
+import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
 
 @Component({
   selector: 'app-new-bussiness',
@@ -115,7 +114,7 @@ export class NewBussinessComponent implements OnInit {
     }
   }
 
-  
+
 
   setProduct() {
     this.addModal();
@@ -157,7 +156,7 @@ export class NewBussinessComponent implements OnInit {
         .updateNeedAnalysisData(this.tempNeedAnalysisQuestions)
         .subscribe((data) => {
           console.log(data);
-          
+
           this.toast_service.success(
             'Save Product Record Successfully!!',
             'Successfull'
@@ -236,7 +235,7 @@ export class NewBussinessComponent implements OnInit {
         node.options = [];
       }
       node.options.push(updateData);
-    } 
+    }
 
     else if (node.options !== null && node.options !== undefined) {
       const index = nodeState[0];
@@ -248,7 +247,7 @@ export class NewBussinessComponent implements OnInit {
         const productsArray = node.options[index].options.filter(m =>  m['option']?.toUpperCase() === updateData['option']?.toUpperCase() );
 
         if (productsArray.length===0) {
-          node.options[index].options.push(updateData);            
+          node.options[index].options.push(updateData);
         } else {
           this.toast_service.danger(
             'Option already in the List',
@@ -281,7 +280,7 @@ export class NewBussinessComponent implements OnInit {
     } else if (node.options !== null && node.options !== undefined) {
       for (let index = 0; index < nodeState.length; index++) {
 
-        if (nodeState.length === 1) {          
+        if (nodeState.length === 1) {
           node.options[nodeState[0]].options.splice(node.options[nodeState[0]].options.indexOf(updateData), 1)
           return node;
         } else {
@@ -367,7 +366,7 @@ export class NewBussinessComponent implements OnInit {
 
           const productsArray = node.options[index].products;
           if (!productsArray.includes(updateData)) {
-            productsArray.push(updateData);            
+            productsArray.push(updateData);
           } else {
             this.toast_service.danger(
               'Product already in the List',
@@ -449,7 +448,7 @@ export class NewBussinessComponent implements OnInit {
     return node;
   }
 
-  // QUESTION AROUD this.mainQuestion 
+  // QUESTION AROUD this.mainQuestion
   deleteResponse(i: any) {
     this.selectQuestion(this.nodeState);
     let node = this.deleteOptionTreeStructure(this.nodeState.length===0? null: this.nodeState, i, this.mainQuestion);
@@ -468,7 +467,7 @@ export class NewBussinessComponent implements OnInit {
   editOption(item:any){
     this.optionForm.get('option').setValue(item['option']);
     this.optionForm.get('old_option').setValue(item['option']);
-    this.addModal('optionModal');    
+    this.addModal('optionModal');
   }
 
   saveOption(){
@@ -487,7 +486,7 @@ export class NewBussinessComponent implements OnInit {
         this.toast_service.success('Edit Option Data Successfully', 'Sucessfull')
 
       });
-    
+
     this.optionForm.reset();
     this.closeModal('optionModal')
   }
@@ -551,7 +550,7 @@ export class NewBussinessComponent implements OnInit {
       }
       this.presentQuestion = this.saveRecentNeedAnalysisData(temp);
     }else {
-      
+
     }
   }
 }

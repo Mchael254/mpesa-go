@@ -9,7 +9,7 @@ import { MessageService } from 'primeng/api';
 import { Status } from '../../../data/enums/Status';
 import { AccountStatus } from '../../../data/AccountStatus';
 import { UpdateAccountStatusDto } from '../../../data/UpdateAccountStatusDto';
-import { TableDetail } from 'src/app/shared/data/table-detail';
+import {TableDetail} from "../../../../../shared/data/table-detail";
 
 @Component({
   selector: 'app-related-accounts',
