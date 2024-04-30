@@ -178,6 +178,7 @@
     "Cheque signing": "Signature de chèque"
   },
   "crm": {
+    "activity": "Activité",
     "category": "Catégorie",
     "client_type": "Type de client",
     "description": "Description",
@@ -185,10 +186,12 @@
     "no_client_found": "Aucun type de client trouvé.",
     "no_occupation_found": "Aucune profession trouvée.",
     "no_sector_found": "Aucun secteur trouvé.",
+    "no_service_provider_type_activity_found": "Aucune activité de type de prestataire de services trouvée",
     "no_service_provider_type_found": "Aucun type de fournisseur de services trouvé",
     "occupation": "Métiers",
     "search": "Rechercher",
     "sector": "Secteurs",
+    "service_provider_type_activity": "Types de Prestataires de Services Activité",
     "service_provider_type": "Types de Prestataires de Services",
     "short_description": "Description Courte",
     "status": "Statut",
@@ -756,7 +759,7 @@
   },
   "setups": {},
   "mngt_wrkflw": {
-    "tickets" : {
+    "tickets": {
       "reassign": "Réaffecter",
       "authorize": "Autoriser",
       "from": "De",
@@ -858,7 +861,6 @@
       "importCSV": "Importer un fichier CSV",
       "reinsurerName": "Nom du Réassureur",
       "brokerName": "Nom du Courtier",
-      "facreAccountId": "Identifiant du Compte Facre",
       "rateAmount": "Taux/montant",
       "cessionRate": "Taux de Cession",
       "vat": "TVA",

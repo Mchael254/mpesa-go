@@ -178,6 +178,7 @@
     "Cheque signing": "Kusaini hundi"
   },
   "crm": {
+    "activity": "Shughuli",
     "category": "Jamii",
     "client_type": "Aina ya Mteja",
     "description": "Maelezo",
@@ -185,10 +186,12 @@
     "no_client_found": "Hakuna Aina ya Mteja iliyopatikana.",
     "no_occupation_found": "Hakuna Kazi iliyopatikana.",
     "no_sector_found": "Hakuna Sekta iliyopatikana.",
+    "no_service_provider_type_activity_found": "Hakuna Shughuli ya Aina ya Watoa Huduma iliyopatikana",
     "no_service_provider_type_found": "Hakuna Aina ya Mtoa Huduma iliyopatikana",
     "occupation": "Kazi",
     "search": "Tafuta",
     "sector": "Sekta",
+    "service_provider_type_activity": "Aina za Watoa Huduma Shughuli",
     "service_provider_type": "Aina za Watoa Huduma",
     "short_description": "Maelezo Mafupi",
     "status": "Hali",
@@ -755,7 +758,7 @@
   },
   "setups": {},
   "mngt_wrkflw": {
-    "tickets" : {
+    "tickets": {
       "reassign": "Kuhamisha tena",
       "authorize": "Idhinisha",
       "from": "Kutoka",
@@ -857,7 +860,6 @@
       "importCSV": "Ingiza faili ya CSV",
       "reinsurerName": "Jina la mhusika wa rikindikaji",
       "brokerName": "Jina la mpatanishi",
-      "facreAccountId": "Id ya Akaunti ya Facre",
       "rateAmount": "Kiwango/kiasi",
       "cessionRate": "Kiwango cha kuhamisha",
       "vat": "VAT",

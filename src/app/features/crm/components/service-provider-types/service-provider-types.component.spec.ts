@@ -10,7 +10,10 @@ import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fi
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
 import { ServiceProviderTypesService } from '../../services/service-provider-types.service';
 import { MandatoryFieldsDTO } from '../../../../shared/data/common/mandatory-fields-dto';
-import { ServiceProviderTypeDTO } from '../../data/service-provider-type';
+import {
+  ServiceProviderTypeActivityDTO,
+  ServiceProviderTypeDTO,
+} from '../../data/service-provider-type';
 import { SharedModule } from '../../../../shared/shared.module';
 import { StatusDTO } from '../../../../shared/data/common/systemsDto';
 import { StatusService } from '../../../../shared/services/system-definitions/status.service';
@@ -52,6 +55,20 @@ const mockServiceProviderTypeData: ServiceProviderTypeDTO = {
   witholdingTaxRate: '',
 };
 
+const mockServiceProviderTypeActivityData: ServiceProviderTypeActivityDTO[] = [
+  {
+    code: 0,
+    description: '',
+    emailCode: 0,
+    emailDefault: '',
+    messageCode: 0,
+    messageDefault: '',
+    reportDays: 0,
+    shortDescription: '',
+    spTypeCode: 0,
+  },
+];
+
 const mockMandatoryData: MandatoryFieldsDTO[] = [
   {
     id: 1,
@@ -87,6 +104,9 @@ export class MockServiceProviderTypeService {
   deleteServiceProviderType = jest
     .fn()
     .mockReturnValue(of(mockServiceProviderTypeData));
+  getServiceProviderTypeActivityByCode = jest
+    .fn()
+    .mockReturnValue(of(mockServiceProviderTypeActivityData));
 }
 
 export class MockMandatoryService {

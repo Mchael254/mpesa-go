@@ -391,51 +391,12 @@
             </div>
             <div class="col-6 mb-3">
               <label for="round" class="form-label">Round</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="round"
-                  style="width: 70px; height: 42px; border-right: none"
-                />
-                <div class="input-group-append">
-                  <span
-                    class="d-block"
-                    (click)="updateRound(1, createCurrencyForm, 'round')"
-                    style="
-                      width: 20px;
-                      height: 20px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-top: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-up"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                  <span
-                    (click)="updateRound(-1, createCurrencyForm, 'round')"
-                    style="
-                      width: 20px;
-                      height: 22px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-bottom: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-down"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                </div>
-              </div>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Round"
+                formControlName="round"
+              />
             </div>
             <div class="col-6 mb-3">
               <label for="numberRound" class="form-label">Number Round</label>
@@ -496,56 +457,17 @@
           <div class="row">
             <div class="col-6 mb-3">
               <label for="value" class="form-label">Value</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="value"
-                  style="width: 70px; height: 42px; border-right: none"
-                  [ngClass]="{
-                    'is-invalid':
-                      d['value']?.invalid &&
-                      (d['value']?.dirty || d['value']?.touched)
-                  }"
-                />
-                <div class="input-group-append">
-                  <span
-                    class="d-block"
-                    (click)="updateRound(1, createDenominationForm, 'value')"
-                    style="
-                      width: 20px;
-                      height: 20px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-top: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-up"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                  <span
-                    (click)="updateRound(-1, createDenominationForm, 'value')"
-                    style="
-                      width: 20px;
-                      height: 22px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-bottom: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-down"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                </div>
-              </div>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Value"
+                formControlName="value"
+                [ngClass]="{
+                  'is-invalid':
+                    d['value']?.invalid &&
+                    (d['value']?.dirty || d['value']?.touched)
+                }"
+              />
               <div
                 *ngIf="
                   d['value']?.invalid &&
@@ -700,68 +622,28 @@
             </div>
             <div class="col-6 mb-3">
               <label for="rate" class="form-label">Rate</label>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="rate"
-                  style="width: 70px; height: 42px; border-right: none"
-                  [ngClass]="{
-                    'is-invalid':
-                      c['rate']?.invalid &&
-                      (c['rate']?.dirty || c['rate']?.touched)
-                  }"
-                />
-                <div class="input-group-append">
-                  <span
-                    class="d-block"
-                    (click)="updateRound(1, createCurrencyRateForm, 'rate')"
-                    style="
-                      width: 20px;
-                      height: 20px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-top: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-up"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                  <span
-                    (click)="updateRound(-1, createCurrencyRateForm, 'rate')"
-                    style="
-                      width: 20px;
-                      height: 22px;
-                      display: inline-block;
-                      text-align: center;
-                      background: none;
-                      border-bottom: 1px solid #e5e5e7;
-                      border-right: 1px solid #e5e5e7;
-                    "
-                  >
-                    <i
-                      class="fa-solid fa-chevron-down"
-                      style="background-color: white; color: black"
-                    ></i>
-                  </span>
-                </div>
-                <div
-                  *ngIf="
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Rate"
+                formControlName="rate"
+                [ngClass]="{
+                  'is-invalid':
                     c['rate']?.invalid &&
                     (c['rate']?.dirty || c['rate']?.touched)
-                  "
-                  class="form-text text-danger"
-                  [ngClass]="{
-                    'is-invalid': ['submitted'] && c['rate']?.errors
-                  }"
-                >
-                  <div *ngIf="c['rate']?.errors['required']">
-                    Rate is required
-                  </div>
+                }"
+              />
+              <div
+                *ngIf="
+                  c['rate']?.invalid && (c['rate']?.dirty || c['rate']?.touched)
+                "
+                class="form-text text-danger"
+                [ngClass]="{
+                  'is-invalid': ['submitted'] && c['rate']?.errors
+                }"
+              >
+                <div *ngIf="c['rate']?.errors['required']">
+                  Rate is required
                 </div>
               </div>
             </div>

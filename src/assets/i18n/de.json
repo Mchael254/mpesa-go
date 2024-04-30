@@ -178,6 +178,7 @@
     "Cheque signing": "Unterzeichnung von Schecks"
   },
   "crm": {
+    "activity": "Activiteit",
     "category": "Categorie",
     "client_type": "Klanttype",
     "description": "Omschrijving",
@@ -185,10 +186,12 @@
     "no_client_found": "Geen klanttype gevonden.",
     "no_occupation_found": "Geen beroep gevonden.",
     "no_sector_found": "Geen sector gevonden.",
+    "no_service_provider_type_activity_found": "Geen activiteit voor soort dienstverlener gevonden",
     "no_service_provider_type_found": "Geen type dienstverlener gevonden",
     "occupation": "Beroepen",
     "search": "Zoeken",
     "sector": "Sectoren",
+    "service_provider_type_activity": "Soorten Dienstverleners Activiteit",
     "service_provider_type": "Soort Dienstverlener",
     "short_description": "Korte Beschrijving",
     "status": "Status",
@@ -756,7 +759,7 @@
   },
   "setups": {},
   "mngt_wrkflw": {
-    "tickets" : {
+    "tickets": {
       "reassign": "Erneut zuweisen",
       "authorize": "Autorisieren",
       "from": "Von",
@@ -858,7 +861,6 @@
       "importCSV": "CSV-Datei importieren",
       "reinsurerName": "Rückversicherername",
       "brokerName": "Brokername",
-      "facreAccountId": "Facre-Kontoid",
       "rateAmount": "Satz/Betrag",
       "cessionRate": "Zessionssatz",
       "vat": "MwSt.",
