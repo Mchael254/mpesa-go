@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { distinct } from 'rxjs';
 import { CategoryDetailsDto } from '../../models/categoryDetails';
 import { CoverTypesDto } from '../../models/coverTypes/coverTypesDto';
@@ -11,6 +10,7 @@ import { CoverageService } from '../../service/coverage/coverage.service';
 import { SummaryService } from '../../service/summary/summary.service';
 import { SelectItem } from 'primeng/api';
 import stepData from '../../data/steps.json';
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 
 
@@ -50,14 +50,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
 
 
-  constructor( 
+  constructor(
     private fb: FormBuilder,
     private summaryService: SummaryService,
     private coverageService: CoverageService,
     private router: Router,
     private session_storage: SessionStorageService
     ) {}
-  
+
   ngOnInit(): void {
     this.retrievQuoteDets();
     this.getQuotationDetailsSummary();
@@ -72,7 +72,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
   dependantLimitsColumns() {
@@ -89,7 +89,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { label: 'Accelerated', value: 'accelerator' },
       { label: 'Main cover rider', value: 'main_cover' },
   ];
-  
+
   this.selectedColumnsDependantLimits = this.columnOptionsDepLimits.map(option => option.value);
   }
 
@@ -105,7 +105,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { label: '% of main/yr SA', value: 'main_sumassured_percentage' },
       { label: 'Main cover', value: 'cvt_main_cover' },
   ];
-  
+
   this.selectedColumnsCovDets = this.columnOptionsCoveDets.map(option => option.value);
   }
 
@@ -120,7 +120,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       { label: 'Category', value: 'description' },
       { label: 'Dependant type', value: 'dty_description' },
   ];
-  
+
   this.selectedColumnsMemberDets = this.columnOptionsMemberDets.map(option => option.value);
   }
 
@@ -128,14 +128,14 @@ export class SummaryComponent implements OnInit, OnDestroy {
     const storedQuoteData = this.session_storage.get('quotation_code');
     const storedQuoteDetails = sessionStorage.getItem('quotationResponse');
     const parsedQuoteDetails = JSON.parse(storedQuoteDetails);
-  
+
     this.quotationCode = parsedQuoteDetails.quotation_code;
     console.log("quotation code", this.quotationCode)
     this.quotationNumber = parsedQuoteDetails.quotation_number;
     console.log("quotation number", this.quotationNumber)
-    
-  
-  
+
+
+
     if (storedQuoteData) {
       const quoteData = JSON.parse(storedQuoteData);
       const formData = quoteData.formData;
@@ -193,7 +193,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
         "A": "ANNUALLY",
         "F": "SINGLE PREMIUM",
     };
-    
+
     // Return the description based on the provided payFrequency value
     return payFrequencyDescriptions[payFrequency] || "Unknown";
 }
@@ -209,7 +209,7 @@ getDurationTypeDescription(durationType: string): string {
       "S": "Semi-Annual",
       "T": "Termly",
   };
-  
+
   // Return the description based on the provided durationType value OR unknown if not among the above
   return durationTypeDescriptions[durationType] || "Unknown";
 }
@@ -288,7 +288,7 @@ getDurationTypeDescription(durationType: string): string {
       console.log("coverTypesSummary", this.coverTypes)
     });
   }
-  
+
   getDependantLimits() {
     this.summaryService.getDependantLimits(this.quotationCode).subscribe((dLimits: CategoryDTO[]) => {
       console.log("dLimits", dLimits)
@@ -318,13 +318,13 @@ onMemberTableRowClick(membersDetails, index: number) {
     this.summaryService.memberCoverSummary(this.quotationCode, this.memberCode).subscribe((memCvtTypes: MemberCoverTypeSummaryDto[]) => {
       console.log("memCvtTypes", memCvtTypes)
       this.memberCoverTypeSummaryDto = memCvtTypes;
-      
+
     });
   }
 }
 
   onProceed () {
-    this.router.navigate(['home/lms/quotation/list'], 
+    this.router.navigate(['home/lms/quotation/list'],
     { queryParams: { tab: 'group-life' } });
   }
 

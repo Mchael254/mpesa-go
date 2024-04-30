@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { Logger } from 'src/app/shared/services';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { MemberPolicies, UserProfileDTO } from '../../models/member-policies';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {Logger} from "../../../../../../../shared/services";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
 
 const log = new Logger('LandingDashboardComponent');
 @AutoUnsubscribe
@@ -36,7 +36,7 @@ export class LandingDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.getData();
     this.getMemberPolicies();
-    
+
   }
 
   getData() {
@@ -44,7 +44,7 @@ export class LandingDashboardComponent implements OnInit {
    this.activatedRoute.queryParams.subscribe((params) => {
     this.entityCode = +params['entityCode'];
     });
-    
+
     this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
     const data = this.session_storage.get('memberProfile');
     this.userProfileData = data;
@@ -66,12 +66,12 @@ export class LandingDashboardComponent implements OnInit {
   // }
 
   navigateToPolDets() {
-    this.router.navigate(['/home/lms/grp/dashboard/policy-details'], { 
-      queryParams: { 
-        entityCode: this.entityCode, 
+    this.router.navigate(['/home/lms/grp/dashboard/policy-details'], {
+      queryParams: {
+        entityCode: this.entityCode,
         policyNumber: this.policyNumber ,
         policyCode: this.policyCode,
-      } 
+      }
     });
   }
 

@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { throwError, Observable, retry, catchError } from 'rxjs';
 import {AppConfigService} from '../../../../../../core/config/app-config-service'
 import { InterestedParties } from '../../data/gisDTO';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,7 @@ export class InterestedPartiesService {
   baseurl = this.appConfig.config.contextPath.gis_services;
   crmurl = this.appConfig.config.contextPath.setup_services;
   setupsbaseurl = "setups/api/v1"
-  
+
   constructor(
     private http: HttpClient,
     public appConfig : AppConfigService,
@@ -23,7 +24,7 @@ export class InterestedPartiesService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
     }
 
@@ -48,7 +49,7 @@ return throwError(errorMessage);
      const headers = new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
       const params = new HttpParams()
       .set('page', `${page}`)
@@ -56,10 +57,10 @@ return throwError(errorMessage);
       return this.api.GET<any>(`interested-parties?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
-      ) 
+      )
     }
     getInterestedParties(code: any): Observable<InterestedParties[]>{
-      
+
       return this.api.GET<InterestedParties[]>(`interested-parties/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
@@ -72,7 +73,7 @@ return throwError(errorMessage);
           retry(1),
           catchError(this.errorHandl)
         )
-      } 
+      }
       updateParty(data:InterestedParties,id:any): Observable<InterestedParties> {
         console.log(JSON.stringify(data))
         return this.api.PUT<InterestedParties>(`interested-parties/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)

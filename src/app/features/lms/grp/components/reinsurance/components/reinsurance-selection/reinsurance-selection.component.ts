@@ -5,7 +5,7 @@ import stepData from '../../data/steps.json';
 import { ReinsuranceService } from '../../service/reinsurance.service';
 import { PolicySummaryDTO, ReinsuranceParametersDTO, TreatyDTO } from '../../models/policySummaryDTO';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
 
 @AutoUnsubscribe
 @Component({
@@ -55,7 +55,7 @@ export class ReinsuranceSelectionComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
   proceed() {

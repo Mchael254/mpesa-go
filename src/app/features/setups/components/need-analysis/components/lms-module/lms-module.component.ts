@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
 
 @Component({
   selector: 'app-lms-module',
@@ -26,7 +26,7 @@ export class LmsModuleComponent implements OnInit {
 
   filterBySystem(system_name){
     return this.sub_system.filter(d => d['system_name']===system_name)
-  } 
+  }
 
   saveSystem(sub_system){
     this.session_storage_service.set(SESSION_KEY.NEED_ANALYSIS_SYSTEM_NAME, sub_system['system_name']);

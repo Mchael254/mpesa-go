@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { Logger } from 'src/app/shared/services';
+import {Logger} from "../../../../shared/services";
 const log = new Logger('DashboardLayoutComponent');
 
 @Component({

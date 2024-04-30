@@ -4,8 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 import { territories } from '../../../data/gisDTO';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../../environments/api_service_config";
 @Injectable({
   providedIn: 'root'
 })
@@ -18,14 +18,14 @@ export class TerritoriesService {
     private http: HttpClient,
     public appConfig : AppConfigService,
     public api:ApiService
-    
+
     ) { }
 
     httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-      
+
       })
     }
 
@@ -63,7 +63,7 @@ errorHandl(error: HttpErrorResponse) {
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updateTerritory(data:territories,id:any){
       console.log(JSON.stringify(data))
       return this.api.PUT<territories>(`territories/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)

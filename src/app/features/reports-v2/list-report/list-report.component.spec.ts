@@ -14,6 +14,7 @@ import {MessageService} from "primeng/api";
 import {DynamicBreadcrumbComponent} from "../../../shared/components/dynamic-breadcrumb/dynamic-breadcrumb.component";
 import {MenuModule} from "primeng/menu";
 import {AddReportToDashDTO, DashboardReports} from "../../../shared/data/reports/dashboard";
+import {TranslateModule} from "@ngx-translate/core";
 
 export class MockAppConfigService {
   get config() {
@@ -60,6 +61,7 @@ describe('ListReportComponent', () => {
         RouterTestingModule,
         MenuModule,
         NgxSpinnerModule.forRoot(),
+        TranslateModule.forRoot(),
         ],
       providers: [
         GlobalMessagingService,

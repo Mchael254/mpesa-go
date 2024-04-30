@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { Utils } from 'src/app/features/lms/util/util';
-import { TableDetail } from 'src/app/shared/data/table-detail';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {TableDetail} from "../../../../../../../shared/data/table-detail";
+import {Utils} from "../../../../../util/util";
+import {PoliciesService} from "../../../../../service/policies/policies.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
 
 @Component({
   selector: 'app-receipts',
@@ -35,14 +33,14 @@ export class ReceiptsComponent implements OnInit{
   };
   util: Utils;
 
-  constructor(private policy_service: PoliciesService, private spinner_service: NgxSpinnerService, private session_storage_service: SessionStorageService){}  
+  constructor(private policy_service: PoliciesService, private spinner_service: NgxSpinnerService, private session_storage_service: SessionStorageService){}
   ngOnInit(): void {
     this.util = new Utils(this.session_storage_service);
     this.listPolicyReceipts();
   }
 
   public listPolicyReceipts(){
-       
+
     this.spinner_service.show()
 
     this.policy_service.listPolicyReceipts(this.util.getPolCode()).subscribe((data: any) =>{

@@ -5,8 +5,9 @@ import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { Sequence } from '../../data/gisDTO';
 import { allocateform,changeForm } from '../../data/gisDTO';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,7 +34,7 @@ export class SequenceService {
     getSequenceList (): Observable<Sequence>{
 
       return this.api.GET<Sequence>(`system-sequences`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
-  
+
         retry(1),
         catchError(this.errorHandl)
       );
@@ -48,13 +49,13 @@ export class SequenceService {
       )
     }
     allocate(code: any, data:any) {
-  
+
       return this.api.POST(`system-sequences/${code}/allocate`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
       )
     }
     change (code: any,data:changeForm): Observable<changeForm> {
-      
+
       return this.api.PUT<changeForm>(`system-sequences/${code}/change-next-number`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)
         .pipe(
       )

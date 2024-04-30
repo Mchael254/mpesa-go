@@ -5,11 +5,12 @@ import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import {subclassCoverSections, subclassCoverTypes} from "../../data/gisDTO";
 import { environment } from '../../../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {StringManipulation} from "../../../../../lms/util/string_manipulation";
+import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +20,7 @@ export class SubClassCoverTypesSectionsService {
   setupsbaseurl = "setups/api/v1"
 
   constructor(private http: HttpClient,
-              public  appConfig : AppConfigService, 
+              public  appConfig : AppConfigService,
               private session_storage: SessionStorageService,
               private api:ApiService
               ) { }

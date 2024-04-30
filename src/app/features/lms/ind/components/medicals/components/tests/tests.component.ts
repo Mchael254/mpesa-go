@@ -3,20 +3,20 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { CoverTypeService } from 'src/app/features/lms/service/cover-type/cover-type.service';
-import { PartyService } from 'src/app/features/lms/service/party/party.service';
-import { ProductOptionService } from 'src/app/features/lms/service/product-option/product-option.service';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
 import { switchMap } from 'rxjs';
-import { MedicalsService } from 'src/app/features/lms/service/medicals/medicals.service';
-import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
-import { Utils } from 'src/app/features/lms/util/util';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import {Utils} from "../../../../../util/util";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {QuotationService} from "../../../../../service/quotation/quotation.service";
+import {ProductService} from "../../../../../service/product/product.service";
+import {ProductOptionService} from "../../../../../service/product-option/product-option.service";
+import {PartyService} from "../../../../../service/party/party.service";
+import {CoverTypeService} from "../../../../../service/cover-type/cover-type.service";
+import {MedicalsService} from "../../../../../service/medicals/medicals.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {PoliciesService} from "../../../../../service/policies/policies.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 @Component({
   selector: 'app-tests',

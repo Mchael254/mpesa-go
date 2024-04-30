@@ -3,8 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable, retry, catchError, throwError } from 'rxjs';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
 import { TaxRates } from '../../data/gisDTO';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +22,7 @@ export class TaxRatesService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
   }
   // Error handling
@@ -37,16 +38,16 @@ export class TaxRatesService {
     console.log(errorMessage);
     return throwError(errorMessage);
     }
-    
+
    /********Tax Rates ******/
-  
+
    getAllTaxRates(): Observable<any>{
     let page = 0;
     let size = 1000
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
     const params = new HttpParams()
     .set('page', `${page}`)
@@ -54,7 +55,7 @@ export class TaxRatesService {
     return this.api.GET<any>(`tax-rates?page=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
   getTaxRates(code: any): Observable<TaxRates[]>{
 
@@ -70,7 +71,7 @@ export class TaxRatesService {
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updateTaxRate(data:TaxRates,id:any): Observable<TaxRates> {
       console.log(JSON.stringify(data))
       return this.api.PUT<TaxRates>(`tax-rates/${id}`, JSON.stringify(data),API_CONFIG.GIS_SETUPS_BASE_URL)

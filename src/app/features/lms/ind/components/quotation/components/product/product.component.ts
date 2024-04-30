@@ -4,18 +4,17 @@ import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
 import { concatMap, finalize, first, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { PayFrequencyService } from 'src/app/features/lms/grp/components/quotation/service/pay-frequency/pay-frequency.service';
-import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { Utils } from 'src/app/features/lms/util/util';
-import { of } from 'rxjs/internal/observable/of';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { Observable } from 'rxjs';
+import {Observable, of} from 'rxjs';
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ProductService} from "../../../../../service/product/product.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {PayFrequencyService} from "../../../../../grp/components/quotation/service/pay-frequency/pay-frequency.service";
+import {QuotationService} from "../../../../../service/quotation/quotation.service";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {Utils} from "../../../../../util/util";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 @Component({
   selector: 'app-product',
@@ -68,8 +67,8 @@ export class ProductComponent implements OnInit {
     this.getPayFrequencies();
     this.getAgentList();
     console.log(quote);
-    
-    if (!quote) {      
+
+    if (!quote) {
       this.getQuotationSubscribe = this.getProduct().pipe(
         concatMap((products) => {
           this.productList = [...products];
@@ -80,7 +79,7 @@ export class ProductComponent implements OnInit {
     } else {
       this.getQuotationSubscribe = this.getProduct().pipe(
         concatMap((products) => {
-        
+
           this.productList = [...products];
           return this.getWebQuote();
         }),
@@ -92,8 +91,8 @@ export class ProductComponent implements OnInit {
       if(data?.agent_code){
         return this.getAgentByCode(data?.agent_code).pipe(concatMap(agent_details =>{
           this.productForm.get('agent').patchValue(agent_details);
-          
-          return of(data); 
+
+          return of(data);
         }))
 
       }
@@ -120,7 +119,7 @@ export class ProductComponent implements OnInit {
       this.toast.danger('Fail to fetch data successfully, try again!', 'Product Selection'.toUpperCase())
 
     });
-    
+
   }
 
   getWebQuote() {
@@ -376,7 +375,7 @@ export class ProductComponent implements OnInit {
     // let quote_details = StringManipulation.returnNullIfEmpty(
     //   this.session_storage.get(SESSION_KEY.WEB_QUOTE_DETAILS)
     // );
-    let formValue = this.productForm.value;    
+    let formValue = this.productForm.value;
 
     if(formValue['sa_prem_select']===null){
       this.toast.danger('select either PREMIUM or SUM ASSURED', 'PRODUCT DETAILS')

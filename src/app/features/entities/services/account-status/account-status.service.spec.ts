@@ -2,10 +2,10 @@ import { TestBed } from '@angular/core/testing';
 
 import { AccountStatusService } from './account-status.service';
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
-import {AppConfigService} from "../../../../config/app-config-service";
-import {AccountStatus} from "../models/AccountStatus";
-import {UpdateAccountStatusDto} from "../models/UpdateAccountStatusDto";
-import {Status} from "../enums/Status";
+import {AccountStatus} from "../../data/AccountStatus";
+import {AppConfigService} from "../../../../core/config/app-config-service";
+import {UpdateAccountStatusDto} from "../../data/UpdateAccountStatusDto";
+import {Status} from "../../data/enums/Status";
 
 export class MockAppConfigService {
   get config() {

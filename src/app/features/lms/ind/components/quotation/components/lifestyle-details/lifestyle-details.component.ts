@@ -1,21 +1,20 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
-import { CountryDto } from 'src/app/shared/data/common/countryDto';
-import { LifestyleService } from 'src/app/features/lms/service/lifestyle/lifestyle.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
 import {NgxSpinnerService} from "ngx-spinner";
 import {finalize} from "rxjs/internal/operators/finalize";
 import { Observable } from 'rxjs';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { PayFrequency } from 'src/app/features/lms/grp/components/quotation/models/payFrequency';
-import { PayFrequencyService } from 'src/app/features/lms/grp/components/quotation/service/pay-frequency/pay-frequency.service';
-import { Utils } from 'src/app/features/lms/util/util';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {CountryDto} from "../../../../../../../shared/data/common/countryDto";
+import {Utils} from "../../../../../util/util";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {CountryService} from "../../../../../../../shared/services/setups/country/country.service";
+import {PayFrequencyService} from "../../../../../grp/components/quotation/service/pay-frequency/pay-frequency.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {LifestyleService} from "../../../../../service/lifestyle/lifestyle.service";
+import {PayFrequency} from "../../../../../grp/components/quotation/models/payFrequency";
 
 
 @Component({

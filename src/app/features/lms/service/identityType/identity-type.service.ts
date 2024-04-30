@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormControl, ValidationErrors } from '@angular/forms';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
 
 @Injectable({
   providedIn: 'root'

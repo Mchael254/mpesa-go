@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SessionStorageService } from '../../services/session-storage/session-storage.service';
-// import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
 import { SESSION_KEY } from '../../../features/lms/util/session_storage_enum';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,14 +18,14 @@ export class QuotationLandingScreenComponent implements OnInit {
   activeIndex: number = 0;
   constructor(private session_service: SessionStorageService, private router: Router,
     private route: ActivatedRoute){}
-  
+
   ngOnInit(): void {
     this.session_service.clear_store();
     this.getParams();
   }
-  
 
-  selectLmsIndRow(i: any) {   
+
+  selectLmsIndRow(i: any) {
     this.session_service.set(SESSION_KEY.WEB_QUOTE_DETAILS, i)
     let quote={};
     quote['client_code'] = i['client_code'];
@@ -57,6 +56,6 @@ export class QuotationLandingScreenComponent implements OnInit {
     });
   }
 
-  
+
 
 }

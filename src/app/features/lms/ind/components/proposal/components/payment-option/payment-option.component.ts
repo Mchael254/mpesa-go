@@ -1,11 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { BankDTO } from 'src/app/shared/data/common/bank-dto';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { BankService } from 'src/app/shared/services/setups/bank/bank.service';
-import { PaystackOptions } from 'angular4-paystack';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {BankDTO} from "../../../../../../../shared/data/common/bank-dto";
+import {BankService} from "../../../../../../../shared/services/setups/bank/bank.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 
 @Component({
@@ -35,7 +34,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
     amount: this.payment_details?.premium * 100,
     email: 'user@gmail.com',
     ref: `ref-${Math.ceil(Math.random() * 10e13)}`
-  } 
+  }
   quote: any;
 
 
@@ -52,7 +51,7 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
   }
 
 
-  
+
 
   paymentInit() {
     console.log( this.paystack_details['reference'] );
@@ -75,20 +74,20 @@ export class PaymentOptionComponent implements OnInit, OnDestroy{
     this.options = {...this.options };
   }
 
-  
 
 
- 
+
+
   paymentFailure() {
     location.reload();
     console.log('Payment Failed');
   }
- 
+
   // paymentSuccess(res) {
   //   console.log('Payment complete', res);
   //   this.paymentInstance.close();
   // }
- 
+
   // paymentInited(paymentInstance) {
   //   this.paymentFailure = paymentInstance;
   //   console.log('Payment about to begin', paymentInstance);

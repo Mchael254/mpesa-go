@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { concatMap, finalize, of } from 'rxjs';
-import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { FileProgressEvent } from 'primeng/fileupload';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { Router } from '@angular/router';
+import {DmsService} from "../../../../../service/dms/dms.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {Router} from "@angular/router";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
+
+;
 
 @Component({
   selector: 'app-documents-upload',

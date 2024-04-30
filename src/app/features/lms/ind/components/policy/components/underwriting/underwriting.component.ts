@@ -2,16 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem } from 'primeng/api';
-import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
-import { EndorsementService } from 'src/app/features/lms/service/endorsement/endorsement.service';
-import { PartyService } from 'src/app/features/lms/service/party/party.service';
-import { PoliciesService } from 'src/app/features/lms/service/policies/policies.service';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { Utils } from 'src/app/features/lms/util/util';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
+import {Utils} from "../../../../../util/util";
+import {PoliciesService} from "../../../../../service/policies/policies.service";
+import {ProductService} from "../../../../../service/product/product.service";
+import {EndorsementService} from "../../../../../service/endorsement/endorsement.service";
+import {DmsService} from "../../../../../service/dms/dms.service";
+import {PartyService} from "../../../../../service/party/party.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {RelationTypesService} from "../../../../../service/relation-types/relation-types.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+
 
 @Component({
   selector: 'app-underwriting',
@@ -36,9 +36,9 @@ export class UnderwritingComponent implements OnInit {
   util: Utils;
   relationTypeList: any[];
 
-  constructor(private policies_service: PoliciesService, 
-    private spinner_service: NgxSpinnerService, 
-    private product_service: ProductService, 
+  constructor(private policies_service: PoliciesService,
+    private spinner_service: NgxSpinnerService,
+    private product_service: ProductService,
     private fb: FormBuilder,
     private endorsement_service: EndorsementService,
     private dms_service: DmsService,
@@ -91,7 +91,7 @@ export class UnderwritingComponent implements OnInit {
       let endr_code = this.util.getEndrCode();
     this.policies_service
       .listPolicySummaryByPolCodeAndEndrCode(pol_code, endr_code)
-      .subscribe((data) => {        
+      .subscribe((data) => {
         this.policyUnderwritingSummary = data
         this.policyUnderwritingSummary['endr_pay_method'] = this.getPaymentMethod(this.policyUnderwritingSummary['endr_pay_method']);
         this.spinner_service.hide('underwriting')
@@ -109,13 +109,13 @@ export class UnderwritingComponent implements OnInit {
       .listCoverTypesByEndrCode(this.util.getEndrCode())
       .subscribe((data: any[]) => {
         this.endorsementCoverTypeList = data;
-        
+
         // this.spinner_service.hide('underwriting')
 
       },
       err=>{
         console.log(err);
-        
+
         // this.spinner_service.hide('underwriting')
 
       });
@@ -126,19 +126,19 @@ export class UnderwritingComponent implements OnInit {
       this.productList = data
     })
   }
-  
+
   getListPolicyDependents(){
     this.party_service.getListPolicyDependents(this.util.getEndrCode()).subscribe((data: any[]) =>{
       this.policyDependents = data;
       console.log(data);
-      
+
     })
   }
   getListPolicyBeneficiaries(){
     this.party_service.getListOfBeneficariesByProposalCode(this.util.getPolCode()).subscribe((data: any[]) =>{
       this.policyBeneficiaries = data;
       console.log(data);
-      
+
     })
   }
 
@@ -148,11 +148,11 @@ export class UnderwritingComponent implements OnInit {
     .subscribe(data =>{
       console.log(data);
       this.spinner_service.hide('underwriting');
-      
-    }, 
+
+    },
     err => {
       console.log(err['error']['errors'][0]);
-      this.spinner_service.hide('underwriting');      
+      this.spinner_service.hide('underwriting');
       this.toast_service.info(err['error']['errors'][0]===''?err['error']['errors'][1]:err['error']['errors'][0], 'POLICY UNDERWRITING AUTORIZATION')
     })
   }
@@ -163,7 +163,7 @@ export class UnderwritingComponent implements OnInit {
     // .subscribe(d=>{
     //   console.log(d)
     // });
-    
+
   }
 
   getDocumentsByClientId(){
@@ -183,7 +183,7 @@ export class UnderwritingComponent implements OnInit {
       // this.spinner.hide('download_view');
     })
   }
-  
+
   private getPaymentMethod(g=''){
     if(g==='C'){
       return 'CARD'

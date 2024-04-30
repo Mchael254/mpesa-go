@@ -4,8 +4,9 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular
 import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../core/config/app-config-service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,7 +25,7 @@ export class ShortPeriodService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
   }
 
@@ -42,7 +43,7 @@ errorHandl(error: HttpErrorResponse) {
   return throwError(errorMessage);
   }
 
-  
+
 
   getAllSPRates():Observable<any>{
     return this.api.GET(`short-period-rates`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
@@ -63,7 +64,7 @@ errorHandl(error: HttpErrorResponse) {
         retry(1),
         catchError(this.errorHandl)
       )
-    } 
+    }
     updateSPRates(data:shortPeriod,id:any){
       console.log(JSON.stringify(data))
       return this.api.PUT<shortPeriod>(`short-period-rates/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)

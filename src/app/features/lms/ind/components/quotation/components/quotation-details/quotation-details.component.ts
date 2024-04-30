@@ -6,11 +6,11 @@ import covers from '../../data/covers.json';
 
 import { QuotationFormSetUp } from '../../config/quotations.forms';
 import { Location } from '@angular/common';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService } from 'src/app/shared/services/api/api.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {ApiService} from "../../../../../../../shared/services/api/api.service";
 
 
 @Component({

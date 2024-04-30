@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {ApiService} from "../../../../shared/services/api/api.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +11,6 @@ export class ProductOptionService {
 
   getProductOptionByCode(code: number){
     return this.api.GET(`${this.PRODUCT_OPTION_BASE_URL}/${code}`)
-    
+
   }
 }

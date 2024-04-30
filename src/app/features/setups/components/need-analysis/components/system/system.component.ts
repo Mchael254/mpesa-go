@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
 
 @Component({
   selector: 'app-system',
