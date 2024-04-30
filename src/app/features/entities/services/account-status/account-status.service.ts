@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import { AccountStatus } from '../../data/AccountStatus';
-import { AppConfigService } from 'src/app/core/config/app-config-service';
 import { Status } from '../../data/enums/Status';
 import { AccountTypeStatusList } from '../../data/AccountTypeStatusList';
 import { AccountType } from '../../data/enums/AccountType';
 import { UpdateAccountStatusDto } from '../../data/UpdateAccountStatusDto';
+import {AppConfigService} from "../../../../core/config/app-config-service";
 
 /****
  * @author Idah Gakii

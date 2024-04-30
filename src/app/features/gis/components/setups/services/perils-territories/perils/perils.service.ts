@@ -4,14 +4,15 @@ import { Observable, throwError } from 'rxjs';
 import { retry, catchError, concatMap } from 'rxjs/operators';
 import { AppConfigService } from '../../../../../../../core/config/app-config-service';
 import { Peril } from '../../../data/gisDTO';
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../../environments/api_service_config";
+
 @Injectable({
   providedIn: 'root'
 })
 export class PerilsService {
 
- 
+
   setupsbaseurl = "setups/api/v1"
   baseurl = this.appConfig.config.contextPath.gis_services;
 
@@ -25,7 +26,7 @@ export class PerilsService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
   }
 
@@ -63,7 +64,7 @@ return throwError(errorMessage);
           retry(1),
           catchError(this.errorHandl)
         )
-      } 
+      }
       updatePeril(data:Peril,id:any){
         console.log(JSON.stringify(data))
         return this.api.PUT<Peril>(`perils/${id}`, JSON.stringify(data), API_CONFIG.GIS_SETUPS_BASE_URL)

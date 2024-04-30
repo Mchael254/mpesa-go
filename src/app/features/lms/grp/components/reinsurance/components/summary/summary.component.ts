@@ -5,7 +5,7 @@ import stepData from '../../data/steps.json';
 import { FormBuilder } from '@angular/forms';
 import { ReinsuranceService } from '../../service/reinsurance.service';
 import { FacultativeTreatyDTO, MemberDetailedSummaryDTO, ReinsuranceMembersDTO, SurplusTreatyDTO, SurplusTreatyTotalsDTO } from '../../models/reinsurance-summaryDTO';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
 
 @AutoUnsubscribe
 @Component({
@@ -43,7 +43,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 
   finish() {

@@ -5,11 +5,12 @@ import {Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs/operators";
 import { subclassSection } from '../../data/gisDTO';
 import { environment } from '../../../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {SessionStorageService} from "../../../../../../shared/services/session-storage/session-storage.service";
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+import {StringManipulation} from "../../../../../lms/util/string_manipulation";
+import {SESSION_KEY} from "../../../../../lms/util/session_storage_enum";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,7 +75,7 @@ export class SectionsService {
 
     })
     const params = new HttpParams()
-     
+
     return this.api.GET<any>(`api/v1/sections/${code}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
@@ -96,5 +97,5 @@ export class SectionsService {
       catchError(this.errorHandl)
     )
   }
- 
+
 }

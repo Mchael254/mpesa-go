@@ -1,25 +1,25 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { concatMap, finalize, switchMap, timer } from 'rxjs';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
-import { ProductService } from 'src/app/features/lms/service/product/product.service';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { CoverTypeService } from 'src/app/features/lms/service/cover-type/cover-type.service';
-import { PartyService } from 'src/app/features/lms/service/party/party.service';
-import { RelationTypesService } from 'src/app/features/lms/service/relation-types/relation-types.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
-import { Utils } from 'src/app/features/lms/util/util';
-import { CountryService } from 'src/app/shared/services/setups/country/country.service';
+import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import {ClientDTO} from "../../../../../../entities/data/ClientDTO";
+import {Utils} from "../../../../../util/util";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {QuotationService} from "../../../../../service/quotation/quotation.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ProductService} from "../../../../../service/product/product.service";
+import {ClientService} from "../../../../../../entities/services/client/client.service";
+import {CoverTypeService} from "../../../../../service/cover-type/cover-type.service";
+import {PartyService} from "../../../../../service/party/party.service";
+import {RelationTypesService} from "../../../../../service/relation-types/relation-types.service";
+import {NgxSpinnerService} from "ngx-spinner";
+import {DmsService} from "../../../../../service/dms/dms.service";
+import {CountryService} from "../../../../../../../shared/services/setups/country/country.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 @AutoUnsubscribe
 @Component({
@@ -117,7 +117,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
   }
 
   getCountryList(){
-    this.country_service.getCountries().subscribe((data:any) =>{      
+    this.country_service.getCountries().subscribe((data:any) =>{
       this.countryList = data;
     })
   }
@@ -200,7 +200,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
       )
       .subscribe((data: any) =>{
         console.log(data);
-        
+
       });
   }
 
@@ -236,7 +236,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((web_quote_res: any) => {
-        if(web_quote_details)  this.session_storage_service.set(SESSION_KEY.WEB_QUOTE_DETAILS,  web_quote_details); 
+        if(web_quote_details)  this.session_storage_service.set(SESSION_KEY.WEB_QUOTE_DETAILS,  web_quote_details);
 
         this.summaryRecord = { ...this.summaryRecord, ...web_quote_res };
       });
@@ -315,7 +315,7 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             );
             let quote = this.session_storage_service.get(
               SESSION_KEY.QUOTE_DETAILS
-            );            
+            );
             if (quote) {
               quote['endr_code'] = data?.proposal_details?.endr_code;
               quote['pol_code'] = data?.proposal_details?.pol_code;
@@ -332,13 +332,13 @@ export class QuotationSummaryComponent implements OnInit, OnDestroy {
             this.route.navigate(['/home/lms/ind/proposal/summary']);
             console.log(web_quote);
             console.log(data)
-            
+
 
             web_quote = { ...web_quote, ...data };
             this.session_storage_service.set(
               SESSION_KEY.WEB_QUOTE_DETAILS,
               web_quote
-            );            
+            );
           },
           (err: any) => {
             this.toast.danger(err['error']['errors'][0], 'WARNING');

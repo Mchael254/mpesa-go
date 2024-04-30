@@ -19,6 +19,7 @@ import {DynamicBreadcrumbComponent} from "../../../shared/components/dynamic-bre
 import {DropdownModule} from "primeng/dropdown";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {TranslateModule} from "@ngx-translate/core";
 
 export class MockAppConfigService {
   get config() {
@@ -84,6 +85,7 @@ describe('CreateReportComponent', () => {
         ReactiveFormsModule,
         FormsModule,
         DropdownModule,
+        TranslateModule.forRoot(),
     ],
       providers: [
         GlobalMessagingService,
@@ -109,7 +111,7 @@ describe('CreateReportComponent', () => {
 
   test('should fetch and set categories correctly', () => {
     const subjectArea = { id: 1, subjectAreaName: 'General Insurance Underwriting' };
-    
+
     const mockResponse = [
       {
         id: 0,

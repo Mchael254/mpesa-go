@@ -6,11 +6,12 @@ import {Pagination} from "../../../../shared/data/common/pagination";
 import { QuotationsDTO } from '../../data/quotations-dto';
 import { PremiumComputationRequest, quotationDTO, quotationRisk, riskSection } from '../../components/quotation/data/quotationsDTO';
 import { environment } from '../../../../../environments/environment';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
-import { ApiService } from 'src/app/shared/services/api/api.service';
+import {SessionStorageService} from "../../../../shared/services/session-storage/session-storage.service";
+import {ApiService} from "../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../environments/api_service_config";
+import {SESSION_KEY} from "../../../lms/util/session_storage_enum";
+import {StringManipulation} from "../../../lms/util/string_manipulation";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,24 +75,24 @@ export class QuotationsService {
    const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    
+
     })
-   
+
     return this.api.GET<any>(`v2/quotation-sources?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_QUOTATION_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
   getFormFields(shortDescription:any): Observable<any>{
-  
+
     return this.api.GET<any>(`/forms/${shortDescription}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
-    ) 
+    )
   }
    createQuotation(data:quotationDTO,user){
     return this.api.POST(`v1/quotation?user=${user}`, JSON.stringify(data),API_CONFIG.GIS_QUOTATION_BASE_URL)
-      
+
   }
   createQuotationRisk(quotationCode ,data:quotationRisk[]){
     // console.log(JSON.stringify(data),"Data from the service")
@@ -146,6 +147,6 @@ export class QuotationsService {
   sendSms(data){
     return this.http.post(`/${this.notificationUrl}/api/sms/send`, JSON.stringify(data),this.httpOptions)
   }
- 
+
 
 }

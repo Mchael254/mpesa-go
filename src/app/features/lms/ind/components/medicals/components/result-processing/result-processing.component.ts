@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import stepData from '../../data/steps.json';
 import { Router } from '@angular/router';
-import { MedicalsService } from 'src/app/features/lms/service/medicals/medicals.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { DmsService } from 'src/app/features/lms/service/dms/dms.service';
-import { SessionStorageService } from 'src/app/shared/services/session-storage/session-storage.service';
-import { Utils } from 'src/app/features/lms/util/util';
-import { ToastService } from 'src/app/shared/services/toast/toast.service';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
+import {Utils} from "../../../../../util/util";
+import {MedicalsService} from "../../../../../service/medicals/medicals.service";
+import {DmsService} from "../../../../../service/dms/dms.service";
+import {SessionStorageService} from "../../../../../../../shared/services/session-storage/session-storage.service";
+import {ToastService} from "../../../../../../../shared/services/toast/toast.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
 
 @Component({
   selector: 'app-result-processing',
@@ -60,7 +60,7 @@ export class ResultProcessingComponent implements OnInit {
     this.util = new Utils(this.storage_service);
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.decisionsFormOne = this.fb.group({
       ud_code : [],
       load_type: [],
@@ -85,29 +85,29 @@ export class ResultProcessingComponent implements OnInit {
     this.getClientMedicalTest();
     this.medical_service.serviceProvider().subscribe(data =>{
       this.facilitatorList = data;
-      
+
     });
     this.medical_service.getUnderwritingDecisons(this.util.getPolCode()).subscribe((data: any[]) =>{
       this.possibleDecisionList = data;
-      
+
     });
     this.medical_service.getLoadType().subscribe((data: any[]) =>{
       this.loadTypeList = data;
-      
+
     })
   };
 
   private initForms(): void {
 
     this.diseaseForms = this.diseases.map((disease) =>
-    
-      { 
+
+      {
         disease['checked'] = disease['received'];
         disease['invoice_date'] = new Date(disease['invoice_date']);
         disease['cheque_date'] = new Date(disease['date_received']);
         disease['limit'] = disease['limit'];
         disease['facilitator'] = disease['spr_code'];
-        
+
         return this.createForm(disease);}
     );
 
@@ -135,14 +135,14 @@ export class ResultProcessingComponent implements OnInit {
       this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
 
 
-      
+
     },
     err =>{
       this.spinner_service.hide('decisionsFormOne');
       this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
 
     })
-    
+
   }
 
   saveMedicalDecisionTwo(){
@@ -167,14 +167,14 @@ export class ResultProcessingComponent implements OnInit {
       this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
 
 
-      
+
     },
     err =>{
       this.spinner_service.hide('decisionsFormTwo');
       this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
 
     })
-    
+
   }
 
   saveMedicalDecisionThree(){
@@ -198,14 +198,14 @@ export class ResultProcessingComponent implements OnInit {
       this.spinner_service.hide('decisionsFormThree');
       this.toast_service.success('save data successfully', 'Medical Decision'.toUpperCase());
 
-      
+
     },
     err =>{
       this.spinner_service.hide('decisionsFormThree');
       this.toast_service.danger('fail to save data successfully', 'Medical Decision'.toUpperCase());
 
     })
-    
+
   }
 
   getListOfMedicalDocuments() : any[]{
@@ -267,7 +267,7 @@ export class ResultProcessingComponent implements OnInit {
   //   },
   //   err=>{
   //     console.log(err);
-      
+
   //   })
 
   // }
@@ -289,16 +289,16 @@ export class ResultProcessingComponent implements OnInit {
       this.filePath= null;
       this.spinner_service.hide('test_report_view');
       console.log(err);
-      
+
       this.toast_service.danger('Fail to Preview Medical Report', 'Preview Medical Report'.toUpperCase())
       console.log(err);
-      
+
     })
 
   }
 
 
-  private createForm(disease: any): FormGroup {   
+  private createForm(disease: any): FormGroup {
     return this.fb.group({
       checked: [disease.checked],
       cheque_date: [disease.cheque_date],
@@ -320,7 +320,7 @@ export class ResultProcessingComponent implements OnInit {
       .getListOfClientMedicalTests(this.util.getPolCode())
       .subscribe((data: any[]) => {
         // console.log(data);
-        
+
         this.diseases = data[0]?.medical_tests;
         this.initForms();
         this.spinner_service.hide('medical_test_results_view');
@@ -341,7 +341,7 @@ export class ResultProcessingComponent implements OnInit {
 
     const form = this.diseaseForms[index];
     console.log(form.value);
-    
+
     if (form.valid) {
       const formData = form.value;
       // Update disease object with form data
@@ -379,7 +379,7 @@ export class ResultProcessingComponent implements OnInit {
     // }
 
       let val = {
-        
+
         "claim_amt": formData?.payable_amt,
         "received": formData?.checked,
         "date_received": formData?.cheque_date,

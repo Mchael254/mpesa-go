@@ -54,13 +54,12 @@ import { StringManipulation } from '../../../../../util/string_manipulation';
 import { SESSION_KEY } from '../../../../../../lms/util/session_storage_enum';
 import { DmsService } from '../../../../../../lms/service/dms/dms.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { FormsService } from 'src/app/features/setups/components/forms/service/forms/forms.service';
-import { QuotationService } from 'src/app/features/lms/service/quotation/quotation.service';
-import { Utils } from 'src/app/features/lms/util/util';
-import { Pagination } from 'src/app/shared/data/common/pagination';
-import { IdentityTypeService } from 'src/app/features/lms/service/identityType/identity-type.service';
-import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
-import { SectorOccupationComponent } from 'src/app/features/crm/components/sector-occupation/sector-occupation.component';
+import {DataManipulation} from "../../../../../../../shared/utils/data-manipulation";
+import {Utils} from "../../../../../util/util";
+import {FormsService} from "../../../../../../setups/components/forms/service/forms/forms.service";
+import {QuotationService} from "../../../../../service/quotation/quotation.service";
+import {IdentityTypeService} from "../../../../../service/identityType/identity-type.service";
+import {Pagination} from "../../../../../../../shared/data/common/pagination";
 
 @Component({
   selector: 'app-personal-details',
@@ -132,7 +131,7 @@ export class PersonalDetailsComponent implements OnInit {
 
   ngOnInit() {
     let quote = this.session_storage.get(SESSION_KEY.QUOTE_DETAILS);
-   
+
 
     this.clientForm = this.getClientDetailsForm();
     this.clientSearch = this.fb.group({
@@ -143,7 +142,7 @@ export class PersonalDetailsComponent implements OnInit {
     this.getCountryList();
     this.getBranchList();
     this.getBankList();
-    
+
 
     this.util = new Utils(this.session_storage);
 
@@ -154,7 +153,7 @@ export class PersonalDetailsComponent implements OnInit {
     .pipe(concatMap((data) => {
       return this.getClientById(quote?.client_code)
     }))
-    .subscribe(data =>{      
+    .subscribe(data =>{
       this.patchClientDetailsToForm(data)
       this.toast.success('Fetch Client Details Successfull', 'CLIENT DETAILS');
       this.spinner_Service.hide('client_details_view');
@@ -166,7 +165,7 @@ export class PersonalDetailsComponent implements OnInit {
       this.toast.danger(err?.error?.errors[0], 'CLIENT DETAILS');
       this.spinner_Service.hide('client_details_view');
 
-      
+
     })
   }
 
@@ -178,10 +177,10 @@ export class PersonalDetailsComponent implements OnInit {
           // if (data) {
             this.occupationsData = data;
             // log.info(`Fetched Occuption Data`, this.occupationsData);
-          
+
           }
-        
-        
+
+
       );
   }
 
@@ -191,7 +190,7 @@ export class PersonalDetailsComponent implements OnInit {
         'LMS_INDIVIDUAL',
         'QUOTATION',
         'CLIENT_DETAILS'
-      ).pipe(tap((data : any) => {        
+      ).pipe(tap((data : any) => {
         this.validationData = data['data'].map((val: any) => {
           let temp = {};
           temp['name'] = val?.form_name;
@@ -354,7 +353,7 @@ export class PersonalDetailsComponent implements OnInit {
   //     effectiveDateFrom: [],
   //     effectiveDateTo: [],
   //     modeOfIdentityId: [],
-      
+
   //   });
   // }
 
@@ -363,11 +362,11 @@ export class PersonalDetailsComponent implements OnInit {
   //     const dob = new Date(dateOfBirth);
   //     return today.getFullYear() - dob.getFullYear();
   //   }
-  getClientDetailsForm(pattern: any = ''): FormGroup<any> {    
+  getClientDetailsForm(pattern: any = ''): FormGroup<any> {
     return this.fb.group({
       id: [],
       modeOfIdentity: this.getControlConfig('MODE_OF_IDENTITY'),
-      modeOfIdentityId: [],  
+      modeOfIdentityId: [],
       countryId: this.getControlConfig('COUNTRY_ID'),
       firstName: this.getControlConfig('FIRST_NAME'),
       lastName: this.getControlConfig('LAST_NAME'),
@@ -395,7 +394,7 @@ export class PersonalDetailsComponent implements OnInit {
         is_utility_address: 'N'
       }),
       paymentDetails: this.fb.group({
-        
+
         id: [],
         account_number: this.getControlConfig('PAYMENT_DETAILS_ACCOUNT_NUMBER'),
         bank_branch_id: this.getControlConfig('PAYMENT_DETAILS_BANK_BRANCH_ID'),
@@ -436,12 +435,12 @@ export class PersonalDetailsComponent implements OnInit {
       dateCreated: [],
       effectiveDateFrom: [],
       effectiveDateTo: [],
-        
+
     });
   }
   private patchClientDetailsToForm(data){
     console.log(data);
-    
+
     this.clientForm.patchValue(data);
     this.clientForm.get('id').patchValue(data?.id);
       this.clientForm.get('dateOfBirth').patchValue(new Date(data['dateOfBirth']));
@@ -488,7 +487,7 @@ export class PersonalDetailsComponent implements OnInit {
       });
     });
   }
-  
+
   selectClient(event: any) {
     // console.log('select client');
     console.log(event?.value);
@@ -637,7 +636,7 @@ export class PersonalDetailsComponent implements OnInit {
     } else {
       let client_sub = this.generateOutObjectFromClientForm(this.clientForm);
       console.log(client_sub);
-      
+
       this.crm_client_service
         .save(client_sub)
         // of({'code':7373638383})
@@ -652,7 +651,7 @@ export class PersonalDetailsComponent implements OnInit {
               'Create Client Details Successfully!',
               'Client Details'
             );
-            // return 
+            // return
             return this.quotation_service.getLmsIndividualQuotationWebQuoteListByDraft(0, 10, client_res['id']);
           }),
           finalize(() =>{this.spinner_Service.hide('client_details_view');})
@@ -666,8 +665,8 @@ export class PersonalDetailsComponent implements OnInit {
             );
             this.spinner_Service.hide('client_details_view');
             this.draftList =
-            // [ 
-            //   {}, {} 
+            // [
+            //   {}, {}
             // ]
              data['content']
             ?.filter((data: any)=> data?.proposal_no===null);
@@ -693,14 +692,14 @@ export class PersonalDetailsComponent implements OnInit {
   generateOutObjectFromClientForm(clientForm: FormGroup): any {
     let mode = this.identifierTypeList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(clientForm.get('modeOfIdentity').value));
     console.log(clientForm.get('contactDetails').get('branchId').value);
-    
+
     let branch = this.branchList.find((data: any) => StringManipulation.returnNullIfEmpty(data['id'])===StringManipulation.returnNullIfEmpty(
       clientForm.get('contactDetails').get('branchId').value
       ));
 
     mode = mode?mode:{'id':null, 'name': null};
     branch = mode?mode:{'id':null, 'name': null};
-    
+
     return {
       id: clientForm.get('id').value,
       system: clientForm.get('system').value,
@@ -829,7 +828,7 @@ export class PersonalDetailsComponent implements OnInit {
     }
 
     this.patchClientDetailsToForm(clientTyped)
-    
+
     if (clientTyped?.length > 0) {
       this.crm_client_service
         .searchClients(0, 5, clientTyped)

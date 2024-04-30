@@ -8,10 +8,10 @@ import { AutoUnsubscribe } from '../../../../../../../shared/services/AutoUnsubs
 import { SessionStorageService } from '../../../../../../../shared/services/session-storage/session-storage.service';
 import { Router } from '@angular/router';
 import { ProductService } from '../../../../../../../features/lms/service/product/product.service';
-import { SESSION_KEY } from 'src/app/features/lms/util/session_storage_enum';
-import { DataManipulation } from 'src/app/shared/utils/data-manipulation';
-import { StringManipulation } from 'src/app/features/lms/util/string_manipulation';
-import { NotificationService } from 'src/app/features/lms/service/notification/notification.service';
+import {DataManipulation} from "../../../../../../../shared/utils/data-manipulation";
+import {NotificationService} from "../../../../../service/notification/notification.service";
+import {StringManipulation} from "../../../../../util/string_manipulation";
+import {SESSION_KEY} from "../../../../../util/session_storage_enum";
 
 @Component({
   selector: 'app-quick',
@@ -293,7 +293,7 @@ export class QuickComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          (prem) => {     
+          (prem) => {
             console.log(prem);
 
             let quote: {} = StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.QUOTE_DETAILS));
@@ -370,7 +370,7 @@ export class QuickComponent implements OnInit, OnDestroy {
       return;
     }
 
-    
+
 
     let sub: Observable<any> = null;
     if(this.shareInputType==='email'){
@@ -401,15 +401,15 @@ export class QuickComponent implements OnInit, OnDestroy {
       };
       sub = this.notification_service.sendEmail(payload);
     }else{
-      let payload = 
+      let payload =
         {
           "message": "string",
           "recipients": [
             "string"
           ],
           "sender": "string"
-        
-        
+
+
       }
       sub = this.notification_service.sendPhone(payload);
 

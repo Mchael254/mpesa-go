@@ -18,6 +18,7 @@ import {ReportServiceV2} from "../services/report.service";
 import cubejs from "@cubejs-client/core";
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import {TranslateModule} from "@ngx-translate/core";
 
 export class MockAppConfigService {
   get config() {
@@ -150,7 +151,9 @@ describe('ReportPreviewComponent', () => {
 
   let component: ReportPreviewComponent;
   let fixture: ComponentFixture<ReportPreviewComponent>;
-  
+  let authService: AuthService;
+  let appConfigService: AppConfigService;
+
   const report: ReportV2 = {
     charts: [],
     createdDate: "",
@@ -198,6 +201,7 @@ describe('ReportPreviewComponent', () => {
         HttpClientTestingModule,
         ReactiveFormsModule,
         FormsModule,
+        TranslateModule.forRoot(),
       ],
       providers: [
         MessageService,
@@ -322,7 +326,7 @@ describe('ReportPreviewComponent', () => {
     }
     const colorScheme = findComponent(fixture, 'app-color-scheme');
     colorScheme.triggerEventHandler('selectedColorScheme', selectedColorScheme);
-    
+
     expect(component.colorScheme['bar']).toBe(selectedColorScheme);
     expect(component.loadChart.call).toBeTruthy();
   });
@@ -352,6 +356,6 @@ describe('ReportPreviewComponent', () => {
     // write assertions
   });
 
-  
+
 
 });

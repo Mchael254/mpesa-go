@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
 
 @Component({
   selector: 'app-initiation',
@@ -10,6 +10,6 @@ export class InitiationComponent {
   breadCrumbItems: BreadCrumbItem[] = [
     { label: 'Home', url: '/home/dashboard' },
     { label: 'Reinsurance', url: '/home/lms/ind/reinsurance/initiation' },
-    
+
   ];
 }

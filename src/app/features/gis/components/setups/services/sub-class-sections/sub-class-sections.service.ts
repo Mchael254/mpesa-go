@@ -4,8 +4,9 @@ import {catchError, retry} from "rxjs/operators";
 import {AppConfigService} from "../../../../../../core/config/app-config-service";
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {subSections} from "../../data/gisDTO";
-import { ApiService } from 'src/app/shared/services/api/api.service';
-import { API_CONFIG } from 'src/environments/api_service_config';
+import {ApiService} from "../../../../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../../../../environments/api_service_config";
+
 
 @Injectable({
   providedIn: 'root'

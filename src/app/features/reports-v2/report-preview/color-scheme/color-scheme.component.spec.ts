@@ -7,6 +7,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { createSpyObj } from 'jest-createspyobj';
 import { of } from 'rxjs';
 import { ColorSchemeService } from '../../services/color-scheme.service';
+import {TranslateModule} from "@ngx-translate/core";
 
 
 export class MockAppConfigService {
@@ -44,7 +45,10 @@ describe('ColorSchemeComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ColorSchemeComponent],
-      imports: [HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        TranslateModule.forRoot(),
+      ],
       providers: [
         { provide: AppConfigService, useClass: MockAppConfigService },
         { provide: ColorSchemeService, useValue: colorSchemeServiceStub },
@@ -78,7 +82,7 @@ describe('ColorSchemeComponent', () => {
     component.colorSchemeForm.controls['color2'].setValue('yellow');
     component.colorSchemeForm.controls['color3'].setValue('green');
     component.colorSchemeForm.controls['color4'].setValue('indigo');
-    
+
     const button = fixture.debugElement.nativeElement.querySelector('#saveColorScheme')
     button.click();
     fixture.detectChanges();

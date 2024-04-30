@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
 
 @Component({
   selector: 'app-summary',
