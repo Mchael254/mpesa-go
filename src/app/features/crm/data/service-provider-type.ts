@@ -9,3 +9,15 @@ export interface ServiceProviderTypeDTO {
   vatTaxRate: string;
   witholdingTaxRate: string;
 }
+
+export interface ServiceProviderTypeActivityDTO {
+  code: number;
+  description: string;
+  emailCode: number;
+  emailDefault: string;
+  messageCode: number;
+  messageDefault: string;
+  reportDays: number;
+  shortDescription: string;
+  spTypeCode: number;
+}

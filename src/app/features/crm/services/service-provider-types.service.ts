@@ -1,7 +1,10 @@
 import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ServiceProviderTypeDTO } from '../data/service-provider-type';
+import {
+  ServiceProviderTypeActivityDTO,
+  ServiceProviderTypeDTO,
+} from '../data/service-provider-type';
 import { ApiService } from '../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../environments/api_service_config';
 
@@ -61,6 +64,57 @@ export class ServiceProviderTypesService {
   deleteServiceProviderType(serviceProviderTypeId: number) {
     return this.api.DELETE<ServiceProviderTypeDTO>(
       `service-provider-types/${serviceProviderTypeId}`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getServiceProviderTypeActivity(): Observable<
+    ServiceProviderTypeActivityDTO[]
+  > {
+    return this.api.GET<ServiceProviderTypeActivityDTO[]>(
+      `service-provider-types/activities`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  getServiceProviderTypeActivityByCode(
+    code: number
+  ): Observable<ServiceProviderTypeActivityDTO[]> {
+    return this.api.GET<ServiceProviderTypeActivityDTO[]>(
+      `service-provider-types/${code}/activities`,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  createServiceProviderTypeActivity(
+    id: number,
+    data: ServiceProviderTypeActivityDTO
+  ): Observable<ServiceProviderTypeActivityDTO> {
+    return this.api.POST<ServiceProviderTypeActivityDTO>(
+      `service-provider-types/${id}/activities`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  updateServiceProviderTypeActivity(
+    code: number,
+    id: number,
+    data: ServiceProviderTypeActivityDTO
+  ): Observable<ServiceProviderTypeActivityDTO> {
+    return this.api.PUT<ServiceProviderTypeActivityDTO>(
+      `service-provider-types/${id}/activities/${code}`,
+      data,
+      API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteServiceProviderTypeActivity(
+    code: number,
+    id: number
+  ): Observable<ServiceProviderTypeActivityDTO> {
+    return this.api.DELETE<ServiceProviderTypeActivityDTO>(
+      `service-provider-types/${id}/activities/${code}`,
       API_CONFIG.CRM_ACCOUNTS_SERVICE_BASE_URL
     );
   }

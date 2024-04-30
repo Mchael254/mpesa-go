@@ -6,7 +6,10 @@ import { BreadCrumbItem } from '../../../../shared/data/common/BreadCrumbItem';
 import { UtilService } from '../../../../shared/services/util/util.service';
 import { MandatoryFieldsService } from '../../../../shared/services/mandatory-fields/mandatory-fields.service';
 import { GlobalMessagingService } from '../../../../shared/services/messaging/global-messaging.service';
-import { ServiceProviderTypeDTO } from '../../data/service-provider-type';
+import {
+  ServiceProviderTypeActivityDTO,
+  ServiceProviderTypeDTO,
+} from '../../data/service-provider-type';
 import { ServiceProviderTypesService } from '../../services/service-provider-types.service';
 import { untilDestroyed } from '../../../../shared/services/until-destroyed';
 import { Logger } from '../../../../shared/services/logger/logger.service';
@@ -26,8 +29,12 @@ success messages. */
 })
 export class ServiceProviderTypesComponent implements OnInit {
   @ViewChild('serviceProviderTypeTable') serviceProviderTypeTable: Table;
+  @ViewChild('serviceProviderTypeActivityTable')
+  serviceProviderTypeActivityTable: Table;
   @ViewChild('serviceProviderTypeConfirmationModal')
   serviceProviderTypeConfirmationModal!: ReusableInputComponent;
+  @ViewChild('serviceProviderTypeActivityConfirmationModal')
+  serviceProviderTypeActivityConfirmationModal!: ReusableInputComponent;
 
   public createServiceProviderTypeForm: FormGroup;
   public createServiceProviderTypeActivityForm: FormGroup;
@@ -36,9 +43,11 @@ export class ServiceProviderTypesComponent implements OnInit {
   public selectedServiceProviderType: ServiceProviderTypeDTO;
   public statusesData: StatusDTO[];
 
-  public serviceProviderActivitiesData: any;
+  public serviceProviderActivitiesData: ServiceProviderTypeActivityDTO[];
+  public selectedServiceProviderTypeActivity: ServiceProviderTypeActivityDTO;
 
   public groupId: string = 'serviceProviderTypeTab';
+  public groupAId: string = 'serviceProviderTypeActivityTab';
   public response: any;
   public submitted = false;
   public visibleStatus: any = {};
@@ -86,25 +95,11 @@ export class ServiceProviderTypesComponent implements OnInit {
     this.ServiceProviderTypeForm();
     this.ServiceProviderTypeActivityForm();
     this.fetchServiceProviderTypes();
+    // this.fetchServiceProviderTypeActivities();
     this.fetchStatuses();
   }
 
   ngOnDestroy(): void {}
-
-  /**
-   * The function updates the value of a form control by adding a specified change value, ensuring the
-   * new value is not less than zero.
-   * @param {number} change - The change parameter is a number that represents the amount by which the
-   * value should be changed. It can be positive or negative.
-   * @param {FormGroup} form - The "form" parameter is a FormGroup object, which represents a group of
-   * FormControl objects. It is used to manage the form controls and their values.
-   * @param {string} formControlName - The `formControlName` parameter is the name of the form control
-   * in the `form` FormGroup that you want to update.
-   */
-  updateRound(change: number, form: FormGroup, formControlName: string) {
-    const newValue = Math.max(form.get(formControlName).value + change, 0);
-    form.get(formControlName).setValue(newValue);
-  }
 
   ServiceProviderTypeForm() {
     this.createServiceProviderTypeForm = this.fb.group({
@@ -147,9 +142,38 @@ export class ServiceProviderTypesComponent implements OnInit {
 
   ServiceProviderTypeActivityForm() {
     this.createServiceProviderTypeActivityForm = this.fb.group({
-      activityId: [''],
+      shortDescription: [''],
       activity: [''],
     });
+    this.mandatoryFieldsService
+      .getMandatoryFieldsByGroupId(this.groupAId)
+      .pipe(untilDestroyed(this))
+      .subscribe((response) => {
+        this.response = response;
+        response.forEach((field) => {
+          this.visibleStatus[field.frontedId] = field.visibleStatus;
+          if (field.visibleStatus === 'Y' && field.mandatoryStatus === 'Y') {
+            const key = field.frontedId;
+            this.createServiceProviderTypeActivityForm.controls[
+              key
+            ].setValidators(Validators.required);
+            this.createServiceProviderTypeActivityForm.controls[
+              key
+            ].updateValueAndValidity();
+            const label = document.querySelector(`label[for=${key}]`);
+            if (label) {
+              const asterisk = document.createElement('span');
+              asterisk.innerHTML = ' *';
+              asterisk.style.color = 'red';
+              label.appendChild(asterisk);
+            }
+          }
+        });
+      });
+  }
+
+  get g() {
+    return this.createServiceProviderTypeActivityForm.controls;
   }
 
   /**
@@ -184,6 +208,66 @@ export class ServiceProviderTypesComponent implements OnInit {
       });
   }
 
+  fetchServiceProviderTypeActivities() {
+    this.serviceProviderTypeService
+      .getServiceProviderTypeActivity()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.serviceProviderActivitiesData = data;
+            log.info(`Fetched SPTA Data`, this.serviceProviderActivitiesData);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.error?.error;
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
+  fetchServiceProviderTypeActivitiesByCode(code: number) {
+    this.serviceProviderTypeService
+      .getServiceProviderTypeActivityByCode(code)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.serviceProviderActivitiesData = data;
+            log.info(`Fetched SPTA Data`, this.serviceProviderActivitiesData);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.error;
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
+
   /**
    * The fetchStatuses function retrieves status data using a service, stores it in the statusesData
    * variable, and logs the fetched data.
@@ -211,7 +295,10 @@ export class ServiceProviderTypesComponent implements OnInit {
     this.serviceProviderTypeTable.filterGlobal(filterValue, 'contains');
   }
 
-  filterServiceProviderTypeActivity(event: Event) {}
+  filterServiceProviderTypeActivity(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.serviceProviderTypeActivityTable.filterGlobal(filterValue, 'contains');
+  }
 
   /**
    * The function `onServiceProviderTypeRowSelect` assigns the selected `ServiceProviderTypeDTO` to the
@@ -223,6 +310,15 @@ export class ServiceProviderTypesComponent implements OnInit {
    */
   onServiceProviderTypeRowSelect(provider: ServiceProviderTypeDTO) {
     this.selectedServiceProviderType = provider;
+    this.fetchServiceProviderTypeActivitiesByCode(
+      this.selectedServiceProviderType.code
+    );
+  }
+
+  onServiceProviderTypeActivityRowSelect(
+    provider: ServiceProviderTypeActivityDTO
+  ) {
+    this.selectedServiceProviderTypeActivity = provider;
   }
 
   /**
@@ -533,9 +629,179 @@ export class ServiceProviderTypesComponent implements OnInit {
     }
 
     this.closeServiceProviderTypeActivityModal();
+
+    if (!this.selectedServiceProviderTypeActivity) {
+      const serviceProviderTypeActivityFormValues =
+        this.createServiceProviderTypeActivityForm.getRawValue();
+      const serviceProviderTypeId = this.selectedServiceProviderType.code;
+
+      const saveSPTA: ServiceProviderTypeActivityDTO = {
+        code: null,
+        description: serviceProviderTypeActivityFormValues.activity,
+        emailCode: null,
+        emailDefault: null,
+        messageCode: null,
+        messageDefault: null,
+        reportDays: null,
+        shortDescription:
+          serviceProviderTypeActivityFormValues.shortDescription,
+        spTypeCode: serviceProviderTypeId,
+      };
+
+      this.serviceProviderTypeService
+        .createServiceProviderTypeActivity(serviceProviderTypeId, saveSPTA)
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Created a Service Provider Type Activity'
+              );
+              this.createServiceProviderTypeActivityForm.reset();
+              this.fetchServiceProviderTypeActivitiesByCode(
+                serviceProviderTypeId
+              );
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.errorOccurred = true;
+            this.errorMessage = err?.error?.error;
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              this.errorMessage
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    } else {
+      const serviceProviderTypeActivityFormValues =
+        this.createServiceProviderTypeActivityForm.getRawValue();
+      const serviceProviderTypeId = this.selectedServiceProviderType.code;
+      const serviceProviderTypeActivityId =
+        this.selectedServiceProviderTypeActivity.code;
+
+      const updateSPTA: ServiceProviderTypeActivityDTO = {
+        code: serviceProviderTypeActivityId,
+        description: serviceProviderTypeActivityFormValues.activity,
+        emailCode: this.selectedServiceProviderTypeActivity.emailCode,
+        emailDefault: this.selectedServiceProviderTypeActivity.emailDefault,
+        messageCode: this.selectedServiceProviderTypeActivity.messageCode,
+        messageDefault: this.selectedServiceProviderTypeActivity.messageDefault,
+        reportDays: this.selectedServiceProviderTypeActivity.reportDays,
+        shortDescription:
+          serviceProviderTypeActivityFormValues.shortDescription,
+        spTypeCode: serviceProviderTypeId,
+      };
+
+      this.serviceProviderTypeService
+        .updateServiceProviderTypeActivity(
+          serviceProviderTypeActivityId,
+          serviceProviderTypeId,
+          updateSPTA
+        )
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'Success',
+                'Successfully Updated a Service Provider Type Activity'
+              );
+              this.createServiceProviderTypeActivityForm.reset();
+              this.fetchServiceProviderTypeActivitiesByCode(
+                serviceProviderTypeId
+              );
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.errorOccurred = true;
+            this.errorMessage = err?.error?.error;
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              this.errorMessage
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    }
   }
 
-  editServiceProviderTypeActivity() {}
+  editServiceProviderTypeActivity() {
+    if (this.selectedServiceProviderTypeActivity) {
+      this.openServiceProviderTypeActivityModal();
+      this.createServiceProviderTypeActivityForm.patchValue({
+        shortDescription:
+          this.selectedServiceProviderTypeActivity.shortDescription,
+        activity: this.selectedServiceProviderTypeActivity.description,
+      });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Service Provider Type Activity is selected!.'
+      );
+    }
+  }
 
-  deleteServiceProviderTypeActivity() {}
+  deleteServiceProviderTypeActivity() {
+    this.serviceProviderTypeActivityConfirmationModal.show();
+  }
+
+  confirmServiceProviderTypeActivityDelete() {
+    if (this.selectedServiceProviderTypeActivity) {
+      const serviceProviderTypeId = this.selectedServiceProviderType.code;
+      const serviceProviderTypeActivityId =
+        this.selectedServiceProviderTypeActivity.code;
+      this.serviceProviderTypeService
+        .deleteServiceProviderTypeActivity(
+          serviceProviderTypeActivityId,
+          serviceProviderTypeId
+        )
+        .subscribe({
+          next: (data) => {
+            if (data) {
+              this.globalMessagingService.displaySuccessMessage(
+                'success',
+                'Successfully deleted a Service Provider Type Activity'
+              );
+              this.selectedServiceProviderTypeActivity = null;
+              this.fetchServiceProviderTypeActivitiesByCode(
+                serviceProviderTypeId
+              );
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'Something went wrong. Please try Again';
+              this.globalMessagingService.displayErrorMessage(
+                'Error',
+                'Something went wrong. Please try Again'
+              );
+            }
+          },
+          error: (err) => {
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              err?.error?.error
+            );
+            log.info(`error >>>`, err);
+          },
+        });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Service Provider Type Activity is selected!.'
+      );
+    }
+  }
 }
