@@ -1,4 +1,4 @@
-<label class="text-primary mb-3">Claim details</label>
+<label class="text-primary mb-3 fw-medium">Claim details</label>
 <div class="row">
   <div class="col-sm-4">
     <p>
@@ -71,14 +71,14 @@
 </div>
 
 <div class="mt-4">
-  <label class="text-primary mb-3">Claim transaction details</label>
-  <button
+  <label class="text-primary mb-3 fw-medium">Claim transaction details</label>
+  <!--<button
     class="btn btn-primary float-end"
     *ngIf ="claimPaymentTransaction?.transaction_type === 'CFO' || claimPaymentTransaction?.transaction_type === 'CFI' ||
       claimPaymentTransaction?.transaction_type === 'CPI' || claimPaymentTransaction?.transaction_type === 'CPO'"
   >
     Contra
-  </button>
+  </button>-->
   <div class="row">
     <div>
       <span *ngIf="!isLoadingTransactionData; else loadingTransactionData"></span>
@@ -244,8 +244,9 @@
   </div>
 </div>
 
-<div class="row mt-4 mb-2 card">
-  <div class="col-12 mt-2 mb-2">
+<div class="mt-4 mb-2">
+ <app-revision-details [selectedSpringTickets]="selectedSpringTickets"></app-revision-details>
+  <!--<div class="col-12 mt-2 mb-2">
     <label class="text-primary">Exceptions</label>
 
     <span class="icon-circle float-end"
@@ -308,7 +309,7 @@
         <tr>
           <th style="width:0.5rem;">
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            <!--        Select-->
+            &lt;!&ndash;        Select&ndash;&gt;
           </th>
           <th>{{'base.id' | translate }}</th>
           <th>{{'mngt_wrkflw.policyDetails.description' | translate }}</th>
@@ -373,60 +374,6 @@
         </tr>
       </ng-template>
     </p-table>
-  </div>
+  </div>-->
 </div>
 
-<div class="row mt-5 mb-2 card" *ngIf="authorizationLevelsData?.length > 0">
-  <div class="col-12 mt-2 mb-2">
-    <label class="text-primary">Authorization levels</label>
-
-    <span class="icon-circle float-end"
-          data-bs-toggle="collapse" href="#collapseAuth" role="button" aria-expanded="false" aria-controls="collapseAuth"
-    ><i class="pi pi-chevron-down"></i
-    ></span>
-  </div>
-
-  <div class="collapse" id="collapseAuth">
-    <!--<div class="col-12 d-flex justify-content-end mt-2 mb-2">
-      <button
-        class="btn btn-primary" style="font-size: 12px;">Authorize level
-      </button>
-    </div>-->
-    <p-table
-      [autoLayout]="true"
-      [rowHover]="true"
-      [resizableColumns]="true"
-      [showCurrentPageReport]="true"
-      [value]="authorizationLevelsData"
-      [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-      responsiveLayout="stack"
-      [scrollable]="true"
-      [(selection)]="selectedAuthorizationLevel"
-      scrollHeight="400px"
-      currentPageReportTemplate="{first} - {last} of {totalRecords}"
-    >
-
-      <ng-template pTemplate="header">
-        <tr>
-          <th>{{'mngt_wrkflw.exceptions.level' | translate }}</th>
-          <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
-          <th>{{'mngt_wrkflw.exceptions.roleName' | translate }}</th>
-          <th>{{'mngt_wrkflw.exceptions.authorizeDate' | translate }}</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-authlevels>
-        <tr>
-          <td>{{authlevels.level}}</td>
-          <td>{{authlevels.authorized}}</td>
-          <td>{{authlevels.user_name}}</td>
-          <td>{{authlevels.authorized_date}}</td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="9">No Authorization Levels Detail(s) Found.</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-</div>
