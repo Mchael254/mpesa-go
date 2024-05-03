@@ -1,6 +1,8 @@
 .report-link {
-  margin: 2rem 0; font-size: 0.8em;
+  margin: 2rem 0;
+  font-size: 0.8em;
   cursor: pointer;
+  color: #00529B;
 }
 
 .report-link:hover {
