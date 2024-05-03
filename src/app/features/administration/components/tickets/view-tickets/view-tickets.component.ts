@@ -244,7 +244,7 @@ export class ViewTicketsComponent implements OnInit {
         return this.searchTicketsDup(this.filterKey, pageIndex, pageSize);
     }
     else {
-      return this.ticketsService.getAllTickets(pageIndex, pageSize, this.dateFrom, this.dateToday, sort, '', query, queryColumn, )
+      return this.ticketsService.getAllTickets(pageIndex, pageSize, "", "", sort, '', query, queryColumn, )
         .pipe(
           takeUntil(this.destroyed$),
           tap((data) => log.info('Fetch Tickets data>> ', data))
@@ -661,7 +661,8 @@ export class ViewTicketsComponent implements OnInit {
       payload.fromDate,
       payload.toDate,
       payload.ticketTypes,
-      payload.ticketModules
+      payload.ticketModules,
+      null
       )
       .subscribe(data => {
         this.springTickets = data;

@@ -11,6 +11,7 @@ import {tap} from "rxjs";
 import {NgxSpinnerService} from "ngx-spinner";
 import {TicketsService} from "../../../services/tickets.service";
 import {LazyLoadEvent} from "primeng/api";
+import {ReportsService} from "../../../../../shared/services/reports/reports.service";
 
 const log = new Logger('MassDocumentDispatchComponent');
 @Component({
@@ -36,6 +37,10 @@ export class MassDocumentDispatchComponent implements OnInit {
   isLoadingDispatch: boolean = false;
   reportsDispatchedData: any[];
   selectedOptions: any[];
+  selectedRptName: string = '';
+
+  filePath: any;
+  fileName: any;
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -50,7 +55,8 @@ export class MassDocumentDispatchComponent implements OnInit {
               private globalMessagingService: GlobalMessagingService,
               private cdr: ChangeDetectorRef,
               private spinner: NgxSpinnerService,
-              private ticketsService: TicketsService,) {
+              private ticketsService: TicketsService,
+              private reportService: ReportsService,) {
   }
 
   ngOnInit(): void {
@@ -133,7 +139,7 @@ export class MassDocumentDispatchComponent implements OnInit {
     pageIndex: number,
     pageSize: number,) {
     this.spinner.show();
-      return this.ticketsService.sortTickets(pageIndex, pageSize, null, null, 'DISP', null )
+      return this.ticketsService.sortTickets(pageIndex, pageSize, null, null, null, null, 'Dispatch' )
         .pipe(
           untilDestroyed(this),
           tap((data) => log.info('Fetch Tickets data>> ', data))
@@ -149,7 +155,7 @@ export class MassDocumentDispatchComponent implements OnInit {
    */
   lazyLoadTickets(event:LazyLoadEvent | TableLazyLoadEvent) {
 
-    const pageIndex = event.first / event.rows;
+    const pageIndex = event.first;
     const queryColumn = event.sortField;
     const sort = event.sortOrder === -1 ? `-${event.sortField}` : event.sortField;
     const pageSize = event.rows;
@@ -203,9 +209,12 @@ export class MassDocumentDispatchComponent implements OnInit {
    */
   prepareDocuments() {
     const scheduleFormValues = this.docDispatchForm.getRawValue();
+    let reportSelected = this.documentsToDispatchData.filter(data => data['checked'] === true);
+    const reportCodes = reportSelected.map(data=> data.dd_code);
+    log.info('0', reportCodes)
     if (scheduleFormValues.documentDispatched.length > 0) {
       const payload: any = {
-        dispatchDocumentCode: scheduleFormValues.documentDispatched,
+        dispatchDocumentCode: reportCodes,
         policyBatchNo: this.selectedTicket?.ticket?.policyCode,
         reportStatus: "A"
       }
@@ -242,6 +251,7 @@ export class MassDocumentDispatchComponent implements OnInit {
         next: (data) => {
           // this.savePreparedDocumentData = data;
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully prepared documents');
+          this.closeDocDispatchModal();
         },
         error: err => {
           this.globalMessagingService.displayErrorMessage('Error', err.error.message);
@@ -287,6 +297,59 @@ export class MassDocumentDispatchComponent implements OnInit {
   filterDocs(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dispatchDocsTable.filterGlobal(filterValue, 'contains');
+  }
+
+  getReportsDispatched() {
+    this.policiesService.fetchReportsDispatched(this.selectedTicket?.ticket?.policyCode)
+      .pipe(
+        untilDestroyed(this),
+      )
+      .subscribe(
+        (data) => {
+          const codes = data.embedded.map(transaction => transaction?.documentDispatchCode);
+          log.info('Codes:', codes);
+
+          // this.selectedOptions = codes;
+          this.reportsDispatchedData = data;
+
+          log.info('reports dispatched>>', this.reportsDispatchedData);
+        }
+      );
+  }
+
+  selectDocs(doc:any) {
+    log.info("report selected>>", doc);
+    this.selectedRptName = doc.rpt_name;
+    this.fetchReport(doc.dd_code);
+    this.documentsToDispatchData = this.documentsToDispatchData.map(data =>{
+      if (data?.dd_code === doc?.dd_code) {
+        data['checked'] = !!!doc['checked'];
+        return data;
+      }
+      return data;
+    })
+  }
+
+  fetchReport(report: any) {
+    // this.isLoadingReport = true;
+
+    console.log('rpt>', report);
+    this.reportService.fetchReport(report)
+      .subscribe(
+        (response) => {
+          // this.apiService.DOWNLOADFROMBYTES(response, 'fname.pdf', 'application/pdf')
+          const blob = new Blob([response], { type: 'application/pdf' });
+          this.filePath  = window.URL.createObjectURL(blob);
+          this.cdr.detectChanges();
+
+          // this.openReportsModal();
+          // this.isLoadingReport = false;
+        },
+        err=>{
+          this.filePath= null;
+          this.globalMessagingService.displayErrorMessage('Error', err.statusText);
+          // this.isLoadingReport = false;
+        })
   }
 
   ngOnDestroy(): void {

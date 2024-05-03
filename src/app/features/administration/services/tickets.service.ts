@@ -369,6 +369,7 @@ export class TicketsService {
     toDate: string,
     type: string,
     module: string,
+    ticketName: string
 
   ): Observable<Pagination<TicketsDTO>> {
 
@@ -382,6 +383,7 @@ export class TicketsService {
       .set('toDate', `${toDate}`)
       .set('type', `${type}`)
       .set('module', `${module}`)
+      .set('ticketName', `${ticketName}`)
 
     // Call the removeNullValuesFromQueryParams method from the UtilsService
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });

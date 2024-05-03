@@ -231,10 +231,32 @@ export class TicketReportsComponent implements OnInit {
    * @returns An array of strings containing the claim voucher report.
    */
   private fetchClaimReports(): any[] {
-    return [{
-      name: 'Claim Voucher Report',
-      rpt_code: 294
-    }];
+    return [
+      {
+        name: 'Claim Payment Voucher',
+        rpt_code: 294
+      },
+      {
+        name: 'Facultative debit/ credit',
+        rpt_code: 424
+      },
+      {
+        name: 'Cheque forwarding Letter',
+        rpt_code: 3958
+      },
+      {
+        name: 'Coinsurance Debit/credit',
+        rpt_code: 989
+      },
+      {
+        name: 'Related Claims XOL Report',
+        rpt_code: 0
+      },
+      {
+        name: 'Cash call document',
+        rpt_code: 0
+      },
+    ];
   }
 
   /**
