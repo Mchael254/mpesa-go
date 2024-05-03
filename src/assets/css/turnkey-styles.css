@@ -615,6 +615,7 @@ color: #00529B;
 .p-datatable .p-datatable-thead > tr > th {
   padding: 0.6rem 0.6rem;
   font-size: 0.9em;
+  /*background: #BAD0E4;*/
 }
 tr > td > p-celleditor > input {
   width: 150px;

@@ -1,0 +1,884 @@
+<label class="text-primary mb-3">Transaction history</label>
+<p-table
+  [autoLayout]="true"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  [showCurrentPageReport]="true"
+  dataKey="transactionNo"
+  [rows]="pageSize || 5"
+  [totalRecords]="claimTransactionData?.length"
+  [value]="claimTransactionData"
+  [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+  responsiveLayout="stack"
+  [scrollable]="true"
+  scrollHeight="400px"
+  currentPageReportTemplate="{first} - {last} of {totalRecords}"
+>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Trans type</th>
+      <th>Trans date</th>
+      <th>Gross liability</th>
+      <th>Net liability</th>
+      <th>Payee</th>
+      <th>Paid amount</th>
+      <th>Authorised?</th>
+      <th>Authorise by</th>
+      <th>Authorise date</th>
+      <th>Action</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-transaction let-expanded="expanded">
+    <tr>
+      <td>{{transaction.transactionCode}}</td>
+      <td>{{transaction.transDate | date: 'dd-MM-yyyy'}}</td>
+      <td>{{transaction.grossMovement | number}}</td>
+      <td>{{transaction.netMovement | number}}</td>
+      <td></td>
+      <td></td>
+      <td>{{transaction.authorized}}</td>
+      <td>{{transaction.authorizedBy}}</td>
+      <td>{{transaction.authorizationDate | date: 'dd-MM-yyyy'}}</td>
+      <td>
+        <button type="button" pButton pRipple
+                [pRowToggler]="transaction" class="p-button-text p-button-rounded p-button-plain"
+                [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-eye'" (click)="toggleTransactionDetails(transaction, expanded)">
+
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="rowexpansion" let-product>
+    <tr>
+      <td colspan="10">
+        <div class="mt-4">
+          <label class="text-primary mb-3">Claim transaction details</label>
+          <div class="row">
+            <div class="col-sm-4">
+              <p>
+                <label class="ticketLabel">Transaction type:</label>
+                <span class="ticketDesc">{{ claimTransaction?.transactionCode }}</span>
+              </p>
+              <p>
+                <label class="ticketLabel">Revision own:</label>
+                <span class="ticketDesc"></span>
+              </p>
+              <p>
+                <label class="ticketLabel">Authorised date:</label>
+                <span class="ticketDesc">{{claimTransaction?.authorizationDate}}</span>
+              </p>
+            </div>
+            <div class="col-sm-4">
+              <p>
+                <label class="ticketLabel">Authorised by:</label>
+                <span class="ticketDesc">{{claimTransaction?.authorizedBy}}</span>
+              </p>
+              <p>
+                <label class="ticketLabel">Revision authorised:</label>
+                <span class="ticketDesc">{{claimTransaction?.authorized}}</span>
+              </p>
+              <p>
+                <label class="ticketLabel">Own share:</label>
+                <span class="ticketDesc"></span>
+              </p>
+            </div>
+            <div class="col-sm-4">
+              <p>
+                <label class="ticketLabel">Revision date:</label>
+                <span class="ticketDesc">{{claimPaymentTransaction?.date}}</span>
+              </p>
+              <p>
+                <label class="ticketLabel">Own gross amount:</label>
+                <span class="ticketDesc">{{claimPaymentTransaction?.amount | number}}</span>
+              </p>
+              <p>
+                <label class="ticketLabel">Revision remarks:</label>
+                <span class="ticketDesc">{{ selectedSpringTickets?.ticket?.remarks }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="10">
+
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="10">No Transaction Detail(s) Found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+
+<div class="mt-4 mb-2">
+  <p-tabView [scrollable]="true">
+    <p-tabPanel header="Exceptions">
+      <div class="col-12 d-flex justify-content-end mt-2 mb-2">
+        <div class="col-sm-12 col-md-6">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by id, description"
+            aria-label="search"
+            aria-describedby="search"
+
+          />
+        </div>
+
+        <div class="col-sm-12 col-md-6 d-flex justify-content-end">
+          <button
+            class="btn btn-primary me-2" style="font-size: 12px;" (click)="makeReady()" [disabled]="isLoadingMakeUndo">
+            <span *ngIf="!isLoadingMakeUndo; else loadingMakeUndo">Make ready</span>
+            <ng-template #loadingMakeUndo>
+              <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+            </ng-template>
+          </button>
+          <button
+            class="btn btn-primary" style="font-size: 12px;" (click)="authoriseExceptions()" [disabled]="isLoadingAuthExc">
+            <span *ngIf="!isLoadingAuthExc; else loadingAuthExc">Authorise exceptions</span>
+            <ng-template #loadingAuthExc>
+              <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+            </ng-template>
+          </button>
+        </div>
+      </div>
+      <p-table
+        #claimsExceptionsTable
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="claimExceptionData?.length"
+        [value]="claimExceptionData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedClaimException"
+        selectionMode="single"
+        dataKey="code"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+        [globalFilterFields]="['description', 'code']"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width:0.5rem;">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              <!--        Select-->
+            </th>
+            <th>{{'base.id' | translate }}</th>
+            <th>{{'mngt_wrkflw.policyDetails.description' | translate }}</th>
+            <th>{{'mngt_wrkflw.reinsurance.remarks' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.setStandard' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.usedStandard' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.submissionDate' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.authorizedBy' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.authorizedDate' | translate }}</th>
+            <th>{{'report.created_by' | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-exception>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="exception"></p-tableCheckbox>
+            </td>
+            <td>{{exception.gis_exception_code}}</td>
+            <td>
+        <span *ngIf = "exception?.description" title="{{exception?.description}}">
+          {{exception?.description?.substring(0,10)}}...
+        </span>
+            </td>
+            <td>
+            <span title="{{exception?.underwriting_decision}}" (click)="toggleDropdown(exception)">
+            {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
+          </span>
+
+              <ng-container *ngIf="!exception.underwriting_decision || showDropdownForException === exception">
+                <p-dropdown
+                  [options]="completionRemarksData"
+                  optionLabel="remark"
+                  optionValue="remark"
+                  id="code"
+                  [filter]="true"
+                  filterBy="remark"
+                  [showClear]="true"
+                  [style]="{ 'width': '130px', 'height': '40px' }"
+                  placeholder="Select remark"
+                  appendTo="body"
+                  (onChange)="onDropdownChange($event, exception)"
+                >
+                  <ng-template let-remark pTemplate="item">
+                    <div title="{{remark.remark}}">{{ remark.remark.length > 10 ? remark.remark.substring(0, 28) + '...' : remark.remark }}</div>
+                  </ng-template>
+                </p-dropdown>
+              </ng-container>
+            </td>
+            <td>{{exception?.set_standard}}</td>
+            <td>{{exception?.used_standard}}</td>
+            <td>{{exception?.authorised}}</td>
+            <td>{{exception?.transactions_date}}</td>
+            <td>{{exception?.authorised_by}}</td>
+            <td>{{exception?.authorised_date}}</td>
+            <td>{{exception?.exception_by}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="11">No Exception Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Authorization levels">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [value]="authorizationLevelsData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        [(selection)]="selectedAuthorizationLevel"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>{{'mngt_wrkflw.exceptions.level' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.authorized' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.roleName' | translate }}</th>
+            <th>{{'mngt_wrkflw.exceptions.authorizeDate' | translate }}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-authlevels>
+          <tr>
+            <td>{{authlevels.level}}</td>
+            <td>{{authlevels.authorized}}</td>
+            <td>{{authlevels.user_name}}</td>
+            <td>{{authlevels.authorized_date}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="9">No Authorization Levels Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Perils">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="perilsData?.length"
+        [value]="perilsData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Claimant</th>
+            <th>Description</th>
+            <th>Peril type</th>
+            <th>Claim amt</th>
+            <th>Adj amt</th>
+            <th>Limit amount</th>
+            <th>Excess amt</th>
+            <th>Novice excess amt</th>
+            <th>Depreciation %</th>
+            <th>Reserve amount</th>
+            <th>Recoveries</th>
+            <th>Salvages</th>
+            <th>Payments</th>
+            <th>Net paid</th>
+            <th>Remarks</th>
+            <th>Underwriting rate</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-peril>
+          <tr>
+            <td>{{peril.claimant}}</td>
+            <td>{{peril.description | titlecase}}</td>
+            <td>{{peril.peril_type}}</td>
+            <td>{{peril.claim_peril_claim_amount | number}}</td>
+            <td>{{peril.claim_peril_adjacent_amount | number}}</td>
+            <td>{{peril.peril_limit}}</td>
+            <td>{{peril.excess}}</td>
+            <td>{{peril.novice_excess_amount | number}}</td>
+            <td>{{peril.section_peril_depreciation_percentage}}</td>
+            <td>{{peril.claim_peril_origin_reserve_amount}}</td>
+            <td>{{peril.own_recoveries}}</td>
+            <td>{{peril.own_salvages}}</td>
+            <td>{{peril.own_payments}}</td>
+            <td>{{peril.own_net_paid}}</td>
+            <td>{{peril.claim_peril_remarks | titlecase}}</td>
+            <td>{{peril.peril_rate}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="17">No Peril Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Treaty ceding">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="treatyCedingData?.length"
+        [value]="treatyCedingData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Treaty</th>
+            <th>Rate</th>
+            <th>Treaty amount</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-treatyCeding>
+          <tr>
+            <td>{{treatyCeding.reinsurance_short_description | titlecase}}</td>
+            <td>{{treatyCeding.rate}}</td>
+            <td>{{treatyCeding.treaty_amount_currency}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No Treaty Ceding Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Facultative ceding">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="facultativeCedingData?.length"
+        [value]="facultativeCedingData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Reinsurer ID</th>
+            <th>Reinsurer</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Submission status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-facultativeCeding>
+          <tr>
+            <td>{{facultativeCeding.agent_short_description}}</td>
+            <td>{{facultativeCeding.agency_name}}</td>
+            <td>{{facultativeCeding.rate}}</td>
+            <td>{{facultativeCeding.amount | number}}</td>
+            <td>{{facultativeCeding.master_transaction_settlement}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">No Facultative Ceding Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Non-proportional treaties">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="nonPropTreatyData?.length"
+        [value]="nonPropTreatyData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Layer</th>
+            <th>Comp ret</th>
+            <th>Amt to reserve</th>
+            <th>Excess amount</th>
+            <th>Recovered</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-nonProp>
+          <tr>
+            <td>{{nonProp.layer}}</td>
+            <td>{{nonProp.company_retention_amount | number}}</td>
+            <td>{{nonProp.amount_to_cede | number}}</td>
+            <td>{{nonProp.excess_amount | number}}</td>
+            <td>{{nonProp.master_transaction_settlement}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">No Non-proportional Treaties Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Penalties">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="penaltiesData?.length"
+        [value]="penaltiesData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Amount</th>
+            <th>Remarks</th>
+            <th>Peril</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-penalties>
+          <tr>
+            <td>{{penalties.transmital_trans_receipt_no}}</td>
+            <td>{{penalties.transmital_trans_gen_date}}</td>
+            <td>{{penalties.transmital_trans_amount}}</td>
+            <td>{{penalties.master_transaction_balance}}</td>
+            <td>{{penalties.master_transaction_settlement}}</td>
+            <td>{{penalties.master_transaction_dc}}</td>
+            <td>{{penalties.transmital_trans_auth_by}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7">No Penalty Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Reinsurance pool">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="reinsurancePoolData?.length"
+        [value]="reinsurancePoolData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Pool rate</th>
+            <th>Pool amt</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-reinsurancePool>
+          <tr>
+            <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+            <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2">No Reinsurance Pool Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Perils CP">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="perilsPaymentData?.length"
+        [value]="perilsPaymentData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Peril id</th>
+            <th>Peril</th>
+            <th>Voucher amount type</th>
+            <th>Excess allowed</th>
+            <th>Excess amount</th>
+            <th>Novice excess amt</th>
+            <th>Reinstatement amount</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-perilPayment>
+          <tr>
+            <td>{{perilPayment.peril_short_description}}</td>
+            <td>{{perilPayment.peril_description | titlecase}}</td>
+            <td>{{perilPayment.type}}</td>
+            <td>{{perilPayment.excess_allowed}}</td>
+            <td>{{perilPayment.excess_amount | number}}</td>
+            <td>{{perilPayment.novice_excess_amount | number}}</td>
+            <td>{{perilPayment.reinsurance_amount}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="17">No Peril Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Treaty cession">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="treatyCessionData?.length"
+        [value]="treatyCessionData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Code</th>
+            <th>Transaction no.</th>
+            <th>Rei code</th>
+            <th>Description</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-treatyCession>
+          <tr>
+            <td>{{treatyCession.code}}</td>
+            <td>{{treatyCession.transactionNo}}</td>
+            <td>{{treatyCession.reinsuranceCode}}</td>
+            <td>{{treatyCession.reinsuranceTreatyShortDescription}}</td>
+            <td>{{treatyCession.rate | number}}</td>
+            <td>{{treatyCession.treatyAmountCurrency}}</td>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No Treaty Cession Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Facultative cession">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="facultativeCessionData?.length"
+        [value]="facultativeCessionData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Transaction no.</th>
+            <th>FC code</th>
+            <th>Description</th>
+            <th>Facultative account</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Amount covered</th>
+            <th>Balance</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-facultativeCession>
+          <tr>
+            <td>{{facultativeCession.transactionNo}}</td>
+            <td>{{facultativeCession.facultativeCode}}</td>
+            <td>{{facultativeCession.agencyName | titlecase}}</td>
+            <td>{{facultativeCession.shortDescription}}</td>
+            <td>{{facultativeCession.rate}}</td>
+            <td>{{facultativeCession.amount | number}}</td>
+            <td>{{facultativeCession.paid}}</td>
+            <td>{{facultativeCession.balance}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">No Facultative Cession Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Non-proportional reinsurers">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="nonPropReinsurerData?.length"
+        [value]="nonPropReinsurerData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Layer</th>
+            <th>Ret amount</th>
+            <th>Excess</th>
+            <th>Amount to recover</th>
+            <th>Amount recovered</th>
+            <th>Balance</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-nonPropReinsurer>
+          <tr>
+            <td>{{nonPropReinsurer.layer}}</td>
+            <td>{{nonPropReinsurer.companyRetentionAmount | number}}</td>
+            <td>{{nonPropReinsurer.excessAmount | number}}</td>
+            <td>{{nonPropReinsurer.amountToCede}}</td>
+            <td>{{nonPropReinsurer.amount}}</td>
+            <td>{{nonPropReinsurer.balance}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">No Non-proportional Reinsurers Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Payment items">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="paymentItemsData?.length"
+        [value]="paymentItemsData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Desc</th>
+            <th>Amount</th>
+            <th>Withhold VAT</th>
+            <th>VAT rate</th>
+            <th>VAT amount</th>
+            <th>Whtx</th>
+            <th>Whtx rate</th>
+            <th>Whtx amount</th>
+            <th>Excise duty</th>
+            <th>Excise duty rate</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-nonProp>
+          <tr>
+            <td>{{nonProp.description | titlecase}}</td>
+            <td>{{nonProp.amount | number}}</td>
+            <td>{{nonProp.with_holding_tax}}</td>
+            <td>{{nonProp.vat_rate}}</td>
+            <td>{{nonProp.vat_amount | number}}</td>
+            <td>{{nonProp.with_holding_tax}}</td>
+            <td>{{nonProp.with_holding_tax_rate}}</td>
+            <td>{{nonProp.with_holding_tax_amount}}</td>
+            <td>{{nonProp.excise_duty}}</td>
+            <td>{{nonProp.excise_duty_rate}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10">No Payment Item Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Reinsurance pool rates">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="reinsurancePoolData?.length"
+        [value]="reinsurancePoolData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>UWYR</th>
+            <th>Pool rate</th>
+            <th>Pool amt</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-reinsurancePool>
+          <tr>
+            <td></td>
+            <td>{{reinsurancePool.reinsurancePoolRate}}</td>
+            <td>{{reinsurancePool.reinsurancePoolAmount}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2">No Reinsurance Pool Rate Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Bank details">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="claimBankData?.length"
+        [value]="claimBankData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Account no.</th>
+            <th>Bank</th>
+            <th>Bank branch</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-claimBank>
+          <tr>
+            <td>{{claimBank?.account_no}}</td>
+            <td>{{claimBank?.bank_name | titlecase}}</td>
+            <td>{{claimBank?.branch_name | titlecase}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No Bank Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Remarks">
+      <p-table
+        [autoLayout]="true"
+        [rowHover]="true"
+        [resizableColumns]="true"
+        [showCurrentPageReport]="true"
+        [rows]="pageSize || 5"
+        [totalRecords]="remarksData?.length"
+        [value]="remarksData"
+        [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+        responsiveLayout="stack"
+        [scrollable]="true"
+        scrollHeight="400px"
+        currentPageReportTemplate="{first} - {last} of {totalRecords}"
+      >
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Short Description</th>
+            <th>Reason for pending</th>
+            <th>Description</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-remark>
+          <tr>
+            <td>{{remark.pending_reason_short_description}}</td>
+            <td>{{remark.pending_reason_description}}</td>
+            <td>{{remark.description}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No Remarks Detail(s) Found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+  </p-tabView>
+
+</div>
