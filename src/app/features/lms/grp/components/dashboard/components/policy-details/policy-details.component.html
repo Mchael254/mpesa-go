@@ -188,28 +188,28 @@
                 </select>
                 <input type="text" pInputText class="form-control" id='otherNames'>
             </div>
-            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+            <p-table [value]="memberBalances" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: calc(100% / 7);">Year</th>
                         <th style="width: calc(100% / 7);">Period</th>
-                        <th style="width: calc(100% / 7);">Balance B/F</th>
-                        <th style="width: calc(100% / 7);">Contribution</th>
-                        <th style="width: calc(100% / 7);">Rate</th>
-                        <th style="width: calc(100% / 7);">Interest</th>
-                        <th style="width: calc(100% / 7);">Balance C/F</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Balance B/F</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Contribution</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Rate</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Interest</th>
+                        <th id="table-align"  style="width: calc(100% / 7);">Balance C/F</th>
                         <th class="action-column" style="width: 10px;"></th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-item>
                     <tr>
-                        <td id="table-align">{{ item.year }}</td>
-                        <td id="table-align">{{ item.period }}</td>
-                        <td id="table-align">{{ item.balanceBF }}</td>
-                        <td id="table-align">{{ item.contribution }}</td>
-                        <td id="table-align">{{ item.rate }}%</td>
-                        <td id="table-align">{{ item.interest }}</td>
-                        <td id="table-align">{{ item.balanceCF }}</td>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.period }}</td>
+                        <td id="table-align">{{ item.balance_bf | number  }}</td>
+                        <td id="table-align">{{ item.employer_amount | number  }}</td>
+                        <td id="table-align">{{ item.rate }}</td>
+                        <td id="table-align">{{ item.total_interest | number }}</td>
+                        <td id="table-align">{{ item.balance_cf | number  }}</td>
                         <td class="action-column">
                             <div class="flex justify-content-center">
                                 <p-overlayPanel #op>

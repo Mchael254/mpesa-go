@@ -18,4 +18,8 @@ export class DashboardService {
   getMemberAllPensionDepositReceipts(policyCode: number, memberCode: number) {
     return this.api.GET(`group/portal/${policyCode}/member-pension-deposits?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+  getMemberBalances (policyCode, memberCode) {
+    return this.api.GET(`group/portal/${policyCode}/member-valuations?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
 }

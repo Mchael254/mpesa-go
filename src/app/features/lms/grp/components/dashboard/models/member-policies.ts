@@ -22,5 +22,18 @@ export class MemberPolicies {
     teleponeNo: string;
     userName: string;
   }
+
+export class memberBalancesDTO {
+  year: string;
+  policy_code: number;
+  policy_member_code: number;
+  period: string;
+  employer_amount: number;
+  total_amount: number;
+  total_interest: number;
+  balance_bf: number
+  balance_cf: number;
+  balance_income: number;
+}
   
   
