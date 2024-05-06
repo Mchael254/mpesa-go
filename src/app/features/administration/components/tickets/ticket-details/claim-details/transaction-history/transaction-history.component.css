@@ -1,0 +1,22 @@
+.p-button.p-button-icon-only.p-button-rounded {
+  height: 0rem;
+}
+
+.p-button.p-button-icon-only {
+  background-color: transparent!important;
+
+}
+.p-button.p-button-icon-only:hover {
+  background-color: transparent!important;
+}
+.ticketLabel {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+}
+.ticketDesc {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000000;
+  margin-left: 5px;
+}

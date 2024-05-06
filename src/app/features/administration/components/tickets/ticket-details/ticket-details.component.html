@@ -21,14 +21,14 @@
   </div>
 
   <p-tabView [(activeIndex)]="activeIndex">
-    <label class="mb-3 float-end">Current ticket:
+    <label class="mb-3 float-end fw-medium">Current ticket:
       <span class="text-primary">{{selectedSpringTickets?.task?.activityName}}</span>
     </label>
 
     <ng-container *ngIf="selectedSpringTickets?.ticket?.sysModule === 'P' || selectedSpringTickets?.ticket?.sysModule === 'RT'">
       <p-tabPanel header="Policy details">
 
-        <label class="text-primary mb-3">{{'mngt_wrkflw.policyDetails.policyDetails' | translate | titlecase }}</label>
+        <label class="text-primary mb-3 fw-medium">{{'mngt_wrkflw.policyDetails.policyDetails' | translate | titlecase }}</label>
         <div class="row">
           <div class="col-sm-3">
             <p>
@@ -135,7 +135,7 @@
         </app-authorization-tab>
       </p-tabPanel>
       <p-tabPanel header="Documents and reports">
-        <label class="text-primary mb-2">Reports</label>
+        <label class="text-primary mb-2 fw-medium">Reports</label>
         <app-ticket-reports></app-ticket-reports>
 
 
@@ -151,17 +151,17 @@
           [claim]="claim"
         ></app-claim-details>
       </p-tabPanel>
-      <p-tabPanel header="Revision details">
-        <app-revision-details
-          [selectedSpringTickets]="selectedSpringTickets"
-        ></app-revision-details>
-      </p-tabPanel>
       <p-tabPanel header="Documents and reports">
-        <label class="text-primary mb-2">Reports</label>
+        <label class="text-primary mb-2 fw-medium">Reports</label>
         <app-ticket-reports></app-ticket-reports>
 
         <app-ticket-documents></app-ticket-documents>
 
+      </p-tabPanel>
+      <p-tabPanel header="Transaction history">
+        <app-transaction-history
+          [selectedSpringTickets]="selectedSpringTickets"
+        ></app-transaction-history>
       </p-tabPanel>
     </ng-container>
 

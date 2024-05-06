@@ -4,6 +4,6 @@
   </object>
   <img *ngIf="contentType === 'image'" id="view-doc-image" alt="Image document" [src]="docPath | safeUrl" style="max-width:100%"/>
 </div>
-<button *ngIf="contentType === 'image'" type="button" class="btn-primary mt-2" (click)="downloadImage()">Download
+<button *ngIf="contentType === 'image'" type="button" class="btn btn-outline-primary mt-2" (click)="downloadImage()">Download
   <i class="fa fa-download"></i>
 </button>

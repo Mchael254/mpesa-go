@@ -152,6 +152,13 @@ export class ViewClaimService {
     return this.api.GET<any>(`api/v1/claims/revision-details?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
   }
 
+  getClaimsPaymentItems(claimVoucherNo: number):
+    Observable<any> {
+    const params = new HttpParams()
+      .set('transactionCode', `${claimVoucherNo}`)
+    return this.api.GET<any>(`api/v1/claims/payment-items?${params}`, API_CONFIG.GIS_CLAIMS_BASE_URL)
+  }
+
   claimMakeReady(data: any): Observable<any> {
     return this.api.POST<any>(`api/v1/claims/make-ready`, JSON.stringify(data), API_CONFIG.GIS_CLAIMS_BASE_URL);
   }
