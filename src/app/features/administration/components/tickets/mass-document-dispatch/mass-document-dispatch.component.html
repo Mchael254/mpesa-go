@@ -59,7 +59,7 @@
       [(selection)]="selectedSpringTickets"
       [tableStyle]="{ 'min-width': '50rem' }"
       [paginator]="true"
-      [rows]="10"
+      [rows]="springTickets.totalElements"
       [rowHover]="true"
       [autoLayout]="true"
       [totalRecords]="springTickets.totalElements"
@@ -77,8 +77,9 @@
           <th>
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
           </th>
+          <th>Ticket name</th>
           <th>{{'mngt_wrkflw.tickets.clientName' | translate }}</th>
-          <th>{{'mngt_wrkflw.tickets.policyNo' | translate }}.</th>
+          <th>Ref No.</th>
           <th>{{'mngt_wrkflw.tickets.dateCreated' | translate }}</th>
           <th>{{'mngt_wrkflw.tickets.transactionType' | translate }}</th>
           <th>{{'mngt_wrkflw.tickets.endorsementNumber' | translate }}</th>
@@ -90,6 +91,7 @@
           <td>
             <p-tableCheckbox [value]="doc"></p-tableCheckbox>
           </td>
+          <td>{{doc?.task?.activityName}}</td>
           <td>{{doc?.clientName}}</td>
           <td>
             {{ doc?.ticket?.sysModule === 'Q' ? doc?.ticket.quotationNo :
@@ -101,7 +103,7 @@
           <td>{{doc?.ticket?.endorsment}}</td>
           <td>{{doc?.ticket?.endorsmentCode}}</td>
           <td (click)="getReportsToPrepare(doc)">
-            <i class="fa-regular fa-eye" style="font-size: 17px;"></i>
+            <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;"></i>
           </td>
         </tr>
       </ng-template>
@@ -116,40 +118,67 @@
 
 <!--DOC Dispatch modal-->
 <div class="modal fade" id="docDispatchToggle" aria-hidden="true" aria-labelledby="docDispatchToggleLabel" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered" style="width: 350px">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-6 text-primary" id="docDispatchToggleLabel">Dispatch Documents</h1>
+        <h1 class="modal-title fs-6 text-primary" id="docDispatchToggleLabel">Documents viewer</h1>
         <button type="button" class="btn-close" (click)="closeDocDispatchModal()"></button>
       </div>
       <div class="modal-body">
-        <div class="col-12 mb-3">
-          <form [formGroup]="docDispatchForm">
+        <div class="row col-12 mb-3">
+          <div class="col-4 border-end border-secondary-subtle">
 
-              <label class="form-label w-100">Documents to dispatch</label><br>
+              <label class="col-form-label text-dark fw-medium w-100">Documents</label>
+            <form [formGroup]="docDispatchForm">
+              <div class="form-check mt-2" *ngFor="let doc of documentsToDispatchData" style="padding-left: 0.7em;">
+                <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
 
-              <p-multiSelect
-                [options]="documentsToDispatchData"
-                formControlName="documentDispatched"
-                optionLabel="rpt_name"
-                optionValue="dd_code"
-                [filter]="true"
-                filterBy="rpt_name"
-                [style]="{ 'width': '100%', 'height': '40px' }"
-                placeholder="Select report"
-                [(ngModel)]="selectedOptions">
-                <ng-template let-report pTemplate="item">
-                  <div title="{{report.rpt_name}}">
-                    {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
-                  </div>
-                </ng-template>
-              </p-multiSelect>
-          </form>
+                <input class="form-check-input" type="checkbox" value="true" id="reportCheckbox" formControlName="documentDispatched"
+                       (click)="selectDocs(doc)" [checked]="doc?.checked">
+                <label class="form-label fw-medium text-dark" for="reportCheckbox">
+                  {{doc?.rpt_name}}
+                </label><br>
+              </div>
+            </form>
+
+
+          </div>
+          <div class="col-8">
+
+              <form [formGroup]="docDispatchForm">
+
+                <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
+                <!--<ngx-doc-viewer
+                  [fileName]="fileName ?? ''"
+                  [srcUrl]="filePath ?? ''"
+                  class="doc-viewer"
+                ></ngx-doc-viewer>-->
+                <!--<p-multiSelect
+                  [options]="documentsToDispatchData"
+                  formControlName="documentDispatched"
+                  optionLabel="rpt_name"
+                  optionValue="dd_code"
+                  [filter]="true"
+                  filterBy="rpt_name"
+                  [style]="{ 'width': '100%', 'height': '40px' }"
+                  placeholder="Select report"
+                  [(ngModel)]="selectedOptions">
+                  <ng-template let-report pTemplate="item">
+                    <div title="{{report.rpt_name}}">
+                      {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
+                    </div>
+                  </ng-template>
+                </p-multiSelect>-->
+              </form>
+
+          </div>
+
         </div>
       </div>
       <div class="modal-footer">
+        <button class="btn btn-outline-primary">Download</button>
         <button class="btn btn-primary" (click)="prepareDocuments()" [disabled]="isLoading" >
-          <span *ngIf="!isLoading; else loading">Dispatch</span>
+          <span *ngIf="!isLoading; else loading">Save</span>
           <ng-template #loading>
             <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
           </ng-template>
