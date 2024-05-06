@@ -289,6 +289,10 @@ td:first-child {
     margin-right: 0; /* Override the margin-right for label set elswhere */
 }
 
+#table-align {
+    text-align: right;
+}
+
 @media (max-width: 1200px) {
 
     .container,

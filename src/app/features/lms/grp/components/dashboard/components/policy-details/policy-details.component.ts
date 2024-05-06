@@ -2,9 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DashboardService } from '../../services/dashboard.service';
-import {Logger} from "../../../../../../../shared/services";
-import {AutoUnsubscribe} from "../../../../../../../shared/services/AutoUnsubscribe";
-import {BreadCrumbItem} from "../../../../../../../shared/data/common/BreadCrumbItem";
+import { memberBalancesDTO } from '../../models/member-policies';
+import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { Logger } from 'src/app/shared/services';
 
 const log = new Logger("PolicyDetailsComponent")
 @AutoUnsubscribe
@@ -28,6 +29,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   gla: boolean = false;
   investment: boolean = false;
   investmentWithRider: boolean = false;
+  memberBalances: memberBalancesDTO[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -43,6 +45,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.adminDetsTableColumns();
     this.populateBreadCrumbItems();
     this.getMemberAllPensionDepositReceipts();
+    this.getValuations();
   }
 
   ngOnDestroy(): void {
@@ -146,8 +149,17 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   getMemberAllPensionDepositReceipts() {
     this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.memberCode).subscribe((res) => {
+      // this.dashboardService.getMemberAllPensionDepositReceipts(2022169, 20221254139).subscribe((res) => {
       log.info("MemberAllPensionDepositReceipts-->", res)
     })
+  }
+
+  getValuations() {
+    this.dashboardService.getMemberBalances(this.selectedPolicyCode, this.memberCode).subscribe((res: memberBalancesDTO[]) => {
+      // this.dashboardService.getMemberBalances(2022169, 20221254139).subscribe((res: memberBalancesDTO[]) => {
+      log.info("MemberBalances", res)
+      this.memberBalances = res;
+    });
   }
 
 }
