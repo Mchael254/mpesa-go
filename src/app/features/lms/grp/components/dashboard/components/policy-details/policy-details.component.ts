@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DashboardService } from '../../services/dashboard.service';
-import { memberBalancesDTO } from '../../models/member-policies';
+import { MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, memberBalancesDTO } from '../../models/member-policies';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
@@ -22,6 +22,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   selectedPolicyNumber: string;
   selectedPolicyCode: number;
   memberCode: number;
+  endorsementCode: number;
   months: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   breadCrumbItems: BreadCrumbItem[] = [];
   selectedRowIndex: number;
@@ -30,6 +31,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   investment: boolean = false;
   investmentWithRider: boolean = false;
   memberBalances: memberBalancesDTO[];
+  memberCovers: MemberCoversDTO;
+  memberPensionDepReceipts: MemberPensionDepReceiptsDTO[];
+  memberDetails: MemberDetailsDTO[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -41,11 +45,14 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.selectedPolicyNumber = this.activatedRoute.snapshot.queryParams['policyNumber'];
     this.memberCode = this.activatedRoute.snapshot.queryParams['entityCode'];
     this.selectedPolicyCode = this.activatedRoute.snapshot.queryParams['policyCode'];
+    this.endorsementCode = this.activatedRoute.snapshot.queryParams['endorsementCode'];
     this.populateYears();
     this.adminDetsTableColumns();
     this.populateBreadCrumbItems();
     this.getMemberAllPensionDepositReceipts();
     this.getValuations();
+    this.getMemberCovers();
+    this.getMemberDetails();
   }
 
   ngOnDestroy(): void {
@@ -139,6 +146,23 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  getGenderLabel(gender: string): string {
+    return gender === 'M' ? 'Male' : 'Female';
+  }
+
+  getStatusLabel(value: string): string {
+    switch (value) {
+      case 'W':
+        return 'Withdrawn';
+      case 'A':
+        return 'Active';
+      case 'E':
+        return 'Exited';
+      default:
+        return '';
+    }
+  }
+
   onReceiptsTableRowClick(dummyData, index: number) {
     this.selectedRowIndex = index;
     if(dummyData){
@@ -147,11 +171,20 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  getMemberDetails() {
+    this.dashboardService.getMemberDetails(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberDetailsDTO[]) => {
+    // this.dashboardService.getMemberDetails(2021111, 20211250237).subscribe((res: MemberDetailsDTO[]) => {
+      this.memberDetails =  res;
+      log.info("getMemberDetails", this.memberDetails)
+    });
+  }
+
   getMemberAllPensionDepositReceipts() {
-    this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.memberCode).subscribe((res) => {
-      // this.dashboardService.getMemberAllPensionDepositReceipts(2022169, 20221254139).subscribe((res) => {
-      log.info("MemberAllPensionDepositReceipts-->", res)
-    })
+    this.dashboardService.getMemberAllPensionDepositReceipts(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
+      // this.dashboardService.getMemberAllPensionDepositReceipts(2021118, 20211250493).subscribe((res: MemberPensionDepReceiptsDTO[]) => {
+      this.memberPensionDepReceipts = res;
+      log.info("MemberAllPensionDepositReceipts-->", this.memberPensionDepReceipts)
+    });
   }
 
   getValuations() {
@@ -161,5 +194,14 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
       this.memberBalances = res;
     });
   }
+
+  getMemberCovers() {
+    this.dashboardService.getMemberCovers(this.selectedPolicyCode, this.endorsementCode).subscribe((res: MemberCoversDTO) => {
+    // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO) => {
+      this.memberCovers = res;
+      log.info("getMemberCovers", this.memberCovers)
+    });
+  }
+
 
 }

@@ -15,11 +15,19 @@ export class DashboardService {
     return this.api.GET(`group/portal/member-policies?identityNumber=${id}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
+  getMemberDetails(policyCode, memberCode) {
+    return this.api.GET(`group/portal/${policyCode}/member-details?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+  
   getMemberAllPensionDepositReceipts(policyCode: number, memberCode: number) {
     return this.api.GET(`group/portal/${policyCode}/member-pension-deposits?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 
   getMemberBalances (policyCode, memberCode) {
     return this.api.GET(`group/portal/${policyCode}/member-valuations?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getMemberCovers(policyCode, endorsementCode) {
+    return this.api.GET(`group/portal/member-covers?policyMemberCode=${policyCode}&endorsementCode=${endorsementCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
 }

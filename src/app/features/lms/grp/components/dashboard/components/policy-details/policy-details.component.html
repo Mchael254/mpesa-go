@@ -24,37 +24,37 @@
             <div class="title-desc" *ngIf="investment || investmentWithRider">Investment summary</div>
 
 
-            <div class="pension-table-container col-12">
+            <div class="pension-table-container col-12" *ngIf="memberDetails">
 
                 <div class="col-6">
                     <table class="pension-table">
                         <tr>
                             <td class="table-label">Name:</td>
-                            <td class="table-label-desc">James Maina</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.name | titlecase }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Date of birth:</td>
-                            <td class="table-label-desc">10/10/1977</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.date_of_birth }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Date of joining scheme:</td>
-                            <td class="table-label-desc">10/10/2007</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.effective_from_date }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Years to retirement:</td>
-                            <td class="table-label-desc">40</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.future_service_years }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Employee contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.employee_contri | number }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
                             <td class="table-label">Interest:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.pens_interest_pct }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Interim interest rate:</td>
-                            <td class="table-label-desc">4%</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.pens_interest_pct }}</td>
                         </tr>
                     </table>
                 </div>
@@ -63,35 +63,35 @@
                     <table class="pension-table">
                         <tr>
                             <td class="table-label">Gender:</td>
-                            <td class="table-label-desc">Male</td>
+                            <td class="table-label-desc">{{ getGenderLabel(memberDetails[0]?.gender) }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Member number:</td>
-                            <td class="table-label-desc">123789</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.member_number }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Group:</td>
-                            <td class="table-label-desc">Nairobi sacco</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.scheme_name }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Employer contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.employer_contri | number }}</td>
                         </tr>
                         <tr *ngIf="!investment && !investmentWithRider">
                             <td class="table-label">Annual salary:</td>
-                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.annual_earnings | number }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.name }}</td>
                         </tr>
                         <tr *ngIf="investment || investmentWithRider">
                             <td class="table-label">Total fund value:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">{{ memberDetails[0]?.name }}</td>
                         </tr>
                         <tr>
                             <td class="table-label">Status:</td>
-                            <td class="table-label-desc">Active</td>
+                            <td class="table-label-desc">{{ getStatusLabel(memberDetails[0]?.pension_status) }}</td>
                         </tr>
                     </table>
                 </div>
@@ -245,17 +245,17 @@
                 <div class="info">
                     <div>
                         <label class="label-name" for="name">Cover:</label>
-                        <span class="label-desc" id="name">Critical illness</span>
+                        <span class="label-desc" id="name">{{memberCovers[0]?.cvt_desc | titlecase}}</span>
                     </div>
             
                     <div>
                         <label class="label-name" for="national-id">Coverage period:</label>
-                        <span class="label-desc" id="national-id">01/01/2023-31/12/2024</span>
+                        <span class="label-desc" id="national-id">{{ memberCovers[0]?.pcm_cover_wef_date }} - {{ memberCovers[0]?.pcm_cover_wet_date }}</span>
                     </div>
         
                     <div>
                         <label class="label-name" for="phone">Sum assured:</label>
-                        <span class="label-desc" id="phone">30%</span>
+                        <span class="label-desc" id="phone">{{memberCovers[0]?.pcm_sa | number}}</span>
                     </div>
             
                 </div>
@@ -282,29 +282,30 @@
                     </select>
                 </div>
 
-                <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <p-table [value]="memberPensionDepReceipts" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+                [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]">
                     <ng-template pTemplate="header">
                         <tr>
                             <th style="width: calc(100% / 8);">Receipt number</th>
                             <th style="width: calc(100% / 8);">Date</th>
-                            <th style="width: calc(100% / 8);">Contribution</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Contribution</th>
                             <th style="width: calc(100% / 8);">Voluntary contribution</th>
                             <th style="width: calc(100% / 8);">Transfer value</th>
-                            <th style="width: calc(100% / 8);">Severance</th>
-                            <th style="width: calc(100% / 8);">Account total</th>
-                            <th style="width: calc(100% / 8);">Total pension account</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Severance</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Account total</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Total pension account</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
                         <tr (click)="onReceiptsTableRowClick(item, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
-                            <td id="table-align">{{ item.year }}</td>
-                            <td id="table-align">{{ item.period }}</td>
-                            <td id="table-align">{{ item.balanceBF }}</td>
-                            <td id="table-align">{{ item.contribution }}</td>
-                            <td id="table-align">{{ item.rate }}%</td>
-                            <td id="table-align">{{ item.interest }}</td>
-                            <td id="table-align">{{ item.balanceCF }}</td>
-                            <td id="table-align">{{ item.balanceCF }}</td>
+                            <td>{{ item.pension_member_dep_code }}</td>
+                            <td>{{ item.pnmdp_date }}</td>
+                            <td id="table-align">{{ item.employee_amount | number }}</td>
+                            <td id="table-align">{{ item.voluntary_contribution_amount | number }}</td>
+                            <td id="table-align">{{ item.total_transfer_amount }}</td>
+                            <td id="table-align">{{ item.cost_of_past_benefits }}</td>
+                            <td id="table-align">{{ item.total_amount | number }}</td>
+                            <td id="table-align">{{ item.pnmdp_amount | number }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -341,12 +342,12 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                         <tr>
-                            <td id="table-align">{{ item.year }}</td>
-                            <td id="table-align">{{ item.period }}</td>
-                            <td id="table-align">{{ item.balanceBF }}</td>
-                            <td id="table-align">{{ item.contribution }}</td>
-                            <td id="table-align">{{ item.rate }}%</td>
-                            <td id="table-align">{{ item.interest }}</td>
+                            <td>{{ item.year }}</td>
+                            <td>{{ item.period }}</td>
+                            <td>{{ item.balanceBF }}</td>
+                            <td>{{ item.contribution }}</td>
+                            <td>{{ item.rate }}%</td>
+                            <td>{{ item.interest }}</td>
                             <td class="action-column">
                                 <i class="fas fa-ellipsis-v"></i>
                             </td>
