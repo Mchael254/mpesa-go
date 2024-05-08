@@ -23,6 +23,7 @@ export class LandingDashboardComponent implements OnInit {
   userProfileData: UserProfileDTO;
   policyNumber: string;
   policyCode: number;
+  endorsementCode: number;
 
   constructor(
     private router: Router,
@@ -41,13 +42,14 @@ export class LandingDashboardComponent implements OnInit {
 
   getData() {
     // this.entityCode = this.activatedRoute.snapshot.queryParams['entityCode'];
-   this.activatedRoute.queryParams.subscribe((params) => {
-    this.entityCode = +params['entityCode'];
-    });
+  //  this.activatedRoute.queryParams.subscribe((params) => {
+  //   this.entityCode = +params['entityCode'];
+  //   });
 
     this.entityType = this.session_storage.get(SESSION_KEY.ENTITY_TYPE);
     const data = this.session_storage.get('memberProfile');
     this.userProfileData = data;
+    this.entityCode = data.code;
     this.entityIdNo =  data.idNo;
   }
 
@@ -71,6 +73,7 @@ export class LandingDashboardComponent implements OnInit {
         entityCode: this.entityCode,
         policyNumber: this.policyNumber ,
         policyCode: this.policyCode,
+        endorsementCode: this.endorsementCode
       }
     });
   }
@@ -80,6 +83,7 @@ export class LandingDashboardComponent implements OnInit {
       this.memberPolicies = res;
       this.policyNumber = this.memberPolicies[0].policy_number;
       this.policyCode = this.memberPolicies[0].policy_code;
+      this.endorsementCode = this.memberPolicies[0].endorsement_code;
     })
   }
 
