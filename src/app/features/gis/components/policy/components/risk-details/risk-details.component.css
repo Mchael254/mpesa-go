@@ -98,3 +98,65 @@
       .search-icon {
         margin-top: -12px
     }
+    .cellEditorInput{
+        border: 1px solid #D9D9D9;
+        height: 30px;
+      }
+      #icon{
+        background-color: #E4E7EB;
+        border-radius: 100px;
+        border: none;
+    }
+    #icon i{
+        color: #00529B;
+    }
+    /* .fa-pencil{
+        color:#00529B
+    }
+    .fa-trash-can{
+        color:red
+    }
+    .fa-plus{
+        color: green;
+    } */
+    ::ng-deep .p-button.p-button-icon-only{
+        height:20px;
+        width: 20px;
+    }
+    #search-input-Rsection{
+        border: none;
+        background-color: transparent;
+        width:200px;
+      }
+      .search-container {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        background-color: #F5F6F8;
+      }
+      .search-icon {
+        padding: 10 10px; 
+      }
+      
+      .search-icon i {
+        padding-top :15px;
+        /* font-size: 12px;  */
+        color:#B5B5B5
+      }
+      .scrollable-list{
+        overflow-y: scroll;
+        max-height: 280px;
+      }
+      .form-check-input:checked {
+        background-color:#00529B;
+        border-color: #00529B;
+
+      }
+      .form-check-input {
+        border-color: #868E96
+      }
+      .form-check-input:hover {
+        border-color: #00529B
+      }

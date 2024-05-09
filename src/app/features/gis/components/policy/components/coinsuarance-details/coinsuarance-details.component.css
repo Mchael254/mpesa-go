@@ -7,6 +7,7 @@
     text-align: left;
     color: rgba(0, 0, 0, 1);
 }
+
 .subheading {
     font-family: Roboto;
     font-size: 16px;
@@ -16,6 +17,7 @@
     text-align: left;
     color: black;
 }
+
 .product-label {
     font-family: Roboto;
     font-size: 16px;
@@ -23,17 +25,20 @@
     line-height: 19px;
     letter-spacing: 0em;
     text-align: left;
-    
+
 }
-#icon{
+
+#icon {
     background-color: #E4E7EB;
     border-radius: 100px;
     border: none;
 }
-#icon i{
+
+#icon i {
     color: #00529B;
 }
-.subheading2{
+
+.subheading2 {
     font-family: Roboto;
     font-size: 16px;
     font-weight: 600;
@@ -41,4 +46,58 @@
     letter-spacing: 0em;
     text-align: left;
     color: black;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #F5F6F8;
+}
+
+.search-icon {
+    padding: 0 10px;
+    /* Adjust the padding as needed */
+}
+
+.search-icon i {
+    font-size: 12px;
+    /* Adjust the font size as needed */
+    color: #B5B5B5
+}
+
+#search-input-Rsection {
+    border: none;
+    background-color: transparent;
+    width: 200px;
+}
+
+.modal-small-title {
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-align: left;
+
+}
+.fa-times{
+    width: 20px;
+    height: 20px;
+    color: #00529B;
+
+}
+/* #DeletePremium{
+    margin-top: 280px;
+    margin-left: 100px;
+} */
+.deleteMessage{
+    color: #000;
+    font-size: 16px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-align: center;
 }
