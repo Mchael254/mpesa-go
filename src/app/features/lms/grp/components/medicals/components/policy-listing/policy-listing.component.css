@@ -52,6 +52,12 @@ table {
     margin-right: 10px;
   }
 
+  .filter-selectors input {
+    border-radius: 5px;
+    max-width: 200px;
+    border: 1px solid #c1c4c3;
+}
+
   .filter-label {
     color: black;
     margin-right: 5px;
