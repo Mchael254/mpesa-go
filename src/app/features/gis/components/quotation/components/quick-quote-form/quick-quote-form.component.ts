@@ -854,7 +854,7 @@ export class QuickQuoteFormComponent {
       this.quotationService.getFormFields(formFieldDescription).subscribe(data => {
         this.formContent = data;
         console.log(this.formContent, "Form-content"); // Debugging: Check the received data
-        this.formData = this.formContent.fields;
+        this.formData = this.formContent[0].fields;
         console.log(this.formData, "formData is defined here");
 
         // Clear existing form controls

@@ -13,11 +13,11 @@
                             <label for="client" class="required product-label" id="client">{{'gis.policy.client' |
                                 translate}}</label>
                             <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="client_code"  [(ngModel)]="clientName"
+                                formControlName="clientCode"  [(ngModel)]="clientName"
                                 data-bs-toggle="modal" data-bs-target="#clientModal" readonly>
 
                             <!-- Display error message under the field -->
-                            <div *ngIf="policyProductForm.get('client_code').hasError('required') && policyProductForm.get('client_code').touched"
+                            <div *ngIf="policyProductForm.get('clientCode').hasError('required') && policyProductForm.get('clientCode').touched"
                                 class="form-text text-danger">
                                 Client is required.
                             </div>
@@ -40,12 +40,12 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="product" class="required product-label" id="product">{{'gis.policy.product' |
                                 translate}}</label><br>
-                            <p-dropdown formControlName="product_code" [options]="ProductDescriptionArray" optionValue="code"
+                            <p-dropdown formControlName="productCode" [options]="ProductDescriptionArray" optionValue="code"
                                 optionLabel="description" (onChange)="onProductSelected($event.value)" placeholder=" "
                                 [filterBy]="'description'" [filter]="true"></p-dropdown>
 
                             <!-- Display error message under the field -->
-                            <div *ngIf="policyProductForm.get('product_code').hasError('required') && policyProductForm.get('product_code').touched"
+                            <div *ngIf="policyProductForm.get('productCode').hasError('required') && policyProductForm.get('productCode').touched"
                                 class="form-text text-danger">
                                 Product is required.
                             </div>
@@ -57,7 +57,7 @@
                             <label for="policy_interface" class="required product-label"
                                 id="policy_interface">{{'gis.policy.policy_interface_type' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="pro_interface_type">
+                                formControlName="proInterfaceType">
                                 <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
                                 <option value="CASH">{{'gis.policy.cash' | translate}}</option>
 
@@ -78,7 +78,7 @@
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class="required product-label" id="branch">{{'gis.policy.branch' |
                                 translate}}</label>
-                            <p-dropdown formControlName="branch_code" [options]="branchList" optionLabel="name" optionValue="id"
+                            <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name" optionValue="id"
                                 (onChange)="onBranchSelected($event.value)" [placeholder]="userBranchName"
                                 [filterBy]="'description'" [filter]="true" [ngModel]="userBranchName"></p-dropdown>
                         </div>
@@ -93,7 +93,7 @@
                                     formControlName="agent_code">
                                     <option value=""></option>
                                 </select> -->
-                                <p-dropdown formControlName="agent_code" [options]="agentList" optionValue="id"
+                                <p-dropdown formControlName="agentCode" [options]="agentList" optionValue="id"
                                 optionLabel="name" (onChange)="onAgentSelected($event.value)" placeholder=" "
                                 [filterBy]="'name'" [filter]="true"></p-dropdown>
                             </div>
@@ -113,7 +113,7 @@
                                         for="intermediary_comm_allowed">{{'gis.policy.intermediary_comm_allowed' |
                                         translate}}?</label>
                                     <input class="form-check-input" type="checkbox" id="intermediary_comm_allowed"
-                                        formControlName="is_commission_allowed">
+                                        formControlName="isCommissionAllowed">
                                 </div>
                             </div>
 
@@ -125,7 +125,7 @@
                                     <label class="form-check-label"
                                         for="admin_fee_allowed">{{'gis.policy.admin_fee_allowed' | translate}}?</label>
                                     <input class="form-check-input" type="checkbox" id="admin_fee_allowed"
-                                        formControlName="is_admin_fee_allowed">
+                                        formControlName="isAdminFeeAllowed">
                                 </div>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
                                 <label for="select_ceding_company" class="product-label"
                                     id="select_ceding_company">{{'gis.policy.ceding_company' | translate}}</label>
                                 <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                    formControlName="agent_code">
+                                    formControlName="agentCode">
                                     <option value=""></option>
                                 </select>
                             </div>
@@ -165,7 +165,7 @@
                                         | translate}}?</label>
                                     <input class="form-check-input" type="checkbox"
                                         id="intermediary_comm_allowed_facultative"
-                                        formControlName="is_commission_allowed">
+                                        formControlName="isCommissionAllowed">
                                 </div>
                             </div>
                             <div class="mb-1 col-sm-4 col-12">
@@ -175,7 +175,7 @@
                                         for="admin_fee_allowed_facultative">{{'gis.policy.admin_fee_allowed' |
                                         translate}}?</label>
                                     <input class="form-check-input" type="checkbox" id="admin_fee_allowed_facultative"
-                                        formControlName="is_admin_fee_allowed">
+                                        formControlName="isAdminFeeAllowed">
                                 </div>
                             </div>
                         </div>
@@ -211,7 +211,7 @@
                                 <label for="introducer" class=" product-label" id="introducer">{{'gis.policy.introducer'
                                     | translate}}</label>
                                 <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                    formControlName="agent_code" [value]="introducerCode " [(ngModel)]="introducerName"
+                                    formControlName="agentCode" [value]="introducerCode " [(ngModel)]="introducerName"
                                     data-bs-toggle="modal" data-bs-target="#introducersModal" readonly>
 
                                 <!-- <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input">
@@ -247,7 +247,7 @@
                             
                             <div class=" mb-1 col-sm-4 col-12">
                                 <div class="form-check pt-4">
-                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="is_cashback_applicable"
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" formControlName="isCashbackApplicable"
                                     >
                                     <label class="form-check-label" for="flexCheckDefault">
                                         {{'gis.policy.cash_applicable' | translate}}
@@ -284,7 +284,7 @@
                             </div>
                             <div class=" mb-1 col-sm-4 col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="coinsuarnce_policy" formControlName="is_coinsurance">
+                                    <input class="form-check-input" type="checkbox" value="" id="coinsuarnce_policy" formControlName="isCoinsurance">
                                     <label class="form-check-label" for="coinsuarnce_policy">
                                         {{'gis.policy.coinsuarance_policy' | translate}}
                                     </label>
@@ -528,10 +528,10 @@
                             <label for="coverFrom" class="required product-label" id="coverTo">{{'gis.policy.cover_from' |
                                 translate}}</label>
                             <input type="date" id="quote-input" class="form-control form-control-sm mb-1"
-                                formControlName="with_effective_from_date"  (change)="updateCoverTo()">
+                                formControlName="withEffectiveFromDate"  (change)="updateCoverTo()">
 
                             <!-- Display error message under the field -->
-                            <div *ngIf="policyProductForm.get('with_effective_from_date').hasError('required') && policyProductForm.get('with_effective_from_date').touched"
+                            <div *ngIf="policyProductForm.get('withEffectiveFromDate').hasError('required') && policyProductForm.get('withEffectiveFromDate').touched"
                                 class="form-text text-danger">
                                 {{'gis.policy.cover_from' | translate}} is required.
                             </div>
@@ -540,32 +540,32 @@
                             <label for="coverTo" class="required product-label"
                                 id="coverTo">{{'gis.policy.cover_to' | translate}}</label>
                                 <input type="date" id="quote-input" (change)="updateCoverDays()" class="form-control form-control-sm mb-1" 
-                                formControlName="with_effective_to_date">
+                                formControlName="withEffectiveToDate">
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="coverDays" class="required product-label" id="product">{{'gis.policy.cover_days' |
                                 translate}}</label><br>
                                 
-                            <input type="text" id="quote-input" formControlName="cover_days" class="form-control form-control-sm mb-1">
+                            <input type="text" id="quote-input" formControlName="coverDays" class="form-control form-control-sm mb-1">
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_interface" class=" product-label"
                                 id="policy_interface">{{'gis.policy.currency' | translate}}</label>
-                                <p-dropdown formControlName="currency_code" [options]="currency" optionLabel="name" optionValue="id" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
+                                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name" optionValue="id" [filterBy]="'name'" placeholder=" " [filter]="true" ></p-dropdown>
                         </div>
                         <div class=" mb-1 col-sm-4 col-12">
                             <label for="policy_type" class=" product-label"
                                 id="policy_type">{{'gis.policy.currency_rate' | translate}}</label>
-                            <input type="text" id="quote-input" formControlName="currency_rate" class="form-control form-control-sm mb-1">
+                            <input type="text" id="quote-input" formControlName="currencyRate" class="form-control form-control-sm mb-1">
 
                         </div>
                         <div class=" mb-1 col-sm-4 col-12 ">
                             <label for="branch" class=" product-label" id="branch">{{'gis.policy.currency_fixed_rate' |
                                 translate}}</label>
                                 <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="is_exchange_rate_fixed">
+                                formControlName="isExchangeRateFixed">
                                 <option value="Y">{{'gis.policy.yes' | translate}}</option>
                                 <option value="N">{{'gis.policy.no' | translate}}</option>
 
@@ -577,7 +577,7 @@
                             <label for="policy_interface" class="required product-label"
                                 id="policy_interface">{{'gis.policy.policy_document' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                formControlName="transaction_type">
+                                formControlName="transactionType">
                                 
 
                             </select>
@@ -586,7 +586,7 @@
                             <label for="policy_type" class="required product-label"
                                 id="policy_type">{{'gis.policy.payment_mode' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="quote-input"
-                                    formControlName="payment_mode" >
+                                    formControlName="paymentMode" >
                                     <option value=""></option>
                                     <option *ngFor="let payment of paymentDetails" [value]="payment.code">{{
                                         payment.description
@@ -613,7 +613,7 @@
                                     translate}}</label>
                                
                                     <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
-                                    formControlName="fequency_of_payment" >
+                                    formControlName="frequencyOfPayment" >
                                     <option value=""></option>
                                     <option value="">{{'gis.policy.annually' |translate}}</option>
                                     <option value="">{{'gis.policy.semi_annually' |  translate}} </option>
@@ -628,7 +628,7 @@
                                 <label for="holding_company" class=" product-label" id="holding_company">{{'gis.policy.holding_company'
                                     | translate}}</label>
                                 <input type="text" id="quote-input" class="form-control form-control-sm mb-1"
-                                    formControlName="agent_code" [value]="introducerCode " [(ngModel)]="introducerName"
+                                    formControlName="agentCode" [value]="introducerCode " [(ngModel)]="introducerName"
                                     data-bs-toggle="modal" data-bs-target="#introducersModal" readonly>
 
                              

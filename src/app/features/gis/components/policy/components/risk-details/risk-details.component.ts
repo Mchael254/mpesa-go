@@ -5,13 +5,13 @@ import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Subclass, Subclasses, subclassCoverTypes, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
 import { VehicleMakeService } from '../../../setups/services/vehicle-make/vehicle-make.service';
 import { VehicleModelService } from '../../../setups/services/vehicle-model/vehicle-model.service';
-import { PolicyResponseDTO, PolicyContent } from '../../data/policy-dto';
+import { PolicyResponseDTO, PolicyContent, RiskSection } from '../../data/policy-dto';
 import { CountryDto, StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
 import { StaffService } from '../../../../../entities/services/staff/staff.service';
@@ -20,6 +20,11 @@ import underwritingSteps from '../../data/underwriting-steps.json'
 import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
 import { ClientService } from 'src/app/features/entities/services/client/client.service';
 import { Table } from 'primeng/table';
+import { SectionsService } from '../../../setups/services/sections/sections.service';
+import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
+import { concatMap, forkJoin, switchMap, tap } from 'rxjs';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -29,7 +34,7 @@ const log = new Logger("RiskDetailsComponent");
   styleUrls: ['./risk-details.component.css']
 })
 export class RiskDetailsComponent {
-  steps=underwritingSteps
+  steps = underwritingSteps
   policyRiskForm: FormGroup;
   show: boolean = true;
   isNcdApplicable: boolean = false;
@@ -41,10 +46,11 @@ export class RiskDetailsComponent {
   policyDetails: PolicyContent;
 
   passedUserDetails: any;
-  userId:any;
-  detailedUserInfo:StaffDto;
-  userCountryCode:any;
-  
+  userId: any;
+  user: any;
+  detailedUserInfo: StaffDto;
+  userCountryCode: any;
+
   errorMessage: string;
   errorOccurred: boolean;
 
@@ -52,28 +58,31 @@ export class RiskDetailsComponent {
   allSubclassList: Subclasses[]
   allMatchingSubclasses = [];
   selectedSubclassCode: any;
-  selectedSubclass:any;
+  selectedSubclass: any;
 
   productCode: any;
 
   binderList: any;
   binderListDetails: any;
+  selectedBinder: any;
 
   subclassCoverType: subclassCoverTypes[] = [];
-  selectedCoverType:any;
+  selectedCoverType: any;
+  selectedCoverTypeCode: any;
   coverTypeCode: any;
   coverTypeDesc: any;
+  covertypeSections: any;
 
   passedCoverFrom: any;
   passedCoverTo: any;
   passedCoverDays: any;
-  passedClientCode:any;
-  passedClientName:any;
-  passedClient:any;
+  passedClientCode: any;
+  passedClientName: any;
+  passedClient: any;
 
   clientData: ClientDTO[];
   clientDetails: ClientDTO;
-  clientList:any;
+  clientList: any;
 
   showMotorSubclassFields: boolean = false;
   motorClassAllowed: any;
@@ -91,11 +100,39 @@ export class RiskDetailsComponent {
 
   statesList: StateDto[];
   selectedStateId: any;
-   townList:TownDto[];
-   countryList:CountryDto[];
-   userCountryName:any;
-   @ViewChild('dt1') dt1: Table | undefined;
-   @ViewChild('closebutton') closebutton;
+  townList: TownDto[];
+  countryList: CountryDto[];
+  userCountryName: any;
+
+  sectionList: any;
+  // selectedSectionList:subclassSection[];
+  subclassSectionCoverList: subclassCoverTypeSection[];
+  allMatchingSections: any;
+  mandatorySections: any;
+  filteredMandatorySections: any;
+  selectedSection: any;
+  sectionDetailsForm: FormGroup;
+  sectionArray: any;
+  searchText: string = '';
+  checkedSectionCode: any;
+  checkedSectionDesc: any;
+  checkedSectionType: any;
+  filteredAllMatchingSections: any;
+  selectedSections: any[] = [];
+  allTransformedSections: any;
+
+
+  premiumList: any[] = [];
+  premiumListIndex = 0;
+  currentYear: any;
+  riskForm: any;
+  selectedTransactionType: any
+
+  editing = false;
+
+  riskCode: any;
+  @ViewChild('dt1') dt1: Table | undefined;
+  @ViewChild('closebutton') closebutton;
 
 
   constructor(
@@ -108,11 +145,18 @@ export class RiskDetailsComponent {
     public vehicleMakeService: VehicleMakeService,
     public vehicleModelService: VehicleModelService,
     public countryService: CountryService,
-    public staffService :StaffService,
+    public staffService: StaffService,
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
     public cdr: ChangeDetectorRef,
     private clientService: ClientService,
+    public sectionService: SectionsService,
+    public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
+    public premiumRateService: PremiumRateService,
+    public authService: AuthService,
+
+
+
 
 
   ) {
@@ -120,8 +164,11 @@ export class RiskDetailsComponent {
   }
 
   ngOnInit(): void {
-    this.loadAllSubclass();
+    // this.loadAllSubclass();
     this.getVehicleMake();
+    this.getAllSection();
+    this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
+
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
     log.debug("Passed Policy Details:", this.passedPolicyDetails);
@@ -129,11 +176,14 @@ export class RiskDetailsComponent {
     const passedUserDetailsString = sessionStorage.getItem('passedUserDetails');
     this.passedUserDetails = JSON.parse(passedUserDetailsString);
     log.debug("Passed User Details:", this.passedUserDetails);
-    this.userId= this.passedUserDetails?.code
+    this.user = this.authService.getCurrentUserName()
+    log.debug("logged in user :", this.user);
+
+    this.userId = this.passedUserDetails?.code
     log.debug("Passed User Id:", this.userId);
-    if(this.userId){
+    if (this.userId) {
       this.getUserDetails();
-    }else{
+    } else {
       this.globalMessagingService.displayErrorMessage(
         'Error',
         'User ID not found'
@@ -141,8 +191,9 @@ export class RiskDetailsComponent {
     }
 
     this.createPolicyRiskForm();
+    this.createSectionDetailsForm();
     this.getPolicy();
-
+    this.currentYear = new Date().getFullYear();
   }
   ngOnDestroy(): void { }
   getUserDetails() {
@@ -150,13 +201,13 @@ export class RiskDetailsComponent {
       .getStaffById(this.userId)
       .pipe(untilDestroyed(this))
       .subscribe({
-        next:(data:any) =>{
-          if(data){
-            this.detailedUserInfo=data;
-            log.debug("Detailed User Details:",this.detailedUserInfo)
-            this.userCountryCode= this.detailedUserInfo.countryCode;
-            log.debug("User country code:",this.userCountryCode);
-            if(this.userCountryCode){
+        next: (data: any) => {
+          if (data) {
+            this.detailedUserInfo = data;
+            log.debug("Detailed User Details:", this.detailedUserInfo)
+            this.userCountryCode = this.detailedUserInfo.countryCode;
+            log.debug("User country code:", this.userCountryCode);
+            if (this.userCountryCode) {
               this.getRiskLocation();
               this.getRiskTerritory()
             }
@@ -183,69 +234,67 @@ export class RiskDetailsComponent {
   }
   createPolicyRiskForm() {
     this.policyRiskForm = this.fb.group({
-
-      allowed_commission_rate: [''],
-      basic_premium: [''],
-      binder_code: [''],
-      commission_amount: [''],
-      commission_rate: [''],
-      cover_type_code: [''],
-      cover_type_short_description: [''],
-      currency_code: [''],
-      date_cover_from: [''],
-      date_cover_to: [''],
-      del_sect: [''],
-      gross_premium: [''],
+      allowedCommissionRate: [''],
+      basicPremium: [''],
+      binderCode: [''],
+      commissionAmount: [''],
+      commissionRate: [''],
+      coverTypeCode: [''],
+      coverTypeShortDescription: [''],
+      currencyCode: [''],
+      dateCoverFrom: [''],
+      dateCoverTo: [''],
+      delSect: [''],
+      grossPremium: [''],
       insureds: this.fb.group({
         client: this.fb.group({
-          first_name: [''],
+          firstName: [''],
           id: [''],
-          last_name: ['']
+          lastName: ['']
         }),
-        prp_code: [''],
+        prpCode: ['']
       }),
-      ipu_ncd_cert_no: [''],
+      ipuNcdCertNo: [''],
       loaded: [''],
-      lta_commission: [''],
-      net_premium: [''],
-      paid_premium: [''],
-      policy_batch_no: [''],
-      policy_number: [''],
-      policy_status: [''],
-      product_code: [''],
-      property_description: [''],
-      property_id: [''],
+      ltaCommission: [''],
+      netPremium: [''],
+      paidPremium: [''],
+      policyBatchNo: [''],
+      policyNumber: [''],
+      policyStatus: [''],
+      productCode: [''],
+      propertyDescription: [''],
+      propertyId: [''],
       quantity: [''],
-      reinsurance_endorsement_number: [''],
-      renewal_area: [''],
-      risk_fp_override: [''],
-      risk_ipu_code: [''],
+      reinsuranceEndorsementNumber: [''],
+      renewalArea: [''],
+      riskFpOverride: [''],
+      riskIpuCode: [''],
       sections: this.fb.array([
         this.fb.group({
-          div_factor: [0],
-          free_limit: [0],
-          limit_amount: [0],
-          multiplier_rate: [0],
-          pil_prem_rate: [0],
+          divFactor: [0],
+          freeLimit: [0],
+          limitAmount: [0],
+          multiplierRate: [0],
+          pilPremRate: [0],
           premium: [0],
-          rate_type: [''],
-          sect_code: [0],
-          sect_ipu_code: [0],
-          section_code: [0],
-          section_desc: [''],
-          section_short_desc: ['']
+          rateType: [''],
+          sectCode: [0],
+          sectIpuCode: [0],
+          sectionCode: [0],
+          sectionDesc: [''],
+          sectionShortDesc: ['']
         })
       ]),
-      stamp_duty: [''],
-      sub_class_code: [''],
-      sub_class_description: [''],
-      transaction_type: [''],
-      underwriting_year: [''],
+      stampDuty: [''],
+      subClassCode: [''],
+      subClassDescription: [''],
+      transactionType: [''],
+      underwritingYear: [''],
       value: [''],
-
-      cover_days: [''],
-
+      coverDays: ['']
     });
+
   }
   toggleNcdApplicableFields(checked: boolean) {
     this.isNcdApplicable = checked;
@@ -269,11 +318,11 @@ export class RiskDetailsComponent {
             log.debug("Policy Details", this.policyDetails)
             this.productCode = this.policyDetails.product.code;
             log.debug("Product Code", this.productCode)
-            this.passedCoverFrom = this.policyDetails.wef_dt;
+            this.passedCoverFrom = this.policyDetails.wefDt;
             log.debug("COVER FROM", this.passedCoverFrom);
-            this.passedCoverTo = this.policyDetails.wet_dt;
+            this.passedCoverTo = this.policyDetails.wetDt;
             log.debug("COVER TO", this.passedCoverTo);
-            this.passedClientCode = this.policyDetails.client_code
+            this.passedClientCode = this.policyDetails.clientCode
             log.debug("CLIENT CODE", this.passedClientCode);
 
 
@@ -282,12 +331,11 @@ export class RiskDetailsComponent {
             const coverToDate = new Date(this.passedCoverTo).getTime(); // Convert to milliseconds
             const coverDays = Math.ceil((coverToDate - coverFromDate) / (1000 * 60 * 60 * 24));
             this.passedCoverDays = coverDays;
-            this.policyRiskForm.controls['cover_days'].setValue(this.passedCoverDays);
+            this.policyRiskForm.controls['coverDays'].setValue(this.passedCoverDays);
 
             log.debug("Cover Days", this.passedCoverDays);
-
+            this.loadAllSubclass();
             this.onProductSelected();
-            this.getProductSubclass();
             this.loadAllClients();
             this.cdr.detectChanges();
 
@@ -320,6 +368,8 @@ export class RiskDetailsComponent {
           if (data) {
             this.allSubclassList = data;
             log.debug(this.allSubclassList, "All Subclass List");
+            this.getProductSubclass();
+
             this.cdr.detectChanges();
 
 
@@ -400,11 +450,11 @@ export class RiskDetailsComponent {
             this.clientData = this.clientList.content
             log.debug("CLIENT DATA:", this.clientData)
             const selectedClient = this.clientData.find(client => client.id === this.passedClientCode);
-            log.debug("Passed CLient",selectedClient)
-            this.passedClient=selectedClient
-            log.debug("Passed CLient  not inusured",selectedClient)
+            log.debug("Passed CLient", selectedClient)
+            this.passedClient = selectedClient
+            log.debug("Passed CLient  not inusured", selectedClient)
 
-            this.passedClientName= selectedClient.firstName + ' ' + selectedClient.lastName;
+            this.passedClientName = selectedClient.firstName + ' ' + selectedClient.lastName;
 
           } else {
             this.errorOccurred = true;
@@ -425,16 +475,16 @@ export class RiskDetailsComponent {
         },
       });
   }
-   /**
-   * Applies a global filter to a DataTable.
-   * - Retrieves the input value from the event target.
-   * - Calls the DataTable's 'filterGlobal' method with the input value and a specified string value.
-   * @method applyFilterGlobal
-   * @param {Event} $event - The event triggering the filter application.
-   * @param {string} stringVal - The specified string value for filtering.
-   * @return {void}
-   */
-   applyFilterGlobal($event, stringVal) {
+  /**
+  * Applies a global filter to a DataTable.
+  * - Retrieves the input value from the event target.
+  * - Calls the DataTable's 'filterGlobal' method with the input value and a specified string value.
+  * @method applyFilterGlobal
+  * @param {Event} $event - The event triggering the filter application.
+  * @param {string} stringVal - The specified string value for filtering.
+  * @return {void}
+  */
+  applyFilterGlobal($event, stringVal) {
     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
   }
   loadClientDetails(id) {
@@ -450,8 +500,8 @@ export class RiskDetailsComponent {
   }
   saveclient() {
     // this.clientCode = this.clientDetails.id;
-    this.passedClient=this.clientDetails
-    log.debug("THE INSURRED FULL INFO",this.passedClient)
+    this.passedClient = this.clientDetails
+    log.debug("THE INSURRED FULL INFO", this.passedClient)
     this.passedClientName = this.clientDetails.firstName + ' ' + this.clientDetails.lastName;
     log.debug("another insured chosen:", this.passedClientName)
   }
@@ -460,13 +510,14 @@ export class RiskDetailsComponent {
     this.selectedSubclassCode = parseInt(selectedValue);
     // Perform your action based on the selected value
     log.debug(this.selectedSubclassCode, 'Selected Subclass Code')
-    const selectedSubclass = this.allMatchingSubclasses.find( subclass => subclass.code === this.selectedSubclassCode)
+    const selectedSubclass = this.allMatchingSubclasses.find(subclass => subclass.code === this.selectedSubclassCode)
     this.selectedSubclass = selectedSubclass;
     log.debug(this.selectedSubclass, 'Selected Subclass Info')
 
     this.loadCovertypeBySubclassCode(this.selectedSubclassCode);
     this.loadAllBinders();
     // this.loadSubclassSectionCovertype();
+    this.loadSubclassSectionCovertype();
 
   }
   loadAllBinders() {
@@ -542,11 +593,59 @@ export class RiskDetailsComponent {
     const selectedCover = this.subclassCoverType.find(cover => cover.code === this.coverTypeCode)
 
     this.selectedCoverType = selectedCover;
-    log.debug("Cover Type selected:",selectedCover)
+    log.debug("Cover Type selected:", selectedCover)
+    this.selectedCoverTypeCode = this.selectedCoverType.coverTypeCode;
+    log.debug("Cover Type code selected:", this.selectedCoverTypeCode)
+
+    this.covertypeSections = this.subclassSectionCoverList.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode)
+    log.debug("All section for a selected Cover Type:", this.covertypeSections)
+
+    if (this.sectionList && this.covertypeSections) {
+      this.allMatchingSections = [];
+      this.covertypeSections.forEach(element => {
+        const matchingSections = this.sectionList.filter(section => section.code === element.sectionCode);
+        this.allMatchingSections.push(...matchingSections);
+      });
+
+      log.debug("Retrieved All matching sections", this.allMatchingSections);
+    }
+    this.filterMandatorySections();
 
   }
+  getAllSection() {
+    this.sectionService
+      .getAllSections()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
+
+          if (data) {
+            this.sectionList = data;
+            log.debug("Section List", this.sectionList)
+            this.cdr.detectChanges();
+
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
   onProductSelected() {
-    log.debug("allow moto class field",this.policyDetails.product.allowMotorClass)
+    log.debug("allow moto class field", this.policyDetails.product.allowMotorClass)
     this.motorClassAllowed = this.policyDetails.product.allowMotorClass;
     log.debug("Motor Class Allowed Value", this.motorClassAllowed);
     if (this.motorClassAllowed === 'Y') {
@@ -679,7 +778,7 @@ export class RiskDetailsComponent {
           if (data) {
             this.statesList = data;
             log.debug("State  list", this.statesList)
-            
+
 
             this.cdr.detectChanges();
 
@@ -701,96 +800,429 @@ export class RiskDetailsComponent {
   }
   onStateSelected(selectedValue: any) {
     this.selectedStateId = selectedValue;
-    if(this.selectedStateId){
+    if (this.selectedStateId) {
       this.getRiskTown();
     }
     log.debug("SELECTED State Id:", this.selectedStateId)
 
   }
-  getRiskTown(){
+  getRiskTown() {
     this.countryService
-    .getTownsByMainCityState(this.selectedStateId)
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next:(data:any) =>{
-        if(data){
-          this.townList=data;
-          log.debug("Town List:",this.townList)
-          // this.userCountryCode= this.detailedUserInfo.countryCode;
-          // log.debug("User country code:",this.userCountryCode);
-          // if(this.userCountryCode){
-          //   this.getRiskLocation();
-          // }
+      .getTownsByMainCityState(this.selectedStateId)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            this.townList = data;
+            log.debug("Town List:", this.townList)
+            // this.userCountryCode= this.detailedUserInfo.countryCode;
+            // log.debug("User country code:",this.userCountryCode);
+            // if(this.userCountryCode){
+            //   this.getRiskLocation();
+            // }
 
-        }
-        else {
-          this.errorOccurred = true;
-          this.errorMessage = 'Empty response received from the server.';
-          this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
-        }
-        
-      },
-      error: (err) => {
-
-        this.globalMessagingService.displayErrorMessage(
-          'Error',
-          this.errorMessage
-        );
-        log.info(`error >>>`, err);
-      },
-    })
-  }
-
-getRiskTerritory() {
-  this.countryService
-    .getCountries()
-    .pipe(untilDestroyed(this))
-    .subscribe({
-      next: (data: any) => {
-        if (data && data.length > 0) {
-          this.countryList = data;
-          console.log("Country List:", this.countryList);
-
-          const country = this.countryList.find(country => country.id === this.userCountryCode);
-          console.log("User Country:", country);
-
-          if (country) {
-            this.userCountryName = country.name;
-            console.log("User Country Name:", this.userCountryName);
-          } else {
+          }
+          else {
             this.errorOccurred = true;
-            this.errorMessage = 'User country not found in the list.';
+            this.errorMessage = 'Empty response received from the server.';
             this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
           }
-        } else {
+
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      })
+  }
+
+  getRiskTerritory() {
+    this.countryService
+      .getCountries()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data && data.length > 0) {
+            this.countryList = data;
+            console.log("Country List:", this.countryList);
+
+            const country = this.countryList.find(country => country.id === this.userCountryCode);
+            console.log("User Country:", country);
+
+            if (country) {
+              this.userCountryName = country.name;
+              console.log("User Country Name:", this.userCountryName);
+            } else {
+              this.errorOccurred = true;
+              this.errorMessage = 'User country not found in the list.';
+              this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+            }
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
           this.errorOccurred = true;
-          this.errorMessage = 'Empty response received from the server.';
+          this.errorMessage = 'An error occurred while fetching countries.';
           this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
-        }
-      },
-      error: (err) => {
-        this.errorOccurred = true;
-        this.errorMessage = 'An error occurred while fetching countries.';
-        this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
-        log.debug('Error:', err);
-      },
+          log.debug('Error:', err);
+        },
+      });
+  }
+  addPolicyRisk() {
+    this.policyRiskForm.get('insureds.client.firstName').setValue(this.passedClient?.firstName);
+    this.policyRiskForm.get('insureds.client.lastName').setValue(this.passedClient?.lastName);
+    this.policyRiskForm.get('insureds.client.id').setValue(this.passedClient?.id);
+    this.policyRiskForm.get('insureds.prpCode').setValue(this.policyDetails.clientCode);
+    this.policyRiskForm.get('allowedCommissionRate').setValue(890);
+    this.policyRiskForm.get('basicPremium').setValue(890);
+    this.policyRiskForm.get('binderCode').setValue(this.selectedBinder);
+    this.policyRiskForm.get('commissionAmount').setValue(890);
+    this.policyRiskForm.get('commissionRate').setValue(2);
+    this.policyRiskForm.get('coverTypeCode').setValue(this.selectedCoverTypeCode);
+    this.policyRiskForm.get('coverTypeShortDescription').setValue(this.selectedCoverType?.description);
+    this.policyRiskForm.get('currencyCode').setValue(268);
+    this.policyRiskForm.get('dateCoverFrom').setValue(this.policyDetails.wefDt);
+    this.policyRiskForm.get('dateCoverTo').setValue(this.policyDetails.wetDt);
+    this.policyRiskForm.get('delSect').setValue(null);
+    this.policyRiskForm.get('grossPremium').setValue(890);
+    this.policyRiskForm.get('ipuNcdCertNo').setValue(null);
+    this.policyRiskForm.get('loaded').setValue("N");
+    this.policyRiskForm.get('ltaCommission').setValue(890);
+    this.policyRiskForm.get('netPremium').setValue(0);
+    this.policyRiskForm.get('paidPremium').setValue(890);
+    this.policyRiskForm.get('policyBatchNo').setValue(this.policyDetails.batchNo);
+    this.policyRiskForm.get('policyNumber').setValue(this.policyDetails.policyNo);
+    this.policyRiskForm.get('policyStatus').setValue(this.policyDetails.policyStatus);
+    this.policyRiskForm.get('productCode').setValue(this.policyDetails.product.code);
+    this.policyRiskForm.get('propertyDescription').setValue(this.vehiclemakeModel);
+    this.policyRiskForm.get('propertyId')
+    this.policyRiskForm.get('quantity').setValue(0);
+    this.policyRiskForm.get('reinsuranceEndorsementNumber').setValue("N");
+    this.policyRiskForm.get('renewalArea').setValue("N");
+    this.policyRiskForm.get('riskFpOverride').setValue(0);
+    this.policyRiskForm.get('riskIpuCode').setValue(0);
+    this.policyRiskForm.get('stampDuty').setValue(890);
+    this.policyRiskForm.get('subClassCode').setValue(this.selectedSubclassCode);
+    this.policyRiskForm.get('subClassDescription').setValue(this.selectedSubclass.description);
+    this.policyRiskForm.get('transactionType').setValue(this.selectedTransactionType);
+    this.policyRiskForm.get('underwritingYear').setValue(this.currentYear);
+    this.policyRiskForm.get('value').setValue(0);
+    // const riskForm = this.policyRiskForm.value;
+    const riskForm = this.policyRiskForm.value;
+    this.riskForm = [riskForm];
+
+    log.debug("MY RISK FORM", JSON.stringify(this.policyRiskForm.value))
+    this.policyService
+      .addPolicyRisk(this.policyDetails.batchNo, this.riskForm, this.user)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            log.debug("Add risk endpoint response:", data)
+            this.globalMessagingService.displaySuccessMessage('Success', 'Policy Risk has been created');
+            if (data && data._embedded && Array.isArray(data._embedded) && data._embedded.length > 0) {
+              const embedded = data._embedded[0];
+              if (embedded && embedded['IPU_CODE[0]']) {
+                this.riskCode = embedded['IPU_CODE[0]'];
+                log.debug('Risk Code:', this.riskCode);
+                this.createRiskSection();
+
+              }
+            }
+
+          }
+          else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      })
+  }
+  loadSubclassSectionCovertype() {
+    this.subclassSectionCovertypeService
+      .getSubclassCovertypeSections()
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            this.subclassSectionCoverList = data;
+            log.debug("Subclass Section Covertype:", this.subclassSectionCoverList);
+            this.mandatorySections = this.subclassSectionCoverList.filter(section => section.subClassCode == this.selectedSubclassCode && section.isMandatory == "Y");
+            log.debug("Mandatory Section Covertype:", this.mandatorySections);
+
+          }
+          else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      })
+  }
+  filterMandatorySections() {
+    log.debug("selectedCover should be coverdesc", this.selectedCoverType.coverTypeShortDescription)
+    const coverType = this.selectedCoverType.coverTypeShortDescription
+    if (coverType) {
+      this.filteredMandatorySections = this.mandatorySections.filter(section =>
+        section.coverTypeShortDescription === (coverType === "COMP" ? "COMP" : coverType));
+      log.debug("Filtered Section", this.filteredMandatorySections);
+
+      this.filteredAllMatchingSections = this.allMatchingSections.filter(section =>
+        !this.filteredMandatorySections.some(filteredSection => filteredSection.sectionCode === section.code)
+      );
+      console.log('Filtered Matching Sections:', this.filteredAllMatchingSections);
+
+      this.getPremium(this.filteredMandatorySections);
+    } else {
+      this.filteredMandatorySections = this.mandatorySections;
+    }
+  }
+  // getPremium(passedSections: any[]) {
+  //   const selectedBinder = this.policyRiskForm.get('binderCode').value;
+  //   this.selectedBinder = parseInt(selectedBinder);
+
+  //   log.debug("Selected Binder:", this.selectedBinder);
+
+  //   const selectedSubclassCode = this.selectedSubclassCode;
+  //   const sections = passedSections;
+  //   log.debug("Sections passed to premium service:", sections);
+
+  //   // Create an array to store observables returned by each service call
+  //   const observables = sections?.map(section => {
+  //     return this.premiumRateService.getAllPremiums(section.sectionCode, this.selectedBinder, selectedSubclassCode);
+  //   });
+
+  //   // Use forkJoin to wait for all observables to complete
+  //   forkJoin(observables).subscribe((data: any[]) => {
+  //     // data is an array containing the results of each service call
+  //     const newPremiumList = data.flat(); // Flatten the array if needed
+  //     log.debug("New Premium List", newPremiumList);
+
+  //     // Check if premiumList is an array (safeguard against initialization issues)
+  //     if (!Array.isArray(this.premiumList)) {
+  //       this.premiumList = [];
+  //     }
+
+  //     // Append newPremiumList to existing premiumList
+  //     this.premiumList = [...this.premiumList, ...newPremiumList];
+  //     log.debug("Updated Premium List", this.premiumList);
+  //   });
+  // }
+  getPremium(passedSections: any[]) {
+    const selectedBinder = this.policyRiskForm.get('binderCode').value;
+    this.selectedBinder = parseInt(selectedBinder);
+
+    log.debug("Selected Binder:", this.selectedBinder);
+
+    const selectedSubclassCode = this.selectedSubclassCode;
+    const sections = passedSections;
+    log.debug("Sections passed to premium service:", sections);
+
+    // Create an array to store observables returned by each service call
+    const observables = sections?.map(section => {
+      return this.premiumRateService.getAllPremiums(section.sectionCode, this.selectedBinder, selectedSubclassCode);
     });
-}
-addPolicyRisk(){
-  this.policyRiskForm.get('insureds.client.first_name').setValue(this.passedClient?.firstName);
-  this.policyRiskForm.get('insureds.client.last_name').setValue(this.passedClient?.lastName);
-  this.policyRiskForm.get('insureds.client.id').setValue(this.passedClient?.id);
-  this.policyRiskForm.get('cover_type_short_description').setValue(this.selectedCoverType?.description);
-  this.policyRiskForm.get('policy_batch_no').setValue(this.policyDetails.batch_no);
-  this.policyRiskForm.get('policy_number').setValue(this.policyDetails.policy_no);
-  this.policyRiskForm.get('product_code').setValue(this.policyDetails.product.code);
-  this.policyRiskForm.get('sub_class_description').setValue(this.selectedSubclass.description);
-  this.policyRiskForm.get('transaction_type').setValue(this.policyDetails.transaction_type);
+
+    // Use forkJoin to wait for all observables to complete
+    forkJoin(observables).subscribe((data: any[]) => {
+      // data is an array containing the results of each service call
+      const newPremiumList = data.flat(); // Flatten the array if needed
+      log.debug("New Premium List", newPremiumList);
+
+      // Check if premiumList is an array (safeguard against initialization issues)
+      if (!Array.isArray(this.premiumList)) {
+        this.premiumList = [];
+      }
+
+      // Append newPremiumList to existing premiumList
+      this.premiumList = [...this.premiumList, ...newPremiumList];
+      log.debug("Updated Premium List", this.premiumList);
+    });
+  }
+
+
+
+  matchesSearch(description: string): boolean {
+    return description.toLowerCase().includes(this.searchText.toLowerCase());
+  }
+  // onCheckboxChange(section: subclassSection) {
+
+  //   log.debug("Checked Section Data", section)
+  //   this.checkedSectionCode = section.sectionCode;
+  //   this.checkedSectionDesc = section.sectionShortDescription;
+  //   this.checkedSectionType = section.sectionType;
+  //   // this.getPremiumRates()
+  //   // this.getSectionbyCode()
+  // }  
+  onCheckboxChange(section: any) {
+    const index = this.selectedSections.findIndex((s) => s.code === section.code);
+
+    if (index === -1) {
+      // Section is not yet selected, add it to the array
+      this.selectedSections.push(section);
+      log.debug("Checked Sections Data", this.selectedSections);
+      this.allTransformedSections = [];
+      this.selectedSections.forEach(element => {
+        const changedSections = this.covertypeSections.filter(section => section.sectionCode === element.code
+          && section.coverTypeShortDescription === this.selectedCoverType.coverTypeShortDescription);
+        this.allTransformedSections.push(...changedSections);
+        log.debug("Transformed Sections Data", this.allTransformedSections);
+
+      });
+      this.getPremium(this.allTransformedSections);
+      // this.createRiskSection();
+
+
+    } else {
+      // Section is already selected, remove it from the array
+      this.selectedSections.splice(index, 1);
+    }
+  }
+  isSelected(section: any): boolean {
+    return this.selectedSections.some((s) => s.code === section.code);
+
+  }
+  createSectionDetailsForm() {
+    this.sectionDetailsForm = this.fb.group({
+      bindCode: [''],
+      coverTypeCode: [''],
+      group: [''],
+      limit: [''],
+      ncdLevel: [''],
+      renewal: [''],
+      riskCode: [''],
+      row: [''],
+      sectionCode: [''],
+      subClassCode: ['']
+    });
+  }
+  // createRiskSection() {
+  //   const section = this.sectionDetailsForm.value;
+  //   this.sectionArray = [section];
+  //   section.bindCode = this.selectedBinder;
+  //   section.coverTypeCode = this.selectedCoverType.coverTypeCode;
+  //   section.group = 1;
+  //   section.limit = 0;
+  //   section.ncdLevel = null;
+  //   section.renewal = "RN";
+  //   section.riskCode = this.riskCode;
+  //   section.row = 0;
+  //   section.sectionCode = this.premiumList[0].sectionCode;
+  //   section.subClassCode = this.selectedSubclassCode;
+
+  //   this.policyService
+  //     .createRiskSection(this.sectionArray)
+  //     .pipe(untilDestroyed(this))
+  //     .subscribe({
+  //       next: (data: any) => {
+  //         if (data) {
+  //           log.debug("Risk Section Created data:", data)
+  //           this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
+
+
+  //         }
+  //         else {
+  //           this.errorOccurred = true;
+  //           this.errorMessage = 'Empty response received from the server.';
+  //           this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+  //         }
+
+  //       },
+  //       error: (err) => {
+
+  //         this.globalMessagingService.displayErrorMessage(
+  //           'Error',
+  //           this.errorMessage
+  //         );
+  //         log.info(`error >>>`, err);
+  //       },
+  //     })
+  // }
+  createRiskSection() {
+    const section = this.sectionDetailsForm.value;
+  log.debug("Premium List:",this.premiumList);
+    // Check if premiumList has data and if the index is within bounds
+    if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
+      console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+  
+      // Log the current premiumListIndex before incrementing
+      console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+  
+      // Increment the premiumListIndex and wrap around using modulo
+      this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
+  
+      // Log the updated premiumListIndex after incrementing
+      console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+  
+      section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
+    } else {
+      // Handle scenario when premiumList is empty or index is out of bounds
+      console.error('Premium list is empty or index is out of bounds.');
+      return; // or throw an error, handle as per your requirement
+    }
+  
+    // Set other properties for section
+    this.sectionArray = [section];
+    section.bindCode = this.selectedBinder;
+    section.coverTypeCode = this.selectedCoverType.coverTypeCode;
+    section.group = 1;
+    section.limit = 0;
+    section.ncdLevel = null;
+    section.renewal = "RN";
+    section.riskCode = this.riskCode;
+    section.row = 0;
+    section.subClassCode = this.selectedSubclassCode;
+  
+    this.policyService
+      .createRiskSection(this.sectionArray)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data: any) => {
+          if (data) {
+            console.log("Risk Section Created data:", data);
+            this.globalMessagingService.displaySuccessMessage('Success', 'Risk Section has been added');
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Empty response received from the server.';
+            this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+          }
+        },
+        error: (err) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'An error occurred.');
+          console.error(`Error >>>`, err);
+        },
+      });
+  }
+  
+  
   
   
 
-  log.debug("MY RISK FORM", JSON.stringify(this.policyRiskForm.value))
-
-}
 }
 

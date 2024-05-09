@@ -52,7 +52,7 @@ export class SectionsService {
    */
   getAllSections(): Observable<any>{
     let page = 0;
-    let size = 10000;
+    let size = 1000;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -61,7 +61,7 @@ export class SectionsService {
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('pageSize', `${size}`)
-    return this.api.GET<any>(`api/v1/sections`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/sections?pageNo=${page}&pageSize=${size}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )
