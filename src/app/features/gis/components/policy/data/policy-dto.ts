@@ -1,39 +1,40 @@
 export interface Policy {
-    action_type: string;
-    add_edit: string;
-    agent_code: number;
-    agent_short_description: string;
-    batch_number: number;
-    bdiv_code: number;
-    bind_code: number;
-    branch_code: number;
-    branch_short_description: string;
-    client_code: number;
-    client_type: string;
-    coin_leader_combined: string;
-    coinsurance_facultative_cession: string;
-    comments: string;
-    cons_code: string;
-    currency_code: number;
-    currency_symbol: string;
-    fequency_of_payment: string;
-    internal_comments: string;
-    introducer_code: number;
-    is_admin_fee_allowed: string;
-    is_binder_policy: string;
-    is_cashback_applicable: string;
-    is_coinsurance: string;
-    is_commission_allowed: string;
-    is_exchange_rate_fixed: string;
-    is_open_cover: string;
-    payment_mode: string;
-    pro_interface_type: string;
-    product_code: number;
-    source: string;
-    transaction_type: string;
-    with_effective_from_date: string;
-    with_effective_to_date: string;
+  actionType: string;
+  addEdit: string;
+  agentCode: number;
+  agentShortDescription: string;
+  batchNumber: number;
+  bdivCode: number;
+  bindCode: number;
+  branchCode: number;
+  branchShortDescription: string;
+  clientCode: number;
+  clientType: string;
+  coinLeaderCombined: string;
+  coinsuranceFacultativeCession: string;
+  comments: string;
+  consCode: string;
+  currencyCode: number;
+  currencySymbol: string;
+  frequencyOfPayment: string;
+  internalComments: string;
+  introducerCode: number;
+  isAdminFeeAllowed: string;
+  isBinderPolicy: string;
+  isCashbackApplicable: string;
+  isCoinsurance: string;
+  isCommissionAllowed: string;
+  isExchangeRateFixed: string;
+  isOpenCover: string;
+  paymentMode: string;
+  proInterfaceType: string;
+  productCode: number;
+  source: string;
+  transactionType: string;
+  withEffectiveFromDate: string;
+  withEffectiveToDate: string;
 }
+
 export interface InsuredClient {
     first_name: string;
     id: number;
@@ -127,48 +128,49 @@ export interface InsuredClient {
   
   export interface PolicyContent {
     agency: number;
-    authorized_status: string;
-    basic_premium: number;
-    batch_no: number;
-    client_code: number;
+    authorizedStatus: string;
+    basicPremium: number;
+    batchNo: number;
+    clientCode: number;
     currency: string;
-    debit_owner: string;
-    endorsement_no: string;
+    debitOwner: string;
+    endorsementNo: string;
     insureds: Insured[];
-    introducer_code: number;
-    marketer_code: number;
-    policy_no: string;
-    policy_remarks: string;
-    policy_status: string;
-    policy_type: string;
+    introducerCode: number;
+    marketerCode: number;
+    policyNo: string;
+    policyRemarks: string;
+    policyStatus: string;
+    policyType: string;
     premium: number;
-    prepared_by: string;
-    prepared_date: string;
+    preparedBy: string;
+    preparedDate: string;
     product: Product;
-    promise_date: string;
-    renewal_date: string;
-    risk_information: RiskInformation[];
-    tax_information: TaxInformation[];
-    total_premium: number;
-    total_sum_insured: number;
-    transaction_type: string;
+    promiseDate: string;
+    renewalDate: string;
+    riskInformation: RiskInformation[];
+    taxInformation: TaxInformation[];
+    totalPremium: number;
+    totalSumInsured: number;
+    transactionType: string;
     type: string;
-    under_writing_only: string;
-    wef_dt: string;
-    wet_dt: string;
-  }
+    underWritingOnly: string;
+    wefDt: string;
+    wetDt: string;
+}
+
   
-  export interface Insured {
-    client: Client;
-    prp_code: number;
-  }
-  
-  export interface Client {
-    first_name: string;
-    id: number;
-    last_name: string;
-  }
-  
+export interface Insured {
+  client: Client;
+  prpCode: number;
+}
+
+export interface Client {
+  firstName: string;
+  id: number;
+  lastName: string;
+}
+
   export interface Product {
     acceptUniqueRisks: string;
     acceptsMultipleClasses: string;
@@ -238,66 +240,80 @@ export interface InsuredClient {
 }
 
   
-  export interface RiskInformation {
-    allowed_commission_rate: number;
-    basic_premium: number;
-    binder_code: number;
-    commission_amount: number;
-    commission_rate: number;
-    cover_type_code: number;
-    cover_type_short_description: string;
-    currency_code: number;
-    date_cover_from: string;
-    date_cover_to: string;
-    del_sect: string;
-    gross_premium: number;
-    insureds: Insured;
-    ipu_ncd_cert_no: string;
-    loaded: string;
-    lta_commission: number;
-    net_premium: number;
-    paid_premium: number;
-    policy_batch_no: number;
-    policy_number: string;
-    policy_status: string;
-    product_code: number;
-    property_description: string;
-    property_id: string;
-    quantity: number;
-    reinsurance_endorsement_number: string;
-    renewal_area: string;
-    risk_fp_override: number;
-    risk_ipu_code: number;
-    sections: Section[];
-    stamp_duty: number;
-    sub_class_code: number;
-    sub_class_description: string;
-    transaction_type: string;
-    underwriting_year: number;
-    value: number;
-  }
+export interface RiskInformation {
+  allowedCommissionRate: number;
+  basicPremium: number;
+  binderCode: number;
+  commissionAmount: number;
+  commissionRate: number;
+  coverTypeCode: number;
+  coverTypeShortDescription: string;
+  currencyCode: number;
+  dateCoverFrom: string;
+  dateCoverTo: string;
+  delSect: string;
+  grossPremium: number;
+  insureds: Insured;
+  ipuNcdCertNo: string;
+  loaded: string;
+  ltaCommission: number;
+  netPremium: number;
+  paidPremium: number;
+  policyBatchNo: number;
+  policyNumber: string;
+  policyStatus: string;
+  productCode: number;
+  propertyDescription: string;
+  propertyId: string;
+  quantity: number;
+  reinsuranceEndorsementNumber: string;
+  renewalArea: string;
+  riskFpOverride: number;
+  riskIpuCode: number;
+  sections: Section[];
+  stampDuty: number;
+  subClassCode: number;
+  subClassDescription: string;
+  transactionType: string;
+  underwritingYear: number;
+  value: number;
+}
+
   
-  export interface Section {
-    div_factor: number;
-    free_limit: number;
-    limit_amount: number;
-    multiplier_rate: number;
-    pil_prem_rate: number;
-    premium: number;
-    rate_type: string;
-    sect_code: number;
-    sect_ipu_code: number;
-    section_code: number;
-    section_desc: string;
-    section_short_desc: string;
-  }
-  
-  export interface TaxInformation {
-    amount: number;
-    batch_no: number;
-    description: string;
-    rate: number;
-    rate_type: string;
-    transaction_type_code: string;
+export interface Section {
+  divFactor: number;
+  freeLimit: number;
+  limitAmount: number;
+  multiplierRate: number;
+  pilPremRate: number;
+  premium: number;
+  rateType: string;
+  sectCode: number;
+  sectIpuCode: number;
+  sectionCode: number;
+  sectionDesc: string;
+  sectionShortDesc: string;
+}
+
+export interface TaxInformation {
+  amount: number;
+  batchNo: number;
+  description: string;
+  rate: number;
+  rateType: string;
+  transactionTypeCode: string;
+}
+
+  export interface RiskSection{
+    bindCode: number;
+    coverTypeCode: number;
+    group: number;
+    limit: number;
+    ncdLevel: number | null;
+    renewal: string;
+    riskCode: number;
+    row: number;
+    sectionCode: number;
+    subClassCode: number;
   }
   
