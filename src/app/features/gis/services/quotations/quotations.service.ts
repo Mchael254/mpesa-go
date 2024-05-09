@@ -85,7 +85,7 @@ export class QuotationsService {
   }
   getFormFields(shortDescription:any): Observable<any>{
 
-    return this.api.GET<any>(`/forms/${shortDescription}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+    return this.api.GET<any>(`api/v1/forms?shortDescription=${shortDescription}`,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),
       catchError(this.errorHandl)
     )

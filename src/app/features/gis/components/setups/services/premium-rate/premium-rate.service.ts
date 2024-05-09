@@ -55,7 +55,7 @@ return throwError(errorMessage);
       .set('pageSize', `${size}`)
       var url = `api/v1/premium-rates?`
       if ( sectionCode != undefined && binderCode !=undefined && subClassCode !=undefined) {
-        url = url + "?sectionCode=" + sectionCode+"&binderCode="+binderCode+"&subClassCode="+subClassCode;
+        url = url + "sectionCode=" + sectionCode+"&binderCode="+binderCode+"&subClassCode="+subClassCode;
       }
     return this.api.GET(url,API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
       retry(1),

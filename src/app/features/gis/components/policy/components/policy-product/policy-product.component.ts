@@ -154,45 +154,44 @@ export class PolicyProductComponent {
 
   createPolicyProductForm() {
     this.policyProductForm = this.fb.group({
-      action_type: [''],
-      add_edit: [''],
-      agent_code: [null],
-      agent_short_description: [''],
-      batch_number: [0],
-      bdiv_code: [0],
-      bind_code: [0],
-      branch_code: [0, Validators.required],
-      branch_short_description: [''],
-      client_code: [0, Validators.required],
-      client_type: [''],
-      coin_leader_combined: [''],
-      coinsurance_facultative_cession: [''],
+      actionType: [''],
+      addEdit: [''],
+      agentCode: [null],
+      agentShortDescription: [''],
+      batchNumber: [0],
+      bdivCode: [0],
+      bindCode: [0],
+      branchCode: [0, Validators.required],
+      branchShortDescription: [''],
+      clientCode: [0, Validators.required],
+      clientType: [''],
+      coinLeaderCombined: [''],
+      coinsuranceFacultativeCession: [''],
       comments: [''],
-      cons_code: [''],
-      currency_code: [0],
-      currency_symbol: [''],
-      fequency_of_payment: [''],
-      internal_comments: [''],
-      introducer_code: [0],
-      is_admin_fee_allowed: [''],
-      is_binder_policy: [''],
-      is_cashback_applicable: [''],
-      is_coinsurance: [''],
-      is_commission_allowed: [''],
-      is_exchange_rate_fixed: [''],
-      is_open_cover: [''],
-      payment_mode: [''],
-      pro_interface_type: ['', Validators.required],
-      product_code: [0, Validators.required],
+      consCode: [''],
+      currencyCode: [0],
+      currencySymbol: [''],
+      frequencyOfPayment: [''],
+      internalComments: [''],
+      introducerCode: [0],
+      isAdminFeeAllowed: [''],
+      isBinderPolicy: [''],
+      isCashbackApplicable: [''],
+      isCoinsurance: [''],
+      isCommissionAllowed: [''],
+      isExchangeRateFixed: [''],
+      isOpenCover: [''],
+      paymentMode: [''],
+      proInterfaceType: ['', Validators.required],
+      productCode: [0, Validators.required],
       source: [''],
-      transaction_type: ['', Validators.required],
-      with_effective_from_date: [''],
-      with_effective_to_date: [''],
-
-      cover_days: [''],
-      currency_rate: [''],
-
+      transactionType: ['', Validators.required],
+      withEffectiveFromDate: [''],
+      withEffectiveToDate: [''],
+      coverDays: [''],
+      currencyRate: ['']
     });
+
 
   }
   get f() {
@@ -347,18 +346,18 @@ export class PolicyProductComponent {
 
 
     if (!this.showIntermediaryFields) {
-      this.policyProductForm.get('agent_code').reset();
+      this.policyProductForm.get('agentCode').reset();
       // this.policyProductForm.get('underwritersOnly').reset(false);
-      this.policyProductForm.get('is_commission_allowed').reset();
-      this.policyProductForm.get('is_admin_fee_allowed').reset();
+      this.policyProductForm.get('isCommissionAllowed').reset();
+      this.policyProductForm.get('isAdminFeeAllowed').reset();
     }
 
     if (!this.showFacultativeFields) {
-      this.policyProductForm.get('agent_code').reset();
+      this.policyProductForm.get('agentCode').reset();
       // this.policyProductForm.get('selectRiAgent').reset();
       // this.policyProductForm.get('underwritersOnlyFacultative').reset(false);
-      this.policyProductForm.get('is_commission_allowed').reset();
-      this.policyProductForm.get('is_admin_fee_allowed').reset();
+      this.policyProductForm.get('isCommissionAllowed').reset();
+      this.policyProductForm.get('isAdminFeeAllowed').reset();
       // ... reset other fields for facultative business
     }
   }
@@ -633,19 +632,19 @@ export class PolicyProductComponent {
   }
   updateCoverTo(): void {
 
-    const fromDate = new Date(this.policyProductForm.get('with_effective_from_date').value);
+    const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
     const toDate = new Date(fromDate);
     toDate.setDate(fromDate.getDate() + 365);
-    this.policyProductForm.controls['with_effective_to_date'].setValue(this.formatDate(toDate));
+    this.policyProductForm.controls['withEffectiveToDate'].setValue(this.formatDate(toDate));
     this.updateCoverDays();
   }
 
   updateCoverDays(): void {
-    const fromDate = new Date(this.policyProductForm.get('with_effective_from_date').value);
-    const toDate = new Date(this.policyProductForm.get('with_effective_to_date').value);
+    const fromDate = new Date(this.policyProductForm.get('withEffectiveFromDate').value);
+    const toDate = new Date(this.policyProductForm.get('withEffectiveToDate').value);
     const differenceInTime = toDate.getTime() - fromDate.getTime();
     const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    this.policyProductForm.controls['cover_days'].setValue(differenceInDays);
+    this.policyProductForm.controls['coverDays'].setValue(differenceInDays);
   }
   formatDate(date: Date): string {
     const year = date.getFullYear();
@@ -698,21 +697,21 @@ export class PolicyProductComponent {
 
   }
   createPolicy() {
-    this.policyProductForm.get('action_type').setValue("A");
-    this.policyProductForm.get('add_edit').setValue("A");
-    this.policyProductForm.get('client_code').setValue(this.clientCode);
-    this.policyProductForm.get('agent_short_description').setValue(this.selectedAgentDesc);
-    this.policyProductForm.get('branch_code').setValue(this.selectedBranchCode);
-    this.policyProductForm.get('branch_short_description').setValue(this.selectedBranchDescription);
+    this.policyProductForm.get('actionType').setValue("A");
+    this.policyProductForm.get('addEdit').setValue("A");
+    this.policyProductForm.get('clientCode').setValue(this.clientCode);
+    this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+    this.policyProductForm.get('branchCode').setValue(this.selectedBranchCode);
+    this.policyProductForm.get('branchShortDescription').setValue(this.selectedBranchDescription);
 
     // Transform the checkbox value to 'Y' or 'N' based on whether it's checked
-    const isCoinsuranceChecked = this.policyProductForm.get('is_coinsurance').value ? 'Y' : 'N';
-    this.policyProductForm.get('is_coinsurance').setValue(isCoinsuranceChecked);
+    const isCoinsuranceChecked = this.policyProductForm.get('isCoinsurance').value ? 'Y' : 'N';
+    this.policyProductForm.get('isCoinsurance').setValue(isCoinsuranceChecked);
 
-    const isAdminFeeAllowedChecked = this.policyProductForm.get('is_admin_fee_allowed').value ? 'Y' : 'N';
-    this.policyProductForm.get('is_admin_fee_allowed').setValue(isAdminFeeAllowedChecked);
-    const isCashApplicableChecked = this.policyProductForm.get('is_cashback_applicable').value ? 'Y' : 'N';
-    this.policyProductForm.get('is_cashback_applicable').setValue(isCashApplicableChecked);
+    const isAdminFeeAllowedChecked = this.policyProductForm.get('isAdminFeeAllowed').value ? 'Y' : 'N';
+    this.policyProductForm.get('isAdminFeeAllowed').setValue(isAdminFeeAllowedChecked);
+    const isCashApplicableChecked = this.policyProductForm.get('isCashbackApplicable').value ? 'Y' : 'N';
+    this.policyProductForm.get('isCashbackApplicable').setValue(isCashApplicableChecked);
     log.debug("Is coinsuaranace Checked:", isCoinsuranceChecked)
     log.debug("IsAdmin Fee Checked:", isAdminFeeAllowedChecked)
     log.debug("Is Cash Applicable Checked:", isCashApplicableChecked)
@@ -733,7 +732,7 @@ export class PolicyProductComponent {
         // Handle any other case or set a default value if necessary
         break;
     }
-    this.policyProductForm.get('transaction_type').setValue(transactionTypeValue);
+    this.policyProductForm.get('transactionType').setValue(transactionTypeValue);
 
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
@@ -742,7 +741,7 @@ export class PolicyProductComponent {
       log.debug("NAVIGATING TO COINSUARANCE PAGE")
       this.router.navigate(['/home/gis/policy/coinsuarance-details'])
       sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
-    } 
+    }
     // else if () {
     //   this.router.navigate(['/home/gis/quotation/quick-quote'])
     //   sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
@@ -757,7 +756,7 @@ export class PolicyProductComponent {
             if (data) {
               this.policyResponse = data;
               log.debug("Create Policy Endpoint Response", this.policyResponse)
-              this.policyDetails = this.policyResponse.embedded[0]
+              this.policyDetails = this.policyResponse._embedded[0]
               log.debug("Policy Details", this.policyDetails)
               this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
 
@@ -800,7 +799,7 @@ export class PolicyProductComponent {
           if (data) {
             this.paymentModesList = data;
             log.debug("Payment Name  list", this.paymentModesList)
-            this.paymentDetails = this.paymentModesList.embedded
+            this.paymentDetails = this.paymentModesList._embedded
             log.debug("Payment Name details", this.paymentDetails)
 
             this.cdr.detectChanges();
