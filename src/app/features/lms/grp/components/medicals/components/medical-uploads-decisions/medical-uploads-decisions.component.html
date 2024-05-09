@@ -1,14 +1,371 @@
 <div class="main">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-          <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+            <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
         </div>
-      </div>
-      <div style="display: flex; padding-top: 1rem; justify-content: start">
+    </div>
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
         <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
         </app-dynamic-breadcrumb>
     </div>
     <div class="container">
-        <div>Medicals</div>
+        <div style="padding-bottom: 20px; font-weight: 500; font-size: 16px;">Medicals</div>
+
+        <div style="font-weight: 400; font-size: 16px;">Policy details</div>
+        <div class="poldets-table-container col-12">
+
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Policy number:</td>
+                        <td class="table-label-desc">12345</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Product:</td>
+                        <td class="table-label-desc">Group life</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Effective date:</td>
+                        <td class="table-label-desc">10/10/2007</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Policy status:</td>
+                        <td class="table-label-desc">Active</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Members covered</td>
+                        <td class="table-label-desc">5000</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Client:</td>
+                        <td class="table-label-desc">Police force</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Members above FCL:</td>
+                        <td class="table-label-desc">2300</td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+
+        <div style="padding-bottom: 10px; padding-top: 20px; font-weight: 400; font-size: 16px;">Members above FCL</div>
+
+        <div>
+            <h6 class="upload-member" style="margin-top: 12px;">
+                Upload the member template below
+            </h6>
+            <div class="p-col-3" style="margin-top: 24px; margin-bottom: 44px;">
+                <input type="file" #fileInput style="display: none;" accept=".csv">
+                <button class="choose-file">
+                    <span class="file-text">Upload file</span>
+                </button>
+                <!-- <div style="margin-top: 25px;">
+                <div style="width: 30%;">
+                    <span class="file-name">{{ fileInput.files[0].name }}</span>
+                    <span *ngIf="uploadProgress === 100" class="file-name">(100%)</span>
+                    <span class="completed" *ngIf="uploadProgress === 100">Completed</span>
+                </div>
+            <p-progressBar [value]="uploadProgress">
+                <ng-template pTemplate="content" let-value>
+                    <span>{{ value }}%</span>
+                </ng-template>
+            </p-progressBar>
+            </div> -->
+            </div>
+        </div>
+
+
+        <div class="container-fil">
+            <div class="filter-container">
+                <label class="filter-label">Filter by</label>
+                <div class="filter-selectors">
+                    <form>
+                        <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                            [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                        <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                            [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                        <input type="text" pInputText placeholder="Enter value"
+                            [style]="{ height: '35px', 'line-height': '10px' }" />
+                    </form>
+
+                </div>
+            </div>
+            <div class="form-search">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input" placeholder="Search">
+                <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                </p-multiSelect>
+            </div>
+        </div>
+        <div>
+            <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('polNum')" style="width: calc(100% / 8);">Member number</th>
+                        <th *ngIf="selectedColumns.includes('prod')" style="width: calc(100% / 8);">Name</th>
+                        <th *ngIf="selectedColumns.includes('status')" style="width: calc(100% / 8);">Request date</th>
+                        <th *ngIf="selectedColumns.includes('date')" style="width: calc(100% / 8);">Test description</th>
+                        <th *ngIf="selectedColumns.includes('premium')" style="width: calc(100% / 8);">Limit amount</th>
+                        <th *ngIf="selectedColumns.includes('sumAssured')" style="width: calc(100% / 8);">Date received</th>
+                        <th *ngIf="selectedColumns.includes('sumAssured')" style="width: calc(100% / 8);">Invoice number</th>
+                        <th *ngIf="selectedColumns.includes('sumAssured')" style="width: calc(100% / 8);">Invoice date</th>
+                        <th class="action-column" style="width: 10px;"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('polNum')">{{item.polNum}}</td>
+                        <td *ngIf="selectedColumns.includes('prod')">{{item.prod}}</td>
+                        <td *ngIf="selectedColumns.includes('status')">{{item.status}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td style="text-align: right;" *ngIf="selectedColumns.includes('premium')">{{item.premium |
+                            number}}</td>
+                        <td style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">{{item.sumAssured|
+                            number}}</td>
+                        <td style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">{{item.sumAssured|
+                            number}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td class="action-column">
+                            <div class="flex justify-content-center">
+                                <p-overlayPanel #op>
+                                    <div>
+                                        <!-- Decisions button -->
+                                        <p-button label="Decisions" styleClass="p-button-rounded p-button-text"
+                                            severity="primary" (click)="showDecisionsModal()"></p-button>
+                                    </div>
+                                </p-overlayPanel>
+                                <!-- Ellipsis container -->
+                                <div (click)="op.toggle($event)">
+                                    <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
+                                </div>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            <span style="color: gray;">No member uploaded</span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <div style="padding-bottom: 10px; padding-top: 20px; font-weight: 400; font-size: 16px;">Medical results</div>
+        <div class="container-fil">
+            <div class="filter-container">
+                <label class="filter-label">Filter by</label>
+                <div class="filter-selectors">
+                    <form>
+                        <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                            [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                        <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                            [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                        <input type="text" pInputText placeholder="Enter value"
+                            [style]="{ height: '35px', 'line-height': '10px' }" />
+                    </form>
+
+                </div>
+            </div>
+            <div class="form-search">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input" placeholder="Search">
+                <p-multiSelect [options]="medResultsColumnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                </p-multiSelect>
+            </div>
+        </div>
+        <div>
+            <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('polNum')">Test description</th>
+                        <th *ngIf="selectedColumns.includes('prod')">Limit amount</th>
+                        <th *ngIf="selectedColumns.includes('status')">Test status</th>
+                        <th *ngIf="selectedColumns.includes('date')">Date received</th>
+                        <th *ngIf="selectedColumns.includes('date')">Invoice number</th>
+                        <th *ngIf="selectedColumns.includes('date')">Invoice amount</th>
+                        <th *ngIf="selectedColumns.includes('date')">Payable amount</th>
+                        <th *ngIf="selectedColumns.includes('date')">Remarks</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('polNum')">{{item.polNum}}</td>
+                        <td *ngIf="selectedColumns.includes('prod')">{{item.prod}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            <span style="color: gray;">Select a member to view medical results</span>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+
+        <div style="padding-bottom: 10px; padding-top: 20px; font-weight: 400; font-size: 16px;">Cover types</div>
+        <div class="container-fil">
+            <div class="filter-container">
+                <label class="filter-label">Filter by</label>
+                <div class="filter-selectors">
+                    <form>
+                        <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                            [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                        <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                            [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                        <input type="text" pInputText placeholder="Enter value"
+                            [style]="{ height: '35px', 'line-height': '10px' }" />
+                    </form>
+
+                </div>
+            </div>
+            <div class="form-search">
+                <i class="fa fa-search"></i>
+                <input type="text" class="form-control form-input" placeholder="Search">
+                <p-multiSelect [options]="coverTypesColumnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                </p-multiSelect>
+            </div>
+        </div>
+        <div>
+            <p-table [value]="dataa" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('polNum')">Cover type</th>
+                        <th *ngIf="selectedColumns.includes('prod')">Original sum assured</th>
+                        <th *ngIf="selectedColumns.includes('status')">Medical sum assured</th>
+                        <th *ngIf="selectedColumns.includes('date')">Original premium</th>
+                        <th *ngIf="selectedColumns.includes('date')">Medical premium</th>
+                        <th *ngIf="selectedColumns.includes('date')">Add ref premium</th>
+                        <th *ngIf="selectedColumns.includes('date')">Load premium</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td *ngIf="selectedColumns.includes('polNum')">{{item.polNum}}</td>
+                        <td *ngIf="selectedColumns.includes('prod')">{{item.prod}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                        <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">
+                            <span style="color: gray;">Select a member to view cover types</span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div class="flex-btn-container">
+        <button type="button" class="btn btn-primary back-button">back
+        </button>
     </div>
 </div>
+
+<!-- modals begin -->
+<!-- modal to capture decisions -->
+<div class="modal fade" tabindex="-1" #decisionsModal id="decisionsModal" aria-labelledby="decisionsModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="decisionsModal">Decisions</h5>
+          <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+          (click)="closeDecisisonsModal()"></button>
+        </div>
+        <div class="modal-body">
+        <form [formGroup]="decisionsForm">
+          <div class="row" style="padding-top: 0;">
+            <div class="col-md-6">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="gender" style="color: black;">Decision type<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'gender'" formControlName="decisionType">
+                        <option selected="true" disabled="disabled"></option>
+                    <option value="A">A</option>
+                    <option value="FB">B</option>
+                    </select>
+                </div>
+            </div>
+      
+            <div class="col-md-6">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="gender" style="color: black;">Decision<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'gender'" formControlName="decision">
+                        <option selected="true" disabled="disabled"></option>
+                    <option value="A">A</option>
+                    <option value="FB">B</option>
+                    </select>
+                </div>
+            </div>
+      
+          </div>
+  
+          <div class="row">
+            <div class="col-md-6">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <label for="gender" style="color: black;">Load type<span style="color: red;">*</span></label>
+                    <select class="form-select" [id]="'gender'" formControlName="loadType">
+                        <option selected="true" disabled="disabled"></option>
+                    <option value="A">A</option>
+                    <option value="FB">B</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div>
+                    <div>
+                        <label for="position" style="color: black;">Remarks<span style="color: red;">*</span></label>
+                    </div>
+                    <div class="form-group">
+                        <div>
+                            <input 
+                                type="text"
+                                pInputText
+                                class="form-control"
+                                id="position" 
+                                [style]="{ width: '100%' }"
+                                formControlName="remarks">
+                        </div>
+                    </div>
+                </div>
+            </div>
+      
+          </div>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of modal to capture decisions -->
+  <!-- modals end -->

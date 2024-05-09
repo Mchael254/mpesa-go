@@ -8,6 +8,9 @@ import { MedicalUploadsDecisionsComponent } from './components/medical-uploads-d
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -23,6 +26,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     FormsModule,
     MultiSelectModule,
+    ProgressBarModule,
+    OverlayPanelModule,
+    ConfirmDialogModule
     
   ]
 })

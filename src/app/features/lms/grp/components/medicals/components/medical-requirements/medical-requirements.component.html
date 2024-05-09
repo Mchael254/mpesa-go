@@ -9,6 +9,169 @@
         </app-dynamic-breadcrumb>
     </div>
     <div class="container">
-        <div>Medicals</div>
+        <div style="padding-bottom: 20px; font-weight: 500; font-size: 16px;">Medicals</div>
+
+        <div style="font-weight: 400; font-size: 16px;">Policy details</div>
+        <div class="poldets-table-container col-12">
+
+          <div class="col-4">
+              <table class="poldets-table">
+                  <tr>
+                      <td class="table-label">Policy number:</td>
+                      <td class="table-label-desc">12345</td>
+                  </tr>
+                  <tr>
+                      <td class="table-label">Product:</td>
+                      <td class="table-label-desc">Group life</td>
+                  </tr>
+                  <tr>
+                      <td class="table-label">Effective date:</td>
+                      <td class="table-label-desc">10/10/2007</td>
+                  </tr>
+                 
+              </table>
+          </div>
+
+          <div class="col-4">
+            <table class="poldets-table">
+                <tr>
+                    <td class="table-label">Policy status:</td>
+                    <td class="table-label-desc">Active</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Members covered</td>
+                    <td class="table-label-desc">5000</td>
+                </tr>
+               
+            </table>
+        </div>
+
+          <div class="col-4">
+              <table class="poldets-table">
+                  <tr>
+                      <td class="table-label">Client:</td>
+                      <td class="table-label-desc">Police force</td>
+                  </tr>
+                  <tr>
+                      <td class="table-label">Members above FCL:</td>
+                      <td class="table-label-desc">2300</td>
+                  </tr>
+                 
+              </table>
+          </div>
+      </div>
+
+
+      <div style="padding-bottom: 10px; padding-top: 20px; font-weight: 400; font-size: 16px;">Members above FCL</div>  
+      <div class="container-fil">
+          <div class="filter-container">
+              <label class="filter-label">Filter by</label>
+              <div class="filter-selectors">
+                  <form>
+                      <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                          [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                      <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                          [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                      <input type="text" pInputText placeholder="Enter value"
+                          [style]="{ height: '35px', 'line-height': '10px' }"/>
+                  </form>
+
+              </div>
+          </div>
+          <div class="form-search">
+              <i class="fa fa-search"></i>
+              <input type="text" class="form-control form-input" placeholder="Search">
+              <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+              </p-multiSelect>
+          </div>
+      </div>
+      <div>
+        <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th *ngIf="selectedColumns.includes('polNum')">Surname</th>
+                    <th *ngIf="selectedColumns.includes('prod')">Other name</th>
+                    <th *ngIf="selectedColumns.includes('status')">Payroll/member number</th>
+                    <th *ngIf="selectedColumns.includes('date')">Age</th>
+                    <th style="text-align: right;" *ngIf="selectedColumns.includes('premium')">Sum assured</th>
+                    <th style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">FCL limit</th>
+                    <th style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">Medical group</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td *ngIf="selectedColumns.includes('polNum')">{{item.polNum}}</td>
+                    <td *ngIf="selectedColumns.includes('prod')">{{item.prod}}</td>
+                    <td *ngIf="selectedColumns.includes('status')">{{item.status}}</td>
+                    <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                    <td style="text-align: right;" *ngIf="selectedColumns.includes('premium')">{{item.premium |
+                        number}}</td>
+                    <td style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">{{item.sumAssured|
+                        number}}</td>
+                        <td style="text-align: right;" *ngIf="selectedColumns.includes('sumAssured')">{{item.sumAssured|
+                          number}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
+
+    <div style="padding-bottom: 10px; padding-top: 20px; font-weight: 400; font-size: 16px;">Medical requirements</div>
+        <div class="container-fil">
+          <div class="filter-container">
+              <label class="filter-label">Filter by</label>
+              <div class="filter-selectors">
+                  <form>
+                      <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                          [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                      <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                          [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                      <input type="text" pInputText placeholder="Enter value"
+                          [style]="{ height: '35px', 'line-height': '10px' }"/>
+                  </form>
+
+              </div>
+          </div>
+          <div class="form-search">
+              <i class="fa fa-search"></i>
+              <input type="text" class="form-control form-input" placeholder="Search">
+              <p-multiSelect [options]="medReqColumnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+              </p-multiSelect>
+          </div>
+      </div>
+      <div>
+        <p-table [value]="data" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '50rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th *ngIf="selectedColumns.includes('polNum')">Test description</th>
+                    <th *ngIf="selectedColumns.includes('prod')">Limit amount</th>
+                    <th *ngIf="selectedColumns.includes('status')">Request date</th>
+                    <th *ngIf="selectedColumns.includes('date')">Due date</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td *ngIf="selectedColumns.includes('polNum')">{{item.polNum}}</td>
+                    <td *ngIf="selectedColumns.includes('prod')">{{item.prod}}</td>
+                    <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                    <td *ngIf="selectedColumns.includes('date')">{{item.date}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    </div>
+    <div class="flex-btn-container">
+      <button type="button" class="btn btn-primary back-button">back
+      </button>
+      <div class="share-button-container">
+          <button class="bottom-button-share">
+              <span class="text-share">Share medical tests</span>
+          </button>
+      </div>
+
+      <div class="proceed-button-container">
+          <button class="bottom-button-proceed">
+              <span class="text">Proceed</span>
+          </button>
+      </div>
+  </div>
 </div>
