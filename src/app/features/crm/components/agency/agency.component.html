@@ -106,8 +106,8 @@
                   <th class="head" pSortableColumn="code">
                     Code <p-sortIcon field="code"></p-sortIcon>
                   </th>
-                  <th class="head" pSortableColumn="id">
-                    ID <p-sortIcon field="id"></p-sortIcon>
+                  <th class="head" pSortableColumn="shortDescription">
+                    ID <p-sortIcon field="shortDescription"></p-sortIcon>
                   </th>
                   <th class="head" pSortableColumn="name">
                     Name <p-sortIcon field="name"></p-sortIcon>
@@ -135,12 +135,37 @@
                   (click)="onAgencyRowSelect(agency)"
                   [class.selected]="selectedAgency === agency"
                 >
-                  <td class="body">{{ agency.id }}</td>
+                  <td class="body">{{ agency.code }}</td>
+                  <td class="body">{{ agency.shortDescription }}</td>
                   <td class="body">{{ agency.name }}</td>
-                  <td class="body">{{ agency.status }}</td>
+                  <td class="body">
+                    {{
+                      agency.status === "A"
+                        ? "Active"
+                        : agency.status === "I"
+                        ? "Inactive"
+                        : agency.status
+                    }}
+                  </td>
                   <td class="body">{{ agency.manager }}</td>
-                  <td class="body">{{ agency.managerAllowed }}</td>
-                  <td class="body">{{ agency.commissionEarned }}</td>
+                  <td class="body">
+                    {{
+                      agency.managerAllowed === "Y"
+                        ? "Yes"
+                        : agency.managerAllowed === "N"
+                        ? "No"
+                        : agency.managerAllowed
+                    }}
+                  </td>
+                  <td class="body">
+                    {{
+                      agency.overrideCommEarned === "Y"
+                        ? "Yes"
+                        : agency.overrideCommEarned === "N"
+                        ? "No"
+                        : agency.overrideCommEarned
+                    }}
+                  </td>
                 </tr>
               </ng-template>
               <ng-template pTemplate="emptymessage">
@@ -262,12 +287,14 @@
               <label for="status" class="form-label">Status</label>
               <select class="form-select" id="status" formControlName="status">
                 <option value="">Select Status</option>
-                <option
+                <option value="A">Active</option>
+                <option value="I">Inactive</option>
+                <!-- <option
                   *ngFor="let status of statusesData"
                   [value]="status.value"
                 >
                   {{ status.name | uppercase }}
-                </option>
+                </option> -->
               </select>
             </div>
             <div class="col-6 mb-3">
@@ -276,7 +303,7 @@
                 [options]="managersData"
                 [(ngModel)]="selectedManager"
                 optionLabel="name"
-                optionValue="id"
+                optionValue="name"
                 formControlName="manager"
                 id="manager"
                 [filter]="true"
@@ -297,7 +324,7 @@
                     class="form-check-input"
                     type="radio"
                     id="inlineRadio1"
-                    value="YES"
+                    value="Y"
                     formControlName="managerAllowed"
                   />
                   <label class="form-check-label" for="inlineRadio1">Yes</label>
@@ -307,7 +334,7 @@
                     class="form-check-input"
                     type="radio"
                     id="inlineRadio2"
-                    value="NO"
+                    value="N"
                     formControlName="managerAllowed"
                   />
                   <label class="form-check-label" for="inlineRadio2">No</label>
@@ -324,7 +351,7 @@
                     class="form-check-input"
                     type="radio"
                     id="inlineRadio1"
-                    value="YES"
+                    value="Y"
                     formControlName="commission"
                   />
                   <label class="form-check-label" for="inlineRadio1">Yes</label>
@@ -334,7 +361,7 @@
                     class="form-check-input"
                     type="radio"
                     id="inlineRadio2"
-                    value="NO"
+                    value="N"
                     formControlName="commission"
                   />
                   <label class="form-check-label" for="inlineRadio2">No</label>
@@ -442,3 +469,11 @@
     </div>
   </div>
 </div>
+
+<app-reusable-input
+  [modalId]="'branchAgencyConfirmationModal'"
+  [title]="'Delete Confirmation'"
+  [message]="'Are you sure you want to delete this branch agency?'"
+  (confirmed)="confirmBranchAgencyDelete()"
+  #branchAgencyConfirmationModal
+></app-reusable-input>
