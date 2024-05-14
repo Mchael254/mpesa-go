@@ -316,4 +316,48 @@ export interface TaxInformation {
     sectionCode: number;
     subClassCode: number;
   }
+  export interface Coinsurance {
+    shortDescription: string;
+    code: number;
+    name: string;
+    branchCode: number;
+    branchName: string;
+    commissionAllowed: string ; 
+    runoff: string;
+    physicalAddress: string; 
+    emailAddress: string; 
+    smsTelephone: string; 
+  }
+  export interface CoinsuranceDetail {
+    agaCode: number;
+    agaShortDesc: string;
+    agentCode: number;
+    agentShortDesc: string;
+    annualPremium: number;
+    coinPolBatchNo: number;
+    coinPolNo: string;
+    commission: number;
+    commissionRate: number;
+    commissionType: string;
+    duties: number;
+    facPc: number;
+    facSession: string;
+    feeAmount: number;
+    feeRate: number;
+    feeType: string;
+    forceSfCompute: string;
+    glCode: string;
+    lead: string;
+    name: string;
+    optionalCommision: string;
+    percentage: number;
+    policyNo: string;
+    premium: number;
+    premiumTax: number;
+    proposalNo: string;
+    renEndorsementNo: string;
+    sumInsured: number;
+    whtx: number;
+  }
+  
   

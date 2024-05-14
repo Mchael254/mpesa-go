@@ -101,3 +101,12 @@
     line-height: normal;
     text-align: center;
 }
+.cellEditorInput{
+    border: 1px solid #D9D9D9;
+    border-radius: 4px;
+    height: 30px;
+  }
+  ::ng-deep .p-button-icon  .pi-check{
+    color: green;
+  }
+  

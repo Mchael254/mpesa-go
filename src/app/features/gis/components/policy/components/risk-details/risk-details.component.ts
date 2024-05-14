@@ -131,6 +131,7 @@ export class RiskDetailsComponent {
   editing = false;
 
   riskCode: any;
+
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
 
@@ -1194,7 +1195,7 @@ export class RiskDetailsComponent {
     section.group = 1;
     section.limit = 0;
     section.ncdLevel = null;
-    section.renewal = "RN";
+    section.renewal = null;
     section.riskCode = this.riskCode;
     section.row = 0;
     section.subClassCode = this.selectedSubclassCode;
