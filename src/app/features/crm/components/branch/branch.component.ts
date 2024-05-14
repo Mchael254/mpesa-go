@@ -286,6 +286,8 @@ export class BranchComponent implements OnInit {
     this.fetchOrganizationBranchDivision(this.selectedBranch.id);
     this.fetchOrganizationUnassignedBranchDivision(this.selectedBranch.id);
     this.fetchOrganizationBranchContact(this.selectedBranch.id);
+    // Set the selected branch in the service
+    this.organizationService.setSelectedBranch(this.selectedBranch.id);
   }
 
   onBranchDivisionRowSelect(division: BranchDivisionDTO) {
