@@ -3,7 +3,11 @@
     {{ queryObject.queryName }}
     <span>
       <i class="pi pi-filter mx-2" style="color: #868E96"></i>
-      <i class="pi pi-times text-danger" (click)="selectCriteria(queryObject)"></i>
+      <i
+        class="pi pi-times text-danger"
+        id="select-criteria"
+        (click)="selectCriteria(queryObject)"
+      ></i>
     </span>
 <!--    <span>-->
 <!--      -->

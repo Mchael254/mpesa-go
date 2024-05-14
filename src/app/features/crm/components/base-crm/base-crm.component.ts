@@ -36,7 +36,9 @@ Relationship Management) application. Each object has the following properties: 
         { label: 'Banks', link: '/home/crm/bank',  }
       ] },
     { label: 'Administration', link: '',  showSubItems: false, subItems: [] },
-    { label: 'Messaging', link: '', showSubItems: false, subItems: [] },
+    { label: 'Messaging', link: '', showSubItems: false, subItems: [
+        { label: 'Message Template', link: '/home/crm/messaging',  }
+      ] },
     { label: 'System Reports', link: '',  showSubItems: false, subItems: [] }
   ];
 

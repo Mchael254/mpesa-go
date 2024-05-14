@@ -24,7 +24,7 @@ export class ChatBotComponent implements OnInit {
     private globalMessagingService: GlobalMessagingService,
     private reportServiceV2: ReportServiceV2
   ) {
-    
+
   }
 
 
@@ -102,7 +102,6 @@ export class ChatBotComponent implements OnInit {
     .pipe(
       take(1),
       tap((res) => {
-        // console.log(`aibot feedback >>>`, res)
       })
       )
     .subscribe({
@@ -131,7 +130,6 @@ export class ChatBotComponent implements OnInit {
   }
 
 }
-
 
 interface ChatMessage {
   message: string,
