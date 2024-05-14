@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { Policy, RiskInformation, RiskSection } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, RiskInformation, RiskSection } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 
@@ -72,6 +72,13 @@ export class PolicyService {
   }
   createRiskSection(data:RiskSection){
     return this.api.POST(`v1/risk-section`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
+  getCoinsurance(batchNo:number){
+    return this.api.GET(`v1/policies/coInsurance?polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  addCoinsurance(batchNo:number, data:CoinsuranceDetail){
+    return this.api.POST(`v1/policies/add-coinsurance?polBatchNo=${batchNo}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
 }
