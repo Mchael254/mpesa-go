@@ -517,12 +517,15 @@ export class PolicyProductComponent {
       console.log("Selected Agent Data:", selectedAgent);
 
       const selectedAgentCode = selectedAgent.id;
-      const selectedAgentName = selectedAgent.name;
+      const selectedAgentName = selectedAgent.shortDesc;
 
       console.log("Selected Agent Code:", selectedAgentCode);
       console.log("Selected Agent Name:", selectedAgentName);
       this.selectedAgentCode = selectedAgentCode;
       this.selectedAgentDesc = selectedAgentName;
+      sessionStorage.setItem('agentCode', this.selectedAgentCode);
+      sessionStorage.setItem('agentDescription', this.selectedAgentDesc);
+      
 
       this.getContractNames();
     } else {
