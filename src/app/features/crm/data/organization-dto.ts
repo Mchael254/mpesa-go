@@ -220,3 +220,20 @@ export interface BranchContactDTO {
   physicalAddress: string;
   telephone: string;
 }
+
+export interface BranchAgencyDTO {
+  agentCode: number;
+  branchId: number;
+  code: number;
+  manager: string;
+  managerAllowed: string;
+  managerSequenceNo: string;
+  name: string;
+  overrideCommEarned: string;
+  policySequenceNo: number;
+  postLevel: string;
+  propertySequenceNo: number;
+  sequenceNo: string;
+  shortDescription?: string;
+  status: string;
+}

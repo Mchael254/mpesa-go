@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import {
+  BranchAgencyDTO,
   BranchContactDTO,
   BranchDivisionDTO,
   ManagersDTO,
@@ -31,6 +32,10 @@ export class OrganizationService {
   private selectedRegionSource = new BehaviorSubject<number | null>(null);
   selectedRegion$ = this.selectedRegionSource.asObservable();
 
+  // Define selectedBranch$ and its associated BehaviorSubject
+  private selectedBranchSource = new BehaviorSubject<number | null>(null);
+  selectedBranch$ = this.selectedBranchSource.asObservable();
+
   constructor(private utilService: UtilService, private api: ApiService) {}
 
   setSelectedOrganizationId(organizationId: number) {
@@ -39,6 +44,10 @@ export class OrganizationService {
 
   setSelectedRegion(selectedRegion: number) {
     this.selectedRegionSource.next(selectedRegion);
+  }
+
+  setSelectedBranch(selectedBranch: number) {
+    this.selectedBranchSource.next(selectedBranch);
   }
 
   getOptionValues(): Observable<YesNoDTO[]> {
@@ -193,8 +202,11 @@ export class OrganizationService {
     );
   }
 
-  getBranchManagers(organizationId: number): Observable<ManagersDTO[]> {
-    const params = new HttpParams().set('organizationId', `${organizationId}`);
+  getBranchManagers(organizationId?: number): Observable<ManagersDTO[]> {
+    let params = new HttpParams();
+    if (organizationId !== undefined) {
+      params = params.set('organizationId', `${organizationId}`);
+    }
 
     return this.api.GET<ManagersDTO[]>(
       `branch-managers`,
@@ -334,6 +346,43 @@ export class OrganizationService {
   deleteOrganizationBranchContact(branchId: number) {
     return this.api.DELETE<BranchContactDTO>(
       `branch-contacts/${branchId}`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  getOrganizationBranchAgency(branchId: number): Observable<BranchAgencyDTO[]> {
+    return this.api.GET<BranchAgencyDTO[]>(
+      `branches/${branchId}/branch-agencies`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  createOrganizationBranchAgency(
+    data: BranchAgencyDTO,
+    branchId: number
+  ): Observable<BranchAgencyDTO[]> {
+    return this.api.POST<BranchAgencyDTO[]>(
+      `branches/${branchId}/branch-agencies`,
+      JSON.stringify(data),
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  updateOrganizationBranchAgency(
+    data: BranchAgencyDTO,
+    branchAgencyId: number,
+    branchId: number
+  ): Observable<BranchAgencyDTO[]> {
+    return this.api.PUT<BranchAgencyDTO[]>(
+      `/branches/${branchId}/branch-agencies/${branchAgencyId}`,
+      data,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  deleteOrganizationBranchAgency(branchAgencyId: number, branchId: number) {
+    return this.api.DELETE<BranchAgencyDTO>(
+      `branches/${branchId}/branch-agencies/${branchAgencyId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
