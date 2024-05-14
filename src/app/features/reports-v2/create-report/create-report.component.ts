@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {ReportService} from "../../reports/services/report.service";
 import {Logger} from "../../../shared/services";
 import {SubjectArea} from "../../../shared/data/reports/subject-area";
-import {Metrics, SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
+import {SubjectAreaCategory} from "../../../shared/data/reports/subject-area-category";
 import {take} from "rxjs/operators";
 import {Criteria} from "../../../shared/data/reports/criteria";
 import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
@@ -13,7 +13,6 @@ import {SessionStorageService} from "../../../shared/services/session-storage/se
 import {ReportServiceV2} from "../services/report.service";
 import { ReportV2 } from '../../../shared/data/reports/report';
 import { AuthService } from '../../../shared/services/auth.service';
-import { tap } from 'rxjs';
 import { ChatBotComponent } from '../chat-bot/chat-bot.component';
 import {Profile} from "../../../shared/data/auth/profile";
 
@@ -71,7 +70,6 @@ export class CreateReportComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private sessionStorageService: SessionStorageService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
   ) {}
 
   /**
@@ -86,14 +84,16 @@ export class CreateReportComponent implements OnInit {
     this.reportId = +this.activatedRoute.snapshot.params['id'];
     const reportParams = this.sessionStorageService.getItem(`reportParams`);
 
-    if (isFromPreview && reportParams) {
+    // todo: fix when a report is being edited from next screen
+    /*if (isFromPreview && reportParams) {
       this.criteria = reportParams.criteria;
       this.filters = reportParams.filters;
       this.sort = reportParams.sort;
       this.reportNameRec = reportParams.reportNameRec;
     } else if (this.reportId) {
       // this.getReport(this.reportId)
-    }
+    }*/
+
     this.getSubjectAreas();
     this.createSearchForm();
     this.currentUser = this.authService.getCurrentUser();

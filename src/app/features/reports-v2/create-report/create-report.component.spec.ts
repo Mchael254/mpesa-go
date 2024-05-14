@@ -111,7 +111,6 @@ describe('CreateReportComponent', () => {
 
   test('should fetch and set categories correctly', () => {
     const subjectArea = { id: 1, subjectAreaName: 'General Insurance Underwriting' };
-
     const mockResponse = [
       {
         id: 0,
@@ -151,7 +150,9 @@ describe('CreateReportComponent', () => {
     component.selectCriteria(category, subCategory, query);
 
     // Expectations
-    expect(checkIfCriterionExistsSpy).toHaveBeenCalledWith(`${subCategory.value}.${query.value}`, component.measures, component.dimensions);
+    expect(checkIfCriterionExistsSpy).toHaveBeenCalledWith(
+      `${subCategory.value}.${query.value}`, component.measures, component.dimensions
+    );
     // expect(component.criteria).toContain({
     //   category: category.description,
     //   categoryName: category.name,
@@ -180,7 +181,14 @@ describe('CreateReportComponent', () => {
     component.selectCriteria(category, subCategory, query);
 
     // Expectations
-    expect(displayErrorMessageSpy).toHaveBeenCalledWith('error', `${query.value} already selected.`);
+    expect(displayErrorMessageSpy).toHaveBeenCalledWith('error', `${query.name} already selected.`);
     expect(component.criteria.length).toBe(0); // Criteria should not be added
   });
+
+  /*test('should update report name onReportNameChange', () => {
+    const input = fixture.debugElement.nativeElement.querySelector('#onReportNameChange');
+    input.keypress();
+    fixture.detectChanges();
+  });*/
+
 });

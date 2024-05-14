@@ -36,4 +36,10 @@ describe('CriteriaPillComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  test('should select criteria', () => {
+    const button = fixture.debugElement.nativeElement.querySelector('#select-criteria');
+    button.click();
+    fixture.detectChanges();
+  });
+
 });

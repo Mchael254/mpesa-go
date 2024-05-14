@@ -24,6 +24,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {Pagination} from "../../../shared/data/common/pagination";
 
 import {Router} from "@angular/router";
+import {TranslateModule} from "@ngx-translate/core";
 
 export class MockAuthService {
   private currentUserSubject = new BehaviorSubject<AccountContact | ClientAccountContact | WebAdmin>({} as AccountContact | ClientAccountContact | WebAdmin);
@@ -85,6 +86,7 @@ describe('CreateDashboardComponent', () => {
         MultiSelectModule,
         ReactiveFormsModule,
         FormsModule,
+        TranslateModule.forRoot()
         ],
       providers: [
         GlobalMessagingService,

@@ -6,6 +6,7 @@ import {Criteria} from "../../../shared/data/reports/criteria";
 import {createSpyObj} from "jest-createspyobj";
 import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {TranslateModule} from "@ngx-translate/core";
 
 describe('CriteriaComponent', () => {
   const reportServiceStub = createSpyObj('ReportService', ['fetchFilterConditions']);
@@ -40,7 +41,8 @@ describe('CriteriaComponent', () => {
     TestBed.configureTestingModule({
       declarations: [CriteriaComponent],
       imports: [
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        TranslateModule.forRoot()
       ],
       providers: [],
       schemas: [NO_ERRORS_SCHEMA],
@@ -82,6 +84,13 @@ describe('CriteriaComponent', () => {
     button.click();
     fixture.detectChanges();
     expect(component.selectedCriterion.sort).toBe("Sort order: asc")
+  });
+
+  test('should remove sorting', () => {
+    const removeSortingBtn = fixture.debugElement.nativeElement.querySelector('#removeSorting');
+    removeSortingBtn.click();
+    fixture.detectChanges();
+    expect(component.removeSorting.call).toBeTruthy();
   });
 
 });

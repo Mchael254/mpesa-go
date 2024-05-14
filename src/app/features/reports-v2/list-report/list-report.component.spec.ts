@@ -15,6 +15,7 @@ import {DynamicBreadcrumbComponent} from "../../../shared/components/dynamic-bre
 import {MenuModule} from "primeng/menu";
 import {AddReportToDashDTO, DashboardReports} from "../../../shared/data/reports/dashboard";
 import {TranslateModule} from "@ngx-translate/core";
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 
 export class MockAppConfigService {
   get config() {
@@ -71,6 +72,7 @@ describe('ListReportComponent', () => {
         { provide: ReportService, useClass: MockReportService },
         { provide: cubejs, useClass: MockCubeJsApi },
       ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(ListReportComponent);
     component = fixture.componentInstance;
