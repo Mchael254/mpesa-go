@@ -146,7 +146,7 @@ export class ListReportComponent implements OnInit {
     };
 
     this.route.queryParams.subscribe(params => {
-      log.info(`query Params >>>`, params);
+      // log.info(`query Params >>>`, params);
       this.dashboardId = params['dashboardId'];
       this.getDashboardById(params['dashboardId']);
     });

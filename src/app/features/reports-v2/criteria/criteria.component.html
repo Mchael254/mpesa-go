@@ -31,8 +31,8 @@
       <span class="text-secondary filter-option mt-2" style="font-size: 0.8em">
         <i class="pi pi-sort-amount-down"></i>
         {{ criterion.filter }}
-        <i 
-          class="pi pi-times text-danger" 
+        <i
+          class="pi pi-times text-danger"
           style="font-size: 0.8rem; cursor: pointer; padding-left: 1rem;"
           (click)="removeFilter(criterion)"
         ></i>
@@ -43,8 +43,9 @@
       <span class="text-secondary filter-option" style="font-size: 0.8em;">
         <i class="pi pi-sort-amount-down"></i>
         {{ criterion.sort }}
-        <i 
-          class="pi pi-times text-danger" 
+        <i
+          class="pi pi-times text-danger"
+          id="removeSorting"
           style="font-size: 0.8rem; cursor: pointer; padding-left: 1rem;"
           (click)="removeSorting(criterion)"
         ></i>
@@ -73,7 +74,7 @@
           </div>
 
           <div class="col-sm-9 offset-sm-0 col-8 offset-1">
-            
+
             <form [formGroup]="filterForm">
               <div class="mb-3">
                 <label for="condition" class="form-label">{{ 'report.condition' | translate }}</label>
