@@ -476,13 +476,13 @@ describe('PolicyProductComponent', () => {
   it('should reset form controls when showIntermediaryFields is false', () => {
     component.showIntermediaryFields = false;
     component.onPolicyInterfaceTypeChange('N');
-    expect(component.policyProductForm.get('agent_code').value).toBeNull();
+    expect(component.policyProductForm.get('agentCode').value).toBeNull();
     // Add expectations for other form controls here
   });
   it('should reset form controls when showFacultativeFields is false', () => {
     component.showFacultativeFields = false;
     component.onPolicyInterfaceTypeChange('F');
-    expect(component.policyProductForm.get('agent_code').value).toBeNull();
+    expect(component.policyProductForm.get('agentCode').value).toBeNull();
     // Add expectations for other form controls here
   });
   it('should fetch branches and update branchList and userBranchName on successful response', () => {
@@ -926,7 +926,7 @@ it('should call createPolicy and handle success response', () => {
   const mockPolicyForm = {}; // Mock your policy form
   const mockUser = {}; // Mock your user object
   const mockPolicyResponse = {
-    embedded: [{}] // Mock embedded data structure as needed
+    _embedded: [{}] // Mock embedded data structure as needed
   };
 
   // Stub the createPolicy method of PolicyService to return a mock observable
@@ -943,7 +943,7 @@ it('should call createPolicy and handle success response', () => {
 
   // Assert the behavior after success response
   expect(component.policyResponse).toEqual(mockPolicyResponse);
-  expect(component.policyDetails).toEqual(mockPolicyResponse.embedded[0]);
+  expect(component.policyDetails).toEqual(mockPolicyResponse._embedded[0]);
   expect(component.globalMessagingService.displaySuccessMessage).toHaveBeenCalledWith('Success', 'Policy has been created');
   // expect(sessionStorage.setItem).toHaveBeenCalledWith('passedPolicyDetails', JSON.stringify(mockPolicyResponse.embedded[0]));
   // expect(component.router.navigate).toHaveBeenCalledWith(['/home/gis/policy/risk-details']);
@@ -960,7 +960,7 @@ it('should call createPolicy and set transaction type correctly for "new-busines
   component.createPolicy();
 
   // Assert the transaction type value
-  expect(component.policyProductForm.get('transaction_type').value).toEqual('NB');
+  expect(component.policyProductForm.get('transactionType').value).toEqual('NB');
 });
 
 it('should call createPolicy and set transaction type correctly for "endorsement"', () => {
@@ -973,7 +973,7 @@ it('should call createPolicy and set transaction type correctly for "endorsement
   component.createPolicy();
 
   // Assert the transaction type value
-  expect(component.policyProductForm.get('transaction_type').value).toEqual('ED');
+  expect(component.policyProductForm.get('transactionType').value).toEqual('ED');
 });
 
 it('should call createPolicy and set transaction type correctly for "contra-transaction"', () => {
@@ -986,12 +986,12 @@ it('should call createPolicy and set transaction type correctly for "contra-tran
   component.createPolicy();
 
   // Assert the transaction type value
-  expect(component.policyProductForm.get('transaction_type').value).toEqual('CT');
+  expect(component.policyProductForm.get('transactionType').value).toEqual('CT');
 });
 
 it('should call getPaymentModes and handle success response', () => {
   const mockPaymentModes = {
-    embedded: [{ /* mock contract details */ }]
+    _embedded: [{ /* mock contract details */ }]
   };
 
   jest.spyOn(policyService, 'getPaymentModes').mockReturnValue(of(mockPaymentModes)as any);
@@ -999,7 +999,7 @@ it('should call getPaymentModes and handle success response', () => {
   component.getPaymentModes();
 
   expect(component.paymentModesList).toEqual(mockPaymentModes);
-  expect(component.paymentDetails).toEqual(mockPaymentModes.embedded);
+  expect(component.paymentDetails).toEqual(mockPaymentModes._embedded);
 });
 
 });

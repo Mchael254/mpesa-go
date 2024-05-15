@@ -34,6 +34,8 @@ export class CoinsuaranceDetailsComponent {
   agentCode: any;
   agentDescription: any;
   isLeaderChecked:any;
+  followerAgentCode:any;
+  selectedFollower:any;
 
 
   constructor(
@@ -273,7 +275,7 @@ export class CoinsuaranceDetailsComponent {
           if (data) {
 
             log.debug("Coinsurance response", data);
-            this.globalMessagingService.displaySuccessMessage('Success', 'coinsurers  added successfully');
+            this.globalMessagingService.displaySuccessMessage('Success', 'Coinsurers  added successfully');
 
           }
           else {
@@ -292,5 +294,55 @@ export class CoinsuaranceDetailsComponent {
           log.info(`error >>>`, err);
         },
       })
+  }
+  editCoinsurance(){
+    
+  }
+  onRowSelect(Selectedfollower:any){
+    this.selectedFollower=Selectedfollower
+    log.debug("Follower Selected:",this.selectedFollower)
+    this.followerAgentCode=this.selectedFollower.agentCode;
+
+  }
+  openDeleteModal(){
+    if(!this.selectedFollower){
+      this.globalMessagingService.displayInfoMessage('Error', 'Select a Coinsurer to continue');
+    }else{
+      document.getElementById("openModalButtonDelete").click();
+  
+    }
+  }
+  deleteCoinsurance(){
+    this.policyService
+    .deleteCoinsurance(this.followerAgentCode,this.batchNo)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data: any) => {
+        if (data) {
+
+          const deletedIndex = this.transformedCoinsurance.findIndex(
+            (item) => item.agentCode === this.followerAgentCode 
+          );
+          if (deletedIndex !== -1) {
+            this.transformedCoinsurance.splice(deletedIndex, 1); // Remove the deleted item from the array
+          }
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully deleted Co-insurance');
+        }
+        else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Empty response received from the server.';
+          this.globalMessagingService.displayErrorMessage('Error', this.errorMessage);
+        }
+
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    })
   }
 }
