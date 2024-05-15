@@ -686,7 +686,29 @@
       "maintenance_cover": "Wartungsdeckung",
       "quake_flood_zone": "Erdbeben-/Überschwemmungszone",
       "relational_group": "Relationale Gruppe",
-      "risk_class": "Risikoklasse"
+      "risk_class": "Risikoklasse",
+      
+      "underwriting_coinsurance_details": "Zeichnung: Mitversicherungsdetails",
+      "coinsurance_details": "Mitversicherungsdetails",
+      "coinsurance_leader": "Mitversicherungsleiter",
+      "coinsurance_gross_si": "Bruttosumme der Mitversicherung",
+      "coinsurance_leader_combined": "Kombinierter Mitversicherungsleiter",
+      "coinsurance_percent": "Mitversicherungsprozentsatz",
+      "coinsurance_fee_percent": "Mitversicherungsgebühr in Prozent",
+      "save": "Speichern",
+      "coinsurers": "Mitversicherer",
+      "select_coinsurer": "Mitversicherer auswählen",
+      "select": "Auswählen",
+      "short_description": "Kurzbeschreibung",
+      "no_data_to_display": "Keine Daten vorhanden.",
+      "are_you_sure_you_want_to_delete": "Möchten Sie wirklich löschen?",
+      "yes_delete": "Ja, löschen",
+      "no_im_not": "Nein, ich möchte nicht",
+      "leader": "Leiter",
+      "percentage": "Prozentsatz",
+      "premium": "Prämie",
+      "fee_rate": "Gebührensatz",
+      "fee_amount": "Gebührenbetrag"
     }
   },
   "lms": {
