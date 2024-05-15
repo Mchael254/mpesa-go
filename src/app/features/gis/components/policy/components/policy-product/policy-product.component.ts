@@ -740,7 +740,8 @@ export class PolicyProductComponent {
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
-    if (this.policyProductForm.value.is_coinsurance == 'Y') {
+    log.debug("coinsurance outputAst",this.policyProductForm.get('isCoinsurance').value)
+    if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
       log.debug("NAVIGATING TO COINSUARANCE PAGE")
       this.router.navigate(['/home/gis/policy/coinsuarance-details'])
       sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));

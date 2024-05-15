@@ -81,4 +81,11 @@ export class PolicyService {
     return this.api.POST(`v1/policies/add-coinsurance?polBatchNo=${batchNo}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  editCoinsurance(data:CoinsuranceDetail){
+    return this.api.PUT(`v1/policies/edit-coinsurance?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  deleteCoinsurance(agentCode:number,batchNo:number){
+    return this.api.DELETE(`v1/policies/delete-coinsurance?agnCode=${agentCode}&polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
 }

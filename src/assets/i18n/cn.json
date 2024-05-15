@@ -686,7 +686,29 @@
       "maintenance_cover": "维护保险",
       "quake_flood_zone": "地震/洪水区",
       "relational_group": "关系组",
-      "risk_class": "风险等级"
+      "risk_class": "风险等级",
+      
+      "underwriting_coinsurance_details": "承保：合同分摊细节",
+      "coinsurance_details": "合同分摊细节",
+      "coinsurance_leader": "合同分摊领头人",
+      "coinsurance_gross_si": "合同分摊总保额",
+      "coinsurance_leader_combined": "合同分摊领头人联合",
+      "coinsurance_percent": "合同分摊百分比",
+      "coinsurance_fee_percent": "合同分摊费用百分比",
+      "save": "保存",
+      "coinsurers": "合同分摊人",
+      "select_coinsurer": "选择合同分摊人",
+      "select": "选择",
+      "short_description": "简要描述",
+      "no_data_to_display": "没有可显示的数据。",
+      "are_you_sure_you_want_to_delete": "您确定要删除吗？",
+      "yes_delete": "是的，删除",
+      "no_im_not": "不，我不是",
+      "leader": "领导者",
+      "percentage": "百分比",
+      "premium": "保险费",
+      "fee_rate": "费率",
+      "fee_amount": "费用金额"
     }
   },
   "lms": {

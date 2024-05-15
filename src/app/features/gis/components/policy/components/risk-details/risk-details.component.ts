@@ -17,14 +17,14 @@ import { CountryService } from '../../../../../../shared/services/setups/country
 import { StaffService } from '../../../../../entities/services/staff/staff.service';
 import { StaffDto } from '../../../../../entities/data/StaffDto';
 import underwritingSteps from '../../data/underwriting-steps.json'
-import { ClientDTO } from 'src/app/features/entities/data/ClientDTO';
-import { ClientService } from 'src/app/features/entities/services/client/client.service';
+import { ClientDTO } from '../../../../../../features/entities/data/ClientDTO';
+import { ClientService } from '../../../../../../features/entities/services/client/client.service';
 import { Table } from 'primeng/table';
 import { SectionsService } from '../../../setups/services/sections/sections.service';
 import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-class-cover-types-sections/sub-class-cover-types-sections.service';
 import { concatMap, forkJoin, switchMap, tap } from 'rxjs';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../../../../shared/services/auth.service';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -595,10 +595,10 @@ export class RiskDetailsComponent {
 
     this.selectedCoverType = selectedCover;
     log.debug("Cover Type selected:", selectedCover)
-    this.selectedCoverTypeCode = this.selectedCoverType.coverTypeCode;
+    this.selectedCoverTypeCode = this.selectedCoverType?.coverTypeCode;
     log.debug("Cover Type code selected:", this.selectedCoverTypeCode)
 
-    this.covertypeSections = this.subclassSectionCoverList.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode)
+    this.covertypeSections = this.subclassSectionCoverList?.filter(sectionCover => sectionCover.coverTypeCode === this.selectedCoverTypeCode)
     log.debug("All section for a selected Cover Type:", this.covertypeSections)
 
     if (this.sectionList && this.covertypeSections) {
@@ -987,8 +987,8 @@ export class RiskDetailsComponent {
       })
   }
   filterMandatorySections() {
-    log.debug("selectedCover should be coverdesc", this.selectedCoverType.coverTypeShortDescription)
-    const coverType = this.selectedCoverType.coverTypeShortDescription
+    log.debug("selectedCover should be coverdesc", this.selectedCoverType?.coverTypeShortDescription)
+    const coverType = this.selectedCoverType?.coverTypeShortDescription
     if (coverType) {
       this.filteredMandatorySections = this.mandatorySections.filter(section =>
         section.coverTypeShortDescription === (coverType === "COMP" ? "COMP" : coverType));
@@ -1081,30 +1081,62 @@ export class RiskDetailsComponent {
   //   // this.getPremiumRates()
   //   // this.getSectionbyCode()
   // }  
+  // onCheckboxChange(section: any) {
+  //   const index = this.selectedSections.findIndex((s) => s.code === section.code);
+
+  //   if (index === -1) {
+  //     // Section is not yet selected, add it to the array
+  //     this.selectedSections.push(section);
+  //     log.debug("Checked Sections Data", this.selectedSections);
+  //     this.allTransformedSections = [];
+  //     this.selectedSections.forEach(element => {
+  //       const changedSections = this.covertypeSections?.filter(section => section.sectionCode === element.code
+  //         && section.coverTypeShortDescription === this.selectedCoverType.coverTypeShortDescription);
+  //       this.allTransformedSections?.push(...changedSections);
+  //       log.debug("Transformed Sections Data", this.allTransformedSections);
+
+  //     });
+  //     this.getPremium(this.allTransformedSections);
+  //     // this.createRiskSection();
+
+
+  //   } else {
+  //     // Section is already selected, remove it from the array
+  //     this.selectedSections.splice(index, 1);
+  //   }
+  // }
   onCheckboxChange(section: any) {
     const index = this.selectedSections.findIndex((s) => s.code === section.code);
-
+  
     if (index === -1) {
       // Section is not yet selected, add it to the array
       this.selectedSections.push(section);
       log.debug("Checked Sections Data", this.selectedSections);
       this.allTransformedSections = [];
+  
+      // Filter sections based on the selected cover type
       this.selectedSections.forEach(element => {
-        const changedSections = this.covertypeSections.filter(section => section.sectionCode === element.code
-          && section.coverTypeShortDescription === this.selectedCoverType.coverTypeShortDescription);
-        this.allTransformedSections.push(...changedSections);
-        log.debug("Transformed Sections Data", this.allTransformedSections);
-
+        const changedSections = this.covertypeSections?.filter(section => 
+          section.sectionCode === element.code &&
+          section.coverTypeShortDescription === this.selectedCoverType?.coverTypeShortDescription
+        );
+  
+        if (changedSections) {
+          this.allTransformedSections.push(...changedSections);
+          log.debug("Transformed Sections Data", this.allTransformedSections);
+        } else {
+          log.debug("No matching sections found for", element);
+        }
       });
+  
       this.getPremium(this.allTransformedSections);
       // this.createRiskSection();
-
-
     } else {
       // Section is already selected, remove it from the array
       this.selectedSections.splice(index, 1);
     }
   }
+  
   isSelected(section: any): boolean {
     return this.selectedSections.some((s) => s.code === section.code);
 

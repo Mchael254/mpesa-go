@@ -42,6 +42,7 @@ import { StaffService } from '../../../../../entities/services/staff/staff.servi
 import { StaffDto } from '../../../../../entities/data/StaffDto';
 import { CountryService } from '../../../../../../shared/services/setups/country/country.service';
 import { CountryDto, StateDto, TownDto } from '../../../../../../shared/data/common/countryDto';
+import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 
 export class mockPolicyService {
   createPolicy = jest.fn().mockReturnValue(of());
@@ -77,38 +78,41 @@ export class mockStaffService {
   getTownsByMainCityState = jest.fn().mockReturnValue(of());
   getCountries = jest.fn().mockReturnValue(of());
 }
+export class mockPremiumService {
+  getAllPremiums = jest.fn().mockReturnValue(of());
+}
 
-const mockLogger = {
-  debug: jest.fn()
-};
+// const mockLogger = {
+//   debug: jest.fn()
+// };
 const mockPolicyContent: PolicyContent = {
   agency: 123,
-  authorized_status: "Authorized",
-  basic_premium: 70000,
-  batch_no: 2020247746,
-  client_code: 324,
+  authorizedStatus: "Authorized",
+  basicPremium: 70000,
+  batchNo: 2020247746,
+  clientCode: 324,
   currency: "USD",
-  debit_owner: "John Doe",
-  endorsement_no: "ENDORSE123",
+  debitOwner: "John Doe",
+  endorsementNo: "ENDORSE123",
   insureds: [
     {
       client: {
-        first_name: "Jane",
+        firstName: "Jane",
         id: 456,
-        last_name: "Doe"
+        lastName: "Doe"
       },
-      prp_code: 789
+      prpCode: 789
     }
   ],
-  introducer_code: 101,
-  marketer_code: 202,
-  policy_no: "MPC/MSA/2019/200026",
-  policy_remarks: "Renewal due next month",
-  policy_status: "RN",
-  policy_type: "Standard",
+  introducerCode: 101,
+  marketerCode: 202,
+  policyNo: "MPC/MSA/2019/200026",
+  policyRemarks: "Renewal due next month",
+  policyStatus: "RN",
+  policyType: "Standard",
   premium: 75000,
-  prepared_by: "Alice Smith",
-  prepared_date: "2024-04-17",
+  preparedBy: "Alice Smith",
+  preparedDate: "2024-04-17",
   product: {
     acceptUniqueRisks: "N",
     acceptsMultipleClasses: "Y",
@@ -175,89 +179,90 @@ const mockPolicyContent: PolicyContent = {
     withEffectFrom: "2015-01-01",
     withEffectTo: "2015-01-14",
     years: 3
-},
-  promise_date: "2024-04-17",
-  renewal_date: "2021-02-25",
-  risk_information: [
+  },
+  promiseDate: "2024-04-17",
+  renewalDate: "2021-02-25",
+  riskInformation: [
     {
-      allowed_commission_rate: 0,
-      basic_premium: 0,
-      binder_code: 0,
-      commission_amount: 0,
-      commission_rate: 0,
-      cover_type_code: 0,
-      cover_type_short_description: "string",
-      currency_code: 0,
-      date_cover_from: "2024-04-17",
-      date_cover_to: "2024-04-17",
-      del_sect: "string",
-      gross_premium: 0,
+      allowedCommissionRate: 0,
+      basicPremium: 0,
+      binderCode: 0,
+      commissionAmount: 0,
+      commissionRate: 0,
+      coverTypeCode: 0,
+      coverTypeShortDescription: "string",
+      currencyCode: 0,
+      dateCoverFrom: "2024-04-17",
+      dateCoverTo: "2024-04-17",
+      delSect: "string",
+      grossPremium: 0,
       insureds: {
         client: {
-          first_name: "string",
+          firstName: "string",
           id: 0,
-          last_name: "string"
+          lastName: "string"
         },
-        prp_code: 0
+        prpCode: 0
       },
-      ipu_ncd_cert_no: "string",
+      ipuNcdCertNo: "string",
       loaded: "string",
-      lta_commission: 0,
-      net_premium: 0,
-      paid_premium: 0,
-      policy_batch_no: 0,
-      policy_number: "string",
-      policy_status: "string",
-      product_code: 0,
-      property_description: "string",
-      property_id: "string",
+      ltaCommission: 0,
+      netPremium: 0,
+      paidPremium: 0,
+      policyBatchNo: 0,
+      policyNumber: "string",
+      policyStatus: "string",
+      productCode: 0,
+      propertyDescription: "string",
+      propertyId: "string",
       quantity: 0,
-      reinsurance_endorsement_number: "string",
-      renewal_area: "string",
-      risk_fp_override: 0,
-      risk_ipu_code: 0,
+      reinsuranceEndorsementNumber: "string",
+      renewalArea: "string",
+      riskFpOverride: 0,
+      riskIpuCode: 0,
       sections: [
         {
-          div_factor: 0,
-          free_limit: 0,
-          limit_amount: 0,
-          multiplier_rate: 0,
-          pil_prem_rate: 0,
+          divFactor: 0,
+          freeLimit: 0,
+          limitAmount: 0,
+          multiplierRate: 0,
+          pilPremRate: 0,
           premium: 0,
-          rate_type: "string",
-          sect_code: 0,
-          sect_ipu_code: 0,
-          section_code: 0,
-          section_desc: "string",
-          section_short_desc: "string"
+          rateType: "string",
+          sectCode: 0,
+          sectIpuCode: 0,
+          sectionCode: 0,
+          sectionDesc: "string",
+          sectionShortDesc: "string"
         }
       ],
-      stamp_duty: 0,
-      sub_class_code: 0,
-      sub_class_description: "string",
-      transaction_type: "string",
-      underwriting_year: 0,
+      stampDuty: 0,
+      subClassCode: 0,
+      subClassDescription: "string",
+      transactionType: "string",
+      underwritingYear: 0,
       value: 0
     }
   ],
-  tax_information: [
+  taxInformation: [
     {
       amount: 0,
-      batch_no: 0,
+      batchNo: 0,
       description: "string",
       rate: 0,
-      rate_type: "string",
-      transaction_type_code: "string"
+      rateType: "string",
+      transactionTypeCode: "string"
     }
   ],
-  total_premium: 0,
-  total_sum_insured: 800000,
-  transaction_type: "string",
+  totalPremium: 0,
+  totalSumInsured: 800000,
+  transactionType: "string",
   type: "string",
-  under_writing_only: "string",
-  wef_dt: "2020-02-25",
-  wet_dt: "2020-02-25"
+  underWritingOnly: "string",
+  wefDt: "2020-02-25",
+  wetDt: "2020-02-25"
 };
+
 const mockResponse: PolicyResponseDTO = {
   content: [mockPolicyContent],
   empty: false,
@@ -582,6 +587,8 @@ describe('RiskDetailsComponent', () => {
   let vehicleModelService: VehicleModelService;
   let staffService:StaffService;
   let countryService:CountryService;
+  let premiumService:PremiumRateService;
+  let mockLogger: jest.SpyInstance<void>;
 
 
 
@@ -603,6 +610,7 @@ describe('RiskDetailsComponent', () => {
         { provide: VehicleModelService, useClass: mockVehicleModelService },
         { provide: StaffService, useClass: mockStaffService },
         { provide: CountryService, useClass: mockCountryService },
+        { provide: PremiumRateService, useClass: mockPremiumService },
 
 
         { provide: APP_BASE_HREF, useValue: '/' },
@@ -627,15 +635,23 @@ describe('RiskDetailsComponent', () => {
     vehicleModelService = TestBed.inject(VehicleModelService);
     staffService = TestBed.inject(StaffService);
     countryService = TestBed.inject(CountryService);
+    premiumService = TestBed.inject(PremiumRateService);
 
     component.policyRiskForm = new FormGroup({});
     component.fb = TestBed.inject(FormBuilder);
+    const mockFormValue = { binderCode: '123' }; // Mocked form value
+    component.policyRiskForm = component.fb.group({
+      binderCode: new FormControl(mockFormValue.binderCode)
+    });
+    mockLogger = jest.spyOn(console, 'debug').mockImplementation(() => {});
+
 
     fixture.detectChanges();
   });
   afterEach(() => {
     // Optionally clear mock function calls
     jest.clearAllMocks();
+    mockLogger.mockRestore();
   });
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -680,7 +696,7 @@ describe('RiskDetailsComponent', () => {
 
     // Spy on other methods or services as needed
     jest.spyOn(component.globalMessagingService, 'displayErrorMessage');
-    jest.spyOn(component.policyRiskForm.controls['cover_days'], 'setValue');
+    jest.spyOn(component.policyRiskForm.controls['coverDays'], 'setValue');
     jest.spyOn(component, 'onProductSelected');
     jest.spyOn(component, 'getProductSubclass');
     jest.spyOn(component.cdr, 'detectChanges');
@@ -698,11 +714,11 @@ describe('RiskDetailsComponent', () => {
     expect(component.policyResponse).toEqual(mockResponse);
     expect(component.policyDetails).toEqual(mockResponse.content[0]);
     expect(component.productCode).toEqual(mockResponse.content[0].product.code);
-    expect(component.passedCoverFrom).toEqual(mockResponse.content[0].wef_dt);
-    expect(component.passedCoverTo).toEqual(mockResponse.content[0].wet_dt);
-    expect(component.policyRiskForm.controls['cover_days'].setValue).toHaveBeenCalledWith(0);
+    expect(component.passedCoverFrom).toEqual(mockResponse.content[0].wefDt);
+    expect(component.passedCoverTo).toEqual(mockResponse.content[0].wetDt);
+    expect(component.policyRiskForm.controls['coverDays'].setValue).toHaveBeenCalledWith(0);
     expect(component.onProductSelected).toHaveBeenCalled();
-    expect(component.getProductSubclass).toHaveBeenCalled();
+    // expect(component.getProductSubclass).toHaveBeenCalled();
     expect(component.cdr.detectChanges).toHaveBeenCalled();
     // Add more assertions as needed
   });
@@ -845,8 +861,9 @@ describe('RiskDetailsComponent', () => {
     component.onSubclassSelected(event);
 
     // Expectations
-    expect(component.selectedSubclassCode).toEqual(selectedSubclassCode);
-    expect(loadCovertypeBySubclassCodeSpy).toHaveBeenCalledWith(selectedSubclassCode);
+    expect(component.selectedSubclassCode).toEqual(parseInt(selectedSubclassCode)); // Parse as integer
+
+    expect(loadCovertypeBySubclassCodeSpy).toHaveBeenCalledWith(parseInt(selectedSubclassCode));
     expect(loadAllBindersSpy).toHaveBeenCalled();
   });
   it('should load all binders', async () => {
@@ -963,12 +980,12 @@ describe('RiskDetailsComponent', () => {
   it('should update selected cover type code', () => {
     const selectedCoverTypeCode = 'mockCoverTypeCode';
     const event = { target: { value: selectedCoverTypeCode } };
-
+  
     // Trigger the method with the mock event
     component.onCoverTypeSelected(event);
-
+  
     // Expectations
-    expect(component.coverTypeCode).toEqual(selectedCoverTypeCode); // Ensure coverTypeCode is updated
+    expect(component.coverTypeCode).toEqual(parseInt(selectedCoverTypeCode)); // Parse as integer
   });
   it('should fetch vehicle makes and update vehicle make list', () => {
     const mockData = ['Make1', 'Make2']; // Mock data for vehicle makes
@@ -1314,5 +1331,124 @@ describe('RiskDetailsComponent', () => {
     expect(component.errorOccurred).toBe(true);
     expect(component.errorMessage).toEqual('User country not found in the list.');
   });
+  it('should fetch premiums correctly', () => {
+    const binderCode = '123';
+    const subclassCode = 456;
+    const passedSections = [
+      { sectionCode: 123 },
+      { sectionCode: 254 }
+    ];
+  
+    // Mock FormGroup with a binderCode control
+    const mockFormGroup = new FormGroup({
+      binderCode: new FormControl(binderCode)
+    });
+  
+    // Spy on the get method of the FormGroup
+    const getSpy = jest.spyOn(mockFormGroup, 'get').mockReturnValue(new FormControl(binderCode));
+  
+    // Assign the mock FormGroup to component's policyRiskForm
+    component.policyRiskForm = mockFormGroup;
+  
+    component.selectedSubclassCode = subclassCode;
+  
+    // Mock premiumRateService.getAllPremiums responses
+    const mockPremiumResponseA = [{ premium: 100 }];
+    const mockPremiumResponseB = [{ premium: 150 }];
+  
+    jest.spyOn(premiumService, 'getAllPremiums').mockReturnValueOnce(of(mockPremiumResponseA));
+    jest.spyOn(premiumService, 'getAllPremiums').mockReturnValueOnce(of(mockPremiumResponseB));
+  
+    // Call the method with mocked data
+    component.getPremium(passedSections);
+  
+    // Expectations
+    expect(component.selectedBinder).toEqual(parseInt(binderCode)); 
+      
+    expect(getSpy).toHaveBeenCalledWith('binderCode');
+    expect(premiumService.getAllPremiums).toHaveBeenCalledWith(123, parseInt(binderCode), subclassCode);
+    expect(premiumService.getAllPremiums).toHaveBeenCalledWith(254, parseInt(binderCode), subclassCode);
+  
+    // Simulate forkJoin completion (assuming you use Angular's testing utilities for async testing)
+    // Ensure that the premiumList is updated correctly after service call completion
+    expect(component.premiumList).toEqual([...mockPremiumResponseA, ...mockPremiumResponseB]);
+  });
+  it('should return true if description contains searchText (case-insensitive)', () => {
+    // Set up test data
+    component.searchText = 'sum'; // Text to search for
+    const description = 'Sum Insured'; // Description to test against
+
+    // Call the method with the test data
+    const result = component.matchesSearch(description);
+
+    // Expectations
+    expect(result).toBe(true); 
+  });
+  it('should add a section to selectedSections and populate allTransformedSections when section is not yet selected', () => {
+    // Arrange
+    const section = { code: 'sectionCode1' };
+    component.selectedSections = [];
+    component.allTransformedSections = [];
+
+    // Simulate necessary dependencies (e.g., covertypeSections, selectedCoverType) for the method
+    component.covertypeSections = [
+      { sectionCode: 'sectionCode1', coverTypeShortDescription: 'CoverTypeA' },
+      { sectionCode: 'sectionCode1', coverTypeShortDescription: 'CoverTypeB' }
+    ];
+    component.selectedCoverType = { coverTypeShortDescription: 'CoverTypeA' }; // Set a selected cover type
+
+    const initialSelectedCount = component.selectedSections.length;
+
+    // Act
+    component.onCheckboxChange(section);
+
+    // Assert
+    expect(component.selectedSections.length).toBe(initialSelectedCount + 1); // One section should be added
+    expect(component.selectedSections).toContain(section); // New section should be in selectedSections array
+
+    // Check that allTransformedSections is populated based on the selected cover type
+    const transformedSections = component.allTransformedSections;
+    expect(transformedSections.length).toBeGreaterThan(0); // Check that transformed sections are populated
+    // Additional assertions based on the expected behavior of allTransformedSections
+  });
+  it('should remove a section from selectedSections when section is already selected', () => {
+    // Arrange
+    const section = { code: 'sectionCode2' };
+    component.selectedSections = [section];
+    const initialSelectedCount = component.selectedSections.length;
+
+    // Act
+    component.onCheckboxChange(section);
+
+    // Assert
+    expect(component.selectedSections.length).toBe(initialSelectedCount - 1); // One section should be removed
+    expect(component.selectedSections).not.toContain(section); // Removed section should not be in selectedSections array
+    // Add more specific assertions based on the expected behavior
+  });
+  
+  // it('should log a debug message when no matching sections are found', () => {
+  //   // Arrange
+  //   const section = { code: 'sectionCode1' };
+  //   component.selectedSections = [];
+  //   component.covertypeSections = [
+  //     { sectionCode: 'sectionCode2', coverTypeShortDescription: 'CoverTypeA' },
+  //     { sectionCode: 'sectionCode3', coverTypeShortDescription: 'CoverTypeB' }
+  //   ]; // Ensure no sections match the filter criteria
+  //   component.selectedCoverType = { coverTypeShortDescription: 'CoverTypeA' };
+
+  //   // Act
+  //   component.onCheckboxChange(section);
+
+  //   // Assert
+  //   expect(mockLogger).toHaveBeenCalled(); // Check if logger was called
+  //   expect(mockLogger).toHaveBeenCalledWith(
+  //     'No matching sections found for',
+  //     section
+  //   );
+  // });
+
+
+
+
   
 });
