@@ -686,7 +686,29 @@
       "maintenance_cover": "Couverture de maintenance",
       "quake_flood_zone": "Zone de tremblement de terre/inondation",
       "relational_group": "Groupe relationnel",
-      "risk_class": "Classe de risque"
+      "risk_class": "Classe de risque",
+      
+      "underwriting_coinsurance_details": "Détails de la Coassurance en Souscription",
+      "coinsurance_details": "Détails de la Coassurance",
+      "coinsurance_leader": "Leader de la Coassurance",
+      "coinsurance_gross_si": "Montant Brut de la Coassurance",
+      "coinsurance_leader_combined": "Leader de la Coassurance Combinée",
+      "coinsurance_percent": "Pourcentage de Coassurance",
+      "coinsurance_fee_percent": "Pourcentage de Frais de Coassurance",
+      "save": "Enregistrer",
+      "coinsurers": "Coassureurs",
+      "select_coinsurer": "Sélectionner un Coassureur",
+      "select": "Sélectionner",
+      "short_description": "Description Courte",
+      "no_data_to_display": "Aucune donnée à afficher.",
+      "are_you_sure_you_want_to_delete": "Êtes-vous sûr de vouloir supprimer ?",
+      "yes_delete": "Oui, supprimer",
+      "no_im_not": "Non, je ne veux pas",
+      "leader": "Responsable",
+      "percentage": "Pourcentage",
+      "premium": "Prime",
+      "fee_rate": "Taux de Frais",
+      "fee_amount": "Montant des Frais"
     }
   },
   "lms": {

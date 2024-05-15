@@ -690,8 +690,30 @@
       "maintenance_cover": "Maintenance cover",
       "quake_flood_zone": "Quake/flood zone",
       "relational_group": "Relation group",
-      "risk_class": "Risk Class"
-    }
+      "risk_class": "Risk Class",
+
+      "underwriting_coinsurance_details": "Underwriting:Co-insurance Details",
+      "coinsurance_details":"Co-insurance Details",
+      "coinsurance_leader": " Co-insurance leader",
+      "coinsurance_gross_si": "Co-insurance gross SI",
+      "coinsurance_leader_combined": "Co-insurance leader combined",
+      "coinsurance_percent": "Co-insurance %",
+      "coinsurance_fee_percent": "Co-insurance fee %",
+      "save": "Save",
+      "coinsurers": "Co-insurers",
+      "select_coinsurer": "Select co-insurer",
+      "select": "Select",
+      "short_description": "Short description",
+      "no_data_to_display":"No data to display.",
+      "are_you_sure_you_want_to_delete": "Are you sure you want to delete?",
+      "yes_delete": "Yes,delete",
+      "no_im_not": "No, I'm not",
+      "leader": "Leader",
+      "percentage": "Percentage",
+      "premium": "Premium",
+      "fee_rate": "Fee rate",
+      "fee_amount": "Fee amount" 
+       }
   },
   "lms": {
     "common": {},

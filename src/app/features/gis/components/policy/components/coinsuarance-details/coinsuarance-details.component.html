@@ -1,25 +1,23 @@
 <div class="container ">
-    <p class="titleMain mt-3">Underwriting: Co-insurance Details</p>
+    <p class="titleMain mt-3">{{'gis.policy.underwriting_coinsurance_details' | translate}}</p>
     <div class="container mx-2 mt-n1">
         <div class="card mb-3 px-2" style=" position: relative;">
             <div class="card-body">
-                <p class="subheading">Co-insurance details</p>
+                <p class="subheading">{{'gis.policy.coinsurance_details' | translate}}</p>
                 <div class="row mb-4">
                     <div class=" mb-1 col-sm-4 col-12">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" (change)="onCheckboxChange($event)"
                                 id="coinsurance_leader">
                             <label class="form-check-label product-label" for="coinsurance_leader">
-                                Co-insurance leader
-                            </label>
+                                {{'gis.policy.coinsurance_leader' | translate}} </label>
                         </div>
                     </div>
                     <div class=" mb-1 col-sm-4 col-12">
                         <div class="form-check">
                             <input class="form-check-input " type="checkbox" value="" id="coinsurance_gross">
                             <label class="form-check-label product-label" for="coinsurance_gross">
-                                Co-insurance gross SI
-                            </label>
+                                {{'gis.policy.coinsurance_gross_si' | translate}}</label>
                         </div>
                     </div>
                     <div class=" mb-1 col-sm-4 col-12">
@@ -27,19 +25,18 @@
                             <input class="form-check-input" type="checkbox" value="" id="coinsurance_leader_combined"
                                 formControlName="is_coinsurance">
                             <label class="form-check-label product-label" for="coinsurance_leader_combined">
-                                Co-insurance leader combined
-                            </label>
+                                {{'gis.policy.coinsurance_leader_combined' | translate}} </label>
                         </div>
                     </div>
                 </div>
                 <div class="row mb-4">
                     <div class="mb-1 col-sm-4 col-12">
-                        <label for="client" class=" product-label" id="client">Co-insurance %</label>
+                        <label for="client" class=" product-label" id="client">{{'gis.policy.coinsurance_percent' | translate}}</label>
                         <input type="number" id="quote-input" class="form-control form-control-sm mb-1"
                             formControlName="client_code">
                     </div>
                     <div class="mb-1 col-sm-4 col-12" *ngIf="isCoinsuaranceLeader">
-                        <label for="client" class="product-label" id="client">Co-insurance fee %</label>
+                        <label for="client" class="product-label" id="client">{{'gis.policy.coinsurance_fee_percent' | translate}}</label>
                         <input type="number" id="quote-input" class="form-control form-control-sm mb-1"
                             formControlName="client_code">
                     </div>
@@ -52,10 +49,10 @@
                     <div class="col-sm-4 col-12 ">
                     </div>
                     <div class="col-sm-4 col-12 ">
-                        <button class="btn btn-primary mt-3 float-end">Save </button>
+                        <button class="btn btn-primary mt-3 float-end">{{'gis.policy.save' | translate}} </button>
                     </div>
                 </div>
-                <p class="subheading2">Co-insurers</p>
+                <p class="subheading2">{{'gis.policy.coinsurers' | translate}}</p>
 
                 <div class="row">
                     <div class="col-sm-3">
@@ -79,9 +76,15 @@
                             </div>
                             <div class="col-sm-3">
                                 <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#deleteCoinsurance" title="Delete">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                id="openModalButtonDelete" [hidden]="true"  data-bs-target="#deleteCoinsurance" title="Delete">
                                 </button>
+                                <button type="button" id="icon" class="btn btn-primary" 
+                                  title="Delete">
+                                    <i class="fa-solid fa-trash-can"  (click)="openDeleteModal()"></i>
+                                </button>
+                                <!-- <button id="openModalButtonDelete" [hidden]="true"  data-bs-toggle="modal" data-bs-target="#deletePremium" >deletes</button>
+                                <a class="nav-link" id="links"  (click)="openDeleteModal()">Delete</a>
+                                <i class="fa-solid fa-trash-can"  id="icon" (click)="openDeleteModal()"></i> -->
                             </div>
 
 
@@ -96,7 +99,7 @@
                         <div class="modal-content">
                             <div class="modal-body">
                                 <div class="d-flex justify-content-between align-items-center ">
-                                    <h5 class="modal-small-title" id="exampleModalLabel">Select co-insurer</h5>
+                                    <h5 class="modal-small-title" id="exampleModalLabel">{{'gis.policy.select_coinsurer' | translate}}</h5>
                                     <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -112,9 +115,9 @@
                                     responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [rows]="10">
                                     <ng-template pTemplate="header">
                                         <tr>
-                                            <th>Select</th>
-                                            <th>Short description</th>
-                                            <th>Name</th>
+                                            <th>{{'gis.policy.select' | translate}}</th>
+                                            <th>{{'gis.policy.short_description' | translate}}</th>
+                                            <th>{{'gis.policy.name' | translate}}</th>
 
                                         </tr>
                                     </ng-template>
@@ -131,8 +134,7 @@
                                     </ng-template>
                                     <ng-template pTemplate="emptymessage">
                                         <tr>
-                                            <td colspan="8" style="padding: 20px; text-align:center " id="empty">No data
-                                                to display.</td>
+                                            <td colspan="8" style="padding: 20px; text-align:center " id="empty">{{'gis.policy.no_data_to_display' | translate}}</td>
                                         </tr>
                                     </ng-template>
                                 </p-table>
@@ -141,7 +143,7 @@
 
                                 <div class="mt-4 d-flex justify-content-end">
                                     <button type="button" class="btn btn-primary " id="saveDetails"
-                                        data-bs-dismiss="modal" (click)="saveSelectedCoinsurance()">Save </button>
+                                        data-bs-dismiss="modal" (click)="saveSelectedCoinsurance()">{{'gis.policy.save' | translate}} </button>
                                 </div>
                             </div>
                         </div>
@@ -153,19 +155,34 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content" id="deleteCoinsurance">
                             <div class="modal-body ">
-                                <p class="deleteMessage mt-4 mb-4">Are you sure you want to delete?</p>
-
-                                <div class="row mt-4 mb-2 d-flex justify-content-center">
+                                <p class="deleteMessage mt-4 mb-4">{{'gis.policy.are_you_sure_you_want_to_delete' | translate}}</p>
+                                <div class="d-flex justify-content-center mb-3">
+                                    <button type="button" class="btn btn-primary px-5" id="delete"
+                                    data-bs-dismiss="modal" (click)="deleteCoinsurance()" >{{'gis.policy.yes_delete' | translate}}</button>
+                                </div>
+                                <div class="d-flex justify-content-center mb-2">
+                                    <button type="button" class="btn btn-outline-primary px-5"
+                                    data-bs-dismiss="modal">{{'gis.policy.no_im_not' | translate}}</button>
+                                </div>
+                               
+                                
+                                <!-- <div class="row mt-4 mb-2 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-outline-primary "
+                                            data-bs-dismiss="modal">Cancel</button>
                                     <div class="col-6 ">
                                         <button type="button" class="btn btn-outline-primary "
                                             data-bs-dismiss="modal">Cancel</button>
                                     </div>
                                     <div class="col-6 d-flex justify-content-end">
                                         <button type="button" class="btn btn-primary" id="save"
-                                            data-bs-dismiss="modal">Delete</button>
+                                            data-bs-dismiss="modal" (click)="deleteCoinsurance" >Delete</button>
 
                                     </div>
-                                </div>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-primary" id="save"
+                                            data-bs-dismiss="modal" (click)="deleteCoinsurance" >Delete</button>
+                                    </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -176,13 +193,13 @@
                     <ng-template pTemplate="header">
                         <tr>
                             <th><p-tableHeaderCheckbox /></th>
-                            <th>Name</th>
-                            <th>Leader</th>
-                            <th>Percentage</th>
-                            <th>Premium</th>
-                            <th>Fee rate</th>
-                            <th>Fee amount</th>
-                            <th>Policy no</th>
+                            <th>{{'gis.policy.name' | translate}}</th>
+                            <th>{{'gis.policy.leader' | translate}}</th>
+                            <th>{{'gis.policy.percentage' | translate}}</th>
+                            <th>{{'gis.policy.premium' | translate}}</th>
+                            <th>{{'gis.policy.fee_rate' | translate}}</th>
+                            <th>{{'gis.policy.fee_amount' | translate}}</th>
+                            <th>{{'gis.policy.policy_no' | translate}}</th>
                             <th></th>
 
                         </tr>
@@ -190,7 +207,7 @@
                     <ng-template pTemplate="body" let-transformedCoinsurance let-editing="editing" let-ri="rowIndex">
                         <tr [pEditableRow]="transformedCoinsurance">
                             <td>
-                                <p-tableCheckbox [value]="transformedCoinsurance"></p-tableCheckbox>
+                                <p-tableCheckbox [value]="transformedCoinsurance" (click)="onRowSelect(transformedCoinsurance)"></p-tableCheckbox>
                             </td>
                             <td>{{transformedCoinsurance.name}}</td>
                             <td>
@@ -257,7 +274,7 @@
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="9" style="padding: 20px; text-align:center " id="empty">No data to display.
+                            <td colspan="9" style="padding: 20px; text-align:center " id="empty"> {{'gis.policy.no_data_to_display' | translate}}
                             </td>
                         </tr>
                     </ng-template>

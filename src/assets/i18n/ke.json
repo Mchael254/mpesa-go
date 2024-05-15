@@ -685,7 +685,29 @@
       "maintenance_cover": "Fidia ya Matengenezo",
       "quake_flood_zone": "Eneo la Tetemeko la Ardhi/Mafuriko",
       "relational_group": "Kikundi cha Uhusiano",
-      "risk_class": "Daraja la Hatari"
+      "risk_class": "Daraja la Hatari",
+      
+      "underwriting_coinsurance_details": "Maelezo ya Kuhudumia Wenza: Maelezo ya Usimamizi",
+      "coinsurance_details": "Maelezo ya Kuhudumia Wenza",
+      "coinsurance_leader": "Kiongozi wa Kuhudumia Wenza",
+      "coinsurance_gross_si": "Kiasi Kikuu cha Kuhudumia Wenza",
+      "coinsurance_leader_combined": "Kiongozi Mkuu wa Kuhudumia Wenza",
+      "coinsurance_percent": "Asilimia ya Kuhudumia Wenza",
+      "coinsurance_fee_percent": "Asilimia ya Ada ya Kuhudumia Wenza",
+      "save": "Hifadhi",
+      "coinsurers": "Watoaji wa Kuhudumia Wenza",
+      "select_coinsurer": "Chagua Mtoaji wa Kuhudumia Wenza",
+      "select": "Chagua",
+      "short_description": "Maelezo Mafupi",
+      "no_data_to_display": "Hakuna data ya kuonyesha.",
+      "are_you_sure_you_want_to_delete": "Je, una uhakika unataka kufuta?",
+      "yes_delete": "Ndio, futa",
+      "no_im_not": "Hapana, siyo",
+      "leader": "Kiongozi",
+      "percentage": "Asilimia",
+      "premium": "Ada ya Bima",
+      "fee_rate": "Kiwango cha Ada",
+      "fee_amount": "Kiasi cha Ada"
     }
   },
   "lms": {
