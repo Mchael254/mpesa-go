@@ -1,5 +1,5 @@
-<div id="document-viewer" style="display: flex;align-items: center;justify-content: center;" >
-  <object *ngIf="contentType === 'document'" [data]="docPath | safeUrl" [type]="mimeType" style="margin: 25px;min-height:70vh;width:100%">
+<div id="document-viewer" style="align-items: center;justify-content: center;" >
+  <object *ngIf="contentType === 'document'" [data]="docPath | safeUrl" [type]="mimeType" style="min-height:70vh;width:100%">
     <!--    <embed [src]="docPath" />-->
   </object>
   <img *ngIf="contentType === 'image'" id="view-doc-image" alt="Image document" [src]="docPath | safeUrl" style="max-width:100%"/>
