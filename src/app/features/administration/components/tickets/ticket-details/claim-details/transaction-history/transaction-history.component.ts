@@ -56,11 +56,9 @@ export class TransactionHistoryComponent implements OnInit {
   paymentItemsData: any[];
   remarksData: any[];
 
-  isLoadingAuthExc: boolean = false;
   isLoadingTransactionData: boolean = false;
-  isLoadingMakeUndo: boolean = false;
   isLoadingAuthClaim: boolean = false;
-  private selectedTransaction: any;
+  selectedTransaction: any;
 
   constructor(
     private globalMessagingService: GlobalMessagingService,
@@ -113,38 +111,6 @@ export class TransactionHistoryComponent implements OnInit {
         'Error',
         'Exception remark not selected.'
       );
-    }
-  }
-
-  authoriseExceptions() {
-    this.isLoadingAuthExc = true;
-    const selectedExceptions = this.selectedClaimException.map(data=> data.code);
-
-    log.info('selected exceptions', selectedExceptions);
-    const assignee = this.authService.getCurrentUserName();
-    if (selectedExceptions.length > 0) {
-      const payload: any = {
-        code: selectedExceptions,
-        userName: assignee
-      }
-      this.policiesService.authoriseExceptions(payload)
-        .subscribe({
-          next: (data) => {
-            this.authoriseExceptionsData = data;
-            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully authorized exception');
-            this.isLoadingAuthExc = false;
-          },
-          error: err => {
-            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-            this.isLoadingAuthExc = false;
-          }
-        })
-    } else {
-      this.globalMessagingService.displayErrorMessage(
-        'Error',
-        'No exception is selected.'
-      );
-      this.isLoadingAuthExc = false;
     }
   }
 
@@ -398,30 +364,6 @@ export class TransactionHistoryComponent implements OnInit {
       })
   }
 
-  makeReady() {
-    this.isLoadingMakeUndo = true;
-    const assignee = this.authService.getCurrentUserName();
-    const payload: any = {
-      claimNo: this.selectedSpringTickets?.ticket?.claimNo,
-      transactionNo: this.selectedTransaction?.transactionNo,
-      transactionType: this.selectedTransaction?.transactionCode,
-      user: assignee
-    }
-    log.info('pay', payload);
-    this.claimsService.claimMakeReady(payload)
-      .subscribe({
-        next: (data) => {
-          // this.makeReadyData = data;
-          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully made ready claim transaction');
-          this.isLoadingMakeUndo = false;
-        },
-        error: err => {
-          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
-          this.isLoadingMakeUndo = false;
-        }
-      })
-  }
-
   authorizeAuthorizationLevels() {
     const selectedAuthLevel = this.selectedAuthorizationLevel;
     log.info("select", this.selectedAuthorizationLevel);
@@ -468,6 +410,9 @@ export class TransactionHistoryComponent implements OnInit {
       this.getClaimBankDetails();
       this.getPaymentItems();
       this.getRemarks();
+    }
+    else {
+      this.selectedTransaction = null;
     }
   }
 

@@ -7,7 +7,7 @@ import {PoliciesService} from "../../../../gis/services/policies/policies.servic
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Pagination} from "../../../../../shared/data/common/pagination";
-import {tap} from "rxjs";
+import {switchMap, tap} from "rxjs";
 import {NgxSpinnerService} from "ngx-spinner";
 import {TicketsService} from "../../../services/tickets.service";
 import {LazyLoadEvent} from "primeng/api";
@@ -36,7 +36,7 @@ export class MassDocumentDispatchComponent implements OnInit {
   isLoading: boolean = false;
   isLoadingDispatch: boolean = false;
   reportsDispatchedData: any[];
-  selectedOptions: any[];
+  selectedOptions: any[] = [];
   selectedRptName: string = '';
 
   filePath: any;
@@ -48,6 +48,8 @@ export class MassDocumentDispatchComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
+  preparedDocuments: [];
+  documentList: any[];
 
   constructor(
               private fb: FormBuilder,
@@ -208,18 +210,14 @@ export class MassDocumentDispatchComponent implements OnInit {
    * error messages accordingly.
    */
   prepareDocuments() {
-    const scheduleFormValues = this.docDispatchForm.getRawValue();
-    let reportSelected = this.documentsToDispatchData.filter(data => data['checked'] === true);
-    const reportCodes = reportSelected.map(data=> data.dd_code);
-    log.info('0', reportCodes)
-    if (scheduleFormValues.documentDispatched.length > 0) {
+    if (this.selectedOptions.length > 0) {
       const payload: any = {
-        dispatchDocumentCode: reportCodes,
+        dispatchDocumentCode: this.selectedOptions,
         policyBatchNo: this.selectedTicket?.ticket?.policyCode,
         reportStatus: "A"
       }
 
-      log.info('prepare report payload>>', payload, scheduleFormValues)
+      log.info('prepare report payload>>', payload)
       this.policiesService.addRemoveReportsToPrepare(payload)
         .subscribe({
           next: (data) => {
@@ -317,17 +315,77 @@ export class MassDocumentDispatchComponent implements OnInit {
       );
   }
 
-  selectDocs(doc:any) {
-    log.info("report selected>>", doc);
-    this.selectedRptName = doc.rpt_name;
-    this.fetchReport(doc.dd_code);
-    this.documentsToDispatchData = this.documentsToDispatchData.map(data =>{
-      if (data?.dd_code === doc?.dd_code) {
-        data['checked'] = !!!doc['checked'];
-        return data;
+  reportsDispatch(ticket: TicketsDTO) {
+    this.selectedTicket = ticket;
+    this.policiesService.fetchReportsDispatched(ticket?.ticket?.policyCode)
+      .pipe(
+        switchMap((data)=>{
+          log.info('prepared', data);
+          this.preparedDocuments = data.embedded;
+          return this.policiesService.fetchDispatchReports(ticket?.ticket?.policyCode, ticket?.ticket?.endorsment)
+        })
+      )
+      .subscribe((data) => {
+        log.info('unprepared', data);
+        let preparedList = this.preparedDocuments.map(data => {
+          let temp = {}
+          temp['docCode'] = data['documentDispatchCode']
+          temp['docName'] = data['dispatchDocumentDto']['report_name']
+          temp['reportCode'] = data['report_code']
+          temp['doneBy'] = data['doneBy']
+
+          log.info('temp', temp);
+          return temp;
+        })
+
+        let unPreparedList = data.map((data_: any) => {
+          let temp = {}
+          temp['docCode'] = data_['dd_code']
+          temp['docName'] = data_['rpt_name']
+          temp['reportCode'] = data_['emrpt_code']
+          temp['doneBy'] = null
+
+          log.info('tempun', temp);
+          this.cdr.detectChanges();
+          return temp;
+        });
+
+        // Combine the prepared and unprepared lists
+        let combinedList = [...preparedList, ...unPreparedList];
+
+        // Assign the combined list to a class property for use in the template
+        this.documentList = combinedList;
+
+        this.openDocDispatchModal();
+      })
+  }
+
+  selectDocs(event: Event, doc: any) {
+    event.stopPropagation();
+    const checkbox = event.target as HTMLInputElement;
+
+    const index = this.selectedOptions.indexOf(doc.docCode);
+    if (checkbox.checked) {
+      // If not selected, add to the list
+      if (index === -1) {
+        this.selectedOptions.push(doc.docCode);
+        log.info("report selected>>", doc);
       }
-      return data;
-    })
+    } else {
+      // If already selected, remove from the list
+      if (index !== -1) {
+        this.selectedOptions.splice(index, 1);
+        log.info("report unchecked>>", doc);
+      }
+    }
+    log.info("codes selected>>", this.selectedOptions);
+  }
+
+  onLabelClick(event: Event, doc: any) {
+    event.preventDefault(); // Prevent the default label click behavior (which toggles the checkbox)
+    console.log("Label clicked:", doc);
+    this.fetchReport(doc.reportCode);
+    this.selectedRptName = doc.docName;
   }
 
   fetchReport(report: any) {
@@ -340,9 +398,7 @@ export class MassDocumentDispatchComponent implements OnInit {
           // this.apiService.DOWNLOADFROMBYTES(response, 'fname.pdf', 'application/pdf')
           const blob = new Blob([response], { type: 'application/pdf' });
           this.filePath  = window.URL.createObjectURL(blob);
-          this.cdr.detectChanges();
 
-          // this.openReportsModal();
           // this.isLoadingReport = false;
         },
         err=>{

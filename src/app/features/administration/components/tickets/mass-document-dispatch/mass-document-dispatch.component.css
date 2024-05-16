@@ -1,0 +1,6 @@
+.form-check-item {
+  clear: both; /* Ensures each item starts on a new line */
+}
+.form-check .form-label {
+  cursor: pointer;
+}
