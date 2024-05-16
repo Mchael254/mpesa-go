@@ -102,7 +102,7 @@
           <td>{{doc.ticket.date | date: 'shortDate'}}</td>
           <td>{{doc?.ticket?.endorsment}}</td>
           <td>{{doc?.ticket?.endorsmentCode}}</td>
-          <td (click)="getReportsToPrepare(doc)">
+          <td (click)="reportsDispatch(doc)">
             <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;"></i>
           </td>
         </tr>
@@ -130,53 +130,36 @@
 
               <label class="col-form-label text-dark fw-medium w-100">Documents</label>
             <form [formGroup]="docDispatchForm">
-              <div class="form-check mt-2" *ngFor="let doc of documentsToDispatchData" style="padding-left: 0.7em;">
+              <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
                 <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
-
-                <input class="form-check-input" type="checkbox" value="true" id="reportCheckbox" formControlName="documentDispatched"
-                       (click)="selectDocs(doc)" [checked]="doc?.checked">
-                <label class="form-label fw-medium text-dark" for="reportCheckbox">
-                  {{doc?.rpt_name}}
+                <input class="form-check-input" type="checkbox" value="" [id]="'flexCheckChecked' + i"
+                       [checked]="doc?.doneBy !== null && doc?.doneBy !== undefined"
+                       (click)="selectDocs($event, doc)">
+                <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
+                       (click)="onLabelClick($event, doc)">
+                  {{doc?.docName}}
                 </label><br>
               </div>
             </form>
-
-
           </div>
           <div class="col-8">
 
-              <form [formGroup]="docDispatchForm">
-
-                <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
-                <!--<ngx-doc-viewer
-                  [fileName]="fileName ?? ''"
-                  [srcUrl]="filePath ?? ''"
-                  class="doc-viewer"
-                ></ngx-doc-viewer>-->
-                <!--<p-multiSelect
-                  [options]="documentsToDispatchData"
-                  formControlName="documentDispatched"
-                  optionLabel="rpt_name"
-                  optionValue="dd_code"
-                  [filter]="true"
-                  filterBy="rpt_name"
-                  [style]="{ 'width': '100%', 'height': '40px' }"
-                  placeholder="Select report"
-                  [(ngModel)]="selectedOptions">
-                  <ng-template let-report pTemplate="item">
-                    <div title="{{report.rpt_name}}">
-                      {{ report.rpt_name.length > 10 ? report.rpt_name.substring(0, 28) + '...' : report.rpt_name }}
-                    </div>
-                  </ng-template>
-                </p-multiSelect>-->
-              </form>
+            <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
+            <div *ngIf="selectedRptName && filePath">
+              <ngx-doc-viewer
+                [fileName]="selectedRptName ?? ''"
+                [srcUrl]="filePath ?? ''"
+                [mimeType]="'application/pdf'"
+                class="doc-viewer"
+              ></ngx-doc-viewer>
+            </div>
 
           </div>
 
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-outline-primary">Download</button>
+<!--        <button class="btn btn-outline-primary">Download</button>-->
         <button class="btn btn-primary" (click)="prepareDocuments()" [disabled]="isLoading" >
           <span *ngIf="!isLoading; else loading">Save</span>
           <ng-template #loading>
