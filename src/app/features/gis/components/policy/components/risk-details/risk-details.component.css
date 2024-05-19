@@ -160,3 +160,85 @@
       .form-check-input:hover {
         border-color: #00529B
       }
+      ::ng-deep .p-tabview .p-tabview-nav {
+        border: 0px;
+        font-size:15px;
+      }
+      ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+        border: 0px
+      }
+      ::ng-deep ul {
+        padding-left: 0rem;
+        margin-bottom: 0rem;
+    }
+    ::ng-deep .p-highlight{
+      border-bottom: 1px solid #00529B;
+    }
+    ::ng-deep .p-tabview .p-tabview-panels {
+      padding-top: 0px;
+    }
+    .import-button{
+      height: 34px;
+      padding-top: 3px;
+      font-size: 14px;
+    }
+
+
+    input[type="file"] {
+      display: none;
+    }
+    
+    /* Style the label to look like a button */
+    .custom-file-upload {
+      display: inline-block;
+      padding: 4px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #00529B; /* Blue color */
+      color: #fff; /* White text color */
+      border: solid;
+      border-radius: 5px;
+    }
+    
+    .custom-file-upload:hover {
+      background-image:#00529B;; /* Darker blue color on hover */
+    }
+    .modalTitle{
+      color:#00529B
+    }
+
+    #scheduleLabel{
+      color: #000;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+  }
+  #scheduleInput{
+      color: #000;
+      font-family: Roboto;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+  }
+  #scheduleRows{
+      margin-left:16px;
+      margin-right:16px;
+  }
+  #editScheduleLabel{
+    color: #00529B;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    padding-bottom: 16px;
+    margin-left:26px;
+
+}
+.btn-close{
+  color: #00529B;
+  font-size:14px
+}
