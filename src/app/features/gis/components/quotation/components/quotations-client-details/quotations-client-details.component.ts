@@ -16,12 +16,22 @@ import { FormGroup,FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { Table } from 'primeng/table';
+import {untilDestroyed} from "../../../../../../shared/services/until-destroyed";
+import { OccupationService } from '../../../../../../shared/services/setups/occupation/occupation.service';
+import { ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { OccupationDTO } from '../../../../../../shared/data/common/occupation-dto';
+import { SectorDTO } from '../../../../../../shared/data/common/sector-dto';
+import { SectorService } from '../../../../../../shared/services/setups/sector/sector.service';
+import { Logger } from '../../../../../../shared/services';
+const log =  new Logger("QuotationClientDetailsComponent")
 @Component({
   selector: 'app-quotations-client-details',
   templateUrl: './quotations-client-details.component.html',
   styleUrls: ['./quotations-client-details.component.css']
 })
 export class QuotationsClientDetailsComponent {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   steps = quoteStepsData;
   clientType:any;
   identifierType:any;
@@ -29,7 +39,9 @@ export class QuotationsClientDetailsComponent {
   county:StateDto[];
   town:TownDto[];
   bank:BankDTO[];
+  sectorData: SectorDTO[];
   branch:OrganizationBranchDto[];
+  occupationData: OccupationDTO[];
   currency:CurrencyDTO[];
   selected:any;
   client:any;
@@ -50,7 +62,9 @@ export class QuotationsClientDetailsComponent {
     public currencyService:CurrencyService,
     public fb: FormBuilder,
     private router: Router,
-    public sharedService: SharedQuotationsService
+    public sharedService: SharedQuotationsService,
+    private occupationService: OccupationService,
+    private sectorService: SectorService,
   ){}
 
   
@@ -61,8 +75,10 @@ export class QuotationsClientDetailsComponent {
     this.getbranch();   
     this.getCurrency();
     this.getClient();
-    this.createForm();  
+    this.createForm();    
     this.quickClientDetails();
+    this.getOccupation(2);
+    this.getSectors(2);
     const storedData = sessionStorage.getItem('clientFormData');
     if (storedData) {
       const parsedData = JSON.parse(storedData);
@@ -108,6 +124,39 @@ export class QuotationsClientDetailsComponent {
       this.country = data
     })
   }
+    /**
+ * Fetches sectors data for the specified organization and updates the component's sectorData property.
+ * @param organizationId - The ID of the organization for which sectors are being fetched.
+ */
+    getSectors(organizationId: number) {
+      this.sectorService.getSectors(organizationId)
+        .pipe(
+          untilDestroyed(this)
+        )
+        .subscribe(
+          (data) => {
+            log.info("Testing data->", data)
+            this.sectorData = data;
+          },
+        );
+    }
+    /**
+ * Fetches occupation data based on the provided organization ID and
+ *  updates the component's occupationData property.
+ * @param organizationId The organization ID used to retrieve occupation data.
+ */
+    getOccupation(organizationId: number) {
+      this.occupationService.getOccupations(organizationId)
+        .pipe(
+          takeUntil(this.destroyed$),
+        )
+        .subscribe(
+          (data) => {
+            this.occupationData = data;
+            console.log(this.occupationData)
+          },
+        );
+    }
    /**
    * Updates the county based on the selected country from the dropdown.
    * @method getCounty
