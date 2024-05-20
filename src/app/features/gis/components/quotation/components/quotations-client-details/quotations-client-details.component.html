@@ -43,8 +43,13 @@
                     
                 </div>
                 <div class="col-md-4">
-                    <label for=""class="quote-label">Citizenship</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1">
+                    <label for="citizenship" class="quote-label">{{ 'entities.citizenship' | translate | titlecase }}</label>
+                    <select id="citizenship" class="form-select form-select-sm mb-1" id="quote-input" formControlName="citizenship">
+                    <option value="" selected>
+                      {{ 'entities.select' | translate }} {{ 'entities.country' | translate }}
+                      </option>
+                    <option *ngFor="let country of country" value="{{ country.id }}">{{ country.name | titlecase}}</option>
+                </select>
                     
                 </div>
             </div>
@@ -115,7 +120,14 @@
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Title</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="clientTitle">
+                    <select class="form-select form-select-sm mb-1" id="quote-input"  formControlName="clientTitle"  placement="right" >
+                        <option selected="true" disabled="disabled"></option>
+                        <option value="Mr">Mr</option>
+                        <option value="Miss">Miss</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="DR">Dr</option>
+                    </select>
+                    
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">SMS number</label>
@@ -261,7 +273,13 @@
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Preferred channel</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                     <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
+                        <option selected="true" disabled="disabled"></option>
+                        <option value="mobile">Mobile Money</option>
+                        <option value="bank">Bank</option>
+                        
+
+                      </select >
                 </div>
             </div>
         </div>
@@ -305,16 +323,27 @@
             <div class="row mb-4">
                 <div class="col-md-4">
                     <label for="" class="quote-label">Type of employment</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
+                        <option selected="true" disabled="disabled"></option>
+                        <option value="employed">Employed</option>
+                        <option value="self-employed">Self Employed</option>
+                        
+
+                      </select >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> Economic sector</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                    <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
+                        <option selected="true" disabled="disabled"></option>
+                        <option *ngFor="let sector of sectorData" value="{{ sector.id }}">{{ sector.name | titlecase}}</option>
+                      </select >
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label"> Occupation</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" formControlName="occupationId" >
-                </div>
+                    <select id="occupation" class="form-select" formControlName="occupationId">
+                      <option value="" selected>{{ 'entities.select_occupation' | translate }}</option>
+                      <option *ngFor="let occupation of occupationData" value="{{ occupation.id }}">{{ occupation.name | titlecase}}</option>
+                    </select>
             </div>
             <div class="row mb-4">
                 <div class="col-md-4">
@@ -323,7 +352,13 @@
                 </div>
                 <div class="col-md-4">
                     <label for="" class="quote-label">Premium frequency</label>
-                    <input type="text" id="quote-input" class="form-control form-control-sm mb-1" >
+                     <select id="status" class="form-select form-select-sm mb-1" id="quote-input"    placement="right" >
+                        <option selected="true" disabled="disabled"></option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        
+
+                      </select >
                 </div>
                 <div class="col-md-4">
                     <label for=""class="quote-label">Distribution channel</label>
@@ -332,6 +367,7 @@
             </div>
         </div>
         </div>
+      </div>
       </div>
 
       <div class="card mb-4">
