@@ -624,6 +624,7 @@ export class CountryComponent implements OnInit {
       };
       // Create a new country
       this.countryService.createCountry(saveCountry).subscribe((data) => {
+        this.selectedCountry = data.id;
         this.globalMessagingService.displaySuccessMessage(
           'Success',
           'Successfully Created a Country'
@@ -685,6 +686,7 @@ export class CountryComponent implements OnInit {
           'success',
           'Successfully Deleted a Country'
         );
+        this.countrySelected = null;
         this.fetchCountries();
         this.createCountryForm.reset();
       });
