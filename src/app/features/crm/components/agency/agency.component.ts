@@ -53,6 +53,7 @@ export class AgencyComponent implements OnInit {
   public selectedManager: any;
   public selectedOrganizationId: number | null = null;
   public selectedBranch: number;
+  public transferBranch: number;
 
   public steps = stepData;
 
@@ -456,9 +457,11 @@ export class AgencyComponent implements OnInit {
             }
           },
           error: (err) => {
+            this.errorOccurred = true;
+            this.errorMessage = err?.error?.errors[0];
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              err?.error?.errors[0]
+              this.errorMessage
             );
             log.info(`error >>>`, err);
           },
@@ -511,9 +514,11 @@ export class AgencyComponent implements OnInit {
             }
           },
           error: (err) => {
+            this.errorOccurred = true;
+            this.errorMessage = err?.error?.errors[0];
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              err?.error?.errors[0]
+              this.errorMessage
             );
             log.info(`error >>>`, err);
           },
@@ -536,6 +541,11 @@ export class AgencyComponent implements OnInit {
         managerAllowed: this.selectedAgency.managerAllowed,
         commission: this.selectedAgency.overrideCommEarned,
       });
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'No Organization Branch Agency is Selected!'
+      );
     }
   }
 
@@ -561,7 +571,7 @@ export class AgencyComponent implements OnInit {
             if (data) {
               this.globalMessagingService.displaySuccessMessage(
                 'success',
-                'Successfully Deleted an Organizatio Branch Agency'
+                'Successfully Deleted an Organization Branch Agency'
               );
               this.selectedAgency = null;
               this.fetchOrganizationBranchAgency(branchId);
@@ -575,9 +585,11 @@ export class AgencyComponent implements OnInit {
             }
           },
           error: (err) => {
+            this.errorOccurred = true;
+            this.errorMessage = err?.error?.errors[0];
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              err?.error?.error?.message
+              this.errorMessage
             );
             log.info(`error >>>`, err);
           },
@@ -590,5 +602,59 @@ export class AgencyComponent implements OnInit {
     }
   }
 
-  transferAgency() {}
+  transferBranchAgency() {
+    if (this.selectedAgency) {
+      this.openAgencyTransferModal();
+      const date = new Date();
+      this.createAgencyTransferForm.patchValue({
+        agencyName: this.selectedAgency.name,
+        transferDate: date.toLocaleDateString('en-GB'),
+      });
+    }
+  }
+
+  transferAgency() {
+    this.closeAgencyTransferModal();
+    const branchAgencyTransferFormValues =
+      this.createAgencyTransferForm.getRawValue();
+    const fromBranchId = branchAgencyTransferFormValues.currentBranch;
+    const toBranchId = branchAgencyTransferFormValues.transferBranch;
+    const branchAgencyId = this.selectedAgency?.code;
+
+    this.organizationService
+      .transferOrganizationBranchAgency(
+        branchAgencyId,
+        fromBranchId,
+        toBranchId
+      )
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.globalMessagingService.displaySuccessMessage(
+              'success',
+              'Successfully Transfered Organization Branch Agency'
+            );
+            this.createAgencyTransferForm.reset();
+            this.selectedAgency = null;
+            this.fetchOrganizationBranchAgency(fromBranchId);
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
+            this.globalMessagingService.displayErrorMessage(
+              'Error',
+              'Something went wrong. Please try Again'
+            );
+          }
+        },
+        error: (err) => {
+          this.errorOccurred = true;
+          this.errorMessage = err?.error?.errors[0];
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+  }
 }

@@ -6,6 +6,7 @@ import {
   BranchAgencyDTO,
   BranchContactDTO,
   BranchDivisionDTO,
+  CrmApiResponse,
   ManagersDTO,
   OrganizationBranchDTO,
   OrganizationDTO,
@@ -384,6 +385,21 @@ export class OrganizationService {
     return this.api.DELETE<BranchAgencyDTO>(
       `branches/${branchId}/branch-agencies/${branchAgencyId}`,
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
+    );
+  }
+
+  transferOrganizationBranchAgency(
+    branchAgencyId: number,
+    fromBranchId: number,
+    toBranchId
+  ): Observable<CrmApiResponse> {
+    const params = new HttpParams().set('toBranchId', `${toBranchId}`);
+    const body = {};
+    return this.api.POST<CrmApiResponse>(
+      `branches/${fromBranchId}/transfer-agencies/${branchAgencyId}`,
+      body,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      params
     );
   }
 }
