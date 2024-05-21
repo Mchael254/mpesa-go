@@ -25,6 +25,9 @@ import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-
 import { concatMap, forkJoin, switchMap, tap } from 'rxjs';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
+import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
+import * as XLSX from 'xlsx';
+import * as Papa from 'papaparse';
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -120,6 +123,9 @@ export class RiskDetailsComponent {
   filteredAllMatchingSections: any;
   selectedSections: any[] = [];
   allTransformedSections: any;
+  fileSelected: boolean = false;
+  uploadedFileName: string = '';
+  uploading: string = '';
 
 
   premiumList: any[] = [];
@@ -131,6 +137,13 @@ export class RiskDetailsComponent {
   editing = false;
 
   riskCode: any;
+
+  scheduleDetailsForm:FormGroup;
+  scheduleData:any;
+  scheduleList:any;
+  selectedSchedule:any;
+  updatedSchedule:any;
+  updatedScheduleData:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
@@ -156,7 +169,7 @@ export class RiskDetailsComponent {
     public premiumRateService: PremiumRateService,
     public authService: AuthService,
 
-
+    public quotationService:QuotationsService,
 
 
 
@@ -169,6 +182,7 @@ export class RiskDetailsComponent {
     this.getVehicleMake();
     this.getAllSection();
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
+    this.createScheduleDetailsForm();
 
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
@@ -1254,8 +1268,108 @@ export class RiskDetailsComponent {
   }
   
   
+  downloadCSVTemplate(): void {
+    console.log("TEST")
+    const templateFilePath = 'turnquest-v6.2.0/src/assets/data/Template.csv';
+    const link = document.createElement('a');
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', templateFilePath);
+    link.setAttribute('download', 'template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
   
-  
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
 
+      this.uploading = 'progress';
+
+      Papa.parse(file, {
+        complete: (result: any) => {
+
+          // Assuming CSV has header row, you can access data with result.data
+
+          try {
+       
+            this.uploadedFileName = file.name;
+            sessionStorage.setItem('uploadedFileName',this.uploadedFileName)
+            this.uploading = 'success';
+          } catch (e) {
+            console.log(`file upload failed >>> `, e);
+          }
+        },
+        header: true // Set to true if CSV file has a header row
+      });
+    }else{
+      this.fileSelected = false;
+      this.uploadedFileName = '';
+      this.uploading = '';
+    }
+  }
+
+
+  // EDIT SCHEDULE DETAILS FUNCTIONALITY 
+
+    // This method Clears the Schedule Detail form by resetting the form model
+    clearForm() {
+      this.scheduleDetailsForm.reset();
+  
+    }
+
+    updateSchedule(){
+      const schedule = this.scheduleDetailsForm.value;
+      schedule.riskCode = this.riskCode;
+      schedule.transactionType = "Q";
+      schedule.version = 0;
+      this.quotationService.updateSchedule(schedule).subscribe(data=>{
+        this.updatedScheduleData=data;
+        console.log('Updated Schedule Data:', this.updatedScheduleData);
+        this.updatedSchedule=this.updatedScheduleData._embedded;
+        console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+        const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
+        if (index !== -1) {
+          this.scheduleList[index] = this.updatedSchedule;
+          this.cdr.detectChanges();
+        }
+  
+        try{
+  
+          this.scheduleDetailsForm.reset()
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
+        }catch(error){
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later');
+        
+          this.scheduleDetailsForm.reset()
+        }
+      })
+      this.cdr.detectChanges();
+  
+    }
+    createScheduleDetailsForm() {
+      this.scheduleDetailsForm = this.fb.group({
+        details: this.fb.group({
+          level1: this.fb.group({
+            bodyType: [''],
+            yearOfManufacture: [''],
+            color: [''],
+            engineNumber: [''],
+            cubicCapacity: [''],
+            Make: [''],
+            coverType: [''],
+            registrationNumber: [''],
+            chasisNumber: [''],
+            tonnage: [''],
+            carryCapacity: [''],
+            logBook: [''],
+            value: [''],
+          }),
+        }),
+        riskCode: [''],
+        transactionType: [''],
+        version: [''],
+      });
+    }
 }
 
