@@ -491,6 +491,7 @@ export class ServiceProviderTypesComponent implements OnInit {
                 'Successfully Updated a Service Provider Type'
               );
               this.createServiceProviderTypeForm.reset();
+              this.selectedServiceProviderType = null;
               this.fetchServiceProviderTypes();
             } else {
               this.errorOccurred = true;
