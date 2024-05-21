@@ -71,7 +71,7 @@
               <span class="icon-circle"
                 ><i
                   class="pi pi-arrow-right-arrow-left"
-                  (click)="openAgencyTransferModal()"
+                  (click)="transferBranchAgency()"
                 ></i
               ></span>
               <span class="icon-circle"
@@ -404,6 +404,25 @@
         <form [formGroup]="createAgencyTransferForm">
           <div class="row">
             <div class="col-6 mb-3">
+              <label for="transferRegion" class="form-label"
+                >Current Branch</label
+              >
+              <p-dropdown
+                [options]="branchesData"
+                [(ngModel)]="selectedBranch"
+                optionLabel="name"
+                optionValue="id"
+                formControlName="currentBranch"
+                id="currentBranch"
+                [filter]="true"
+                filterBy="name"
+                [showClear]="true"
+                [style]="{ width: '100%', height: '45%' }"
+                placeholder="Current Branch"
+              >
+              </p-dropdown>
+            </div>
+            <!-- <div class="col-6 mb-3">
               <label for="currentBranch" class="form-label"
                 >Current Branch</label
               >
@@ -414,7 +433,7 @@
                 placeholder="Current Branch"
                 formControlName="currentBranch"
               />
-            </div>
+            </div> -->
             <div class="col-6 mb-3">
               <label for="agencyName" class="form-label">Agency</label>
               <input
@@ -441,7 +460,7 @@
               >
               <p-dropdown
                 [options]="branchesData"
-                [(ngModel)]="selectedBranch"
+                [(ngModel)]="transferBranch"
                 optionLabel="name"
                 optionValue="id"
                 formControlName="transferBranch"

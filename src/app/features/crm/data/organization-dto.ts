@@ -237,3 +237,8 @@ export interface BranchAgencyDTO {
   shortDescription?: string;
   status: string;
 }
+
+export interface CrmApiResponse {
+  message: string;
+  status: number;
+}

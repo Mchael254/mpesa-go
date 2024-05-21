@@ -702,13 +702,17 @@ export class SectorOccupationComponent implements OnInit {
         organizationId: 2,
         wefDate: new Date().toISOString(),
         wetDate: null,
-        assignedSectors: occupationFormValues.sector.map((sector) => ({
-          occupationId: null,
-          sectorId: sector.sectorId,
-          wefDate: new Date().toISOString(),
-          wetDate: null,
-        })),
+        assignedSectors: occupationFormValues.sector.map(
+          (sector: SectorDTO) => ({
+            occupationId: 0,
+            sectorId: sector.id,
+            wefDate: new Date().toISOString(),
+            wetDate: null,
+          })
+        ),
       };
+
+      console.log('SAVING oCCUPATION', saveOccupation);
 
       this.occupationServive.createOccupation(saveOccupation).subscribe({
         next: (data) => {
