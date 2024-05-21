@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DashboardService } from '../../services/dashboard.service';
-import { MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, memberBalancesDTO } from '../../models/member-policies';
+import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, memberBalancesDTO } from '../../models/member-policies';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
@@ -34,6 +34,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   memberCovers: MemberCoversDTO;
   memberPensionDepReceipts: MemberPensionDepReceiptsDTO[];
   memberDetails: MemberDetailsDTO[];
+  detailedMemContrReceipts: DetailedMemContrReceiptsDTO[]
+  pensionMemCode: number;
+  pensionDepositCode: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -163,12 +166,22 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onReceiptsTableRowClick(dummyData, index: number) {
+  onReceiptsTableRowClick(memberPensionDepReceipts, index: number) {
     this.selectedRowIndex = index;
-    if(dummyData){
-      log.info("dummydataPassed", dummyData);
+    if(memberPensionDepReceipts){
+      this.pensionDepositCode = memberPensionDepReceipts.pension_member_dep_code;
+      this.pensionMemCode = memberPensionDepReceipts.policy_member_code;
+      log.info("memberPensionDepReceiptsPassed", memberPensionDepReceipts, this.pensionDepositCode, this.pensionMemCode);
+      this.getDetMemDepConReceipts();
       this.showReceiptsModal();
     }
+  }
+
+  getDetMemDepConReceipts() {
+    this.dashboardService.getDetMemDepConReceipts(this.pensionDepositCode, this.pensionMemCode).subscribe((res: DetailedMemContrReceiptsDTO[]) => {
+      this.detailedMemContrReceipts = res;
+      log.info("getDetMemDepConReceipts", this.detailedMemContrReceipts)
+    })
   }
 
   getMemberDetails() {
