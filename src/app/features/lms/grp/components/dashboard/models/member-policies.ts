@@ -116,5 +116,25 @@ export class MemberPensionDepReceiptsDTO {
   total_voluntary_transfer_amount: number | null;
   cost_of_past_benefits: number | null
 }
-  
-  
+
+export class DetailedMemContrReceiptsDTO {
+  pension_member_dep_code: number;
+  policy_code: number | null;
+  policy_member_code: number | null;
+  pnmdp_amount: number;
+  employer_amount: number;
+  employee_amount: number;
+  pnmdp_empyr_vol_amt: number;
+  pnmdp_empye_vol_amt: number;
+  pnmdp_empyr_trans_amt: number | null;
+  pnmdp_empye_trans_amt: number | null;
+  total_amount: number;
+  pnmdp_date: string;
+  pnmdp_grct_code: number | null;
+  pnmdp_chq_rcpt_no: number | null;
+  contribution_amount: number | null;
+  voluntary_contribution_amount: number | null;
+  total_transfer_amount: number | null;
+  total_voluntary_transfer_amount: number | null;
+  cost_of_past_benefits: number | null;
+} 

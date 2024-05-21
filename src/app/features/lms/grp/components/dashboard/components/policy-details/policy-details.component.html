@@ -517,30 +517,30 @@
           (click)="closeReceiptsModal()"></button>
         </div>
         <div class="modal-body">
-            <div class="pension-table-container col-12">
+            <div class="pension-table-container col-12" *ngIf="detailedMemContrReceipts">
                 <div class="col-6">
                     <div class="title-desc" style="color: black;">Employee contribution</div>
 
                     <table class="receipt-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">Ksh. 200,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.employee_amount</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer amount:</td>
-                            <td class="table-label-desc">Ksh. 120,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empye_trans_amt</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empye_vol_amt</td>
                         </tr>
                         <tr>
                             <td class="table-label">Cost of benefits:</td>
-                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.cost_of_past_benefits</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total contribution:</td>
-                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.total_amount</td>
                         </tr>
                     </table>
                 </div>
@@ -551,23 +551,23 @@
                     <table class="receipt-table">
                         <tr>
                             <td class="table-label">Contribution:</td>
-                            <td class="table-label-desc">Ksh. 200,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.employer_amount</td>
                         </tr>
                         <tr>
                             <td class="table-label">Trasfer amount:</td>
-                            <td class="table-label-desc">Ksh. 120,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt</td>
                         </tr>
                         <tr>
                             <td class="table-label">Annual voluntary contribution:</td>
-                            <td class="table-label-desc">Ksh. 20,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.pnmdp_empyr_trans_amt</td>
                         </tr>
                         <tr>
                             <td class="table-label">Cost of benefits:</td>
-                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.cost_of_past_benefits</td>
                         </tr>
                         <tr>
                             <td class="table-label">Total contribution:</td>
-                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                            <td class="table-label-desc">detailedMemContrReceipts[0]?.total_amount</td>
                         </tr>
                     </table>
                 </div>
