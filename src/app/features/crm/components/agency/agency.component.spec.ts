@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { AgencyComponent } from './agency.component';
 import { OrganizationService } from '../../services/organization.service';
@@ -13,6 +13,7 @@ import { GlobalMessagingService } from '../../../../shared/services/messaging/gl
 import { SharedModule } from '../../../../shared/shared.module';
 import {
   BranchAgencyDTO,
+  CrmApiResponse,
   ManagersDTO,
   OrganizationBranchDTO,
   OrganizationDTO,
@@ -172,6 +173,11 @@ const mockBranchAgencyData: BranchAgencyDTO = {
   status: '',
 };
 
+const mockCrmApiResponse: CrmApiResponse = {
+  message: '',
+  status: 0,
+};
+
 const mockManagersData: ManagersDTO[] = [
   {
     agentShortDescription: '',
@@ -218,6 +224,9 @@ export class MockOrganizationService {
   deleteOrganizationBranchAgency = jest
     .fn()
     .mockReturnValue(of(mockBranchAgencyData));
+  transferOrganizationBranchAgency = jest
+    .fn()
+    .mockReturnValue(of(mockCrmApiResponse));
 }
 
 export class MockGlobalMessagingService {
@@ -360,5 +369,113 @@ describe('AgencyComponent', () => {
       organizationServiceStub.getOrganizationBranchAgency
     ).toHaveBeenCalled();
     expect(component.agenciesData).toEqual(mockBranchAgenciesData);
+  });
+
+  test('should save a new Organization Branch Agency', () => {
+    jest.spyOn(component, 'fetchOrganizationBranchAgency');
+    component.createAgencyForm.setValue({
+      code: 1,
+      id: 'BA-001',
+      name: 'Test BA',
+      status: 'A',
+      manager: 'Test Manager',
+      managerAllowed: 'Y',
+      commission: 'Y',
+    });
+
+    component.saveAgency();
+
+    expect(
+      organizationServiceStub.createOrganizationBranchAgency
+    ).toHaveBeenCalled();
+    expect(messageServiceStub.displaySuccessMessage).toHaveBeenCalledWith(
+      'Success',
+      'Successfully Created an Organization Branch Agency'
+    );
+    expect(component.fetchOrganizationBranchAgency).toHaveBeenCalled();
+  });
+
+  test('should handle error when saving Organization Branch Agency', () => {
+    component.createAgencyForm.setValue({
+      code: 1,
+      id: 'BA-001',
+      name: 'Test BA',
+      status: 'A',
+      manager: 'Test Manager',
+      managerAllowed: 'Y',
+      commission: 'Y',
+    });
+    const errorMessage = 'Failed to save Organization Branch Agency';
+    jest
+      .spyOn(organizationServiceStub, 'createOrganizationBranchAgency')
+      .mockReturnValue(throwError({ error: { errors: [errorMessage] } }));
+    component.saveAgency();
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toBe(
+      'Failed to save Organization Branch Agency'
+    );
+    expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith(
+      'Error',
+      'Failed to save Organization Branch Agency'
+    );
+  });
+
+  test('should transfer agency successfully', () => {
+    component.createAgencyTransferForm.setValue({
+      agencyName: 'Test Agency',
+      transferDate: new Date(),
+      currentBranch: 1,
+      transferBranch: 2,
+    });
+    component.selectedAgency = {
+      name: 'Test Agency',
+      code: 1,
+    } as BranchAgencyDTO;
+
+    jest.spyOn(organizationServiceStub, 'transferOrganizationBranchAgency');
+    const closeModalSpy = jest.spyOn(component, 'closeAgencyTransferModal');
+    const fetchAgencySpy = jest.spyOn(
+      component,
+      'fetchOrganizationBranchAgency'
+    );
+    const successMessageSpy = jest.spyOn(
+      messageServiceStub,
+      'displaySuccessMessage'
+    );
+
+    component.transferAgency();
+
+    expect(closeModalSpy).toHaveBeenCalled();
+    expect(
+      organizationServiceStub.transferOrganizationBranchAgency
+    ).toHaveBeenCalledWith(1, 1, 2);
+    expect(successMessageSpy).toHaveBeenCalledWith(
+      'success',
+      'Successfully Transfered Organization Branch Agency'
+    );
+    expect(fetchAgencySpy).toHaveBeenCalledWith(1);
+  });
+
+  test('should handle unsuccessful transfer agency', () => {
+    component.createAgencyTransferForm.setValue({
+      agencyName: 'Test Agency',
+      transferDate: new Date(),
+      currentBranch: 1,
+      transferBranch: 2,
+    });
+    const errorMessage = 'Failed to Transfer Organization Branch Agency';
+    jest
+      .spyOn(organizationServiceStub, 'transferOrganizationBranchAgency')
+      .mockReturnValue(throwError({ error: { errors: [errorMessage] } }));
+
+    component.transferAgency();
+    expect(component.errorOccurred).toBe(true);
+    expect(component.errorMessage).toBe(
+      'Failed to Transfer Organization Branch Agency'
+    );
+    expect(messageServiceStub.displayErrorMessage).toHaveBeenCalledWith(
+      'Error',
+      'Failed to Transfer Organization Branch Agency'
+    );
   });
 });
