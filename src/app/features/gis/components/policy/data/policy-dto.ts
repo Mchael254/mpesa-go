@@ -359,5 +359,15 @@ export interface CoinsuranceDetail {
   sumInsured: number;
   whtx: number;
 }
+export interface PremiumFinanciers {
+  branchName: string;
+  emailAddress: string;
+  partyCode: number;
+  partyName: string;
+  partyType: string;
+  polingCode: number;
+  remarks: string;
+}
+
 
 

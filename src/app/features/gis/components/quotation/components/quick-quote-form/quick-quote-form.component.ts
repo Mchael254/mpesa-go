@@ -440,7 +440,7 @@ export class QuickQuoteFormComponent {
    * @return {void}
    */
   loadAllClients() {
-    this.clientService.getClients().subscribe(data => {
+    this.clientService.getClients(0, 100 ).subscribe(data => {
       this.clientList = data;
       log.debug("CLIENT DATA:", this.clientList)
       this.clientData = this.clientList.content
@@ -1227,10 +1227,11 @@ export class QuickQuoteFormComponent {
 
     this.quotationService.createRiskSection(this.riskCode, this.sectionArray).subscribe(data => {
       try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+        this.globalMessagingService.displaySuccessMessage('Success', 'Section Created')
         this.sectionDetailsForm.reset();
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Error try again later')
+
       }
       // this.computeQuotePremium();
      
