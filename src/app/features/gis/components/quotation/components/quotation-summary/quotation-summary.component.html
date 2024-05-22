@@ -242,22 +242,23 @@
             <div class="card mb-4">  
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-3">
                             <p class="card-title mt-2" data-bs-toggle="collapse" data-bs-target="#productDetails" (click)="toggleProductDetails()">Product Details</p>
                         </div>
-                        <div class="col-8 d-flex justify-content-end">
+                        <div class="col-9 d-flex justify-content-end">
                             <div class="row">
-                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
                                     <button type="button" id="icon" class="btn btn-primary"  title="Add">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
-                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-primary"  title="Edit">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 </div>
-                                <div class="col-sm-4" *ngIf="isCollapsibleOpen">
+                                <div class="col-sm-3" *ngIf="isCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
@@ -444,17 +445,19 @@
                         </div>
                         <div class="col-8 d-flex justify-content-end">
                             <div class="row">
-                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                <div class="col-sm-3"></div>
+
+                                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
                                     <button type="button" id="icon" class="btn btn-primary"  title="Add">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                     </div>
-                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-primary"  title="Edit">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 </div>
-                                <div class="col-4" *ngIf="isRiskCollapsibleOpen">
+                                <div class="col-sm-3" *ngIf="isRiskCollapsibleOpen">
                                 <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
@@ -659,17 +662,18 @@
                         </div>
                         <div class="col-8 d-flex justify-content-end">
                             <div class="row">
-                                <div class="col-4" >
+                            <div class="col-3"></div>
+                                <div class="col-sm-3" >
                                     <button type="button" id="icon" class="btn btn-primary"  title="Add">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                     </div>
-                                <div class="col-4" >
+                                <div class="col-sm-3" >
                                 <button type="button" id="icon" class="btn btn-primary"  title="Edit">
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                                 </div>
-                                <div class="col-4" >
+                                <div class="col-sm-3" >
                                 <button type="button" id="icon" class="btn btn-danger me-2"  title="Delete">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
