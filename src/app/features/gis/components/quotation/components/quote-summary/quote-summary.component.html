@@ -1,17 +1,17 @@
 <div class="container ">
-    <p class="titleMain mt-3">Quotations: Quotation summary</p>
+    <p class="titleMain mt-3">{{'gis.quotation.quotation_summary' | translate}}</p>
     <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
     <div class="container mx-2 mt-n1">
         <div class="card">
             <div class="card-body ms-3">
                 <!-- QOUTE DETAILS -->
-                <p class="title mt-2">Quote details</p>
+                <p class="title mt-2">{{'gis.quotation.quote_details' | translate}}</p>
                 <div class="row ">
                     <div class="col-lg-4 col-12">
                         <div class="row">
 
                             <div class="col-6">
-                                <p class="summary-label">Quote number:</p>
+                                <p class="summary-label"> {{'gis.quotation.quote_number' | translate}}:</p>
                             </div>
                             <div class="col-6" id="value">
                                 <p class="summary-value ">{{quotationNo}}</p>
@@ -21,7 +21,7 @@
                     <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6">
-                                <p class="summary-label">Quote date:</p>
+                                <p class="summary-label">{{'gis.quotation.quote_date' | translate}}:</p>
                             </div>
                             <div class="col-6" id="value">
                                 <p class="summary-value">{{ coverFrom | date:'MMMM d, yyyy'}}</p>
@@ -31,7 +31,7 @@
                     <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6" id="value">
-                                <p class="summary-label">Name of insured:</p>
+                                <p class="summary-label">{{'gis.quotation.name_of_insured' | translate}}:</p>
                             </div>
                             <div class="col-6">
                                 <p class="summary-value">{{selectedClientName}}</p>
@@ -44,7 +44,7 @@
                     <div class="col-lg-4 col-12">
                         <div class="row">
                             <div class="col-6">
-                                <p class="summary-label">Intermediary:</p>
+                                <p class="summary-label">{{'gis.quotation.intermediary' | translate}}:</p>
                             </div>
                             <div class="col-6" id="value">
                                 <p class="summary-value">{{agentDesc}}</p>
@@ -54,7 +54,7 @@
                     <div class="col-lg-6 col-12">
                         <div class="row">
                             <div class="col-4">
-                                <p class="summary-label">Period of insurance:</p>
+                                <p class="summary-label">{{'gis.quotation.period_of_insurance' | translate}}:</p>
                             </div>
                             <div class="col-7" id="value">
                                 <p class="summary-value ps-3">{{ coverFrom | date:'MMMM d, yyyy' }} to {{ coverTo |
@@ -64,17 +64,17 @@
                     </div>
                 </div>
                 <!-- PRODUCT DETAILS -->
-                <p class="title mt-4">Product details</p>
+                <p class="title mt-4">{{'gis.quotation.product_details' | translate}}</p>
                 <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 100px;">Product</th>
-                            <th class="text-end" style="width: 100px;">Sum Insured</th>
+                            <th style="width: 100px;">{{'gis.quotation.product' | translate}}</th>
+                            <th class="text-end" style="width: 100px;"> {{'gis.quotation.sum_insured' | translate}}</th>
                             <!-- Loop through taxInformation and display each tax type in the header -->
                             <th *ngFor="let tax of quotationDetails.taxInformation" class="text-end"
                                 style="width: 100px;">{{ tax.description }}</th>
-                            <th class="text-end" style="width: 100px;">Premium</th>
-                            <th class="text-end" style="width: 100px;">Total premium</th>
+                            <th class="text-end" style="width: 100px;">{{'gis.quotation.premium' | translate}}</th>
+                            <th class="text-end" style="width: 100px;">{{'gis.quotation.total_premium' | translate}}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-quotationDetails let-i="index">
@@ -102,18 +102,18 @@
 
                 <!-- RISK DETAILS -->
                 <div class="d-flex justify-content-between align-items-center mt-5">
-                    <p class="title ">Risk details</p>
-                    <button type="button" class="btn btn-primary mb-2" (click)="addAnotherRisk()">Add another
-                        risk</button>
+                    <p class="title "> {{'gis.quotation.risk_details' | translate}}</p>
+                    <button type="button" class="btn btn-primary mb-2" (click)="addAnotherRisk()">
+                        {{'gis.quotation.add_another_risk' | translate}}</button>
                 </div>
 
                 <p-table [value]="[quotationDetails]" [tableStyle]="{ 'min-width': '608px' }">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 20%">Description</th>
-                            <th style="width: 20%">Risk ID</th>
-                            <th style="width: 20%">Cover type</th>
-                            <th style="width: 35%">Options</th>
+                            <th style="width: 20%">{{'gis.quotation.description' | translate}}</th>
+                            <th style="width: 20%"> {{'gis.quotation.risk_id' | translate}}</th>
+                            <th style="width: 20%">{{'gis.quotation.cover_type' | translate}}</th>
+                            <th style="width: 35%">{{'gis.quotation.options' | translate}}</th>
                             <!-- <th style="width: 10px"></th> -->
                         </tr>
                     </ng-template>
@@ -153,21 +153,21 @@
 
         <div class="float-start mt-4 mb-4 ">
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cancelQuote"
-                id="btnCancelQuote">Cancel quote</button>
+                id="btnCancelQuote">{{'gis.quotation.cancel_quote' | translate}}</button>
 
         </div>
         <div class="float-end mt-4 mb-4  ">
             <button type="button" class="btn btn-outline-primary me-3" data-bs-toggle="modal"
-                data-bs-target="#shareQuote" id="btnCancelQuote">Share quote</button>
-            <button class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">Accept
-                quote</button>
+                data-bs-target="#shareQuote" id="btnCancelQuote"> {{'gis.quotation.share_quote' | translate}}</button>
+            <button class="btn btn-primary" type="submit" (click)="acceptQuote()" id="btnCancelQuote">
+                {{'gis.quotation.accept_quote' | translate}}</button>
         </div>
         <!-- Cancel Quote Modal -->
         <div class="modal fade" id="cancelQuote" tabindex="-1" aria-labelledby="cancelQuote" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content  ps-4 pt-4 pe-4">
-                    <p class="cancelQouteTitle">Please provide a reason for your cancellation</p>
-                    <p class="cancelQouteTitle">Reason</p>
+                    <p class="cancelQouteTitle">{{'gis.quotation.provide_reason_for_cancellation' | translate}}</p>
+                    <p class="cancelQouteTitle">{{'gis.quotation.reason' | translate}}</p>
                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"></textarea>
 
 
@@ -177,11 +177,11 @@
                             <div class="row">
                                 <div class="col-6 d-flex justify-content-end">
                                     <button type="button" class="btn btn-outline-primary" id="closeBtn"
-                                        data-bs-dismiss="modal">Close</button>
+                                        data-bs-dismiss="modal">{{'gis.quotation.close' | translate}}</button>
                                 </div>
                                 <div class="col-6 d-flex justify-content-end">
                                     <button type="button" class="btn btn-primary" id="cancelQoute"
-                                        (click)="cancelQuote()">Cancel Quote</button>
+                                        (click)="cancelQuote()"> {{'gis.quotation.cancel_quote' | translate}}</button>
                                 </div>
                             </div>
                         </div>
@@ -199,25 +199,25 @@
                             <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
                                 value="email" />
                             <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">Email</span>
+                                [ngClass]="{ 'bold-label': selectedOption === 'email' }">{{'gis.quotation.email' | translate}}</span>
                         </div>
                         <div class="col-3">
                             <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
                                 value="sms" />
                             <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">SMS</span>
+                                [ngClass]="{ 'bold-label': selectedOption === 'sms' }">{{'gis.quotation.sms' | translate}}</span>
                         </div>
                         <div class="col-4">
                             <input type="radio" id="shareRadio" name="shareOption" [(ngModel)]="selectedOption"
                                 value="whatsapp" />
                             <span class="ps-2 radio-placeholder"
-                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">WhatsApp</span>
+                                [ngClass]="{ 'bold-label': selectedOption === 'whatsapp' }">{{'gis.quotation.whatsapp' | translate}}</span>
 
                         </div>
                     </div>
 
                     <div class="form-group mt-3">
-                        <label class="mb-3" for="clientName" id="shareLabel">Client Name</label>
+                        <label class="mb-3" for="clientName" id="shareLabel">{{'gis.quotation.client_name' | translate}}</label>
                         <input type="text" [(ngModel)]="clientName" id="clientName" class="form-control" />
                     </div>
                     <div class="form-group">
@@ -230,7 +230,7 @@
                         <div class="col-6"></div>
                         <div class="col-6 d-flex justify-content-end">
                             <button type="button" class="btn btn-primary" id="sendQoute"
-                                data-bs-dismiss="modal">Send</button>
+                                data-bs-dismiss="modal">{{'gis.quotation.send' | translate}}</button>
                         </div>
                     </div>
                 </div>

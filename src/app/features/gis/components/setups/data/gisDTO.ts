@@ -1072,3 +1072,21 @@ export interface introducers {
     wef: string;
     wet: string;
 }
+export interface PolicyDocument {
+    dateWithEffectFrom: string;
+    dateWithEffectTo: string;
+    document: string;
+    isDefault: string;
+    name: string;
+    precedence: string;
+    productCode: number;
+    version: number;
+}
+export interface QuakeZone {
+    code: number;
+    shortDescription: string;
+    quakeZoneName: string;
+    areaCoveredByQuakeZone: string;
+}
+
+

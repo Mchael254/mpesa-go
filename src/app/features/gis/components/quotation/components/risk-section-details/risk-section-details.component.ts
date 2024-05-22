@@ -283,18 +283,21 @@ onResize(event: any) {
 
   showSelectFromDateMessage() {
     if (!this.isFromDateSelected) {
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover From" date.' });
+      this.globalMessagingService.displayInfoMessage('Information', 'Select the "Cover From" date')
+
+      
     }
   }
 
   showSelectToDateMessage() {
     if (!this.isFromDateSelected) {
       this.isFromDateSelected = true;
-      this.messageService.clear();
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover To" date.' });
+      this.globalMessagingService.clearMessages;
+      this.globalMessagingService.displayInfoMessage('Information', 'Select the "Cover To" date')
+
     } else if (!this.isToDateSelected) {
       this.isToDateSelected = true;
-      this.messageService.clear();
+      this.globalMessagingService.clearMessages;
     }
   }
   // This method updates the "Cover To" date when "Cover From" changes
@@ -714,10 +717,12 @@ updateCoverToDate() {
       log.debug( this.quotationRiskData,"Quotation Risk Code Data");
       log.debug( this.quotationRiskCode,"Quotation Risk Code ");
       try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created' });
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Created')
+
         // this.riskDetailsForm.reset()
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Error try again later')
+
         // this.riskDetailsForm.reset()
       }
       sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
@@ -961,17 +966,20 @@ updateCoverToDate() {
         // Send the array of sections to the service
         this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
             try {
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Sections Created' });
+                this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
+
                 this.sectionDetailsForm.reset();
             } catch (error) {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
                 this.sectionDetailsForm.reset();
             }
         });
     } else {
         // Handle scenario when premiumList is empty
         console.error('Premium list is empty.');
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Premium list is empty.' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty')
+
         return;
     }
 }
@@ -1004,10 +1012,12 @@ updateCoverToDate() {
         this.sectionDetailsForm.reset()
         log.info(section)
 
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
+        this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated')
+
       }catch(error){
         log.info(section)
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         this.sectionDetailsForm.reset()
       }
     })
@@ -1102,14 +1112,17 @@ updateCoverToDate() {
           this.scheduleData = data;
           this.scheduleList=this.scheduleData._embedded
           console.log("Schedule Data:", this.scheduleData);
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Schedule created' });
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
+
         } catch (error) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         }
       },
       (error) => {
         console.error('Error creating schedule:', error);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
       }
     );
   }
@@ -1128,7 +1141,7 @@ updateCoverToDate() {
   }
   openEditScheduleModal(){
     if(!this.selectedSchedule){
-      this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Schedule to continue'});
+      this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
     }else{
       document.getElementById("openModalButtonEdit").click();
   
@@ -1155,9 +1168,11 @@ updateCoverToDate() {
       try{
 
         this.scheduleDetailsForm.reset()
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Schedule Updated'});
+        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated')
+
       }catch(error){
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         this.scheduleDetailsForm.reset()
       }
     })
@@ -1192,10 +1207,12 @@ updateCoverToDate() {
           // Remove the deleted schedule from the scheduleList
           this.scheduleList = this.scheduleList.filter(schedule => schedule.code !== scheduleCode);
 
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Successfully' });
+          this.globalMessagingService.displaySuccessMessage('Success', 'Deleted Successfully')
+
         }, error => {
           console.error('Error deleting schedule:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         });
       } else {
         console.log('Invalid level number:', level);
@@ -1203,7 +1220,8 @@ updateCoverToDate() {
       }
     } else {
       // Handle the case where selectedPremiumRate is undefined or does not have a code property
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Select a Schedule to continue' });
+      this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
+
     }
   }
 
