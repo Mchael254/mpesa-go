@@ -5,7 +5,7 @@ import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { SubclassesService } from '../../../setups/services/subclasses/subclasses.service';
-import { Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
+import { QuakeZone, Subclass, Subclasses, subclassCoverTypeSection, subclassCoverTypes, subclassSection, vehicleMake, vehicleModel } from '../../../setups/data/gisDTO';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SubClassCoverTypesService } from '../../../setups/services/sub-class-cover-types/sub-class-cover-types.service';
 import { BinderService } from '../../../setups/services/binder/binder.service';
@@ -25,9 +25,13 @@ import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-
 import { concatMap, forkJoin, switchMap, tap } from 'rxjs';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
+<<<<<<< Updated upstream
 import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
 import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
+=======
+import { QuakeZonesService } from '../../../setups/services/perils-territories/quake-zones/quake-zones.service';
+>>>>>>> Stashed changes
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -104,6 +108,7 @@ export class RiskDetailsComponent {
   statesList: StateDto[];
   selectedStateId: any;
   townList: TownDto[];
+  quakeZoneList:QuakeZone[]=[];
   countryList: CountryDto[];
   userCountryName: any;
 
@@ -168,8 +173,13 @@ export class RiskDetailsComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public premiumRateService: PremiumRateService,
     public authService: AuthService,
+<<<<<<< Updated upstream
 
     public quotationService:QuotationsService,
+=======
+    public quakeZoneService: QuakeZonesService,
+
+>>>>>>> Stashed changes
 
 
 
@@ -181,6 +191,7 @@ export class RiskDetailsComponent {
     // this.loadAllSubclass();
     this.getVehicleMake();
     this.getAllSection();
+    this.getQuakeZone();
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     this.createScheduleDetailsForm();
 
@@ -1266,7 +1277,38 @@ export class RiskDetailsComponent {
         },
       });
   }
-  
+  getQuakeZone(){
+    this.quakeZoneService
+    .getQuakeZone()
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+
+        if (data) {
+          this.quakeZoneList = data;
+          log.debug("Quake Zone list", this.quakeZoneList)
+
+          this.cdr.detectChanges();
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
+  }
   
   downloadCSVTemplate(): void {
     console.log("TEST")

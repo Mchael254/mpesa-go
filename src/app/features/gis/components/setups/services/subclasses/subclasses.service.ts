@@ -130,7 +130,7 @@ createSubClass(data:Subclasses[]) {
       const params = new HttpParams()
       .set('page', `${page}`)
         .set('pageSize', `${size}`)
-      return this.api.GET<Clauses>(`api/v1/clauses`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
+      return this.api.GET<Clauses>(`api/v1/clauses?pageNo=${page}&pageSize=${size}`, API_CONFIG.GIS_SETUPS_BASE_URL).pipe(
         retry(1),
         catchError(this.errorHandl)
       )  }

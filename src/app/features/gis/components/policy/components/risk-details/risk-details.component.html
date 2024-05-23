@@ -617,8 +617,8 @@
                                 <label for="surveyDate" class="required risk-label"
                                     id="surveyDate">{{'gis.policy.quake_flood_zone'|translate}}</label><br>
 
-                                <p-dropdown [options]="" optionValue="code" optionLabel="description" placeholder=" "
-                                    [filterBy]="'description'" [filter]="true"></p-dropdown>
+                                <p-dropdown [options]="quakeZoneList" optionValue="code" optionLabel="quakeZoneName" placeholder=" "
+                                    [filterBy]="'quakeZoneName'" [filter]="true"></p-dropdown>
 
 
 

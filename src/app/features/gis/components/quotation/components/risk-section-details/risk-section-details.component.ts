@@ -23,6 +23,7 @@ import { RiskClausesService } from '../../../setups/services/risk-clauses/risk-c
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import {ClientDTO} from "../../../../../entities/data/ClientDTO";
 import {ClientService} from "../../../../../entities/services/client/client.service";
+import { forkJoin } from 'rxjs';
 
 const log = new Logger('RiskSectionDetailsComponent');
 
@@ -140,6 +141,11 @@ export class RiskSectionDetailsComponent {
   riskClausesList:riskClauses[];
   selectedRiskClause:Clause;
   selectedRiskClauseCode:any;
+
+  selectedSections: any[] = [];
+  premiumListIndex = 0;
+  sections: any[] = [];
+
   constructor(
     private router: Router,
     private messageService:MessageService,
@@ -277,18 +283,21 @@ onResize(event: any) {
 
   showSelectFromDateMessage() {
     if (!this.isFromDateSelected) {
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover From" date.' });
+      this.globalMessagingService.displayInfoMessage('Information', 'Select the "Cover From" date')
+
+      
     }
   }
 
   showSelectToDateMessage() {
     if (!this.isFromDateSelected) {
       this.isFromDateSelected = true;
-      this.messageService.clear();
-      this.messageService.add({ severity: 'info', summary: 'Information', detail: 'Select the "Cover To" date.' });
+      this.globalMessagingService.clearMessages;
+      this.globalMessagingService.displayInfoMessage('Information', 'Select the "Cover To" date')
+
     } else if (!this.isToDateSelected) {
       this.isToDateSelected = true;
-      this.messageService.clear();
+      this.globalMessagingService.clearMessages;
     }
   }
   // This method updates the "Cover To" date when "Cover From" changes
@@ -708,10 +717,12 @@ updateCoverToDate() {
       log.debug( this.quotationRiskData,"Quotation Risk Code Data");
       log.debug( this.quotationRiskCode,"Quotation Risk Code ");
       try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Risk Created' });
+        this.globalMessagingService.displaySuccessMessage('Success', 'Risk Created')
+
         // this.riskDetailsForm.reset()
       } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Error try again later')
+
         // this.riskDetailsForm.reset()
       }
       sessionStorage.setItem('riskFormData', JSON.stringify(this.riskDetailsForm.value));
@@ -825,14 +836,26 @@ updateCoverToDate() {
   });
   }
 
-  onCheckboxChange(section: subclassSection) {
+  // onCheckboxChange(section: subclassSection) {
 
-    log.debug("Checked Section Data",section)
-    this.checkedSectionCode=section.sectionCode;
-    this.checkedSectionDesc=section.sectionShortDescription;
-    this.checkedSectionType=section.sectionType;
-    this.getPremiumRates()
-    this.getSectionbyCode()
+  //   log.debug("Checked Section Data",section)
+  //   this.checkedSectionCode=section.sectionCode;
+  //   this.checkedSectionDesc=section.sectionShortDescription;
+  //   this.checkedSectionType=section.sectionType;
+  //   this.getPremiumRates()
+  //   this.getSectionbyCode()
+  // }
+ 
+  onCheckboxChange(section: any): void {
+    const index = this.selectedSections.findIndex(s => s.code === section.code);
+    if (index === -1) {
+      this.selectedSections.push(section);
+    } else {
+      this.selectedSections.splice(index, 1);
+    }
+    log.debug("Selected Sections",this.selectedSections);
+    this.getPremium(this.selectedSections);
+
   }
 
 
@@ -842,42 +865,125 @@ updateCoverToDate() {
  * to create a new risk section associated with the current risk, and handles
  * the response data by displaying a success or error message.
  */
-  createRiskSection(){
-    const section = this.sectionDetailsForm.value;
-    this.sectionArray = [section];
-    section.calcGroup = 1;
-    section.code = null;
-    section.compute = "Y";
-    section.description = null;
-    section.freeLimit = 0;
-    section.limitAmount = 0;
-    section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
-    section.multiplierRate = 0;
-    section.premiumAmount = 0;
-    section.premiumRate = this.premiumList[0].rate;
-    section.rateDivisionFactor = this.premiumList[0].divisionFactor;
-    section.rateType = this.premiumList[0].rateType;
-    section.rowNumber = 0;
-    section.sumInsuredLimitType = null;
-    section.sumInsuredRate = 0;
+  // createRiskSection(){
+  //   const section = this.sectionDetailsForm.value;
 
-    section.sectionCode=this.checkedSectionCode;
-    section.sectionShortDescription=this.checkedSectionDesc;
-    section.sectionType=this.sectionList.type;
+  //   if (this.premiumList.length > 0 && this.premiumListIndex < this.premiumList.length) {
+  //     console.log(`Using sectionCode: ${this.premiumList[this.premiumListIndex].sectionCode} (Premium List Index: ${this.premiumListIndex})`);
+  
+  //     // Log the current premiumListIndex before incrementing
+  //     console.log(`Current premiumListIndex before increment: ${this.premiumListIndex}`);
+  
+  //     // Increment the premiumListIndex and wrap around using modulo
+  //     this.premiumListIndex = (this.premiumListIndex + 1) % this.premiumList.length;
+  
+  //     // Log the updated premiumListIndex after incrementing
+  //     console.log(`Updated premiumListIndex after increment: ${this.premiumListIndex}`);
+  
+  //     section.sectionCode = this.premiumList[this.premiumListIndex].sectionCode;
+  //     section.sectionShortDescription = this.premiumList[this.premiumListIndex].sectionShortDescription;
+  //     section.sectionType = this.premiumList[this.premiumListIndex].sectionType;
 
-    log.debug("Section Form Array",this.sectionArray)
+  //     // section.sectionCode=this.checkedSectionCode;
+  //     // section.sectionShortDescription=this.checkedSectionDesc;
+  //     // section.sectionType=this.sectionList.type;
 
-    this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
+  //   } else {
+  //     // Handle scenario when premiumList is empty or index is out of bounds
+  //     console.error('Premium list is empty or index is out of bounds.');
+  //     return; // or throw an error, handle as per your requirement
+  //   }
+  //   this.sectionArray = [section];
+  //   section.calcGroup = 1;
+  //   section.code = null;
+  //   section.compute = "Y";
+  //   section.description = null;
+  //   section.freeLimit = 0;
+  //   section.limitAmount = 0;
+  //   section.multiplierDivisionFactor = this.premiumList[0].multiplierDivisionFactor;
+  //   section.multiplierRate = 0;
+  //   section.premiumAmount = 0;
+  //   section.premiumRate = this.premiumList[0].rate;
+  //   section.rateDivisionFactor = this.premiumList[0].divisionFactor;
+  //   section.rateType = this.premiumList[0].rateType;
+  //   section.rowNumber = 0;
+  //   section.sumInsuredLimitType = null;
+  //   section.sumInsuredRate = 0;
 
-      try {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
-        this.sectionDetailsForm.reset()
-      } catch (error) {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
-        this.sectionDetailsForm.reset()
-      }
-    })
-  }
+  //   // section.sectionCode=this.checkedSectionCode;
+  //   // section.sectionShortDescription=this.checkedSectionDesc;
+  //   // section.sectionType=this.sectionList.type;
+
+  //   log.debug("Section Form Array",this.sectionArray)
+
+  //   this.quotationService.createRiskSection(this.riskCode,this.sectionArray).subscribe(data =>{
+
+  //     try {
+  //       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Section Created' });
+  //       this.sectionDetailsForm.reset()
+  //     } catch (error) {
+  //       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error try again later' });
+  //       this.sectionDetailsForm.reset()
+  //     }
+  //   })
+  // }
+  createRiskSection() {
+    const sectionTemplate = this.sectionDetailsForm.value;
+
+    if (this.premiumList.length > 0) {
+        const sections = this.premiumList.map((premiumItem, index) => {
+            // Create a new section object from the template
+            const section = { ...sectionTemplate };
+
+            // Assign values from the premium item to the section
+            section.sectionCode = premiumItem.sectionCode;
+            section.sectionShortDescription = premiumItem.sectionShortDescription;
+            section.sectionType = premiumItem.sectionType;
+            section.calcGroup = 1;
+            section.code = null;
+            section.compute = "Y";
+            section.description = null;
+            section.freeLimit = 0;
+            section.limitAmount = 0;
+            section.multiplierDivisionFactor = premiumItem.multiplierDivisionFactor;
+            section.multiplierRate = 0;
+            section.premiumAmount = 0;
+            section.premiumRate = premiumItem.rate;
+            section.rateDivisionFactor = premiumItem.divisionFactor;
+            section.rateType = premiumItem.rateType;
+            section.rowNumber = 0;
+            section.sumInsuredLimitType = null;
+            section.sumInsuredRate = 0;
+
+            return section;
+        });
+
+        // Log the sections array
+        console.log("Sections to be created:", sections);
+        this.sections=sections;
+        console.log("Sections to be created:", this.sections);
+
+        // Send the array of sections to the service
+        this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
+            try {
+                this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
+
+                this.sectionDetailsForm.reset();
+            } catch (error) {
+              this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
+                this.sectionDetailsForm.reset();
+            }
+        });
+    } else {
+        // Handle scenario when premiumList is empty
+        console.error('Premium list is empty.');
+        this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty')
+
+        return;
+    }
+}
+
 
   onSelectSection(event: any){
     this.selectedSection=event;
@@ -906,10 +1012,12 @@ updateCoverToDate() {
         this.sectionDetailsForm.reset()
         log.info(section)
 
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Section Updated'});
+        this.globalMessagingService.displaySuccessMessage('Success', 'Section Updated')
+
       }catch(error){
         log.info(section)
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         this.sectionDetailsForm.reset()
       }
     })
@@ -1004,14 +1112,17 @@ updateCoverToDate() {
           this.scheduleData = data;
           this.scheduleList=this.scheduleData._embedded
           console.log("Schedule Data:", this.scheduleData);
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Schedule created' });
+          this.globalMessagingService.displaySuccessMessage('Success', 'Schedule created')
+
         } catch (error) {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         }
       },
       (error) => {
         console.error('Error creating schedule:', error);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
       }
     );
   }
@@ -1028,6 +1139,14 @@ updateCoverToDate() {
     log.info("Patched level",level)
     this.deleteScheduleForLevel();
   }
+  openEditScheduleModal(){
+    if(!this.selectedSchedule){
+      this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
+    }else{
+      document.getElementById("openModalButtonEdit").click();
+  
+    }
+  }
   updateSchedule(){
     const schedule = this.scheduleDetailsForm.value;
     schedule.riskCode = this.riskCode;
@@ -1038,6 +1157,8 @@ updateCoverToDate() {
       console.log('Updated Schedule Data:', this.updatedScheduleData);
       this.updatedSchedule=this.updatedScheduleData._embedded;
       console.log('Updated Schedule  nnnnn:', this.updatedSchedule);
+      this.scheduleList = this.updatedSchedule;
+      log.debug("UPDATED SCHEDULE LIST:",this.scheduleList)
       const index = this.scheduleList.findIndex(item => item.code === this.updatedSchedule.code);
       if (index !== -1) {
         this.scheduleList[index] = this.updatedSchedule;
@@ -1047,9 +1168,11 @@ updateCoverToDate() {
       try{
 
         this.scheduleDetailsForm.reset()
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Schedule Updated'});
+        this.globalMessagingService.displaySuccessMessage('Success', 'Schedule Updated')
+
       }catch(error){
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error, try again later'});
+        this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         this.scheduleDetailsForm.reset()
       }
     })
@@ -1084,10 +1207,12 @@ updateCoverToDate() {
           // Remove the deleted schedule from the scheduleList
           this.scheduleList = this.scheduleList.filter(schedule => schedule.code !== scheduleCode);
 
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Deleted Successfully' });
+          this.globalMessagingService.displaySuccessMessage('Success', 'Deleted Successfully')
+
         }, error => {
           console.error('Error deleting schedule:', error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+          this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
+
         });
       } else {
         console.log('Invalid level number:', level);
@@ -1095,7 +1220,8 @@ updateCoverToDate() {
       }
     } else {
       // Handle the case where selectedPremiumRate is undefined or does not have a code property
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Select a Schedule to continue' });
+      this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
+
     }
   }
 
@@ -1131,6 +1257,64 @@ updateCoverToDate() {
       // this.globalMessagingService.displaySuccessMessage('Success', 'Successfully updated');
     });
   }
+  // getPremium(passedSections: any[]) {
+    
+  //   const sections = passedSections;
+  //   log.debug("Sections passed to premium service:", sections);
+
+  //   // Create an array to store observables returned by each service call
+  //   const observables = sections?.map(section => {
+  //     return this.premiumRateService.getAllPremiums(section.sectionCode, this.selectedBinderCode, this.selectedSubclassCode);
+  //   });
+
+  //   // Use forkJoin to wait for all observables to complete
+  //   forkJoin(observables).subscribe((data: any[]) => {
+  //     // data is an array containing the results of each service call
+  //     const newPremiumList = data.flat(); // Flatten the array if needed
+  //     log.debug("New Premium List", newPremiumList);
+
+  //     // Check if premiumList is an array (safeguard against initialization issues)
+  //     if (!Array.isArray(this.premiumList)) {
+  //       this.premiumList = [];
+  //     }
+
+  //     // Append newPremiumList to existing premiumList
+  //     this.premiumList = [...this.premiumList, ...newPremiumList];
+  //     log.debug("Updated Premium List", this.premiumList);
+  //   });
+  // }
+  getPremium(passedSections: any[]) {
+    const sections = passedSections;
+    log.debug("Sections passed to premium service:", sections);
+  
+    // Create an array to store observables returned by each service call
+    const observables = sections?.map(section => {
+      return this.premiumRateService.getAllPremiums(section.sectionCode, this.selectedBinderCode, this.selectedSubclassCode);
+    });
+  
+    // Use forkJoin to wait for all observables to complete
+    forkJoin(observables).subscribe((data: any[]) => {
+      // Flatten the array if needed
+      const newPremiumList = data.flat();
+      log.debug("New Premium List", newPremiumList);
+  
+      // Check if premiumList is an array (safeguard against initialization issues)
+      if (!Array.isArray(this.premiumList)) {
+        this.premiumList = [];
+      }
+  
+      // Create a Set to track existing premium codes
+      const premiumCodeSet = new Set(this.premiumList.map(premium => premium.code));
+  
+      // Filter out any new premiums that already exist in the premiumList
+      const uniqueNewPremiumList = newPremiumList.filter(premium => !premiumCodeSet.has(premium.code));
+  
+      // Append uniqueNewPremiumList to existing premiumList
+      this.premiumList = [...this.premiumList, ...uniqueNewPremiumList];
+      log.debug("Updated Premium List", this.premiumList);
+    });
+  }
+  
   loadRiskClauses(){
     this.quotationService.getRiskClauses(this.riskCode).subscribe(data =>{
       this.riskClausesList=data;

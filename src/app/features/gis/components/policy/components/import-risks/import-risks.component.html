@@ -1,0 +1,152 @@
+<div class="container ">
+    <p class="titleMain mt-3">Underwriting:Import risks</p>
+    <div class="container mx-2 mt-n1">
+        <div class="card mb-3 px-2" style=" position: relative;">
+            <div class="card-body">
+                <p class="subheading">Import risks</p>
+                <div class="row mb-2">
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="row">
+
+                            <div class="col-6">
+                                <p class="summary-label">Policy number</p>
+                            </div>
+                            <div class="col-6" id="value">
+                                <p class="summary-value ">234</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="row">
+
+                            <div class="col-6">
+                                <p class="summary-label">Client</p>
+                            </div>
+                            <div class="col-6" id="value">
+                                <p class="summary-value ">234</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="row">
+
+                            <div class="col-6">
+                                <p class="summary-label">Cover from</p>
+                            </div>
+                            <div class="col-6" id="value">
+                                <p class="summary-value ">234</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="row">
+
+                            <div class="col-6">
+                                <p class="summary-label">Cover To</p>
+                            </div>
+                            <div class="col-6" id="value">
+                                <p class="summary-value ">234</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        <div class="row">
+
+                            <div class="col-6">
+                                <p class="summary-label">Subclass</p>
+                            </div>
+                            <div class="col-6" id="value">
+                                <select class="form-select form-control-sm summary-value" id="subclassSelect"
+                                    formControlName="proInterfaceType">
+                                    <option value=""></option>
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" mb-1 col-sm-4 col-12">
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3">
+                        
+
+                    </div>
+                    <div class="col-sm-9 d-flex justify-content-end">
+                        <div class="row  mb-2">
+
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-3 me-4">
+                                <button type="button" id="icon" class="btn btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#editPolicyRisk" title="add">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div>
+                            <!-- <div class="col-sm-1">
+                                <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#editThirdDetails" title="Edit">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div> -->
+                            <div class="col-sm-3">
+                                <button type="button" id="icon" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deletePolicyRisk" title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <p-table  dataKey="code"
+                [tableStyle]="{ 'min-width': '300px' }" [paginator]="true" selectionMode="single"
+                 styleClass="p-datatable-sm"
+                responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Client ID</th>
+                        <th>Client name</th>
+                        <th>WEF</th>
+                        <th>WET</th>
+                        <th>Risk duplicated</th>
+                        <th>Class</th>
+                        <th>Cover type</th>
+                        <th>Premium</th>
+                        <th>Taxes</th>
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" >
+                    <tr>
+                       
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="9" style="padding: 20px; text-align:center " id="empty">{{'gis.policy.no_data_to_display' | translate}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end mt-4">
+            <button type="button" class="btn btn-primary" >{{'gis.policy.next' |
+                translate}}</button>
+        </div>
+    </div>
+</div>
