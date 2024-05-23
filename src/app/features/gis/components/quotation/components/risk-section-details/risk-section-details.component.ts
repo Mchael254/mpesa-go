@@ -966,20 +966,31 @@ updateCoverToDate() {
         // Send the array of sections to the service
         this.quotationService.createRiskSection(this.riskCode, sections).subscribe(data => {
             try {
+<<<<<<< HEAD
                 this.globalMessagingService.displaySuccessMessage('Success', 'Sections Created')
 
                 this.sectionDetailsForm.reset();
             } catch (error) {
               this.globalMessagingService.displayErrorMessage('Error', 'Error, try again later')
 
+=======
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Sections Created' });
+                this.sectionDetailsForm.reset();
+            } catch (error) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error, try again later' });
+>>>>>>> 01199d9d8e260b2f44b6a049f875996463800b96
                 this.sectionDetailsForm.reset();
             }
         });
     } else {
         // Handle scenario when premiumList is empty
         console.error('Premium list is empty.');
+<<<<<<< HEAD
         this.globalMessagingService.displayErrorMessage('Error', 'Premium list is empty')
 
+=======
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Premium list is empty.' });
+>>>>>>> 01199d9d8e260b2f44b6a049f875996463800b96
         return;
     }
 }
@@ -1141,7 +1152,11 @@ updateCoverToDate() {
   }
   openEditScheduleModal(){
     if(!this.selectedSchedule){
+<<<<<<< HEAD
       this.globalMessagingService.displayErrorMessage('Error', 'Select a Schedule to continue')
+=======
+      this.messageService.add({severity:'error', summary: 'Error', detail: 'Select a Schedule to continue'});
+>>>>>>> 01199d9d8e260b2f44b6a049f875996463800b96
     }else{
       document.getElementById("openModalButtonEdit").click();
   
