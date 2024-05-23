@@ -60,6 +60,19 @@
 #icon i{
     color: #00529B;
 }
+.icon{
+    background-color: #E4E7EB;
+    border-radius: 100px;
+    border: none;
+}
+
+#openModalButtonEdit:hover{
+    background-color: transparent;
+}
+#openModalButtonEdit{
+    background-color: red;
+}
+
 .fa-pencil{
     color:#00529B
 }

@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, RiskInformation, RiskSection } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 
@@ -87,5 +87,18 @@ export class PolicyService {
   deleteCoinsurance(agentCode:number,batchNo:number){
     return this.api.DELETE(`v1/policies/delete-coinsurance?agnCode=${agentCode}&polBatchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
+  }
+  // getPremiumFinanciers(partyType:string){
+  //   let page = 0;
+  //   let size = 100;
+  //   return this.api.GET(`v2/policies/coInsurance?pageNo=${page}&pageSize=${size}&partyType=${partyType}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  // }
+  getPremiumFinanciers(): Observable<PremiumFinanciers[]>{
+    let page = 0;
+    let size = 1000;
+    return this.api.GET<PremiumFinanciers[]>(`v2/financiers?pageNo=${page}&pageSize=${size}`,API_CONFIG.GIS_UNDERWRITING_BASE_URL).pipe(
+      retry(1),
+      catchError(this.errorHandl)
+    )
   }
 }

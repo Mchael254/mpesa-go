@@ -6,7 +6,7 @@ import { ClientDTO } from '../../../../../entities/data/ClientDTO';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GlobalMessagingService } from '../../../../../../shared/services/messaging/global-messaging.service';
 import { ProductsService } from '../../../setups/services/products/products.service';
-import { Products, introducers } from '../../../setups/data/gisDTO';
+import { PolicyDocument, Products, introducers } from '../../../setups/data/gisDTO';
 import { OrganizationBranchDto } from '../../../../../../shared/data/common/organization-branch-dto';
 import { BranchService } from '../../../../../../shared/services/setups/branch/branch.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
@@ -20,6 +20,8 @@ import { ContractNamesService } from '../../services/contract-names/contract-nam
 import { PolicyService } from '../../services/policy.service';
 import { Router } from '@angular/router';
 import underwritingSteps from '../../data/underwriting-steps.json'
+import { ProductDocumentService } from '../../../setups/services/product-document/product-document.service';
+import { PremiumFinanciers } from '../../data/policy-dto';
 
 const log = new Logger("PolicyProductComponent");
 
@@ -78,8 +80,9 @@ export class PolicyProductComponent {
   selectedIntroducer: any;
   introducerCode: any;
   introducerName: any;
-  currency: any;
 
+  currency: any;
+ currencyCode:any 
   contractNamesList: any;
   contractDetails: any;
   binderType: any;
@@ -94,6 +97,12 @@ export class PolicyProductComponent {
   enableSelect: boolean = false;
   show: boolean = true;
   isPolicyGeneratedOutsideSystem: boolean = false;
+  isriskImportedAnotherPolicy: boolean = false
+  importedPolicy:any;
+
+  productDocumentList:PolicyDocument[]=[];
+  defaultProductDocument:any;
+  premiumFinanciers:PremiumFinanciers[]=[];
 
 
   @ViewChild('dt1') dt1: Table | undefined;
@@ -124,6 +133,7 @@ export class PolicyProductComponent {
     public globalMessagingService: GlobalMessagingService,
     private router: Router,
     public cdr: ChangeDetectorRef,
+    public productDocumentService:ProductDocumentService,
 
 
   ) { }
@@ -142,6 +152,7 @@ export class PolicyProductComponent {
     this.getMarketers(0, 1000, "createdDate");
     this.getIntroducers();
     this.getPaymentModes();
+    this.getPremiumFinanciers();
 
   }
   ngOnDestroy(): void { }
@@ -169,7 +180,7 @@ export class PolicyProductComponent {
       coinsuranceFacultativeCession: [''],
       comments: [''],
       consCode: [''],
-      currencyCode: [0],
+      currencyCode: [0, Validators.required],
       currencySymbol: [''],
       frequencyOfPayment: [''],
       internalComments: [''],
@@ -181,13 +192,13 @@ export class PolicyProductComponent {
       isCommissionAllowed: [''],
       isExchangeRateFixed: [''],
       isOpenCover: [''],
-      paymentMode: [''],
+      paymentMode: ['', Validators.required],
       proInterfaceType: ['', Validators.required],
       productCode: [0, Validators.required],
       source: [''],
       transactionType: ['', Validators.required],
-      withEffectiveFromDate: [''],
-      withEffectiveToDate: [''],
+      withEffectiveFromDate: ['', Validators.required],
+      withEffectiveToDate: ['', Validators.required],
       coverDays: [''],
       currencyRate: ['']
     });
@@ -335,8 +346,13 @@ export class PolicyProductComponent {
   * @return {void}
   */
   onProductSelected(selectedValue: any) {
-    this.selectedProductCode = selectedValue.code;
+    this.selectedProductCode = selectedValue;
+    log.debug("Selected Productevent:", selectedValue);
+
     log.debug("Selected Product Code:", this.selectedProductCode);
+    if(this.selectedProductCode){
+      this.getProductDocument()
+    }
   }
   onPolicyInterfaceTypeChange(value: string): void {
     log.info('SELECTED VALUE:', value)
@@ -525,7 +541,7 @@ export class PolicyProductComponent {
       this.selectedAgentDesc = selectedAgentName;
       sessionStorage.setItem('agentCode', this.selectedAgentCode);
       sessionStorage.setItem('agentDescription', this.selectedAgentDesc);
-      
+
 
       this.getContractNames();
     } else {
@@ -699,6 +715,100 @@ export class PolicyProductComponent {
     //   log.debug("Selected Source :", this.selectedSource);
 
   }
+  // createPolicy() {
+  //   this.policyProductForm.get('actionType').setValue("A");
+  //   this.policyProductForm.get('addEdit').setValue("A");
+  //   this.policyProductForm.get('clientCode').setValue(this.clientCode);
+  //   this.policyProductForm.get('agentShortDescription').setValue(this.selectedAgentDesc);
+  //   this.policyProductForm.get('branchCode').setValue(this.selectedBranchCode);
+  //   this.policyProductForm.get('branchShortDescription').setValue(this.selectedBranchDescription);
+
+  //   // Transform the checkbox value to 'Y' or 'N' based on whether it's checked
+  //   const isCoinsuranceChecked = this.policyProductForm.get('isCoinsurance').value ? 'Y' : 'N';
+  //   this.policyProductForm.get('isCoinsurance').setValue(isCoinsuranceChecked);
+
+  //   const isAdminFeeAllowedChecked = this.policyProductForm.get('isAdminFeeAllowed').value ? 'Y' : 'N';
+  //   this.policyProductForm.get('isAdminFeeAllowed').setValue(isAdminFeeAllowedChecked);
+  //   const isCashApplicableChecked = this.policyProductForm.get('isCashbackApplicable').value ? 'Y' : 'N';
+  //   this.policyProductForm.get('isCashbackApplicable').setValue(isCashApplicableChecked);
+  //   log.debug("Is coinsuaranace Checked:", isCoinsuranceChecked)
+  //   log.debug("IsAdmin Fee Checked:", isAdminFeeAllowedChecked)
+  //   log.debug("Is Cash Applicable Checked:", isCashApplicableChecked)
+  //   // Transform the transaction type based on the selected value
+  //   let transactionTypeValue = '';
+  //   switch (this.selectedTransactionType) {
+  //     case 'new-business':
+  //       transactionTypeValue = 'NB';
+  //       break;
+  //     case 'endorsement':
+  //       transactionTypeValue = 'ED';
+  //       break;
+  //     case 'contra-transaction':
+  //       transactionTypeValue = 'CT';
+  //       break;
+  //     // Add more cases for other transaction types as needed
+  //     default:
+  //       // Handle any other case or set a default value if necessary
+  //       break;
+  //   }
+  //   this.policyProductForm.get('transactionType').setValue(transactionTypeValue);
+
+
+  //   log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
+  //   const policyForm = this.policyProductForm.value;
+  //   log.debug("coinsurance outputAst", this.policyProductForm.get('isCoinsurance').value)
+  //   if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
+  //     log.debug("NAVIGATING TO COINSUARANCE PAGE")
+  //     this.router.navigate(['/home/gis/policy/coinsuarance-details'])
+  //     sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
+  //   }
+  //   // else if () {
+  //   //   this.router.navigate(['/home/gis/quotation/quick-quote'])
+  //   //   sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
+  //   // } 
+  //   else {
+  //     this.policyService
+  //       .createPolicy(policyForm, this.user)
+  //       .pipe(untilDestroyed(this))
+  //       .subscribe({
+  //         next: (data) => {
+
+  //           if (data) {
+  //             this.policyResponse = data;
+  //             log.debug("Create Policy Endpoint Response", this.policyResponse)
+  //             this.policyDetails = this.policyResponse._embedded[0]
+  //             log.debug("Policy Details", this.policyDetails)
+  //             this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
+
+  //             const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
+  //             sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+  //             this.router.navigate(['/home/gis/policy/risk-details']);
+
+  //             this.cdr.detectChanges();
+
+  //           } else {
+  //             this.errorOccurred = true;
+  //             this.errorMessage = 'Something went wrong. Please try Again';
+  //             this.globalMessagingService.displayErrorMessage(
+  //               'Error',
+  //               'Something went wrong. Please try Again'
+  //             );
+  //           }
+  //         },
+  //         error: (err) => {
+
+  //           this.globalMessagingService.displayErrorMessage(
+  //             'Error',
+  //             this.errorMessage
+  //           );
+  //           log.info(`error >>>`, err);
+  //         },
+  //       });
+  //   }
+
+
+
+  // }
   createPolicy() {
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
@@ -740,55 +850,64 @@ export class PolicyProductComponent {
 
     log.debug("MY FORM", JSON.stringify(this.policyProductForm.value))
     const policyForm = this.policyProductForm.value;
-    log.debug("coinsurance outputAst",this.policyProductForm.get('isCoinsurance').value)
-    if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
-      log.debug("NAVIGATING TO COINSUARANCE PAGE")
-      this.router.navigate(['/home/gis/policy/coinsuarance-details'])
-      sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
-    }
+    log.debug("coinsurance outputAst", this.policyProductForm.get('isCoinsurance').value)
+    // if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
+    //   log.debug("NAVIGATING TO COINSUARANCE PAGE")
+    //   this.router.navigate(['/home/gis/policy/coinsuarance-details'])
+    //   sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
+    // }
     // else if () {
     //   this.router.navigate(['/home/gis/quotation/quick-quote'])
     //   sessionStorage.setItem('policyFormDetails', JSON.stringify(this.policyProductForm.value));
     // } 
-    else {
-      this.policyService
-        .createPolicy(policyForm, this.user)
-        .pipe(untilDestroyed(this))
-        .subscribe({
-          next: (data) => {
 
-            if (data) {
-              this.policyResponse = data;
-              log.debug("Create Policy Endpoint Response", this.policyResponse)
-              this.policyDetails = this.policyResponse._embedded[0]
-              log.debug("Policy Details", this.policyDetails)
-              this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
+    this.policyService
+      .createPolicy(policyForm, this.user)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (data) => {
 
-              const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
-              sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+          if (data) {
+            this.policyResponse = data;
+            log.debug("Create Policy Endpoint Response", this.policyResponse)
+            this.policyDetails = this.policyResponse._embedded[0]
+            log.debug("Policy Details", this.policyDetails)
+            this.globalMessagingService.displaySuccessMessage('Success', 'Policy has been created');
+
+            const passedPolicyDetailsString = JSON.stringify(this.policyDetails);
+            sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
+            if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
+              log.debug("NAVIGATING TO COINSUARANCE PAGE")
+              this.router.navigate(['/home/gis/policy/coinsuarance-details'])
+            }else if(this.importedPolicy){
+              log.debug("NAVIGATING TO IMPORT RISKS PAGE")
+              this.router.navigate(['/home/gis/policy/import-risks'])
+            }else{
               this.router.navigate(['/home/gis/policy/risk-details']);
 
-              this.cdr.detectChanges();
-
-            } else {
-              this.errorOccurred = true;
-              this.errorMessage = 'Something went wrong. Please try Again';
-              this.globalMessagingService.displayErrorMessage(
-                'Error',
-                'Something went wrong. Please try Again'
-              );
             }
-          },
-          error: (err) => {
 
+            this.cdr.detectChanges();
+
+          } else {
+            this.errorOccurred = true;
+            this.errorMessage = 'Something went wrong. Please try Again';
             this.globalMessagingService.displayErrorMessage(
               'Error',
-              this.errorMessage
+              'Something went wrong. Please try Again'
             );
-            log.info(`error >>>`, err);
-          },
-        });
-    }
+          }
+        },
+        error: (err) => {
+
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            this.errorMessage
+          );
+          log.info(`error >>>`, err);
+        },
+      });
+
 
 
 
@@ -830,5 +949,74 @@ export class PolicyProductComponent {
   onCheckboxChange(event: any) {
     log.debug("Value passed by the checkbox:", event.target.checked)
     this.isPolicyGeneratedOutsideSystem = event.target.checked;
+  }
+  onAnotherPolicyChange(event: any) {
+    log.debug("Value passed by the checkbox for import generate policy:", event.target.checked)
+    this.isriskImportedAnotherPolicy = event.target.checked;
+  }
+  getProductDocument(){
+    this.productDocumentService
+    .getProductDocument(this.selectedProductCode)
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+
+        if (data) {
+          this.productDocumentList = data;
+          log.debug("Product Document  list", this.productDocumentList)
+          this.defaultProductDocument=this.productDocumentList.filter(document => document.isDefault == 'Y');
+         log.debug("Default Product Document",this.defaultProductDocument)
+          this.cdr.detectChanges();
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
+  }
+  getPremiumFinanciers(){
+    this.policyService
+    .getPremiumFinanciers()
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+
+        if (data) {
+          this.premiumFinanciers = data;
+          log.debug("Premium Financiers  list", this.premiumFinanciers)
+
+          this.cdr.detectChanges();
+
+        } else {
+          this.errorOccurred = true;
+          this.errorMessage = 'Something went wrong. Please try Again';
+          this.globalMessagingService.displayErrorMessage(
+            'Error',
+            'Something went wrong. Please try Again'
+          );
+        }
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          this.errorMessage
+        );
+        log.info(`error >>>`, err);
+      },
+    });
   }
 }

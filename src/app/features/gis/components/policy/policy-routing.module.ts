@@ -5,6 +5,7 @@ import { UnderwritingComponent } from './components/underwriting/underwriting.co
 import { PolicyProductComponent } from './components/policy-product/policy-product.component';
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { CoinsuaranceDetailsComponent } from './components/coinsuarance-details/coinsuarance-details.component';
+import { ImportRisksComponent } from './components/import-risks/import-risks.component';
 
 const routes: Routes = [
   {
@@ -18,8 +19,12 @@ const routes: Routes = [
   },
   {
     path: 'risk-details', component:RiskDetailsComponent
-  }, {
+  }, 
+  {
     path: 'coinsuarance-details', component:CoinsuaranceDetailsComponent
+  },
+  {
+    path: 'import-risks', component:ImportRisksComponent
   },
 ];
 
