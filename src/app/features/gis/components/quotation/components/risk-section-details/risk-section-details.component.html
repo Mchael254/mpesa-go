@@ -1085,6 +1085,7 @@
         <p-table [value]="sections" [tableStyle]="{'min-width': '300px'}" selectionMode="single" [(selection)]="selectedSection" dataKey="code" editMode="row">
           <ng-template pTemplate="header">
             <tr>
+<<<<<<< HEAD
               <th>{{'gis.quotation.group' | translate}}</th>
               <th> {{'gis.quotation.row_num' | translate}}</th>
               <th>{{'gis.quotation.code' | translate}}</th>
@@ -1093,6 +1094,16 @@
               <th>{{'gis.quotation.limit_amount' | translate}}</th>
               <th> {{'gis.quotation.premium_rate' | translate}}</th>
               <th>{{'gis.quotation.rate_type' | translate}}</th>
+=======
+              <th>Group</th>
+              <th>Row Num</th>
+              <th>Code</th>
+              <th>Short Description</th>
+              <th>Description</th>
+              <th>Limit Amount</th>
+              <th>Premium Rate</th>
+              <th>Rate Type</th>
+>>>>>>> 01199d9d8e260b2f44b6a049f875996463800b96
               <th></th>
             </tr>
           </ng-template>
