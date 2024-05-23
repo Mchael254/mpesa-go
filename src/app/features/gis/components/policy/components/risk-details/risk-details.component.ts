@@ -25,13 +25,10 @@ import { SubClassCoverTypesSectionsService } from '../../../setups/services/sub-
 import { concatMap, forkJoin, switchMap, tap } from 'rxjs';
 import { PremiumRateService } from '../../../setups/services/premium-rate/premium-rate.service';
 import { AuthService } from '../../../../../../shared/services/auth.service';
-<<<<<<< Updated upstream
 import { QuotationsService } from '../../../../components/quotation/services/quotations/quotations.service'
 import * as XLSX from 'xlsx';
 import * as Papa from 'papaparse';
-=======
 import { QuakeZonesService } from '../../../setups/services/perils-territories/quake-zones/quake-zones.service';
->>>>>>> Stashed changes
 
 const log = new Logger("RiskDetailsComponent");
 
@@ -173,13 +170,10 @@ export class RiskDetailsComponent {
     public subclassSectionCovertypeService: SubClassCoverTypesSectionsService,
     public premiumRateService: PremiumRateService,
     public authService: AuthService,
-<<<<<<< Updated upstream
 
     public quotationService:QuotationsService,
-=======
     public quakeZoneService: QuakeZonesService,
 
->>>>>>> Stashed changes
 
 
 
