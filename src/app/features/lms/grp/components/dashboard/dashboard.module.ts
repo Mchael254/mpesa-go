@@ -8,13 +8,15 @@ import { LandingDashboardComponent } from './components/landing-dashboard/landin
 import { PolicyDetailsComponent } from './components/policy-details/policy-details.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 
 
 @NgModule({
   declarations: [
     LandingScreenComponent,
     LandingDashboardComponent,
-    PolicyDetailsComponent
+    PolicyDetailsComponent,
+    AdminDashboardComponent
   ],
   imports: [
     CommonModule,

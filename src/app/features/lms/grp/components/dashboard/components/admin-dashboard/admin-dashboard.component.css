@@ -1,0 +1,252 @@
+.main {
+    padding: 10px 20px 10px 20px;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 4px;
+    min-height: 120px;
+    padding-left: 50px;
+}
+
+.box-container {
+    display: flex;
+    flex-wrap: wrap;
+    background: #FFF;
+    border-radius: 4px;
+    gap: 20px;
+}
+
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 20px 20px 40px 20px;
+    background: #FFF;
+    border-radius: 4px;
+}
+
+.container>div {
+    margin-right: 20px;
+}
+
+.info {
+    display: flex;
+    flex-grow: 1;
+    /* Items in .info will distribute equally */
+}
+
+.info>div {
+    flex-grow: 1;
+    /* Each item in .info will take equal space */
+    margin-right: 20px;
+}
+
+.label-name {
+    color: grey;
+    margin-right: 10px;
+}
+
+.label-desc {
+    color: black;
+}
+
+.profile {
+    padding-right: 30px;
+}
+
+.box2 {
+    width: calc(33.33% - 80px);
+    min-height: 300px;
+    background-color: white;
+    border-radius: 5px;
+    margin-right: 80px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.box2 img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.title {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#title {
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+#description {
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    color: #a8a6a6;
+}
+
+.proceed-button {
+    display: inline-flex;
+    height: 40px;
+    padding: 12px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background: #00529B;
+}
+
+.proceed-button:hover {
+    background: #9ecbf2;
+}
+
+.product {
+    color: #000;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.product-description {
+    color: #a8a6a6;
+    font-size: 14px;
+}
+
+.box {
+    width: calc(33.33% - 20px);
+    min-height: 200px;
+    background-color: white;
+    padding: 0 0 0 40px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    position: relative;
+}
+
+.box::after {
+    content: '';
+    position: absolute;
+    top: 25%;
+    right: -9px;
+    height: 50%;
+    width: 2px;
+    background-color: #ebeaea;
+}
+
+.box:last-child::after {
+    display: none;
+}
+
+.round-button {
+    display: inline-block;
+    border: none;
+    border-radius: 50%;
+    background-color: #eae8e8;
+    padding: 10px;
+}
+
+.pol-text {
+    margin-left: 20px;
+    color: black;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.centered-table {
+    width: 100%;
+    text-align: left;
+    margin-top: 2vh;
+    border-collapse: collapse;
+}
+
+.sa-premium {
+    color: #000;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.text-typography {
+    color: rgba(0, 0, 0, 0.50);
+    leading-trim: both;
+    text-edge: cap;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+@media (max-width: 1200px) {
+
+    .container,
+    .box-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        flex-wrap: wrap;
+    }
+
+    .container>div {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+        text-align: center;
+    }
+
+    .info>div {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin-bottom: 20px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .profile {
+        width: 100%;
+        text-align: center;
+        padding-left: 20px;
+    }
+
+    .product-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .box2 {
+        width: 100%;
+        padding-bottom: 20px;
+    }
+
+    .box {
+        width: 100%;
+        padding: 0 0 0 20px;
+        margin-right: 0;
+    }
+
+    .box::after {
+        display: none;
+        /* Remove separator line on very small screens */
+    }
+}
