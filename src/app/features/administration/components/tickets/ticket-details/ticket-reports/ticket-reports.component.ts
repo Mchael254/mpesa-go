@@ -360,7 +360,7 @@ export class TicketReportsComponent implements OnInit {
       )
       .subscribe(
         (data) => {
-          this.dispatchReasonsData = data.embedded[0];
+          this.dispatchReasonsData = data?._embedded[0];
           // this.spinner.hide();
           log.info('dispatch reasons>>', this.dispatchReasonsData);
         }
@@ -434,7 +434,7 @@ export class TicketReportsComponent implements OnInit {
       )
       .subscribe(
         (data) => {
-          const codes = data.embedded.map(transaction => transaction?.documentDispatchCode);
+          const codes = data?._embedded.map(transaction => transaction?.documentDispatchCode);
           log.info('Codes:', codes);
 
           // this.selectedOptions = codes;
