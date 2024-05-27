@@ -18,6 +18,7 @@ export interface ContextPath {
   lms: string;
   gis_reinsurance: string;
   gis_quotation_service: string;
+  fms_payments_service: string;
 
 }
 
