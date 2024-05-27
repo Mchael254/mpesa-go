@@ -21,4 +21,11 @@ export class SystemsService {
       params
     );
   }
+
+  getSystemModules(): Observable<any[]> {
+    return this.api.GET<SystemsDto[]>(
+      `system-modules`,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+    );
+  }
 }
