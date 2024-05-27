@@ -76,7 +76,6 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
- 
     "/alfrescoServices": {
       "target": "https://mutual-uat.turnkeyafrica.com/",
       "secure": false,

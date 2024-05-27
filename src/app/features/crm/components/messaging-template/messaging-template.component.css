@@ -1,0 +1,25 @@
+.icon-circle {
+  display: inline-block;
+  background-color: #e4e7eb;
+  color: #00529b;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.modal-header  {
+  border-bottom: none;
+  color: #000000;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+.light-bold {
+  font-weight: 500;
+}
