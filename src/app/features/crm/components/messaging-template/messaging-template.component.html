@@ -1,0 +1,149 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="messagingTemplateBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <p class="mt-3 light-bold">System</p>
+        <div class="form-div px-3">
+          <form>
+            <div class="row">
+              <ng-container *ngFor="let system of systems">
+                <div class="col-sm-4 my-2">
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input select-system"
+                      type="radio"
+                      name="system"
+                      value="{{system.id}}"
+                      (click)="selectSystem(system)"
+                    >
+                    <label class="form-check-label" for="{{system.id}}">{{ system.systemName }}</label>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-sm-3">
+            <span class="light-bold mt-3">Messaging Template</span>
+          </div>
+          <div class="col-sm-9">
+            <div class="row mt-3 float-end">
+            <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#templateModal">
+              <i class="fa-solid fa-plus"></i>
+            </span>
+              <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+              <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <p-table
+            [value]="messageTemplates"
+            [paginator]="true"
+            [rows]="10"
+            [first]="first"
+            [showCurrentPageReport]="true"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            [totalRecords]="messageTemplateResponse?.totalElements"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [lazy]="true"
+            [loading]="loading"
+            [rowsPerPageOptions]="[10, 25, 50]"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Message</th>
+                <th style="width:20%">Subject</th>
+                <th style="width:50%">Message Content</th>
+                <th>System Module</th>
+                <th>Type</th>
+                <th>Active</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-template>
+              <tr>
+                <td>{{ template.name }}</td>
+                <td>{{ template.subject }}</td>
+                <td>{{ template.content }}</td>
+                <td>{{ template.systemModule }}</td>
+                <td>{{ template.templateType }}</td>
+                <td>{{ template.active }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- New Template Modal -->
+<div class="modal fade" id="templateModal" tabindex="-1" aria-labelledby="templateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="templateModalLabel">Define a template</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="templateForm">
+          <div class="mb-3">
+            <label for="message" class="form-label">Name</label>
+            <input type="text" class="form-control" id="message" formControlName="name">
+          </div>
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="subject" formControlName="subject">
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">Template content</label>
+            <textarea class="form-control" id="content" rows="3" formControlName="content"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">System Module</label>
+            <select class="form-select" aria-label="Default select example" formControlName="systemModule">
+              <ng-container *ngFor="let s of systemModules">
+                <option value="{{ s.systemId }}">{{ s.shortDescription }}</option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">Type</label>
+            <select class="form-select" aria-label="Default select example" formControlName="templateType">
+              <option value="EMAIL">Email</option>
+              <option value="SMS">SMS</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="content" class="form-label">Active</label>
+            <select class="form-select" aria-label="Default select example" formControlName="active">
+              <ng-container *ngFor="let s of status">
+                <option value="{{ s.value }}">{{ s.name }}</option>
+              </ng-container>
+            </select>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveTemplate()" id="save-template">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>
+

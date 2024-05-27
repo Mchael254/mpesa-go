@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 import { map } from 'rxjs/operators';
 
@@ -8,6 +8,7 @@ import { UtilService } from '../util/util.service';
 import { Logger } from '../logger/logger.service';
 import { ApiService } from '../api/api.service';
 import { API_CONFIG } from '../../../../environments/api_service_config';
+import {AppConfigService} from "../../../core/config/app-config-service";
 
 const log = new Logger('ParameterService');
 
@@ -18,7 +19,12 @@ const log = new Logger('ParameterService');
   providedIn: 'root',
 })
 export class ParameterService {
-  constructor(private utilService: UtilService, private api: ApiService) {}
+  constructor(
+    private utilService: UtilService,
+    private api: ApiService,
+    private appConfigService: AppConfigService,
+    private http: HttpClient
+  ) {}
 
   /**
    * Fetches all parameters for a given organization
@@ -29,7 +35,7 @@ export class ParameterService {
    */
   private getParameters(
     parameterName: string,
-    organizationId: number
+    organizationId?: number
   ): Observable<ParameterDto[]> {
     log.info('Fetching all parameters for organization: ', organizationId);
     const params = new HttpParams()
@@ -83,7 +89,7 @@ export class ParameterService {
    */
   getParameterValue(
     parameterName: string,
-    organizationId: number
+    organizationId?: number
   ): Observable<string> {
     log.info('Fetching parameter value for : ', parameterName);
     return this.getParameters(parameterName, organizationId).pipe(

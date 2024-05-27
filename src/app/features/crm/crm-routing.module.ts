@@ -16,6 +16,7 @@ import { ServiceProviderTypesComponent } from './components/service-provider-typ
 import { SectorOccupationComponent } from './components/sector-occupation/sector-occupation.component';
 import { ClientTypeComponent } from './components/client-type/client-type.component';
 import { AgencyComponent } from './components/agency/agency.component';
+import {MessagingTemplateComponent} from "./components/messaging-template/messaging-template.component";
 
 const routes: Routes = [
   {
@@ -82,6 +83,10 @@ const routes: Routes = [
     path: 'agencies',
     component: AgencyComponent,
   },
+  {
+    path: 'messaging-template',
+    component: MessagingTemplateComponent
+  }
 ];
 
 @NgModule({
