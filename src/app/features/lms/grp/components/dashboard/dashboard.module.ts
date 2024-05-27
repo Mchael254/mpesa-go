@@ -9,6 +9,8 @@ import { PolicyDetailsComponent } from './components/policy-details/policy-detai
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { AdminPolicyListingComponent } from './components/admin-policy-listing/admin-policy-listing.component';
+import { AdminPolicyDetailsComponent } from './components/admin-policy-details/admin-policy-details.component';
 
 
 @NgModule({
@@ -16,7 +18,9 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
     LandingScreenComponent,
     LandingDashboardComponent,
     PolicyDetailsComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    AdminPolicyListingComponent,
+    AdminPolicyDetailsComponent
   ],
   imports: [
     CommonModule,
