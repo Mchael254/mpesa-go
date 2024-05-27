@@ -27,7 +27,7 @@ export const environment = {
     [API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL, '/user/administration'],
     // [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://10.176.18.211:1020/json'],
     [API_CONFIG.JSON_SERVICE_BASE_URL, 'http://localhost:1020/json'],
-    [API_CONFIG.NOTIFICATION_BASE_URL, 'http://10.176.18.211:1025/notification/api'],
+    [API_CONFIG.NOTIFICATION_BASE_URL, '/turnquest/notification/api'],
     [API_CONFIG.PREMIUM_COMPUTATION, '/premium/computation'],
     [API_CONFIG.GIS_REINSURANCE_BASE_URL, '/gis/reinsurance'],
     [API_CONFIG.GIS_UNDERWRITING_BASE_URL, '/gis/underwriting/api'],
@@ -38,5 +38,6 @@ export const environment = {
     [API_CONFIG.REPORT_SERVICE_BASE_URL, '/turnquest/reports'],
     [API_CONFIG.DMS_SERVICE, '/alfrescoServices'],
     [API_CONFIG.GIS_QUOTATIONS_BASE_URL, '/gis/quotation/api'],
+    [API_CONFIG.NONE_BASE_URL, 'api'],
   ]),
 };
