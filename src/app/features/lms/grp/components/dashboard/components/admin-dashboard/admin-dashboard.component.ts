@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,7 +8,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
 
-  constructor() {}
+  constructor(
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     
@@ -19,6 +22,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   userProfileData = {
     fullName: 'Nairobi Union Sacco', idNo: 'NBO/SACCO/007', userName: 'nbisacco@gmail.com'
+  }
+
+  onPoliciesClick() {
+    this.router.navigate(['/home/lms/grp/dashboard/admin-policy-listing'])
+  }
+
+  onClaimsClick() {
+    
+  }
+
+  onPensionClick() {
+    
   }
 
 }

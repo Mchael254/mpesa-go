@@ -1,0 +1,199 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+      </div>
+    <div class="container">
+        <div style="font-weight: 400; font-size: 16px;">Policy details</div>
+        <div class="poldets-table-container col-12">
+
+          <div class="col-4">
+              <table class="poldets-table">
+                  <tr>
+                      <td class="table-label">Policy number:</td>
+                      <td class="table-label-desc">12345</td>
+                  </tr>
+                  <tr>
+                    <td class="table-label">Endorsement type:</td>
+                    <td class="table-label-desc">New business</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Endorsement effective date:</td>
+                    <td class="table-label-desc">01/01/1901</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Cover to date:</td>
+                    <td class="table-label-desc">01/01/1902</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Currency:</td>
+                    <td class="table-label-desc">KES</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Members:</td>
+                    <td class="table-label-desc">100</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Agent phone:</td>
+                    <td class="table-label-desc">07097100</td>
+                </tr>
+              </table>
+          </div>
+
+          <div class="col-4">
+            <table class="poldets-table">
+                <tr>
+                    <td class="table-label">Policy status:</td>
+                    <td class="table-label-desc">Active</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Sum assured:</td>
+                    <td class="table-label-desc">Kes 5,000,600</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Branch:</td>
+                    <td class="table-label-desc">Nairobi</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Policy effective date:</td>
+                    <td class="table-label-desc">01/09/2021</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Product description:</td>
+                    <td class="table-label-desc">desc</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Occupation:</td>
+                    <td class="table-label-desc">Insurance</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Agent email:</td>
+                    <td class="table-label-desc">agent@company.com</td>
+                </tr>
+               
+            </table>
+        </div>
+
+          <div class="col-4">
+              <table class="poldets-table">
+                  <tr>
+                      <td class="table-label">Endorsement number:</td>
+                      <td class="table-label-desc">001</td>
+                  </tr>
+                  <tr>
+                      <td class="table-label">Premium:</td>
+                      <td class="table-label-desc">Kes 200,000</td>
+                  </tr>
+                  <tr>
+                    <td class="table-label">Cover from date:</td>
+                    <td class="table-label-desc">01/01/1990</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Frequency of payment:</td>
+                    <td class="table-label-desc">Monthly</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Group name:</td>
+                    <td class="table-label-desc">Nairobi union sacco</td>
+                </tr>
+                <tr>
+                    <td class="table-label">Agent name:</td>
+                    <td class="table-label-desc">Agent Kabue</td>
+                </tr>
+                 
+              </table>
+          </div>
+      </div>
+
+        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box">
+            <label class="active-label">{{ memberPolicies[0]?.status }}</label>
+            <div class="scroll-content" style="margin-top: 40px;">
+            <table>
+                <tr>
+                    <td>Members:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Overide FCL amount:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.policy_number | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Members above overide FCL:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.policy_members }}</td>
+                </tr>
+                <tr>
+                    <td>Reinsurance retention limit:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+                <tr>
+                    <td>Members above retention limit:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+                <tr>
+                    <td>Computed FCL amount:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        
+
+        <div *ngIf="memberPolicies" class="box">
+            <label class="active-label">{{ memberPolicies[1]?.status }}</label>
+            
+            <div class="scroll-content">
+                <div style="margin-top: 40px; margin-left: 20px;">Group Life</div>
+            <table>
+                <tr>
+                    <td class="td-data">Sum assured:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+                <tr>
+                    <td class="td-data">Premium:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+            <div style="margin-left: 20px;">Group credit Life</div>
+            <table>
+                <tr>
+                    <td class="td-data">Sum assured:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+                <tr>
+                    <td class="td-data">Premium:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        </div>
+        
+        <div *ngIf="memberPolicies" class="box">
+            <label class="active-label">{{ memberPolicies[2]?.status }}</label>
+            <div class="scroll-content">
+                <div style="margin-top: 40px; margin-left: 20px;">Category 1</div>
+            <table>
+                <tr>
+                    <td class="td-data">Short description:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.shortDesc }}</td>
+                </tr>
+                <tr>
+                    <td class="td-data">Multiple of earnings:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.multipleOfEarning }}</td>
+                </tr>
+            </table>
+            <div style="margin-left: 20px;">Category 2</div>
+            <table>
+                <tr>
+                    <td class="td-data">Short description:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.shortDesc }}</td>
+                </tr>
+                <tr>
+                    <td class="td-data">Multiple of earnings:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.multipleOfEarning }}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+    </div>
+</div>
