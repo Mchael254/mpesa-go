@@ -3,11 +3,13 @@ import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
 import {Logger} from "../../../../shared/services";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {MessagingService} from "../../services/messaging.service";
-import {MessageTemplate, MessageTemplateResponse, } from "../../data/messaging-template";
+import {MessageTemplate } from "../../data/messaging-template";
 import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
 import {SystemModule, SystemsDto} from "../../../../shared/data/common/systemsDto";
 import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 import {TableLazyLoadEvent} from "primeng/table";
+import {NgxSpinnerService} from "ngx-spinner";
+import {Pagination} from "../../../../shared/data/common/pagination";
 
 const log = new Logger('MessagingTemplateComponent');
 
@@ -36,7 +38,7 @@ export class MessagingTemplateComponent implements OnInit {
   };
 
   messageTemplates: MessageTemplate[];
-  messageTemplateResponse: MessageTemplateResponse;
+  messageTemplateResponse: Pagination<MessageTemplate>;
 
   first = 0;
   rows = 10;
@@ -52,11 +54,13 @@ export class MessagingTemplateComponent implements OnInit {
     private fb: FormBuilder,
     private messagingService: MessagingService,
     private systemsService: SystemsService,
-    private globalMessagingService: GlobalMessagingService
+    private globalMessagingService: GlobalMessagingService,
+    private spinner: NgxSpinnerService,
   ) {
   }
 
   ngOnInit(): void {
+    this.spinner.show();
     this.createTemplateForm();
     this.fetchSystems();
     this.fetchSystemModules();
@@ -72,7 +76,7 @@ export class MessagingTemplateComponent implements OnInit {
       content: [''],
       systemModule: [''],
       templateType: [''],
-      active: [''],
+      status: [''],
     })
   }
 
@@ -84,9 +88,11 @@ export class MessagingTemplateComponent implements OnInit {
       .subscribe({
         next: (res: SystemsDto[]) => {
           this.systems = res;
+          // this.spinner.hide();
         },
         error: (err) => {
           log.info(err);
+          // this.spinner.hide();
         }
       })
   }
@@ -113,10 +119,10 @@ export class MessagingTemplateComponent implements OnInit {
    * @param system
    */
   selectSystem(system: SystemsDto) {
-    log.info(`selected system: `, system);
+    this.spinner.show();
+    // log.info(`selected system: `, system);
     this.selectedSystem = system;
-    // this.fetchTemplates(this.pageNumber, 10, system.id);
-    // this.fetchTemplates();
+    this.fetchTemplates();
     this.loading = true;
   }
 
@@ -125,23 +131,34 @@ export class MessagingTemplateComponent implements OnInit {
    * This method fetches a list  of templates
    *  saves them in the templates variable
    */
-  /*fetchTemplates(systemId: number, $event?: TableLazyLoadEvent): void {
-    setTimeout(() => {
-      // log.info(`event `, $event, systemId);
-      this.loading = false;
+  fetchTemplates($event?: TableLazyLoadEvent): void {
+    this.spinner.show();
 
-      this.messagingService.getMessageTemplates(0, 10, 0)
-        .subscribe({
-          next: (res: MessageTemplateResponse) => {
-            this.messageTemplateResponse = res
-            // log.info(`message templates >>> `, this.messageTemplateResponse);
-          },
-          error: (err) => {
-            console.log(err)
-          }
-        });
-    }, 2000)
-  }*/
+    if ($event) {
+      this.first = $event.first;
+      this.rows = $event.rows;
+      this.pageNumber = this.first / this.rows;
+    } else {
+      this.first = 0;
+      this.rows = 10;
+      this.pageNumber = 0;
+    }
+
+    this.messagingService.getMessageTemplates(this.pageNumber, this.rows, this.selectedSystem?.id)
+      .subscribe({
+        next: (res: Pagination<MessageTemplate>) => {
+          this.messageTemplateResponse = res;
+          this.messageTemplates = res.content;
+          this.loading = false;
+          this.spinner.hide();
+        },
+        error: (err) => {
+          // console.log(err);
+          this.loading = false;
+          this.spinner.hide();
+        }
+      });
+  }
 
   /**
    * This method fetches the values from the template form, creates a new object for saving
@@ -170,7 +187,7 @@ export class MessagingTemplateComponent implements OnInit {
       .subscribe({
         next: (res: MessageTemplate) => {
           // log.info(`message template created >>> `, res);
-          this.globalMessagingService.displayErrorMessage('Success', 'Message template successfully created!')
+          this.globalMessagingService.displaySuccessMessage('Success', 'Message template successfully created!')
         },
         error: (err) => {
           this.globalMessagingService.displayErrorMessage('Error', 'Message template not created!')
