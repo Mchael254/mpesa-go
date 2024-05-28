@@ -1,0 +1,81 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+      </div>
+    <div class="container">
+        <div class="title"><span id="title">Policies</span></div>
+        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ getStatusDescription(memberPolicies[0]?.status) }}</label>
+            <div class="scroll-content">
+            <table>
+                <tr>
+                    <td>Policy:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy number:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.policy_number | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy members:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.policy_members }}</td>
+                </tr>
+                <tr>
+                    <td>Sum assured:</td>
+                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        
+
+        <div *ngIf="memberPolicies && memberPolicies.length > 1" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ getStatusDescription(memberPolicies[1]?.status) }}</label>
+            <div class="scroll-content">
+            <table>
+                <tr>
+                    <td>Policy:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.description | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy number:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.policy_number | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy members:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.policy_members }}</td>
+                </tr>
+                <tr>
+                    <td>Sum assured:</td>
+                    <td class="td-data">{{ memberPolicies[1]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+        
+        <div *ngIf="memberPolicies && memberPolicies.length > 2" class="box" (click)="navigateToPolDets()">
+            <label class="active-label">{{ getStatusDescription(memberPolicies[2]?.status) }}</label>
+            <div class="scroll-content">
+            <table>
+                <tr>
+                    <td>Policy:</td>
+                    <td class="td-data">{{ memberPolicies[2]?.description | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy number:</td>
+                    <td class="td-data">{{ memberPolicies[2]?.policy_number | titlecase }}</td>
+                </tr>
+                <tr>
+                    <td>Policy members:</td>
+                    <td class="td-data">{{ memberPolicies[2]?.policy_members }}</td>
+                </tr>
+                <tr>
+                    <td>Sum assured:</td>
+                    <td class="td-data">{{ memberPolicies[2]?.sum_assured | number }}</td>
+                </tr>
+            </table>
+        </div>
+        </div>
+    </div>
+</div>
