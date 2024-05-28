@@ -1,0 +1,349 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="organizationBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card col-md-12 col-lg-12 col-xxl-12 mb-3">
+        <div class="card-header bg-transparent float-start">
+          <span class="float-start mt-3">System Messages</span>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <span class="mb-3 light-bold">Select a System</span>
+            <div class="mb-3">
+              <div class="row">
+                <div class="col-md-4" *ngFor="let system of systems">
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="system"
+                      [id]="system.id"
+                      [value]="system.id"
+                      [(ngModel)]="selectedSystem"
+                      (ngModelChange)="onSystemChange()"
+                    />
+                    <label class="form-check-label" [for]="system.id">{{
+                      system.systemName
+                    }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="me-4">
+    <div class="row">
+      <div class="card col-md-12 col-lg-12 col-xxl-12 mb-3">
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="row mb-3">
+              <div class="col-sm-4 mb-4">
+                <div class="form-group mb-4">
+                  <label for="dateFrom" class="form-label">Date From</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="dateFrom"
+                    aria-describedby="dateFrom"
+                    placeholder="Date"
+                    [(ngModel)]="dateFrom"
+                    (ngModelChange)="onDateChange()"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label for="dateTo" class="form-label">Date To</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="dateTo"
+                    aria-describedby="dateTo"
+                    placeholder="Date To"
+                    [(ngModel)]="dateTo"
+                    (ngModelChange)="onDateChange()"
+                  />
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <label for="transactional" class="form-label"
+                  >Transactional Level</label
+                >
+                <p-dropdown
+                  [options]="systemModules"
+                  [(ngModel)]="selectedTransactionLevel"
+                  optionLabel="description"
+                  optionValue="id"
+                  id="id"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  [style]="{ width: '100%', height: '35%' }"
+                  placeholder="Select Transactional Level"
+                >
+                </p-dropdown>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <p-tabView>
+                <p-tabPanel header="SMS history">
+                  <div class="row mb-3">
+                    <div class="col-sm-4 col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Search by name"
+                        aria-label="search"
+                        aria-describedby="search"
+                        (input)="filterSmsHistory($event)"
+                      />
+                    </div>
+                    <div class="col-sm-8 col-6">
+                      <div class="float-end">
+                        <span class="icon-circle"
+                          ><i
+                            class="pi pi-send"
+                            (click)="openSmsHistoryModal()"
+                          ></i
+                        ></span>
+                        <span class="icon-circle"
+                          ><i
+                            class="pi pi-pencil"
+                            (click)="editSmsHistory()"
+                          ></i
+                        ></span>
+                        <span class="icon-circle"
+                          ><i
+                            class="fa-regular fa-trash-can"
+                            (click)="deleteSmsHistory()"
+                          ></i
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- SMS History Table -->
+                  <div class="col-sm-12 col-12">
+                    <p-table
+                      #smsHistoryTable
+                      [value]="smsHistoryData.content"
+                      styleClass="p-datatable-sm"
+                      [autoLayout]="true"
+                      [rowHover]="true"
+                      [resizableColumns]="true"
+                      responsiveLayout="scroll"
+                      [scrollable]="true"
+                      scrollHeight="400px"
+                      class="ui-datatable"
+                      [globalFilterFields]="['clientName']"
+                    >
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th class="head">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                          </th>
+                          <th class="head" pSortableColumn="systemModule">
+                            Module<p-sortIcon field="systemModule"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="policyNo">
+                            Policy No.<p-sortIcon field="policyNo"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="clientName">
+                            Client Name<p-sortIcon
+                              field="clientName"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="telephoneNumber">
+                            Tel No.<p-sortIcon
+                              field="telephoneNumber"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="message">
+                            Message<p-sortIcon field="message"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="status">
+                            SMS Status<p-sortIcon field="status"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="sendDate">
+                            Send Date<p-sortIcon field="sendDate"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="policyStatus">
+                            Policy Status<p-sortIcon
+                              field="policyStatus"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="transaction">
+                            Transaction Level<p-sortIcon
+                              field="transaction"
+                            ></p-sortIcon>
+                          </th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-sms>
+                        <tr
+                          class="custom-table"
+                          (click)="onSmsHistoryRowSelect(sms)"
+                          [class.selected]="selectedSmsHistory === sms"
+                        >
+                          <td class="body">
+                            <p-tableCheckbox [value]="sms"></p-tableCheckbox>
+                          </td>
+                          <td class="body">{{ sms.systemModule }}</td>
+                          <td class="body">{{ sms.policyNo }}</td>
+                          <td class="body">{{ sms.clientName }}</td>
+                          <td class="body">{{ sms.telephoneNumber }}</td>
+                          <td class="body">{{ sms.message }}</td>
+                          <td class="body">{{ sms.status }}</td>
+                          <td class="body">{{ sms.sendDate }}</td>
+                          <td class="body">{{ sms.policyStatus }}</td>
+                          <td class="body">{{ sms.transaction }}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="8">No sms history found</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </p-tabPanel>
+                <p-tabPanel header="Email history">
+                  <!-- Email history content goes here -->
+                  <div class="row mb-3">
+                    <div class="col-sm-4 col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Search by name"
+                        aria-label="search"
+                        aria-describedby="search"
+                        (input)="filterEmailHistory($event)"
+                      />
+                    </div>
+                    <div class="col-sm-8 col-6">
+                      <div class="float-end">
+                        <span class="icon-circle"
+                          ><i
+                            class="pi pi-send"
+                            (click)="openSmsHistoryModal()"
+                          ></i
+                        ></span>
+                        <span class="icon-circle"
+                          ><i
+                            class="pi pi-pencil"
+                            (click)="editSmsHistory()"
+                          ></i
+                        ></span>
+                        <span class="icon-circle"
+                          ><i
+                            class="fa-regular fa-trash-can"
+                            (click)="deleteSmsHistory()"
+                          ></i
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Email History Table -->
+                  <div class="col-sm-12 col-12">
+                    <p-table
+                      #emailHistoryTable
+                      [value]="emailHistoryData.content"
+                      styleClass="p-datatable-sm"
+                      [autoLayout]="true"
+                      [rowHover]="true"
+                      [resizableColumns]="true"
+                      responsiveLayout="scroll"
+                      [scrollable]="true"
+                      scrollHeight="400px"
+                      class="ui-datatable"
+                      [globalFilterFields]="['claimNo', 'policyNo']"
+                    >
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th class="head">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                          </th>
+                          <th class="head" pSortableColumn="policyNo">
+                            Policy No.<p-sortIcon field="policyNo"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="claimNo">
+                            Claim No.<p-sortIcon field="claimNo"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="telephoneNumber">
+                            Tel No.<p-sortIcon
+                              field="telephoneNumber"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="message">
+                            Message<p-sortIcon field="message"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="status">
+                            Status<p-sortIcon field="status"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="preparedBy">
+                            Prepared By<p-sortIcon
+                              field="preparedBy"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="preparedDate">
+                            Prepared Date<p-sortIcon
+                              field="preparedDate"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="sendOn">
+                            Send Date<p-sortIcon field="sendOn"></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="quotationNo">
+                            Quotation No.<p-sortIcon
+                              field="quotationNo"
+                            ></p-sortIcon>
+                          </th>
+                          <th class="head" pSortableColumn="response">
+                            Send Response<p-sortIcon
+                              field="response"
+                            ></p-sortIcon>
+                          </th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-email>
+                        <tr
+                          class="custom-table"
+                          (click)="onEmailHistoryRowSelect(email)"
+                          [class.selected]="selectedEmailHistory === email"
+                        >
+                          <td class="body">
+                            <p-tableCheckbox [value]="email"></p-tableCheckbox>
+                          </td>
+                          <td class="body">{{ email.policyNo }}</td>
+                          <td class="body">{{ email.claimNo }}</td>
+                          <td class="body">{{ email.telephoneNumber }}</td>
+                          <td class="body">{{ email.message }}</td>
+                          <td class="body">{{ email.status }}</td>
+                          <td class="body">{{ email.preparedBy }}</td>
+                          <td class="body">{{ email.preparedDate }}</td>
+                          <td class="body">{{ email.sendOn }}</td>
+                          <td class="body">{{ email.quotationNo }}</td>
+                          <td class="body">{{ email.response }}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="8">No email history found</td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </p-tabPanel>
+              </p-tabView>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

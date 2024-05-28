@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { HttpParams } from '@angular/common/http';
 
-import { SystemsDto } from '../../../data/common/systemsDto';
+import { SystemModule, SystemsDto } from '../../../data/common/systemsDto';
 import { ApiService } from '../../api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
 
@@ -12,8 +12,14 @@ import { API_CONFIG } from '../../../../../environments/api_service_config';
 export class SystemsService {
   constructor(private api: ApiService) {}
 
-  getSystems(): Observable<SystemsDto[]> {
-    const params = new HttpParams().set('organizationId', 2);
+  getSystems(organizationId?: number): Observable<SystemsDto[]> {
+    // Create an object to hold parameters only if they are provided
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
 
     return this.api.GET<SystemsDto[]>(
       `systems`,
@@ -22,10 +28,10 @@ export class SystemsService {
     );
   }
 
-  getSystemModules(): Observable<any[]> {
-    return this.api.GET<SystemsDto[]>(
+  getSystemModules(): Observable<SystemModule[]> {
+    return this.api.GET<SystemModule[]>(
       `system-modules`,
-      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL,
+      API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
 }
