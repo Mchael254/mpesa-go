@@ -48,21 +48,21 @@
           <div class="col-sm-3">
             <p *ngIf="selectedSpringTickets?.ticket.policyCode">
               <label class="ticketLabel">{{'mngt_wrkflw.tickets.policyNo' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.policy_no }}</span>
+              <span class="ticketDesc">{{ policyDetails?.policyNo }}</span>
             </p>
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.totalSI' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.total_sum_insured | number: '1.2-2' }}</span>
+              <span class="ticketDesc">{{ policyDetails?.totalSumInsured | number: '1.2-2' }}</span>
             </p>
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.tickets.transactionType' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.policy_status }}</span>
+              <span class="ticketDesc">{{ policyDetails?.policyStatus }}</span>
             </p>
           </div>
           <div class="col-sm-4">
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.endorseNo' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.endorsement_no }}</span>
+              <span class="ticketDesc">{{ policyDetails?.endorsementNo }}</span>
             </p>
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.premium' | translate | titlecase }}:</label>
@@ -76,11 +76,11 @@
           <div class="col-sm-2">
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.coverFrom' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.wef_dt | date: 'shortDate' }} </span>
+              <span class="ticketDesc">{{ policyDetails?.wefDt | date: 'shortDate' }} </span>
             </p>
             <p>
               <label class="ticketLabel">{{'mngt_wrkflw.policyDetails.coverTo' | translate | titlecase }}:</label>
-              <span class="ticketDesc">{{ policyDetails?.wet_dt | date: 'shortDate' }}</span>
+              <span class="ticketDesc">{{ policyDetails?.wetDt | date: 'shortDate' }}</span>
             </p>
           </div>
 
@@ -116,7 +116,7 @@
           </ng-container>
           <app-tax-details
             [taxInformation]="policyDetails?.taxInformation"
-            [totalPremium]="policyDetails?.total_premium"
+            [totalPremium]="policyDetails?.totalPremium"
           ></app-tax-details>
         </div>
 
@@ -131,7 +131,7 @@
         <app-authorization-tab
           *ngIf="policyDetails"
           [policyDetails]="policyDetails"
-          (undoOrMakeReady)="fetchPolicyDetails(policyDetails?.batch_no)">
+          (undoOrMakeReady)="fetchPolicyDetails(policyDetails?.batchNo)">
         </app-authorization-tab>
       </p-tabPanel>
       <p-tabPanel header="Documents and reports">
