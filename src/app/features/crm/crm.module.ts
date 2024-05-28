@@ -6,6 +6,7 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TabViewModule } from 'primeng/tabview';
 
 import { CrmRoutingModule } from './crm-routing.module';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -26,6 +27,7 @@ import { SectorOccupationComponent } from './components/sector-occupation/sector
 import { ClientTypeComponent } from './components/client-type/client-type.component';
 import { AgencyComponent } from './components/agency/agency.component';
 import { MessagingTemplateComponent } from './components/messaging-template/messaging-template.component';
+import { MessagesComponent } from './components/messages/messages.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +48,7 @@ import { MessagingTemplateComponent } from './components/messaging-template/mess
     ClientTypeComponent,
     AgencyComponent,
     MessagingTemplateComponent,
+    MessagesComponent,
   ],
   imports: [
     CommonModule,
@@ -57,6 +60,7 @@ import { MessagingTemplateComponent } from './components/messaging-template/mess
     TooltipModule,
     DialogModule,
     MultiSelectModule,
+    TabViewModule,
     SharedModule,
   ],
   providers: [DatePipe],
