@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ApiService } from '../../../shared/services/api/api.service';
-import { API_CONFIG } from '../../../../environments/api_service_config';
-import {
-  MessageTemplate,
-  MessageTemplateResponse,
-} from '../data/messaging-template';
+import {Observable} from "rxjs";
+import {ApiService} from "../../../shared/services/api/api.service";
+import {API_CONFIG} from "../../../../environments/api_service_config";
+import {MessageTemplate } from "../data/messaging-template";
+import {Pagination} from "../../../shared/data/common/pagination";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessagingService {
-  constructor(private api: ApiService) {}
+
+  constructor(
+    private api: ApiService,
+  ) { }
 
   getMessageTemplates(
     page: number = 0,
     size: number = 10,
     systemId: number = 1
-  ): Observable<MessageTemplateResponse> {
-    return this.api.GET<MessageTemplateResponse>(
-      `api/message-templates?page=${page}&size=${size}&systemId=${systemId}`,
-      API_CONFIG.NOTIFICATION_BASE_URL
-    );
+  ): Observable<Pagination<MessageTemplate>> {
+    let params: HttpParams = new HttpParams()
+      .set('page', `${page}`)
+      .set('size', `${size}`)
+      .set('systemId', `${systemId}`)
+    return this.api.GET<Pagination<MessageTemplate>>
+    (`message-templates`, API_CONFIG.NOTIFICATION_BASE_URL, params);
   }
 
   saveMessageTemplate(

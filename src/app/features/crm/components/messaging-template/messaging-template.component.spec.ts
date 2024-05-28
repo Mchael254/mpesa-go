@@ -11,10 +11,25 @@ import {SystemsService} from "../../../../shared/services/setups/systems/systems
 import {SystemModule, SystemsDto} from "../../../../shared/data/common/systemsDto";
 import {of} from "rxjs";
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {MessageTemplate} from "../../data/messaging-template";
 
 
 const systems: SystemsDto[] = [{id: 0, shortDesc: "", systemName: ""}];
 const systemModules: SystemModule[] = [{description: "", id: 0, shortDescription: "", systemId: 0, systemName: ""}];
+const messageTemplates: MessageTemplate[] = [{
+  content: "",
+  id: 0,
+  imageAttachment: "",
+  imageUrl: "",
+  name: "",
+  productCode: 0,
+  productName: "",
+  status: "",
+  subject: "",
+  systemCode: 0,
+  systemModule: "",
+  templateType: ""
+}];
 
 export class MockMessageService {
   displayErrorMessage = jest.fn((summary,detail ) => {return});
@@ -27,7 +42,7 @@ describe('MessagingTemplateComponent', () => {
   let fixture: ComponentFixture<MessagingTemplateComponent>;
 
   const messagingServiceStub = createSpyObj('MessagingService', [
-    'saveMessageTemplate'
+    'saveMessageTemplate', 'getMessageTemplates'
   ]);
 
   const systemsServiceStub = createSpyObj(
@@ -36,7 +51,8 @@ describe('MessagingTemplateComponent', () => {
   beforeEach(() => {
     jest.spyOn(systemsServiceStub, 'getSystems').mockReturnValue(of(systems));
     jest.spyOn(systemsServiceStub, 'getSystemModules').mockReturnValue(of(systemModules));
-
+    jest.spyOn(messagingServiceStub, 'getMessageTemplates').mockReturnValue(of(messageTemplates));
+    jest.spyOn(messagingServiceStub, 'saveMessageTemplate').mockReturnValue(of(messageTemplates[0]));
 
     TestBed.configureTestingModule({
       declarations: [MessagingTemplateComponent],
@@ -69,7 +85,7 @@ describe('MessagingTemplateComponent', () => {
   });
 
   test('should save template', () => {
-    component.selectedSystem = {id: 0, shortDesc: "", systemName: ""};
+    component.selectedSystem = {id: 37, shortDesc: "", systemName: ""};
     component.templateForm.controls['name'].setValue('sample template');
     component.templateForm.controls['subject'].setValue('sample template');
     component.templateForm.controls['content'].setValue('This is for test');
@@ -77,17 +93,13 @@ describe('MessagingTemplateComponent', () => {
     component.templateForm.controls['systemModule'].setValue('EMAIL');
     component.templateForm.controls['systemModule'].setValue('Y');
     fixture.detectChanges();
-    expect(component.selectedSystem.id).toBe(0)
+    expect(component.selectedSystem.id).toBe(37)
 
     const button = fixture.debugElement.nativeElement.querySelector('#save-template');
     button.click();
     fixture.detectChanges();
     expect(component.saveTemplate.call).toBeTruthy();
   });
-
-  test('should fetch templates', () => {
-
-  })
 
 
 });
