@@ -61,8 +61,8 @@
     dataKey="code"
     scrollHeight="400px"
     currentPageReportTemplate="{first} - {last} of {totalRecords}"
-    [globalFilterFields]="['description', 'exceptions_remark_code']"
-    [sortField]="'is_authorized'" [sortOrder]="1"
+    [globalFilterFields]="['description', 'exceptionsRemarkCode']"
+    [sortField]="'isAuthorized'" [sortOrder]="1"
   >
 
     <ng-template pTemplate="header">
@@ -88,18 +88,18 @@
         <td>
           <p-tableCheckbox [value]="exception"></p-tableCheckbox>
         </td>
-        <td>{{exception.exceptions_remark_code}}</td>
+        <td>{{exception.exceptionsRemarkCode}}</td>
         <td>
         <span *ngIf = "exception?.description" title="{{exception?.description}}">
           {{exception?.description?.substring(0,10) | titlecase }}...
         </span>
         </td>
         <td>
-          <span title="{{exception?.underwriting_decision}}" (click)="toggleDropdown(exception)">
-            {{exception?.underwriting_decision?.substring(0,20) | titlecase }}
+          <span title="{{exception?.underwritingDecision}}" (click)="toggleDropdown(exception)">
+            {{exception?.underwritingDecision?.substring(0,20) | titlecase }}
           </span>
 
-          <ng-container *ngIf="!exception.underwriting_decision || showDropdownForException === exception">
+          <ng-container *ngIf="!exception.underwritingDecision || showDropdownForException === exception">
             <p-dropdown
               [options]="completionRemarksData"
               optionLabel="remark"
@@ -119,13 +119,13 @@
             </p-dropdown>
           </ng-container>
         </td>
-        <td>{{exception?.set_standard}}</td>
-        <td>{{exception?.used_standard}}</td>
-        <td>{{exception?.is_authorized}}</td>
-        <td>{{exception?.transactions_date}}</td>
-        <td>{{exception?.authorized_by}}</td>
-        <td>{{exception?.authorized_date}}</td>
-        <td>{{exception?.exception_by}}</td>
+        <td>{{exception?.setStandard}}</td>
+        <td>{{exception?.usedStandard}}</td>
+        <td>{{exception?.isAuthorized}}</td>
+        <td>{{exception?.transactionsDate}}</td>
+        <td>{{exception?.authorizedBy}}</td>
+        <td>{{exception?.authorizedDate}}</td>
+        <td>{{exception?.exceptionBy}}</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
@@ -182,13 +182,13 @@
       </ng-template>
       <ng-template pTemplate="body" let-receipt>
         <tr>
-          <td>{{receipt.transmital_trans_receipt_no}}</td>
-          <td>{{receipt.transmital_trans_gen_date}}</td>
-          <td>{{receipt.transmital_trans_amount | number}}</td>
-          <td>{{receipt.master_transaction_balance | number}}</td>
-          <td>{{receipt.master_transaction_settlement | number}}</td>
-          <td>{{receipt.master_transaction_dc}}</td>
-          <td>{{receipt.transmital_trans_auth_by}}</td>
+          <td>{{receipt.transmitalTransReceiptNo}}</td>
+          <td>{{receipt.transmitalTransGenDate}}</td>
+          <td>{{receipt.transmitalTransAmount | number}}</td>
+          <td>{{receipt.masterTransactionBalance | number}}</td>
+          <td>{{receipt.masterTransactionSettlement | number}}</td>
+          <td>{{receipt.masterTransactionDc}}</td>
+          <td>{{receipt.transmitalTransAuthBy}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
@@ -244,8 +244,8 @@
         <tr>
           <td>{{authlevels.level}}</td>
           <td>{{authlevels.authorized}}</td>
-          <td>{{authlevels.user_name}}</td>
-          <td>{{authlevels.authorized_date}}</td>
+          <td>{{authlevels.userName}}</td>
+          <td>{{authlevels.authorizedDate}}</td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">

@@ -18,6 +18,7 @@ import {
 import { AuthService } from '../../../../shared/services/auth.service';
 import { ApiService } from '../../../../shared/services/api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import {SystemsDto} from "../../../../shared/data/common/systemsDto";
 
 @Injectable({
   providedIn: 'root',
@@ -210,6 +211,24 @@ export class StaffService {
   getStaffByGroup(staffGroupId: number): Observable<StaffDto[]> {
     return this.api.GET<StaffDto[]>(
       `user-groups/${staffGroupId}/users`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
+  }
+
+  getUserSystems(
+    userId: number,
+  ): Observable<SystemsDto[]> {
+    return this.api.GET<SystemsDto[]>(
+      `users/${userId}/systems`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    );
+  }
+
+  getUserOrganizations(
+    userId: number,
+  ): Observable<any[]> {
+    return this.api.GET<any[]>(
+      `user-organizations?userId=${userId}`,
       API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
     );
   }

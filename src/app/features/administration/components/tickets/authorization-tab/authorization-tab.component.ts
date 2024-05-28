@@ -71,7 +71,7 @@ export class AuthorizationTabComponent implements OnInit{
   getAuthorizationExceptionDetails() {
     this.authorizationExceptionData = null;
     this.spinner.show();
-    this.policiesService.getListOfExceptionsByPolBatchNo(this.policyDetails?.batch_no)
+    this.policiesService.getListOfExceptionsByPolBatchNo(this.policyDetails?.batchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -89,13 +89,13 @@ export class AuthorizationTabComponent implements OnInit{
    * The function `getAuthorizationLevels` retrieves policy authorization levels data and logs it.
    */
   getAuthorizationLevels() {
-    this.policiesService.getPolicyAuthorizationLevels(this.policyDetails?.batch_no)
+    this.policiesService.getPolicyAuthorizationLevels(this.policyDetails?.batchNo)
       .pipe(
         untilDestroyed(this),
       )
       .subscribe({
         next: (data) => {
-          this.authorizationLevelsData = data.embedded && data.embedded.length > 0 ? data.embedded[0] : [];
+          this.authorizationLevelsData = data?._embedded && data?._embedded.length > 0 ? data?._embedded[0] : [];
           log.info('AuthorizationLevels>>', this.authorizationLevelsData);
           },
       })
@@ -105,10 +105,10 @@ export class AuthorizationTabComponent implements OnInit{
    * The `getReceipts` function retrieves policy receipts data and logs it.
    */
   getReceipts() {
-    this.policiesService.getPolicyReceipts(this.policyDetails?.batch_no)
+    this.policiesService.getPolicyReceipts(this.policyDetails?.batchNo)
       .subscribe({
         next: (data) => {
-          this.receiptsData = data.embedded && data.embedded.length > 0 ? data.embedded[0] : [];
+          this.receiptsData = data?._embedded && data?._embedded.length > 0 ? data?._embedded[0] : [];
           log.info('Receipts>>', this.receiptsData);
           }
       })
@@ -160,7 +160,7 @@ export class AuthorizationTabComponent implements OnInit{
   makeReady() {
     if (this.policyDetails) {
       this.isLoadingMakeUndo = true;
-      this.policiesService.policyMakeReady(this.policyDetails?.batch_no)
+      this.policiesService.policyMakeReady(this.policyDetails?.batchNo)
         .subscribe({
           next: (data) => {
             this.makeReadyData = data;
@@ -185,7 +185,7 @@ export class AuthorizationTabComponent implements OnInit{
    */
   undoMakeReady() {
     this.isLoadingMakeUndo = true;
-    this.policiesService.policyUndoMakeReady(this.policyDetails?.batch_no)
+    this.policiesService.policyUndoMakeReady(this.policyDetails?.batchNo)
       .subscribe({
         next: (data) => {
           this.undoMakeReadyData = data;
