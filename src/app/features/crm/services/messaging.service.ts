@@ -25,7 +25,7 @@ export class MessagingService {
       .set('size', `${size}`)
       .set('systemId', `${systemId}`)
     return this.api.GET<Pagination<MessageTemplate>>
-    (`message-templates`, API_CONFIG.NOTIFICATION_BASE_URL, params);
+    (`api/message-templates`, API_CONFIG.NOTIFICATION_BASE_URL, params);
   }
 
   saveMessageTemplate(
