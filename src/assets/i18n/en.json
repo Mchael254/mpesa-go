@@ -850,7 +850,11 @@
       "percentage": "Percentage",
       "premium": "Premium",
       "fee_rate": "Fee rate",
-      "fee_amount": "Fee amount"
+      "fee_amount": "Fee amount",
+
+      "import_schedule":"Import Schedule",
+      "from_csv_file":"From CSV File",
+      "from_another_policy":"From another policy"
     }
   },
   "lms": {
