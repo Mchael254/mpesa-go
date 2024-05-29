@@ -196,7 +196,18 @@
     "short_description": "Description Courte",
     "status": "Statut",
     "vat_rate": "Taux de TVA",
-    "withholding_tax_rate": "Taux de retenue à la source"
+    "withholding_tax_rate": "Taux de retenue à la source",
+    "system": "Système",
+    "messaging_template": "Modèle de Message",
+    "message": "Message",
+    "message_content": "Contenu du Message",
+    "system_module": "Module Système",
+    "type": "Type",
+    "active": "Actif",
+    "subject": "Sujet",
+    "template_content": "Contenu du Modèle",
+    "define_template": "Définir un modèle",
+    "save_details": "Enregistrer les Détails"
   },
   "entities": {
     "account_number": "Numéro de compte",
@@ -580,7 +591,7 @@
       "whatsapp": "WhatsApp",
       "client_name": "Nom du Client",
       "send": "Envoyer",
-      
+
       "quote_details": "Détails du Devis",
       "quote_number": "Numéro de Devis",
       "quote_date": "Date de devis",
@@ -819,7 +830,7 @@
       "quake_flood_zone": "Zone de tremblement de terre/inondation",
       "relational_group": "Groupe relationnel",
       "risk_class": "Classe de risque",
-      
+
       "underwriting_coinsurance_details": "Détails de la Coassurance en Souscription",
       "coinsurance_details": "Détails de la Coassurance",
       "coinsurance_leader": "Leader de la Coassurance",

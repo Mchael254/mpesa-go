@@ -196,7 +196,18 @@
     "short_description": "Short Description",
     "status": "Status",
     "vat_rate": "VAT Rate",
-    "withholding_tax_rate": "Withholding Tax Rate"
+    "withholding_tax_rate": "Withholding Tax Rate",
+    "system": "System",
+    "messaging_template": "Messaging Template",
+    "message": "Message",
+    "message_content": "Message Content",
+    "system_module": "System Module",
+    "type": "Type",
+    "active": "Active",
+    "subject": "Subject",
+    "template_content": "Template Content",
+    "define_template": "Define a template",
+    "save_details": "Save Details"
   },
   "entities": {
     "account_number": "Account Number",

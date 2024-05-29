@@ -196,7 +196,18 @@
     "short_description": "Korte Beschrijving",
     "status": "Status",
     "vat_rate": "BTW-tarief",
-    "withholding_tax_rate": "Bronbelastingtarief"
+    "withholding_tax_rate": "Bronbelastingtarief",
+    "system": "System",
+    "messaging_template": "Nachrichtenvorlage",
+    "message": "Nachricht",
+    "message_content": "Nachrichteninhalt",
+    "system_module": "Systemmodul",
+    "type": "Typ",
+    "active": "Aktiv",
+    "subject": "Betreff",
+    "template_content": "Vorlageninhalt",
+    "define_template": "Vorlage definieren",
+    "save_details": "Details speichern"
   },
   "entities": {
     "account_number": "Kontonummer",
