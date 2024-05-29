@@ -369,5 +369,23 @@ export interface PremiumFinanciers {
   remarks: string;
 }
 
+export interface CoinsuranceEdit{
+  
+    agencyAccountCode: number,
+    agentCode: number,
+    batchNo: number,
+    commissionRate: number,
+    commissionType: string,
+    facultativePercentage: number,
+    facultativeSession: string,
+    feeRate: number,
+    forceCompute: string,
+    leader: string,
+    optimalCommission: string,
+    percentage: number,
+    policyNo: string
+  
+}
+
 
 
