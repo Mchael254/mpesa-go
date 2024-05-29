@@ -196,7 +196,18 @@
     "short_description": "简短描述",
     "status": "状态",
     "vat_rate": "增值税率",
-    "withholding_tax_rate": "代扣税率"
+    "withholding_tax_rate": "代扣税率",
+    "system": "系统",
+    "messaging_template": "消息模板",
+    "message": "消息",
+    "message_content": "消息内容",
+    "system_module": "系统模块",
+    "type": "类型",
+    "active": "活跃",
+    "subject": "主题",
+    "template_content": "模板内容",
+    "define_template": "定义模板",
+    "save_details": "保存详细信息"
   },
   "entities": {
     "account_number": "帐号",

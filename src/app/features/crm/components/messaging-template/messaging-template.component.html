@@ -4,10 +4,9 @@
     </app-dynamic-breadcrumb>
   </div>
   <div class="me-4">
-<!--    <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
     <div class="card mb-3">
       <div class="card-body">
-        <p class="mt-3 light-bold">System</p>
+        <p class="mt-3 light-bold">{{ 'crm.system' | translate }}</p>
         <div class="form-div px-3">
           <form>
             <div class="row">
@@ -38,7 +37,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-sm-3">
-            <span class="light-bold mt-3">Messaging Template</span>
+            <span class="light-bold mt-3">{{ 'crm.messaging_template' | translate }}</span>
           </div>
           <div class="col-sm-9">
             <div class="row mt-3 float-end">
@@ -68,12 +67,12 @@
           >
             <ng-template pTemplate="header">
               <tr>
-                <th>Message</th>
-                <th style="width:20%">Subject</th>
-                <th style="width:50%">Message Content</th>
-                <th>System Module</th>
-                <th>Type</th>
-                <th>Active</th>
+                <th>{{ 'crm.message' | translate }}</th>
+                <th style="width:20%">{{ 'crm.subject' | translate }}</th>
+                <th style="width:50%">{{ 'crm.message_content' | translate }}</th>
+                <th>{{ 'crm.system_module' | translate }}</th>
+                <th>{{ 'crm.type' | translate }}</th>
+                <th>{{ 'crm.active' | translate }}</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-template>
@@ -100,26 +99,26 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="templateModalLabel">Define a template</h1>
+        <h1 class="modal-title fs-5" id="templateModalLabel">{{ 'crm.define_template' | translate }}</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
 
         <form [formGroup]="templateForm">
           <div class="mb-3">
-            <label for="message" class="form-label">Name</label>
+            <label for="message" class="form-label">{{ 'crm.name' | translate }}</label>
             <input type="text" class="form-control" id="message" formControlName="name">
           </div>
           <div class="mb-3">
-            <label for="subject" class="form-label">Subject</label>
+            <label for="subject" class="form-label">{{ 'crm.subject' | translate }}</label>
             <input type="text" class="form-control" id="subject" formControlName="subject">
           </div>
           <div class="mb-3">
-            <label for="content" class="form-label">Template content</label>
+            <label for="content" class="form-label">{{ 'crm.template_content' | translate }}</label>
             <textarea class="form-control" id="content" rows="3" formControlName="content"></textarea>
           </div>
           <div class="mb-3">
-            <label for="content" class="form-label">System Module</label>
+            <label for="content" class="form-label">{{ 'crm.system_module' | translate }}</label>
             <select class="form-select" aria-label="Default select example" formControlName="systemModule">
               <ng-container *ngFor="let s of systemModules">
                 <option value="{{ s.systemId }}">{{ s.shortDescription }}</option>
@@ -129,12 +128,12 @@
           <div class="mb-3">
             <label for="content" class="form-label">Type</label>
             <select class="form-select" aria-label="Default select example" formControlName="templateType">
-              <option value="EMAIL">Email</option>
-              <option value="SMS">SMS</option>
+              <option value="EMAIL">{{ 'crm.email' | translate }}</option>
+              <option value="SMS">{{ 'crm.sms' | translate }}</option>
             </select>
           </div>
           <div class="mb-3">
-            <label for="content" class="form-label">Active</label>
+            <label for="content" class="form-label">{{ 'crm.active' | translate }}</label>
             <select class="form-select" aria-label="Default select example" formControlName="status">
               <ng-container *ngFor="let s of status">
                 <option value="{{ s.value }}">{{ s.name }}</option>
@@ -145,7 +144,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveTemplate()" id="save-template">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveTemplate()" id="save-template">{{ 'crm.save_details' | translate }}</button>
       </div>
     </div>
   </div>

@@ -196,7 +196,18 @@
     "short_description": "Descripción Corta",
     "status": "Estado",
     "vat_rate": "Tasa de IVA",
-    "withholding_tax_rate": "Tasa de Retención de Impuestos"
+    "withholding_tax_rate": "Tasa de Retención de Impuestos",
+    "system": "Sistema",
+    "messaging_template": "Plantilla de Mensajes",
+    "message": "Mensaje",
+    "message_content": "Contenido del Mensaje",
+    "system_module": "Módulo del Sistema",
+    "type": "Tipo",
+    "active": "Activo",
+    "subject": "Asunto",
+    "template_content": "Contenido de la Plantilla",
+    "define_template": "Definir una plantilla",
+    "save_details": "Guardar Detalles"
   },
   "entities": {
     "account_number": "Número de cuenta",
