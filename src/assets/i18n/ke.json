@@ -196,7 +196,18 @@
     "short_description": "Maelezo Mafupi",
     "status": "Hali",
     "vat_rate": "Kiwango cha VAT",
-    "withholding_tax_rate": "Kiwango cha Uthibitisho wa Kodi"
+    "withholding_tax_rate": "Kiwango cha Uthibitisho wa Kodi",
+    "system": "Mfumo",
+    "messaging_template": "Kiolezo cha Ujumbe",
+    "message": "Ujumbe",
+    "message_content": "Maudhui ya Ujumbe",
+    "system_module": "Moduli ya Mfumo",
+    "type": "Aina",
+    "active": "Hai",
+    "subject": "Mada",
+    "template_content": "Maudhui ya Kiolezo",
+    "define_template": "Fafanua kiolezo",
+    "save_details": "Hifadhi Maelezo"
   },
   "entities": {
     "account_number": "Nambari ya Akaunti",
@@ -580,7 +591,7 @@
       "whatsapp": "WhatsApp",
       "client_name": "Jina la Mteja",
       "send": "Tuma",
-      
+
       "quote_details": "Maelezo ya Ofa ya Bima",
       "quote_number": "Nambari ya Ofa ya Bima",
       "quote_date": "Tarehe ya nukuu",
@@ -685,7 +696,7 @@
       "rate_table": "Jedwali la Viwango",
       "absolute_range": "Kiwango Kamili",
       "step_ranges": "Viwanja vya Hatua"
-    
+
     },
     "policy": {
       "underwriting_new_transaction": "Uwekaji wa Saini: Biashara Mpya",
@@ -819,7 +830,7 @@
       "quake_flood_zone": "Eneo la Tetemeko la Ardhi/Mafuriko",
       "relational_group": "Kikundi cha Uhusiano",
       "risk_class": "Daraja la Hatari",
-      
+
       "underwriting_coinsurance_details": "Maelezo ya Kuhudumia Wenza: Maelezo ya Usimamizi",
       "coinsurance_details": "Maelezo ya Kuhudumia Wenza",
       "coinsurance_leader": "Kiongozi wa Kuhudumia Wenza",
