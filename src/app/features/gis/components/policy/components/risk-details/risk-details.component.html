@@ -887,17 +887,17 @@
         <!-- SCHEDULE DETAILS -->
         <div class="card mb-3 px-2" style=" position: relative;">
             <div class="card-body">
-                <p class="subheading">Schedule Details</p>
+                <p class="subheading">{{'gis.quotation.schedule_details' |translate}}</p>
                 <p-tabView>
                     <p-tabPanel header="Motor Private Schedule">
                         <div class="row mb-4">
-                            <div class="col-5">
+                            <div class="col-6">
                                 <div class="row">
                                     <div class="col-4">
-                                        <p class="mt-1">Import Schedule</p>
+                                        <p class="mt-1">{{'gis.policy.import_schedule' |translate}}</p>
                                     </div>
                                     <div class="col-8">
-                                        <label for="fileInput" class="custom-file-upload mb-4">From CSV file</label>
+                                        <label for="fileInput" class="custom-file-upload mb-4">{{'gis.policy.from_csv_file' |translate}}</label>
 
                                         <span *ngIf="uploading === 'progress'" class="mx-3">
                                           <i class="pi pi-spin pi-spinner" style="color: #cccccc"></i>
@@ -907,15 +907,25 @@
                                         </span>
                                   
                                         <input type="file" id="fileInput" accept=".csv" (change)="onFileSelected($event)">
-                                        <!-- <button class="btn btn-primary import-button">From CSV file</button> -->
+
+                                        <button class="btn btn-primary import-policy-button ms-2"  data-bs-toggle="modal" data-bs-target="#importModal">{{'gis.policy.from_another_policy' |translate}}</button>
                                     </div>
-                                    <!-- <div class="col-4">
-                                        <button class="btn btn-primary import-button">From CSV file</button>
-                                    </div> -->
+                                  <!-- Modal -->
+                                <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog  modal-dialog-centered">
+                                    <div class="modal-content">
+                                        
+                                        <div class="modal-body">
+                                            <p>Import a Schedule</p>
+                                        </div>
+                                      
+                                    </div>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                             <!-- <div class="col-2"></div> -->
-                            <div class="col-7 d-flex justify-content-end">
+                            <div class="col-6 d-flex justify-content-end">
                                 <!-- <div class="row">
                             
                                     <div class="col-4">
@@ -1142,8 +1152,8 @@
                                                           <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Motor accessories.:</label>
                                                           <div class="col-7">
                                                             <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="color">
-                                                              <option ></option>
-                                                              <option ></option>
+                                                              <option></option>
+                                                              <option></option>
                                                             </select>                              
                                                           </div>
                                                         </div>

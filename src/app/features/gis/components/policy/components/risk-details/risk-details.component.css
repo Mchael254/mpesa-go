@@ -178,7 +178,7 @@
       padding-top: 0px;
     }
     .import-button{
-      height: 34px;
+      height: 30px;
       padding-top: 3px;
       font-size: 14px;
     }
@@ -237,6 +237,12 @@
     padding-bottom: 16px;
     margin-left:26px;
 
+}
+.import-policy-button{
+  height:30px;
+  padding-top: 3px;
+  font-size: 14px;
+  border-radius: 5px; 
 }
 .btn-close{
   color: #00529B;
