@@ -5,7 +5,7 @@ import { AppConfigService } from '../../../../../../app/core/config/app-config-s
 import { ApiService } from '../../../../../../app/shared/services/api/api.service';
 import { SessionStorageService } from '../../../../../../app/shared/services/session-storage/session-storage.service';
 import { API_CONFIG } from '../../../../../../environments/api_service_config';
-import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection } from '../data/policy-dto';
+import { CoinsuranceDetail, Policy, PremiumFinanciers, RiskInformation, RiskSection,CoinsuranceEdit } from '../data/policy-dto';
 import { StringManipulation } from '../../../../../../app/features/lms/util/string_manipulation';
 import { SESSION_KEY } from '../../../../../features/lms/util/session_storage_enum';
 
@@ -81,7 +81,7 @@ export class PolicyService {
     return this.api.POST(`v1/policies/add-coinsurance?polBatchNo=${batchNo}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
-  editCoinsurance(data:CoinsuranceDetail){
+  editCoinsurance(data:CoinsuranceEdit){
     return this.api.PUT(`v1/policies/edit-coinsurance?`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
   deleteCoinsurance(agentCode:number,batchNo:number){
