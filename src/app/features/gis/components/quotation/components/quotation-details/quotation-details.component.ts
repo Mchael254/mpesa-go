@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { ProductsService } from '../../../setups/services/products/products.service';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
-import { FormGroup,FormBuilder } from '@angular/forms';
+import { FormGroup,FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { QuotationsService } from '../../services/quotations/quotations.service';
 // import { Modal } from 'bootstrap';
@@ -213,36 +213,36 @@ export class QuotationDetailsComponent {
    * @return {void}
    */
   createQuotationForm(){
-    this.quotationForm = this.fb.group({
-      actionType: [''],
-      addEdit: [''],
-      agentCode: [''],
-      agentShortDescription: [''],
-      bdivCode: [''],
-      bindCode: [''],
-      branchCode: [''],
-      clientCode: [''],
-      clientType: [''],
-      coinLeaderCombined: [''],
-      consCode: [''],
-      currencyCode: [''],
-      currencySymbol: [''],
-      fequencyOfPayment: [''],
-      isBinderPolicy: [''],
-      paymentMode: [''],
-      proInterfaceType: [''],
-      productCode: [''],
-      source: [''],
-      withEffectiveFromDate: [''],
-      withEffectiveToDate: [''],
-      multiUser:[''],
-      comments:[''],
-      internalComments:[''],
-      introducerCode:[''],
-      dateRange:[''],
-      RFQDate:[''],
-      expiryDate:['']
-    })
+      this.quotationForm = this.fb.group({
+        actionType: ['',],
+        addEdit: [''],
+        agentCode: ['',Validators.required],
+        agentShortDescription: [''],
+        bdivCode: [''],
+        bindCode: [''],
+        branchCode: ['',Validators.required],
+        clientCode: ['',Validators.required],
+        clientType: [''],
+        coinLeaderCombined: [''],
+        consCode: [''],
+        currencyCode: ['',Validators.required],
+        currencySymbol: [''],
+        fequencyOfPayment: [''],
+        isBinderPolicy: [''],
+        paymentMode: [''],
+        proInterfaceType: [''],
+        productCode: ['',Validators.required],
+        source: ['',Validators.required],
+        withEffectiveFromDate: ['',Validators.required],
+        withEffectiveToDate: ['',Validators.required],
+        multiUser:[''],
+        comments:[''],
+        internalComments:[''],
+        introducerCode:[''],
+        dateRange:[''],
+        RFQDate:['',Validators.required],
+        expiryDate:['',Validators.required]
+      })
   }
 
 
