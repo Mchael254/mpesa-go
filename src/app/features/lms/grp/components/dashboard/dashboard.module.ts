@@ -11,6 +11,10 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { AdminPolicyListingComponent } from './components/admin-policy-listing/admin-policy-listing.component';
 import { AdminPolicyDetailsComponent } from './components/admin-policy-details/admin-policy-details.component';
+import { AdminPensionListingComponent } from './components/admin-pension-listing/admin-pension-listing.component';
+import { AdminClaimsListingComponent } from './components/admin-claims-listing/admin-claims-listing.component';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -20,7 +24,9 @@ import { AdminPolicyDetailsComponent } from './components/admin-policy-details/a
     PolicyDetailsComponent,
     AdminDashboardComponent,
     AdminPolicyListingComponent,
-    AdminPolicyDetailsComponent
+    AdminPolicyDetailsComponent,
+    AdminPensionListingComponent,
+    AdminClaimsListingComponent
   ],
   imports: [
     CommonModule,
@@ -28,6 +34,9 @@ import { AdminPolicyDetailsComponent } from './components/admin-policy-details/a
     SharedModule,
     OverlayPanelModule,
     ConfirmDialogModule,
+    MultiSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
   ]
 })
 export class DashboardModule { }
