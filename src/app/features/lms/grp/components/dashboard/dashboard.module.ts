@@ -11,6 +11,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { AdminPolicyListingComponent } from './components/admin-policy-listing/admin-policy-listing.component';
 import { AdminPolicyDetailsComponent } from './components/admin-policy-details/admin-policy-details.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 @NgModule({
