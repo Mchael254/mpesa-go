@@ -29,11 +29,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   onClaimsClick() {
-    
+    this.router.navigate(['/home/lms/grp/dashboard/admin-claims-listing'])
   }
 
   onPensionClick() {
-    
+    this.router.navigate(['/home/lms/grp/dashboard/admin-pension-listing'])
   }
 
 }
