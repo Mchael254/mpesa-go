@@ -1,0 +1,44 @@
+<div class="main">
+    <div style="display: flex; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div style="padding-top: 35px;">Claims</div>
+
+        <div class="form">
+            <i class="fa fa-search"></i>
+            <input type="text" class="form-control form-input" placeholder="Search">
+
+            <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+            </p-multiSelect>
+        </div>
+
+        <div class="card mt-1">
+            <p-table [value]="claimListing" selectionMode="single" dataKey="code" [tableStyle]="{'min-width': '50rem'}"
+                styleClass="p-datatable-striped" [paginator]="true" [rows]="5" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('product')">Product</th>
+                        <th *ngIf="selectedColumns.includes('claim_number')">Claim number</th>
+                        <th *ngIf="selectedColumns.includes('member')">Member</th>
+                        <th *ngIf="selectedColumns.includes('mem_no')">Member number</th>
+                        <th id="table-align" *ngIf="selectedColumns.includes('claim_amnt')">Claim amount</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-claim>
+                    <tr>
+
+                        <td *ngIf="selectedColumns.includes('product')">{{ claim.product }}</td>
+                        <td *ngIf="selectedColumns.includes('claim_number')">{{ claim.claim_number }}</td>
+                        <td *ngIf="selectedColumns.includes('member')">{{ claim.member }}</td>
+                        <td *ngIf="selectedColumns.includes('mem_no')">{{ claim.mem_no }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('claim_amnt')">{{ claim.claim_amnt | number
+                            }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
