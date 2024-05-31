@@ -2,198 +2,386 @@
     <div style="display: flex; padding-top: 1rem; justify-content: start">
         <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
         </app-dynamic-breadcrumb>
-      </div>
+    </div>
     <div class="container">
-        <div style="font-weight: 400; font-size: 16px;">Policy details</div>
+        <div class="flex-container">
+            <div class="pol-dets">
+                <span class="font-style">Policy details</span>
+            </div>
+            <div class="option-select">
+                <form>
+                    <select class="form-select" id="newBusiness">
+                        <option selected="true" disabled="disabled">New business</option>
+                        <option>End 001</option>
+                        <option>End 002</option>
+                    </select>
+                </form>
+            </div>
+        </div>
         <div class="poldets-table-container col-12">
 
-          <div class="col-4">
-              <table class="poldets-table">
-                  <tr>
-                      <td class="table-label">Policy number:</td>
-                      <td class="table-label-desc">12345</td>
-                  </tr>
-                  <tr>
-                    <td class="table-label">Endorsement type:</td>
-                    <td class="table-label-desc">New business</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Endorsement effective date:</td>
-                    <td class="table-label-desc">01/01/1901</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Cover to date:</td>
-                    <td class="table-label-desc">01/01/1902</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Currency:</td>
-                    <td class="table-label-desc">KES</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Members:</td>
-                    <td class="table-label-desc">100</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Agent phone:</td>
-                    <td class="table-label-desc">07097100</td>
-                </tr>
-              </table>
-          </div>
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Policy number:</td>
+                        <td class="table-label-desc">12345</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Endorsement type:</td>
+                        <td class="table-label-desc">New business</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Endorsement effective date:</td>
+                        <td class="table-label-desc">01/01/1901</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Cover to date:</td>
+                        <td class="table-label-desc">01/01/1902</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Currency:</td>
+                        <td class="table-label-desc">KES</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Members:</td>
+                        <td class="table-label-desc">100</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Agent phone:</td>
+                        <td class="table-label-desc">07097100</td>
+                    </tr>
+                </table>
+            </div>
 
-          <div class="col-4">
-            <table class="poldets-table">
-                <tr>
-                    <td class="table-label">Policy status:</td>
-                    <td class="table-label-desc">Active</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Sum assured:</td>
-                    <td class="table-label-desc">Kes 5,000,600</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Branch:</td>
-                    <td class="table-label-desc">Nairobi</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Policy effective date:</td>
-                    <td class="table-label-desc">01/09/2021</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Product description:</td>
-                    <td class="table-label-desc">desc</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Occupation:</td>
-                    <td class="table-label-desc">Insurance</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Agent email:</td>
-                    <td class="table-label-desc">agent@company.com</td>
-                </tr>
-               
-            </table>
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Policy status:</td>
+                        <td class="table-label-desc">Active</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Sum assured:</td>
+                        <td class="table-label-desc">Kes 5,000,600</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Branch:</td>
+                        <td class="table-label-desc">Nairobi</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Policy effective date:</td>
+                        <td class="table-label-desc">01/09/2021</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Product description:</td>
+                        <td class="table-label-desc">desc</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Occupation:</td>
+                        <td class="table-label-desc">Insurance</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Agent email:</td>
+                        <td class="table-label-desc">agent@company.com</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div class="col-4">
+                <table class="poldets-table">
+                    <tr>
+                        <td class="table-label">Endorsement number:</td>
+                        <td class="table-label-desc">001</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Premium:</td>
+                        <td class="table-label-desc">Kes 200,000</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Cover from date:</td>
+                        <td class="table-label-desc">01/01/1990</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Frequency of payment:</td>
+                        <td class="table-label-desc">Monthly</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Group name:</td>
+                        <td class="table-label-desc">Nairobi union sacco</td>
+                    </tr>
+                    <tr>
+                        <td class="table-label">Agent name:</td>
+                        <td class="table-label-desc">Agent Kabue</td>
+                    </tr>
+
+                </table>
+            </div>
         </div>
 
-          <div class="col-4">
-              <table class="poldets-table">
-                  <tr>
-                      <td class="table-label">Endorsement number:</td>
-                      <td class="table-label-desc">001</td>
-                  </tr>
-                  <tr>
-                      <td class="table-label">Premium:</td>
-                      <td class="table-label-desc">Kes 200,000</td>
-                  </tr>
-                  <tr>
-                    <td class="table-label">Cover from date:</td>
-                    <td class="table-label-desc">01/01/1990</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Frequency of payment:</td>
-                    <td class="table-label-desc">Monthly</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Group name:</td>
-                    <td class="table-label-desc">Nairobi union sacco</td>
-                </tr>
-                <tr>
-                    <td class="table-label">Agent name:</td>
-                    <td class="table-label-desc">Agent Kabue</td>
-                </tr>
-                 
-              </table>
-          </div>
-      </div>
-
-        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box">
+        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box" (click)="showMembersSummary()">
             <label class="active-label">{{ memberPolicies[0]?.status }}</label>
             <div class="scroll-content" style="margin-top: 40px;">
-            <table>
-                <tr>
-                    <td>Members:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
-                </tr>
-                <tr>
-                    <td>Overide FCL amount:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.policy_number | titlecase }}</td>
-                </tr>
-                <tr>
-                    <td>Members above overide FCL:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.policy_members }}</td>
-                </tr>
-                <tr>
-                    <td>Reinsurance retention limit:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-                <tr>
-                    <td>Members above retention limit:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-                <tr>
-                    <td>Computed FCL amount:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-            </table>
+                <table>
+                    <tr>
+                        <td>Members:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.description | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td>Overide FCL amount:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.policy_number | titlecase }}</td>
+                    </tr>
+                    <tr>
+                        <td>Members above overide FCL:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.policy_members }}</td>
+                    </tr>
+                    <tr>
+                        <td>Reinsurance retention limit:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Members above retention limit:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Computed FCL amount:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
-        </div>
-        
+
 
         <div *ngIf="memberPolicies" class="box">
             <label class="active-label">{{ memberPolicies[1]?.status }}</label>
-            
+
             <div class="scroll-content">
                 <div style="margin-top: 40px; margin-left: 20px;">Group Life</div>
-            <table>
-                <tr>
-                    <td class="td-data">Sum assured:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-                <tr>
-                    <td class="td-data">Premium:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-            </table>
-            <div style="margin-left: 20px;">Group credit Life</div>
-            <table>
-                <tr>
-                    <td class="td-data">Sum assured:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-                <tr>
-                    <td class="td-data">Premium:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
-                </tr>
-            </table>
+                <table>
+                    <tr>
+                        <td class="td-data">Sum assured:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-data">Premium:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                </table>
+                <div style="margin-left: 20px;">Group credit Life</div>
+                <table>
+                    <tr>
+                        <td class="td-data">Sum assured:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-data">Premium:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.sum_assured | number }}</td>
+                    </tr>
+                </table>
+            </div>
+
         </div>
-        
-        </div>
-        
-        <div *ngIf="memberPolicies" class="box">
+
+        <div *ngIf="memberPolicies" class="box" (click)="showCategorySummary()">
             <label class="active-label">{{ memberPolicies[2]?.status }}</label>
             <div class="scroll-content">
                 <div style="margin-top: 40px; margin-left: 20px;">Category 1</div>
-            <table>
-                <tr>
-                    <td class="td-data">Short description:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.shortDesc }}</td>
-                </tr>
-                <tr>
-                    <td class="td-data">Multiple of earnings:</td>
-                    <td class="td-data">{{ memberPolicies[0]?.multipleOfEarning }}</td>
-                </tr>
-            </table>
-            <div style="margin-left: 20px;">Category 2</div>
-            <table>
-                <tr>
-                    <td class="td-data">Short description:</td>
-                    <td class="td-data">{{ memberPolicies[1]?.shortDesc }}</td>
-                </tr>
-                <tr>
-                    <td class="td-data">Multiple of earnings:</td>
-                    <td class="td-data">{{ memberPolicies[1]?.multipleOfEarning }}</td>
-                </tr>
-            </table>
-        </div>
+                <table>
+                    <tr>
+                        <td class="td-data">Short description:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.shortDesc }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-data">Multiple of earnings:</td>
+                        <td class="td-data">{{ memberPolicies[0]?.multipleOfEarning }}</td>
+                    </tr>
+                </table>
+                <div style="margin-left: 20px;">Category 2</div>
+                <table>
+                    <tr>
+                        <td class="td-data">Short description:</td>
+                        <td class="td-data">{{ memberPolicies[1]?.shortDesc }}</td>
+                    </tr>
+                    <tr>
+                        <td class="td-data">Multiple of earnings:</td>
+                        <td class="td-data">{{ memberPolicies[1]?.multipleOfEarning }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- modal for members summary -->
+<div class="modal fade" tabindex="-1" #memberSummaryModal id="memberSummaryModal"
+aria-labelledby="memberSummaryModal" aria-hidden="true" (click)="onBackdropClick($event)">
+<div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="memberSummaryModalLabel">Member details</h5>
+        </div>
+
+        <div class="modal-body">
+            <div class="multiselect-add">
+                <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                </p-multiSelect>
+              </div>
+            
+            <div class="">
+                <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+[tableStyle]="{'min-width': '50rem'}"
+currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+[rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-striped">
+<ng-template pTemplate="header">
+<tr>
+<th *ngIf="selectedColumnsMemberDets.includes('surname')">Surname</th>
+<th *ngIf="selectedColumnsMemberDets.includes('other_names')">Other names</th>
+<th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Premium</th>
+<th *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Sum Assured</th>
+<th *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">Date of birth</th>
+<th *ngIf="selectedColumnsMemberDets.includes('gender')">Gender</th>
+<th *ngIf="selectedColumnsMemberDets.includes('member_number')">Payroll/Member no.</th>
+<th *ngIf="selectedColumnsMemberDets.includes('description')">Category</th>
+<th *ngIf="selectedColumnsMemberDets.includes('dty_description')">Dependant type</th>
+</tr>
+</ng-template>
+<ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
+<tr (click)="onMemberTableRowClick(membersDetails, rowIndex)" [ngClass]="{'selected-row': rowIndex === selectedRowIndex}" style="cursor: pointer">
+<td *ngIf="selectedColumnsMemberDets.includes('surname')" id="tdStyle">{{ membersDetails.surname | titlecase }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('other_names')" id="tdStyle">{{ membersDetails.other_names | titlecase }}</td>
+<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')" id="tdStyle">{{ membersDetails.premium | number }}</td>
+<td style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')" id="tdStyle">{{ membersDetails.total_sum_assured | number }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('date_of_birth')" id="tdStyle">{{ membersDetails.date_of_birth }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('gender')" id="tdStyle">{{ membersDetails.gender }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('description')" id="tdStyle">{{ membersDetails.description | titlecase }}</td>
+<td *ngIf="selectedColumnsMemberDets.includes('dty_description')" id="tdStyle">{{ membersDetails.dty_description | titlecase }}</td>
+</tr>
+</ng-template>
+</p-table>
+
+            </div>
+
+            <div class="mt-5">
+                <h6>Member summary</h6>
+                <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'max-width': '35rem'}" styleClass="p-datatable-striped">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Cover type</th>
+                            <th style="text-align: right;">Premium</th>
+                            <th style="text-align: right;">Sum assured</th>
+                            
+
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-memberCoverTypeSummaryDto>
+                        <tr>
+                            <td id="tdStyle">{{ memberCoverTypeSummaryDto.cvt_desc | titlecase }}</td>
+                            <td style="text-align: right;"> {{memberCoverTypeSummaryDto.premium | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+            (click)="closeMembersSummary()">Back to summary</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- end of modal for members summary -->
+
+<!-- modal for category summary -->
+<div class="modal fade" tabindex="-1" #memberSummaryModal id="categorySummaryModal"
+aria-labelledby="categorySummaryModal" aria-hidden="true" (click)="onBackdropClick($event)">
+<div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="categorySummaryModalLabel">Category details</h5>
+        </div>
+
+        <div class="modal-body">
+            <div class="multiselect-add">
+                <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                </p-multiSelect>
+              </div>
+            
+            <div class="">
+                <p-table [value]="membersDetails" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+[tableStyle]="{'min-width': '50rem'}"
+currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+[rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-striped">
+<ng-template pTemplate="header">
+<tr>
+<th style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('surname')">Category</th>
+<th style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('other_names')">Multiple of earning</th>
+<th style="width: calc(100% / 5);" style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Access group</th>
+<th style="width: calc(100% / 5);" style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">Select rates</th>
+<th style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">Premium mask</th>
+</tr>
+</ng-template>
+<ng-template pTemplate="body" let-membersDetails let-rowIndex="rowIndex">
+<tr>
+<td style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('surname')">{{ membersDetails.surname | titlecase }}</td>
+<td style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('other_names')">{{ membersDetails.other_names | titlecase }}</td>
+<td style="width: calc(100% / 5);" style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">{{ membersDetails.premium | number }}</td>
+<td style="width: calc(100% / 5);" style="text-align: right;" *ngIf="selectedColumnsMemberDets.includes('total_sum_assured')">{{ membersDetails.total_sum_assured | number }}</td>
+<td style="width: calc(100% / 5);" *ngIf="selectedColumnsMemberDets.includes('date_of_birth')">{{ membersDetails.date_of_birth }}</td>
+</tr>
+</ng-template>
+</p-table>
+
+            </div>
+
+            <div class="mt-5">
+                <h6>Dependent limit</h6>
+                <div class="multiselect-add">
+                    <p-multiSelect [options]="columnOptionsMemberDets" [(ngModel)]="selectedColumnsMemberDets">
+                    </p-multiSelect>
+                  </div>
+                <p-table [value]="memberCoverTypeSummaryDto" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-striped">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Cover type</th>
+                            <th>Dependent type</th>
+                            <th>Lives covered</th>
+                            <th>Min amount</th>
+                            <th>Max limit amount</th>
+                            <th>Rate</th>
+                            <th>Division factor</th>
+                            <th>% of main/yr SA</th>
+                            <th>Inbuilt</th>
+                            <th>Accelerated</th>
+
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-memberCoverTypeSummaryDto>
+                        <tr>
+                            <td id="tdStyle">{{ memberCoverTypeSummaryDto.cvt_desc | titlecase }}</td>
+                            <td style="text-align: right;"> {{memberCoverTypeSummaryDto.premium | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            <td style="text-align: right;">{{ memberCoverTypeSummaryDto.sum_assured | number }}</td>
+                            
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+            (click)="closeCategorySummary()">Back to summary</button>
+        </div>
+    </div>
+</div>
+</div>
+<!-- end of modal for category summary -->
