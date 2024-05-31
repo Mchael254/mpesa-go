@@ -70,7 +70,7 @@
                             </div>
                             <div class="col-sm-3">
                                 <button type="button" id="icon" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#editThirdDetails" title="Edit">
+                                    data-bs-target="#editThirdDetails" title="Edit" >
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                             </div>
@@ -207,18 +207,18 @@
                     <ng-template pTemplate="body" let-transformedCoinsurance let-editing="editing" let-ri="rowIndex">
                         <tr [pEditableRow]="transformedCoinsurance">
                             <td>
-                                <p-tableCheckbox [value]="transformedCoinsurance" (click)="onRowSelect(transformedCoinsurance)"></p-tableCheckbox>
+                                <p-tableCheckbox [value]="transformedCoinsurance" pInitEditableRow (click)="onRowSelect(transformedCoinsurance);coinsurersStatus('add')"></p-tableCheckbox>
                             </td>
                             <td>{{transformedCoinsurance.name}}</td>
                             <td>
                                 <p-tableCheckbox id="leaderCheckbox" [value]="transformedCoinsurance?.lead" (click)="onLeaderChange($event)"></p-tableCheckbox>
                             </td>
                             
-                            <td [pEditableRow]="transformedCoinsurance.percentage" pEditableColumnField="percentage">
+                            <!-- <td [pEditableRow]="transformedCoinsurance.percentage" pEditableColumnField="percentage">
                                 <input [(ngModel)]="transformedCoinsurance.percentage" class="cellEditorInput"
                                     type="text">
-                            </td>
-                            <!-- <td>
+                            </td> -->
+                            <td>
                                 <p-cellEditor>
                                     <ng-template pTemplate="input">
                                         <input pInputText type="text" [(ngModel)]="transformedCoinsurance.percentage"
@@ -229,25 +229,75 @@
                                     </ng-template>
 
                                 </p-cellEditor>
-                            </td> -->
-                            <td [pEditableRow]="transformedCoinsurance.premium" pEditableColumnField="premium">
-                                <!-- <input [(ngModel)]="section.limitAmount" class="cellEditorInput"/> -->
+                            </td>
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="transformedCoinsurance.premium"
+                                            class="form-control form-control-sm " [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{transformedCoinsurance.premium}}
+                                    </ng-template>
+
+                                </p-cellEditor>
+                            </td>
+                            <!-- <td [pEditableRow]="transformedCoinsurance.premium" pEditableColumnField="premium">
+                                
                                 <input [(ngModel)]="transformedCoinsurance.premium" class="cellEditorInput" type="text">
+                            </td> -->
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="transformedCoinsurance.feeRate"
+                                            class="form-control form-control-sm " [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{transformedCoinsurance.feeRate}}
+                                    </ng-template>
+
+                                </p-cellEditor>
                             </td>
-                            <td [pEditableRow]="transformedCoinsurance.feeRate" pEditableColumnField="feeRate">
-                                <!-- <input [(ngModel)]="section.limitAmount" class="cellEditorInput"/> -->
+                            <!-- <td [pEditableRow]="transformedCoinsurance.feeRate" pEditableColumnField="feeRate">
+                                
                                 <input [(ngModel)]="transformedCoinsurance.feeRate" class="cellEditorInput" type="text">
+                            </td> -->
+
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="transformedCoinsurance.feeAmount"
+                                            class="form-control form-control-sm " [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{transformedCoinsurance.feeAmount}}
+                                    </ng-template>
+
+                                </p-cellEditor>
                             </td>
-                            <td [pEditableRow]="transformedCoinsurance.feeAmount" pEditableColumnField="feeAmount">
-                                <!-- <input [(ngModel)]="section.limitAmount" class="cellEditorInput"/> -->
+                            <!-- <td [pEditableRow]="transformedCoinsurance.feeAmount" pEditableColumnField="feeAmount">
+                               
                                 <input [(ngModel)]="transformedCoinsurance.feeAmount" class="cellEditorInput"
                                     type="text">
+                            </td> -->
+
+                            <td>
+                                <p-cellEditor>
+                                    <ng-template pTemplate="input">
+                                        <input pInputText type="text" [(ngModel)]="transformedCoinsurance.policyNo"
+                                            class="form-control form-control-sm " [ngModelOptions]="{standalone: true}">
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{transformedCoinsurance.policyNo}}
+                                    </ng-template>
+
+                                </p-cellEditor>
                             </td>
-                            <td [pEditableRow]="transformedCoinsurance.policyNo" pEditableColumnField="policyNo">
-                                <!-- <input [(ngModel)]="section.limitAmount" class="cellEditorInput"/> -->
+                            <!-- <td [pEditableRow]="transformedCoinsurance.policyNo" pEditableColumnField="policyNo">
+                               
                                 <input [(ngModel)]="transformedCoinsurance.policyNo" class="cellEditorInput"
                                     type="text">
-                            </td>
+                            </td> -->
 
 
                             <td>
@@ -255,10 +305,22 @@
 
 
                                 <div class="flex align-items-center justify-content-center gap-2">
-                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow
+                                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow (click)="coinsurersStatus('edit')"
                                         icon="pi pi-pencil" class="p-button-rounded p-button-text">
                                     </button>
-                                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                    <div *ngIf="editCoinsurer">
+                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
+                                        icon="pi pi-check" class="p-button-rounded p-button-text p-button-success mr-2"
+                                       (click)="editCoinsurance(transformedCoinsurance)"
+                                        style="color: #4bb543;">
+                                    </button>
+                                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow
+                                        icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"
+                                        style="color: red;">
+                                    </button>
+                                    </div>
+                                    <div *ngIf="addCoinsurer">
+                                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow
                                         icon="pi pi-check" class="p-button-rounded p-button-text p-button-success mr-2"
                                         (click)="onRowEdit(transformedCoinsurance)" 
                                         style="color: #4bb543;">
@@ -267,6 +329,7 @@
                                         icon="pi pi-times" class="p-button-rounded p-button-text p-button-danger"
                                         style="color: red;">
                                     </button>
+                                    </div>
                                 </div>
 
                             </td>
