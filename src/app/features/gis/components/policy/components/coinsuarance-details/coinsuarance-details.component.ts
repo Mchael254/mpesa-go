@@ -36,7 +36,8 @@ export class CoinsuaranceDetailsComponent {
   isLeaderChecked:any;
   followerAgentCode:any;
   selectedFollower:any;
-
+  addCoinsurer:boolean=false;
+  editCoinsurer:boolean=false;
 
   constructor(
     private policyService: PolicyService,
@@ -295,8 +296,37 @@ export class CoinsuaranceDetailsComponent {
         },
       })
   }
-  editCoinsurance(){
-    
+  editCoinsurance(data){
+    console.log(data)
+    const payload = {
+      agencyAccountCode: data.agaCode,
+      agentCode: data.agentCode,
+      batchNo:this.batchNo,
+      commissionRate: data.commissionRate,
+      commissionType: data.commissionType,
+      facultativePercentage: data.facPc,
+      facultativeSession: data.facSession,
+      feeRate: data.feeRate,
+      forceCompute: data.forceSfCompute,
+      leader: data.lead,
+      optimalCommission: data.optionalCommision,
+      percentage: data.percentage,
+      policyNo: data.policyNo
+    };
+    console.log(payload);
+    this.policyService
+      .editCoinsurance(payload)
+      .pipe(untilDestroyed(this))
+      .subscribe({
+        next: (response) => {
+          this.globalMessagingService.displaySuccessMessage('Success', 'Coinsurers updated successfully');
+
+          console.log('Success:', response);
+        },
+        error: (error) => {
+          this.globalMessagingService.displayErrorMessage('Error', 'Failed to update coinsurer.Try again later');
+        }
+      });
   }
   onRowSelect(Selectedfollower:any){
     this.selectedFollower=Selectedfollower
@@ -345,4 +375,19 @@ export class CoinsuaranceDetailsComponent {
       },
     })
   }
+
+ coinsurersStatus(status){
+  if(status === 'add'){
+    this.addCoinsurer = true
+    this.editCoinsurer = false
+  }else if (status  === 'edit'){
+    this.editCoinsurer = true
+    this.addCoinsurer = false
+  }else{
+    this.addCoinsurer = false
+    this.editCoinsurer = false
+  }
+  console.log('edit',this.editCoinsurer)
+  console.log('add',this.addCoinsurer)
+ }
 }
