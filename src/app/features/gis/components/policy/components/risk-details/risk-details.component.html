@@ -887,17 +887,17 @@
         <!-- SCHEDULE DETAILS -->
         <div class="card mb-3 px-2" style=" position: relative;">
             <div class="card-body">
-                <p class="subheading">Schedule Details</p>
+                <p class="subheading">{{'gis.quotation.schedule_details' |translate}}</p>
                 <p-tabView>
                     <p-tabPanel header="Motor Private Schedule">
                         <div class="row mb-4">
-                            <div class="col-5">
+                            <div class="col-6">
                                 <div class="row">
                                     <div class="col-4">
-                                        <p class="mt-1">Import Schedule</p>
+                                        <p class="mt-1">{{'gis.policy.import_schedule' |translate}}</p>
                                     </div>
                                     <div class="col-8">
-                                        <label for="fileInput" class="custom-file-upload mb-4">From CSV file</label>
+                                        <label for="fileInput" class="custom-file-upload mb-4">{{'gis.policy.from_csv_file' |translate}}</label>
 
                                         <span *ngIf="uploading === 'progress'" class="mx-3">
                                           <i class="pi pi-spin pi-spinner" style="color: #cccccc"></i>
@@ -907,15 +907,100 @@
                                         </span>
                                   
                                         <input type="file" id="fileInput" accept=".csv" (change)="onFileSelected($event)">
-                                        <!-- <button class="btn btn-primary import-button">From CSV file</button> -->
+
+                                        <button class="btn btn-primary import-policy-button ms-2"  data-bs-toggle="modal" data-bs-target="#importModal">{{'gis.policy.from_another_policy' |translate}}</button>
                                     </div>
-                                    <!-- <div class="col-4">
-                                        <button class="btn btn-primary import-button">From CSV file</button>
-                                    </div> -->
+                                  <!-- Modal -->
+                                <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog  modal-dialog-centered">
+                                    <div class="modal-content">
+                                        
+                                        <div class="modal-body">
+                                            <p>Import a Schedule</p>
+                                            <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a policy">
+                                         
+                                                
+                                        </div>
+                                        <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                        selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
+                                        responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
+                                        <ng-template pTemplate="header">
+                                            <tr  style="background-color: #F5F6F8;">
+                                               
+                                                <th style="width:8%">Policy No.</th>
+                                                <th style="width:8%">Endorsement No.</th>
+                                                <th style="width:10%">Product</th>
+                                               
+                                                <!-- <th style="width:7%;"></th> -->  
+                                               
+                                                
+                                            </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
+                                            <tr [pEditableRow]="premiumList">
+                                            
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            
+                                            </tr>
+                    
+                    
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                            <tr>
+                                                <td colspan="9" style="padding: 10px; text-align:center " id="empty"> {{'gis.policy.no_data_to_display' | translate}}
+                                                </td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                    <div class="modal-body">
+                                        <p>Import a Risk</p>
+                                        <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a risk">
+                                     
+                                            
+                                    </div>
+                                    <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                    selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
+                                    responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
+                                    <ng-template pTemplate="header">
+                                        <tr  style="background-color: #F5F6F8;">
+                                           
+                                            <th style="width:8%">Select</th>
+                                            <th style="width:8%">Risk Description</th>
+                                            <th style="width:8%">Risk Value</th>
+                                            <th style="width:8%">Subclass</th>
+                                            <!-- <th style="width:7%;"></th> -->  
+                                           
+                                            
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
+                                        <tr [pEditableRow]="premiumList">
+                                        
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        
+                                        </tr>
+                
+                
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="9" style="padding: 10px; text-align:center " id="empty"> {{'gis.policy.no_data_to_display' | translate}}
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                                    </div>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                             <!-- <div class="col-2"></div> -->
-                            <div class="col-7 d-flex justify-content-end">
+                            <div class="col-6 d-flex justify-content-end">
                                 <!-- <div class="row">
                             
                                     <div class="col-4">
@@ -1142,8 +1227,8 @@
                                                           <label for="minmax-buttons" class="col-5 col-form-label " id="scheduleLabel">Motor accessories.:</label>
                                                           <div class="col-7">
                                                             <select class="form-select form-control-sm mb-1" id="scheduleInput" formControlName="color">
-                                                              <option ></option>
-                                                              <option ></option>
+                                                              <option></option>
+                                                              <option></option>
                                                             </select>                              
                                                           </div>
                                                         </div>
