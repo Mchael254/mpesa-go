@@ -178,7 +178,7 @@
       padding-top: 0px;
     }
     .import-button{
-      height: 34px;
+      height: 30px;
       padding-top: 3px;
       font-size: 14px;
     }
@@ -238,7 +238,16 @@
     margin-left:26px;
 
 }
+.import-policy-button{
+  height:30px;
+  padding-top: 3px;
+  font-size: 14px;
+  border-radius: 5px; 
+}
 .btn-close{
   color: #00529B;
   font-size:14px
+}
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+  padding: 0.5rem 0.5rem;
 }

@@ -50,6 +50,10 @@ export class PolicyService {
     return this.api.GET(`/v2/policies?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getAllPolicy() {
+    return this.api.GET(`/v2/policies`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+
+  }
   getPaymentModes() {
     let page = 0;
     let size = 100;
