@@ -142,7 +142,7 @@ export class ServiceProviderTypesComponent implements OnInit {
 
   ServiceProviderTypeActivityForm() {
     this.createServiceProviderTypeActivityForm = this.fb.group({
-      shortDescription: [''],
+      activity_shortDescription: [''],
       activity: [''],
     });
     this.mandatoryFieldsService
