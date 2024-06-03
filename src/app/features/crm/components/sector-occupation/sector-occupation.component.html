@@ -308,62 +308,67 @@
         <form [formGroup]="createOccupationForm">
           <div class="row">
             <div class="col-sm-12 mb-3">
-              <label for="shortDescription" class="form-label"
+              <label for="occupation_shortDescription" class="form-label"
                 >Short Description</label
               >
               <input
                 type="text"
                 class="form-control"
-                id="shortDescription"
+                id="occupation_shortDescription"
                 placeholder="Short Description"
-                formControlName="shortDescription"
+                formControlName="occupation_shortDescription"
                 [ngClass]="{
                   'is-invalid':
-                    g['shortDescription']?.invalid &&
-                    (g['shortDescription']?.dirty ||
-                      g['shortDescription']?.touched)
+                    g['occupation_shortDescription']?.invalid &&
+                    (g['occupation_shortDescription']?.dirty ||
+                      g['occupation_shortDescription']?.touched)
                 }"
               />
               <div
                 *ngIf="
-                  g['shortDescription']?.invalid &&
-                  (g['shortDescription']?.dirty ||
-                    g['shortDescription']?.touched)
+                  g['occupation_shortDescription']?.invalid &&
+                  (g['occupation_shortDescription']?.dirty ||
+                    g['occupation_shortDescription']?.touched)
                 "
                 class="form-text text-danger"
                 [ngClass]="{
-                  'is-invalid': ['submitted'] && g['shortDescription']?.errors
+                  'is-invalid':
+                    ['submitted'] && g['occupation_shortDescription']?.errors
                 }"
               >
-                <div *ngIf="g['shortDescription']?.errors['required']">
+                <div
+                  *ngIf="g['occupation_shortDescription']?.errors['required']"
+                >
                   Short Description is required
                 </div>
               </div>
             </div>
             <div class="col-sm-12 mb-3">
-              <label for="name" class="form-label">Name</label>
+              <label for="occupation_name" class="form-label">Name</label>
               <input
                 type="text"
                 class="form-control"
-                id="name"
+                id="occupation_name"
                 placeholder="Name"
-                formControlName="name"
+                formControlName="occupation_name"
                 [ngClass]="{
                   'is-invalid':
-                    g['name']?.invalid &&
-                    (g['name']?.dirty || g['name']?.touched)
+                    g['occupation_name']?.invalid &&
+                    (g['occupation_name']?.dirty ||
+                      g['occupation_name']?.touched)
                 }"
               />
               <div
                 *ngIf="
-                  g['name']?.invalid && (g['name']?.dirty || g['name']?.touched)
+                  g['occupation_name']?.invalid &&
+                  (g['occupation_name']?.dirty || g['occupation_name']?.touched)
                 "
                 class="form-text text-danger"
                 [ngClass]="{
-                  'is-invalid': ['submitted'] && g['name']?.errors
+                  'is-invalid': ['submitted'] && g['occupation_name']?.errors
                 }"
               >
-                <div *ngIf="g['name']?.errors['required']">
+                <div *ngIf="g['occupation_name']?.errors['required']">
                   Name is required
                 </div>
               </div>

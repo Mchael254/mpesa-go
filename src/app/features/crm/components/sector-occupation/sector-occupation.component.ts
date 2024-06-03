@@ -139,8 +139,8 @@ export class SectorOccupationComponent implements OnInit {
 
   OccupationsForm() {
     this.createOccupationForm = this.fb.group({
-      shortDescription: [''],
-      name: [''],
+      occupation_shortDescription: [''],
+      occupation_name: [''],
       sector: [[]],
     });
     this.mandatoryFieldsService
