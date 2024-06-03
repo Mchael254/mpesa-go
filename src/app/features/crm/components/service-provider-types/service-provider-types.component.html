@@ -411,34 +411,35 @@
         <form [formGroup]="createServiceProviderTypeActivityForm">
           <div class="row">
             <div class="col-6 mb-3">
-              <label for="shortDescription" class="form-label">{{
+              <label for="activity_shortDescription" class="form-label">{{
                 "crm.short_description" | translate
               }}</label>
               <input
                 type="text"
                 class="form-control"
-                id="shortDescription"
+                id="activity_shortDescription"
                 placeholder="Short Description"
-                formControlName="shortDescription"
+                formControlName="activity_shortDescription"
                 [ngClass]="{
                   'is-invalid':
-                    g['shortDescription']?.invalid &&
-                    (g['shortDescription']?.dirty ||
-                      g['shortDescription']?.touched)
+                    g['activity_shortDescription']?.invalid &&
+                    (g['activity_shortDescription']?.dirty ||
+                      g['activity_shortDescription']?.touched)
                 }"
               />
               <div
                 *ngIf="
-                  g['shortDescription']?.invalid &&
-                  (g['shortDescription']?.dirty ||
-                    g['shortDescription']?.touched)
+                  g['activity_shortDescription']?.invalid &&
+                  (g['activity_shortDescription']?.dirty ||
+                    g['activity_shortDescription']?.touched)
                 "
                 class="form-text text-danger"
                 [ngClass]="{
-                  'is-invalid': ['submitted'] && g['shortDescription']?.errors
+                  'is-invalid':
+                    ['submitted'] && g['activity_shortDescription']?.errors
                 }"
               >
-                <div *ngIf="g['shortDescription']?.errors['required']">
+                <div *ngIf="g['activity_shortDescription']?.errors['required']">
                   Short Description is required
                 </div>
               </div>

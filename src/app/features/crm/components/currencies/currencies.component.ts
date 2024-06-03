@@ -164,7 +164,7 @@ export class CurrenciesComponent implements OnInit {
     this.createDenominationForm = this.fb.group({
       value: [''],
       name: [''],
-      wef: [''],
+      denomination_wef: [''],
     });
     this.mandatoryFieldsService
       .getMandatoryFieldsByGroupId(this.dgroupId)

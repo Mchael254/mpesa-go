@@ -512,7 +512,7 @@
               </div>
             </div>
             <div class="col-6 mb-3">
-              <label for="wef" class="form-label">WEF Date</label>
+              <label for="denomination_wef" class="form-label">WEF Date</label>
               <input
                 type="text"
                 class="form-control"
@@ -520,22 +520,26 @@
                 placeholder="Date"
                 onfocus="(this.type='date')"
                 onblur="(this.type='text')"
-                formControlName="wef"
+                formControlName="denomination_wef"
                 [ngClass]="{
                   'is-invalid':
-                    d['wef']?.invalid && (d['wef']?.dirty || d['wef']?.touched)
+                    d['denomination_wef']?.invalid &&
+                    (d['denomination_wef']?.dirty ||
+                      d['denomination_wef']?.touched)
                 }"
               />
               <div
                 *ngIf="
-                  d['wef']?.invalid && (d['wef']?.dirty || d['wef']?.touched)
+                  d['denomination_wef']?.invalid &&
+                  (d['denomination_wef']?.dirty ||
+                    d['denomination_wef']?.touched)
                 "
                 class="form-text text-danger"
                 [ngClass]="{
-                  'is-invalid': ['submitted'] && d['wef']?.errors
+                  'is-invalid': ['submitted'] && d['denomination_wef']?.errors
                 }"
               >
-                <div *ngIf="d['wef']?.errors['required']">
+                <div *ngIf="d['denomination_wef']?.errors['required']">
                   WEF Date is required
                 </div>
               </div>
