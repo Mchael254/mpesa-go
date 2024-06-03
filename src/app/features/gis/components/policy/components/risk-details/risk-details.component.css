@@ -248,3 +248,6 @@
   color: #00529B;
   font-size:14px
 }
+::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+  padding: 0.5rem 0.5rem;
+}
