@@ -129,7 +129,9 @@ export class RiskDetailsComponent {
   uploadedFileName: string = '';
   uploading: string = '';
 
-
+  policyRisks:any;
+  policyRiskDetails:any;
+  policySectionDetails:any;
   premiumList: any[] = [];
   premiumListIndex = 0;
   currentYear: any;
@@ -209,7 +211,7 @@ export class RiskDetailsComponent {
         'User ID not found'
       );
     }
-
+    this.getImportedRisk()
     this.createPolicyRiskForm();
     this.createSectionDetailsForm();
     this.getPolicy();
@@ -1407,5 +1409,25 @@ export class RiskDetailsComponent {
         version: [''],
       });
     }
-}
 
+    getImportedRisk(){
+      const policyNo = sessionStorage.getItem('selectedPolicyforRisk')
+      if (policyNo){
+        console.log(policyNo)
+        this.policyService.getPolicyRisks(policyNo).pipe(untilDestroyed(this))
+        .subscribe({
+          next: (data) => {
+            this.policyRisks = data
+            this.policyRiskDetails= this.policyRisks.content
+            this.policyRiskDetails.forEach(element => {
+              this.policySectionDetails = element.sections
+              console.log('section test',element.sections)
+            });
+            console.log('risks',this.policyRiskDetails.coverTypeShortDescription)
+          }
+
+
+      })
+    }
+}
+}
