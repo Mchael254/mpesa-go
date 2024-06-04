@@ -46,10 +46,10 @@ export class AdminPensionListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  // navigateToPolDets() {
-  //   this.router.navigate(['/home/lms/grp/dashboard/admin-policy-details'], {
-  //     queryParams: {
-  //     }
-  //   });
-  // }
+  navigateToPensionDets() {
+    this.router.navigate(['/home/lms/grp/dashboard/admin-pension-summary'], {
+      queryParams: {
+      }
+    });
+  }
 }

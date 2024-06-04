@@ -15,6 +15,7 @@ import { AdminPensionListingComponent } from './components/admin-pension-listing
 import { AdminClaimsListingComponent } from './components/admin-claims-listing/admin-claims-listing.component';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AdminPensionSummaryComponent } from './components/admin-pension-summary/admin-pension-summary.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     AdminPolicyListingComponent,
     AdminPolicyDetailsComponent,
     AdminPensionListingComponent,
-    AdminClaimsListingComponent
+    AdminClaimsListingComponent,
+    AdminPensionSummaryComponent
   ],
   imports: [
     CommonModule,
