@@ -8,6 +8,7 @@ import { AdminPolicyListingComponent } from './components/admin-policy-listing/a
 import { AdminPolicyDetailsComponent } from './components/admin-policy-details/admin-policy-details.component';
 import { AdminPensionListingComponent } from './components/admin-pension-listing/admin-pension-listing.component';
 import { AdminClaimsListingComponent } from './components/admin-claims-listing/admin-claims-listing.component';
+import { AdminPensionSummaryComponent } from './components/admin-pension-summary/admin-pension-summary.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: LandingScreenComponent }, //agent
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'admin-policy-details', component: AdminPolicyDetailsComponent}, //scheme-admin policy details
   { path: 'admin-pension-listing', component: AdminPensionListingComponent}, //scheme-admin pension listing
   { path: 'admin-claims-listing', component: AdminClaimsListingComponent}, //scheme-admin claims listing
+  { path: 'admin-pension-summary', component: AdminPensionSummaryComponent}, //scheme-admin pension summary
 ];
 
 @NgModule({

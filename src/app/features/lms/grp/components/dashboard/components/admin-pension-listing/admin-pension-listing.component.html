@@ -5,7 +5,7 @@
     </div>
     <div class="container">
         <div class="title"><span id="title">Pension</span></div>
-        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box">
+        <div *ngIf="memberPolicies && memberPolicies.length > 0" class="box" (click)="navigateToPensionDets()">
             <label class="active-label">{{ getStatusDescription(memberPolicies[0]?.status) }}</label>
             <div class="scroll-content">
                 <table>
@@ -30,7 +30,7 @@
         </div>
 
 
-        <div *ngIf="memberPolicies && memberPolicies.length > 1" class="box">
+        <div *ngIf="memberPolicies && memberPolicies.length > 1" class="box" (click)="navigateToPensionDets()">
             <label class="active-label">{{ getStatusDescription(memberPolicies[1]?.status) }}</label>
             <div class="scroll-content">
                 <table>
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <div *ngIf="memberPolicies && memberPolicies.length > 2" class="box">
+        <div *ngIf="memberPolicies && memberPolicies.length > 2" class="box" (click)="navigateToPensionDets()">
             <label class="active-label">{{ getStatusDescription(memberPolicies[2]?.status) }}</label>
             <div class="scroll-content">
                 <table>
