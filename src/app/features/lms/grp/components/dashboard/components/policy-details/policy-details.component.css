@@ -110,6 +110,7 @@ table {
   
   td {
     padding: 2px;
+    white-space: nowrap;
   }
   
   .action-column {
