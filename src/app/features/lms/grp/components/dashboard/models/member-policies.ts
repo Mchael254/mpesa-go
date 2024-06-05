@@ -138,3 +138,13 @@ export class DetailedMemContrReceiptsDTO {
   total_voluntary_transfer_amount: number | null;
   cost_of_past_benefits: number | null;
 } 
+
+export class MemberWithdrawalsDTO {
+  payee: string;
+  accountName: string | null;
+  clntAccNo: string;
+  bankBranchName: string;
+  voucherDate: Date;
+  voucherAmount: number;
+  paymentMode: string;
+}

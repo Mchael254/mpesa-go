@@ -328,7 +328,7 @@
                     </select>
                 </div>
 
-                <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <p-table [value]="withdrawals" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th style="width: calc(100% / 6);">Date</th>
@@ -336,18 +336,18 @@
                             <th style="width: calc(100% / 6);">Bank</th>
                             <th style="width: calc(100% / 6);">Account number</th>
                             <th style="width: calc(100% / 6);">Payee</th>
-                            <th style="width: calc(100% / 6);">Amount</th>
+                            <th style="width: calc(100% / 6); text-align: right;">Amount</th>
                             <th class="action-column" style="width: 10px;"></th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                         <tr>
-                            <td>{{ item.year }}</td>
-                            <td>{{ item.period }}</td>
-                            <td>{{ item.balanceBF }}</td>
-                            <td>{{ item.contribution }}</td>
-                            <td>{{ item.rate }}%</td>
-                            <td>{{ item.interest }}</td>
+                            <td>{{ item.voucher_date }}</td>
+                            <td>{{ item.payment_mode }}</td>
+                            <td>{{ item.bank_branch_name }}</td>
+                            <td>{{ item.clnt_acc_no }}</td>
+                            <td>{{ item.payee }}</td>
+                            <td style="text-align: right;">{{ item.voucher_amount | number }}</td>
                             <td class="action-column">
                                 <i class="fas fa-ellipsis-v"></i>
                             </td>

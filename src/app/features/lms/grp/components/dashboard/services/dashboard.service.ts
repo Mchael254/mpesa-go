@@ -34,4 +34,8 @@ export class DashboardService {
   getDetMemDepConReceipts(pensDepCode: number, memberCode: number) {
     return this.api.GET(`group/portal/${pensDepCode}/receipt-info?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+  getMemberWithdrawals (policyCode, memberCode) {
+    return this.api.GET(`group/portal/${policyCode}/member-withdrawals?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
 }
