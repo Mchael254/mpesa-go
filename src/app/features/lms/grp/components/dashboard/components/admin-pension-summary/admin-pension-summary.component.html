@@ -1,0 +1,348 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div>
+        <div class="container">
+            <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
+                {{'Pension account summary' }}
+            </div>
+            <div class="nav-link" (click)="showContent('transactions')"
+                [class.active]="selectedContent === 'transactions'">Transactions</div>
+            <div class="nav-link" (click)="showContent('members')" [class.active]="selectedContent === 'members'">
+                Members</div>
+        </div>
+    </div>
+
+    <div class="container2">
+        <div *ngIf="selectedContent === 'summary'">
+            <div class="flex-container">
+                <div class="pol-dets">
+                    <span class="title-desc">Pension account summary</span>
+                </div>
+                <div class="option-select">
+                    <form>
+                        <select class="form-select" id="groupDetails">
+                            <option selected="true" disabled="disabled">Group details</option>
+                            <option>Member 001</option>
+                            <option>Member 002</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="pension-table-container col-12" *ngIf="adminDetails">
+
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Group name:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.name | titlecase }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Retirement age:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Members:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.members }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Status:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.status }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Members annual salary:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.salary }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="statement-desc" style="margin-top: 40px;">Statement as of 13th, March 2024</div>
+            <div class="pension-table-container col-12">
+                <div class="col-6">
+                    <div class="title-desc" style="color: black;">Employee contribution</div>
+
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Contribution:</td>
+                            <td class="table-label-desc">Ksh. 100,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Trasfer value:</td>
+                            <td class="table-label-desc">Ksh. 80,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Annual voluntary contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Interest:</td>
+                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Total fund value:</td>
+                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-6">
+                    <div class="title-desc col-6" style="color: black;">Employer contribution</div>
+
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Contribution:</td>
+                            <td class="table-label-desc">Ksh. 100,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Trasfer value:</td>
+                            <td class="table-label-desc">Ksh. 80,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Annual voluntary contribution:</td>
+                            <td class="table-label-desc">Ksh. 20,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Interest:</td>
+                            <td class="table-label-desc">Ksh. 1,200,000</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Total fund value:</td>
+                            <td class="table-label-desc">Ksh. 10,300,000</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="statement-desc" style="color: black;">Pension account totals <b>Ksh. 20,000,000</b></div>
+
+            <div class="download-link mt-2">
+                <a href="#">
+                    <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                    <span class="download-link">
+                        {{ 'Pension account summary report' }}
+                    </span>
+                </a>
+            </div>
+
+
+            <div class="title-desc mt-3">Valuations</div>
+            <div class="filter-options">
+                <label for="filterBy" style="color: black;">Filter by</label>
+                <select class="form-select">
+                    <ng-container *ngFor="let option ">
+                        <option [value]="">{{ option['category_category'] | titlecase }}</option>
+                    </ng-container>
+                </select>
+                <select class="form-select">
+                    <ng-container *ngFor="let option ">
+                        <option [value]="">{{ option['category_category'] | titlecase }}</option>
+                    </ng-container>
+                </select>
+                <input type="text" pInputText class="form-control" id='otherNames'>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: calc(100% / 7);">Year</th>
+                        <th style="width: calc(100% / 7);">Period</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Balance B/F</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Contribution</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Rate</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Interest</th>
+                        <th id="table-align" style="width: calc(100% / 7);">Balance C/F</th>
+                        <th class="action-column" style="width: 10px;"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.period }}</td>
+                        <td id="table-align">{{ item.balance_bf | number }}</td>
+                        <td id="table-align">{{ item.employer_amount | number }}</td>
+                        <td id="table-align">{{ item.rate }}</td>
+                        <td id="table-align">{{ item.total_interest | number }}</td>
+                        <td id="table-align">{{ item.balance_cf | number }}</td>
+                        <td class="action-column">
+                            <div class="flex justify-content-center">
+                                <p-overlayPanel #op>
+                                    <div>
+                                        <!-- Download button -->
+                                        <p-button label="Download" icon="pi pi-download"
+                                            styleClass="p-button-rounded p-button-text" severity="primary"></p-button>
+                                    </div>
+                                </p-overlayPanel>
+                                <!-- Ellipsis container -->
+                                <div (click)="op.toggle($event)">
+                                    <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+
+        </div>
+
+        <div *ngIf="selectedContent === 'transactions'">
+            <div class="title-desc">Receipts</div>
+            <div>
+                <div class="filter-options">
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Year</option>
+                        <ng-container *ngFor="let year of years">
+                            <option [value]="year">{{ year }}</option>
+                        </ng-container>
+                    </select>
+
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Month</option>
+                        <ng-container *ngFor="let month of months">
+                            <option [value]="month">{{ month }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+
+                <p-table [value]="adminPensionDepReceipts" styleClass="p-datatable-striped"
+                    [tableStyle]="{'max-width': '100%'}" [paginator]="true" [rows]="5" [showCurrentPageReport]="true"
+                    [rowsPerPageOptions]="[10, 25, 50]">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: calc(100% / 8);">Receipt number</th>
+                            <th style="width: calc(100% / 8);">Date</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Contribution</th>
+                            <th style="width: calc(100% / 8);">Voluntary contribution</th>
+                            <th style="width: calc(100% / 8);">Transfer value</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Severance</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Account total</th>
+                            <th id="table-align" style="width: calc(100% / 8);">Total pension account</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+                        <tr>
+                            <td>{{ item.pension_member_dep_code }}</td>
+                            <td>{{ item.pnmdp_date }}</td>
+                            <td id="table-align">{{ item.employee_amount | number }}</td>
+                            <td id="table-align">{{ item.voluntary_contribution_amount | number }}</td>
+                            <td id="table-align">{{ item.total_transfer_amount }}</td>
+                            <td id="table-align">{{ item.cost_of_past_benefits }}</td>
+                            <td id="table-align">{{ item.total_amount | number }}</td>
+                            <td id="table-align">{{ item.pnmdp_amount | number }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div style="margin-top: 40px;">
+                <div class="title-desc">Withdrawals</div>
+                <div class="filter-options">
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Year</option>
+                        <ng-container *ngFor="let year of years">
+                            <option [value]="year">{{ year }}</option>
+                        </ng-container>
+                    </select>
+
+                    <select class="form-select">
+                        <option value="" disabled selected>Select Month</option>
+                        <ng-container *ngFor="let month of months">
+                            <option [value]="month">{{ month }}</option>
+                        </ng-container>
+                    </select>
+                </div>
+
+                <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: calc(100% / 6);">Date</th>
+                            <th style="width: calc(100% / 6);">Payment method</th>
+                            <th style="width: calc(100% / 6);">Bank</th>
+                            <th style="width: calc(100% / 6);">Account number</th>
+                            <th style="width: calc(100% / 6);">Payee</th>
+                            <th style="width: calc(100% / 6); text-align: right;">Amount</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td>{{ item.year }}</td>
+                            <td>{{ item.period }}</td>
+                            <td>{{ item.balanceBF }}</td>
+                            <td>{{ item.contribution }}</td>
+                            <td>{{ item.rate }}%</td>
+                            <td style="text-align: right;">{{ item.interest }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div *ngIf="selectedContent === 'members'">
+            <div>Members</div>
+            <div class="container-fil">
+                <div class="filter-container">
+                    <label class="filter-label">Filter by</label>
+                    <div class="filter-selectors">
+                        <form>
+                            <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                                [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                            <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                                [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                            <input type="text" pInputText placeholder="Enter value"
+                                [style]="{ height: '35px', 'line-height': '10px' }" />
+                        </form>
+
+                    </div>
+                </div>
+                <div class="form-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text" class="form-control form-input" placeholder="Search">
+                    <!-- <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                    </p-multiSelect> -->
+                </div>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+                [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: calc(100% / 8);">Surname</th>
+                        <th style="width: calc(100% / 8);">Other names</th>
+                        <th style="width: calc(100% / 8);">Date of birth</th>
+                        <th style="width: calc(100% / 8);">Gender</th>
+                        <th style="width: calc(100% / 8);">Payroll/Member No.</th>
+                        <th style="width: calc(100% / 8);">Category</th>
+                        <th style="width: calc(100% / 8);">Dependent type</th>
+                        <th style="width: calc(100% / 8); text-align: right;">Monthly earning</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.period }}</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td>{{ item.contribution }}</td>
+                        <td>{{ item.rate }}%</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td style="text-align: right;">{{ item.interest }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+
+    </div>
+</div>
