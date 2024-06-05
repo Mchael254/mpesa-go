@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DashboardService } from '../../services/dashboard.service';
-import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, memberBalancesDTO } from '../../models/member-policies';
+import { DetailedMemContrReceiptsDTO, MemberCoversDTO, MemberDetailsDTO, MemberPensionDepReceiptsDTO, MemberWithdrawalsDTO, memberBalancesDTO } from '../../models/member-policies';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
 import { Logger } from 'src/app/shared/services';
@@ -37,6 +37,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   detailedMemContrReceipts: DetailedMemContrReceiptsDTO[]
   pensionMemCode: number;
   pensionDepositCode: number;
+  withdrawals: MemberWithdrawalsDTO[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -56,6 +57,7 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     this.getValuations();
     this.getMemberCovers();
     this.getMemberDetails();
+    this.getMemberWithdrawals();
   }
 
   ngOnDestroy(): void {
@@ -213,6 +215,14 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
     // this.dashboardService.getMemberCovers(20241259133, 2024991).subscribe((res: MemberCoversDTO) => {
       this.memberCovers = res;
       log.info("getMemberCovers", this.memberCovers)
+    });
+  }
+
+  getMemberWithdrawals() {
+    this.dashboardService.getMemberWithdrawals(this.selectedPolicyCode, this.memberCode).subscribe((res: MemberWithdrawalsDTO[]) => {
+      // this.dashboardService.getMemberWithdrawals(2024839, 20241259568).subscribe((res: MemberWithdrawalsDTO[]) => {
+      this.withdrawals = res;
+      log.info("withdrawals", this.withdrawals)
     });
   }
 
