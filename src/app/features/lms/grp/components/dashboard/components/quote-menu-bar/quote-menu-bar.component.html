@@ -1,0 +1,26 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="container">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <img src="assets/images/quick-quote.png" alt="Quick quote">
+                <div class="text-center">
+                    <p>Quick quote</p>
+                    <button class="btn-continue" (click)="onQuickQuoteClick()">Continue</button>
+                </div>
+            </div>
+        
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <img src="assets/images/normal-quote.png" alt="Normal quote">
+                <div class="text-center">
+                    <p>Normal quote</p>
+                    <button class="btn-continue" (click)="onNormalQuoteClick()" >Continue</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>

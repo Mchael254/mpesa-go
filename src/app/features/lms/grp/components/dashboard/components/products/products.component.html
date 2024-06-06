@@ -1,0 +1,147 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <div class="product-title">Product catalog</div>
+        <div class="row">
+            <div class="image-wrapper">
+                <div class="image-container">
+                    <div class="caption-above">Life Insurance</div>
+                    <img src="assets/images/prod catalog 1.png" alt="Camera">
+                    <div class="caption-below">Insurance coverage for a group, typically offered to
+                        employers to ensure financial protection
+                        in the event of an individual's death
+                    </div>
+                    <div class="button-container">
+                        <button class="learn-more" (click)="showProductOverview()">Learn more</button>
+                        <button class="get-quote">Get quote</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="image-wrapper">
+                <div class="image-container">
+                    <div class="caption-above">Credit life</div>
+                    <img src="assets/images/prod catalog 2.png" alt="Camera">
+                    <div class="caption-below">Insurance that clears a borrower's debt in case of death,
+                        disability or involuntary job loss.
+                    </div>
+                    <div class="button-container">
+                        <button class="learn-more">Learn more</button>
+                        <button class="get-quote">Get quote</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="image-wrapper">
+                <div class="image-container">
+                    <div class="caption-above">Welfare scheme</div>
+                    <img src="assets/images/prod catalog 3.png" alt="Camera">
+                    <div class="caption-below">A program providing financial support for the well-being of
+                        a group.
+                    </div>
+                    <div class="button-container">
+                        <button class="learn-more">Learn more</button>
+                        <button class="get-quote">Get quote</button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="image-wrapper">
+                <div class="image-container">
+                    <div class="caption-above">Managed funds</div>
+                    <img src="assets/images/prod catalog 4.png" alt="Camera">
+                    <div class="caption-below">Insurance coverage for a group, typically offered to
+                        employers to ensure financial protection
+                        in the event of an individual's death</div>
+                    <div class="button-container">
+                        <button class="learn-more">Learn more</button>
+                        <button class="get-quote">Get quote</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal to show product overview -->
+<div class="modal fade" tabindex="-1" #productOverviewModal id="productOverviewModal"
+    aria-labelledby="adminDetailsModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeProductOverview()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 col-md-12 col-sm-12" style="display: flex; gap: 20px;">
+                    <div class="col-lg-7 col-md-7 col-sm-12">
+                        <div class="caption-above" style="color: #00529B;">Life insurance</div>
+                        <img src="assets/images/prod catalog 1.png" alt="Camera">
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-12" style="display: flex; align-items: center;">
+                        <div>
+                            <div class="product-title" style="color: black;">Overview</div>
+                            <div style="color: black;">SecureLife plus is a comprehensive life insurance policy designed
+                                to
+                                provide financial security and peace of mind to you and you loved ones
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
+                    <div class="product-title" style="color: black;">Key features</div>
+                    <div style="color: black;">
+                        <ol style="margin-left: 20px;">
+                            <li>Death Benefit: In the unfortunate event of the policyholders demise
+                                , a lump sum amount is paid to the beneficiaries, providing financial
+                                support during a difficult time.
+                            </li>
+                            <li>SecureLife plus offers option for income protection, ensuring that your family's 
+                                lifestyle and financial obligation are maintained even in your absence.
+                            </li>
+                            <li>SecureLife plus offers peace of mind for you and your loved ones.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
+                    <div class="product-title" style="color: black;">Policy documents</div>
+                    <div style="color: black;">
+                        <ul style="list-style-type: none; padding: 0;">
+                            <li style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <span>Document 1</span>
+                                <a href="#" download style="margin-left: 10px;">
+                                    <i class="fas fa-arrow-down" style="font-size: 20px;"></i>
+                                </a>
+                            </li>
+                            <li style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <span>Document 2</span>
+                                <a href="#" download style="margin-left: 10px;">
+                                    <i class="fas fa-arrow-down" style="font-size: 20px;"></i>
+                                </a>
+                            </li>
+                            <li style="display: flex; align-items: center;">
+                                <span>Document 3</span>
+                                <a href="#" download style="margin-left: 10px;">
+                                    <i class="fas fa-arrow-down" style="font-size: 20px;"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Get quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of modal to show product overview -->
