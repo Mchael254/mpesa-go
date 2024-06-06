@@ -80,7 +80,7 @@ export class PolicyProductComponent {
   selectedIntroducer: any;
   introducerCode: any;
   introducerName: any;
-
+  selectedPolicy: string | undefined;
   currency: any;
  currencyCode:any 
   contractNamesList: any;
@@ -89,7 +89,7 @@ export class PolicyProductComponent {
 
   policyDetails: any;
   policyResponse: any;
-
+  policyList:any;
   selectedTransactionType: any;
 
   paymentModesList: any;
@@ -153,7 +153,8 @@ export class PolicyProductComponent {
     this.getIntroducers();
     this.getPaymentModes();
     this.getPremiumFinanciers();
-
+    this.getAllPolicies();
+    this.createPolicyRiskForm();
   }
   ngOnDestroy(): void { }
   ngAfterViewInit(): void {
@@ -204,6 +205,11 @@ export class PolicyProductComponent {
     });
 
 
+  }
+  createPolicyRiskForm(){
+    this.policyForm = this.fb.group({
+      importRiskfromPolicy:['']
+    })
   }
   get f() {
     return this.policyProductForm.controls;
@@ -1019,4 +1025,29 @@ export class PolicyProductComponent {
       },
     });
   }
-}
+  getAllPolicies(){
+    this.policyService.getAllPolicy()
+    .pipe(untilDestroyed(this))
+    .subscribe({
+      next: (data) => {
+       this.policyList = data
+        console.log(this.policyList.content)
+      },
+      error: (err) => {
+
+        this.globalMessagingService.displayErrorMessage(
+          'Error',
+          'Something went wrong when trying to retrive policies. Please try Again'
+        );
+        log.info(`error >>>`, err);
+      },
+    });
+    }
+  
+  selectedPolicyforRisk(){
+    console.log('policy for risk',this.policyForm.value.importRiskfromPolicy)
+    sessionStorage.setItem('selectedPolicyforRisk',this.policyForm.value.importRiskfromPolicy)
+  }
+  
+  }
+

@@ -70,6 +70,9 @@ export class PolicyService {
     return this.api.POST(`/v1/policy-Risks-Controller?policyBatchNo=${batchNo}&user=${user}`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
   }
+  getPolicyRisks(policyNo:String){
+    return this.api.GET(`/v2/policy-risks?policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
   generatePolicyNumber(data: Policy) {
     return this.api.POST(`v1/policies/generatePolicyNumber`, JSON.stringify(data), API_CONFIG.GIS_UNDERWRITING_BASE_URL)
 
