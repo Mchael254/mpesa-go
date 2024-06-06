@@ -22,6 +22,7 @@ const log = new Logger('RevisionDetailsComponent');
 export class RevisionDetailsComponent implements OnInit {
   claim: ClaimsDTO;
   @Input() selectedSpringTickets: TicketsDTO;
+  @Input() claimPaymentTransaction : any;
   claimTransaction: any;
   pageSize: 5;
   perilsData: any[];
