@@ -1326,7 +1326,7 @@ export class RiskDetailsComponent {
 
       Papa.parse(file, {
         complete: (result: any) => {
-
+          console.log(result)
           // Assuming CSV has header row, you can access data with result.data
 
           try {

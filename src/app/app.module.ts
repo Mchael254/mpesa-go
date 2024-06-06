@@ -20,6 +20,7 @@ import { HttpLoaderFactory } from './shared/utils/httpLoaderFactory';
 import { CommonModule } from '@angular/common';
 import { NgxAwesomePopupModule, ToastNotificationConfigModule, ToastPositionEnum, ToastProgressBarEnum, ToastUserViewTypeEnum } from '@costlydeveloper/ngx-awesome-popup';
 import {NgbModule, NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
+
 export function loadConfig(
   config: AppConfigService,
   configLoader: ConfigurationLoader,
@@ -35,7 +36,8 @@ export function loadConfig(
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+  
   ],
   imports: [
     CommonModule,
