@@ -1,0 +1,138 @@
+.main {
+  background: #F5F6F8;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.container {
+  background: #FFF;
+  border: 1px solid rgba(220, 220, 220, 0.85);
+  border-radius: 5px;
+  flex: 1;
+  padding: 48px;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+label {
+  padding-bottom: 8px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 40px;
+}
+
+button {
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+button.get-quote {
+  background-color: #00529B;
+  color: #FFFFFF;
+  border-color: #00529B;
+}
+
+button.get-quote:hover {
+  background-color: #65b2f5;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 5px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+#container {
+  display: flex;
+  gap: 20px;
+}
+
+.prod-description {
+  padding-left: 40px;
+}
+
+.btns-container {
+  display: flex;
+  margin-top: 20px;
+  margin-left: 40px;
+  gap: 50px;
+}
+
+.labels-desc {
+  display: flex;
+  margin-top: 20px;
+  gap: 50px;
+}
+
+button.download-btn {
+  /* style="padding: 10px 20px; background-color: transparent; color: #00529B; background-color: #00529B; border-radius: 5px;" */
+  background-color: transparent;
+  color: #00529B;
+  border-color: #00529B;
+}
+
+button.download-btn:hover {
+  background-color: #e1e1e1;
+}
+
+button.purchase-btn {
+  /* style="padding: 10px 20px; background-color: #00529B; color: white; border: none; border-radius: 5px;" */
+  background-color: #00529B;
+  color: #FFFFFF;
+  border-color: #00529B;
+}
+
+button.purchase-btn:hover {
+  background-color: #65b2f5;
+}
+
+@media (max-width: 1000px) {
+  #container {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .prod-description {
+    padding-left: unset;
+  }
+
+  .btns-container {
+    margin-top: 20px;
+    margin-left: unset;
+    gap: 10px;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .labels-desc {
+    display: flex;
+    margin-top: 20px;
+    gap: 10px;
+    flex-direction: column;
+  }
+}

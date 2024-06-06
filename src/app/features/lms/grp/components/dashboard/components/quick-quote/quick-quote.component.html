@@ -1,0 +1,165 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div class="container">
+        <form [formGroup]="quickQuoteForm">
+            <div class="row" style="padding-top: 10px;">
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="product" style="color: black;">Product</label>
+                        <select class="form-select" [id]="'product'" formControlName="product">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let prod of " [value]="">{{ prod }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="coverType" style="color: black;">Cover type</label>
+                        <select class="form-select" [id]="'coverType'" formControlName="coverType">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let cover of " [value]="">{{ cover }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <label for="coverageType" style="color: black;">Coverage type</label>
+                        <select class="form-select" [id]="'coverageType'" formControlName="coverageType">
+                            <option selected="true" disabled="disabled"></option>
+                            <option *ngFor="let coverage of " [value]="">{{ coverage }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding-top: 10px;">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="multipleOfEarnings" style="color: black;">Multiple of earnnings</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input type="text" pInputText class="form-control" id="multipleOfEarnings"
+                                    [style]="{ width: '100%' }" formControlName="multipleOfEarnings">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="NoOfMembers" style="color: black;">Number of members</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input type="number" pInputText class="form-control" id="NoOfMembers"
+                                    [style]="{ width: '100%' }" formControlName="NoOfMembers">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="averageAge" style="color: black;">Members average age</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input type="text" pInputText class="form-control" id="averageAge"
+                                    [style]="{ width: '100%' }" formControlName="averageAge">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding-top: 10px;">
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="annualEarnings" style="color: black;">Members annual earning</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <input type="text" pInputText class="form-control" id="annualEarnings"
+                                    [style]="{ width: '100%' }" formControlName="annualEarnings">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="coverFrom" style="color: black;">Cover from</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <p-calendar formControlName="coverFrom" dateFormat="dd/mm/yy" [showIcon]="true"
+                                    [showButtonBar]="true" placeholder="dd/mm/yy">
+                                </p-calendar>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div>
+                        <div>
+                            <label for="coverTo" style="color: black;">Cover to</label>
+                        </div>
+                        <div class="form-group">
+                            <div>
+                                <p-calendar formControlName="coverTo" dateFormat="dd/mm/yy" [showIcon]="true"
+                                    [showButtonBar]="true" placeholder="dd/mm/yy">
+                                </p-calendar>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="get-quote" (click)="submitQuickFormData()">Get quote</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container" style="margin-top: 20px;">
+        <div class="title" style="margin-bottom: 8px;">Quote summary</div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="container">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <img src="assets/images/prod catalog 1.png" alt="Camera">
+            </div>
+
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 prod-description">
+                <div class="title" style="color: black;">Group life assurance</div>
+
+                <div class="labels-desc">
+                    <div>
+                        <div style="font-size: 24px; color: #00529B;">$100,000</div>
+                        <div style="color: grey;">Premium</div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 24px; color: #00529B;">365 days</div>
+                        <div style="color: grey;">Coverage period</div>
+                    </div>
+                </div>
+
+                <div class="btns-container">
+                    <button class="download-btn">Download</button>
+                    <button class="purchase-btn" >Purchase</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
