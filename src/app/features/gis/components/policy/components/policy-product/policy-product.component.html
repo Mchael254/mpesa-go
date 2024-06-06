@@ -759,7 +759,7 @@
                                     <div class="col-3">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" value=""
-                                                (change)="onAnotherPolicyChange($event)" id="another_policy">
+                                                (change)="onAnotherPolicyChange($event);" id="another_policy">
                                             <label class="form-check-label" for="another_policy">
                                                 {{'gis.policy.another_policy' | translate}}
                                             </label>
@@ -787,13 +787,18 @@
                             </div> -->
                         </div>
                         <div class="row mb-4">
-                            <div class="col-sm-4 col-12" *ngIf="isriskImportedAnotherPolicy">
-                                <label for="policy_interface" class=" product-label"
-                                    id="policy_interface">{{'gis.policy.policy_no' | translate}}</label>
-                                <p-dropdown formControlName="currencyCode" [options]="currency" optionLabel="name"
-                                    optionValue="id" [filterBy]="'name'" placeholder=" " [filter]="true"></p-dropdown>
-
-                            </div>
+                            <form [formGroup]="policyForm">
+                                
+                                <div class="col-sm-4 col-12" *ngIf="isriskImportedAnotherPolicy">
+                                    <label for="policy_interface" class=" product-label"
+                                        id="policy_interface">{{'gis.policy.policy_no' | translate}}</label>
+                                    <p-dropdown  [options]="policyList.content" formControlName="importRiskfromPolicy"  optionLabel="policyNo"
+                                        optionValue="policyNo" [filterBy]="'policyNo'" placeholder="Select a policy" [filter]="true">
+                                    </p-dropdown>
+    
+                                </div>
+                            </form>
+                           
                         </div>
                     </div>
                     <p class="more " (click)="show=!show" data-bs-toggle="collapse" data-bs-target="#collapsePolicy"
@@ -808,7 +813,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-primary" (click)="createPolicy()">{{'gis.policy.next' |
+            <button type="button" class="btn btn-primary" (click)="createPolicy();selectedPolicyforRisk()">{{'gis.policy.next' |
                 translate}}</button>
         </div>
 
