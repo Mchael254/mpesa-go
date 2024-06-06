@@ -1,259 +1,699 @@
 <div class="base-content-section">
-  <div class="me-4">
-    <div class="card mb-3">
+  <div class="row me-4">
+    <div class="col-8">
+      <app-dynamic-breadcrumb [breadCrumbItems]="[
+      {
+        label: 'FMS',
+        url: '/home/dashboard'
+      },
+      {
+        label: 'Cheques',
+        url: '#',
+      },
+      {
+        label: 'Signing',
+        url: ''
+      }
+    ]">
+      </app-dynamic-breadcrumb>
+    </div>
+  </div>
+
+  <div class="card mb-2" style="box-shadow:none">
+    <div class="row px-3 d-flex justify-content-center">
+      <div class="col-lg-3 d-flex">
+        <label  class="form-label text-black align-content-center m-0" style="width: 35%;">Organization:</label>
+        <select class="form-control form-select text-black border-0 fw-medium" id="organization" style="width: 62%;">
+          <option value="" disabled >Select option</option>
+          <option value="" selected>Mutual Benefits Assurance PLC</option>
+        </select>
+      </div>
+      <div class="col-lg-3 d-flex">
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Branch:</label>
+        <select class="form-control form-select text-black border-0 fw-medium" id="branch" style="width: 62%;">
+          <option value="" disabled >Select option</option>
+          <option value="" selected>Head Office</option>
+        </select>
+      </div>
+      <div class="col-lg-2 d-flex">
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Year:</label>
+        <select class="form-control form-select text-black border-0 fw-medium" id="year" style="width: 50%;">
+          <option value="" disabled >Select option</option>
+          <option value="" selected>2022</option>
+          <option value="" selected>2023</option>
+          <option value="" selected>2024</option>
+        </select>
+      </div>
+      <div class="col-lg-2 d-flex">
+        <label  class="form-label text-black text-end align-content-center m-0" style="width: 35%;">Period:</label>
+        <select class="form-control form-select text-black border-0 fw-medium" id="period" style="width: 50%;">
+          <option value="" disabled >Select option</option>
+          <option value="" selected>APR</option>
+          <option value="" selected>MAY</option>
+          <option value="" selected>JUN</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+    <div class="card mb-3" style="box-shadow:none">
       <div class="card-header bg-transparent border-bottom-0">
         <span class="justify-content-center mt-3 text-primary">Cheque authorization</span>
       </div>
       <div class="card-body">
+
+        <p-tabView [(activeIndex)]="activeIndex">
+          <p-tabPanel header="Cheques">
+            <form [formGroup]="sortingForm" style="background: none; display: contents">
+              <div class="row">
+                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                  <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
+                  <!--<select class="form-control form-select" formControlName="bank" id="bank" (change)="sortChequePayments()">
+                    <option value="" disabled selected>Select option</option>
+                    <option *ngFor="let bankData of bankData" value="{{ bankData.id }}"> {{ bankData.shortDesc}}</option>
+                  </select>-->
+
+                  <p-dropdown
+                    [options]="bankAccount"
+                    optionLabel="bctName"
+                    [showClear]="true"
+                    [filter]="true"
+                    filterBy="bctName"
+                    [style]="{ width: '100%', height: '50%' }"
+                    appendTo="body"
+                    placeholder="Select bank"
+                    (onChange)="sortChequePayments()"
+                    formControlName="bank">
+
+                    <ng-template let-bank pTemplate="item">
+                      <div class="d-flex align-items-center gap-2">
+                        <div>{{ bank?.accNo }}</div>
+                        <div>{{ bank?.bctName }}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+                <div class="col-lg-2 col-sm-4 col-6">
+                  <label for="paymentType" class="form-label text-black fw-medium">Payment type</label>
+                  <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
+                    <option value="" disabled selected>Select option</option>
+                    <!--                <option value="">All</option>-->
+                    <option *ngFor="let paymentOption of paymentTypes" value="{{ paymentOption?.chqPaymentType }}" >{{ paymentOption?.chqPaymentDesc }}
+                    </option>
+                  </select>
+                </div>
+                <!--<div class="col-lg-2 col-sm-4 col-6 mb-3">
+                  <label for="paymentType" class="form-label text-black">System</label>
+                  <select class="form-control form-select" formControlName="system" id="system" (change)="sortChequePayments()">
+                    <option value="" disabled selected>Select option</option>
+                    <option *ngFor="let systemData of systemsData" value="{{ systemData.id }}"> {{ systemData.shortDesc}}</option>
+                  </select>
+                </div>-->
+                <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
+                  <label class="form-label text-black fw-medium">Date from</label><br>
+                  <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
+                </div>
+                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                  <label class="form-label text-black fw-medium">Date to</label><br>
+                  <input type="date" class="form-control" formControlName="toDate" (change)="sortChequePayments()">
+                </div>
+              </div>
+
+            </form>
+            <div >
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <p-table
+                #chequeTable
+                [autoLayout]="true"
+                [rowHover]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="chequeRequisitions?.totalElements"
+                [value]="chequeRequisitions?.content"
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                [scrollable]="true"
+                [paginator]="true"
+                [(selection)]="selectedEftPaymentTypes"
+                selectionMode="single"
+                dataKey="chequeRef"
+                scrollHeight="400px"
+                [tableStyle]="{'min-width': '78rem'}"
+                responsiveLayout="scroll"
+
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                [globalFilterFields]="['chequeRef']"
+              >
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 3%;">
+                      <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th pSortableColumn="chequeRef">Ref No<p-sortIcon field="chequeRef"></p-sortIcon></th>
+                    <th pSortableColumn="chequeRefDate">Date<p-sortIcon field="chequeRefDate"></p-sortIcon></th>
+                    <th pSortableColumn="reqDate">Request date<p-sortIcon field="reqDate"></p-sortIcon></th>
+                    <th pSortableColumn="pymtType">Type<p-sortIcon field="pymtType"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNarrative">Narrative<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
+                    <th pSortableColumn="bnkName">Bank account<p-sortIcon field="bnkName"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNo">Cheque number<p-sortIcon field="chequeNo"></p-sortIcon></th>
+                    <th pSortableColumn="chequeAmount">Amount<p-sortIcon field="chequeAmount"></p-sortIcon></th>
+                    <th style="width: 3%;"></th>
+                  </tr>
+                  <tr>
+                    <th style="width: 3%;"></th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeRef" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeRefDate" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="reqDate" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="pymtType" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeNarrative" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="bnkName" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeNo" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeAmount" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th style="width: 3%;"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-chequeAuth>
+                  <tr>
+                    <td>
+                      <p-tableCheckbox [value]="chequeAuth"></p-tableCheckbox>
+                    </td>
+                    <td>{{chequeAuth.chequeRef}}</td>
+                    <td>
+                      {{chequeAuth?.chequeRefDate | date: 'dd-MM-yyyy'}}
+                    </td>
+                    <td>
+                      {{chequeAuth?.reqDate | date: 'dd-MM-yyyy'}}
+                    </td>
+                    <td>
+                      {{chequeAuth?.pymtType}}
+                    </td>
+                    <td>
+                      <span *ngIf = "chequeAuth?.chequeNarrative" title="{{chequeAuth?.chequeNarrative}}">
+                        {{chequeAuth?.chequeNarrative?.substring(0,10)}}...
+                      </span>
+                    </td>
+                    <td>
+                  <span *ngIf = "chequeAuth?.bnkName" title="{{chequeAuth?.bnkName | titlecase}}">
+                    {{chequeAuth?.bnkName?.substring(0,10) | titlecase}}...
+                  </span>
+                    </td>
+                    <td>{{chequeAuth?.chequeNo}}</td>
+                    <td>{{chequeAuth?.chequeAmount | number:'1.2-2'}}</td>
+
+                    <td class="text-center">
+                      <div style="position: relative;">
+                        <div class="btn-group dropend">
+                          <a class="btn btn-link text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="pi pi-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li (click)="openEligibleAuthModal(chequeAuth)">Eligible authorizers</li>
+                            <li (click)="openSignedByModal(chequeAuth)">Signed by</li>
+                            <li (click)="openTransactionSummaryModal(chequeAuth)">Transaction details</li>
+                            <li (click)="openDocViewerModal()">Documents</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="11">No Cheque Authorization Detail(s) Found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="EFT">
+            <form [formGroup]="sortingForm" style="background: none; display: contents">
+              <div class="row">
+                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                  <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
+                  <!--<select class="form-control form-select" formControlName="bank" id="bank" (change)="sortChequePayments()">
+                    <option value="" disabled selected>Select option</option>
+                    <option *ngFor="let bankData of bankData" value="{{ bankData.id }}"> {{ bankData.shortDesc}}</option>
+                  </select>-->
+
+                  <p-dropdown
+                    [options]="bankAccount"
+                    optionLabel="bctName"
+                    [showClear]="true"
+                    [filter]="true"
+                    filterBy="bctName"
+                    [style]="{ width: '100%', height: '50%' }"
+                    appendTo="body"
+                    placeholder="Select bank"
+                    (onChange)="sortChequePayments()"
+                    formControlName="bank">
+
+                    <ng-template let-bank pTemplate="item">
+                      <div class="d-flex align-items-center gap-2">
+                        <div>{{ bank?.accNo }}</div>
+                        <div>{{ bank?.bctName }}</div>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+                <div class="col-lg-2 col-sm-4 col-6">
+                  <label for="paymentType" class="form-label text-black fw-medium">Payment type</label>
+                  <select class="form-control form-select" formControlName="paymentType" id="paymentType" (change)="sortChequePayments()">
+                    <option value="" disabled selected>Select option</option>
+                    <!--                <option value="">All</option>-->
+                    <option *ngFor="let paymentOption of paymentTypes;" value="{{ paymentOption?.chqPaymentType }}">{{ paymentOption?.chqPaymentDesc }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
+                  <label class="form-label text-black fw-medium">Date from</label><br>
+                  <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
+                </div>
+                <div class="col-lg-2 col-sm-4 col-6 mb-3">
+                  <label class="form-label text-black fw-medium">Date to</label><br>
+                  <input type="date" class="form-control" formControlName="toDate" (change)="sortChequePayments()">
+                </div>
+              </div>
+
+            </form>
+            <div >
+              <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+              <p-table
+                #eftTable
+                [autoLayout]="true"
+                [rowHover]="true"
+                [showCurrentPageReport]="true"
+                [rows]="pageSize || 5"
+                [totalRecords]="eftRequisitions?.totalElements"
+                [value]="eftRequisitions?.content"
+                [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+                [scrollable]="true"
+                [paginator]="true"
+                [(selection)]="selectedEftPaymentTypes"
+                selectionMode="single"
+                dataKey="chequeRef"
+                scrollHeight="400px"
+                [tableStyle]="{'min-width': '89rem'}"
+                currentPageReportTemplate="{first} - {last} of {totalRecords}"
+                [globalFilterFields]="['chequeRef']"
+              >
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 3%;">
+                      <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th pSortableColumn="chequeRef">Ref No<p-sortIcon field="chequeRef"></p-sortIcon></th>
+                    <th pSortableColumn="cqrRefDate">Date<p-sortIcon field="cqrRefDate"></p-sortIcon></th>
+                    <th pSortableColumn="chequeNarrative">Narrative<p-sortIcon field="chequeNarrative"></p-sortIcon></th>
+                    <th pSortableColumn="bnkBankName">Bank<p-sortIcon field="bnkBankName"></p-sortIcon></th>
+                    <th pSortableColumn="pyAccNo">Account Number<p-sortIcon field="pyAccNo"></p-sortIcon></th>
+                    <th pSortableColumn="chequeAmount">Amount<p-sortIcon field="chequeAmount"></p-sortIcon></th>
+                    <th pSortableColumn="eftStatus">Status<p-sortIcon field="eftStatus"></p-sortIcon></th>
+                    <th pSortableColumn="disableControls">Disabled<p-sortIcon field="disableControls"></p-sortIcon></th>
+                    <th pSortableColumn="date">Remarks<p-sortIcon field="date"></p-sortIcon></th>
+                    <th style="width: 3%;"></th>
+                  </tr>
+                  <tr>
+                    <th style="width: 3%;"></th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeRef" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeRefDate" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeNarrative" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="bnkBankName" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="pyAccNo" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="chequeAmount" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="eftStatus" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="eftStatus" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th>
+                      <p-columnFilter type="text" field="disableControls" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>
+                    </th>
+                    <th style="width: 3%;"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-chequeAuth>
+                  <tr>
+                    <td>
+                      <p-tableCheckbox [value]="chequeAuth" [disabled] = "chequeAuth?.disableControls === 'Y'"></p-tableCheckbox>
+                    </td>
+                    <td>{{chequeAuth.chequeRef}}</td>
+                    <td>
+                      {{chequeAuth?.chequeRefDate | date: 'dd-MM-yyyy'}}
+                    </td>
+                    <td>
+                      <span *ngIf = "chequeAuth?.chequeNarrative" title="{{chequeAuth?.chequeNarrative | titlecase}}">
+                        {{chequeAuth?.chequeNarrative?.substring(0,10) | titlecase}}...
+                      </span>
+                    </td>
+                    <td>
+                  <span *ngIf = "chequeAuth?.bnkBankName" title="{{chequeAuth?.bnkBankName | titlecase}}">
+                    {{chequeAuth?.bnkBankName?.substring(0,10) | titlecase}}...
+                  </span>
+                    </td>
+                    <td>{{chequeAuth?.pyAccNo}}</td>
+                    <td>{{chequeAuth?.chequeAmount | number:'1.2-2'}}</td>
+                    <td>
+                      <span *ngIf = "chequeAuth?.eftStatus" title="{{chequeAuth?.eftStatus | titlecase}}">
+                        {{chequeAuth?.eftStatus?.substring(0,10) | titlecase}}...
+                      </span>
+                    </td>
+                    <td>{{chequeAuth?.disableControls}}</td>
+                    <td><input type="text" name="" class="form-control w-75"></td>
+                    <td class="text-center">
+                      <div style="position: relative;">
+                        <div class="btn-group dropend">
+                          <a class="btn btn-link text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="pi pi-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li (click)="openEligibleAuthModal(chequeAuth)">Eligible authorizers</li>
+                            <li (click)="openSignedByModal(chequeAuth)">Signed by</li>
+                            <li (click)="openTransactionSummaryModal(chequeAuth)">Transaction details</li>
+                            <li (click)="openDocViewerModal()">Documents</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="11">No EFT Authorization Detail(s) Found.</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </p-tabPanel>
+        </p-tabView>
+      </div>
+    </div>
+
+
+  <button class="btn btn-outline-primary float-start mb-3" (click)="generateOtp()"
+          [disabled]="isGenerateOtpButtonDisabled || isLoadingGenerateOtp">
+    <span *ngIf="!isLoadingGenerateOtp || countdown !== null; else loading">Generate OTP</span>
+    <ng-template #loading>
+      <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
+    </ng-template>
+  </button>
+  <button class="btn btn-primary float-end mb-3" (click)="saveSignChequeMandate()"
+          [disabled]="isButtonDisabled || isLoadingSignSelected">
+    <span *ngIf="!isLoadingSignSelected; else loadingSignSelected">Sign selected</span>
+    <ng-template #loadingSignSelected>
+      <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+    </ng-template>
+  </button>
+  <button class="btn btn-primary float-end mb-3" (click)="sendToCorrectionChequeMandate()"
+          [disabled]="isButtonDisabled || isLoadingSendCorrection">
+    <span *ngIf="!isLoadingSendCorrection; else loading">Send for correction</span>
+    <ng-template #loading>
+      <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+    </ng-template>
+  </button>
+  <button class="btn btn-danger float-end mb-3 me-2" (click)="rejectSignChequeMandate()"
+          [disabled]="isButtonDisabled || isLoadingReject">
+    <span *ngIf="!isLoadingReject; else loading">Reject</span>
+    <ng-template #loading>
+      <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+    </ng-template>
+  </button>
+</div>
+
+<!--OTP modal-->
+
+<div class="modal fade" id="otpVerifyToggle" aria-hidden="true" aria-labelledby="otpVerifyToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="width: 550px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-dark" id="otpVerifyToggleLabel">OTP VERIFICATION</h1>
+        <button type="button" class="btn-close" (click)="closeOtpModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 mb-3">
+          <p class="text-black-50 text-center">We have sent a one time password to your email</p>
+          <form [formGroup]="otpForm">
+            <div class="row justify-content-center">
+              <div style="align-items: center; width: 13%" class="form-group col-sm-2 col-3" *ngFor="let input of formInput;  index as i">
+                <input id="keyUpEvent" #formRow type="text" formControlName="{{input}}" class="form-control text-center"
+                       maxlength="1" (keyup)="keyUpEvent($event, input)">
+              </div>
+              <div *ngIf="submitted && otpForm.invalid" class="invalid-feedback">
+                <div>
+                  {{ 'auth.otp_required' | translate }}
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <button [disabled]="!this.otpForm.valid" id="onVerify" type="submit" class="btn btn-primary my-3 w-25" (click)="onVerify()">
+                <span *ngIf="!isLoading; else loading">Verify OTP</span>
+                <ng-template #loading>
+                  <i class="pi pi-spin pi-spinner text-white" style="font-size: 2rem"></i>
+                </ng-template>
+              </button>
+
+              <div class="d-flex justify-content-center flex-nowrap">
+                <label class="text-black align-content-center" style="width: 35%">Didn't receive a code?</label>
+                <button class="btn btn-link text-primary text-decoration-underline" (click)="resendOtp()">
+                  Resend
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-bottom"></div>
+
+<app-dynamic-simple-modal
+  [modalVisible]="showEligibleAuthorizers"
+  [showModalButtons]="false"
+  [useDynamicContent]="true"
+  [modalTitle]="'Eligible authorizers'"
+  [zIndex]="1"
+  (actionEmitter)="processActionEligibleAuthEmitted($event)">
+  <div modal-body-content>
+    <app-dynamic-table
+      [tableDetails]="tableEligibleAuthorizers">
+    </app-dynamic-table>
+  </div>
+</app-dynamic-simple-modal>
+
+<app-dynamic-simple-modal
+  [modalVisible]="showSignedBy"
+  [showModalButtons]="false"
+  [useDynamicContent]="true"
+  [modalTitle]="'Signed by'"
+  [zIndex]="1"
+  (actionEmitter)="processActionSignedByEmitted($event)">
+  <div modal-body-content>
+    <app-dynamic-table
+      [tableDetails]="tableSignedBy">
+    </app-dynamic-table>
+  </div>
+</app-dynamic-simple-modal>
+
+
+<div class="modal fade" id="transactionSummary" tabindex="-1" aria-labelledby="transactionSummaryLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="transactionSummaryLabel">Transaction summary</h1>
+        <button type="button" class="btn-close" (click)="closeTransactionSummaryModal()"></button>
+      </div>
+      <div class="modal-body">
         <div class="row">
-          <div class="col-sm-4">
-            <label for="paymentType" class="form-label text-black">Please select the payment type</label>
-            <p-dropdown
-              [options]=""
-              optionLabel="name"
-              optionValue="id"
-              id="paymentType"
-              [filter]="true"
-              filterBy="name"
-              [showClear]="true"
-              [style]="{ width: '100%', height: '45%' }"
-              placeholder="Select payment type"
-            >
-            </p-dropdown>
+          <div class="col-sm-6">
+            <p>
+              <label class="ticketLabel">System:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeSource}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Ref date:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeRefDate}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Transaction branch:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeTransactionBranch}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Currency:</label>
+              <span class="ticketDesc">{{transactionSummary?.currency}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Cheque No.:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeNo}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Amount(words):</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeAmountInWords}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Payee details:</label>
+              <span class="ticketDesc">{{transactionSummary?.payeeBank}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Date 1:</label>
+              <span class="ticketDesc">{{transactionSummary?.date1}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Date 2:</label>
+              <span class="ticketDesc">{{transactionSummary?.date2}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Requisition date:</label>
+              <span class="ticketDesc">{{transactionSummary?.reqDate}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Source authorization date:</label>
+              <span class="ticketDesc">{{transactionSummary?.sourceAuthDate}}</span>
+            </p>
+          </div>
+          <div class="col-sm-6">
+            <p>
+              <label class="ticketLabel">Ref:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeRef}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Narrative:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeNarrative}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Amount:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeAmount}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Bank:</label>
+              <span class="ticketDesc">{{transactionSummary?.bank}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Cheque date:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequeDate | titlecase}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Payee:</label>
+              <span class="ticketDesc">{{transactionSummary?.chequePayee}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Action by 1:</label>
+              <span class="ticketDesc">{{transactionSummary?.actionBy1}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Action by 2:</label>
+              <span class="ticketDesc">{{transactionSummary?.actionBy2}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Requisition by:</label>
+              <span class="ticketDesc">{{transactionSummary?.requisitionBy}}</span>
+            </p>
+            <p>
+              <label class="ticketLabel">Source authorized by:</label>
+              <span class="ticketDesc">{{transactionSummary?.authorisedBy}}</span>
+            </p>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="row col-sm-12 col-lg-8">
-            <div class="col-sm-6 col-lg-2 position-relative" style="top: 8px">
-              <span>Filter by</span>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <select class="form-select">
-                <option value="">Sorting Options</option>
-                <option value="refno">Ref no</option>
-                <option value="date">Date</option>
-                <option value="amt">Amount</option>
-              </select>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <select class="form-select">
-                <option value="">Sorting Options</option>
-                <option value="asc">greater than</option>
-                <option value="desc">equals</option>
-              </select>
-            </div>
-            <div class="col-sm-6 col-lg-3">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter value"
-                aria-label="search"
-                aria-describedby="search"
+      </div>
+    </div>
+  </div>
+</div>
 
-              />
-            </div>
+<!--DOC Viewer modal-->
+<div class="modal fade" id="docViewerToggle" aria-hidden="true" aria-labelledby="docViewerToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-6 text-primary" id="docViewerToggleLabel">Documents</h1>
+        <button type="button" class="btn-close" (click)="closeDocViewerModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row col-12 mb-3">
+          <div class="col-4 border-end border-secondary-subtle">
 
-          </div>
-          <div class="row col-sm-6 col-lg-4">
-            <div class="float-lg-end">
-              <input
-                type="text"
-                class="form-control float-end w-75"
-                placeholder="Search"
-                aria-label="search"
-                aria-describedby="search"
+            <!--<form [formGroup]="docDispatchForm">
+              <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
+                &lt;!&ndash;                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>&ndash;&gt;
+                <input class="form-check-input" type="checkbox" value="" [id]="'flexCheckChecked' + i"
+                       [checked]="doc?.doneBy !== null && doc?.doneBy !== undefined"
+                       (click)="selectDocs($event, doc)">
+                <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
+                       (click)="onLabelClick($event, doc)">
+                  {{doc?.docName}}
+                </label><br>
+              </div>
+            </form>-->
+            <div class="form-check mt-2 form-check-item" >
 
-              />
-              <!--<button class="btn btn-outline-primary ms-4" (click)="showColumnSelect()">
-                <i class="fa fa-angle-down"></i>
-              </button>-->
+              <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
+              >
+              <label class="form-label fw-medium text-dark" for="flexCheckChecked">
+                Document 1
+              </label><br>
             </div>
           </div>
+          <div class="col-8">
 
-          <div
-            class="columnSelect-dialogue float-end bg-white"
-            [ngStyle]="{'visibility': (shouldShowColumnSelect === true) ? 'visible' : 'hidden' }"
-          >
-            <div style="display: block; width: auto">
-              <form [formGroup]="columnsForm">
-
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="refNo" type="checkbox" [checked]="columns.refNo">
-                  <label class="form-check-label">
-                    Ref No
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="date" type="checkbox" [value]="columns.date">
-                  <label class="form-check-label">
-                    Date
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="requestDate" type="checkbox" [checked]="columns.requestDate">
-                  <label class="form-check-label">
-                    Request date
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="type" type="checkbox" [checked]="columns.type">
-                  <label class="form-check-label">
-                    Type
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="paymentMethod" type="checkbox" [checked]="columns.paymentMethod">
-                  <label class="form-check-label">
-                    Payment method
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="narrative" type="checkbox" [checked]="columns.narrative">
-                  <label class="form-check-label">
-                    Narrative
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="bankAccount" type="checkbox" [checked]="columns.bankAccount">
-                  <label class="form-check-label">
-                    Bank account
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="chequeNumber" type="checkbox" [checked]="columns.chequeNumber">
-                  <label class="form-check-label">
-                    Cheque number
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="amount" type="checkbox" [checked]="columns.amount">
-                  <label class="form-check-label">
-                    Amount
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="payee" type="checkbox" [checked]="columns.payee">
-                  <label class="form-check-label">
-                    Payee
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" formControlName="remarks" type="checkbox" [checked]="columns.remarks">
-                  <label class="form-check-label">
-                    Remarks
-                  </label>
-                </div>
-
-                <button class="btn btn-outline-primary" (click)="closeColumnSelect()">Cancel</button>
-                <button class="btn btn-primary ms-2" (click)="showSelectedColumns()">Done</button>
-              </form>
+            <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
+            <div *ngIf="selectedRptName && filePath">
+              <ngx-doc-viewer
+                [fileName]="selectedRptName ?? ''"
+                [srcUrl]="filePath ?? ''"
+                [mimeType]="'application/pdf'"
+                class="doc-viewer"
+              ></ngx-doc-viewer>
             </div>
           </div>
+
         </div>
-        <div >
-          <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
-          <p-table
-            #chequeAuthTable
-            [autoLayout]="true"
-            [rowHover]="true"
-            [resizableColumns]="true"
-            [showCurrentPageReport]="true"
-            [rows]="pageSize || 5"
-            [totalRecords]=""
-            [value]=""
-            [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
-            responsiveLayout="stack"
-            [scrollable]="true"
-
-            selectionMode="single"
-            dataKey="code"
-            scrollHeight="400px"
-            currentPageReportTemplate="{first} - {last} of {totalRecords}"
-            [globalFilterFields]="['description', 'code']"
-          >
-
-            <ng-template pTemplate="header">
-              <tr>
-                <th style="width:0.5rem;">
-                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                </th>
-                <th *ngIf="columns.refNo">Ref No</th>
-                <th *ngIf="columns.date">Date</th>
-                <th *ngIf="columns.requestDate">Request date</th>
-                <th *ngIf="columns.type">Type</th>
-                <th *ngIf="columns.paymentMethod">Payment method</th>
-                <th *ngIf="columns.narrative">Narrative</th>
-                <th *ngIf="columns.bankAccount">Bank account</th>
-                <th *ngIf="columns.chequeNumber">Cheque number</th>
-                <th *ngIf="columns.amount">Amount</th>
-                <th *ngIf="columns.payee">Payee</th>
-                <th *ngIf="columns.remarks">Remarks</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-chequeAuth>
-              <tr>
-                <td>
-                  <p-tableCheckbox [value]="chequeAuth"></p-tableCheckbox>
-                </td>
-                <td *ngIf="columns.refNo">{{chequeAuth.exceptions_remark_code}}</td>
-                <td *ngIf="columns.date">
-                  {{chequeAuth?.description?.substring(0,10) | titlecase }}
-                </td>
-                <td *ngIf="columns.requestDate">
-                  {{chequeAuth?.underwriting_decision?.substring(0,20) | titlecase }}
-                </td>
-                <td *ngIf="columns.type">{{chequeAuth?.set_standard}}</td>
-                <td *ngIf="columns.paymentMethod">{{chequeAuth?.used_standard}}</td>
-                <td *ngIf="columns.narrative">{{chequeAuth?.is_authorized}}</td>
-                <td *ngIf="columns.bankAccount">{{chequeAuth?.transactions_date}}</td>
-                <td *ngIf="columns.chequeNumber">{{chequeAuth?.authorized_by}}</td>
-                <td *ngIf="columns.amount">{{chequeAuth?.authorized_date}}</td>
-                <td *ngIf="columns.payee">{{chequeAuth?.exception_by}}</td>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="11">No Cheque Authorization Detail(s) Found.</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </div>
-        <!--<div>
-          <table class="table">
-            <thead>
-            <tr>
-              <th>Select</th>
-              <th *ngIf="columns.refNo">Ref No</th>
-              <th *ngIf="columns.date">Date</th>
-              <th *ngIf="columns.requestDate">Request date</th>
-              <th *ngIf="columns.type">Type</th>
-              <th *ngIf="columns.paymentMethod">Payment method</th>
-              <th *ngIf="columns.narrative">Narrative</th>
-              <th *ngIf="columns.bankAccount">Bank account</th>
-              <th *ngIf="columns.chequeNumber">Cheque number</th>
-              <th *ngIf="columns.amount">Amount</th>
-              <th *ngIf="columns.payee">Payee</th>
-              <th *ngIf="columns.remarks">Remarks</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td scope="row"><input type="checkbox" ></td>
-              <td *ngIf="columns.refNo">Mark</td>
-              <td *ngIf="columns.date">Otto</td>
-              <td *ngIf="columns.requestDate">@mdo</td>
-              <td *ngIf="columns.type">Type</td>
-              <td *ngIf="columns.paymentMethod">Payment method</td>
-              <td *ngIf="columns.narrative">Narrative</td>
-              <td *ngIf="columns.bankAccount">Bank account</td>
-              <td *ngIf="columns.chequeNumber">Cheque number</td>
-              <td *ngIf="columns.amount">Amount</td>
-              <td *ngIf="columns.payee">Payee</td>
-              <td *ngIf="columns.remarks">Remarks</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>-->
       </div>
     </div>
   </div>
