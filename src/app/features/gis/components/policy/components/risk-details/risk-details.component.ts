@@ -1309,7 +1309,7 @@ export class RiskDetailsComponent {
   
   downloadCSVTemplate(): void {
     console.log("TEST")
-    const templateFilePath = 'turnquest-v6.2.0/src/assets/data/Template.csv';
+    const templateFilePath = '/assets/data/Template.csv';
     const link = document.createElement('a');
     link.setAttribute('target', '_blank');
     link.setAttribute('href', templateFilePath);
