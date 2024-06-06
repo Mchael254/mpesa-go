@@ -1,6 +1,15 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {ChangeDetectorRef, Component, OnInit, ViewChildren} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {Logger} from "../../../shared/services";
+import {FmsService} from "../services/fms.service";
+import {Pagination} from "../../../shared/data/common/pagination";
+import {NgxSpinnerService} from "ngx-spinner";
+import {GlobalMessagingService} from "../../../shared/services/messaging/global-messaging.service";
+import {AuthService} from "../../../shared/services/auth.service";
+import {TableDetail} from "../../../shared/data/table-detail";
+import {Profile} from "../../../shared/data/auth/profile";
 
+const log = new Logger('ChequeAuthorizationComponent');
 @Component({
   selector: 'app-cheque-authorization',
   templateUrl: './cheque-authorization.component.html',
@@ -9,65 +18,627 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 export class ChequeAuthorizationComponent implements OnInit {
 
   public pageSize: 5;
-  columnsForm: FormGroup;
 
-  columns: any;
-  public shouldShowColumnSelect: boolean = false;
+  eftRequisitions: Pagination<any> = <Pagination<any>>{};
+  chequeRequisitions: Pagination<any> = <Pagination<any>>{};
+  selectedEftPaymentTypes: any;
+
+  public sortingForm: FormGroup;
+
+
+  public otpForm: FormGroup;
+  public formInput = ['input1', 'input2', 'input3', 'input4', 'input5', 'input6', 'input7'];
+  public otpValue = '';
+  public submitted = false;
+  isLoading: boolean = false;
+  isLoadingGenerateOtp: boolean = false;
+  isLoadingReject: boolean = false;
+  isLoadingSignSelected: boolean = false;
+  isLoadingSendCorrection: boolean = false;
+  @ViewChildren('formRow') rows: any;
+
+  isButtonDisabled = true;
+  countdown: number | null = null;
+  isGenerateOtpButtonDisabled = false;
+
+  today = new Date();
+  year = this.today.getFullYear(); // Get the current year
+  month = (this.today.getMonth() + 1).toString().padStart(2, '0'); // Get the current month and pad with leading zero if necessary
+  day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
+
+  dateToday = `${this.year}-${this.month}-${this.day}`;
+  dateFrom = `${this.year-1}-${this.month}-${this.day}`;
+
+
+  showEligibleAuthorizers: boolean = false;
+  tableEligibleAuthorizers: TableDetail;
+  colsEligibleAuthorizers = [
+    { field: 'signatoryType', header: 'Signatory type' },
+    { field: 'userName', header: 'User' },
+    { field: 'jointSignatoryType', header: 'Joint signatory type' },
+    { field: 'dsgnDescription', header: 'Designation' },
+  ];
+
+  private eligibleAuthorizers: any[];
+
+  showSignedBy: boolean = false;
+  tableSignedBy: TableDetail;
+  colsSignedBy = [
+    { field: 'username', header: 'User' },
+    { field: 'authorizationDate', header: 'Authorization date' }
+  ];
+  private signedBy: any[];
+
+  selectedOptions: any[] = [];
+  selectedRptName: string = '';
+
+  filePath: any;
+  fileName: any;
+
+  documentList: any[];
+  private validityPeriod: number;
+
+  bankAccount: any;
+  paymentTypes: any;
+  transactionSummary: any;
+
+  activeIndex: number = 0;
+  private loggedInUser: Profile;
+  private selectedBank: any;
+  tableDetails: TableDetail;
+  public totalRecords: number;
 
   constructor(private fb: FormBuilder,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private fmsService: FmsService,
+              private spinner: NgxSpinnerService,
+              private globalMessagingService: GlobalMessagingService,
+              private authService: AuthService)
+  {
+    this.otpForm = this.createOtpFormGroup(this.formInput);
   }
   ngOnInit(): void {
-    this.createColumnsForm();
-    this.columns = {
-      refNo: true,
-      date: true,
-      requestDate: true,
-      type: true,
-      paymentMethod: true,
-      narrative: true,
-      bankAccount: true,
-      chequeNumber: true,
-      amount: true,
-      payee: true,
-      remarks: true
+
+    const loggedInUser = this.authService.getCurrentUser();
+    this.loggedInUser = loggedInUser;
+
+    this.tableEligibleAuthorizers = {
+      paginator: false, showFilter: false, showSorting: false,
+      cols: this.colsEligibleAuthorizers,
+      rows: this.eligibleAuthorizers,
+      isLazyLoaded: false,
+      showCustomModalOnView: false,
+      noDataFoundMessage: 'No Eligible Authorizers Found'
+    }
+
+    this.tableSignedBy = {
+      paginator: false, showFilter: false, showSorting: false,
+      cols: this.colsSignedBy,
+      rows: this.signedBy,
+      isLazyLoaded: false,
+      showCustomModalOnView: false,
+      noDataFoundMessage: 'No Signed By Users Found'
+    }
+
+    this.createSortForm();
+    this.getBankAccount();
+    this.getPaymentTypes();
+  }
+
+  createSortForm() {
+    this.sortingForm = this.fb.group({
+      paymentType: '',
+      system: '',
+      fromDate: '',
+      toDate: '',
+      bank: ''
+    });
+  }
+
+  createOtpFormGroup(elements) {
+    const group: any = {};
+    elements.forEach((key) => {
+      group[key] = new FormControl('', Validators.required);
+    });
+
+    return new FormGroup(group);
+  }
+
+  openOtpModal() {
+    const modal = document.getElementById('otpVerifyToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
     }
   }
 
-  createColumnsForm() {
-    this.columnsForm = this.fb.group({
-      refNo: [''],
-      date: [''],
-      requestDate: [''],
-      type: [''],
-      paymentMethod: [''],
-      narrative: [''],
-      bankAccount: [''],
-      chequeNumber: [''],
-      amount: [''],
-      payee: [''],
-      remarks: ['']
-    })
+  closeOtpModal() {
+    const modal = document.getElementById('otpVerifyToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
   }
 
-  showHideColumn(event) {
-    const column = event.target.value;
-    this.columns[column] = !this.columns[column]
-    console.log(column, this.columns);
+  openTransactionSummaryModal(data) {
+    const modal = document.getElementById('transactionSummary');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+
+
+      if (this.activeIndex === 0) {
+        this.getTransactionDetails(data?.chequeNo, this.loggedInUser?.code, 'PRN');
+      }
+      else {
+        this.getTransactionDetails(data?.chequeNo, this.loggedInUser?.code, 'EFT');
+      }
+    }
   }
 
-  showSelectedColumns() {
-    const formValues = this.columnsForm.getRawValue();
-    this.columns = { ...formValues }
-    // {refNo: true, date: true, requestDate: true}
-    console.log(formValues)
+  closeTransactionSummaryModal() {
+    const modal = document.getElementById('transactionSummary');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
   }
 
-  showColumnSelect() {
-    this.shouldShowColumnSelect = !this.shouldShowColumnSelect;
-    // console.info(`clicked`, this.shouldShowColumnSelect)
+  openDocViewerModal() {
+    const modal = document.getElementById('docViewerToggle');
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'block';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.add('show');
+      }
+    }
   }
-  closeColumnSelect(): void {
-    this.shouldShowColumnSelect = false;
+
+  closeDocViewerModal() {
+    const modal = document.getElementById('docViewerToggle');
+    if (modal) {
+      modal.classList.remove('show');
+      modal.style.display = 'none';
+      const modalBackdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (modalBackdrop) {
+        modalBackdrop.classList.remove('show');
+      }
+    }
   }
+
+  sortChequePayments() {
+
+    const sortValues = this.sortingForm.getRawValue();
+    log.info('form value', sortValues);
+    const payload: any = {
+      paymentType: sortValues.paymentType ? sortValues.paymentType : '',
+      system: sortValues.system ? sortValues.system : 1,
+      fromDate: sortValues.fromDate ? sortValues.fromDate : '',
+      toDate: sortValues.toDate ? sortValues.toDate : '',
+      bankBranch: sortValues?.bank.brhCode ? sortValues?.bank.brhCode: '',
+      bankCode: sortValues?.bank.bctCode ? sortValues?.bank.bctCode: ''
+    }
+
+    this.selectedBank = sortValues?.bank;
+
+    log.info(`tickets >>>`, payload);
+
+    if (this.activeIndex === 0) {
+      this.getChequeMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
+        payload.bankBranch, payload?.paymentType, payload?.fromDate, payload?.toDate)
+    }
+      else {
+        this.getEFTMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
+          payload?.paymentType, payload?.fromDate, payload?.toDate)
+    }
+
+  }
+
+  keyUpEvent(event, input) {
+    const value = event.target.value;
+    const index = this.formInput.indexOf(input);
+
+    if (event.keyCode === 8 && event.which === 8 && value.length === 0 && index > 0) {
+      const previousInput = this.formInput[index - 1];
+      this.otpForm.controls[previousInput].setValue('');
+      this.rows._results[index - 1].nativeElement.focus();
+    } else {
+      this.otpForm.controls[input].setValue(event.key);
+      if (index < this.formInput.length - 1) {
+        const nextInput = this.formInput[index + 1];
+        this.rows._results[index + 1].nativeElement.focus();
+      }
+    }
+  }
+
+  onVerify() {
+    this.isLoading = true;
+
+    if (this.otpForm.valid) {
+      Object.keys(this.otpForm.controls).forEach((key, index) => {
+        this.otpValue = this.otpValue + this.otpForm.controls[key].value;
+      });
+
+      this.fmsService.validateOtp(this.loggedInUser?.code, this.otpValue)
+        .subscribe({
+          next: (data) => {
+            this.isLoading = false;
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully validated OTP');
+            this.otpValue='';
+            this.otpForm.reset();
+            this.closeOtpModal();
+            this.startCountdown(this.validityPeriod);
+          },
+          error: (err) => {
+            let errorMessage = '';
+            if (err?.error?.msg) {
+              errorMessage = err.error.msg
+            } else {
+              errorMessage = err.message
+            }
+            this.otpValue='';
+            this.otpForm.reset();
+            this.isLoading = false;
+            this.globalMessagingService.displayErrorMessage('Error', errorMessage);
+          }
+        })
+    }
+  }
+
+  generateOtp() {
+    this.isLoadingGenerateOtp = true;
+    this.fmsService.generateOtp(this.loggedInUser?.code, 2).subscribe({
+      next: (res) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Successfully generated OTP');
+        this.isLoadingGenerateOtp = false;
+        this.openOtpModal();
+        log.info('otpData', res?.data?.tokenValidity);
+        const validityPeriodMinutes = res?.data?.tokenValidity;
+        this.validityPeriod = validityPeriodMinutes * 60; // Convert minutes to seconds
+
+      },
+      error: (err) => {
+        this.isLoadingGenerateOtp = false;
+        this.globalMessagingService.displayErrorMessage('Error', err.message);
+      }
+    });
+  }
+
+  startCountdown(seconds: number) {
+    this.isGenerateOtpButtonDisabled = true;
+    this.isButtonDisabled = false;
+    this.countdown = seconds;
+
+    const interval = setInterval(() => {
+      if (this.countdown && this.countdown > 0) {
+        this.countdown--;
+      } else {
+        this.isGenerateOtpButtonDisabled = false;
+        this.isButtonDisabled = true;
+        this.countdown = null;
+        clearInterval(interval);
+      }
+    }, 1000);
+  }
+
+  resendOtp() {
+    this.generateOtp();
+  }
+
+  saveSignChequeMandate() {
+    const selectedEftPayments = this.selectedEftPaymentTypes;
+    log.info('selected cheque/eft', selectedEftPayments);
+
+    let chequeMandateApproveOptions = [];
+
+    if (selectedEftPayments.length > 1) {
+      // Iterate over each selectedEftPaymentType and construct the array
+      chequeMandateApproveOptions = selectedEftPayments.map(payment => ({
+        cqrNo: payment.chequeNo,
+        cqrOk: "Y",
+        cqrCorrect: "N",
+        cqrCancel: "N",
+        cqrRemarks: "Signing"
+      }));
+    } else {
+      // Only one entry, so we construct a single object array
+      chequeMandateApproveOptions = [
+        {
+          cqrNo: selectedEftPayments[0].chequeNo,
+          cqrOk: "Y",
+          cqrCorrect: "N",
+          cqrCancel: "N",
+          cqrRemarks: "Signing"
+        }
+      ];
+    }
+    this.isLoadingSignSelected = true;
+
+    const payload: any = {
+      eftNo: 0,
+      chequeMandateApproveOptions: chequeMandateApproveOptions,
+      userCode: this.loggedInUser?.code,
+      sysCode: 1
+    };
+
+    log.info('payload sign', payload);
+    this.fmsService.signChequeMandate(payload)
+      .subscribe({
+        next: (data) => {
+          log.info('signed data>>', data);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully signed');
+          this.isLoadingSignSelected = false;
+
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoadingSignSelected = false;
+        }
+      })
+  }
+
+  rejectSignChequeMandate() {
+    const selectedEftPayments = this.selectedEftPaymentTypes;
+    log.info('selected cheque/eft', selectedEftPayments);
+
+    let chequeMandateApproveOptions = [];
+
+    if (selectedEftPayments.length > 1) {
+      chequeMandateApproveOptions = selectedEftPayments.map(payment => ({
+        cqrNo: payment.chequeNo,
+        cqrOk: "N",
+        cqrCorrect: "N",
+        cqrCancel: "Y",
+        cqrRemarks: "Reject"
+      }));
+    } else {
+      chequeMandateApproveOptions = [
+        {
+          cqrNo: selectedEftPayments[0].chequeNo,
+          cqrOk: "N",
+          cqrCorrect: "N",
+          cqrCancel: "Y",
+          cqrRemarks: "Reject"
+        }
+      ];
+    }
+
+    this.isLoadingReject = true;
+
+    const payload: any = {
+      eftNo: 0,
+      chequeMandateApproveOptions: chequeMandateApproveOptions,
+      userCode: this.loggedInUser?.code,
+      sysCode: 1
+    };
+
+    log.info('payload reject', payload);
+
+    this.fmsService.signChequeMandate(payload)
+      .subscribe({
+        next: (data) => {
+          log.info('signed data>>', data);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully rejected');
+          this.isLoadingReject = false;
+
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoadingReject = false;
+        }
+      })
+  }
+
+  sendToCorrectionChequeMandate() {
+
+    const selectedEftPayments = this.selectedEftPaymentTypes;
+    log.info('selected cheque/eft', selectedEftPayments);
+
+    let chequeMandateApproveOptions = [];
+
+    if (selectedEftPayments.length > 1) {
+      chequeMandateApproveOptions = selectedEftPayments.map(payment => ({
+        cqrNo: payment.chequeNo,
+        cqrOk: "N",
+        cqrCorrect: "Y",
+        cqrCancel: "N",
+        cqrRemarks: "Correction"
+      }));
+    } else {
+      chequeMandateApproveOptions = [
+        {
+          cqrNo: selectedEftPayments[0].chequeNo,
+          cqrOk: "N",
+          cqrCorrect: "Y",
+          cqrCancel: "N",
+          cqrRemarks: "Correction"
+        }
+      ];
+    }
+    this.isLoadingSendCorrection = true;
+
+    const payload: any = {
+      eftNo: 0,
+      chequeMandateApproveOptions: chequeMandateApproveOptions,
+      userCode: this.loggedInUser?.code,
+      sysCode: 1
+    };
+
+    log.info('payload correction', payload);
+    this.fmsService.signChequeMandate(payload)
+      .subscribe({
+        next: (data) => {
+          log.info('signed data>>', data);
+          this.globalMessagingService.displaySuccessMessage('Success', 'Successfully sent for correction');
+          this.isLoadingSendCorrection = false;
+
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          this.isLoadingSendCorrection = false;
+        }
+      })
+  }
+
+  processActionEligibleAuthEmitted(event) {
+    this.toggleEligibleAuthModal(false);
+  }
+
+  private toggleEligibleAuthModal(display: boolean) {
+    this.showEligibleAuthorizers = display;
+  }
+
+  openEligibleAuthModal(data) {
+    this.toggleEligibleAuthModal(true);
+    this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.brhCode, 1, data?.chequeNo, data?.chequeAmount);
+  }
+
+  processActionSignedByEmitted(event) {
+    this.toggleSignedByModal(false);
+  }
+
+  private toggleSignedByModal(display: boolean) {
+    this.showSignedBy = display;
+  }
+
+  openSignedByModal(data) {
+    this.toggleSignedByModal(true);
+    this.getSignedBy(this.loggedInUser?.code, data?.chequeNo, this.selectedBank?.brhCode)
+  }
+
+  getBankAccount() {
+
+    this.fmsService.getBankAccounts(this.loggedInUser?.code, 2, 223, 1)
+      .subscribe({
+        next: (res) => {
+          this.bankAccount = res.data;
+          log.info('Bank account>>', this.bankAccount);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err?.error?.msg);
+        }
+      })
+  }
+
+  getPaymentTypes() {
+
+    this.fmsService.getEftPaymentTypes(this.loggedInUser?.code, 223, 1)
+      .subscribe({
+        next: (res) => {
+          this.paymentTypes = res.data;
+          log.info('Payment types>>', this.paymentTypes);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err?.error?.msg);
+        }
+      })
+  }
+
+  getEligibleAuthorizers(userCode: number, branchCode: number, sysCode: number, chequeNumber: number, chequeAmount: number) {
+
+    this.fmsService.getEligibleAuthorizers(userCode, branchCode, sysCode, chequeNumber, chequeAmount)
+      .subscribe({
+        next: (res) => {
+          this.eligibleAuthorizers = res.data;
+          this.tableEligibleAuthorizers.rows = res.data;
+          log.info('Eligible Authorizers>>', this.eligibleAuthorizers);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+        }
+      })
+  }
+
+  getSignedBy(userCode: number, chequeNumber: number, branchCode: number) {
+
+    this.signedBy = null;
+    this.tableSignedBy.rows = null;
+
+    this.fmsService.getSignedBy(userCode, chequeNumber, branchCode)
+      .subscribe({
+        next: (res) => {
+          this.signedBy = res.data;
+          this.tableSignedBy.rows = res.data;
+          log.info('Signed by>>', this.signedBy);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+        }
+      })
+  }
+
+  getTransactionDetails(chequeNumber: number, userCode: number, paymentCategory: string) {
+
+    this.transactionSummary = null;
+    this.fmsService.getTransactionDetails(chequeNumber, userCode, paymentCategory)
+      .subscribe({
+        next: (res) => {
+          this.transactionSummary = res.data;
+          log.info('Transaction summary>>', this.transactionSummary);
+        },
+        error: err => {
+          this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+        }
+      })
+  }
+
+  getEFTMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
+                            fromDate: string, toDate: string) {
+    this.spinner.show();
+    this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate)
+      .subscribe({
+        next: (res) => {
+          this.eftRequisitions = res;
+          log.info('Eft requisitions>>', this.eftRequisitions);
+          this.spinner.hide();
+        },
+        error: err => {
+          this.eftRequisitions = null;
+          this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+          this.spinner.hide();
+        }
+      })
+  }
+
+  getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
+                               fromDate: string, toDate: string) {
+    this.spinner.show();
+    this.fmsService.getChequeMandateRequisitions(bankCode, userCode, branchCode, paymentType, fromDate, toDate)
+      .subscribe({
+        next: (res) => {
+          this.chequeRequisitions = res;
+          this.totalRecords = res.totalElements;
+          // this.tableDetails.rows = res?.content;
+          // this.tableDetails.totalElements = res?.totalElements;
+          log.info('Cheque requisitions>>', this.chequeRequisitions);
+          this.spinner.hide();
+        },
+        error: err => {
+          this.chequeRequisitions = null;
+          this.globalMessagingService.displayErrorMessage('Error', err.error.msg);
+          this.spinner.hide();
+        }
+      })
+  }
+
+  ngOnDestroy() {}
+
 }
