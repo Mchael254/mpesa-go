@@ -55,6 +55,7 @@ Relationship Management) application. Each object has the following properties: 
       subItems: [
         { label: 'Message Template', link: '/home/crm/messaging-template' },
         { label: 'Messages History', link: '/home/crm/messages' },
+        { label: 'System Roles', link: '/home/crm/system-roles' },
       ],
     },
     { label: 'System Reports', link: '', showSubItems: false, subItems: [] },

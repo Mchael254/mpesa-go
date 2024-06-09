@@ -1,0 +1,262 @@
+<div class="base-content-section">
+  <div class="me-4">
+    <app-dynamic-breadcrumb [breadCrumbItems]="messagingTemplateBreadCrumbItems">
+    </app-dynamic-breadcrumb>
+  </div>
+  <div class="me-4">
+    <div class="card mb-3">
+      <div class="card-body">
+        <p class="mt-3 fw-bold">{{ 'crm.system_roles' | translate }}</p>
+        <div class="form-div px-3">
+          <form>
+            <div class="row">
+              <ng-container *ngFor="let system of systems">
+                <div class="col-sm-4 my-2">
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input select-system"
+                      type="radio"
+                      name="system"
+                      value="{{system.id}}"
+                      (click)="selectSystem(system)"
+                      [checked]="selectedSystem?.id===system.id"
+                    >
+                    <label class="form-check-label" for="{{system.id}}">{{ system.systemName | titlecase }}</label>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="systemRoles.length > 0">
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-12">
+                  <span class="mt-3 fw-bold">{{ 'crm.select_role' | translate }}</span>
+                </div>
+                <div class="col-sm-12 ms-3">
+                  <div class="row mt-3 float-start">
+                  <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" >
+                    <i class="fa-solid fa-plus"></i>
+                  </span>
+                    <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                    <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                  </div>
+                </div>
+                <div class="col-sm-12 mt-3 ms-1">
+                  <ng-container *ngFor="let role of systemRoles">
+                    <div class="mt-2">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input select-role"
+                          type="radio"
+                          name="role"
+                          value="{{ role.id }}"
+                          id="{{ role.id }}"
+                          [checked]="selectedRole.id===role.id"
+                          (click)="selectRole(role)"
+                        >
+                        <label class="form-check-label" for="{{ role.id }}">
+                          {{ role.roleName }}
+                        </label>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="selectedRole.id !== 0">
+          <div class="col-sm-8">
+            <p-tabView>
+              <p-tabPanel header="Roles and sub areas">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p class="fw-bold">Role areas</p>
+                    <ng-container *ngFor="let role of systemRoles">
+                      <div class="mt-2">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="{{role}}"
+                            id="roleArea"
+                            [checked]="selectedRole===role"
+                          >
+                          <label class="form-check-label" for="roleArea">
+                            {{ role.roleName }}
+                          </label>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <div class="col-sm-6">
+                    <p class="fw-bold">Process areas and sub areas</p>
+                    <ng-container *ngFor="let role of processesAndSubareas">
+                      <div class="mt-2">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="{{role}}"
+                          >
+                          <span
+                            class="form-check-label" for="roleArea"
+                            data-bs-toggle="collapse" [attr.href]="'#'+role"
+                            role="button" aria-expanded="false"
+                            aria-controls="collapseExample"
+                          >
+                          {{ role }} <i class="fa-solid fa-caret-down"></i>
+                        </span>
+                        </div>
+                        <div class="collapse" [id]="role">
+                          <ng-container *ngFor="let subArea of subAreas">
+                            <div class="form-check ms-3">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                value="{{subArea}}"
+                              >
+                              <label class="form-check-label" for="roleArea">
+                                {{ subArea }}
+                              </label>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </p-tabPanel>
+              <p-tabPanel header="Approval levels">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <p class="fw-bold text-primary">Sub areas</p>
+                    <ng-container *ngFor="let role of systemRoles">
+                      <div class="mt-2">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            value="{{role}}"
+                            id="roleArea"
+                          >
+                          <label class="form-check-label" for="roleArea">
+                            {{ role }}
+                          </label>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <div class="col-sm-8">
+                    <div class="row">
+                      <div class="col-sm-4">
+                        <p class="fw-bold text-primary">Authorization levels</p>
+                      </div>
+                      <div class="col-sm-8">
+                        <div class="float-end">
+                        <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" >
+                          <i class="fa-solid fa-plus"></i>
+                        </span>
+                          <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                          <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                        </div>
+                      </div>
+                      <div class="col-sm-12">
+                        table goes here
+                      </div>
+                    </div>
+
+                    <div class="row mt-5">
+                      <div class="col-sm-4">
+                        <p class="fw-bold text-primary">Authorization limits</p>
+                      </div>
+                      <div class="col-sm-8">
+                        <div class="float-end">
+                        <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" >
+                          <i class="fa-solid fa-plus"></i>
+                        </span>
+                          <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                          <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                        </div>
+                      </div>
+                      <div class="col-sm-12">
+                        table goes here
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </p-tabPanel>
+            </p-tabView>
+          </div>
+        </ng-container>
+
+        <div class="col-sm-12 mt-3">
+          <button class="btn btn-primary float-end">
+            Confirm
+          </button>
+        </div>
+
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="renewRoleModal" tabindex="-1" aria-labelledby="renewRoleModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="fs-5 text-dark" id="exampleModalLabel">Define a role</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Role name</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Created date</label>
+                <input type="date" class="form-control" id="exampleInputPassword1">
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label text-dark" for="exampleCheck1">Authorize?</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Short description</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Status</label>
+                <select class="form-select" aria-label="Default select example">
+                  <option selected>Status</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save details</button>
+      </div>
+    </div>
+  </div>
+</div>

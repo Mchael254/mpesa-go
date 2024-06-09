@@ -28,6 +28,7 @@ import { ClientTypeComponent } from './components/client-type/client-type.compon
 import { AgencyComponent } from './components/agency/agency.component';
 import { MessagingTemplateComponent } from './components/messaging-template/messaging-template.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import { SystemRolesComponent } from './components/system-roles/system-roles.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { MessagesComponent } from './components/messages/messages.component';
     AgencyComponent,
     MessagingTemplateComponent,
     MessagesComponent,
+    SystemRolesComponent,
   ],
   imports: [
     CommonModule,

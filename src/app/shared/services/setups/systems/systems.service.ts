@@ -5,6 +5,7 @@ import { HttpParams } from '@angular/common/http';
 import { SystemModule, SystemsDto } from '../../../data/common/systemsDto';
 import { ApiService } from '../../api/api.service';
 import { API_CONFIG } from '../../../../../environments/api_service_config';
+import {SystemRole} from "../../../data/common/system-role";
 
 @Injectable({
   providedIn: 'root',
@@ -34,4 +35,21 @@ export class SystemsService {
       API_CONFIG.CRM_SETUPS_SERVICE_BASE_URL
     );
   }
+
+  getSystemRoles(organizationId?: number): Observable<SystemRole[]> {
+    const paramsObj: { [param: string]: string } = {};
+    if (organizationId !== undefined && organizationId !== null) {
+      paramsObj['organizationId'] = organizationId.toString();
+    }
+
+    const params = new HttpParams({ fromObject: paramsObj });
+
+    return this.api.GET<SystemRole[]>(
+      `roles`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+      params
+    );
+  }
+
+
 }
