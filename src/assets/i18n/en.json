@@ -207,7 +207,9 @@
     "subject": "Subject",
     "template_content": "Template Content",
     "define_template": "Define a template",
-    "save_details": "Save Details"
+    "save_details": "Save Details",
+    "system_roles": "System roles",
+    "select_role": "Select a role"
   },
   "entities": {
     "account_number": "Account Number",
