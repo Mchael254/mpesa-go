@@ -4,6 +4,8 @@ import {Logger} from "../../../../shared/services";
 import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
 import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
 import {SystemRole} from "../../../../shared/data/common/system-role";
+import {NgxSpinnerService} from "ngx-spinner";
+import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
 
 const log = new Logger('SystemRolesComponent');
 
@@ -27,17 +29,21 @@ export class SystemRolesComponent implements OnInit {
     shortDesc: undefined,
     systemName: undefined
   }
+  shouldShowSystems: boolean = false;
 
-  // systemRoles: string[] = ['Customer Service', 'LMS CRM', 'Admin', 'GIS CRM', 'IT intern', 'FMS CRM', 'Underwriter'];
   systemRoles: SystemRole[] = [];
-  selectedRole: SystemRole = {id: 0, roleName: ''};
+  selectedRole: SystemRole = {id: undefined, roleName: undefined};
+  shouldShowRoles: boolean = false;
+  rolesErrorMessage: string = '';
 
-  // shouldShowRoles: boolean = false;
   processesAndSubareas: string[] = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
-  subAreas: string[] = ['Access(AMA)', 'Clients (AMAC)', 'Holding companies (AMHC)']
+  subAreas: string[] = ['Access(AMA)', 'Clients (AMAC)', 'Holding companies (AMHC)'];
+  shouldShowRoleAreas: boolean = false;
 
   constructor(
     private systemsService: SystemsService,
+    private spinner: NgxSpinnerService,
+    private globalMessagingService: GlobalMessagingService,
   ) {
   }
 
@@ -49,13 +55,20 @@ export class SystemRolesComponent implements OnInit {
    * This method fetches all system and assigns them to a variable
    */
   fetchSystems(): void {
+    this.shouldShowSystems = false;
+    this.spinner.show();
     this.systemsService.getSystems()
       .subscribe({
         next: (res: SystemsDto[]) => {
           this.systems = res;
+          this.spinner.hide();
+          this.shouldShowSystems = true;
         },
         error: (err) => {
-          log.info(err);
+          let errorMessage = err?.error?.message ?? err.message
+          this.spinner.hide();
+          this.shouldShowSystems = true;
+          this.globalMessagingService.displayErrorMessage('Error', errorMessage);
         }
       })
   }
@@ -65,14 +78,21 @@ export class SystemRolesComponent implements OnInit {
    * @param system
    */
   selectSystem(system: SystemsDto): void {
+    this.spinner.show();
+    this.shouldShowRoles = false;
     this.selectedSystem = system;
-    // this.shouldShowRoles = true;
-    this.systemsService.getSystemRoles(2).subscribe({ // todo: make orgId optional from backend
+    this.systemsService.getSystemRoles(this.selectedSystem.id).subscribe({
       next: (roles: SystemRole[]) => {
         this.systemRoles = roles;
+        this.spinner.hide();
+        if (roles.length === 0) this.rolesErrorMessage = 'No roles found for selected system';
+        this.shouldShowRoles = true;
       },
       error: (err) => {
-        log.info(err);
+        this.rolesErrorMessage = err?.error?.message ?? err.message
+        this.spinner.hide();
+        this.shouldShowRoles = true;
+        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
       }
     })
   }
@@ -83,6 +103,7 @@ export class SystemRolesComponent implements OnInit {
    */
   selectRole(role: SystemRole): void {
     this.selectedRole = role;
+    this.shouldShowRoleAreas = true;
   }
 
 }

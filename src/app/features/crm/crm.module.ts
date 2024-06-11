@@ -29,6 +29,7 @@ import { AgencyComponent } from './components/agency/agency.component';
 import { MessagingTemplateComponent } from './components/messaging-template/messaging-template.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SystemRolesComponent } from './components/system-roles/system-roles.component';
+import {ScrollPanelModule} from "primeng/scrollpanel";
 
 @NgModule({
   declarations: [
@@ -52,19 +53,20 @@ import { SystemRolesComponent } from './components/system-roles/system-roles.com
     MessagesComponent,
     SystemRolesComponent,
   ],
-  imports: [
-    CommonModule,
-    CrmRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TableModule,
-    DropdownModule,
-    TooltipModule,
-    DialogModule,
-    MultiSelectModule,
-    TabViewModule,
-    SharedModule,
-  ],
+    imports: [
+        CommonModule,
+        CrmRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TableModule,
+        DropdownModule,
+        TooltipModule,
+        DialogModule,
+        MultiSelectModule,
+        TabViewModule,
+        SharedModule,
+        ScrollPanelModule,
+    ],
   providers: [DatePipe],
 })
 export class CrmModule {}
