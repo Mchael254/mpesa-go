@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 
 @Component({
@@ -9,7 +10,9 @@ import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
 export class ProductsComponent implements OnInit, OnDestroy {
   breadCrumbItems: BreadCrumbItem[] = [];
 
-  constructor() {}
+  constructor(
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.populateBreadCrumbItems();
@@ -40,6 +43,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
       modal.classList.remove('show')
       modal.style.display = 'none';
     }
+  }
+
+  getQuote() {
+    this.router.navigate(['/home/lms/grp/dashboard/quote']);
   }
 
 }

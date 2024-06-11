@@ -34,7 +34,7 @@ export class QuoteMenuBarComponent implements OnInit, OnDestroy {
   }
 
  onNormalQuoteClick() {
-  this.router.navigate(['/home/lms/grp/quotation/quick']);
+  this.router.navigate(['/home/lms/grp/dashboard/normal-quote']);
  }
 
 }
