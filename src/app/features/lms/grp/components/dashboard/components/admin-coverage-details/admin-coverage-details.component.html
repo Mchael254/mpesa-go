@@ -1,0 +1,159 @@
+<div class="main">
+    <div class="container">
+        <div>
+            <div class="title">Cover details</div>
+            <div class="multiselect-add">
+                <button class="btn btn-success rounded-circle" (click)="showAdminDetailsModal()">&plus;</button>
+                <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                </p-multiSelect>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '30rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('contact_person_name')">Cover type</th>
+                        <th *ngIf="selectedColumns.includes('date_of_birth')">Overide premiums</th>
+                        <th *ngIf="selectedColumns.includes('identification_number')">Average ANB</th>
+                        <th *ngIf="selectedColumns.includes('position')">No of members</th>
+                        <th *ngIf="selectedColumns.includes('contact_person_physical_address')">Average earning per
+                            member</th>
+                        <th *ngIf="selectedColumns.includes('phone_number')">Sum assured</th>
+                        <th *ngIf="selectedColumns.includes('contact_person_email')">Dependent type</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_name')">{{ item.a }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('date_of_birth')">{{ item.b }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('identification_number')">{{ item.c }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('position')">{{ item.c }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_physical_address')">{{
+                            item.d }}
+                        </td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('phone_number')">{{ item.e }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_email')">{{ item.f }}</td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <div style="max-width: 50rem; margin-top: 40px;">
+            <div class="title">Category details</div>
+            <div class="multiselect-add">
+                <button class="btn btn-success rounded-circle" (click)="showAdminDetailsModal()">&plus;</button>
+                <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                </p-multiSelect>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '50rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('contact_person_name')">Short description</th>
+                        <th *ngIf="selectedColumns.includes('date_of_birth')">Description</th>
+                        <th *ngIf="selectedColumns.includes('identification_number')">Multiple of earnings</th>
+                        <th *ngIf="selectedColumns.includes('position')">Premium mask</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_name')">{{ item.a }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('date_of_birth')">{{ item.b }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('identification_number')">{{ item.c }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('position')">{{ item.d }}</td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <div>
+            <h5 class="mt-5 member-dets">Member details</h5>
+            <h6 class="add-member" style="margin-top: 22px;">Add members</h6>
+            <h6 class="download-member" style="margin-top: 12px;">
+                Download member upload template
+                <a style="text-decoration: underline; cursor: pointer;" (click)="downloadMemberUploadTemplate()"
+                    class="link">here</a>
+            </h6>
+            <div class="p-col-3" style="margin-top: 24px;"><input type="file" #fileInput style="display: none;"
+                    accept=".csv" (change)="handleFileChange($event)">
+                <button class="choose-file" (click)="fileInput.click()">
+                    <span class="file-text">Choose file</span>
+                </button>
+                <div style="margin-top: 25px;" *ngIf="fileInput.files && fileInput.files.length > 0">
+                    <div style="width: 30%;">
+                        <span class="file-name">{{ fileInput.files[0].name }}</span>
+                        <span *ngIf="uploadProgress === 100" class="file-name">(100%)</span>
+                        <span class="completed" *ngIf="uploadProgress === 100">Completed</span>
+                    </div>
+                    <p-progressBar [value]="uploadProgress">
+                        <ng-template pTemplate="content" let-value>
+                            <span>{{ value }}%</span>
+                        </ng-template>
+                    </p-progressBar>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <div class="container-fil">
+                <div class="filter-container">
+                    <label class="filter-label">Filter by</label>
+                    <div class="filter-selectors">
+                        <form>
+                            <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                                [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                            <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                                [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                            <input type="text" pInputText placeholder="Enter value"
+                                [style]="{ height: '35px', 'line-height': '10px' }" />
+                        </form>
+
+                    </div>
+                </div>
+                <div class="form-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text" class="form-control form-input" placeholder="Search">
+                    <button style="margin-left: 10px;" class="btn btn-success rounded-circle"
+                        (click)="showAdminDetailsModal()">&plus;</button>
+                    <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                    </p-multiSelect>
+                </div>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '30rem'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngIf="selectedColumns.includes('contact_person_name')">Surname</th>
+                        <th *ngIf="selectedColumns.includes('date_of_birth')">Other names</th>
+                        <th *ngIf="selectedColumns.includes('identification_number')">Date of birth</th>
+                        <th *ngIf="selectedColumns.includes('position')">Gender</th>
+                        <th *ngIf="selectedColumns.includes('contact_person_physical_address')">Payroll/member no.</th>
+                        <th *ngIf="selectedColumns.includes('phone_number')">Category</th>
+                        <th *ngIf="selectedColumns.includes('contact_person_email')">Dependant type</th>
+                        <th *ngIf="selectedColumns.includes('contact_person_email')">Monthly earning</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_name')">{{ item.a }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('date_of_birth')">{{ item.b }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('identification_number')">{{ item.c }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('position')">{{ item.c }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_physical_address')">{{
+                            item.d }}
+                        </td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('phone_number')">{{ item.e }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_email')">{{ item.f }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('contact_person_email')">{{ item.f }}</td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div class="btn-container" >
+        <button type="button" class="btn btn-primary back-button" (click)="onBack()">Back
+        </button>
+
+        <button type="button" class="btn btn-primary proceed-button" (click)="onProceed()">Proceed
+        </button>
+    </div>
+</div>
