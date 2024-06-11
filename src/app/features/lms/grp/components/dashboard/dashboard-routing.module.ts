@@ -12,6 +12,9 @@ import { AdminPensionSummaryComponent } from './components/admin-pension-summary
 import { ProductsComponent } from './components/products/products.component';
 import { QuickQuoteComponent } from './components/quick-quote/quick-quote.component';
 import { QuoteMenuBarComponent } from './components/quote-menu-bar/quote-menu-bar.component';
+import { NormalQuoteInitComponent } from './components/normal-quote-init/normal-quote-init.component';
+import { AdminQuoteSummaryComponent } from './components/admin-quote-summary/admin-quote-summary.component';
+import { AdminCoverageDetailsComponent } from './components/admin-coverage-details/admin-coverage-details.component';
 
 const routes: Routes = [
   { path: 'dashboard', component: LandingScreenComponent }, //agent
@@ -26,6 +29,9 @@ const routes: Routes = [
   { path: 'products', component: ProductsComponent}, //scheme available products
   { path: 'quick-quote', component: QuickQuoteComponent}, //scheme admin quick quote
   { path: 'quote', component: QuoteMenuBarComponent}, //scheme admin quote
+  { path: 'normal-quote', component: NormalQuoteInitComponent}, //scheme admin normal quote initialization
+  { path: 'cover-details', component: AdminCoverageDetailsComponent}, //scheme admin coverage details
+  { path: 'quote-summary', component: AdminQuoteSummaryComponent}, //scheme admin normal quote summary
 ];
 
 @NgModule({
