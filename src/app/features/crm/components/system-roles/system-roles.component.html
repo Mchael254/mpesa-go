@@ -3,136 +3,161 @@
     <app-dynamic-breadcrumb [breadCrumbItems]="messagingTemplateBreadCrumbItems">
     </app-dynamic-breadcrumb>
   </div>
+
   <div class="me-4">
     <div class="card mb-3">
       <div class="card-body">
-        <p class="mt-3 fw-bold">{{ 'crm.system_roles' | translate }}</p>
-        <div class="form-div px-3">
-          <form>
-            <div class="row">
-              <ng-container *ngFor="let system of systems">
-                <div class="col-sm-4 my-2">
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input select-system"
-                      type="radio"
-                      name="system"
-                      value="{{system.id}}"
-                      (click)="selectSystem(system)"
-                      [checked]="selectedSystem?.id===system.id"
-                    >
-                    <label class="form-check-label" for="{{system.id}}">{{ system.systemName | titlecase }}</label>
+        <ng-container *ngIf="shouldShowSystems; else showSystemsLoading">
+          <p class="mt-3 fw-bold">{{ 'crm.system_roles' | translate }}</p>
+          <div class="form-div px-3">
+            <form>
+              <div class="row">
+                <ng-container *ngFor="let system of systems">
+                  <div class="col-sm-4 my-2">
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input select-system"
+                        type="radio"
+                        name="system"
+                        value="{{system.id}}"
+                        (click)="selectSystem(system)"
+                        [checked]="selectedSystem?.id===system.id"
+                      >
+                      <label class="form-check-label" for="{{system.id}}">{{ system.systemName | titlecase }}</label>
+                    </div>
                   </div>
-                </div>
-              </ng-container>
-            </div>
-          </form>
-        </div>
+                </ng-container>
+              </div>
+            </form>
+          </div>
+        </ng-container>
+        <ng-template #showSystemsLoading>
+          <div class="my-5 mx-5">
+            <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+          </div>
+        </ng-template>
       </div>
     </div>
 
-    <ng-container *ngIf="systemRoles.length > 0">
+    <ng-container *ngIf="selectedSystem.id !== undefined">
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4 role-left">
           <div class="card mb-3">
             <div class="card-body">
-              <div class="row">
-                <div class="col-sm-12">
-                  <span class="mt-3 fw-bold">{{ 'crm.select_role' | translate }}</span>
-                </div>
-                <div class="col-sm-12 ms-3">
-                  <div class="row mt-3 float-start">
+              <ng-container *ngIf="systemRoles.length > 0 && shouldShowRoles; else noSystemRoles">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <span class="mt-3 fw-bold">{{ 'crm.select_role' | translate }}</span>
+                  </div>
+                  <div class="col-sm-12 ms-3">
+                    <div class="row mt-3 float-start">
                   <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" >
                     <i class="fa-solid fa-plus"></i>
                   </span>
-                    <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                    <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                      <span class="icon-circle"><i class="pi pi-pencil"></i></span>
+                      <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                    </div>
+                  </div>
+                  <p-scrollPanel [style]="{ width: '100%', height: '400px' }" styleClass="custombar1">
+                    <div class="col-sm-12 mt-3 ms-1">
+                      <ng-container *ngFor="let role of systemRoles">
+                        <div class="mt-2">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input select-role"
+                              type="radio"
+                              name="role"
+                              value="{{ role.id }}"
+                              id="{{ role.id }}"
+                              [checked]="selectedRole.id===role.id"
+                              (click)="selectRole(role)"
+                            >
+                            <label class="form-check-label" for="{{ role.id }}">
+                              {{ role.roleName }}
+                            </label>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </p-scrollPanel>
+                </div>
+              </ng-container>
+              <ng-template #noSystemRoles>
+                <div class="text-center">
+                  <div *ngIf="!shouldShowRoles" class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <div *ngIf="shouldShowRoles" class="text-warning">
+                    {{ rolesErrorMessage }}
                   </div>
                 </div>
-                <div class="col-sm-12 mt-3 ms-1">
-                  <ng-container *ngFor="let role of systemRoles">
-                    <div class="mt-2">
-                      <div class="form-check">
-                        <input
-                          class="form-check-input select-role"
-                          type="radio"
-                          name="role"
-                          value="{{ role.id }}"
-                          id="{{ role.id }}"
-                          [checked]="selectedRole.id===role.id"
-                          (click)="selectRole(role)"
-                        >
-                        <label class="form-check-label" for="{{ role.id }}">
-                          {{ role.roleName }}
-                        </label>
-                      </div>
-                    </div>
-                  </ng-container>
-                </div>
-              </div>
+              </ng-template>
             </div>
           </div>
         </div>
 
-        <ng-container *ngIf="selectedRole.id !== 0">
-          <div class="col-sm-8">
+        <div class="col-sm-8">
+          <ng-container *ngIf="selectedRole.id !== undefined;">
             <p-tabView>
               <p-tabPanel header="Roles and sub areas">
                 <div class="row">
                   <div class="col-sm-6">
                     <p class="fw-bold">Role areas</p>
-                    <ng-container *ngFor="let role of systemRoles">
-                      <div class="mt-2">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            value="{{role}}"
-                            id="roleArea"
-                            [checked]="selectedRole===role"
-                          >
-                          <label class="form-check-label" for="roleArea">
-                            {{ role.roleName }}
-                          </label>
+                    <p-scrollPanel [style]="{ width: '100%', height: '380px' }" styleClass="custombar1">
+                      <ng-container *ngFor="let role of systemRoles">
+                        <div class="mt-2">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="{{role}}"
+                              [checked]="selectedRole===role"
+                            >
+                            <label class="form-check-label" for="roleArea">
+                              {{ role.roleName }}
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                    </ng-container>
+                      </ng-container>
+                    </p-scrollPanel>
                   </div>
                   <div class="col-sm-6">
                     <p class="fw-bold">Process areas and sub areas</p>
-                    <ng-container *ngFor="let role of processesAndSubareas">
-                      <div class="mt-2">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            value="{{role}}"
-                          >
-                          <span
-                            class="form-check-label" for="roleArea"
-                            data-bs-toggle="collapse" [attr.href]="'#'+role"
-                            role="button" aria-expanded="false"
-                            aria-controls="collapseExample"
-                          >
+                    <p-scrollPanel [style]="{ width: '100%', height: '380px' }" styleClass="custombar1">
+                      <ng-container *ngFor="let role of processesAndSubareas">
+                        <div class="mt-2">
+                          <div class="form-check">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              value="{{role}}"
+                            >
+                            <span
+                              class="form-check-label" for="roleArea"
+                              data-bs-toggle="collapse" [attr.href]="'#'+role"
+                              role="button" aria-expanded="false"
+                              aria-controls="collapseExample"
+                            >
                           {{ role }} <i class="fa-solid fa-caret-down"></i>
                         </span>
+                          </div>
+                          <div class="collapse" [id]="role">
+                            <ng-container *ngFor="let subArea of subAreas">
+                              <div class="form-check ms-3">
+                                <input
+                                  class="form-check-input"
+                                  type="checkbox"
+                                  value="{{subArea}}"
+                                >
+                                <label class="form-check-label" for="roleArea">
+                                  {{ subArea }}
+                                </label>
+                              </div>
+                            </ng-container>
+                          </div>
                         </div>
-                        <div class="collapse" [id]="role">
-                          <ng-container *ngFor="let subArea of subAreas">
-                            <div class="form-check ms-3">
-                              <input
-                                class="form-check-input"
-                                type="checkbox"
-                                value="{{subArea}}"
-                              >
-                              <label class="form-check-label" for="roleArea">
-                                {{ subArea }}
-                              </label>
-                            </div>
-                          </ng-container>
-                        </div>
-                      </div>
-                    </ng-container>
+                      </ng-container>
+                    </p-scrollPanel>
                   </div>
                 </div>
               </p-tabPanel>
@@ -148,6 +173,7 @@
                             type="radio"
                             value="{{role}}"
                             id="roleArea"
+                            (click)="selectRole(role)"
                           >
                           <label class="form-check-label" for="roleArea">
                             {{ role }}
@@ -196,8 +222,18 @@
                 </div>
               </p-tabPanel>
             </p-tabView>
-          </div>
-        </ng-container>
+          </ng-container>
+          <!--<ng-template #noRoleAreas>
+            <div class="text-center">
+              <div *ngIf="!shouldShowRoleAreas" class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div *ngIf="shouldShowRoleAreas" class="text-warning">
+                No roles areas for selected role
+              </div>
+            </div>
+          </ng-template>-->
+        </div>
 
         <div class="col-sm-12 mt-3">
           <button class="btn btn-primary float-end">

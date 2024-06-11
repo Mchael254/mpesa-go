@@ -10,6 +10,7 @@ import {SystemsDto} from "../../../../shared/data/common/systemsDto";
 import {SystemRole} from "../../../../shared/data/common/system-role";
 import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
+import {MessageService} from "primeng/api";
 
 const systems: SystemsDto[] = [{id: 111, shortDesc: "", systemName: ""}];
 const systemRoles: SystemRole[] = [{
@@ -46,6 +47,7 @@ describe('SystemRolesComponent', () => {
         ReactiveFormsModule
       ],
       providers: [
+        MessageService,
         { provide: SystemsService, useValue: systemsServiceStub },
       ],
       schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA]

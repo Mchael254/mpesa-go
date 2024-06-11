@@ -22,3 +22,11 @@
 .modal-footer {
   border-top: none;
 }
+
+.role-left .card {
+  /*height: 600px!important;*/
+}
+
+:host ::ng-deep .p-tabview {
+  /*height: 200px*/
+}
