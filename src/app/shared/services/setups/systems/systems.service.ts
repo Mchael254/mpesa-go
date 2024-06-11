@@ -36,11 +36,12 @@ export class SystemsService {
     );
   }
 
-  getSystemRoles(organizationId?: number): Observable<SystemRole[]> {
+  getSystemRoles(systemCode: number, organizationId?: number): Observable<SystemRole[]> {
     const paramsObj: { [param: string]: string } = {};
     if (organizationId !== undefined && organizationId !== null) {
       paramsObj['organizationId'] = organizationId.toString();
     }
+    paramsObj['systemCode'] = systemCode.toString();
 
     const params = new HttpParams({ fromObject: paramsObj });
 
