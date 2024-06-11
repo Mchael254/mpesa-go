@@ -72,14 +72,21 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-3">
-                        
+                       
 
                     </div>
                     <div class="col-sm-9 d-flex justify-content-end">
                         <div class="row  mb-2">
 
-                            <div class="col-sm-3"></div>
                             <div class="col-sm-3 me-4">
+                                <button type="button" class="btn btn-primary" id="templateButton" (click)="downloadCSVTemplate()" >{{'gis.policy.export_template' |
+                                    translate}}</button>
+                            </div>
+                            <div class="col-sm-3 me-4">
+                                <button type="button" class="btn btn-primary" id="templateButton" >{{'gis.policy.upload_template' |
+                                    translate}}</button>
+                            </div>
+                            <div class="col-sm-3" style="width:auto">
                                 <button type="button" id="icon" class="btn btn-success" data-bs-toggle="modal"
                                     data-bs-target="#editPolicyRisk" title="add">
                                     <i class="fa-solid fa-pencil"></i>
@@ -91,7 +98,7 @@
                                     <i class="fa-solid fa-pencil"></i>
                                 </button>
                             </div> -->
-                            <div class="col-sm-3">
+                            <div class="col-sm-3" style="width:auto">
                                 <button type="button" id="icon" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#deletePolicyRisk" title="Delete">
                                     <i class="fa-solid fa-trash-can"></i>
