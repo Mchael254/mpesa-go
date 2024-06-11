@@ -19,6 +19,9 @@ import { AdminPensionSummaryComponent } from './components/admin-pension-summary
 import { ProductsComponent } from './components/products/products.component';
 import { QuickQuoteComponent } from './components/quick-quote/quick-quote.component';
 import { QuoteMenuBarComponent } from './components/quote-menu-bar/quote-menu-bar.component';
+import { NormalQuoteInitComponent } from './components/normal-quote-init/normal-quote-init.component';
+import { AdminQuoteSummaryComponent } from './components/admin-quote-summary/admin-quote-summary.component';
+import { AdminCoverageDetailsComponent } from './components/admin-coverage-details/admin-coverage-details.component';
 
 
 @NgModule({
@@ -35,6 +38,9 @@ import { QuoteMenuBarComponent } from './components/quote-menu-bar/quote-menu-ba
     ProductsComponent,
     QuickQuoteComponent,
     QuoteMenuBarComponent,
+    NormalQuoteInitComponent,
+    AdminCoverageDetailsComponent,
+    AdminQuoteSummaryComponent,
   ],
   imports: [
     CommonModule,
