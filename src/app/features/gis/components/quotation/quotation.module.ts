@@ -23,6 +23,9 @@ import { TreeModule } from 'primeng/tree';
 import { InputTextModule } from 'primeng/inputtext';
 import { CoverTypesDetailsComponent } from './components/cover-types-details/cover-types-details.component';
 import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.component'; 
+import { FileUploadModule } from 'primeng/fileupload';
+import { BadgeModule } from 'primeng/badge';
+
 
 @NgModule({
   declarations: [
@@ -51,7 +54,9 @@ import { QuoteSummaryComponent } from './components/quote-summary/quote-summary.
     DropdownModule,
     MenuModule,
     PanelMenuModule,
-    TreeModule
+    TreeModule,
+    FileUploadModule,
+    BadgeModule
   ],
   
 })
