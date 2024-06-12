@@ -7,7 +7,7 @@ import {PoliciesService} from "../../../../gis/services/policies/policies.servic
 import {GlobalMessagingService} from "../../../../../shared/services/messaging/global-messaging.service";
 import {untilDestroyed} from "../../../../../shared/services/until-destroyed";
 import {Pagination} from "../../../../../shared/data/common/pagination";
-import {switchMap, tap} from "rxjs";
+import {tap} from "rxjs";
 import {NgxSpinnerService} from "ngx-spinner";
 import {TicketsService} from "../../../services/tickets.service";
 import {LazyLoadEvent} from "primeng/api";
@@ -23,21 +23,16 @@ export class MassDocumentDispatchComponent implements OnInit {
   @ViewChild('dispatchDocsTable') dispatchDocsTable: Table;
   public pageSize: 5;
   isDispatch: boolean = false;
-  dispatchedDocs: any[];
-  selectedDoc: any[] = [];
   selectedSpringTickets: TicketsDTO[] = [];
   springTickets: Pagination<TicketsDTO> =  <Pagination<TicketsDTO>>{};
   selectedTicket: TicketsDTO;
 
   docDispatchForm: FormGroup;
-  dispatchReasonsData: any[];
-  saveDocumentRejectionData: any;
+
   documentsToDispatchData: any[];
   isLoading: boolean = false;
   isLoadingDispatch: boolean = false;
   reportsDispatchedData: any[];
-  selectedOptions: any[] = [];
-  selectedRptName: string = '';
 
   filePath: any;
   fileName: any;
@@ -48,9 +43,14 @@ export class MassDocumentDispatchComponent implements OnInit {
   day = this.today.getDate().toString().padStart(2, '0'); // Get the current day and pad with leading zero if necessary
 
   dateToday = `${this.year}-${this.month}-${this.day}`;
-  preparedDocuments: [];
+
   documentList: any[];
 
+  docsPrepared: any[] = [];
+  docsUnprepared: any[] = [];
+  docToPrepare: number[] = [];
+  docToUnPrepare: number;
+  reportList: any[] = [];
   constructor(
               private fb: FormBuilder,
               private policiesService: PoliciesService,
@@ -210,9 +210,10 @@ export class MassDocumentDispatchComponent implements OnInit {
    * error messages accordingly.
    */
   prepareDocuments() {
-    if (this.selectedOptions.length > 0) {
+    log.info('prep', this.docToPrepare)
+    if (this.docToPrepare.length > 0) {
       const payload: any = {
-        dispatchDocumentCode: this.selectedOptions,
+        dispatchDocumentCode: this.docToPrepare,
         policyBatchNo: this.selectedTicket?.ticket?.policyCode,
         reportStatus: "A"
       }
@@ -307,7 +308,6 @@ export class MassDocumentDispatchComponent implements OnInit {
           const codes = data.embedded.map(transaction => transaction?.documentDispatchCode);
           log.info('Codes:', codes);
 
-          // this.selectedOptions = codes;
           this.reportsDispatchedData = data;
 
           log.info('reports dispatched>>', this.reportsDispatchedData);
@@ -315,90 +315,109 @@ export class MassDocumentDispatchComponent implements OnInit {
       );
   }
 
-  reportsDispatch(ticket: TicketsDTO) {
-    this.selectedTicket = ticket;
+  fetchPreparedDocs(ticket: TicketsDTO) {
     this.policiesService.fetchReportsDispatched(ticket?.ticket?.policyCode)
-      .pipe(
-        switchMap((data)=>{
-          log.info('prepared', data);
-          this.preparedDocuments = data.embedded;
-          return this.policiesService.fetchDispatchReports(ticket?.ticket?.policyCode, ticket?.ticket?.endorsment)
-        })
-      )
       .subscribe((data) => {
-        log.info('unprepared', data);
-        let preparedList = this.preparedDocuments.map(data => {
-          let temp = {}
-          temp['docCode'] = data['documentDispatchCode']
-          temp['docName'] = data['dispatchDocumentDto']['report_name']
-          temp['reportCode'] = data['report_code']
-          temp['doneBy'] = data['doneBy']
-
-          log.info('temp', temp);
-          return temp;
-        })
-
-        let unPreparedList = data.map((data_: any) => {
-          let temp = {}
-          temp['docCode'] = data_['dd_code']
-          temp['docName'] = data_['rpt_name']
-          temp['reportCode'] = data_['emrpt_code']
-          temp['doneBy'] = null
-
-          log.info('tempun', temp);
-          this.cdr.detectChanges();
-          return temp;
-        });
-
-        // Combine the prepared and unprepared lists
-        let combinedList = [...preparedList, ...unPreparedList];
-
-        // Assign the combined list to a class property for use in the template
-        this.documentList = combinedList;
-
-        this.openDocDispatchModal();
+        this.docsPrepared = data.embedded;
+        this.fetchUnPreparedDocs(ticket?.ticket?.policyCode, ticket?.ticket?.endorsment);
       })
+  }
+
+  fetchUnPreparedDocs(policyCode: number, docType: string) {
+    this.policiesService.fetchDispatchReports(policyCode, docType)
+      .subscribe((data) => {
+        this.docsUnprepared = data;
+        this.combineDocs();
+      })
+  }
+
+  combineDocs() {
+    let preparedList = this.docsPrepared.map(data => {
+      let temp = {}
+      temp['docCode'] = data['documentDispatchCode']
+      temp['docName'] = data['dispatchDocumentDto']['report_name']
+      temp['reportCode'] = data['report_code']
+      temp['doneBy'] = data['doneBy']
+
+      log.info('temp', temp);
+      return temp;
+    })
+
+    let unPreparedList = this.docsUnprepared.map(data_ => {
+      let temp = {}
+      temp['docCode'] = data_['dd_code']
+      temp['docName'] = data_['rpt_name']
+      temp['reportCode'] = data_['emrpt_code']
+      temp['doneBy'] = null
+
+      log.info('temp', temp);
+      return temp;
+    })
+
+    let combinedList = [...preparedList, ...unPreparedList];
+    this.documentList = combinedList;
+    log.info('list', combinedList)
+    this.openDocDispatchModal();
+  }
+
+  reportsDispatch(ticket: TicketsDTO) {
+    this.fetchPreparedDocs(ticket);
+    this.selectedTicket = ticket;
+
   }
 
   selectDocs(event: Event, doc: any) {
     event.stopPropagation();
     const checkbox = event.target as HTMLInputElement;
 
-    const index = this.selectedOptions.indexOf(doc.docCode);
-    if (checkbox.checked) {
-      // If not selected, add to the list
-      if (index === -1) {
-        this.selectedOptions.push(doc.docCode);
-        log.info("report selected>>", doc);
+    const filteredDoc = (this.documentList.filter(el => el.docCode == doc.docCode))[0];
+
+    if (filteredDoc?.doneBy === null) {
+      if (!(this.docToPrepare.includes(filteredDoc.docCode))) {
+        log.info('unchecked')
+        this.docToPrepare.push(filteredDoc.docCode)
+      } else {
+        this.docToPrepare.splice(filteredDoc, 1)
+        log.info('in the list')
       }
+
     } else {
-      // If already selected, remove from the list
-      if (index !== -1) {
-        this.selectedOptions.splice(index, 1);
-        log.info("report unchecked>>", doc);
-      }
+      this.unPrepareDocument(filteredDoc.docCode)
+      log.info('checked. Call endpoint when checked', filteredDoc?.doneBy)
     }
-    log.info("codes selected>>", this.selectedOptions);
+    log.info('index', filteredDoc, this.docToPrepare)
+
   }
 
-  onLabelClick(event: Event, doc: any) {
+  onLabelClick(event: Event) {
     event.preventDefault(); // Prevent the default label click behavior (which toggles the checkbox)
-    console.log("Label clicked:", doc);
-    this.fetchReport(doc.reportCode);
-    this.selectedRptName = doc.docName;
+    // console.log("Label clicked:", doc);
+    this.documentList.forEach(doc => {
+      this.fetchReport(doc)
+    })
   }
 
   fetchReport(report: any) {
     // this.isLoadingReport = true;
 
     console.log('rpt>', report);
-    this.reportService.fetchReport(report)
+    if (!report.reportCode) {
+      log.info('no report code');
+      return
+    }
+    this.reportService.fetchReport(report?.reportCode)
       .subscribe(
         (response) => {
           // this.apiService.DOWNLOADFROMBYTES(response, 'fname.pdf', 'application/pdf')
           const blob = new Blob([response], { type: 'application/pdf' });
-          this.filePath  = window.URL.createObjectURL(blob);
+          // this.filePath  = window.URL.createObjectURL(blob);
+          const filePath = window.URL.createObjectURL(blob);
 
+          this.reportList.push({
+            fileName: report?.docName,
+            srcUrl: filePath
+          })
+          log.info('report list', this.reportList)
           // this.isLoadingReport = false;
         },
         err=>{
@@ -406,6 +425,35 @@ export class MassDocumentDispatchComponent implements OnInit {
           this.globalMessagingService.displayErrorMessage('Error', err.statusText);
           // this.isLoadingReport = false;
         })
+  }
+
+  unPrepareDocument(docCode: number) {
+    if (docCode) {
+      const payload: any = {
+        dispatchDocumentCode: docCode,
+        policyBatchNo: this.selectedTicket?.ticket?.policyCode
+      }
+
+      log.info('un-prepare report payload>>', payload)
+      this.policiesService.unPrepareDocuments(payload?.policyBatchNo, payload?.dispatchDocumentCode)
+        .subscribe({
+          next: (data) => {
+
+            this.globalMessagingService.displaySuccessMessage('Success', 'Successfully unprepared report');
+            setTimeout(() => {
+              this.reportsDispatch(this.selectedTicket);
+            },1500);
+          },
+          error: err => {
+            this.globalMessagingService.displayErrorMessage('Error', err.error.message);
+          }
+        })
+    } else {
+      this.globalMessagingService.displayErrorMessage(
+        'Error',
+        'Document not unprepared, ensure a report is selected.'
+      );
+    }
   }
 
   ngOnDestroy(): void {

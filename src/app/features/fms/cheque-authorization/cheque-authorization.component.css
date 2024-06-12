@@ -7,26 +7,13 @@
 ::ng-deep .p-dropdown .p-dropdown-filter {
   height: 30px;
 }
-.columnSelect-dialogue {
-  width: 186px;
-  height: 337px;
-  border: solid 1px #d9d9d9;
-  border-radius: 10px;
-  margin: 10px;
-  position: absolute;
-  right: 50px;
-  z-index: 1000;
-}
-/* responsiveness */
-@media (max-width: 576px) {
-  .columnSelect-dialogue {
-    width: 300px;
-    margin: auto;
-    top: 20px;
-  }
-}
 table th {
   background: #f8f9fa;
+}
+
+.p-datatable-tbody tr td,
+p-table tr > td {
+  padding: 0rem 0.6rem !important;
 }
 
 ul.dropdown-menu {
@@ -67,3 +54,17 @@ ul.dropdown-menu li:hover {
   cursor: pointer;
 }
 
+.btn:disabled {
+  pointer-events: all;
+  cursor: not-allowed;
+  opacity: 0.40;
+}
+
+::ng-deep .p-tabview-title {
+  font-size: 16px !important;
+}
+#flexCheckChecked {
+  background-color: gray;
+  width: 22px;
+  height: 21px;
+}
