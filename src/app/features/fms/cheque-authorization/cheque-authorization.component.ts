@@ -8,6 +8,12 @@ import {GlobalMessagingService} from "../../../shared/services/messaging/global-
 import {AuthService} from "../../../shared/services/auth.service";
 import {TableDetail} from "../../../shared/data/table-detail";
 import {Profile} from "../../../shared/data/auth/profile";
+import {untilDestroyed} from "../../../shared/services/until-destroyed";
+import {DmsService} from "../../../shared/services/dms/dms.service";
+import {DmsDocument, SingleDmsDocument} from "../../../shared/data/common/dmsDocument";
+import {take} from "rxjs";
+import {TableLazyLoadEvent} from "primeng/table";
+
 
 const log = new Logger('ChequeAuthorizationComponent');
 @Component({
@@ -17,7 +23,7 @@ const log = new Logger('ChequeAuthorizationComponent');
 })
 export class ChequeAuthorizationComponent implements OnInit {
 
-  public pageSize: 5;
+  public pageSize: 10;
 
   eftRequisitions: Pagination<any> = <Pagination<any>>{};
   chequeRequisitions: Pagination<any> = <Pagination<any>>{};
@@ -69,13 +75,8 @@ export class ChequeAuthorizationComponent implements OnInit {
   ];
   private signedBy: any[];
 
-  selectedOptions: any[] = [];
-  selectedRptName: string = '';
-
-  filePath: any;
-  fileName: any;
-
-  documentList: any[];
+  documentList: DmsDocument[] = [];
+  selectedDocumentData: SingleDmsDocument;
   private validityPeriod: number;
 
   bankAccount: any;
@@ -87,13 +88,26 @@ export class ChequeAuthorizationComponent implements OnInit {
   private selectedBank: any;
   tableDetails: TableDetail;
   public totalRecords: number;
+  remark: string = '';
 
+  first = 0;
+  pageNumber: number = 1;
+  formPayload: any = {
+    paymentType: '',
+    system: 0,
+    fromDate: '',
+    toDate: '',
+    bankBranch: 0,
+    bankCode: 0
+  };
+  docsList: any[] = [];
   constructor(private fb: FormBuilder,
               private cdr: ChangeDetectorRef,
               private fmsService: FmsService,
               private spinner: NgxSpinnerService,
               private globalMessagingService: GlobalMessagingService,
-              private authService: AuthService)
+              private authService: AuthService,
+              private dmsService: DmsService,)
   {
     this.otpForm = this.createOtpFormGroup(this.formInput);
   }
@@ -222,13 +236,15 @@ export class ChequeAuthorizationComponent implements OnInit {
         modalBackdrop.classList.remove('show');
       }
     }
+    this.documentList= [];
+    this.docsList= [];
   }
 
   sortChequePayments() {
 
     const sortValues = this.sortingForm.getRawValue();
     log.info('form value', sortValues);
-    const payload: any = {
+    this.formPayload = {
       paymentType: sortValues.paymentType ? sortValues.paymentType : '',
       system: sortValues.system ? sortValues.system : 1,
       fromDate: sortValues.fromDate ? sortValues.fromDate : '',
@@ -239,15 +255,16 @@ export class ChequeAuthorizationComponent implements OnInit {
 
     this.selectedBank = sortValues?.bank;
 
-    log.info(`tickets >>>`, payload);
+    log.info(`tickets >>>`, this.formPayload);
 
     if (this.activeIndex === 0) {
-      this.getChequeMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
-        payload.bankBranch, payload?.paymentType, payload?.fromDate, payload?.toDate)
+      this.getChequeMandateRequisitions(this.formPayload.bankCode, this.loggedInUser?.code,
+        this.formPayload.bankBranch, this.formPayload?.paymentType, this.formPayload?.fromDate, this.formPayload?.toDate)
     }
       else {
-        this.getEFTMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
-          payload?.paymentType, payload?.fromDate, payload?.toDate)
+        /*this.getEFTMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
+          payload?.paymentType, payload?.fromDate, payload?.toDate, this.rows, this.pageNumber)*/
+      this.sortEftPagination();
     }
 
   }
@@ -601,9 +618,10 @@ export class ChequeAuthorizationComponent implements OnInit {
   }
 
   getEFTMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
-                            fromDate: string, toDate: string) {
+                            fromDate: string, toDate: string, rows: number, pageNo: number) {
     this.spinner.show();
-    this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate)
+
+    this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate, this.pageNumber, this.rows)
       .subscribe({
         next: (res) => {
           this.eftRequisitions = res;
@@ -618,6 +636,19 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  sortEftPagination($event?: TableLazyLoadEvent) {
+    if ($event) {
+      this.first = $event.first;
+      this.rows = $event.rows;
+      this.pageNumber = this.first / this.rows;
+    } else {
+      this.first = 0;
+      this.rows = 10;
+      this.pageNumber = 1;
+    }
+    this.getEFTMandateRequisitions(this.formPayload?.bankCode, this.loggedInUser?.code, '', '', '', this.rows, this.pageNumber)
+  }
+
   getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
                                fromDate: string, toDate: string) {
     this.spinner.show();
@@ -625,9 +656,6 @@ export class ChequeAuthorizationComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.chequeRequisitions = res;
-          this.totalRecords = res.totalElements;
-          // this.tableDetails.rows = res?.content;
-          // this.tableDetails.totalElements = res?.totalElements;
           log.info('Cheque requisitions>>', this.chequeRequisitions);
           this.spinner.hide();
         },
@@ -639,6 +667,50 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  onTextChange(event, exception) {
+    this.remark = event.target.value;
+  }
+
+  fetchDocs(eftAuth: any) {
+    this.dmsService.fetchDocumentsByClaimNo(eftAuth)
+      .pipe(untilDestroyed(this))
+      .subscribe( claimDocs =>
+      {
+        this.documentList = claimDocs;
+        log.info('documents', this.documentList)
+        this.openDocViewerModal();
+      });
+  }
+
+  fetchSelectedDoc(doc: any) {
+
+    console.log('rpt>', doc);
+    this.documentList.forEach(doc => {
+
+      this.fetchDocuments(doc.id)
+    })
+
+  }
+
+  fetchDocuments(docId) {
+    log.info('doc id', docId);
+    this.dmsService.getDocumentById(docId)
+      .pipe(
+        untilDestroyed(this),
+        take(1)
+      )
+      .subscribe((documentData: SingleDmsDocument) => {
+        // this.selectedDocumentData = documentData;
+        this.docsList.push({
+          isBase64: documentData.byteData,
+          base64String: documentData.byteData,
+          fileName: documentData.docName,
+          srcUrl: documentData.url,
+          mimeType: documentData.docMimetype,
+        })
+        log.info('doc list', this.docsList)
+      });
+  }
   ngOnDestroy() {}
 
 }
