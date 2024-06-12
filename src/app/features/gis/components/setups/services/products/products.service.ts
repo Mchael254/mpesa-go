@@ -166,4 +166,5 @@ export class ProductsService {
       catchError(this.errorHandl) 
     );
   }
+
 }

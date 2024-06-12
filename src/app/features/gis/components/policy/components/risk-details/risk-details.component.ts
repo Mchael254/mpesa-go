@@ -148,6 +148,7 @@ export class RiskDetailsComponent {
   selectedSchedule:any;
   updatedSchedule:any;
   updatedScheduleData:any;
+  modelYear:any;
 
   @ViewChild('dt1') dt1: Table | undefined;
   @ViewChild('closebutton') closebutton;
@@ -190,7 +191,7 @@ export class RiskDetailsComponent {
     this.getQuakeZone();
     this.selectedTransactionType = sessionStorage.getItem('selectedTransactionType');
     this.createScheduleDetailsForm();
-
+    this.getModelYear()
     const passedPolicyDetailsString = sessionStorage.getItem('passedPolicyDetails');
     this.passedPolicyDetails = JSON.parse(passedPolicyDetailsString);
     log.debug("Passed Policy Details:", this.passedPolicyDetails);
@@ -1429,5 +1430,17 @@ export class RiskDetailsComponent {
 
       })
     }
+}
+getModelYear(){
+  this.productService.getYearOfManufacture().subscribe({
+    next:(data)=>{
+      const model = data._embedded
+      this.modelYear =  model[0]["List of cover years"]
+      console.log("model year", this.modelYear)
+    } ,error: (err) => {
+      this.globalMessagingService.displayErrorMessage('Error', 'Error fetching model years');
+      console.error(err);
+    }
+  })
 }
 }
