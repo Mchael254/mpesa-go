@@ -57,10 +57,10 @@
   </div>
 
     <div class="card mb-3" style="box-shadow:none">
-      <div class="card-header bg-transparent border-bottom-0">
+      <div class="card-header bg-transparent border-bottom-0 mb-0">
         <span class="justify-content-center mt-3 text-primary">Cheque authorization</span>
       </div>
-      <div class="card-body">
+      <div class="card-body pt-0">
 
         <p-tabView [(activeIndex)]="activeIndex">
           <p-tabPanel header="Cheques">
@@ -68,10 +68,6 @@
               <div class="row">
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
-                  <!--<select class="form-control form-select" formControlName="bank" id="bank" (change)="sortChequePayments()">
-                    <option value="" disabled selected>Select option</option>
-                    <option *ngFor="let bankData of bankData" value="{{ bankData.id }}"> {{ bankData.shortDesc}}</option>
-                  </select>-->
 
                   <p-dropdown
                     [options]="bankAccount"
@@ -102,13 +98,6 @@
                     </option>
                   </select>
                 </div>
-                <!--<div class="col-lg-2 col-sm-4 col-6 mb-3">
-                  <label for="paymentType" class="form-label text-black">System</label>
-                  <select class="form-control form-select" formControlName="system" id="system" (change)="sortChequePayments()">
-                    <option value="" disabled selected>Select option</option>
-                    <option *ngFor="let systemData of systemsData" value="{{ systemData.id }}"> {{ systemData.shortDesc}}</option>
-                  </select>
-                </div>-->
                 <div class="col-lg-2 col-sm-4 col-6 offset-lg-4">
                   <label class="form-label text-black fw-medium">Date from</label><br>
                   <input type="date" class="form-control" formControlName="fromDate" (change)="sortChequePayments()">
@@ -127,7 +116,7 @@
                 [autoLayout]="true"
                 [rowHover]="true"
                 [showCurrentPageReport]="true"
-                [rows]="pageSize || 5"
+                [rows]="pageSize || 10"
                 [totalRecords]="chequeRequisitions?.totalElements"
                 [value]="chequeRequisitions?.content"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
@@ -136,7 +125,7 @@
                 [(selection)]="selectedEftPaymentTypes"
                 selectionMode="single"
                 dataKey="chequeRef"
-                scrollHeight="400px"
+                scrollHeight="490px"
                 [tableStyle]="{'min-width': '78rem'}"
                 responsiveLayout="scroll"
 
@@ -254,10 +243,6 @@
               <div class="row">
                 <div class="col-lg-2 col-sm-4 col-6 mb-3">
                   <label for="paymentType" class="form-label text-black fw-medium">Bank account</label>
-                  <!--<select class="form-control form-select" formControlName="bank" id="bank" (change)="sortChequePayments()">
-                    <option value="" disabled selected>Select option</option>
-                    <option *ngFor="let bankData of bankData" value="{{ bankData.id }}"> {{ bankData.shortDesc}}</option>
-                  </select>-->
 
                   <p-dropdown
                     [options]="bankAccount"
@@ -306,7 +291,7 @@
                 [autoLayout]="true"
                 [rowHover]="true"
                 [showCurrentPageReport]="true"
-                [rows]="pageSize || 5"
+                [rows]="pageSize || 10"
                 [totalRecords]="eftRequisitions?.totalElements"
                 [value]="eftRequisitions?.content"
                 [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
@@ -315,10 +300,12 @@
                 [(selection)]="selectedEftPaymentTypes"
                 selectionMode="single"
                 dataKey="chequeRef"
-                scrollHeight="400px"
-                [tableStyle]="{'min-width': '89rem'}"
+                scrollHeight="490px"
+                [tableStyle]="{'min-width': '81rem'}"
                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
                 [globalFilterFields]="['chequeRef']"
+                (onLazyLoad)="sortEftPagination($event)"
+                [lazy]="true"
               >
 
                 <ng-template pTemplate="header">
@@ -333,7 +320,6 @@
                     <th pSortableColumn="pyAccNo">Account Number<p-sortIcon field="pyAccNo"></p-sortIcon></th>
                     <th pSortableColumn="chequeAmount">Amount<p-sortIcon field="chequeAmount"></p-sortIcon></th>
                     <th pSortableColumn="eftStatus">Status<p-sortIcon field="eftStatus"></p-sortIcon></th>
-                    <th pSortableColumn="disableControls">Disabled<p-sortIcon field="disableControls"></p-sortIcon></th>
                     <th pSortableColumn="date">Remarks<p-sortIcon field="date"></p-sortIcon></th>
                     <th style="width: 3%;"></th>
                   </tr>
@@ -371,41 +357,52 @@
                       <p-columnFilter type="text" field="eftStatus" matchMode="contains"
                                       [showMatchModes]="false" [showMenu]="false"/>
                     </th>
-                    <th>
-                      <p-columnFilter type="text" field="disableControls" matchMode="contains"
-                                      [showMatchModes]="false" [showMenu]="false"/>
-                    </th>
                     <th style="width: 3%;"></th>
                   </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-chequeAuth>
+                <ng-template pTemplate="body" let-eftAuth let-i="rowIndex">
                   <tr>
                     <td>
-                      <p-tableCheckbox [value]="chequeAuth" [disabled] = "chequeAuth?.disableControls === 'Y'"></p-tableCheckbox>
+                      <ng-container *ngIf="eftAuth?.disableControls === 'N'; else disableCheckbox">
+                        <p-tableCheckbox [value]="eftAuth" [disabled] = "eftAuth?.disableControls === 'Y'"
+                        ></p-tableCheckbox>
+                      </ng-container>
+                      <ng-template #disableCheckbox>
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" disabled>
+                      </ng-template>
                     </td>
-                    <td>{{chequeAuth.chequeRef}}</td>
+                    <td>{{eftAuth.chequeRef}}</td>
                     <td>
-                      {{chequeAuth?.chequeRefDate | date: 'dd-MM-yyyy'}}
+                      {{eftAuth?.chequeRefDate | date: 'dd-MM-yyyy'}}
                     </td>
                     <td>
-                      <span *ngIf = "chequeAuth?.chequeNarrative" title="{{chequeAuth?.chequeNarrative | titlecase}}">
-                        {{chequeAuth?.chequeNarrative?.substring(0,10) | titlecase}}...
+                      <span *ngIf = "eftAuth?.chequeNarrative" title="{{eftAuth?.chequeNarrative | titlecase}}">
+                        {{eftAuth?.chequeNarrative?.substring(0,10) | titlecase}}...
                       </span>
                     </td>
                     <td>
-                  <span *ngIf = "chequeAuth?.bnkBankName" title="{{chequeAuth?.bnkBankName | titlecase}}">
-                    {{chequeAuth?.bnkBankName?.substring(0,10) | titlecase}}...
+                  <span *ngIf = "eftAuth?.bnkBankName" title="{{eftAuth?.bnkBankName | titlecase}}">
+                    {{eftAuth?.bnkBankName?.substring(0,10) | titlecase}}...
                   </span>
                     </td>
-                    <td>{{chequeAuth?.pyAccNo}}</td>
-                    <td>{{chequeAuth?.chequeAmount | number:'1.2-2'}}</td>
+                    <td>{{eftAuth?.pyAccNo}}</td>
+                    <td>{{eftAuth?.chequeAmount | number:'1.2-2'}}</td>
                     <td>
-                      <span *ngIf = "chequeAuth?.eftStatus" title="{{chequeAuth?.eftStatus | titlecase}}">
-                        {{chequeAuth?.eftStatus?.substring(0,10) | titlecase}}...
+                      <span *ngIf = "eftAuth?.eftStatus" title="{{eftAuth?.eftStatus | titlecase}}">
+                        {{eftAuth?.eftStatus?.substring(0,10) | titlecase}}...
                       </span>
                     </td>
-                    <td>{{chequeAuth?.disableControls}}</td>
-                    <td><input type="text" name="" class="form-control w-75"></td>
+                    <td>
+                      <input
+                        type="text"
+                        pInputText
+                        (input)="onTextChange($event, eftAuth)"
+                        [pTooltip]="remark"
+                        tooltipPosition="bottom"
+                        class="form-control"
+                        [id]="i"
+                      />
+                    </td>
                     <td class="text-center">
                       <div style="position: relative;">
                         <div class="btn-group dropend">
@@ -413,10 +410,10 @@
                             <i class="pi pi-ellipsis-v"></i>
                           </a>
                           <ul class="dropdown-menu">
-                            <li (click)="openEligibleAuthModal(chequeAuth)">Eligible authorizers</li>
-                            <li (click)="openSignedByModal(chequeAuth)">Signed by</li>
-                            <li (click)="openTransactionSummaryModal(chequeAuth)">Transaction details</li>
-                            <li (click)="openDocViewerModal()">Documents</li>
+                            <li (click)="openEligibleAuthModal(eftAuth)">Eligible authorizers</li>
+                            <li (click)="openSignedByModal(eftAuth)">Signed by</li>
+                            <li (click)="openTransactionSummaryModal(eftAuth)">Transaction details</li>
+                            <li (click)="fetchDocs(eftAuth?.chequeRef2)">Documents</li>
                           </ul>
                         </div>
                       </div>
@@ -659,37 +656,48 @@
         <div class="row col-12 mb-3">
           <div class="col-4 border-end border-secondary-subtle">
 
-            <!--<form [formGroup]="docDispatchForm">
+<!--            <form [formGroup]="docDispatchForm">-->
               <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
-                &lt;!&ndash;                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>&ndash;&gt;
-                <input class="form-check-input" type="checkbox" value="" [id]="'flexCheckChecked' + i"
-                       [checked]="doc?.doneBy !== null && doc?.doneBy !== undefined"
-                       (click)="selectDocs($event, doc)">
+                <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
                 <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
-                       (click)="onLabelClick($event, doc)">
-                  {{doc?.docName}}
+                      (click)="fetchSelectedDoc(doc?.id)" >
+                  <span *ngIf = "doc?.actualName" title="{{doc?.actualName | titlecase}}">
+                        {{doc?.actualName?.substring(0,18) | titlecase}}...
+                      </span>
+<!--                  {{doc?.actualName}}-->
+                  <i class="fa-regular fa-eye" style="font-size: 17px; cursor: pointer;"></i>
                 </label><br>
               </div>
-            </form>-->
-            <div class="form-check mt-2 form-check-item" >
-
-              <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
-              >
-              <label class="form-label fw-medium text-dark" for="flexCheckChecked">
-                Document 1
-              </label><br>
-            </div>
+<!--            </form>-->
           </div>
           <div class="col-8">
 
-            <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
-            <div *ngIf="selectedRptName && filePath">
-              <ngx-doc-viewer
-                [fileName]="selectedRptName ?? ''"
-                [srcUrl]="filePath ?? ''"
-                [mimeType]="'application/pdf'"
-                class="doc-viewer"
-              ></ngx-doc-viewer>
+            <!-- carousel -->
+            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <ng-container *ngIf="docsList.length > 0">
+                  <div class="carousel-item" *ngFor="let doc of docsList; let i = index" [class.active]="i === 0">
+                    <label class="form-label w-100 text-center">Preview: {{ doc.fileName }}</label><br>
+                    <ngx-doc-viewer
+                      [isBase64]="!!doc.isBase64"
+                      [base64String]="doc?.base64String"
+                      [fileName]="doc?.fileName ?? ''"
+                      [srcUrl]="doc?.srcUrl ?? ''"
+                      [mimeType]="doc?.mimeType"
+                    ></ngx-doc-viewer>
+                  </div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="docsList.length > 0">
+                <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </ng-container>
             </div>
           </div>
 

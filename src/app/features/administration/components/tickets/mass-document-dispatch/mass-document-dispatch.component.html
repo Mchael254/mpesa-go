@@ -136,7 +136,7 @@
                        [checked]="doc?.doneBy !== null && doc?.doneBy !== undefined"
                        (click)="selectDocs($event, doc)">
                 <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
-                       (click)="onLabelClick($event, doc)">
+                       (click)="onLabelClick($event)">
                   {{doc?.docName}}
                 </label><br>
               </div>
@@ -144,16 +144,32 @@
           </div>
           <div class="col-8">
 
-            <label class="form-label w-100 text-center">Preview: {{ selectedRptName }}</label><br>
-            <div *ngIf="selectedRptName && filePath">
-              <ngx-doc-viewer
-                [fileName]="selectedRptName ?? ''"
-                [srcUrl]="filePath ?? ''"
-                [mimeType]="'application/pdf'"
-                class="doc-viewer"
-              ></ngx-doc-viewer>
+            <!-- carousel -->
+            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <ng-container *ngIf="reportList.length > 0">
+                  <div class="carousel-item" *ngFor="let doc of reportList; let i = index" [class.active]="i === 0">
+                    <label class="form-label w-100 text-center">Preview: {{ doc.fileName }}</label><br>
+                    <ngx-doc-viewer
+                      [fileName]="doc.fileName ?? ''"
+                      [srcUrl]="doc.srcUrl ?? ''"
+                      [mimeType]="'application/pdf'"
+                      class="d-block w-100"
+                    ></ngx-doc-viewer>
+                  </div>
+                </ng-container>
+              </div>
+              <ng-container *ngIf="reportList.length > 0">
+                <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </ng-container>
             </div>
-
           </div>
 
         </div>

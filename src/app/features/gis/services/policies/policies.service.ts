@@ -163,4 +163,14 @@ export class PoliciesService {
   fetchReportsDispatched(batchNo: number): Observable<any> {
     return this.api.GET<any>(`v2/document-dispatch/dispatch-documents-mapping?batchNo=${batchNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL);
   }
+
+  unPrepareDocuments(batchNo: number, documentDispatchCode: number): Observable<any> {
+    const params = new HttpParams()
+      .set('batchNo', `${batchNo}`)
+      .set('documentDispatchCode', `${documentDispatchCode}`)
+    return this.api.DELETE<any>(
+      `v2/electronic-document-status/unprepare-documents?${params}`,
+      API_CONFIG.GIS_UNDERWRITING_BASE_URL
+    );
+  }
 }

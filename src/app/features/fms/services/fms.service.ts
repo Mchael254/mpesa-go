@@ -71,7 +71,7 @@ export class FmsService {
   }
 
   getEftMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
-                            fromDate: string, toDate: string):
+                            fromDate: string, toDate: string, pageNo: number, pageSize: number):
     Observable<Pagination<any>> {
     let params = new HttpParams()
       .set('bankCode', `${bankCode}`)
@@ -79,6 +79,8 @@ export class FmsService {
       .set('paymentType', `${paymentType}`)
       .set('fromDate', `${fromDate}`)
       .set('toDate', `${toDate}`)
+      .set('pageNo', `${pageNo}`)
+      .set('pageSize', `${pageSize}`)
 
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
