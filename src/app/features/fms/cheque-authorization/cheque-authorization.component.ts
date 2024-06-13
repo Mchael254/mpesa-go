@@ -13,6 +13,8 @@ import {DmsService} from "../../../shared/services/dms/dms.service";
 import {DmsDocument, SingleDmsDocument} from "../../../shared/data/common/dmsDocument";
 import {take} from "rxjs";
 import {TableLazyLoadEvent} from "primeng/table";
+import {LazyLoadEvent} from "primeng/api";
+import {eftDTO} from "../data/auth-requisition-dto";
 
 
 const log = new Logger('ChequeAuthorizationComponent');
@@ -23,15 +25,13 @@ const log = new Logger('ChequeAuthorizationComponent');
 })
 export class ChequeAuthorizationComponent implements OnInit {
 
-  public pageSize: 10;
+  pageSize: number = 10;
 
-  eftRequisitions: Pagination<any> = <Pagination<any>>{};
+  eftRequisitions: Pagination<eftDTO> = <Pagination<eftDTO>>{};
   chequeRequisitions: Pagination<any> = <Pagination<any>>{};
   selectedEftPaymentTypes: any;
 
   public sortingForm: FormGroup;
-
-
   public otpForm: FormGroup;
   public formInput = ['input1', 'input2', 'input3', 'input4', 'input5', 'input6', 'input7'];
   public otpValue = '';
@@ -101,6 +101,13 @@ export class ChequeAuthorizationComponent implements OnInit {
     bankCode: 0
   };
   docsList: any[] = [];
+
+  filterObject: {
+    refNoFilter:string, narrativeFilter:string, accountNumberFilter:string, statusFilter:string
+  } = {
+    refNoFilter:'', narrativeFilter:'', accountNumberFilter:'', statusFilter:''
+  };
+
   constructor(private fb: FormBuilder,
               private cdr: ChangeDetectorRef,
               private fmsService: FmsService,
@@ -264,7 +271,7 @@ export class ChequeAuthorizationComponent implements OnInit {
       else {
         /*this.getEFTMandateRequisitions(payload.bankCode, this.loggedInUser?.code,
           payload?.paymentType, payload?.fromDate, payload?.toDate, this.rows, this.pageNumber)*/
-      this.sortEftPagination();
+      this.lazyLoadEft();
     }
 
   }
@@ -403,6 +410,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           log.info('signed data>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully signed');
           this.isLoadingSignSelected = false;
+          this.lazyLoadEft();
 
         },
         error: err => {
@@ -455,6 +463,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           log.info('signed data>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully rejected');
           this.isLoadingReject = false;
+          this.lazyLoadEft();
 
         },
         error: err => {
@@ -506,6 +515,7 @@ export class ChequeAuthorizationComponent implements OnInit {
           log.info('signed data>>', data);
           this.globalMessagingService.displaySuccessMessage('Success', 'Successfully sent for correction');
           this.isLoadingSendCorrection = false;
+          this.lazyLoadEft();
 
         },
         error: err => {
@@ -524,8 +534,8 @@ export class ChequeAuthorizationComponent implements OnInit {
   }
 
   openEligibleAuthModal(data) {
+    this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.brhCode, data?.chequeNo, data?.chequeAmount);
     this.toggleEligibleAuthModal(true);
-    this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.brhCode, 1, data?.chequeNo, data?.chequeAmount);
   }
 
   processActionSignedByEmitted(event) {
@@ -569,9 +579,9 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
-  getEligibleAuthorizers(userCode: number, branchCode: number, sysCode: number, chequeNumber: number, chequeAmount: number) {
+  getEligibleAuthorizers(userCode: number, branchCode: number, chequeNumber: number, chequeAmount: number) {
 
-    this.fmsService.getEligibleAuthorizers(userCode, branchCode, sysCode, chequeNumber, chequeAmount)
+    this.fmsService.getEligibleAuthorizers(userCode, branchCode, chequeNumber, chequeAmount)
       .subscribe({
         next: (res) => {
           this.eligibleAuthorizers = res.data;
@@ -618,10 +628,13 @@ export class ChequeAuthorizationComponent implements OnInit {
   }
 
   getEFTMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
-                            fromDate: string, toDate: string, rows: number, pageNo: number) {
+                            fromDate: string, toDate: string, pageNo: number, pageSize: number,
+                            sortField: any, sortDirection: string) {
     this.spinner.show();
 
-    this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate, this.pageNumber, this.rows)
+    this.fmsService.getEftMandateRequisitions(bankCode, userCode, paymentType, fromDate, toDate,
+      this.pageNumber, this.pageSize, '', '', '',
+      '', sortField, sortDirection)
       .subscribe({
         next: (res) => {
           this.eftRequisitions = res;
@@ -636,17 +649,22 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
-  sortEftPagination($event?: TableLazyLoadEvent) {
-    if ($event) {
-      this.first = $event.first;
-      this.rows = $event.rows;
+  lazyLoadEft(event?: LazyLoadEvent | TableLazyLoadEvent) {
+    const pageIndex = event?.first / event?.rows;
+    const pageSize = event?.rows;
+    const sortField = event?.sortField ? event?.sortField : '';
+    const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
+    /*if (event) {
+      this.first = event.first;
+      this.rows = event.rows;
       this.pageNumber = this.first / this.rows;
     } else {
       this.first = 0;
       this.rows = 10;
       this.pageNumber = 1;
-    }
-    this.getEFTMandateRequisitions(this.formPayload?.bankCode, this.loggedInUser?.code, '', '', '', this.rows, this.pageNumber)
+    }*/
+    this.getEFTMandateRequisitions(this.formPayload?.bankCode, this.loggedInUser?.code,
+      this.formPayload?.paymentType, this.formPayload?.fromDate, this.formPayload?.toDate, pageIndex, pageSize, sortField, sortOrder)
   }
 
   getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
@@ -711,6 +729,41 @@ export class ChequeAuthorizationComponent implements OnInit {
         log.info('doc list', this.docsList)
       });
   }
+  filterEft(event, pageIndex: number = 0, pageSize: number = event?.rows) {
+    this.eftRequisitions = null;
+
+    this.spinner.show();
+    this.fmsService
+      .getEftMandateRequisitions(
+        this.formPayload?.bankCode, this.loggedInUser?.code,
+        this.formPayload?.paymentType,
+        this.formPayload?.fromDate, this.formPayload?.toDate,
+        pageIndex, this.pageSize,
+        this.filterObject?.refNoFilter,
+        this.filterObject?.narrativeFilter,
+        this.filterObject?.accountNumberFilter,
+        this.filterObject?.statusFilter, '', '')
+      .subscribe((data) => {
+          this.eftRequisitions = data;
+          this.spinner.hide();
+        },
+        error => {
+          this.spinner.hide();
+        });
+  }
+  inputRefNoFilter(event) {
+
+    const value = (event.target as HTMLInputElement).value;
+    this.filterObject['refNoFilter'] = value;
+  }
+
+  updateFilter(event) {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.name;
+    const value = target.value;
+    this.filterObject[filterName] = value;
+  }
+
   ngOnDestroy() {}
 
 }

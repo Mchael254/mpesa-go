@@ -62,3 +62,30 @@ export interface AuthRequisitionDTO {
   cqrRequisitionBy: string,
   currencyName: string
 }
+export interface eftDTO {
+  bbrBranchName: string,
+  bbrCode: number,
+  bnkBankName: string,
+  bnkCode: number,
+  brhCode: number,
+  chequeAmount: number,
+  chequeBatchNo: null,
+  chequeCpyNo: number,
+  chequeCstStatus: string,
+  chequeCstStatusDesc: string,
+  chequeNarrative: string,
+  chequeNo: number,
+  chequeRef: string,
+  chequeRef2: string,
+  chequeRefDate: string,
+  chequeSinglePayeeCon: string,
+  chequeSource: number,
+  chequerFmsRemarks: string,
+  cpyName: string,
+  disableControls: string,
+  eftStatus: string,
+  mandatesComplete: string,
+  pyAccNo: string,
+  toolTip: string,
+  userEligible: string
+}

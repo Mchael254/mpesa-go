@@ -68,3 +68,7 @@ ul.dropdown-menu li:hover {
   width: 22px;
   height: 21px;
 }
+.carousel-control-next, .carousel-control-prev {
+  top: 50%;
+  height: 20%;
+}
