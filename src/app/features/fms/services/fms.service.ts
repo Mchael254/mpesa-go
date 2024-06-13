@@ -5,6 +5,7 @@ import {Pagination} from "../../../shared/data/common/pagination";
 import {HttpParams} from "@angular/common/http";
 import {API_CONFIG} from "../../../../environments/api_service_config";
 import {UtilService} from "../../../shared/services";
+import {eftDTO} from "../data/auth-requisition-dto";
 
 
 @Injectable({
@@ -37,12 +38,11 @@ export class FmsService {
     return this.api.GET<any>(`v1/payment-bank-accounts?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
   }
 
-  getEligibleAuthorizers(userCode: number, branchCode: number, sysCode: number, chequeNumber: number, chequeAmount: number):
+  getEligibleAuthorizers(userCode: number, branchCode: number, chequeNumber: number, chequeAmount: number):
     Observable<any> {
     const params = new HttpParams()
       .set('userCode', `${userCode}`)
       .set('branchCode', `${branchCode}`)
-      .set('sysCode', `${sysCode}`)
       .set('chequeNumber', `${chequeNumber}`)
       .set('chequeAmount', `${chequeAmount}`)
 
@@ -71,8 +71,10 @@ export class FmsService {
   }
 
   getEftMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
-                            fromDate: string, toDate: string, pageNo: number, pageSize: number):
-    Observable<Pagination<any>> {
+                            fromDate: string, toDate: string, pageNo: number, pageSize: number,
+                            refNoFilter: string, narrativeFilter: string, accountNumberFilter: string,
+                            statusFilter: string, sortBy: string, sortDirection: string):
+    Observable<Pagination<eftDTO>> {
     let params = new HttpParams()
       .set('bankCode', `${bankCode}`)
       .set('userCode', `${userCode}`)
@@ -81,10 +83,16 @@ export class FmsService {
       .set('toDate', `${toDate}`)
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
+      .set('refNoFilter', `${refNoFilter}`)
+      .set('narrativeFilter', `${narrativeFilter}`)
+      .set('accountNumberFilter', `${accountNumberFilter}`)
+      .set('statusFilter', `${statusFilter}`)
+      .set('sortBy', `${sortBy}`)
+      .set('sortDirection', `${sortDirection}`)
 
     params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.api.GET<Pagination<any>>(`v1/eft-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
+    return this.api.GET<Pagination<eftDTO>>(`v1/eft-mandate-requisitions?${params}`, API_CONFIG.FMS_PAYMENTS_SERVICE_BASE_URL)
   }
 
   getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
