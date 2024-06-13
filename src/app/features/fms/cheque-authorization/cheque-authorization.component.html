@@ -301,10 +301,10 @@
                 selectionMode="single"
                 dataKey="chequeRef"
                 scrollHeight="490px"
-                [tableStyle]="{'min-width': '81rem'}"
+                [tableStyle]="{'min-width': '82rem'}"
                 currentPageReportTemplate="{first} - {last} of {totalRecords}"
-                [globalFilterFields]="['chequeRef']"
-                (onLazyLoad)="sortEftPagination($event)"
+                [globalFilterFields]="['eftRequisitions.chequeRef', 'chequeRefDate']"
+                (onLazyLoad)="lazyLoadEft($event)"
                 [lazy]="true"
               >
 
@@ -326,36 +326,32 @@
                   <tr>
                     <th style="width: 3%;"></th>
                     <th>
-                      <p-columnFilter type="text" field="chequeRef" matchMode="contains"
-                                      [showMatchModes]="false" [showMenu]="false"/>
+                      <input type="text" name="refNoFilter" class="form-control w-75" (keyup.enter)="filterEft($event);" (input)="updateFilter($event)">
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="chequeRefDate" matchMode="contains"
-                                      [showMatchModes]="false" [showMenu]="false"/>
+                      <!--<p-columnFilter type="text" field="chequeRefDate" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>-->
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="chequeNarrative" matchMode="contains"
-                        [showMatchModes]="false" [showMenu]="false"/>
+                      <input type="text" name="narrativeFilter" class="form-control w-75" (keyup.enter)="filterEft($event);" (input)="updateFilter($event)">
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="bnkBankName" matchMode="contains"
-                        [showMatchModes]="false" [showMenu]="false"/>
+                      <!--<p-columnFilter type="text" field="bnkBankName" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>-->
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="pyAccNo" matchMode="contains"
-                        [showMatchModes]="false" [showMenu]="false"/>
+                      <input type="text" name="accountNumberFilter" class="form-control w-75" (keyup.enter)="filterEft($event);" (input)="updateFilter($event)">
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="chequeAmount" matchMode="contains"
-                        [showMatchModes]="false" [showMenu]="false"/>
+                      <!--<p-columnFilter type="text" field="chequeAmount" matchMode="contains"
+                        [showMatchModes]="false" [showMenu]="false"/>-->
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="eftStatus" matchMode="contains"
-                        [showMatchModes]="false" [showMenu]="false"/>
+                      <input type="text" name="statusFilter" class="form-control w-75" (keyup.enter)="filterEft($event);" (input)="updateFilter($event)">
                     </th>
                     <th>
-                      <p-columnFilter type="text" field="eftStatus" matchMode="contains"
-                                      [showMatchModes]="false" [showMenu]="false"/>
+                      <!--<p-columnFilter type="text" field="chequerFmsRemarks" matchMode="contains"
+                                      [showMatchModes]="false" [showMenu]="false"/>-->
                     </th>
                     <th style="width: 3%;"></th>
                   </tr>
@@ -646,7 +642,7 @@
 
 <!--DOC Viewer modal-->
 <div class="modal fade" id="docViewerToggle" aria-hidden="true" aria-labelledby="docViewerToggleLabel" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-6 text-primary" id="docViewerToggleLabel">Documents</h1>
@@ -654,7 +650,7 @@
       </div>
       <div class="modal-body">
         <div class="row col-12 mb-3">
-          <div class="col-4 border-end border-secondary-subtle">
+          <div class="col-3 border-end border-secondary-subtle">
 
 <!--            <form [formGroup]="docDispatchForm">-->
               <div class="form-check mt-2 form-check-item" *ngFor="let doc of documentList;  let i = index">
@@ -670,7 +666,7 @@
               </div>
 <!--            </form>-->
           </div>
-          <div class="col-8">
+          <div class="col-9">
 
             <!-- carousel -->
             <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -699,6 +695,7 @@
                 </button>
               </ng-container>
             </div>
+
           </div>
 
         </div>

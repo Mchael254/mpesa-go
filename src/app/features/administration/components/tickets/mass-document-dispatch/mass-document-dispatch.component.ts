@@ -102,6 +102,8 @@ export class MassDocumentDispatchComponent implements OnInit {
         modalBackdrop.classList.remove('show');
       }
     }
+    this.documentList = [];
+    this.reportList = [];
   }
 
   /**
