@@ -730,14 +730,8 @@ export class ChequeAuthorizationComponent implements OnInit {
       });
   }
   filterEft(event, pageIndex: number = 0, pageSize: number = event?.rows) {
-    this.eftRequisitions = null; // Initialize with an empty array or appropriate structure
+    this.eftRequisitions = null;
 
-    /*const value = (event.target as HTMLInputElement).value.toLowerCase();
-
-    log.info('myvalue>>>', value)
-
-      this.searchTerm = value;*/
-    // this.isSearching = true;
     this.spinner.show();
     this.fmsService
       .getEftMandateRequisitions(
