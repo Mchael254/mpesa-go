@@ -4,3 +4,7 @@
 .form-check .form-label {
   cursor: pointer;
 }
+.carousel-control-next, .carousel-control-prev {
+  top: 50%;
+  height: 20%;
+}
