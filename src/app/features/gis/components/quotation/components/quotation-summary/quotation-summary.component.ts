@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
@@ -23,13 +23,18 @@ import {GlobalMessagingService} from "../../../../../../shared/services/messagin
 
 const log = new Logger('QuotationSummaryComponent');
 
-
+interface FileItem {
+  file: File;
+  name: string;
+  selected: boolean;
+}
 @Component({
   selector: 'app-quotation-summary',
   templateUrl: './quotation-summary.component.html',
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef;
   steps = quoteStepsData;
   quotationCode:any
   quotationNumber:any;
@@ -79,6 +84,7 @@ export class QuotationSummaryComponent {
   files = [];
   totalSize : number = 0;
   totalSizePercent : number = 0;
+  selectedDocumentType: string = '';
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -610,52 +616,48 @@ sendSms(){
 
 // start document upload functionality 
 
-choose(event, callback) {
-  callback();
+
+onBrowseClick(): void {
+  this.fileInput.nativeElement.click();
 }
 
-onRemoveTemplatingFile(event, file, removeFileCallback, index) {
-  removeFileCallback(event, index);
-  this.totalSize -= parseInt(this.formatSize(file.size));
-  this.totalSizePercent = this.totalSize / 10;
-}
-
-onClearTemplatingUpload(clear) {
-  clear();
-  this.totalSize = 0;
-  this.totalSizePercent = 0;
-}
-
-onTemplatedUpload() {
-  this.globalMessagingService.displaySuccessMessage(  'Success',  'File Uploaded' );
-}
-
-onSelectedFiles(event) {
-  this.files = event.currentFiles;
-  this.files.forEach((file) => {
-      this.totalSize += parseInt(this.formatSize(file.size));
-  });
-  this.totalSizePercent = this.totalSize / 10;
-}
-
-uploadEvent(callback) {
-  callback();
-}
-
-formatSize(bytes) {
-  const k = 1024;
-  const dm = 3;
-  const sizes = this.config.translation.fileSizeTypes;
-  if (bytes === 0) {
-      return `0 ${sizes[0]}`;
+onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+    }
   }
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
-
-  return `${formattedSize} ${sizes[i]}`;
 }
 
+downloadFile(fileItem: FileItem): void {
+  const url = window.URL.createObjectURL(fileItem.file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileItem.name;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
+}
+
+printFile(fileItem: FileItem): void {
+  // Implement your print logic here
+  console.log('Print file:', fileItem.name);
+}
+
+deleteFile(index: number): void {
+  this.files.splice(index, 1);
+}
+onDocumentTypeChange(event: Event): void {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedId = +selectElement.value;
+  const selectedData = this.documentTypes.find(data => data.id === selectedId);
+  if (selectedData) {
+    this.selectedDocumentType = selectedData.description;
+  }
+}
 // end document upload functionality
 
 onResize(event: any) {
