@@ -697,8 +697,8 @@ export class SectorOccupationComponent implements OnInit {
 
       const saveOccupation: PostOccupationDTO = {
         id: null,
-        shortDescription: occupationFormValues.shortDescription,
-        name: occupationFormValues.name,
+        shortDescription: occupationFormValues.occupation_shortDescription,
+        name: occupationFormValues.occupation_name,
         organizationId: 2,
         wefDate: new Date().toISOString(),
         wetDate: null,
@@ -711,8 +711,6 @@ export class SectorOccupationComponent implements OnInit {
           })
         ),
       };
-
-      console.log('SAVING oCCUPATION', saveOccupation);
 
       this.occupationServive.createOccupation(saveOccupation).subscribe({
         next: (data) => {
@@ -771,8 +769,8 @@ export class SectorOccupationComponent implements OnInit {
       // Prepare the updateOccupation DTO
       const updateOccupation: PostOccupationDTO = {
         id: occupationId,
-        shortDescription: occupationFormValues.shortDescription,
-        name: occupationFormValues.name,
+        shortDescription: occupationFormValues.occupation_shortDescription,
+        name: occupationFormValues.occupation_name,
         organizationId: this.selectedOccupation.organizationId,
         wefDate: this.selectedOccupation.wefDate,
         wetDate: this.selectedOccupation.wetDate,
