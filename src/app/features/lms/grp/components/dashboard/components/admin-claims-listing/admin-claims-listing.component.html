@@ -30,11 +30,11 @@
                 <ng-template pTemplate="body" let-claim>
                     <tr>
 
-                        <td *ngIf="selectedColumns.includes('product')">{{ claim.product }}</td>
+                        <td *ngIf="selectedColumns.includes('product')">{{ claim.product_desc | titlecase }}</td>
                         <td *ngIf="selectedColumns.includes('claim_number')">{{ claim.claim_number }}</td>
-                        <td *ngIf="selectedColumns.includes('member')">{{ claim.member }}</td>
-                        <td *ngIf="selectedColumns.includes('mem_no')">{{ claim.mem_no }}</td>
-                        <td id="table-align" *ngIf="selectedColumns.includes('claim_amnt')">{{ claim.claim_amnt | number
+                        <td *ngIf="selectedColumns.includes('member')">{{ claim.member_name | titlecase }}</td>
+                        <td *ngIf="selectedColumns.includes('mem_no')">{{ claim.member_number }}</td>
+                        <td id="table-align" *ngIf="selectedColumns.includes('claim_amnt')">{{ claim.clm_amt_claimed | number
                             }}</td>
                     </tr>
                 </ng-template>

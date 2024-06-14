@@ -45,8 +45,8 @@
             <div>
                 <table class="centered-table">
                     <tr>
-                        <td><span class="sa-premium">100</span></td>&nbsp;&nbsp;
-                        <td><span class="sa-premium">Ksh. 8,000,000</span></td>
+                        <td><span class="sa-premium">{{policiesSummary?.count | number}}</span></td>&nbsp;&nbsp;
+                        <td><span class="sa-premium">{{policiesSummary?.total_sum_assured | number}}</span></td>
                     </tr>
                     <tr>
                         <td><span class="text-typography" style="color: black;">Policies</span></td>&nbsp;&nbsp;
@@ -69,13 +69,13 @@
                 <span class="pol-text">Claims<span class="breadcrumb-symbol">&gt;</span></span>
             </div>
             <div>
-                <table class="centered-table">
+                <table class="centered-table" *ngIf="claimsSummary">
                     <tr>
-                        <td><span class="sa-premium">100</span></td>&nbsp;&nbsp;
-                        <td><span class="sa-premium">Ksh. 8,000,000</span></td>
+                        <td><span class="sa-premium">{{ claimsSummary?.count }}</span></td>&nbsp;&nbsp;
+                        <td><span class="sa-premium">{{ claimsSummary?.tot_amt_claimed | number }}</span></td>
                     </tr>
                     <tr>
-                        <td><span class="text-typography" style="color: black;">Policies</span></td>&nbsp;&nbsp;
+                        <td><span class="text-typography" style="color: black;">Claims</span></td>&nbsp;&nbsp;
                         <td><span class="text-typography" style="color: black;">Claimed amount</span></td>
                     </tr>
                 </table>
@@ -97,12 +97,12 @@
             <div>
                 <table class="centered-table">
                     <tr>
-                        <td><span class="sa-premium">100</span></td>&nbsp;&nbsp;
-                        <!-- <td><span class="sa-premium">Ksh. 8,000,000</span></td> -->
+                        <td><span class="sa-premium">{{pensionSummary?.count}}</span></td>&nbsp;&nbsp;
+                        <td><span class="sa-premium">Ksh. 8,000,000</span></td>
                     </tr>
                     <tr>
                         <td><span class="text-typography" style="color: black;">Policies</span></td>&nbsp;&nbsp;
-                        <!-- <td><span class="text-typography" style="color: black;">Sum assured</span></td> -->
+                        <td><span class="text-typography" style="color: black;">Fund value</span></td>
                     </tr>
                 </table>
             </div>
