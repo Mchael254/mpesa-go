@@ -147,10 +147,10 @@
                             <div class=" mb-1 col-sm-4 col-12 ">
                                 <label for="riskCoverDays" class=" risk-label required" id="modelYear">Model
                                     year</label>
-                                <select class="form-select form-control-sm selectInput" id="modelYear"
-                                    formControlName="subClassCode">
+                                <select class="form-select form-control-sm selectInput" id="modelYear">
                                     <option value=""></option>
-                                    <option value=""></option>
+                                    <option *ngFor="let year of modelYear" [value]="year">{{ year }}</option>
+                                   
                                 </select>
 
 
