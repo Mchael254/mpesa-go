@@ -16,7 +16,8 @@ const log = new Logger('AuthorizePolicyModalComponent');
   styleUrls: ['./authorize-policy-modal.component.css']
 })
 export class AuthorizePolicyModalComponent implements OnInit {
-  @Input() policyDetails:any;
+  policyDetails:any;
+  batchNo: number;
 
   debtOwnerForm: FormGroup;
   scheduleCheckForm: FormGroup;
@@ -63,7 +64,10 @@ export class AuthorizePolicyModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.showDefaultUser = false;
-    this.policyDetails = this.localStorageService.getItem('ticketDetails');
+    this.policyDetails = this.localStorageService.getItem('policyDetails');
+    log.info('policy>>', this.policyDetails);
+    this.batchNo = this.policyDetails?.batchNo;
+    log.info('batchNo>>', this.batchNo);
     this.createDebtOwnerTicketsForm();
     this.createScheduleCheckForm();
     this.getDispatchReasons();
@@ -249,7 +253,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
 
     const debitOwnerPromiseDate: any = {
       debitOwner: debtOwnerFormValues.modalUserAssignTo,
-      policyBatchNo: this.policyDetails?.batch_no,
+      policyBatchNo: this.batchNo,
       promiseDate: debtOwnerFormValues.promiseDate
     }
 
@@ -289,7 +293,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
     this.saveDispatchRejection();
     setTimeout(() => {
 
-    this.policiesService.authorisePolicy(this.policyDetails?.batch_no, scheduleFormValues.scheduleReadyAuth, this.dateToday)
+    this.policiesService.authorisePolicy(this.batchNo, scheduleFormValues.scheduleReadyAuth, this.dateToday)
       .subscribe({
         next: (data) => {
           this.scheduleData = data;
@@ -339,7 +343,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
         code: 0,
         dispatchApply: "N",
         exemptReason: scheduleFormValues.rejectionDescription,
-        policyBatchNo: this.policyDetails?.batch_no,
+        policyBatchNo: this.batchNo,
         preparedBy: assignee,
         preparedDate: this.dateToday
 
@@ -368,7 +372,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * This function fetches dispatch reports for a specific policy and stores the data in a variable.
    */
   getReportsToPrepare() {
-    this.policiesService.fetchDispatchReports(this.policyDetails?.ticket?.policyCode, this.policyDetails?.ticket?.endorsment)
+    this.policiesService.fetchDispatchReports(this.batchNo, this.policyDetails?.policyStatus)
       .pipe(
         untilDestroyed(this),
       )
@@ -385,7 +389,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * dispatch codes and the fetched data.
    */
   getReportsDispatched() {
-    this.policiesService.fetchReportsDispatched(this.policyDetails?.ticket?.policyCode)
+    this.policiesService.fetchReportsDispatched(this.batchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -408,7 +412,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
     if (scheduleFormValues.documentDispatched.length > 0) {
       const payload: any = {
         dispatchDocumentCode: scheduleFormValues.documentDispatched,
-        policyBatchNo: this.policyDetails?.ticket?.policyCode,
+        policyBatchNo: this.batchNo,
         reportStatus: "A"
       }
 
@@ -438,7 +442,7 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * The `savePreparedDocs` function prepares documents for a policy and displays success or error messages accordingly.
    */
   savePreparedDocs() {
-    this.policiesService.prepareDocuments(this.policyDetails?.ticket?.policyCode)
+    this.policiesService.prepareDocuments(this.batchNo)
       .subscribe({
         next: (data) => {
           // this.savePreparedDocumentData = data;
@@ -456,16 +460,16 @@ export class AuthorizePolicyModalComponent implements OnInit {
    * accordingly.
    */
   onSave() {
-    if (this.policyDetails?.ticket?.policyCode) {
+    if (this.batchNo) {
       const payload: any[] = [
-        this.policyDetails?.ticket?.policyCode
+        this.batchNo
       ]
       this.policiesService.dispatchDocuments(payload)
         .subscribe({
           next: (data) => {
             // this.saveDispatchedDocumentData = data;
             this.globalMessagingService.displaySuccessMessage('Success', 'Successfully dispatched documents');
-            this.dmsService.fetchDispatchedDocumentsByBatchNo(this.policyDetails?.ticket?.policyCode);
+            this.dmsService.fetchDispatchedDocumentsByBatchNo(this.batchNo);
           },
           error: err => {
             this.globalMessagingService.displayErrorMessage('Error', err.error.message);

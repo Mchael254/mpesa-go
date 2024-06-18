@@ -657,7 +657,7 @@
                 <!--                <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>-->
                 <label class="form-label fw-medium text-dark" [for]="'flexCheckChecked' + i"
                       (click)="fetchSelectedDoc(doc?.id)" >
-                  <span *ngIf = "doc?.actualName" title="{{doc?.actualName | titlecase}}">
+                  <span *ngIf = "doc?.actualName" class="doc-name" title="{{doc?.actualName | titlecase}}">
                         {{doc?.actualName?.substring(0,18) | titlecase}}...
                       </span>
 <!--                  {{doc?.actualName}}-->
@@ -669,7 +669,7 @@
           <div class="col-9">
 
             <!-- carousel -->
-            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="documentCarousel" class="carousel slide">
               <div class="carousel-inner">
                 <ng-container *ngIf="docsList.length > 0">
                   <div class="carousel-item" *ngFor="let doc of docsList; let i = index" [class.active]="i === 0">

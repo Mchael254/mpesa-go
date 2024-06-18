@@ -124,7 +124,7 @@
 
       <p-tabPanel header="Reinsurance allocations" >
         <app-reinsurance-allocations *ngIf="policyDetails?.riskInformation"
-                                     [riskDetails]="policyDetails?.riskInformation"
+                                     [policyDetails]="policyDetails"
         ></app-reinsurance-allocations>
       </p-tabPanel>
       <p-tabPanel header="Authorization" [selected]="true">
@@ -205,8 +205,7 @@
   </div>
 </div>
 
-<app-authorize-policy-modal
-  [policyDetails]="policyDetails">
+<app-authorize-policy-modal>
 </app-authorize-policy-modal>
 
 <app-reassign-ticket-modal
