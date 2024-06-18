@@ -38,4 +38,20 @@ export class DashboardService {
   getMemberWithdrawals (policyCode, memberCode) {
     return this.api.GET(`group/portal/${policyCode}/member-withdrawals?policyMemberCode=${memberCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
   }
+
+  getAdminPolicies(clientCode: number) {
+    return this.api.GET(`admin/policies-listing?clientCode=${clientCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getClaimsSummary(clientCode: number) {
+    return this.api.GET(`admin/claims-summary?clientCode=${clientCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getClaimsListing(clientCode: number) {
+    return this.api.GET(`admin/claims-listing?clientCode=${clientCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
+
+  getAdminPensionListing(clientCode: number) {
+    return this.api.GET(`admin/pensions?clientCode=${clientCode}`, API_CONFIG.UNDERWRITING_SERVICE_BASE_URL);
+  }
 }
