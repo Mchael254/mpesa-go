@@ -146,6 +146,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.getPaymentTypes();
   }
 
+  /**
+   * The function creates a form for sorting payment data with fields for payment type, system, date
+   * range, and bank.
+   */
   createSortForm() {
     this.sortingForm = this.fb.group({
       paymentType: '',
@@ -156,6 +160,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     });
   }
 
+  /**
+   * The function `createOtpFormGroup` creates a FormGroup with FormControl instances for each element
+   * in the provided array.
+   */
   createOtpFormGroup(elements) {
     const group: any = {};
     elements.forEach((key) => {
@@ -165,6 +173,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     return new FormGroup(group);
   }
 
+  /**
+   * The `openOtpModal` function displays an OTP verification modal by adding the 'show' class and
+   * setting the display style to 'block'.
+   */
   openOtpModal() {
     const modal = document.getElementById('otpVerifyToggle');
     if (modal) {
@@ -177,6 +189,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeOtpModal` hides the OTP verification modal by removing the 'show' class and
+   * setting the display to 'none'.
+   */
   closeOtpModal() {
     const modal = document.getElementById('otpVerifyToggle');
     if (modal) {
@@ -189,6 +205,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `openTransactionSummaryModal` displays a modal with transaction details based on the
+   * active index and transaction data.
+   */
   openTransactionSummaryModal(data) {
     const modal = document.getElementById('transactionSummary');
     if (modal) {
@@ -209,6 +229,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeTransactionSummaryModal` closes a modal by removing the 'show' class and hiding
+   * it from display.
+   */
   closeTransactionSummaryModal() {
     const modal = document.getElementById('transactionSummary');
     if (modal) {
@@ -221,6 +245,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+ /**
+  * The `openDocViewerModal` function displays a modal for viewing documents by adding a 'show' class
+  * and setting the display style to 'block'.
+  */
   openDocViewerModal() {
     const modal = document.getElementById('docViewerToggle');
     if (modal) {
@@ -233,6 +261,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The function `closeDocViewerModal` closes a document viewer modal by removing the 'show' class and
+   * hiding the modal elements.
+   */
   closeDocViewerModal() {
     const modal = document.getElementById('docViewerToggle');
     if (modal) {
@@ -247,6 +279,8 @@ export class ChequeAuthorizationComponent implements OnInit {
     this.docsList= [];
   }
 
+  /* The provided TypeScript code is a method named `sortChequePayments` that seems to be handling the
+  sorting and filtering of cheque payments based on the values obtained from a form.*/
   sortChequePayments() {
 
     const sortValues = this.sortingForm.getRawValue();
@@ -276,6 +310,10 @@ export class ChequeAuthorizationComponent implements OnInit {
 
   }
 
+  /**
+   * The keyUpEvent function handles keyboard events for an OTP input form, allowing users to navigate
+   * between input fields and clear previous inputs.
+   */
   keyUpEvent(event, input) {
     const value = event.target.value;
     const index = this.formInput.indexOf(input);
@@ -293,6 +331,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The `onVerify` function handles the validation of OTP input, displays success or error messages
+   * accordingly, and resets the form.
+   */
   onVerify() {
     this.isLoading = true;
 
@@ -327,6 +369,10 @@ export class ChequeAuthorizationComponent implements OnInit {
     }
   }
 
+  /**
+   * The `generateOtp` function generates an OTP (One-Time Password) and handles success and error
+   * responses accordingly.
+   */
   generateOtp() {
     this.isLoadingGenerateOtp = true;
     this.fmsService.generateOtp(this.loggedInUser?.code, 2).subscribe({
@@ -346,6 +392,13 @@ export class ChequeAuthorizationComponent implements OnInit {
     });
   }
 
+  /**
+   * The function `startCountdown` in TypeScript initiates a countdown for a specified number of
+   * seconds, updating certain properties and enabling/disabling buttons accordingly.
+   * @param {number} seconds - The `seconds` parameter in the `startCountdown` function represents the
+   * initial countdown duration in seconds. This function will start a countdown from the specified
+   * number of seconds and update the countdown value every second until it reaches 0.
+   */
   startCountdown(seconds: number) {
     this.isGenerateOtpButtonDisabled = true;
     this.isButtonDisabled = false;
@@ -363,10 +416,17 @@ export class ChequeAuthorizationComponent implements OnInit {
     }, 1000);
   }
 
+  /**
+   * The `resendOtp` function in TypeScript generates a new OTP.
+   */
   resendOtp() {
     this.generateOtp();
   }
 
+  /**
+   * The function `saveSignChequeMandate` saves and signs cheque mandate approve options based on
+   * selected EFT payments.
+   */
   saveSignChequeMandate() {
     const selectedEftPayments = this.selectedEftPaymentTypes;
     log.info('selected cheque/eft', selectedEftPayments);
@@ -420,6 +480,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The `rejectSignChequeMandate` function handles the rejection of cheque/eft payments by updating
+   * the approval options and sending a request to sign the cheque mandate.
+   */
   rejectSignChequeMandate() {
     const selectedEftPayments = this.selectedEftPaymentTypes;
     log.info('selected cheque/eft', selectedEftPayments);
@@ -473,6 +537,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `sendToCorrectionChequeMandate` sends selected cheque or EFT payments for correction
+   * and displays success or error messages accordingly.
+   */
   sendToCorrectionChequeMandate() {
 
     const selectedEftPayments = this.selectedEftPaymentTypes;
@@ -525,32 +593,56 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `processActionEligibleAuthEmitted` toggles the eligible authorization modal to false.
+   */
   processActionEligibleAuthEmitted(event) {
     this.toggleEligibleAuthModal(false);
   }
 
+  /**
+   * The function `toggleEligibleAuthModal` toggles the display of eligible authorizers in a TypeScript
+   * class.
+   */
   private toggleEligibleAuthModal(display: boolean) {
     this.showEligibleAuthorizers = display;
   }
 
+  /**
+   * The function `openEligibleAuthModal` retrieves eligible authorizers and toggles the eligible
+   * authorization modal.
+   */
   openEligibleAuthModal(data) {
     this.getEligibleAuthorizers(this.loggedInUser?.code, this.selectedBank?.brhCode, data?.chequeNo, data?.chequeAmount);
     this.toggleEligibleAuthModal(true);
   }
 
+  /**
+   * The function `processActionSignedByEmitted` toggles the `SignedByModal` to false.
+   */
   processActionSignedByEmitted(event) {
     this.toggleSignedByModal(false);
   }
 
+  /**
+   * The function `toggleSignedByModal` toggles the display of a modal.
+   */
   private toggleSignedByModal(display: boolean) {
     this.showSignedBy = display;
   }
 
+  /**
+   * The function `openSignedByModal` toggles a modal and retrieves information about the signed-by
+   * user.
+   */
   openSignedByModal(data) {
     this.toggleSignedByModal(true);
     this.getSignedBy(this.loggedInUser?.code, data?.chequeNo, this.selectedBank?.brhCode)
   }
 
+  /**
+   * The function `getBankAccount()` retrieves bank account information for a logged-in user.
+   */
   getBankAccount() {
 
     this.fmsService.getBankAccounts(this.loggedInUser?.code, 2, 223, 1)
@@ -565,6 +657,9 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getPaymentTypes` retrieves EFT payment types for a logged-in user.
+   */
   getPaymentTypes() {
 
     this.fmsService.getEftPaymentTypes(this.loggedInUser?.code, 223, 1)
@@ -579,6 +674,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getEligibleAuthorizers` retrieves eligible authorizers for a given user, branch,
+   * cheque number, and cheque amount.
+   */
   getEligibleAuthorizers(userCode: number, branchCode: number, chequeNumber: number, chequeAmount: number) {
 
     this.fmsService.getEligibleAuthorizers(userCode, branchCode, chequeNumber, chequeAmount)
@@ -594,6 +693,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getSignedBy` retrieves signed by information for a given user code, cheque number,
+   * and branch code.
+   */
   getSignedBy(userCode: number, chequeNumber: number, branchCode: number) {
 
     this.signedBy = null;
@@ -612,6 +715,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getTransactionDetails` retrieves transaction details based on the provided cheque
+   * number, user code, and payment category.
+   */
   getTransactionDetails(chequeNumber: number, userCode: number, paymentCategory: string) {
 
     this.transactionSummary = null;
@@ -627,6 +734,10 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `getEFTMandateRequisitions` retrieves EFT mandate requisitions based on specified
+   * parameters and handles success and error cases accordingly.
+   */
   getEFTMandateRequisitions(bankCode: number, userCode: number, paymentType: string,
                             fromDate: string, toDate: string, pageNo: number, pageSize: number,
                             sortField: any, sortDirection: string) {
@@ -649,24 +760,24 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The `lazyLoadEft` function in TypeScript handles lazy loading of data for EFT mandate requisitions
+   * based on the provided event parameters.
+   */
   lazyLoadEft(event?: LazyLoadEvent | TableLazyLoadEvent) {
     const pageIndex = event?.first / event?.rows;
     const pageSize = event?.rows;
     const sortField = event?.sortField ? event?.sortField : '';
     const sortOrder = event?.sortOrder == 1 ? 'asc' : 'desc';
-    /*if (event) {
-      this.first = event.first;
-      this.rows = event.rows;
-      this.pageNumber = this.first / this.rows;
-    } else {
-      this.first = 0;
-      this.rows = 10;
-      this.pageNumber = 1;
-    }*/
+
     this.getEFTMandateRequisitions(this.formPayload?.bankCode, this.loggedInUser?.code,
       this.formPayload?.paymentType, this.formPayload?.fromDate, this.formPayload?.toDate, pageIndex, pageSize, sortField, sortOrder)
   }
 
+  /**
+   * This TypeScript function retrieves cheque mandate requisitions based on specified parameters and
+   * handles success and error responses accordingly.
+   */
   getChequeMandateRequisitions(bankCode: number, userCode: number, branchCode: number, paymentType: string,
                                fromDate: string, toDate: string) {
     this.spinner.show();
@@ -685,10 +796,17 @@ export class ChequeAuthorizationComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `onTextChange` updates the `remark` property based on the value of the event target.
+   */
   onTextChange(event, exception) {
     this.remark = event.target.value;
   }
 
+  /**
+   * The `fetchDocs` function fetches documents by claim number using the `dmsService` and opens a
+   * document viewer modal to display the fetched documents.
+   */
   fetchDocs(eftAuth: any) {
     this.dmsService.fetchDocumentsByClaimNo(eftAuth)
       .pipe(untilDestroyed(this))
@@ -700,6 +818,9 @@ export class ChequeAuthorizationComponent implements OnInit {
       });
   }
 
+  /**
+   * The function fetches documents based on a selected document from a list.
+   */
   fetchSelectedDoc(doc: any) {
 
     console.log('rpt>', doc);
@@ -710,6 +831,14 @@ export class ChequeAuthorizationComponent implements OnInit {
 
   }
 
+  /**
+   * The `fetchDocuments` function fetches a document by its ID, processes the document data, and adds
+   * it to a list of documents.
+   * @param docId - The `docId` parameter in the `fetchDocuments` function is used to identify the
+   * document that needs to be fetched from the DMS (Document Management System). The function logs the
+   * `docId`, retrieves the document data using the `dmsService.getDocumentById(docId)` method, and
+   * then
+   */
   fetchDocuments(docId) {
     log.info('doc id', docId);
     this.dmsService.getDocumentById(docId)
@@ -729,6 +858,11 @@ export class ChequeAuthorizationComponent implements OnInit {
         log.info('doc list', this.docsList)
       });
   }
+
+  /**
+   * The `filterEft` function filters EFT mandate requisitions based on various criteria and retrieves
+   * the data asynchronously.
+   */
   filterEft(event, pageIndex: number = 0, pageSize: number = event?.rows) {
     this.eftRequisitions = null;
 
@@ -751,12 +885,10 @@ export class ChequeAuthorizationComponent implements OnInit {
           this.spinner.hide();
         });
   }
-  inputRefNoFilter(event) {
 
-    const value = (event.target as HTMLInputElement).value;
-    this.filterObject['refNoFilter'] = value;
-  }
-
+  /**
+   * The function `updateFilter` updates the value of a filter in an object based on user input.
+   */
   updateFilter(event) {
     const target = event.target as HTMLInputElement;
     const filterName = target.name;
