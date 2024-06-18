@@ -1,73 +1,87 @@
 <div></div>
 
 <div class="base-content-section lms">
-    <div style="display: flex; padding-top: 1rem; justify-content: end">
+    <!-- <div style="display: flex; padding-top: 1rem; justify-content: end">
         <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
         </app-dynamic-breadcrumb>
-      </div>
+    </div> -->
   <div class="row">
     <div >
-      <div class="transactions d-flex justify-content-center" style="padding-bottom: 1rem; font-size: 0.8rem">
+      <!-- <div class="transactions d-flex justify-content-center" style="padding-bottom: 1rem; font-size: 0.8rem">
         {{ "Reinsurance"  | uppercase }}
-      </div>
+      </div> -->
+      <!-- Title -->
       <div class="full-border" style="position: relative;">
         <div
-        class="fw-medium d-flex justify-content-center"
+        class="transactions d-flex justify-content-center"
         style="font-size: 0.8rem"
       >
-        {{ "Initiation" | uppercase }}
+        {{ "Reinsurance Initiation" | uppercase }}
       </div>
 
       <ngx-spinner name="lms_ind_view" type="ball-clip-rotate-multiple" [fullScreen]="false" color="#00529B" size="medium" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
 
-      <div class="py-2">
-        
-      <div style="padding-bottom: 1rem; font-size: 0.8rem">
-        <div class="row">
-         <div class="col-lg-2 col-md-6 fw-medium">{{ "Risk retention parameters"  | titlecase }}</div>
-         <div class="col-lg-1 col-md-6">
-            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
-            <option selected>2024</option>
-            <option value="1">2025</option>
-            <option value="2">2026</option>
-            <option value="3">2027</option>
-          </select></div>
+      <!-- Table for Risk Retention Parameters -->
+      <div class="py-2"> 
+        <div style="padding-bottom: 1rem; font-size: 0.8rem">
+          <!-- Treaty Input -->
+          <div class="fw-medium py-2 text-black">Select a Treaty</div>
+          <div class="col-lg-3 col-md-5 pb-2">
+            <label for="treatyType" class="quote-label fw-medium text-black">Treaty</label>
+            <select id="treatyType" class="form-select form-select-sm my-1" placement="right">
+              <option value="" selected="true" disabled="disabled"></option>
+              <option *ngFor="let data of [] | sort : 'asc' :'nationality'" 
+              [value]="data.id">{{ data?.nationality | titlecase}}</option>
+            </select>
+          </div>
+          <!-- Risk Retention Year Listbox -->
+          <div class="d-flex flex-row" style="align-items: center;">
+            <div class=" fw-medium" style=" margin-right: 1rem;" >{{ "Risk retention parameters"  | titlecase }}</div>
+              <div class="">
+                  <select class="form-select form-select-sm" aria-label=".form-select-sm">
+                    <option selected>2024</option>
+                    <option value="1">2025</option>
+                    <option value="2">2026</option>
+                    <option value="3">2027</option>
+                  </select>
+              </div>
+          </div>
         </div>
-       </div>
-       <div class="table-responsive">
-         <table class="table table-striped">
-           <thead>
-             <tr>
-               <th>Cover Type</th>
-               <th>Retained Sum Assured</th>
-               <th>Excess</th>
-               <th>Retention Limit</th>
-               <th>Gross Retention Limit</th>
-               <th>Net retention limit</th>
-               <th>Policy sum assured</th>
-             </tr>
-           </thead>
-           <tbody *ngIf="[].length > 0">
-             <tr *ngFor="let lms of []">
-               <td>{{ lms?.quote_no || "" }}</td>
-               <td>{{ lms?.quote_no || "" }}</td>
-               <td>{{ lms?.sum_insured || "" | number }}</td>
-               <td>{{ lms?.premium || 0 | number }}</td>
-               <td>{{ lms?.quote_no || "" }}</td>
-               <td>{{ lms?.created_at || "" | date:'short' }}</td>
-               <td>{{ lms?.quote_no || "" }}</td>
-               <!-- <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td> -->
-             </tr>
-           </tbody>
-         </table>
- 
-         <div
-           *ngIf="[].length === 0"
-           class="text-danger d-flex justify-content-center"
-         >
-           No List of Risk retention parameters Available
-         </div>
-       </div>   
+        <!-- Risk Retention Table -->
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Cover Type</th>
+                <th>Retained Sum Assured</th>
+                <th>Excess</th>
+                <th>Retention Limit</th>
+                <th>Gross Retention Limit</th>
+                <th>Net retention limit</th>
+                <th>Policy sum assured</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="[].length > 0">
+              <tr *ngFor="let lms of []">
+                <td>{{ lms?.quote_no || "" }}</td>
+                <td>{{ lms?.quote_no || "" }}</td>
+                <td>{{ lms?.sum_insured || "" | number }}</td>
+                <td>{{ lms?.premium || 0 | number }}</td>
+                <td>{{ lms?.quote_no || "" }}</td>
+                <td>{{ lms?.created_at || "" | date:'short' }}</td>
+                <td>{{ lms?.quote_no || "" }}</td>
+                <!-- <td (click)="selectLmsIndRow(lms)">{{ "Process" }}</td> -->
+              </tr>
+            </tbody>
+          </table>
+  
+          <div
+            *ngIf="[].length === 0"
+            class="text-danger d-flex justify-content-center"
+          >
+            No List of Risk retention parameters Available
+          </div>
+        </div>   
       </div>
         
       <div class="py-2">
@@ -153,13 +167,7 @@
              </div>
            </div> 
       </div>  
-    
-    
     </div>
-
-
-
-
 
     <div class="d-flex justify-content-between pb-4">
         <div></div>
