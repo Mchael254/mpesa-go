@@ -369,7 +369,7 @@
             <td class="body">
               <p-tableCheckbox [value]="ticket"></p-tableCheckbox>
             </td>
-            <td class="body">{{ticket.ticket.date | date: 'shortDate'}}</td>
+            <td class="body">{{ticket.ticket.date | date: 'YYYY-MM-dd'}}</td>
             <td class="body" style="cursor:pointer;">{{ ticket?.task?.activityName }}</td>
             <td class="body">
               {{ ticket?.ticket?.sysModule === 'Q' ? ticket?.ticket.quotationNo :

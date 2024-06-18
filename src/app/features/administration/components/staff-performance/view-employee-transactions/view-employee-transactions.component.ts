@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {Table} from "primeng/table";
 import {LazyLoadEvent} from "primeng/api";
 import {SystemsDto} from "../../../../../shared/data/common/systemsDto";
 import {ReplaySubject} from "rxjs/internal/ReplaySubject";
@@ -21,7 +20,6 @@ const log = new Logger('ViewEmployeeTransactionsComponent');
   styleUrls: ['./view-employee-transactions.component.css']
 })
 export class ViewEmployeeTransactionsComponent implements OnInit {
-  @ViewChild(Table) transactionsTable: Table;
 
   // transactions: Pagination<TransactionsDTO> = <Pagination<TransactionsDTO>>{};
   transactions: TransactionsDTO[] =[];
@@ -38,7 +36,6 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   sortingForm: FormGroup;
-  selectedModule: string;
 
   today = new Date();
   year = this.today.getFullYear(); // Get the current year
@@ -106,36 +103,6 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
   ngOnDestroy(): void {
   }
 
-  /**
-   * The searchModule function sets the module property to the selectedModule value, logs the selectedModule value, resets
-   * the transactionsTable, and detects changes.
-   * @param event - The event parameter is an object that represents the event that triggered the searchModule function. It
-   * could be an event object from a user interaction.
-   */
-  searchModule(event) {
-
-    this.module = this.selectedModule;
-    // this.module = 'module';
-    log.info('Selected valu', this.selectedModule);
-    this.transactionsTable.reset();
-    this.cdr.detectChanges();
-
-  }
-
-  //gets the employee data(username, module & name) from the previous screen
-  /*getTransactionsData() {
-    this.ticketsService.transanctionsRoutingData$
-      .pipe(
-        takeUntil(this.destroyed$)
-      )
-      .subscribe(
-        transactionRouting => {
-          this.aggregatedRoutingData = transactionRouting;
-          this.getAllTransactions(this.page, this.queryColumn);
-          this.cdr.detectChanges();
-        }
-      )
-  }*/
   //get all tickets for the logged in user
   /**
    * The function `getAllTransactions` retrieves transactions based on the provided parameters and updates the
@@ -169,15 +136,6 @@ export class ViewEmployeeTransactionsComponent implements OnInit {
     }
 
   }
-  /*lazyLoadTransactions(event:LazyLoadEvent) {
-    const pageIndex = event.first / event.rows;
-    this.getAllTransactions(pageIndex)
-      .pipe(untilDestroyed(this))
-      .subscribe((data:Pagination<TransactionsDTO>) => {
-        this.transactions = data;
-        this.cdr.detectChanges();
-      })
-  }*/
   /**
    * The function `getAllSystems()` retrieves systems data from the tickets service and assigns it to the `systemsData`
    * variable.

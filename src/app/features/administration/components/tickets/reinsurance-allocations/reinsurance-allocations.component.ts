@@ -24,7 +24,8 @@ const log = new Logger('ReinsuranceAllocationsComponent');
 })
 export class ReinsuranceAllocationsComponent implements OnInit {
 
-  @Input() riskDetails:any [] = [];
+  @Input() policyDetails:any;
+  batchNo: number;
   public pageSize: 5;
   risKCedingDetails: any;
   treatyRISummaryForm: FormGroup;
@@ -67,9 +68,8 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   ngOnInit(): void {
     this.createTreatyRiSummaryForm();
     this.createRiskPopulateForm();
+    this.batchNo = this.policyDetails?.batchNo;
     this.getRiskReinsuranceRiskDetails();
-    log.info('riskinfo', this.riskDetails);
-
   }
 
   /**
@@ -141,7 +141,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
   getRiskReinsuranceRiskDetails() {
     // this.policyDetails[0].policyBatchNo
     this.spinner.show();
-    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.riskDetails[0]?.policyBatchNo)
+    this.reinsuranceService.getRiskReinsuranceRiskDetails(this.batchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -413,7 +413,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    */
   getPolicyFacreSetups() {
     this.spinner.show();
-    this.reinsuranceService.getPolicyFacreSetups(this.riskDetails[0].policyBatchNo)
+    this.reinsuranceService.getPolicyFacreSetups(this.batchNo)
       .pipe(
         untilDestroyed(this),
       )
@@ -445,7 +445,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
     //pass the risk code selected to this.riskCode
     this.riskCode = riskCodes;
     const payload: any = {
-      batchNumber: this.riskDetails[0]?.policyBatchNo,
+      batchNumber: this.batchNo,
       riskIpuCodes:
         riskCodes
     }
@@ -557,7 +557,7 @@ export class ReinsuranceAllocationsComponent implements OnInit {
    */
   reinsureRisk() {
     this.isLoadingReinsure = true;
-    const batchNo = this.riskDetails[0].policyBatchNo;
+    const batchNo = this.batchNo;
     const reinsureRiskData: RiskReinsurePOSTDTO[] = []
 
     this.reinsuranceService.reinsureRisk(batchNo, reinsureRiskData)
