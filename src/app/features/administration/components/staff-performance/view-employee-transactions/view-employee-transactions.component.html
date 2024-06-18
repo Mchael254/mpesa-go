@@ -31,7 +31,7 @@
 
       <div class="col-lg-2 col-sm-4 col-6">
         <label class="transactionLabel">{{ 'entities.module' | translate }}:</label><br>
-        <select class="form-control form-select" formControlName="module" id="module" [(ngModel)]="selectedModule" (change)="sortEmployeeTransactions()">
+        <select class="form-control form-select" formControlName="module" id="module" (change)="sortEmployeeTransactions()">
           <option value="" selected>{{ 'entities.all' | translate }}</option>
           <option *ngFor="let ticketModule of ticketModules" [ngValue]="ticketModule.shortDescription">{{ ticketModule.description }}</option>
         </select>

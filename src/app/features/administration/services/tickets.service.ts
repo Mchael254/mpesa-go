@@ -221,14 +221,9 @@ export class TicketsService {
   ): Observable<TransactionsDTO[]> {
 
     const loggedInUser = this.authService.getCurrentUser();
-    let id:number;
-    if (this.utilService.isUserAdmin(loggedInUser)) {
-      id = loggedInUser.id;
+    const supervisor = loggedInUser?.code;
 
-    }
-    const supervisor = id;
-
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
       .set('fromDate', `${fromDate}`)
@@ -238,9 +233,9 @@ export class TicketsService {
       .set('module', `${module}`)
       .set('sortColumn', `${sortColumn}`)
 
-    let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
+    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${queryparamObject}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
+    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   // get all transactions aggregate per module
@@ -251,28 +246,23 @@ export class TicketsService {
   ): Observable<TransactionsCountDTO[]> {
 
     const loggedInUser = this.authService.getCurrentUser();
-    let id:number;
-    if (this.utilService.isUserAdmin(loggedInUser)) {
-      id = loggedInUser.id;
-
-    }
-    const supervisor = id;
+    const supervisor = loggedInUser?.code;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     })
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('fromDate', `${fromDate}`)
       .set('supervisor', `${supervisor}`)
       .set('toDate', `${toDate}`)
 
 
-    let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
+    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
     return this.http.get<TransactionsCountDTO[]>(`/${this.baseUrl}/workflow/api/v1/gis-transactions/count-per-module`,
       {
         headers: headers,
-        params: queryparamObject,
+        params: params,
       });
   }
 
@@ -338,14 +328,9 @@ export class TicketsService {
   ): Observable<TransactionsDTO[]> {
 
     const loggedInUser = this.authService.getCurrentUser();
-    let id:number;
-    if (this.utilService.isUserAdmin(loggedInUser)) {
-      id = loggedInUser.id;
+    const supervisor = loggedInUser.code;
 
-    }
-    const supervisor = id;
-
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('pageNo', `${pageNo}`)
       .set('pageSize', `${pageSize}`)
       .set('fromDate', `${fromDate}`)
@@ -357,9 +342,9 @@ export class TicketsService {
       .set('filterColumn', `${filterColumn}`)
       .set('filterQuery', `${filterQuery}`)
 
-    let queryparamObject = this.utilService.removeNullValuesFromQueryParams(params);
+    params = new HttpParams({ fromObject: this.utilService.removeNullValuesFromQueryParams(params) });
 
-    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${queryparamObject}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
+    return this.api.GET<TransactionsDTO[]>(`api/v1/tickets/manager-report?${params}`, API_CONFIG.MNGT_WORKFLOW_BASE_URL);
   }
 
   sortTickets(

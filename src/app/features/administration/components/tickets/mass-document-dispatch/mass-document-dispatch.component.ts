@@ -300,6 +300,10 @@ export class MassDocumentDispatchComponent implements OnInit {
     this.dispatchDocsTable.filterGlobal(filterValue, 'contains');
   }
 
+  /**
+   * The function `getReportsDispatched` fetches and logs document dispatch codes for a selected
+   * ticket's policy.
+   */
   getReportsDispatched() {
     this.policiesService.fetchReportsDispatched(this.selectedTicket?.ticket?.policyCode)
       .pipe(
@@ -317,6 +321,10 @@ export class MassDocumentDispatchComponent implements OnInit {
       );
   }
 
+  /**
+   * The fetchPreparedDocs function fetches reports dispatched for a given policy code and then fetches
+   * unprepared documents based on the policy code and endorsement.
+   */
   fetchPreparedDocs(ticket: TicketsDTO) {
     this.policiesService.fetchReportsDispatched(ticket?.ticket?.policyCode)
       .subscribe((data) => {
@@ -325,6 +333,10 @@ export class MassDocumentDispatchComponent implements OnInit {
       })
   }
 
+  /**
+   * The fetchUnPreparedDocs function fetches dispatch reports for a specific policy code and document
+   * type and then combines the retrieved documents.
+   */
   fetchUnPreparedDocs(policyCode: number, docType: string) {
     this.policiesService.fetchDispatchReports(policyCode, docType)
       .subscribe((data) => {
@@ -333,6 +345,10 @@ export class MassDocumentDispatchComponent implements OnInit {
       })
   }
 
+  /**
+   * The function `combineDocs` prepares and combines document lists from two different sources and
+   * then opens a document dispatch modal.
+   */
   combineDocs() {
     let preparedList = this.docsPrepared.map(data => {
       let temp = {}
@@ -362,12 +378,20 @@ export class MassDocumentDispatchComponent implements OnInit {
     this.openDocDispatchModal();
   }
 
+  /**
+   * The `reportsDispatch` function in TypeScript fetches prepared documents for a given ticket and
+   * sets the selected ticket.
+   */
   reportsDispatch(ticket: TicketsDTO) {
     this.fetchPreparedDocs(ticket);
     this.selectedTicket = ticket;
 
   }
 
+  /**
+   * The function `selectDocs` handles the selection of documents based on user interaction, updating a
+   * list of documents to prepare or unprepare accordingly.
+   */
   selectDocs(event: Event, doc: any) {
     event.stopPropagation();
     const checkbox = event.target as HTMLInputElement;
@@ -391,14 +415,21 @@ export class MassDocumentDispatchComponent implements OnInit {
 
   }
 
+  /**
+   * The function `onLabelClick` prevents the default label click behavior and fetches a report for
+   * each document in the `documentList`.
+   */
   onLabelClick(event: Event) {
     event.preventDefault(); // Prevent the default label click behavior (which toggles the checkbox)
-    // console.log("Label clicked:", doc);
     this.documentList.forEach(doc => {
       this.fetchReport(doc)
     })
   }
 
+  /**
+   * The fetchReport function fetches a report using a report code, creates a Blob from the response,
+   * and adds the report to a list with file name and source URL.
+   */
   fetchReport(report: any) {
     // this.isLoadingReport = true;
 
@@ -429,6 +460,10 @@ export class MassDocumentDispatchComponent implements OnInit {
         })
   }
 
+  /**
+   * The function `unPrepareDocument` takes a document code as input, prepares a payload, and then
+   * calls a service to unprepare the document, displaying success or error messages accordingly.
+   */
   unPrepareDocument(docCode: number) {
     if (docCode) {
       const payload: any = {
