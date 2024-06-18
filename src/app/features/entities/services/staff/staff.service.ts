@@ -180,11 +180,7 @@ export class StaffService {
     order: string = 'desc'
   ): Observable<Pagination<StaffResDto>> {
     const loggedInUser = this.authService.getCurrentUser();
-    let id: number;
-    if (this.utilService.isUserAdmin(loggedInUser)) {
-      id = loggedInUser.id;
-    }
-    const supervisor = id;
+    const supervisor = loggedInUser?.code;
     const params = new HttpParams()
       .set('page', `${page}`)
       .set('size', `${size}`)
