@@ -7,19 +7,21 @@
       </div>
   <div class="row">
     <div class="col-sm-12">
-      <div
+      <!-- <div
         class="transactions d-flex justify-content-center"
         style="padding-bottom: 1rem; font-size: 0.8rem"
       >
         {{ "Reinsurance" | uppercase }}
-      </div>
+      </div> -->
+      <!-- TITLE -->
       <div class="full-border" style="position: relative">
         <div
-        class="fw-medium d-flex justify-content-center"
+        class="transactions d-flex justify-content-center"
         style="font-size: 0.8rem"
       >
-        {{ "Excess of Coverage" | uppercase }}
+        {{ "Reinsurance Excess Coverage" | uppercase }}
       </div>
+      
         <ngx-spinner
           name="lms_ind_view"
           type="ball-clip-rotate-multiple"
@@ -71,10 +73,10 @@
               >
                 <option selected="true" disabled="disabled"></option>
                 <option
-                  *ngFor="let data of [] | sort : 'asc' : 'nationality'"
-                  [value]="data.id"
+                  *ngFor="let data of reinsuranceCompanies | sort : 'asc' : 'name' "
+                  [value]="data.code "
                 >
-                  {{ data?.nationality | titlecase }}
+                  {{ data?.name | titlecase }}
                 </option>
               </select>
             </div>
