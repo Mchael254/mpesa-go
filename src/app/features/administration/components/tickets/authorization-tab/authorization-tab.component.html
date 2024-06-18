@@ -258,4 +258,59 @@
 </div>
 
 
+<div class="row mt-5 mb-2">
+  <div class="col-12 mt-2 mb-2">
+    <label class="text-primary fw-medium">Etims</label>
+    <label class="text-dark fw-medium offset-lg-4">Debit note: <span>1554555</span> </label>
+  </div>
 
+  <p-table
+    [autoLayout]="true"
+    [rowHover]="true"
+    [resizableColumns]="true"
+    [showCurrentPageReport]="true"
+    [rows]="pageSize || 5"
+    [totalRecords]="eTimsData?.length"
+    [value]="eTimsData"
+    [rowsPerPageOptions]="[5, 10, 20, 30, 50, 100]"
+    responsiveLayout="stack"
+    [scrollable]="true"
+    scrollHeight="400px"
+    currentPageReportTemplate="{first} - {last} of {totalRecords}"
+  >
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Ref no</th>
+        <th>Amount posted</th>
+        <th>Date posted</th>
+        <th>Time posted</th>
+        <th>Etims status</th>
+        <th>Taxable amount A</th>
+        <th>Taxable amount B</th>
+        <th>Taxable amount C</th>
+        <th>Taxable amount D</th>
+        <th>Taxable amount E</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-eTims>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9">No Etims Detail(s) Found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

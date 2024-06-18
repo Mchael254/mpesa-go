@@ -48,6 +48,8 @@ export class AuthorizationTabComponent implements OnInit{
 
   showDropdownForException: any;
 
+  eTimsData: any[];
+
   constructor(private policiesService: PoliciesService,
               private globalMessagingService: GlobalMessagingService,
               private completionRemarksService: CompletionRemarksService,
