@@ -511,6 +511,41 @@ td {
   width: 100%;  
 }
 
+.action-column {
+  width: 4px;
+  text-align: center;
+}
+
+.button-container {
+  display: inline-block;
+}
+
+.hover-button {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.hover-button:hover {
+  background-color: #b8bbb9;
+}
+
+/* overlay popup*/
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-wrapper {
+  width: 100%;
+}
+/* overlay popup*/
+
 @media screen and (max-width:1400px) and (min-width:280px),
 (max-width:280px) {
   /* .container {
