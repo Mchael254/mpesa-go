@@ -7,6 +7,7 @@
           <app-stepper [currentStep]="3" [stepperData]="steps"></app-stepper>
         </div>
       </div>
+      <p-confirmDialog></p-confirmDialog>  <!--confirm dialog, used more than once -->
     <div id="container">
         <h5 class="mt-1">Cover details</h5>
         <!-- <div class="add-client-button-container">
@@ -402,14 +403,32 @@
             <td style="text-align: center; width: 10.5%;" id="tdStyle">{{ coverTypes.premium_rate }} </td>
             <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.rate_division_factor | number }}</td>
             <td style="text-align: right; width: 12.5%;" id="tdStyle">{{ coverTypes.main_sumassured_percentage }}</td>
-            <td style="text-align: left; width: 12.5%;">
-                <button class="edit-button" (click)="showEditDetailedCoverDetailsModal(coverTypes)">
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                </button>
-                <button class="delete-button" (click)="deleteCoverType(coverTypes)">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
-              </td>
+              <td class="action-column">
+                <div class="flex justify-content-center">
+                    <p-overlayPanel #op>
+                        <div class="action-buttons">
+                            <!-- Edit button -->
+                            <div class="button-wrapper">
+                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditDetailedCoverDetailsModal(coverTypes)"
+                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                            </div>
+                        
+                            <!-- Delete button -->
+                            <div class="button-wrapper">
+                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
+                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                            </div>
+                        </div>
+                        
+                    </p-overlayPanel>
+                    <!-- Ellipsis container -->
+                    <div class="button-container">
+                        <button class="hover-button" (click)="op.toggle($event)">
+                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                        </button>
+                    </div>
+                </div>
+            </td>
           </tr>
         </ng-template>
       </p-table> 
@@ -466,13 +485,39 @@
             <td *ngIf="selectedColumnsAggregateCvt.includes('average_anb')" style="text-align: center; width: 4.5%" id="tdStyle">{{ coverTypes.average_anb }} </td>
             <td *ngIf="selectedColumnsAggregateCvt.includes('but_charge_premium')" style="text-align: right; width: 6.5%" id="tdStyle">{{ coverTypes.but_charge_premium | number}} </td>
             <td *ngIf="selectedColumnsAggregateCvt.includes('sum_assured')" style="text-align: right; width: 7.5%" id="tdStyle">{{ coverTypes.sum_assured | number }}</td>
-            <td *ngIf="selectedColumnsAggregateCvt.includes('action')" style="text-align: right;">
+            <!-- <td *ngIf="selectedColumnsAggregateCvt.includes('action')" style="text-align: right;">
                 <button class="edit-button" (click)="showEditAggregateCoverDetailsModal(coverTypes)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </button>
-                <button class="delete-button" (click)=" deleteCoverType(coverTypes)">
+                <button class="delete-button" (click)=" deleteCoverType(coverTypes, $event)">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
+            </td> -->
+            <td class="action-column">
+                <div class="flex justify-content-center">
+                    <p-overlayPanel #op>
+                        <div class="action-buttons">
+                            <!-- Edit button -->
+                            <div class="button-wrapper">
+                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditDetailedCoverDetailsModal(coverTypes)"
+                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                            </div>
+                        
+                            <!-- Delete button -->
+                            <div class="button-wrapper">
+                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCoverType(coverTypes, $event)"
+                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                            </div>
+                        </div>
+                        
+                    </p-overlayPanel>
+                    <!-- Ellipsis container -->
+                    <div class="button-container">
+                        <button class="hover-button" (click)="op.toggle($event)">
+                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                        </button>
+                    </div>
+                </div>
             </td>
         </tr>
       </ng-template>
@@ -560,7 +605,7 @@
                 </form>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeCategoryDetstModal()">Close</button>
+                  <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeCategoryDetstModal()">Close</button> -->
                   <!-- <button type="button" class="btn btn-primary" (click)="onSaveCatDets()">Save</button> -->
                   <button type="button" class="btn btn-primary" (click)="isEditMode ? onSaveEditCatDets() : onSaveCatDets()">Save</button>
                 </div>
@@ -587,17 +632,32 @@
             <td id="tdStyle">{{ categoryDetails.category_category | titlecase }}</td>
             <td style="text-align: center;" id="tdStyle">{{ categoryDetails.period }}</td>
             <td id="tdStyle">{{ categoryDetails.pmas_sht_desc}}</td>
-            <td>
-                <button class="edit-button" (click)="showEditCategoryDetstModal(categoryDetails)">
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                </button>
-                <button class="delete-button" (click)="deleteCategoryDets(categoryDetails)">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
+            <td class="action-column">
+                <div class="flex justify-content-center">
+                    <p-overlayPanel #op>
+                        <div class="action-buttons">
+                            <!-- Edit button -->
+                            <div class="button-wrapper">
+                                <p-button label="Edit" icon="pi pi-pencil" (click)="showEditCategoryDetstModal(categoryDetails)"
+                                    styleClass="p-button-rounded p-button-text" severity="warning"></p-button>
+                            </div>
+                        
+                            <!-- Delete button -->
+                            <div class="button-wrapper">
+                                <p-button label="Delete" icon="pi pi-trash" (click)="deleteCategoryDets(categoryDetails, $event)"
+                                    styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                            </div>
+                        </div>
+                        
+                    </p-overlayPanel>
+                    <!-- Ellipsis container -->
+                    <div class="button-container">
+                        <button class="hover-button" (click)="op.toggle($event)">
+                            <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                        </button>
+                    </div>
+                </div>
             </td>
-            <!-- <td class="ellipsis-container">
-                <i class="fas fa-ellipsis-v"></i>
-              </td> -->
         </tr>
     </ng-template>
 
@@ -973,15 +1033,27 @@
                           <td *ngIf="selectedColumnsMembers.includes('monthly_earnings')" id="tdStyle">{{ membersDetails.monthly_earnings }}</td>
                           <td *ngIf="selectedColumnsMembers.includes('date_joined')" id="tdStyle">{{ membersDetails.date_joined }}</td>
                           <td *ngIf="selectedColumnsMembers.includes('member_number')" id="tdStyle">{{ membersDetails.member_number }}</td>
-                          <!-- <td><i class="fas fa-ellipsis-v"></i></td> -->
-                          <td *ngIf="selectedColumnsMembers.includes('action')" style="text-align: center;">
-                            <!-- <button class="edit-button">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button> -->
-                            <button class="delete-button" (click)="deleteMember(membersDetails)">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
-                          </td>
+
+                          <td class="action-column">
+                            <div class="flex justify-content-center">
+                                <p-overlayPanel #op>
+                                    <div class="action-buttons">
+                                        <!-- Delete button -->
+                                        <div class="button-wrapper">
+                                            <p-button label="Delete" icon="pi pi-trash" (click)="deleteMember(membersDetails, $event)"
+                                                styleClass="p-button-rounded p-button-text" severity="danger"></p-button>
+                                        </div>
+                                    </div>
+                                    
+                                </p-overlayPanel>
+                                <!-- Ellipsis container -->
+                                <div class="button-container">
+                                    <button class="hover-button" (click)="op.toggle($event)">
+                                        <i class="fas fa-ellipsis-v" (click)="op.toggle($event)"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
                         </tr>
                       </ng-template>
                       <ng-template pTemplate="emptymessage" let-columns>
