@@ -1,8 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { BreadCrumbItem } from 'src/app/shared/data/common/BreadCrumbItem';
+import { DashboardService } from '../../services/dashboard.service';
+import { AutoUnsubscribe } from 'src/app/shared/services/AutoUnsubscribe';
+import { Logger } from 'src/app/shared/services';
+import { AdminPolicyDetailsDTO, CategorySummaryDTO, EndorsementDetailsDTO } from '../../models/admin-policies';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
+const log = new Logger("AdminPolicyDetailsComponent");
+@AutoUnsubscribe
 @Component({
   selector: 'app-admin-policy-details',
   templateUrl: './admin-policy-details.component.html',
@@ -14,14 +21,28 @@ export class AdminPolicyDetailsComponent implements OnInit, OnDestroy {
   columnOptionsMemberDets: SelectItem[];
   selectedColumnsMemberDets: string[];
   selectedRowIndex: number;
+  endorsementCode: number = 20241004;
+  policyCode: number = 2024833;
+  adminPolicyDetails: AdminPolicyDetailsDTO;
+  endorsements: EndorsementDetailsDTO[] = [];
+  endorsementForm: FormGroup;
+  categorySummary: CategorySummaryDTO[] = []; 
 
   constructor(
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private dasboardService: DashboardService,
+    private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.populateBreadCrumbItems();
     this.memberDetailsColumns();
+    this.getAdminPolicyDetails();
+    this.getEndorsements();
+    this.createEndorsementForm();
+    this.onEndorsementChange();
+    this.getCategorySummary();
     
   }
 
@@ -120,6 +141,20 @@ memberCoverTypeSummaryDto = [
   }
 ];
 
+createEndorsementForm() {
+  this.endorsementForm = this.fb.group({
+    endorsement: [""],
+  });
+}
+
+onEndorsementChange() {
+  this.endorsementForm.get("endorsement").valueChanges.subscribe((endCode) => {
+    this.endorsementCode = endCode;
+    log.info("new EndCode...", this.endorsementCode)
+    this.getAdminPolicyDetails();
+  });
+}
+
 
   showMembersSummary() {
     const modal = document.getElementById('memberSummaryModal');
@@ -174,6 +209,27 @@ memberCoverTypeSummaryDto = [
   
       // });
     }
+  }
+
+  getAdminPolicyDetails() {
+    this.dasboardService.getAdminPolicyDetails(this.endorsementCode).subscribe((res: AdminPolicyDetailsDTO) => {
+      this.adminPolicyDetails = res;
+      log.info("getAdminPolicyDetails", this.adminPolicyDetails);
+    });
+  }
+
+  getEndorsements() {
+    this.dasboardService.getEndorsements(this.policyCode).subscribe((res: EndorsementDetailsDTO[]) => {
+      this.endorsements = res;
+      log.info("getEndorsements", res)
+    });
+  }
+
+  getCategorySummary() {
+    this.dasboardService.getCategorySummary(this.policyCode).subscribe((res: CategorySummaryDTO[]) => {
+      this.categorySummary = res;
+      log.info("getCategorySummary", this.categorySummary)
+    });
   }
 
 }
