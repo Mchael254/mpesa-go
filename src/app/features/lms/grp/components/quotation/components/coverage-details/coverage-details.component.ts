@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { formatDate } from '@angular/common';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { MessageService, SelectItem } from "primeng/api";
+import { ConfirmationService, MessageService, SelectItem } from "primeng/api";
 import { CategoryDetailsDto } from '../../models/categoryDetails';
 import { MembersDTO } from '../../models/members';
 import { CoverageService } from '../../service/coverage/coverage.service';
@@ -62,6 +62,7 @@ steps = stepData;
   constructor (
     private fb: FormBuilder,
     private router: Router,
+    private confirmationService: ConfirmationService,
     private activatedRoute: ActivatedRoute,
     private coverageService: CoverageService,
     private cdr: ChangeDetectorRef,
@@ -710,24 +711,35 @@ handleFileChange(event) {
 
   }
 
-  deleteCategoryDets(categoryDetails) {
-    const confirmation = window.confirm('Are you sure you want to delete this category?');
-    if (confirmation) {
-      this.spinner_Service.show('download_view');
-      const categoryIdToDelete = categoryDetails.category_unique_code;
+  deleteCategoryDets(categoryDetails, event: Event) {
+    const categoryIdToDelete = categoryDetails.category_unique_code;
 
-      this.coverageService.deleteCategoryDetails(categoryIdToDelete).subscribe((del) => {
-        this.cdr.detectChanges();
-        this.categoryDetails = this.categoryDetails.filter(item => item.category_unique_code !== categoryIdToDelete);
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'success', summary: 'summary', detail: 'Deleted'});
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to delete this category?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      accept: () => {
+        this.spinner_Service.show('download_view');
+        this.coverageService.deleteCategoryDetails(categoryIdToDelete).subscribe((del) => {
+          this.cdr.detectChanges();
+          this.categoryDetails = this.categoryDetails.filter(item => item.category_unique_code !== categoryIdToDelete);
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'success', summary: 'summary', detail: 'Category deleted successfully'});
+        },
+        (error) => {
+          console.log(error);
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'error', summary: 'summary', detail: 'Not deleted'});
+        });
       },
-      (error) => {
-        console.log(error)
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'error', summary: 'summary', detail: 'Not deleted'});
-      });
-    }
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Cancelled', life: 3000 });
+      }
+    });
   }
 
   onCoverTypeSelected(event: any) {
@@ -965,26 +977,38 @@ handleFileChange(event) {
     }
   }
 
-  deleteCoverType(coverTypes) {
-    const confirmation = window.confirm('Are you sure you want to delete this Cover Type?');
-    if (confirmation) {
-      this.spinner_Service.show('download_view');
-      const coverIdToDelete = coverTypes.cover_type_unique_code;
-      const quotationCode = this.quotationCode;
+  deleteCoverType(coverTypes, event: Event) {
+    const coverIdToDelete = coverTypes.cover_type_unique_code;
+    const quotationCode = this.quotationCode;
 
-      this.coverageService.deleteCoverType(quotationCode, coverIdToDelete).subscribe((del) => {
-        this.getCoverTypes();
-        this.cdr.detectChanges();
-        this.coverTypes = this.coverTypes.filter(item => item.cover_type_code !== coverIdToDelete);
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover type Deleted'});
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to delete this Cover Type?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      accept: () => {
+        this.spinner_Service.show('download_view');
+        this.coverageService.deleteCoverType(quotationCode, coverIdToDelete).subscribe((del) => {
+          this.getCoverTypes();
+          this.cdr.detectChanges();
+          this.coverTypes = this.coverTypes.filter(item => item.cover_type_code !== coverIdToDelete);
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'success', summary: 'summary', detail: 'Cover type Deleted'});
+        },
+        (error) => {
+          console.log(error);
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'error', summary: 'summary', detail: 'Cover type not deleted'});
+        });
       },
-      (error) => {
-        console.log(error)
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'error', summary: 'summary', detail: 'Cover type not deleted'});
-      });
-    }
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Cancelled', life: 3000 });
+      }
+    });
+
     this.cdr.detectChanges();
   }
 
@@ -1025,34 +1049,72 @@ handleFileChange(event) {
     })
   }
 
-  deleteMember(membersDetails: MembersDTO) {
-    const confirmation = window.confirm('Are you sure you want to delete this Member?');
-    if (confirmation) {
-      this.spinner_Service.show('download_view');
-      const coverIdToDelete = membersDetails.member_code;
-      const quotationCode = this.quotationCode;
-      // const dependantTypeCode = membersDetails.dependant_type_code
-      const dependantTypeCode = 1000
-      const quoteDto = {
-        member_code: coverIdToDelete,
-        dependant_type_code: dependantTypeCode,
-      };
-      console.log("memberTodel", coverIdToDelete, quoteDto)
-      this.coverageService.deleteMember(quotationCode, quoteDto).subscribe((del) => {
+  // deleteMember(membersDetails: MembersDTO) {
+  //   const confirmation = window.confirm('Are you sure you want to delete this Member?');
+  //   if (confirmation) {
+  //     this.spinner_Service.show('download_view');
+  //     const coverIdToDelete = membersDetails.member_code;
+  //     const quotationCode = this.quotationCode;
+  //     // const dependantTypeCode = membersDetails.dependant_type_code
+  //     const dependantTypeCode = 1000
+  //     const quoteDto = {
+  //       member_code: coverIdToDelete,
+  //       dependant_type_code: dependantTypeCode,
+  //     };
+  //     console.log("memberTodel", coverIdToDelete, quoteDto)
+  //     this.coverageService.deleteMember(quotationCode, quoteDto).subscribe((del) => {
 
-        this.getMembers();
-        this.cdr.detectChanges();
-        this.membersDetails = this.membersDetails.filter(item => item.member_code !== coverIdToDelete);
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'success', summary: 'summary', detail: 'Deleted'});
+  //       this.getMembers();
+  //       this.cdr.detectChanges();
+  //       this.membersDetails = this.membersDetails.filter(item => item.member_code !== coverIdToDelete);
+  //       this.spinner_Service.hide('download_view');
+  //       this.messageService.add({severity: 'success', summary: 'summary', detail: 'Deleted'});
+  //     },
+  //     (error) => {
+  //       this.spinner_Service.hide('download_view');
+  //       this.messageService.add({severity: 'error', summary: 'summary', detail: 'Not deleted'});
+  //       console.log(error);
+  //     });
+  //   }
+  //   this.cdr.detectChanges();
+  // }
+
+  deleteMember(membersDetails: MembersDTO, event: Event) {
+    const coverIdToDelete = membersDetails.member_code;
+    const quotationCode = this.quotationCode;
+    const dependantTypeCode = 1000;
+    const quoteDto = {
+      member_code: coverIdToDelete,
+      dependant_type_code: dependantTypeCode,
+    };
+
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to delete this Member?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: "none",
+      rejectIcon: "none",
+      rejectButtonStyleClass: "p-button-text",
+      accept: () => {
+        this.spinner_Service.show('download_view');
+        this.coverageService.deleteMember(quotationCode, quoteDto).subscribe((del) => {
+          this.getMembers();
+          this.cdr.detectChanges();
+          this.membersDetails = this.membersDetails.filter(item => item.member_code !== coverIdToDelete);
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'success', summary: 'summary', detail: 'Member deleted'});
+        },
+        (error) => {
+          this.spinner_Service.hide('download_view');
+          this.messageService.add({severity: 'error', summary: 'summary', detail: 'Not deleted'});
+          console.log(error);
+        });
       },
-      (error) => {
-        this.spinner_Service.hide('download_view');
-        this.messageService.add({severity: 'error', summary: 'summary', detail: 'Not deleted'});
-        console.log(error);
-      });
-    }
-    this.cdr.detectChanges();
+      reject: () => {
+        this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Cancelled', life: 3000 });
+      }
+    });
   }
 
   getPremiumMask() {
