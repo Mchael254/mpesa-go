@@ -19,7 +19,7 @@ import { RiskDetailsComponent } from './components/risk-details/risk-details.com
 import { TabViewModule } from 'primeng/tabview';
 import { CoinsuaranceDetailsComponent } from './components/coinsuarance-details/coinsuarance-details.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
-
+import { PolicySummaryComponent } from './components/policy-summary/policy-summary.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +28,8 @@ import { ImportRisksComponent } from './components/import-risks/import-risks.com
     PolicyProductComponent,
     RiskDetailsComponent,
     CoinsuaranceDetailsComponent,
-    ImportRisksComponent
+    ImportRisksComponent,
+    PolicySummaryComponent
   ],
   imports: [
     CommonModule,

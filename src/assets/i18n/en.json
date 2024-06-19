@@ -858,7 +858,8 @@
       "from_csv_file":"From CSV File",
       "from_another_policy":"From another policy",
       "export_template":"Export template",
-      "upload_template":"Upload template"
+      "upload_template":"Upload template",
+      "underwriting_policy_summary":"Underwriting:Policy Summary"
     }
   },
   "lms": {

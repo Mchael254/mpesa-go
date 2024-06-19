@@ -86,7 +86,7 @@
                                 translate}}</label>
                             <p-dropdown formControlName="branchCode" [options]="branchList" optionLabel="name"
                                 optionValue="id" (onChange)="onBranchSelected($event.value)"
-                                [placeholder]="userBranchName" [filterBy]="'description'" [filter]="true"
+                                 [filterBy]="'description'" [filter]="true"
                                 [ngModel]="userBranchName"></p-dropdown>
                             <!-- Display error message under the field -->
                             <div *ngIf="policyProductForm.get('branchCode').hasError('required') && policyProductForm.get('branchCode').touched"
