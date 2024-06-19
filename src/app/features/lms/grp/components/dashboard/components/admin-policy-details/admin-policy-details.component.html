@@ -9,13 +9,16 @@
                 <span class="font-style">Policy details</span>
             </div>
             <div class="option-select">
-                <form>
-                    <select class="form-select" id="newBusiness">
-                        <option selected="true" disabled="disabled">New business</option>
-                        <option>End 001</option>
-                        <option>End 002</option>
-                    </select>
-                </form>
+                <form [formGroup]="endorsementForm">
+                    <div class="form-group">
+                      <label for="endorsement">Select endorsement</label>
+                      <select class="form-select" id="endorsement" formControlName="endorsement">
+                        <option *ngFor="let endorsement of endorsements" [value]="endorsement.endorsement_code">
+                          {{ endorsement.endorsement_type | titlecase }}
+                        </option>
+                      </select>
+                    </div>
+                  </form>
             </div>
         </div>
         <div class="poldets-table-container col-12">
@@ -24,31 +27,31 @@
                 <table class="poldets-table">
                     <tr>
                         <td class="table-label">Policy number:</td>
-                        <td class="table-label-desc">12345</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.policy_number }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Endorsement type:</td>
-                        <td class="table-label-desc">New business</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.transaction_type | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Endorsement effective date:</td>
-                        <td class="table-label-desc">01/01/1901</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.effective_date }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Cover to date:</td>
-                        <td class="table-label-desc">01/01/1902</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.cover_to_date }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Currency:</td>
-                        <td class="table-label-desc">KES</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.currency_symbol }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Members:</td>
-                        <td class="table-label-desc">100</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.number_of_members }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Agent phone:</td>
-                        <td class="table-label-desc">07097100</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.agent_telephone }}</td>
                     </tr>
                 </table>
             </div>
@@ -57,31 +60,31 @@
                 <table class="poldets-table">
                     <tr>
                         <td class="table-label">Policy status:</td>
-                        <td class="table-label-desc">Active</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.status | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Sum assured:</td>
-                        <td class="table-label-desc">Kes 5,000,600</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.total_sum_assured | number }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Branch:</td>
-                        <td class="table-label-desc">Nairobi</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.branch_name | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Policy effective date:</td>
-                        <td class="table-label-desc">01/09/2021</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.effective_date }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Product description:</td>
-                        <td class="table-label-desc">desc</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.product_description | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Occupation:</td>
-                        <td class="table-label-desc">Insurance</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.occupation_description | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Agent email:</td>
-                        <td class="table-label-desc">agent@company.com</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.agent_email_address | titlecase }}</td>
                     </tr>
 
                 </table>
@@ -91,27 +94,27 @@
                 <table class="poldets-table">
                     <tr>
                         <td class="table-label">Endorsement number:</td>
-                        <td class="table-label-desc">001</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.endorsement_number }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Premium:</td>
-                        <td class="table-label-desc">Kes 200,000</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.total_premium | number }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Cover from date:</td>
-                        <td class="table-label-desc">01/01/1990</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.cover_from_date }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Frequency of payment:</td>
-                        <td class="table-label-desc">Monthly</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.frequency_of_payment | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Group name:</td>
-                        <td class="table-label-desc">Nairobi union sacco</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.proposer_name | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="table-label">Agent name:</td>
-                        <td class="table-label-desc">Agent Kabue</td>
+                        <td class="table-label-desc">{{ adminPolicyDetails?.agent_name | titlecase }}</td>
                     </tr>
 
                 </table>
@@ -181,31 +184,33 @@
 
         </div>
 
-        <div *ngIf="memberPolicies" class="box" (click)="showCategorySummary()">
-            <label class="active-label">{{ memberPolicies[2]?.status }}</label>
+        <div *ngIf="categorySummary && categorySummary.length > 0" class="box" (click)="showCategorySummary()">
+            <label class="active-label">Category summary</label>
             <div class="scroll-content">
-                <div style="margin-top: 40px; margin-left: 20px;">Category 1</div>
+                <div style="margin-top: 40px; margin-left: 20px;">{{ categorySummary[0]?.category_category | titlecase }}</div>
                 <table>
                     <tr>
                         <td class="td-data">Short description:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.shortDesc }}</td>
+                        <td class="td-data">{{ categorySummary[0]?.short_description | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="td-data">Multiple of earnings:</td>
-                        <td class="td-data">{{ memberPolicies[0]?.multipleOfEarning }}</td>
+                        <td class="td-data">{{ categorySummary[0]?.period }}</td>
                     </tr>
                 </table>
-                <div style="margin-left: 20px;">Category 2</div>
+                <ng-container *ngIf="categorySummary && categorySummary.length > 1" >
+                <div style="margin-left: 20px;">{{ categorySummary[1]?.category_category | titlecase }}</div>
                 <table>
                     <tr>
                         <td class="td-data">Short description:</td>
-                        <td class="td-data">{{ memberPolicies[1]?.shortDesc }}</td>
+                        <td class="td-data">{{ categorySummary[1]?.short_description | titlecase }}</td>
                     </tr>
                     <tr>
                         <td class="td-data">Multiple of earnings:</td>
-                        <td class="td-data">{{ memberPolicies[1]?.multipleOfEarning }}</td>
+                        <td class="td-data">{{ categorySummary[1]?.period }}</td>
                     </tr>
                 </table>
+            </ng-container>
             </div>
         </div>
     </div>
