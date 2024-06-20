@@ -6,6 +6,7 @@ import { PolicyProductComponent } from './components/policy-product/policy-produ
 import { RiskDetailsComponent } from './components/risk-details/risk-details.component';
 import { CoinsuaranceDetailsComponent } from './components/coinsuarance-details/coinsuarance-details.component';
 import { ImportRisksComponent } from './components/import-risks/import-risks.component';
+import { PolicySummaryComponent } from './components/policy-summary/policy-summary.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,9 @@ const routes: Routes = [
   },
   {
     path: 'import-risks', component:ImportRisksComponent
+  },
+  {
+    path: 'policy-summary', component:PolicySummaryComponent
   },
 ];
 

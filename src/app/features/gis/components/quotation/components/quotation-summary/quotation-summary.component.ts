@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import quoteStepsData from '../../data/normal-quote-steps.json';
 import { SharedQuotationsService } from '../../services/shared-quotations.service';
 import { QuotationsService } from '../../services/quotations/quotations.service';
@@ -8,7 +8,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 
 import {NgxSpinnerService} from 'ngx-spinner';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, PrimeNGConfig } from 'primeng/api';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { untilDestroyed } from 'src/app/shared/services/until-destroyed';
 import { Subject } from 'rxjs';
@@ -23,13 +23,18 @@ import {GlobalMessagingService} from "../../../../../../shared/services/messagin
 
 const log = new Logger('QuotationSummaryComponent');
 
-
+interface FileItem {
+  file: File;
+  name: string;
+  selected: boolean;
+}
 @Component({
   selector: 'app-quotation-summary',
   templateUrl: './quotation-summary.component.html',
   styleUrls: ['./quotation-summary.component.css']
 })
 export class QuotationSummaryComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef;
   steps = quoteStepsData;
   quotationCode:any
   quotationNumber:any;
@@ -75,6 +80,11 @@ export class QuotationSummaryComponent {
   riskClauses:any;
   modalHeight: number = 200; // Initial height
 
+
+  files = [];
+  totalSize : number = 0;
+  totalSizePercent : number = 0;
+  selectedDocumentType: string = '';
   constructor(
 
     public sharedService:SharedQuotationsService,
@@ -90,7 +100,8 @@ export class QuotationSummaryComponent {
     public branchService:BranchService,
     private spinner: NgxSpinnerService,
     public bankService:BankService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private config: PrimeNGConfig
   ){}
   public isCollapsibleOpen = false;
   public isRiskCollapsibleOpen = false;
@@ -600,10 +611,65 @@ sendSms(){
     // Set the showHelperModal property of the selectedClause to true
     selectedClause.showHelperModal = true;
 }
+
+
+
+// start document upload functionality 
+
+
+onBrowseClick(): void {
+  this.fileInput.nativeElement.click();
+}
+
+onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      this.files.push({ file, name: file.name, selected: false, documentType: this.selectedDocumentType });
+    }
+  }
+}
+
+downloadFile(fileItem: FileItem): void {
+  const url = window.URL.createObjectURL(fileItem.file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileItem.name;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.remove();
+}
+
+printFile(fileItem: FileItem): void {
+  // Implement your print logic here
+  console.log('Print file:', fileItem.name);
+}
+
+deleteFile(index: number): void {
+  this.files.splice(index, 1);
+}
+onDocumentTypeChange(event: Event): void {
+  const selectElement = event.target as HTMLSelectElement;
+  const selectedId = +selectElement.value;
+  const selectedData = this.documentTypes.find(data => data.id === selectedId);
+  if (selectedData) {
+    this.selectedDocumentType = selectedData.description;
+  }
+}
+// end document upload functionality
+
 onResize(event: any) {
   this.modalHeight = event.height;
 }
   ngOnDestroy() {
     this.ngUnsubscribe.complete();
   }
+
+
+
+
+
+
 }
