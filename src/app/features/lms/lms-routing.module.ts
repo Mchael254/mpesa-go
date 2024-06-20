@@ -55,7 +55,7 @@ const routes: Routes = [
               ),
           },
           {
-            path: 'claim',
+            path: 'claims',
             loadChildren: () =>
               import('./ind/components/claims/claims.module').then(
                 (m) => m.ClaimsModule
