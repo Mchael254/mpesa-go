@@ -1115,12 +1115,12 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h6 class="mb-4">Documents</h6>
-                    <div class="row mt-3 g-3 align-items-center">
+                    <div class="row mt-3 mb-4 g-3 align-items-center">
                         <div class="col-auto">
                           <label for="documentTypes" class="col-form-label">Document Type</label>
                         </div>
                         <div class="col-auto">
-                            <select class="form-select form-select-sm mb-1" id="quote-input"   placement="right" >
+                            <select class="form-select form-select-sm mb-1" id="quote-input"   placement="right" (change)="onDocumentTypeChange($event)" >
                                 <option [value]="" selected="true" disabled="disabled"></option> 
                                 <option *ngFor="let data of documentTypes"  [value]="data.id">{{data.description}}</option>
                             </select>    
@@ -1129,6 +1129,35 @@
                         
                         </div>
                       </div>
+
+                      <div class="card" style="border: 2px dashed black;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center">
+                                <i class="pi pi-arrow-circle-up mb-4" style="font-size: 2.5rem"></i>
+                            </div>
+                            <p class="text-center">
+                                Drag and drop files to upload or 
+                                <span class="browse-link" (click)="onBrowseClick()">browse</span>
+                              </p>
+                              <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)">
+                            
+                        </div>
+                      </div>
+
+                      <div *ngIf="files.length > 0" class="file-list">
+                        <h6>Uploaded Files</h6>
+                        <div *ngFor="let file of files; let i = index" class="file-item">
+                           
+                          <input type="checkbox" [(ngModel)]="file.selected">
+                          <span class="file-name">{{ file.documentType }} - {{ file.name }}</span>
+                          <span class="file-actions">
+                            <i class="fas fa-download" (click)="downloadFile(file)"></i>
+                            <i class="fas fa-print" (click)="printFile(file)"></i>
+                            <i class="fas fa-trash" (click)="deleteFile(i)"></i>
+                          </span>
+                        </div>
+                      </div>
+                   
                 </div>
             </div>
         </div>

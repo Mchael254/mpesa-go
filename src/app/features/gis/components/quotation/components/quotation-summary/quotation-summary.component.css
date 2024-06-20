@@ -126,5 +126,33 @@
     }
     ul li a.active {
         color: #00529b;
+    }
+    .browse-link {
+        color: #00529b;
+        cursor: pointer;
+        text-decoration: underline;
       }
       
+      .file-list {
+        margin-top: 20px;
+      }
+      
+      .file-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      
+      .file-name {
+        flex: 1;
+        margin-left: 10px;
+      }
+      
+      .file-actions {
+        margin-right: 47%;
+      }
+      
+      .file-actions i {
+        margin-left: 10px;
+        cursor: pointer;
+      }

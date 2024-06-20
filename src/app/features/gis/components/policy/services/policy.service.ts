@@ -28,6 +28,7 @@ export class PolicyService {
 
     })
   }
+  computationUrl = this.appConfig.config.contextPath.computation_service;
   // Error handling
   errorHandl(error: HttpErrorResponse) {
     let errorMessage = '';
@@ -107,5 +108,24 @@ export class PolicyService {
       retry(1),
       catchError(this.errorHandl)
     )
+  }
+ policyUtils(transactionCode){
+    const params = new HttpParams()
+    .set('transactionCode', transactionCode)
+    .set('transactionsType','UNDERWRITING')
+  
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-TenantId': StringManipulation.returnNullIfEmpty(this.session_storage.get(SESSION_KEY.API_TENANT_ID)),
+    });
+  
+    return this.http.get(`/${this.computationUrl}/api/v1/utils/payload`,{
+      headers: headers,
+      params:params
+    })
+  }
+  computePremium(computationDetails){
+    return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`,computationDetails)
   }
 }
