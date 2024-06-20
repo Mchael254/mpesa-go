@@ -16,7 +16,7 @@ export class InitiationComponent implements OnInit, OnDestroy {
     { label: 'Reinsurance', url: '/home/lms/ind/reinsurance/initiation' },
 
   ];
-  endorsement_code: number = 202319
+  endorsement_code: number = 20231684111;
   
   constructor(private reinsuranceService:ReinsuranceService){}
   ngOnInit(): void {
