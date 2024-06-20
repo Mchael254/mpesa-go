@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/internal/Observable';
-import { HttpParams } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs/internal/Observable';
+import {HttpParams} from '@angular/common/http';
 
-import { SystemModule, SystemsDto } from '../../../data/common/systemsDto';
-import { ApiService } from '../../api/api.service';
-import { API_CONFIG } from '../../../../../environments/api_service_config';
+import {SystemModule, SystemsDto} from '../../../data/common/systemsDto';
+import {ApiService} from '../../api/api.service';
+import {API_CONFIG} from '../../../../../environments/api_service_config';
 import {SystemRole} from "../../../data/common/system-role";
 
 @Injectable({
@@ -50,6 +50,29 @@ export class SystemsService {
       API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
       params
     );
+  }
+
+  createRole(role: SystemRole): Observable<SystemRole> {
+    return this.api.POST<SystemRole>(
+      `roles`,
+      JSON.stringify(role),
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+    )
+  }
+
+  editRole(role: SystemRole): Observable<SystemRole> {
+    return this.api.PUT<SystemRole>(
+      `roles/${role.id}`,
+      JSON.stringify(role),
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL,
+    )
+  }
+
+  deleteRole(id: number) {
+    return this.api.DELETE(
+      `roles/${id}`,
+      API_CONFIG.USER_ADMINISTRATION_SERVICE_BASE_URL
+    )
   }
 
 
