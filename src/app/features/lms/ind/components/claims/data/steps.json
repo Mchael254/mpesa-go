@@ -1,0 +1,23 @@
+[
+    {
+      "number": 1,
+      "title": "Claim Initiation",
+      "link": "/home/lms/claims/claims-initiation"
+    },
+    {
+      "number": 2,
+      "title": "Claim and Policy details",
+      "link": "/home/lms/claims/claim-details"
+    },
+    {
+        "number": 3,
+        "title": "Investigation",
+        "link": "/home/lms/claims/claim-investigation"
+      },
+      {
+        "number": 4,
+        "title": "Payment Processing",
+        "link": "/home/lms/claims/claim-payment"
+      }
+  ]
+  
