@@ -209,7 +209,18 @@
     "define_template": "Define a template",
     "save_details": "Save Details",
     "system_roles": "System roles",
-    "select_role": "Select a role"
+    "select_role": "Select a role",
+    "email": "Email",
+    "sms": "SMS",
+    "define_role": "Define a role",
+    "role_name": "Role name",
+    "created_date": "Created date",
+    "authorize": "Authorize",
+    "inactive": "Inactive",
+    "confirm_delete": "Confirm delete",
+    "are_you_sure": "Are you sure?",
+    "cancel": "Cancel",
+    "delete": "Delete"
   },
   "entities": {
     "account_number": "Account Number",

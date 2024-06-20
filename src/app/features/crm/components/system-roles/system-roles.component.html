@@ -51,11 +51,18 @@
                   </div>
                   <div class="col-sm-12 ms-3">
                     <div class="row mt-3 float-start">
-                  <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" >
+                  <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" (click)="resetFormValues()">
                     <i class="fa-solid fa-plus"></i>
                   </span>
-                      <span class="icon-circle"><i class="pi pi-pencil"></i></span>
-                      <span class="icon-circle"><i class="fa-regular fa-trash-can"></i></span>
+                      <span
+                        class="icon-circle" (click)="prepareEditRole()"
+                        data-bs-toggle="modal" data-bs-target="#renewRoleModal"
+                      >
+                        <i class="pi pi-pencil"></i>
+                      </span>
+                      <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#deleteRoleModal">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </span>
                     </div>
                   </div>
                   <p-scrollPanel [style]="{ width: '100%', height: '400px' }" styleClass="custombar1">
@@ -69,7 +76,7 @@
                               name="role"
                               value="{{ role.id }}"
                               id="{{ role.id }}"
-                              [checked]="selectedRole.id===role.id"
+                              [checked]="selectedRole?.id===role.id"
                               (click)="selectRole(role)"
                             >
                             <label class="form-check-label" for="{{ role.id }}">
@@ -97,7 +104,7 @@
         </div>
 
         <div class="col-sm-8">
-          <ng-container *ngIf="selectedRole.id !== undefined;">
+          <ng-container *ngIf="selectedRole?.id !== undefined;">
             <p-tabView>
               <p-tabPanel header="Roles and sub areas">
                 <div class="row">
@@ -138,7 +145,7 @@
                               role="button" aria-expanded="false"
                               aria-controls="collapseExample"
                             >
-                          {{ role }} <i class="fa-solid fa-caret-down"></i>
+                            {{ role }} <i class="fa-solid fa-caret-down"></i>
                         </span>
                           </div>
                           <div class="collapse" [id]="role">
@@ -252,38 +259,37 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="fs-5 text-dark" id="exampleModalLabel">Define a role</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h1 class="fs-5 text-dark" id="exampleModalLabel">{{ 'crm.define_role' | translate }}</h1>
+        <button #closebutton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form [formGroup]="roleForm">
           <div class="row">
             <div class="col-sm-6">
               <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Role name</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <label for="roleName" class="form-label">{{ 'crm.role_name' | translate }}</label>
+                <input type="text" class="form-control" formControlName="roleName" id="roleName" aria-describedby="roleName">
               </div>
               <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Created date</label>
-                <input type="date" class="form-control" id="exampleInputPassword1">
+                <label for="createdDate" class="form-label">{{ 'crm.created_date' | translate }}</label>
+                <input type="date" class="form-control" formControlName="createdAt" id="createdDate">
               </div>
               <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label text-dark" for="exampleCheck1">Authorize?</label>
+                <input type="checkbox" class="form-check-input" formControlName="authorized" id="authorize">
+                <label class="form-check-label text-dark" for="authorize">{{ 'crm.authorize' | translate }}?</label>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Short description</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <label for="shortDesc" class="form-label">{{ 'crm.short_description' | translate }}</label>
+                <input type="text" class="form-control" formControlName="shortDesc" id="shortDesc" aria-describedby="shortDesc">
               </div>
               <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Status</label>
-                <select class="form-select" aria-label="Default select example">
-                  <option selected>Status</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <label for="status" class="form-label">{{ 'crm.status' | translate }}</label>
+                <select class="form-select" formControlName="status" aria-label="Default select example" id="status">
+                  <option selected>{{ 'crm.status' | translate }}</option>
+                  <option value="A">{{ 'crm.active' | translate }}</option>
+                  <option value="I">{{ 'crm.inactive' | translate }}</option>
                 </select>
               </div>
             </div>
@@ -291,7 +297,26 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save details</button>
+        <button type="button" class="btn btn-primary" (click)="saveDetails()">{{ 'crm.save_details' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--confirm delete modal-->
+<div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-danger">{{ 'crm.confirm_delete' | translate }}!</h1>
+        <button #closeDeleteButton type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="lead">{{ 'crm.are_you_sure' | translate }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'crm.cancel' | translate }}</button>
+        <button type="button" class="btn btn-danger" (click)="deleteRole()">{{ 'crm.delete' | translate }}</button>
       </div>
     </div>
   </div>

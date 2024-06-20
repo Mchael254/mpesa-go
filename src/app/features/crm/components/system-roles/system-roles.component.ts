@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {SystemsDto} from "../../../../shared/data/common/systemsDto";
 import {Logger} from "../../../../shared/services";
 import {SystemsService} from "../../../../shared/services/setups/systems/systems.service";
@@ -6,6 +6,7 @@ import {BreadCrumbItem} from "../../../../shared/data/common/BreadCrumbItem";
 import {SystemRole} from "../../../../shared/data/common/system-role";
 import {NgxSpinnerService} from "ngx-spinner";
 import {GlobalMessagingService} from "../../../../shared/services/messaging/global-messaging.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 const log = new Logger('SystemRolesComponent');
 
@@ -15,6 +16,9 @@ const log = new Logger('SystemRolesComponent');
   styleUrls: ['./system-roles.component.css']
 })
 export class SystemRolesComponent implements OnInit {
+
+  @ViewChild('closebutton') closebutton;
+  @ViewChild('closeDeleteButton') closeDeleteButton;
 
   messagingTemplateBreadCrumbItems: BreadCrumbItem[] = [
     { label: 'Administration', url: '/home/dashboard' },
@@ -40,15 +44,32 @@ export class SystemRolesComponent implements OnInit {
   subAreas: string[] = ['Access(AMA)', 'Clients (AMAC)', 'Holding companies (AMHC)'];
   shouldShowRoleAreas: boolean = false;
 
+  roleForm: FormGroup;
+
   constructor(
     private systemsService: SystemsService,
     private spinner: NgxSpinnerService,
     private globalMessagingService: GlobalMessagingService,
+    private fb: FormBuilder,
   ) {
   }
 
   ngOnInit(): void {
     this.fetchSystems();
+    this.createRoleForm();
+  }
+
+  /**
+   * This method create a role form and defines all fields
+   */
+  createRoleForm() {
+    this.roleForm = this.fb.group({
+      roleName: [''],
+      shortDesc: [''],
+      createdAt: [''],
+      status: [''],
+      authorized: ['']
+    })
   }
 
   /**
@@ -81,7 +102,11 @@ export class SystemRolesComponent implements OnInit {
     this.spinner.show();
     this.shouldShowRoles = false;
     this.selectedSystem = system;
-    this.systemsService.getSystemRoles(this.selectedSystem.id).subscribe({
+    this.fetchSystemRoles(this.selectedSystem.id);
+  }
+
+  fetchSystemRoles(id: number) {
+    this.systemsService.getSystemRoles(id).subscribe({
       next: (roles: SystemRole[]) => {
         this.systemRoles = roles;
         this.spinner.hide();
@@ -106,4 +131,75 @@ export class SystemRolesComponent implements OnInit {
     this.shouldShowRoleAreas = true;
   }
 
+  saveDetails(): void {
+    const formValues = this.roleForm.getRawValue();
+    const role: SystemRole = {
+      ...formValues,
+      authorized: formValues.authorized === true ? 'Y' : 'N',
+      systemCode: this.selectedSystem?.id
+    }
+    log.info(`role to save >>> `, role);
+    if (this.selectedRole === null) {
+      this.createRole(role);
+    } else {
+      role.id = this.selectedRole.id;
+      this.editRole(role);
+    }
+  }
+
+  createRole(role: SystemRole): void {
+    this.systemsService.createRole(role).subscribe({
+      next: (role) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully created.')
+        this.fetchSystemRoles(this.selectedSystem.id);
+        this.closebutton.nativeElement.click();
+      },
+      error: (err) => {
+        this.rolesErrorMessage = err?.error?.message ?? err.message
+        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
+      }
+    })
+  }
+
+  editRole(role: SystemRole): void {
+    this.systemsService.editRole(role).subscribe({
+      next: (role) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully updated.');
+        this.fetchSystemRoles(this.selectedSystem.id);
+        this.closebutton.nativeElement.click();
+      },
+      error: (err) => {
+        this.rolesErrorMessage = err?.error?.message ?? err.message
+        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
+      }
+    })
+  }
+
+  prepareEditRole(): void {
+    this.roleForm.patchValue({
+      ...this.selectedRole,
+      authorized: this.selectedRole.authorized === 'Y',
+      createdAt: new Date(this.selectedRole.createdAt)
+    });
+    log.info(this.selectedRole, new Date(this.selectedRole.createdAt))
+  }
+
+  resetFormValues(): void {
+    this.selectedRole = null;
+    this.roleForm.reset();
+  }
+
+  deleteRole(): void {
+    this.systemsService.deleteRole(this.selectedRole.id).subscribe({
+      next: (role) => {
+        this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
+        this.fetchSystemRoles(this.selectedSystem.id);
+      },
+      error: (err) => {
+        this.rolesErrorMessage = err?.error?.message ?? err.message
+        this.globalMessagingService.displayErrorMessage('Error', this.rolesErrorMessage);
+      }
+    });
+    this.closeDeleteButton.nativeElement.click();
+  }
 }
