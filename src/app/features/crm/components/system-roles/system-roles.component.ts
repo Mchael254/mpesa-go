@@ -133,16 +133,23 @@ export class SystemRolesComponent implements OnInit {
 
   saveDetails(): void {
     const formValues = this.roleForm.getRawValue();
-    const role: SystemRole = {
+    let role: SystemRole = {
       ...formValues,
       authorized: formValues.authorized === true ? 'Y' : 'N',
       systemCode: this.selectedSystem?.id
     }
-    log.info(`role to save >>> `, role);
-    if (this.selectedRole === null) {
+
+    if (this.selectedRole.id === undefined) {
       this.createRole(role);
     } else {
-      role.id = this.selectedRole.id;
+      role = {
+        ...role,
+        id: this.selectedRole.id,
+        authorizedBy: this.selectedRole.authorizedBy,
+        createdAt: this.selectedRole.createdAt,
+        createdBy: this.selectedRole.createdBy,
+        organizationId: this.selectedRole.organizationId,
+      };
       this.editRole(role);
     }
   }
@@ -181,17 +188,16 @@ export class SystemRolesComponent implements OnInit {
       authorized: this.selectedRole.authorized === 'Y',
       createdAt: new Date(this.selectedRole.createdAt)
     });
-    log.info(this.selectedRole, new Date(this.selectedRole.createdAt))
   }
 
   resetFormValues(): void {
-    this.selectedRole = null;
+    this.selectedRole = {id: undefined, roleName: undefined};
     this.roleForm.reset();
   }
 
   deleteRole(): void {
     this.systemsService.deleteRole(this.selectedRole.id).subscribe({
-      next: (role) => {
+      next: () => {
         this.globalMessagingService.displaySuccessMessage('Success', 'Role successfully deleted.');
         this.fetchSystemRoles(this.selectedSystem.id);
       },
@@ -202,4 +208,5 @@ export class SystemRolesComponent implements OnInit {
     });
     this.closeDeleteButton.nativeElement.click();
   }
+
 }
