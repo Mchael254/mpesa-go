@@ -51,12 +51,19 @@
                   </div>
                   <div class="col-sm-12 ms-3">
                     <div class="row mt-3 float-start">
-                  <span class="icon-circle" data-bs-toggle="modal" data-bs-target="#renewRoleModal" (click)="resetFormValues()">
+                  <span
+                    class="icon-circle"
+                    id="reset-form"
+                    data-bs-toggle="modal"
+                    data-bs-target="#renewRoleModal"
+                    (click)="resetFormValues()"
+                  >
                     <i class="fa-solid fa-plus"></i>
                   </span>
                       <span
                         class="icon-circle" (click)="prepareEditRole()"
                         data-bs-toggle="modal" data-bs-target="#renewRoleModal"
+                        id="prepare-edit-role"
                       >
                         <i class="pi pi-pencil"></i>
                       </span>
@@ -297,7 +304,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="saveDetails()">{{ 'crm.save_details' | translate }}</button>
+        <button type="button" class="btn btn-primary" id="save-details" (click)="saveDetails()">{{ 'crm.save_details' | translate }}</button>
       </div>
     </div>
   </div>
@@ -316,7 +323,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'crm.cancel' | translate }}</button>
-        <button type="button" class="btn btn-danger" (click)="deleteRole()">{{ 'crm.delete' | translate }}</button>
+        <button type="button" id="delete-role-btn" class="btn btn-danger" (click)="deleteRole()">{{ 'crm.delete' | translate }}</button>
       </div>
     </div>
   </div>

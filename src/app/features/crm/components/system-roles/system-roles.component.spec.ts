@@ -12,19 +12,19 @@ import {SystemsService} from "../../../../shared/services/setups/systems/systems
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA} from "@angular/core";
 import {MessageService} from "primeng/api";
 
-const systems: SystemsDto[] = [{id: 111, shortDesc: "", systemName: ""}];
+const systems: SystemsDto[] = [{id: 111, shortDesc: "TEST SYSTEM", systemName: "TEST SYSTEM"}];
 const systemRoles: SystemRole[] = [{
   authorized: "Y",
   authorizedBy: "admin",
-  createdAt: "",
-  createdBy: "",
+  createdAt: "2024-11-20",
+  createdBy: "2024-11-20",
   editedBy: "",
-  id: 111,
+  id: 123,
   organizationId: 2,
   roleName: "Sample Role",
   shortDesc: "Sample",
   status: "A",
-  systemCode: 123
+  systemCode: 111
 }]
 
 describe('SystemRolesComponent', () => {
@@ -32,12 +32,15 @@ describe('SystemRolesComponent', () => {
   let fixture: ComponentFixture<SystemRolesComponent>;
 
   const systemsServiceStub = createSpyObj('SystemsService', [
-    'getSystems', 'getSystemRoles',
+    'getSystems', 'getSystemRoles', 'createRole', 'editRole', 'deleteRole'
   ])
 
   beforeEach(() => {
     jest.spyOn(systemsServiceStub, 'getSystems').mockReturnValue(of(systems));
     jest.spyOn(systemsServiceStub, 'getSystemRoles').mockReturnValue(of(systemRoles));
+    jest.spyOn(systemsServiceStub, 'createRole').mockReturnValue(of(systemRoles[0]));
+    jest.spyOn(systemsServiceStub, 'editRole').mockReturnValue(of(systemRoles[0]));
+    jest.spyOn(systemsServiceStub, 'deleteRole').mockReturnValue('');
 
     TestBed.configureTestingModule({
       declarations: [SystemRolesComponent],
@@ -77,5 +80,75 @@ describe('SystemRolesComponent', () => {
     expect(component.selectedRole).toBe(systemRoles[0]);
   });
 
+  test('should save Role', () => {
+
+    const systemButton = fixture.debugElement.nativeElement.querySelector('.select-system');
+    systemButton.click();
+    fixture.detectChanges();
+
+    component.roleForm.setValue({
+      roleName: 'Test Role',
+      shortDesc: 'TR',
+      createdAt: '',
+      status: 'A',
+      authorized: 'Y'
+    });
+
+    const button = fixture.debugElement.nativeElement.querySelector('#save-details');
+    button.click();
+    fixture.detectChanges();
+
+    expect(component.createRole.call).toBeTruthy();
+    expect(component.fetchSystemRoles.call).toBeTruthy();
+  });
+
+  test('should edit selected Role', () => {
+    const systemButton = fixture.debugElement.nativeElement.querySelector('.select-system');
+    systemButton.click();
+    fixture.detectChanges();
+
+    const selectRoleButton = fixture.debugElement.nativeElement.querySelector('.select-role');
+    selectRoleButton.click();
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.nativeElement.querySelector('#prepare-edit-role');
+    button.click();
+    fixture.detectChanges();
+
+    const saveDetails = fixture.debugElement.nativeElement.querySelector('#save-details');
+    saveDetails.click();
+    fixture.detectChanges();
+
+    expect(component.editRole.call).toBeTruthy();
+    expect(component.fetchSystemRoles.call).toBeTruthy();
+  });
+
+  test('should delete system role', () => {
+    const systemButton = fixture.debugElement.nativeElement.querySelector('.select-system');
+    systemButton.click();
+    fixture.detectChanges();
+
+    const selectRoleButton = fixture.debugElement.nativeElement.querySelector('.select-role');
+    selectRoleButton.click();
+    fixture.detectChanges();
+    expect(component.prepareEditRole.call).toBeTruthy()
+
+    const deleteRoleButton = fixture.debugElement.nativeElement.querySelector('#delete-role-btn');
+    deleteRoleButton.click();
+    fixture.detectChanges();
+    expect(component.deleteRole.call).toBeTruthy()
+  })
+
+  test('should reset form values', () => {
+    const systemButton = fixture.debugElement.nativeElement.querySelector('.select-system');
+    systemButton.click();
+    fixture.detectChanges();
+
+    const resetButton = fixture.debugElement.nativeElement.querySelector('#reset-form');
+    resetButton.click();
+    fixture.detectChanges();
+
+    expect(component.resetFormValues.call).toBeTruthy();
+  });
 
 });
