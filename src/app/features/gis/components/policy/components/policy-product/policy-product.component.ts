@@ -22,6 +22,8 @@ import { Router } from '@angular/router';
 import underwritingSteps from '../../data/underwriting-steps.json'
 import { ProductDocumentService } from '../../../setups/services/product-document/product-document.service';
 import { PremiumFinanciers } from '../../data/policy-dto';
+import {NgxSpinnerService} from 'ngx-spinner';
+
 
 const log = new Logger("PolicyProductComponent");
 
@@ -134,7 +136,7 @@ export class PolicyProductComponent {
     private router: Router,
     public cdr: ChangeDetectorRef,
     public productDocumentService:ProductDocumentService,
-
+    private spinner: NgxSpinnerService,
 
   ) { }
 
@@ -706,10 +708,10 @@ export class PolicyProductComponent {
         },
         error: (err) => {
 
-          this.globalMessagingService.displayErrorMessage(
-            'Error',
-            this.errorMessage
-          );
+          // this.globalMessagingService.displayErrorMessage(
+          //   'Error',
+          //    'Something went wrong. Please try Again'
+          // );
           log.info(`error >>>`, err);
         },
       });
@@ -816,6 +818,7 @@ export class PolicyProductComponent {
 
   // }
   createPolicy() {
+    this.spinner.show()
     this.policyProductForm.get('actionType').setValue("A");
     this.policyProductForm.get('addEdit').setValue("A");
     this.policyProductForm.get('clientCode').setValue(this.clientCode);
@@ -884,11 +887,14 @@ export class PolicyProductComponent {
             sessionStorage.setItem('passedPolicyDetails', passedPolicyDetailsString);
             if (this.policyProductForm.get('isCoinsurance').value == 'Y') {
               log.debug("NAVIGATING TO COINSUARANCE PAGE")
+              this.spinner.hide()
               this.router.navigate(['/home/gis/policy/coinsuarance-details'])
             }else if(this.importedPolicy){
               log.debug("NAVIGATING TO IMPORT RISKS PAGE")
+              this.spinner.hide()
               this.router.navigate(['/home/gis/policy/import-risks'])
             }else{
+              this.spinner.hide()
               this.router.navigate(['/home/gis/policy/risk-details']);
 
             }
