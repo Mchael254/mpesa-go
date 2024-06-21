@@ -137,7 +137,7 @@ export class RiskDetailsComponent {
   currentYear: any;
   riskForm: any;
   selectedTransactionType: any
-
+  csvRisksList:any;
   editing = false;
 
   riskCode: any;
@@ -1327,7 +1327,8 @@ export class RiskDetailsComponent {
 
       Papa.parse(file, {
         complete: (result: any) => {
-          console.log(result)
+          console.log('file result',result.data[0])
+          this.csvRisksList = result.data
           // Assuming CSV has header row, you can access data with result.data
 
           try {
@@ -1442,5 +1443,24 @@ getModelYear(){
       console.error(err);
     }
   })
+}
+filterPolicies(policyNo){
+  if(policyNo){
+    this.policyService.getbypolicyNo(policyNo).subscribe({
+      next:(data)=>{
+        if(data === null ){
+          this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+        }
+        console.log(data)
+      },error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+        console.error(err);
+      }
+    })
+  }else{
+    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+  }
+
+
 }
 }
