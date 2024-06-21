@@ -1,1 +1,317 @@
-<p>policy-and-claims-details works!</p>
+<div class="base-content-section lms">
+    <div class="fw-medium col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <app-stepper [currentStep]="2" [stepperData]="steps"></app-stepper>
+    </div>
+
+    <!-- But Pay Amount/Buy Pay Reason-->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="full-border" style="position: relative">
+              <!-- Title -->
+              <div
+              class="transactions d-flex justify-content-center fw-medium"
+              style="font-size: 1.25rem; padding-bottom: 1rem;"
+              >
+                  {{ "Claims" }}
+              </div>
+
+              
+              <div class="row">
+                <!-- But Pay Amount -->
+                <div class="col-lg-4 col-md-4 ">
+                  <div class="text-black mr-3">
+                    <label for="butPayAmount" class="quote-label fw-medium"style="font-size:1rem;">But Pay Amount</label>
+                    <input
+                      type="text"
+                      id="butPayAmount"
+                      class="form-control form-control my-1"
+                    />
+                  </div>
+                </div>
+                    
+                <!-- Buy Pay Reason -->
+                <div class="col-lg-4 col-md-4">
+                  <div class="text-black">
+                    <label for="buyPayReason" class="quote-label fw-medium"style="font-size:1rem;">Buy Pay Reason</label>
+                    <input
+                      type="text"
+                      id="buyPayReason"
+                      class="form-control form-control my-1"
+                    />
+                  </div>
+                </div>
+
+                <!-- Button -->
+                <div class="col-lg-4 col-md-4 mt-4">
+                    <button
+                    style="font-size: 1rem"
+                    class="btn p-2"
+                    type="button"
+                    [ngClass]="{
+                      'btn-danger': false,
+                      'btn-primary': true
+                    }"
+                    class="btn btn-md"
+                    >
+                      Apply
+                    </button>
+                </div>
+              </div>
+            </div>           
+        </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="full-border mt-1" style="position: relative">
+
+        <!-- POLICY DETAILS TABLE -->
+        <div
+          class="d-flex justify-content-start fw-bold"
+          style="font-size: 1.25rem; padding-left: 1.75rem;"
+          >
+              {{ "Policy Details" }}
+          </div>
+          <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
+            <div class="col-md-4 col-sm-12 col-xs-12">
+              <table style="width: 100%">
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Policy number: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">123456</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Client name: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Cris Doe</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Life assured: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Doe Jnr</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Premium: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 12000</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Sum assured: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 1,300,000</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4 col-sm-12 col-xs-12">
+              <table style="width: 100%">
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Bonus: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">some text</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Policy status: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Active</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Branch: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Text</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Effective date: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">12/12/2024</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Outstanding premium: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 139,262</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-4 col-sm-12 col-xs-12">
+              <table style="width: 100%">
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Outstanding loan: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">N/A</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Unprocessed receipts </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 10,000</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Premium waiver: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">some text</td>
+                </tr>
+                <tr>
+                  <td style="align-items: left; color:grey; font-size:16px;">Retention %: </td>
+                  <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">25</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- CLAIMS INFORMATION TABLE -->
+          <div style="margin-top: 2rem">
+            <div
+            class="d-flex justify-content-start fw-bold"
+            style="font-size: 1.25rem; padding-left: 1.75rem;"
+            >
+                {{ "Claims information" }}
+            </div>
+            <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Claim number: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">123456</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Claim status: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Active</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Claim on life: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Doe Jnr</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Causation: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Illness</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Death date: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">12/02/2024</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Death reported: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">12/02/2024</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Indemnity claim type: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">some text</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Indemnity days: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">100</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Amount claimed: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 20,000</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">But pay: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">No</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">But pay amount: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 0</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">But pay reason: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">N/A</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Amount to be paid: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 50,000</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Claim charge: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 10,000</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Initiator: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Jane Doe</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- COVER TYPES TABLE -->
+          <div style="margin-top: 2rem">
+            <div
+            class="d-flex justify-content-start fw-bold"
+            style="font-size: 1.25rem; padding-left: 1.75rem;"
+            >
+                {{ "Cover Types" }}
+            </div>
+            <div class="row col-12 mt-1" style="color: black; padding-left: 25px;">
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <th>Cover type A</th>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Sum assured: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">123456</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Reserved amount: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">Active</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <th>Cover type B</th>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Sum assured: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">some text</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Reserved amount: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">100</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-4 col-sm-12 col-xs-12">
+                <table style="width: 100%">
+                  <th>Cover type C</th>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Sum assured: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 50,000</td>
+                  </tr>
+                  <tr>
+                    <td style="align-items: left; color:grey; font-size:16px;">Reserved amount: </td>
+                    <td class="fw-bold" style="align-items: left; font-size:16px; color:black;">ksh 10,000</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="d-flex justify-content-end gap-4 pb-4">
+    <div></div>
+    <div>
+      <button
+        class="btn btn-md p-2 fw-medium"
+        type="button"
+        [ngClass]="{
+          'btn-danger': false,
+          'btn-primary': false,
+          'btn-outline-primary': true
+        }"
+        style="font-size: 16px"
+      >
+        Investigation
+      </button>
+    </div>
+    <div>
+      <button
+        class="btn btn-md p-2 fw-medium"
+        type="button"
+        [ngClass]="{
+          'btn-danger': false,
+          'btn-primary': true
+        }"
+        style="font-size: 16px"
+      >
+        Proceed without Investigation
+      </button>
+    </div>
+  </div> 
+</div>
+
