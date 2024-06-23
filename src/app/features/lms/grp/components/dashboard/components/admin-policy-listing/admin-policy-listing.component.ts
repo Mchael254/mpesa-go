@@ -17,6 +17,8 @@ export class AdminPolicyListingComponent implements OnInit, OnDestroy {
   breadCrumbItems: BreadCrumbItem[] = [];
   policiesListing: PoliciesListingDTO[] = [];
   clientCode: number = 2422853;
+  investment: boolean = false;
+  creditLife: boolean = false;
 
 
   constructor(
@@ -73,11 +75,26 @@ export class AdminPolicyListingComponent implements OnInit, OnDestroy {
   }
 
   navigateToPolDets(polCode) {
-    this.router.navigate(['/home/lms/grp/dashboard/admin-policy-details'], {
-      queryParams: {
-        policyCode: polCode,
-      }
-    });
+    if(this.investment) {
+      this.router.navigate(['/home/lms/grp/dashboard/investment'], {
+        queryParams: {
+          policyCode: polCode,
+        }
+      });
+    } else if(this.creditLife) {
+      this.router.navigate(['/home/lms/grp/dashboard/credit-life'], {
+        queryParams: {
+          policyCode: polCode,
+        }
+      });
+    } else {
+      this.router.navigate(['/home/lms/grp/dashboard/admin-policy-details'], {
+        queryParams: {
+          policyCode: polCode,
+        }
+      });
+    }
+    
   }
 
 }

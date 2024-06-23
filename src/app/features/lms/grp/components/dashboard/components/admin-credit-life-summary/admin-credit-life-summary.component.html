@@ -1,0 +1,285 @@
+<div class="main">
+    <div style="display: flex; padding-top: 1rem; justify-content: start">
+        <app-dynamic-breadcrumb [breadCrumbItems]="breadCrumbItems">
+        </app-dynamic-breadcrumb>
+    </div>
+    <div>
+        <div class="container">
+            <div class="nav-link" (click)="showContent('summary')" [class.active]="selectedContent === 'summary'">
+                {{ 'Credit life summary' }}
+            </div>
+            <div class="nav-link" (click)="showContent('members')" [class.active]="selectedContent === 'members'">
+                Members</div>
+        </div>
+    </div>
+
+    <div class="container2">
+        <div *ngIf="selectedContent === 'summary'">
+            <div class="title-desc">Credit life summary</div>
+            <div class="pension-table-container col-12" *ngIf="adminDetails">
+
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Policy number:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.plicyNo }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Outstanding loan:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Group name:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.name | titlecase }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Premium:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-4">
+                    <table class="pension-table">
+                        <tr>
+                            <td class="table-label">Total members:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.members }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">Policy status:</td>
+                            <td class="table-label-desc">{{ adminDetails[0]?.status | titlecase }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="title-desc" style="font-size: 16px;">Cover types</div>
+
+                <div class="pension-table-container col-12" *ngIf="adminDetails">
+
+                    <div class="col-4">
+                        <div class="table-label-desc">{{ 'Death' }}</div>
+                        <table class="pension-table">
+                            <tr>
+                                <td class="table-label">Sum assured:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Premium:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="table-label-desc">{{ 'Dissability' }}</div>
+                        <table class="pension-table">
+                            <tr>
+                                <td class="table-label">Sum assured:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Premium:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-4">
+                        <div class="table-label-desc">{{ 'Retrenchment' }}</div>
+                        <table class="pension-table">
+                            <tr>
+                                <td class="table-label">Sum assured:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="table-label">Premium:</td>
+                                <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="selectedContent === 'members'">
+            <div class="container-fil">
+                <div class="filter-container">
+                    <label class="filter-label">Filter by</label>
+                    <div class="filter-selectors">
+                        <form>
+                            <p-dropdown [options]="" placeholder="Surname, Date of Birth, Gender" optionLabel="name"
+                                [style]="{height: '35px', 'line-height': '10px'}"></p-dropdown>
+                            <p-dropdown [options]="" placeholder="Greater than, Equals to, Less than" optionLabel="name"
+                                [style]="{ height: '35px', 'line-height': '10px' }"></p-dropdown>
+                            <input type="text" pInputText placeholder="Enter value"
+                                [style]="{ height: '35px', 'line-height': '10px' }" />
+                        </form>
+
+                    </div>
+                </div>
+                <div class="form-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text" class="form-control form-input" placeholder="Search">
+                    <p-multiSelect [options]="columnOptions" [(ngModel)]="selectedColumns" [filter]="false">
+                    </p-multiSelect>
+                </div>
+            </div>
+            <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}"
+                [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: calc(100% / 8);">Member ID</th>
+                        <th style="width: calc(100% / 8);">Name</th>
+                        <th style="width: calc(100% / 8);">Date of birth</th>
+                        <th style="width: calc(100% / 8);">Address</th>
+                        <th style="width: calc(100% / 8);">Contact</th>
+                        <th style="width: calc(100% / 8);">Loans</th>
+                        <th style="width: calc(100% / 8); text-align: right;">Loan amount</th>
+                        <th style="width: calc(100% / 8);">Status</th>
+                        <th class="action-column" style="width: 10px;"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.period }}</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td>{{ item.contribution }}</td>
+                        <td>{{ item.rate }}%</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td style="text-align: right;">{{ item.balanceBF | number }}</td>
+                        <td>{{ item.interest }}</td>
+                        <td class="action-column">
+                            <div class="flex justify-content-center">
+                                <p-overlayPanel #op>
+                                    <div>
+                                        <!-- button -->
+                                        <p-button label="Amortization table" icon="" styleClass="custom-button"
+                                            severity="" (click)="showAmortizationPopUp()"></p-button>
+                                    </div>
+                                </p-overlayPanel>
+                                <!-- Ellipsis container -->
+                                <div (click)="op.toggle($event)">
+                                    <i class="fas fa-ellipsis-v hover-button" (click)="op.toggle($event)"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <!-- modal for amortization table  -->
+    <div class="modal fade" tabindex="-1" #amortizationModal id="amortizationModal" aria-labelledby="amortizationModal"
+        aria-hidden="true" (click)="onBackdropClick($event)">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="amortizationModalLabel">Amortization schedule</h5>
+                    <button type="button" class="custom-red-button" data-bs-dismiss="modal" aria-label="Close"
+        (click)="closeAmortizationPopUp()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="pension-table-container col-12" *ngIf="adminDetails">
+
+                        <div class="col-4">
+                            <table class="pension-table">
+                                <tr>
+                                    <td class="table-label">Loan ID:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.plicyNo }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-label">Loan end date:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-label">Coverage start date:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                                </tr>
+                            </table>
+                        </div>
+        
+                        <div class="col-4">
+                            <table class="pension-table">
+                                <tr>
+                                    <td class="table-label">Loan amount:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.salary | number }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-label">Interest rate:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.salary }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-label">Coverage start date:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-4">
+                            <table class="pension-table">
+                                <tr>
+                                    <td class="table-label">Loan issue date:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-label">Payment frequency:</td>
+                                    <td class="table-label-desc">{{ adminDetails[0]?.rod }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px;">
+                        <p-table [value]="dummyData" styleClass="p-datatable-striped" [tableStyle]="{'max-width': '100%'}">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: calc(100% / 7);">Repayment date</th>
+                        <th style="width: calc(100% / 7);">Amount</th>
+                        <th style="width: calc(100% / 7);">Principal</th>
+                        <th style="width: calc(100% / 7);">Interest</th>
+                        <th style="width: calc(100% / 7);">Status</th>
+                        <th style="width: calc(100% / 7);">Total amount paid</th>
+                        <th style="width: calc(100% / 7); text-align: right;">Balance</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td>{{ item.year }}</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td>{{ item.rate }}</td>
+                        <td>{{ item.balanceBF }}%</td>
+                        <td>{{ item.balanceBF }}</td>
+                        <td style="text-align: right;">{{ item.balanceBF | number }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+                    </div>
+
+                    <div class="download-link" style="margin-top: 40px;">
+                        <a href="#">
+                            <img src="assets/images/file-type-pdf.svg" class="pdf-icon">
+                            <span class="download-link">
+                                {{ 'Amortization schedule' }}
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            (click)="closeAmortizationPopUp()">Close</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of modal for amortization table -->
