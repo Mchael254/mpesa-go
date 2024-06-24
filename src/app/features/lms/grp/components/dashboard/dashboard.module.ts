@@ -22,6 +22,8 @@ import { QuoteMenuBarComponent } from './components/quote-menu-bar/quote-menu-ba
 import { NormalQuoteInitComponent } from './components/normal-quote-init/normal-quote-init.component';
 import { AdminQuoteSummaryComponent } from './components/admin-quote-summary/admin-quote-summary.component';
 import { AdminCoverageDetailsComponent } from './components/admin-coverage-details/admin-coverage-details.component';
+import { AdminInvestmentDetailsComponent } from './components/admin-investment-details/admin-investment-details.component';
+import { AdminCreditLifeSummaryComponent } from './components/admin-credit-life-summary/admin-credit-life-summary.component';
 
 
 @NgModule({
@@ -41,6 +43,8 @@ import { AdminCoverageDetailsComponent } from './components/admin-coverage-detai
     NormalQuoteInitComponent,
     AdminCoverageDetailsComponent,
     AdminQuoteSummaryComponent,
+    AdminInvestmentDetailsComponent,
+    AdminCreditLifeSummaryComponent,
   ],
   imports: [
     CommonModule,
