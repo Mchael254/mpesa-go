@@ -87,7 +87,7 @@
                               (click)="selectRole(role)"
                             >
                             <label class="form-check-label" for="{{ role.id }}">
-                              {{ role.roleName }}
+                              {{ role.roleName | sentenceCase }}
                             </label>
                           </div>
                         </div>
@@ -128,7 +128,7 @@
                               [checked]="selectedRole===role"
                             >
                             <label class="form-check-label" for="roleArea">
-                              {{ role.roleName }}
+                              {{ role.roleName | sentenceCase }}
                             </label>
                           </div>
                         </div>
@@ -190,7 +190,7 @@
                             (click)="selectRole(role)"
                           >
                           <label class="form-check-label" for="roleArea">
-                            {{ role }}
+                            {{ role.roleName | sentenceCase }}
                           </label>
                         </div>
                       </div>
