@@ -41,7 +41,7 @@
                             <label for="riskDescription" class="required risk-label"
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="propertyDescription">
+                                formControlName="propertyDescription" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right" readonly>
 
                             <!-- Display error message under the field -->
                             <div *ngIf="policyRiskForm.get('propertyDescription').hasError('required') && policyRiskForm.get('propertyDescription').touched"
@@ -53,7 +53,7 @@
                             <label for="riskDescription" class="required risk-label"
                                 id="riskDescription">{{'gis.policy.risk_description' | translate}}</label><br>
                             <input type="text" id="riskDescription" class="form-control form-control-sm mb-1 riskInput"
-                                formControlName="subClassCode" [(ngModel)]="vehiclemakeModel">
+                                formControlName="subClassCode" [(ngModel)]="vehiclemakeModel" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip on right" readonly>
 
                             <!-- Display error message under the field -->
                             <!-- <div *ngIf="policyRiskForm.get('property_description').hasError('required') && policyRiskForm.get('property_description').touched"
@@ -1014,9 +1014,7 @@
                                         <span *ngIf="uploading === 'progress'" class="mx-3">
                                           <i class="pi pi-spin pi-spinner" style="color: #cccccc"></i>
                                         </span>
-                                        <span *ngIf="uploading === 'success'" class="mx-1" style="color: #fff">
-                                          <!--<i class="pi pi-check" ></i>--> File uploaded
-                                        </span>
+                                      
                                   
                                         <input type="file" id="fileInput" accept=".csv" (change)="onFileSelected($event)">
 
@@ -1029,11 +1027,24 @@
                                         
                                         <div class="modal-body">
                                             <p>Import a Schedule</p>
-                                            <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a policy">
-                                         
+                                            <!-- <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a policy"> -->
+                                            <div class="input-group mb-3 w-50">
+                                                <input
+                                                  type="text"
+                                                  class="form-control form-control-sm "
+                                                  placeholder="Search for a policy"
+                                                  aria-label="search"
+                                                  aria-describedby="search"
+                                                  #policyNoInput
+                                                  
+                                                >
+                                                <span class="input-group-text" id="search" (click)="filterPolicies(policyNoInput.value)" >
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                          </span>
+                                              </div>
                                                 
                                         </div>
-                                        <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                        <p-table [value]="selectedPolicy" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
                                         selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
                                         responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
                                         <ng-template pTemplate="header">
@@ -1048,12 +1059,12 @@
                                                 
                                             </tr>
                                         </ng-template>
-                                        <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
-                                            <tr [pEditableRow]="premiumList">
+                                        <ng-template pTemplate="body" let-data let-editing="editing" let-ri="rowIndex">
+                                            <tr >
                                             
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>{{data.policyNo}}</td>
+                                                <td>{{data.endorsementNo}}</td>
+                                                <td>{{data.proCode}}</td>
                                             
                                             </tr>
                     
@@ -1068,17 +1079,30 @@
                                     </p-table>
                                     <div class="modal-body">
                                         <p>Import a Risk</p>
-                                        <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a risk">
+                                        <div class="input-group mb-3 w-50">
+                                            <input
+                                              type="text"
+                                              class="form-control form-control-sm "
+                                              placeholder="Search for a risk"
+                                              aria-label="search"
+                                              aria-describedby="search"
+                                              #riskNoInput
+                                              
+                                            >
+                                            <span class="input-group-text" id="search" (click)="filterRisk(riskNoInput.value)" >
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                      </span>
+                                          </div>
                                      
                                             
                                     </div>
-                                    <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                    <p-table [value]="selectedRisk" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
                                     selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
                                     responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
                                     <ng-template pTemplate="header">
                                         <tr  style="background-color: #F5F6F8;">
                                            
-                                            <th style="width:8%">Select</th>
+                                            <!-- <th style="width:8%">Select</th> -->
                                             <th style="width:8%">Risk Description</th>
                                             <th style="width:8%">Risk Value</th>
                                             <th style="width:8%">Subclass</th>
@@ -1087,13 +1111,12 @@
                                             
                                         </tr>
                                     </ng-template>
-                                    <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
-                                        <tr [pEditableRow]="premiumList">
+                                    <ng-template pTemplate="body" let-data let-editing="editing" let-ri="rowIndex">
+                                        <tr>
                                         
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{{data.propertyDescription}}</td>
+                                            <td>td>
+                                            <td>{{data.subClassCode}}</td>
                                         
                                         </tr>
                 
@@ -1113,24 +1136,6 @@
                             </div>
                             <!-- <div class="col-2"></div> -->
                             <div class="col-6 d-flex justify-content-end">
-                                <!-- <div class="row">
-                            
-                                    <div class="col-4">
-                                        <button class="btn btn-primary import-button">Export Template</button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button type="button" id="icon" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#addSection" title="add">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button type="button" id="icon" class="btn btn-success" data-bs-toggle="modal"
-                                        data-bs-target="#addSection" title="add">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                    </div>
-                                </div> -->
                                 <div class="row  mb-2">
 
                                     <div class="col-sm-6 me-3">
@@ -1457,7 +1462,7 @@
                                             </div>
                                           </div>
                                         </div>
-                                      </div>
+                                    </div>
                                     <div class="col-sm-2">
                                         <button type="button" id="icon" class="btn btn-danger" data-bs-toggle="modal"
                                             data-bs-target="#deleteCoinsurance" title="Delete">
@@ -1470,46 +1475,42 @@
                             </div>
                         </div>
 
-                        <p-table [value]="premiumList" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
+                        <p-table [value]="csvRisksList" dataKey="code" editMode="row" [tableStyle]="{'min-width': '50rem'}"
                     selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
                     responsiveLayout="scroll" class='ui-datatable' [autoLayout]="true">
                     <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width:5%">Select</th>
-                            <th style="width:8%">Group</th>
-                            <th style="width:8%">RowNum</th>
-                            <th style="width:10%">Code</th>
-                            <th style="width:12%">Short Description</th>
-                            <th style="width:10%">Description</th>
-                            <th style="width:8%">Limit Amount</th>
-                            <th style="width:10%">Premium Rate</th>
-                            <th style="width:12%">Rate Type</th>
+                        <tr class="mb-4">
+                            <th style="width:15%">Client ID</th>
+                            <th style="width:15%">Client Name</th>
+                            <th style="width:5%">WEF</th>
+                            <th style="width:7%">WET</th>
+                            <th style="width:15%">Risk Duplicated</th>
+                            <th style="width:10%">Class</th>
+                            <th style="width:15%">Cover Type</th>
+                            <th style="width:10%">Premium </th>
+                            <th style="width:12%">Taxes</th>
                             <!-- <th style="width:7%;"></th> -->
                            
                            
                             
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
-                        <tr [pEditableRow]="premiumList">
-                            <td>
-                                <p-tableCheckbox [value]="selectedSection"></p-tableCheckbox>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            
-                          
-                           
-
-
-                            <td>
-                               
-                            </td>
+                    <ng-template pTemplate="body" let-data let-editing="editing" let-ri="rowIndex">
+                        <tr>
+                            <td>{{data.clientId}}</td>
+                            <td>{{data.clientName}}</td>
+                            <td>{{data.WEF}}</td>
+                            <td>{{data.WET}}</td>
+                            <td>{{data.riskDuplicated}}</td>
+                            <td>{{data.class}}</td>
+                            <td>{{data.coverType}}</td>
+                            <td>{{data.premium}}</td>
+                            <td>{{data.taxes}}</td>
                         </tr>
 
 
                     </ng-template>
-                </p-table>
+                        </p-table>
                         
                     </p-tabPanel>
                     <p-tabPanel header="Other Details">
