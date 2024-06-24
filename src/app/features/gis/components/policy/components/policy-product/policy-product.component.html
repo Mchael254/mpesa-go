@@ -1,4 +1,7 @@
 <div class="container ">
+    <div class="spinner" style="position: relative">
+        <ngx-spinner type="ball-clip-rotate-multiple" [fullScreen]="true" color="#00529B" size="large" bdColor = "rgba(255, 255, 255, 0.966)"></ngx-spinner>
+      </div>
     <p class="titleMain mt-3">{{'gis.policy.underwriting_product_details' | translate}}</p>
     <app-stepper [currentStep]="1" [stepperData]="steps"></app-stepper>
 
@@ -60,6 +63,7 @@
                                 id="policy_interface">{{'gis.policy.policy_interface_type' | translate}}</label>
                             <select class="form-select form-control-sm mb-1 ms-n4" id="product-input"
                                 formControlName="proInterfaceType">
+                                <option></option>
                                 <option value="ACCRUAL">{{'gis.policy.accrual' | translate}}</option>
                                 <option value="CASH">{{'gis.policy.cash' | translate}}</option>
 

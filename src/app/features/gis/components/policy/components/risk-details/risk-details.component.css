@@ -251,3 +251,7 @@
 ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
   padding: 0.5rem 0.5rem;
 }
+#search{
+  border: #00529B;
+  cursor:pointer;
+}

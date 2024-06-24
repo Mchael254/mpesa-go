@@ -128,4 +128,10 @@ export class PolicyService {
   computePremium(computationDetails){
     return this.http.post(`/${this.computationUrl}/api/v1/premium-computation`,computationDetails)
   }
+  getbypolicyNo(policyNo){
+    return this.api.GET(`v1/policies/filter-policies?policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
+  getbyRiskId(riskId){
+    return this.api.GET(`v2/policies/filter-risks?riskId=${riskId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
 }

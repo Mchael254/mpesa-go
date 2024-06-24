@@ -128,7 +128,8 @@ export class RiskDetailsComponent {
   fileSelected: boolean = false;
   uploadedFileName: string = '';
   uploading: string = '';
-
+  selectedPolicy:any;
+  selectedRisk:any;
   policyRisks:any;
   policyRiskDetails:any;
   policySectionDetails:any;
@@ -137,7 +138,7 @@ export class RiskDetailsComponent {
   currentYear: any;
   riskForm: any;
   selectedTransactionType: any
-
+  csvRisksList:any;
   editing = false;
 
   riskCode: any;
@@ -1327,7 +1328,8 @@ export class RiskDetailsComponent {
 
       Papa.parse(file, {
         complete: (result: any) => {
-          console.log(result)
+          console.log('file result',result.data[0])
+          this.csvRisksList = result.data
           // Assuming CSV has header row, you can access data with result.data
 
           try {
@@ -1442,5 +1444,45 @@ getModelYear(){
       console.error(err);
     }
   })
+}
+filterPolicies(policyNo){
+  if(policyNo){
+    this.policyService.getbypolicyNo(policyNo).subscribe({
+      next:(data)=>{
+        if(data === null ){
+          this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+        }
+        this.selectedPolicy = [data];
+
+
+        console.log(this.selectedPolicy)
+      },error: (err) => {
+        this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
+        console.error(err);
+      }
+    })
+  }else{
+    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+  }
+
+
+}
+filterRisk(riskId){ 
+  if(riskId){
+    this.policyService.getbyRiskId(riskId).subscribe({
+      next:(data)=>{
+        if(data === null){
+          this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+        }
+        this.selectedRisk = [data];
+      },error:(err) =>{
+        this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+        console.error(err);
+      }
+    })
+  }else{
+    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+  }
+
 }
 }
