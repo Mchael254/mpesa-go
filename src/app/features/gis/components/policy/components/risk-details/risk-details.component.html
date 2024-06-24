@@ -1079,17 +1079,30 @@
                                     </p-table>
                                     <div class="modal-body">
                                         <p>Import a Risk</p>
-                                        <input type="text" class="form-control form-control-sm w-50 mb-4"  placeholder="Search for a risk">
+                                        <div class="input-group mb-3 w-50">
+                                            <input
+                                              type="text"
+                                              class="form-control form-control-sm "
+                                              placeholder="Search for a risk"
+                                              aria-label="search"
+                                              aria-describedby="search"
+                                              #riskNoInput
+                                              
+                                            >
+                                            <span class="input-group-text" id="search" (click)="filterRisk(riskNoInput.value)" >
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                      </span>
+                                          </div>
                                      
                                             
                                     </div>
-                                    <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                    <p-table [value]="selectedRisk" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
                                     selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
                                     responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
                                     <ng-template pTemplate="header">
                                         <tr  style="background-color: #F5F6F8;">
                                            
-                                            <th style="width:8%">Select</th>
+                                            <!-- <th style="width:8%">Select</th> -->
                                             <th style="width:8%">Risk Description</th>
                                             <th style="width:8%">Risk Value</th>
                                             <th style="width:8%">Subclass</th>
@@ -1098,13 +1111,12 @@
                                             
                                         </tr>
                                     </ng-template>
-                                    <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
-                                        <tr [pEditableRow]="premiumList">
+                                    <ng-template pTemplate="body" let-data let-editing="editing" let-ri="rowIndex">
+                                        <tr>
                                         
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>{{data.propertyDescription}}</td>
+                                            <td>td>
+                                            <td>{{data.subClassCode}}</td>
                                         
                                         </tr>
                 
