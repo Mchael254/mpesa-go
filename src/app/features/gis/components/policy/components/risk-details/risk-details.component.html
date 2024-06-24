@@ -1044,7 +1044,7 @@
                                               </div>
                                                 
                                         </div>
-                                        <p-table [value]="" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
+                                        <p-table [value]="selectedPolicy" dataKey="code" editMode="row" [tableStyle]="{'min-width': '10rem'}"
                                         selectionMode="single" [(selection)]="selectedSection" styleClass="p-datatable-sm"
                                         responsiveLayout="scroll" class='ui-datatable mb-4' [autoLayout]="true">
                                         <ng-template pTemplate="header">
@@ -1059,12 +1059,12 @@
                                                 
                                             </tr>
                                         </ng-template>
-                                        <ng-template pTemplate="body" let-premiumList let-editing="editing" let-ri="rowIndex">
-                                            <tr [pEditableRow]="premiumList">
+                                        <ng-template pTemplate="body" let-data let-editing="editing" let-ri="rowIndex">
+                                            <tr >
                                             
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>{{data.policyNo}}</td>
+                                                <td>{{data.endorsementNo}}</td>
+                                                <td>{{data.proCode}}</td>
                                             
                                             </tr>
                     
