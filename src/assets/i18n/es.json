@@ -207,7 +207,20 @@
     "subject": "Asunto",
     "template_content": "Contenido de la Plantilla",
     "define_template": "Definir una plantilla",
-    "save_details": "Guardar Detalles"
+    "save_details": "Guardar Detalles",
+    "system_roles": "Roles del sistema",
+    "select_role": "Seleccionar un rol",
+    "email": "Correo electrónico",
+    "sms": "SMS",
+    "define_role": "Definir un rol",
+    "role_name": "Nombre del rol",
+    "created_date": "Fecha de creación",
+    "authorize": "Autorizar",
+    "inactive": "Inactivo",
+    "confirm_delete": "Confirmar eliminación",
+    "are_you_sure": "¿Estás seguro?",
+    "cancel": "Cancelar",
+    "delete": "Eliminar"
   },
   "entities": {
     "account_number": "Número de cuenta",
