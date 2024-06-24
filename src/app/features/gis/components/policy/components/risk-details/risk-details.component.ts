@@ -129,6 +129,7 @@ export class RiskDetailsComponent {
   uploadedFileName: string = '';
   uploading: string = '';
   selectedPolicy:any;
+  selectedRisk:any;
   policyRisks:any;
   policyRiskDetails:any;
   policySectionDetails:any;
@@ -1464,6 +1465,24 @@ filterPolicies(policyNo){
     this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
   }
 
+
+}
+filterRisk(riskId){ 
+  if(riskId){
+    this.policyService.getbyRiskId(riskId).subscribe({
+      next:(data)=>{
+        if(data === null){
+          this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+        }
+        this.selectedRisk = [data];
+      },error:(err) =>{
+        this.globalMessagingService.displayErrorMessage('Risk not found', 'Try a different Risk Id or check the structure of the Risk Id');
+        console.error(err);
+      }
+    })
+  }else{
+    this.globalMessagingService.displayErrorMessage('Error', 'Fill in a policy number');
+  }
 
 }
 }

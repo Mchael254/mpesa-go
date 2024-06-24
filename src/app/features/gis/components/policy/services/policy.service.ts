@@ -131,4 +131,7 @@ export class PolicyService {
   getbypolicyNo(policyNo){
     return this.api.GET(`v1/policies/filter-policies?policyNo=${policyNo}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
   }
+  getbyRiskId(riskId){
+    return this.api.GET(`v2/policies/filter-risks?riskId=${riskId}`, API_CONFIG.GIS_UNDERWRITING_BASE_URL)
+  }
 }
