@@ -128,7 +128,7 @@ export class RiskDetailsComponent {
   fileSelected: boolean = false;
   uploadedFileName: string = '';
   uploading: string = '';
-
+  selectedPolicy:any;
   policyRisks:any;
   policyRiskDetails:any;
   policySectionDetails:any;
@@ -1451,7 +1451,10 @@ filterPolicies(policyNo){
         if(data === null ){
           this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
         }
-        console.log(data)
+        this.selectedPolicy = [data];
+
+
+        console.log(this.selectedPolicy)
       },error: (err) => {
         this.globalMessagingService.displayErrorMessage('Policy not found', ' Try a different policy no or check the structure of the policy No');
         console.error(err);
